@@ -9,6 +9,7 @@ use MailPoet\Config\Env;
 use MailPoet\Config\Menu;
 use MailPoet\Config\SchemaNotReadyResponder;
 use MailPoet\Config\SchemaState;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Migrator\Migrator;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
@@ -23,8 +24,12 @@ class SchemaNotReadyResponderTest extends \MailPoetTest {
 
   private SchemaNotReadyResponder $responder;
 
+  /** @var mixed */
+  private $pagenow;
+
   public function _before(): void {
     parent::_before();
+    $this->pagenow = $GLOBALS['pagenow'] ?? null;
     $this->settings = $this->diContainer->get(SettingsController::class);
     $this->settings->set('db_version', '0.0.1');
     // fresh instances: the container's shared SchemaState would carry a failure across tests
@@ -35,8 +40,7 @@ class SchemaNotReadyResponderTest extends \MailPoetTest {
 
   public function _after(): void {
     $this->settings->set('db_version', Env::$version);
-    unset($_GET[Router::NAME], $_REQUEST['page']);
-    wp_set_current_user(0);
+    $GLOBALS['pagenow'] = $this->pagenow;
     foreach (['menu', 'submenu', '_parent_pages', 'admin_page_hooks', '_registered_pages'] as $name) {
       unset($GLOBALS[$name]);
     }
@@ -118,11 +122,31 @@ class SchemaNotReadyResponderTest extends \MailPoetTest {
     $this->responder->init();
     verify(has_action('wp_ajax_mailpoet', [$this->responder, 'sendJsonResponse']))->notEmpty();
     verify(has_action('wp_ajax_nopriv_mailpoet', [$this->responder, 'sendJsonResponse']))->notEmpty();
+    verify(has_action('wp_ajax_mailpoet_token', [$this->responder, 'sendJsonResponse']))->notEmpty();
+    verify(has_action('wp_ajax_nopriv_mailpoet_token', [$this->responder, 'sendJsonResponse']))->notEmpty();
     verify(has_action('wp_loaded', [$this->responder, 'rejectRouterRequest']))->notEmpty();
     verify(has_action('admin_post_mailpoet_subscription_form', [$this->responder, 'sendUnavailablePage']))->notEmpty();
     verify(has_action('admin_post_nopriv_mailpoet_subscription_form', [$this->responder, 'sendUnavailablePage']))->notEmpty();
     verify(has_action('admin_post_mailpoet_subscription_update', [$this->responder, 'sendUnavailablePage']))->notEmpty();
     verify(has_action('admin_post_nopriv_mailpoet_subscription_update', [$this->responder, 'sendUnavailablePage']))->notEmpty();
+    verify(has_action('admin_init', [$this->responder, 'redirectEmailEditorScreen']))->notEmpty();
+  }
+
+  public function testItAddsTheNoticeExceptOnMailPoetScreens(): void {
+    $this->responder->init();
+    verify($this->renderMailPoetNotices())->stringContainsString('notice-warning');
+
+    $_REQUEST['page'] = 'mailpoet-newsletters';
+    $this->createResponder()->init();
+    verify(substr_count($this->renderMailPoetNotices(), 'mailpoet_notice_server'))->equals(1);
+  }
+
+  public function testTheNoticeIsAnErrorAfterAFailedMigration(): void {
+    $this->schemaState->markFailed(new \Exception('Unknown column wp_mailpoet_x.y'));
+    $this->responder->init();
+    $html = $this->renderMailPoetNotices();
+    verify($html)->stringContainsString('notice-error');
+    verify($html)->stringNotContainsString('Unknown column');
   }
 
   public function testItEndsARouterRequestWithA503Page(): void {
@@ -149,19 +173,25 @@ class SchemaNotReadyResponderTest extends \MailPoetTest {
     $this->responder->registerMenu();
 
     verify(menu_page_url(Menu::MAIN_PAGE_SLUG, false))->stringContainsString('page=' . Menu::MAIN_PAGE_SLUG);
-    $submenu = $GLOBALS['submenu'] ?? [];
-    $this->assertIsArray($submenu);
-    $deepLinks = $submenu[Menu::NO_PARENT_PAGE_SLUG] ?? [];
-    $this->assertIsArray($deepLinks);
-    $this->assertContains('mailpoet-newsletters', array_column($deepLinks, 2));
+    verify($this->getDeepLinkSlugs())->equals(['mailpoet-newsletters']);
+  }
+
+  public function testItRegistersNoDeepLinkForOtherPagesOrTheMainPage(): void {
+    wp_set_current_user(1);
+    foreach (['woocommerce', Menu::MAIN_PAGE_SLUG, ''] as $page) {
+      $_REQUEST['page'] = $page;
+      $this->responder->registerMenu();
+      verify($this->getDeepLinkSlugs())->equals([], "page={$page}");
+    }
   }
 
   public function testTheStatusPageExplainsAnUpdateInProgress(): void {
+    wp_set_current_user(1);
     $html = $this->renderStatusPage($this->responder);
     verify($html)->stringContainsString('notice-warning');
     verify($html)->stringContainsString('update is in progress');
     verify($html)->stringContainsString('Database version: 0.0.1');
-    verify($html)->stringNotContainsString('mailpoet:migrations:run');
+    verify($html)->stringNotContainsString('mailpoet migrations run');
   }
 
   public function testTheStatusPageKeepsFailureDetailFromNonAdministrators(): void {
@@ -180,16 +210,50 @@ class SchemaNotReadyResponderTest extends \MailPoetTest {
     verify($html)->stringContainsString('notice-error');
     verify($html)->stringContainsString('Unknown column wp_mailpoet_x.y');
     verify($html)->stringContainsString('<td>Migration_2</td><td>3</td><td>Exception: Unknown column &#039;x&#039; in /plugin/Migration_2.php:12</td>');
-    verify($html)->stringNotContainsString('Stack trace');
-    verify($html)->stringContainsString('mailpoet:migrations:run');
+    verify($html)->stringContainsString('<summary>Full error: Migration_2</summary>');
+    verify($html)->stringContainsString("Migration_2.php:12\nStack trace:\n#0 ...</pre>");
+    verify($html)->stringContainsString('mailpoet migrations run');
   }
 
   private function createMigratorWithFailure(): Migrator {
     return $this->makeEmpty(Migrator::class, [
       'getFailedMigrations' => [
-        ['name' => 'Migration_2', 'status' => Migrator::MIGRATION_STATUS_FAILED, 'retries' => 3, 'error' => "Exception: Unknown column 'x' in /plugin/Migration_2.php:12\nStack trace:\n#0 ..."],
+        ['name' => 'Migration_2', 'status' => Migrator::MIGRATION_STATUS_FAILED, 'retries' => 3, 'error' => "Exception: Unknown column 'x' in /plugin/Migration_2.php:12\nStack trace:\n#0 ...", 'error_summary' => "Exception: Unknown column 'x' in /plugin/Migration_2.php:12"],
       ],
     ]);
+  }
+
+  /**
+   * @return string[]
+   */
+  private function getDeepLinkSlugs(): array {
+    $submenu = $GLOBALS['submenu'] ?? [];
+    $this->assertIsArray($submenu);
+    $deepLinks = $submenu[Menu::NO_PARENT_PAGE_SLUG] ?? [];
+    $this->assertIsArray($deepLinks);
+    return array_column($deepLinks, 2);
+  }
+
+  /**
+   * Renders only MailPoet's own notices; other plugins' admin_notices callbacks stay untouched.
+   */
+  private function renderMailPoetNotices(): string {
+    $filters = $GLOBALS['wp_filter'];
+    $this->assertIsArray($filters);
+    $hook = $filters['admin_notices'] ?? null;
+    if (!$hook instanceof \WP_Hook) {
+      return '';
+    }
+    ob_start();
+    foreach ($hook->callbacks as $callbacks) {
+      foreach ($callbacks as $callback) {
+        $function = $callback['function'];
+        if (is_array($function) && ($function[0] ?? null) instanceof \MailPoet\WP\Notice && is_callable($function)) {
+          $function();
+        }
+      }
+    }
+    return (string)ob_get_clean();
   }
 
   private function renderStatusPage(SchemaNotReadyResponder $responder): string {
@@ -204,5 +268,62 @@ class SchemaNotReadyResponderTest extends \MailPoetTest {
       $migrator ?? $this->diContainer->get(Migrator::class),
       $wp ?? $this->diContainer->get(WPFunctions::class)
     );
+  }
+
+  public function testItSendsTheEmailEditorScreenToTheStatusPage(): void {
+    $emailId = wp_insert_post(['post_type' => EmailEditor::MAILPOET_EMAIL_POST_TYPE, 'post_title' => 'Gated email', 'post_status' => 'draft']);
+    $postId = wp_insert_post(['post_type' => 'post', 'post_title' => 'Ordinary post', 'post_status' => 'draft']);
+    $this->assertIsInt($emailId);
+    $this->assertIsInt($postId);
+    try {
+      $redirects = [];
+      $wp = $this->make(new WPFunctions(), [
+        'wpSafeRedirect' => function (string $url) use (&$redirects) {
+          $redirects[] = $url;
+          throw new \RuntimeException('redirected');
+        },
+      ]);
+      $responder = $this->createResponder(null, $wp);
+
+      // an ordinary post, a non-editor screen and a new post of the default type pass through
+      $GLOBALS['pagenow'] = 'post.php';
+      $_GET['post'] = (string)$postId;
+      $responder->redirectEmailEditorScreen();
+      $GLOBALS['pagenow'] = 'edit.php';
+      $_GET['post'] = (string)$emailId;
+      $responder->redirectEmailEditorScreen();
+      $GLOBALS['pagenow'] = 'post-new.php';
+      unset($_GET['post']);
+      $responder->redirectEmailEditorScreen();
+      verify($redirects)->equals([]);
+
+      $GLOBALS['pagenow'] = 'post.php';
+      $_GET['post'] = (string)$emailId;
+
+      try {
+        $responder->redirectEmailEditorScreen();
+        $this->fail('editing an email should redirect');
+      } catch (\RuntimeException $e) {
+        verify($e->getMessage())->equals('redirected');
+      }
+
+      unset($_GET['post']);
+      $_GET['post_type'] = EmailEditor::MAILPOET_EMAIL_POST_TYPE;
+      foreach (['post-new.php', 'edit.php'] as $screen) {
+        $GLOBALS['pagenow'] = $screen;
+        try {
+          $responder->redirectEmailEditorScreen();
+          $this->fail("{$screen} for emails should redirect");
+        } catch (\RuntimeException $e) {
+          verify($e->getMessage())->equals('redirected');
+        }
+      }
+
+      verify($redirects)->arrayCount(3);
+      verify($redirects[0])->stringContainsString('admin.php?page=' . Menu::MAIN_PAGE_SLUG);
+    } finally {
+      wp_delete_post($emailId, true);
+      wp_delete_post($postId, true);
+    }
   }
 }

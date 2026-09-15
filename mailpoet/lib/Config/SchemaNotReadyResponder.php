@@ -6,9 +6,11 @@ use MailPoet\API\JSON\Error;
 use MailPoet\API\JSON\ErrorResponse;
 use MailPoet\API\JSON\Response;
 use MailPoet\API\REST\API as RestApi;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Migrator\Migrator;
 use MailPoet\Router\Router;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WP\Notice as WPNotice;
 use WP_Error;
 use WP_REST_Request;
 
@@ -49,12 +51,31 @@ class SchemaNotReadyResponder {
   public function init(): void {
     $this->wp->addAction('wp_ajax_mailpoet', [$this, 'sendJsonResponse']);
     $this->wp->addAction('wp_ajax_nopriv_mailpoet', [$this, 'sendJsonResponse']);
+    $this->wp->addAction('wp_ajax_mailpoet_token', [$this, 'sendJsonResponse']);
+    $this->wp->addAction('wp_ajax_nopriv_mailpoet_token', [$this, 'sendJsonResponse']);
     $this->wp->addFilter('rest_pre_dispatch', [$this, 'rejectRestRequest'], 10, 3);
     $this->wp->addAction('wp_loaded', [$this, 'rejectRouterRequest']);
     $this->wp->addAction('admin_menu', [$this, 'registerMenu']);
+    $this->wp->addAction('admin_init', [$this, 'redirectEmailEditorScreen']);
     foreach (self::ADMIN_POST_ACTIONS as $action) {
       $this->wp->addAction('admin_post_' . $action, [$this, 'sendUnavailablePage']);
       $this->wp->addAction('admin_post_nopriv_' . $action, [$this, 'sendUnavailablePage']);
+    }
+    $this->registerNotice();
+  }
+
+  /**
+   * Shows the reason on every admin screen. MailPoet's own screens render the status
+   * page, which repeats it, so they are left out.
+   */
+  private function registerNotice(): void {
+    if (Menu::isOnMailPoetAdminPage()) {
+      return;
+    }
+    if ($this->schemaState->hasFailed()) {
+      WPNotice::displayError($this->getMessage());
+    } else {
+      WPNotice::displayWarning($this->getMessage());
     }
   }
 
@@ -88,6 +109,11 @@ class SchemaNotReadyResponder {
       $this->getMessage(),
       ['status' => Response::STATUS_SERVICE_UNAVAILABLE]
     );
+  }
+
+  private function isMailPoetRoute(string $route): bool {
+    $namespace = '/' . RestApi::PREFIX;
+    return $route === $namespace || strpos($route, $namespace . '/') === 0;
   }
 
   public function rejectRouterRequest(): void {
@@ -135,8 +161,30 @@ class SchemaNotReadyResponder {
     );
   }
 
+  /**
+   * The email editor is not registered while gated, so its edit screen would fall back
+   * to WordPress's "Invalid post type" page. Send it to the status page instead.
+   */
+  public function redirectEmailEditorScreen(): void {
+    global $pagenow;
+    if (!in_array($pagenow, ['post.php', 'post-new.php', 'edit.php'], true)) {
+      return;
+    }
+    if ($pagenow !== 'post.php') {
+      $postType = isset($_GET['post_type']) && is_string($_GET['post_type']) ? sanitize_key($_GET['post_type']) : 'post';
+    } else {
+      $postId = isset($_GET['post']) && is_numeric($_GET['post']) ? (int)$_GET['post'] : 0;
+      $postType = $postId > 0 ? (string)$this->wp->getPostType($postId) : '';
+    }
+    if ($postType !== EmailEditor::MAILPOET_EMAIL_POST_TYPE) {
+      return;
+    }
+    $this->wp->wpSafeRedirect($this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG));
+    exit;
+  }
+
   public function renderStatusPage(): void {
-    $failed = $this->schemaState->getStatus() === SchemaState::STATUS_FAILED;
+    $failed = $this->schemaState->hasFailed();
     $noticeClass = $failed ? 'notice-error' : 'notice-warning';
 
     echo '<div class="wrap">';
@@ -145,9 +193,9 @@ class SchemaNotReadyResponder {
 
     if ($failed && $this->isAdministrator()) {
       $this->renderFailedMigrations();
-      echo '<p>' . esc_html__('MailPoet retries the update on every page load. If it keeps failing, run the update from the command line to see the full error:', 'mailpoet') . '</p>';
-      echo '<p><code>wp mailpoet:migrations:run</code></p>';
-      echo '<p>' . esc_html__('Include the details above when contacting MailPoet support.', 'mailpoet') . '</p>';
+      echo '<p>' . esc_html__('MailPoet retries the update on every page load. To retry it manually, run:', 'mailpoet') . '</p>';
+      echo '<p><code>wp mailpoet migrations run</code></p>';
+      echo '<p>' . esc_html__('Include the full error when contacting MailPoet support.', 'mailpoet') . '</p>';
     }
 
     echo '<p>' . sprintf(
@@ -172,16 +220,18 @@ class SchemaNotReadyResponder {
     echo '<table class="widefat striped" style="max-width: 900px">';
     echo '<thead><tr><th>' . esc_html__('Migration', 'mailpoet') . '</th><th>' . esc_html__('Attempts', 'mailpoet') . '</th><th>' . esc_html__('Error', 'mailpoet') . '</th></tr></thead><tbody>';
     foreach ($failed as $migration) {
-      // the store keeps the whole exception dump; the first line carries the message
-      $error = explode("\n", (string)$migration['error'], 2)[0];
-      echo '<tr><td>' . esc_html($migration['name']) . '</td><td>' . esc_html((string)(int)$migration['retries']) . '</td><td>' . esc_html($error) . '</td></tr>';
+      echo '<tr><td>' . esc_html($migration['name']) . '</td><td>' . esc_html((string)($migration['retries'] ?? 0)) . '</td><td>' . esc_html($migration['error_summary']) . '</td></tr>';
     }
     echo '</tbody></table>';
-  }
-
-  private function isMailPoetRoute(string $route): bool {
-    $namespace = '/' . RestApi::PREFIX;
-    return $route === $namespace || strpos($route, $namespace . '/') === 0;
+    foreach ($failed as $migration) {
+      echo '<details style="max-width: 900px"><summary>' . sprintf(
+        // translators: %s is the migration name
+        esc_html__('Full error: %s', 'mailpoet'),
+        esc_html($migration['name'])
+      ) . '</summary>';
+      echo '<pre style="white-space: pre-wrap; overflow-wrap: anywhere">' . esc_html((string)$migration['error']) . '</pre>';
+      echo '</details>';
+    }
   }
 
   /**
@@ -198,8 +248,6 @@ class SchemaNotReadyResponder {
   }
 
   private function getErrorCode(): string {
-    return $this->schemaState->getStatus() === SchemaState::STATUS_FAILED
-      ? Error::UPDATE_FAILED
-      : Error::UPDATE_IN_PROGRESS;
+    return $this->schemaState->hasFailed() ? Error::UPDATE_FAILED : Error::UPDATE_IN_PROGRESS;
   }
 }
