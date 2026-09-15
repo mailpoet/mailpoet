@@ -25,8 +25,7 @@ export function EditorChoiceOption({
         // eslint-disable-next-line jsx-a11y/control-has-associated-label -- the label comes from the Card.Title children Card.Root renders into this button.
         <button
           type="button"
-          role="radio"
-          aria-checked={isSelected}
+          aria-pressed={isSelected}
           onClick={() => onSelect(value)}
           data-automation-id={`editor_choice_${value}`}
         />
