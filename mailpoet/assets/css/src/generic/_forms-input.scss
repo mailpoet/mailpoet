@@ -28,6 +28,9 @@
     line-height: $form-control-line-height;
     margin: 0;
     max-width: 100%;
+    // WordPress admin styles set `min-height: 40px` on inputs and selects,
+    // which would override the wrapper's own height.
+    min-height: 0;
     padding: $form-control-spacing $form-control-spacing-horizontal;
 
     &::placeholder {
