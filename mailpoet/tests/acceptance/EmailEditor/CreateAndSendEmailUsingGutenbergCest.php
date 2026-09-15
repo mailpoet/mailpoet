@@ -21,10 +21,9 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->login();
     $i->amOnMailpoetPage('Emails');
     $i->click('[data-automation-id="create_standard_email_dropdown"]');
-    $i->waitForText('Create using the new email editor (Alpha)');
-    $i->click('Create using the new email editor (Alpha)');
-    $i->waitForText('Take a first look at our new email editor. It introduces a more flexible, modern way to design your emails.');
-    $i->click('//button[text()="Try it now"]');
+    $i->waitForText('Choose an email editor');
+    $i->click('[data-automation-id="editor_choice_block"]');
+    $i->click('[data-automation-id="editor_choice_continue"]');
 
     $this->closeTemplateSelectionModal($i);
 
@@ -96,10 +95,9 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->login();
     $i->amOnMailpoetPage('Emails');
     $i->click('[data-automation-id="create_standard_email_dropdown"]');
-    $i->waitForText('Create using the new email editor (Alpha)');
-    $i->click('Create using the new email editor (Alpha)');
-    $i->waitForText('Take a first look at our new email editor. It introduces a more flexible, modern way to design your emails.');
-    $i->click('//button[text()="Try it now"]');
+    $i->waitForText('Choose an email editor');
+    $i->click('[data-automation-id="editor_choice_block"]');
+    $i->click('[data-automation-id="editor_choice_continue"]');
 
     $this->closeTemplateSelectionModal($i);
 

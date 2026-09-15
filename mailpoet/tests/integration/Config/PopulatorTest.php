@@ -138,6 +138,28 @@ class PopulatorTest extends MailPoetTest {
     $this->assertSame($customCaptchaPageId, (int)$settings->get('subscription.pages.captcha'));
   }
 
+  public function testItEnablesEditorChoiceModalOnNewInstallsOnly(): void {
+    $populator = $this->diContainer->get(Populator::class);
+    $settings = $this->diContainer->get(SettingsController::class);
+
+    // fresh install (no db_version yet)
+    $settings->delete('db_version');
+    $settings->delete('editor_choice_modal');
+    $populator->up();
+    $this->assertTrue($settings->get('editor_choice_modal.enabled'));
+
+    // existing install
+    $settings->set('db_version', '4.0.0');
+    $settings->delete('editor_choice_modal');
+    $populator->up();
+    $this->assertFalse($settings->get('editor_choice_modal.enabled'));
+
+    // an already saved value is never overwritten
+    $settings->delete('db_version');
+    $populator->up();
+    $this->assertFalse($settings->get('editor_choice_modal.enabled'));
+  }
+
   private function getAllOptionFields(): array {
     return (array)$this->entityManager->createQueryBuilder()
       ->select('f')

@@ -27,6 +27,8 @@ class UserFlagsController {
       'transactional_emails_opt_in_notice_dismissed' => false,
       'legacy_automations_notice_dismissed' => false,
       'legacy_automatic_emails_notice_dismissed' => false,
+      'last_email_editor_choice' => null,
+      'editor_choice_modal' => null,
       self::EMAIL_EDITOR_SURVEY => null,
     ];
     $this->userFlagsRepository = $userFlagsRepository;

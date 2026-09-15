@@ -1,9 +1,4 @@
-import {
-  Button,
-  ButtonGroup,
-  Dropdown,
-  MenuItem as WpMenuItem,
-} from '@wordpress/components';
+import { Button, ButtonGroup } from '@wordpress/components';
 import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { chevronDown, Icon } from '@wordpress/icons';
@@ -12,7 +7,10 @@ import { Hooks } from 'wp-js-hooks';
 import _ from 'underscore';
 import { useNavigate } from 'react-router-dom';
 import { Heading } from 'common/typography/heading/heading';
-import { EditorSelectModal } from 'newsletters/editor-select-modal';
+import {
+  EditorChoiceModal,
+  getRememberedEditorChoice,
+} from 'newsletters/editor-choice-modal';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { APIErrorsNotice } from '../notices/api-errors-notice';
 import { Info } from './types/info';
@@ -22,11 +20,6 @@ interface Props {
   hideScreenOptions?: boolean;
 }
 
-// Menu Item type definition in @wordpress/components is missing variant property
-const MenuItem = WpMenuItem as React.FC<
-  React.ComponentProps<typeof WpMenuItem> & { variant: string }
->;
-
 export function NewsletterTypes({
   filter = null,
   hideScreenOptions = true,
@@ -35,8 +28,10 @@ export function NewsletterTypes({
 
   const [isCreating, setIsCreating] = useState(null);
 
-  const [isSelectEditorModalOpen, setIsSelectEditorModalOpen] = useState(false);
+  const [isEditorChoiceModalOpen, setIsEditorChoiceModalOpen] = useState(false);
   const isNewEmailEditorEnabled = window.mailpoet_block_email_editor_enabled;
+  const showEditorChoiceModalOnCreate =
+    window.mailpoet_editor_choice_modal_enabled;
 
   const setupNewsletter = (type): void => {
     if (type !== undefined) {
@@ -65,7 +60,7 @@ export function NewsletterTypes({
     </div>
   );
 
-  const createNewsletter = (type): void => {
+  const createNewsletter = (type, editor = 'classic'): void => {
     setIsCreating(type);
     MailPoet.trackEvent('Emails > Type selected', {
       'Email type': type,
@@ -77,9 +72,16 @@ export function NewsletterTypes({
       data: {
         type,
         subject: __('Subject', 'mailpoet'),
+        new_editor: editor === 'block',
       },
     })
       .done((response) => {
+        if (editor === 'block') {
+          window.location.href = MailPoet.getBlockEmailEditorUrl(
+            response.data.wp_post_id as string,
+          );
+          return;
+        }
         navigate(`/template/${response.data.id}`);
       })
       .fail((response) => {
@@ -91,7 +93,11 @@ export function NewsletterTypes({
       });
   };
 
-  const createStandardNewsletter = _.partial(createNewsletter, 'standard');
+  const createStandardNewsletter = () =>
+    createNewsletter(
+      'standard',
+      isNewEmailEditorEnabled ? getRememberedEditorChoice() : 'classic',
+    );
   const createNotificationNewsletter = _.partial(
     setupNewsletter,
     'notification',
@@ -105,65 +111,59 @@ export function NewsletterTypes({
     window.location.href = 'admin.php?page=mailpoet-automation-templates';
   };
 
-  const standardAction = isNewEmailEditorEnabled ? (
-    <ButtonGroup className="mailpoet-dropdown-button-group">
+  let standardAction: JSX.Element;
+  if (showEditorChoiceModalOnCreate) {
+    standardAction = (
       <Button
         variant="secondary"
-        onClick={createStandardNewsletter}
-        isBusy={isCreating === 'standard'}
+        onClick={() => setIsEditorChoiceModalOpen(true)}
         disabled={isCreating !== null}
         aria-label={__('Create Newsletter', 'mailpoet')}
         data-automation-id="create_standard"
       >
         {__('Create', 'mailpoet')}
       </Button>
-      <Dropdown
-        className="mailpoet-dropdown-button"
-        contentClassName="mailpoet-dropdown-button-content"
-        popoverProps={{ placement: 'bottom-end' }}
-        renderToggle={({ isOpen, onToggle }) => (
+    );
+  } else if (isNewEmailEditorEnabled) {
+    standardAction = (
+      <ButtonGroup className="mailpoet-dropdown-button-group">
+        <Button
+          variant="secondary"
+          onClick={createStandardNewsletter}
+          isBusy={isCreating === 'standard'}
+          disabled={isCreating !== null}
+          aria-label={__('Create Newsletter', 'mailpoet')}
+          data-automation-id="create_standard"
+        >
+          {__('Create', 'mailpoet')}
+        </Button>
+        <div className="mailpoet-dropdown-button">
           <Button
             variant="secondary"
             className="mailpoet-button-with-wordpress-icon"
-            onClick={onToggle}
+            onClick={() => setIsEditorChoiceModalOpen(true)}
             isBusy={isCreating === 'standard'}
             disabled={isCreating !== null}
-            aria-expanded={isOpen}
-            aria-label={__('Choose editor version', 'mailpoet')}
+            aria-label={__('Choose an email editor', 'mailpoet')}
             data-automation-id="create_standard_email_dropdown"
           >
             <Icon icon={chevronDown} size={24} />
           </Button>
-        )}
-        onToggle={(isOpen) =>
-          isOpen &&
-          MailPoet.trackEvent('New Email Editor > create email icon clicked')
-        }
-        renderContent={() => (
-          <MenuItem
-            variant="tertiary"
-            onClick={() => {
-              setIsSelectEditorModalOpen(true);
-              MailPoet.trackEvent(
-                'New Email Editor > creating using new email editor button clicked',
-              );
-            }}
-          >
-            {__('Create using the new email editor (Alpha)', 'mailpoet')}
-          </MenuItem>
-        )}
-      />
-    </ButtonGroup>
-  ) : (
-    <Button
-      variant="secondary"
-      onClick={createStandardNewsletter}
-      isBusy={isCreating}
-      data-automation-id="create_standard"
-    >
-      {__('Create', 'mailpoet')}
-    </Button>
-  );
+        </div>
+      </ButtonGroup>
+    );
+  } else {
+    standardAction = (
+      <Button
+        variant="secondary"
+        onClick={createStandardNewsletter}
+        isBusy={isCreating}
+        data-automation-id="create_standard"
+      >
+        {__('Create', 'mailpoet')}
+      </Button>
+    );
+  }
   const defaultTypes = [
     {
       slug: 'standard',
@@ -277,10 +277,9 @@ export function NewsletterTypes({
       </div>
 
       <link rel="prefetch" href={templatesGETUrl} as="fetch" />
-      <EditorSelectModal
-        onClose={() => setIsSelectEditorModalOpen(false)}
-        isModalOpen={isSelectEditorModalOpen}
-      />
+      {isEditorChoiceModalOpen && (
+        <EditorChoiceModal onClose={() => setIsEditorChoiceModalOpen(false)} />
+      )}
     </>
   );
 }
