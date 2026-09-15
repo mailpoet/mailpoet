@@ -44,16 +44,6 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
     if (choice === null) {
       return;
     }
-    setIsCreating(true);
-    const saveLastChoice = MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'user_flags',
-      action: 'set',
-      data: {
-        last_email_editor_choice: choice,
-        editor_choice_modal: remember ? 0 : 1,
-      },
-    });
     void MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
@@ -65,10 +55,19 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
       },
     })
       .done((response) => {
+        const saveChoice = MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
+          endpoint: 'user_flags',
+          action: 'set',
+          data: {
+            last_email_editor_choice: choice,
+            editor_choice_modal: remember ? 0 : 1,
+          },
+        });
         window.mailpoet_last_email_editor_choice = choice;
         window.mailpoet_editor_choice_modal_enabled = !remember;
         if (choice === 'block') {
-          void saveLastChoice.always(() => {
+          void saveChoice.always(() => {
             window.location.href = MailPoet.getBlockEmailEditorUrl(
               response.data.wp_post_id as string,
             );
@@ -90,7 +89,7 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
     <Dialog.Root
       open
       onOpenChange={(open) => {
-        if (!open) {
+        if (!open && !isCreating) {
           MailPoet.trackEvent('Emails > Editor choice modal closed');
           onClose();
         }
@@ -101,7 +100,7 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
           <Dialog.Title>
             {__('Choose an email editor', 'mailpoet')}
           </Dialog.Title>
-          <Dialog.CloseIcon />
+          <Dialog.CloseIcon disabled={isCreating} />
         </Dialog.Header>
         <Stack direction="column" gap="xl">
           <Text variant="body-lg">
@@ -113,7 +112,7 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
           <Stack
             direction="row"
             gap="lg"
-            role="radiogroup"
+            role="group"
             aria-label={__('Email editor', 'mailpoet')}
           >
             <EditorChoiceOption
@@ -169,6 +168,7 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
             disabled={isCreating || choice === null}
             data-automation-id="editor_choice_continue"
             onClick={() => {
+              setIsCreating(true);
               MailPoet.trackEvent('Emails > Type selected', {
                 'Email type': 'standard',
               });
