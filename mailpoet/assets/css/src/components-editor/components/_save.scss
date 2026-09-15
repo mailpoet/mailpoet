@@ -51,14 +51,29 @@
   }
 }
 
-.mailpoet_save_show_options {
-  padding: 6px 3px 4px;
+/* Centre the caret. The dashicons arrow is drawn by a `:before` glyph that sits
+   low in its line box, so centring the icon element alone still leaves the
+   visible arrow near the bottom. Flex every level down to the pseudo-element so
+   the glyph box itself is what gets centred. The `.wp-core-ui` scope is needed
+   to out-specify core's `.wp-core-ui .button .dashicons`. */
+.wp-core-ui .mailpoet_save_show_options {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
 }
 
-.mailpoet_save_show_options_icon {
-  height: 14px;
-  margin-top: -6px;
-  vertical-align: middle;
+.wp-core-ui .mailpoet_save_show_options_icon {
+  align-items: center;
+  display: flex;
+  height: 20px;
+  justify-content: center;
+  line-height: 1;
+  width: 20px;
+
+  &:before {
+    display: block;
+    line-height: 1;
+  }
 }
 
 .mailpoet_save_as_template_container,
