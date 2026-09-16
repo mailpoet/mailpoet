@@ -6,10 +6,11 @@ import {
 } from '@woocommerce/components';
 import { select, useSelect } from '@wordpress/data';
 import { MailPoet } from '../../../../../../mailpoet';
-import { OverviewSection, storeName } from '../../store';
+import { CurrentAndPrevious, OverviewSection, storeName } from '../../store';
 import { storeName as editorStoreName } from '../../../../../editor/store';
 import { locale } from '../../../../../config';
 import { formattedPrice } from '../../formatter';
+import { calculateDelta } from '../../formatter/calculate-delta';
 
 // WooSummaryNumber has return type annotated as Object and has all props mandatory
 const SummaryNumber = WooSummaryNumber as unknown as (
@@ -49,6 +50,16 @@ function getEmailDelta(type: 'opened' | 'clicked'): number | undefined {
 
   const newValue = current - previous;
   return (newValue / previous) * 100;
+}
+
+function getTrackingCoverageDelta(): number | undefined {
+  const overview = select(storeName).getSection('overview');
+  const coverage = (overview.data?.trackingCoverage ??
+    null) as CurrentAndPrevious | null;
+  if (!coverage) {
+    return 0;
+  }
+  return calculateDelta(coverage.current, coverage.previous);
 }
 
 function getWooCommerceTotal(
@@ -124,6 +135,7 @@ export function Overview(): JSX.Element | null {
             numberFormatter.format(overview.data.trackedSent?.current ?? 0),
             numberFormatter.format(overview.data.sent?.current ?? 0),
           )}
+          delta={Number((getTrackingCoverageDelta() ?? 0).toFixed(2))}
         />,
       );
     }

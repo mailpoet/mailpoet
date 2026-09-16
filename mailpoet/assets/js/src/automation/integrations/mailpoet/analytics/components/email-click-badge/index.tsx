@@ -34,15 +34,14 @@ export function Badge({ email, property }: BadgeProps): JSX.Element {
   if (!email) {
     return <>0</>;
   }
-  if (email.sent.current === 0) {
+  // Based on the recipients we were allowed to measure, matching the rate next to it.
+  const trackedSent = email.trackedSent ?? email.sent.current;
+  // With nobody to measure, the rate next to the badge reads 0% and means nothing.
+  if (email.sent.current === 0 || trackedSent === 0) {
     return <>{`${email[property]}`}</>;
   }
 
-  // Based on the recipients we were allowed to measure, matching the rate next to it.
-  const clickedPercentage = calculatePercentage(
-    email[property],
-    email.trackedSent ?? email.sent.current,
-  );
+  const clickedPercentage = calculatePercentage(email[property], trackedSent);
   const clickedBadge = percentageBadgeCalculation(clickedPercentage);
 
   return (
