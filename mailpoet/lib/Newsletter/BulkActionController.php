@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter;
 
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -64,6 +65,16 @@ class BulkActionController {
 
     $ids = array_values(array_map('intval', $this->newsletterListingRepository->getActionableIds($definition)));
 
+    // Confirmation emails can only be removed via the dedicated
+    // newsletters/deleteConfirmationEmail action, never through generic
+    // trash/delete, so lists don't end up pointing at a removed email.
+    if (in_array($action, [self::ACTION_TRASH, self::ACTION_DELETE], true)) {
+      $ids = $this->newslettersRepository->getIdsExcludingType(
+        $ids,
+        NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER
+      );
+    }
+
     if ($action === self::ACTION_TRASH) {
       $this->newslettersRepository->bulkTrash($ids);
     } elseif ($action === self::ACTION_RESTORE) {
@@ -71,10 +82,13 @@ class BulkActionController {
     } elseif ($action === self::ACTION_DELETE) {
       // Hooks fire around the cascading delete so premium add-ons (and any
       // third-party listeners) keep observing the same lifecycle they did
-      // under the legacy JSON endpoint.
-      $this->wp->doAction('mailpoet_api_newsletters_delete_before', $ids);
-      $this->newsletterDeleteController->bulkDelete($ids);
-      $this->wp->doAction('mailpoet_api_newsletters_delete_after', $ids);
+      // under the legacy JSON endpoint. Skipped entirely when nothing is
+      // left to delete (e.g. the selection was only confirmation emails).
+      if (!empty($ids)) {
+        $this->wp->doAction('mailpoet_api_newsletters_delete_before', $ids);
+        $this->newsletterDeleteController->bulkDelete($ids);
+        $this->wp->doAction('mailpoet_api_newsletters_delete_after', $ids);
+      }
     }
 
     return [

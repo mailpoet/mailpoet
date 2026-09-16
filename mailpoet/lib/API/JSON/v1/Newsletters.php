@@ -194,32 +194,40 @@ class Newsletters extends APIEndpoint {
 
   public function trash($data = []) {
     $newsletter = $this->getNewsletter($data);
-    if ($newsletter instanceof NewsletterEntity) {
-      $this->newslettersRepository->bulkTrash([$newsletter->getId()]);
-      $this->newslettersRepository->refresh($newsletter);
-      return $this->successResponse(
-        $this->newslettersResponseBuilder->build($newsletter),
-        ['count' => 1]
-      );
-    } else {
+    if (!$newsletter instanceof NewsletterEntity) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
+    if ($newsletter->getType() === NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => __('Confirmation emails can only be deleted from the list settings.', 'mailpoet'),
+      ]);
+    }
+    $this->newslettersRepository->bulkTrash([$newsletter->getId()]);
+    $this->newslettersRepository->refresh($newsletter);
+    return $this->successResponse(
+      $this->newslettersResponseBuilder->build($newsletter),
+      ['count' => 1]
+    );
   }
 
   public function delete($data = []) {
     $newsletter = $this->getNewsletter($data);
-    if ($newsletter instanceof NewsletterEntity) {
-      $this->wp->doAction('mailpoet_api_newsletters_delete_before', [$newsletter->getId()]);
-      $this->newsletterDeleteController->bulkDelete([(int)$newsletter->getId()]);
-      $this->wp->doAction('mailpoet_api_newsletters_delete_after', [$newsletter->getId()]);
-      return $this->successResponse(null, ['count' => 1]);
-    } else {
+    if (!$newsletter instanceof NewsletterEntity) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
+    if ($newsletter->getType() === NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => __('Confirmation emails can only be deleted from the list settings.', 'mailpoet'),
+      ]);
+    }
+    $this->wp->doAction('mailpoet_api_newsletters_delete_before', [$newsletter->getId()]);
+    $this->newsletterDeleteController->bulkDelete([(int)$newsletter->getId()]);
+    $this->wp->doAction('mailpoet_api_newsletters_delete_after', [$newsletter->getId()]);
+    return $this->successResponse(null, ['count' => 1]);
   }
 
   public function showPreview($data = []) {
@@ -371,7 +379,6 @@ class Newsletters extends APIEndpoint {
     $newsletter = $this->getNewsletter($data);
     if (
       !$newsletter instanceof NewsletterEntity
-      || $newsletter->getDeletedAt() !== null
       || $newsletter->getType() !== NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER
     ) {
       return $this->errorResponse([

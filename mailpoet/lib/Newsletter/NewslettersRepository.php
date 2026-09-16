@@ -917,4 +917,25 @@ class NewslettersRepository extends Repository {
 
       return $wpPostIds;
   }
+
+  /**
+   * @param int[] $ids
+   * @return int[] the subset of $ids that are not of the given type
+   */
+  public function getIdsExcludingType(array $ids, string $type): array {
+    if (!$ids) {
+      return [];
+    }
+    /** @var string[] $filteredIds */
+    $filteredIds = $this->entityManager->createQueryBuilder()
+      ->select('n.id')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.id IN (:ids)')
+      ->andWhere('n.type != :type')
+      ->setParameter('ids', $ids)
+      ->setParameter('type', $type)
+      ->getQuery()
+      ->getSingleColumnResult();
+    return array_map('intval', $filteredIds);
+  }
 }
