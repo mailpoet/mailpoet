@@ -73,6 +73,13 @@ class Segment {
     return $this->update('display_in_manage_subscription_page', $state);
   }
 
+  /**
+   * @return static
+   */
+  public function withConfirmationEmailId(?int $id): self {
+    return $this->update('confirmation_email_id', $id);
+  }
+
   public function create(): SegmentEntity {
     $segment = $this->segmentsRepository->createOrUpdate(
       $this->data['name'],
@@ -81,7 +88,7 @@ class Segment {
       [],
       null,
       $this->data['display_in_manage_subscription_page'],
-      null,
+      $this->data['confirmation_email_id'] ?? null,
       null,
       $this->data['public_description']
     );
