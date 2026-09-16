@@ -75,6 +75,34 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     verify($segment2->getDeletedAt())->null();
   }
 
+  public function testItResetsConfirmationEmailIdOnlyForMatchingSegments(): void {
+    $matchingSegment1 = $this->createDefaultSegment('Segment 1');
+    $matchingSegment1->setConfirmationEmailId(123);
+    $matchingSegment2 = $this->createDefaultSegment('Segment 2');
+    $matchingSegment2->setConfirmationEmailId(123);
+    $otherSegment = $this->createDefaultSegment('Segment 3');
+    $otherSegment->setConfirmationEmailId(456);
+    $nullSegment = $this->createDefaultSegment('Segment 4');
+    $this->entityManager->flush();
+
+    $result = $this->segmentsRepository->resetConfirmationEmailId(123);
+
+    $this->entityManager->clear();
+    verify($result)->equals(2);
+    $refreshedMatchingSegment1 = $this->segmentsRepository->findOneById($matchingSegment1->getId());
+    $refreshedMatchingSegment2 = $this->segmentsRepository->findOneById($matchingSegment2->getId());
+    $refreshedOtherSegment = $this->segmentsRepository->findOneById($otherSegment->getId());
+    $refreshedNullSegment = $this->segmentsRepository->findOneById($nullSegment->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $refreshedMatchingSegment1);
+    $this->assertInstanceOf(SegmentEntity::class, $refreshedMatchingSegment2);
+    $this->assertInstanceOf(SegmentEntity::class, $refreshedOtherSegment);
+    $this->assertInstanceOf(SegmentEntity::class, $refreshedNullSegment);
+    verify($refreshedMatchingSegment1->getConfirmationEmailId())->null();
+    verify($refreshedMatchingSegment2->getConfirmationEmailId())->null();
+    verify($refreshedOtherSegment->getConfirmationEmailId())->equals(456);
+    verify($refreshedNullSegment->getConfirmationEmailId())->null();
+  }
+
   public function testItReturnsCountsOfSegmentsWithMultipleFilters(): void {
     // No Segments
     $count = $this->segmentsRepository->getSegmentCountWithMultipleFilters();

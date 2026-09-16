@@ -380,6 +380,15 @@ class SegmentsRepository extends Repository {
     }, $ids);
   }
 
+  public function resetConfirmationEmailId(int $confirmationEmailId): int {
+    return $this->entityManager->createQueryBuilder()->update(SegmentEntity::class, 's')
+      ->set('s.confirmationEmailId', ':newConfirmationEmailId')
+      ->where('s.confirmationEmailId = :confirmationEmailId')
+      ->setParameter('newConfirmationEmailId', null)
+      ->setParameter('confirmationEmailId', $confirmationEmailId)
+      ->getQuery()->execute();
+  }
+
   public function bulkTrash(array $ids, string $type = SegmentEntity::TYPE_DEFAULT): int {
     $activelyUsedInNewsletters = $this->newsletterSegmentRepository->getSubjectsOfActivelyUsedEmailsForSegments($ids);
     $activelyUsedInForms = $this->formsRepository->getNamesOfFormsForSegments();
