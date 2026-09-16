@@ -3,6 +3,7 @@
 namespace MailPoet\Migrations\Db;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Test\DataFactories\Newsletter;
@@ -11,6 +12,7 @@ use MailPoet\Test\DataFactories\StatisticsClicks;
 use MailPoet\Test\DataFactories\StatisticsNewsletters;
 use MailPoet\Test\DataFactories\StatisticsOpens;
 use MailPoet\Test\DataFactories\Subscriber;
+use MailPoet\WP\Functions as WPFunctions;
 
 require_once __DIR__ . '/../../../../lib/Migrations/Db/Migration_20260914_145549_Db.php';
 
@@ -21,7 +23,13 @@ class Migration_20260914_145549_Db_Test extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
+    WPFunctions::get()->deleteOption('mailpoet_sent_with_tracking_backfill');
     $this->migration = new Migration_20260914_145549_Db($this->diContainer);
+  }
+
+  public function _after() {
+    parent::_after();
+    WPFunctions::get()->deleteOption('mailpoet_sent_with_tracking_backfill');
   }
 
   public function testItMarksSendsMadeAfterTheRecipientOptedOut() {
@@ -129,6 +137,86 @@ class Migration_20260914_145549_Db_Test extends \MailPoetTest {
     $this->migration->run();
 
     verify($this->getStoredValue($row))->equals(0);
+  }
+
+  public function testItWorksAcrossIdWindows() {
+    $migration = $this->createMigration(1000, 1);
+    $rows = [];
+    for ($i = 0; $i < 3; $i++) {
+      $newsletter = (new Newsletter())->withSendingQueue()->create();
+      $rows[] = $this->createRow($newsletter, $this->createSubscriber(SubscriberEntity::TRACKING_CONSENT_GRANTED, null), '-1 day');
+      $optedOut = $this->createNewsletterWithLink();
+      $rows[] = $this->createRow($optedOut, $this->createSubscriber(SubscriberEntity::TRACKING_CONSENT_DENIED, '-3 days'), '-1 day');
+    }
+
+    $migration->run();
+
+    foreach ($rows as $row) {
+      verify($this->getStoredValue($row))->equals(0);
+    }
+  }
+
+  public function testItClearsItsProgressWhenItFinishes() {
+    $newsletter = $this->createNewsletterWithLink();
+    $this->createRow($newsletter, $this->createSubscriber(SubscriberEntity::TRACKING_CONSENT_DENIED, '-3 days'), '-1 day');
+
+    $this->migration->run();
+
+    verify(WPFunctions::get()->getOption('mailpoet_sent_with_tracking_backfill'))->false();
+  }
+
+  public function testItCarriesOnFromWhereAStoppedRunLeftOff() {
+    $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $subscriber = $this->createSubscriber(SubscriberEntity::TRACKING_CONSENT_GRANTED, null);
+    $row = $this->createRow($newsletter, $subscriber, '-1 day');
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    WPFunctions::get()->updateOption('mailpoet_sent_with_tracking_backfill', ['step' => 'links', 'lastId' => (int)$queue->getId()]);
+
+    $this->migration->run();
+
+    verify($this->getStoredValue($row))->equals(1);
+  }
+
+  public function testItPicksUpQueuesThatAStoppedRunDidNotReach() {
+    $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $subscriber = $this->createSubscriber(SubscriberEntity::TRACKING_CONSENT_GRANTED, null);
+    $row = $this->createRow($newsletter, $subscriber, '-1 day');
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    WPFunctions::get()->updateOption('mailpoet_sent_with_tracking_backfill', ['step' => 'links', 'lastId' => (int)$queue->getId() - 1]);
+
+    $this->migration->run();
+
+    verify($this->getStoredValue($row))->equals(0);
+  }
+
+  private function createMigration(int $batchSize, int $windowSize): Migration_20260914_145549_Db {
+    return new class($this->diContainer, $batchSize, $windowSize) extends Migration_20260914_145549_Db {
+      /** @var int */
+      private $batchSize;
+
+      /** @var int */
+      private $windowSize;
+
+      public function __construct(
+        \MailPoet\DI\ContainerWrapper $container,
+        int $batchSize,
+        int $windowSize
+      ) {
+        parent::__construct($container);
+        $this->batchSize = $batchSize;
+        $this->windowSize = $windowSize;
+      }
+
+      protected function getBatchSize(): int {
+        return $this->batchSize;
+      }
+
+      protected function getWindowSize(): int {
+        return $this->windowSize;
+      }
+    };
   }
 
   private function createNewsletterWithLink(): NewsletterEntity {
