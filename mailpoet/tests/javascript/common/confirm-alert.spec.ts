@@ -165,7 +165,7 @@ describe('confirmAlert', function confirmAlertSuite() {
     expect(confirmed).to.equal(false);
   });
 
-  it('focuses returnFocus synchronously after a sync onConfirm', () => {
+  it('focuses returnFocus after the next tick following a sync onConfirm', async () => {
     const target = document.createElement('button');
     target.id = 'return-target';
     document.body.appendChild(target);
@@ -180,6 +180,11 @@ describe('confirmAlert', function confirmAlertSuite() {
     document
       .getElementById('mailpoet_alert_confirm')
       .dispatchEvent(clickEvent());
+
+    // focus is deferred to the next tick (setTimeout(0))
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
 
     expect(document.activeElement && document.activeElement.id).to.equal(
       'return-target',
@@ -202,12 +207,53 @@ describe('confirmAlert', function confirmAlertSuite() {
       .getElementById('mailpoet_alert_confirm')
       .dispatchEvent(clickEvent());
 
-    // let the onConfirm() promise settle
+    // let the onConfirm() promise settle, then the deferred focus tick run
     await Promise.resolve();
     await Promise.resolve();
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
 
     expect(document.activeElement && document.activeElement.id).to.equal(
       'return-target-async',
+    );
+  });
+
+  it('does not focus returnFocus while it is still disabled, and focuses it once re-enabled on the next tick', async () => {
+    const target = document.createElement('button');
+    target.id = 'return-target-disabled';
+    target.disabled = true;
+    document.body.appendChild(target);
+
+    confirmAlertModule.confirmAlert({
+      message: 'Are you sure?',
+      onConfirm: () => Promise.resolve(),
+      returnFocus: () => document.getElementById('return-target-disabled'),
+    });
+
+    lastPopupOptions.onInit();
+    document
+      .getElementById('mailpoet_alert_confirm')
+      .dispatchEvent(clickEvent());
+
+    // let the onConfirm() promise settle, but the target is still disabled
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(document.activeElement && document.activeElement.id).to.not.equal(
+      'return-target-disabled',
+    );
+
+    // simulate React committing the re-render that re-enables the field
+    target.disabled = false;
+
+    // let the deferred focus (setTimeout(0)) run
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+
+    expect(document.activeElement && document.activeElement.id).to.equal(
+      'return-target-disabled',
     );
   });
 
@@ -227,9 +273,12 @@ describe('confirmAlert', function confirmAlertSuite() {
       .getElementById('mailpoet_alert_confirm')
       .dispatchEvent(clickEvent());
 
-    // let the rejected onConfirm() promise settle
+    // let the rejected onConfirm() promise settle, then the deferred focus tick run
     await Promise.resolve();
     await Promise.resolve();
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
 
     expect(document.activeElement && document.activeElement.id).to.equal(
       'return-target-rejected',

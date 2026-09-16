@@ -16,10 +16,15 @@ function resolveReturnFocusElement(returnFocus) {
 }
 
 function focusReturnTarget(returnFocus) {
-  const element = resolveReturnFocusElement(returnFocus);
-  if (element) {
-    element.focus();
-  }
+  // Deferred to the next tick so React has committed the re-render that
+  // followed onConfirm settling (e.g. re-enabling a disabled field) before
+  // we check focusability and try to focus it.
+  setTimeout(() => {
+    const element = resolveReturnFocusElement(returnFocus);
+    if (element && !element.disabled) {
+      element.focus();
+    }
+  }, 0);
 }
 
 function ConfirmAlert({
