@@ -164,6 +164,36 @@ describe('MailPoetModal', function modalSuite() {
     );
   });
 
+  it('moves focus to the first element on Tab when the popup container itself is focused', () => {
+    openPopup();
+    const popup = document.getElementById('mailpoet_popup');
+    popup.focus();
+
+    const event = dispatchKey(popup, 'keydown', { key: 'Tab', keyCode: 9 });
+
+    expect(document.activeElement && document.activeElement.id).to.equal(
+      'mailpoet_modal_close',
+    );
+    expect(event.defaultPrevented).to.equal(true);
+  });
+
+  it('moves focus to the last element on Shift+Tab when the popup container itself is focused', () => {
+    openPopup();
+    const popup = document.getElementById('mailpoet_popup');
+    popup.focus();
+
+    const event = dispatchKey(popup, 'keydown', {
+      key: 'Tab',
+      keyCode: 9,
+      shiftKey: true,
+    });
+
+    expect(document.activeElement && document.activeElement.id).to.equal(
+      'mailpoet_b',
+    );
+    expect(event.defaultPrevented).to.equal(true);
+  });
+
   it('pulls focus back into the popup when Tab fires outside it', () => {
     openPopup();
     document.body.focus();
