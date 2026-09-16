@@ -310,6 +310,42 @@ class NewslettersTest extends \MailPoetTest {
     verify($response->meta['count'])->equals(1);
   }
 
+  public function testItRefusesToTrashConfirmationEmailsThroughGenericAction() {
+    $defaultConfirmationEmail = (new Newsletter())->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)->create();
+    $settingsController = $this->diContainer->get(SettingsController::class);
+    $settingsController->set(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, (string)$defaultConfirmationEmail->getId());
+    $customConfirmationEmail = (new Newsletter())->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)->create();
+
+    foreach ([$defaultConfirmationEmail, $customConfirmationEmail] as $confirmationEmail) {
+      $response = $this->endpoint->trash(['id' => $confirmationEmail->getId()]);
+      verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+      verify($response->errors[0]['message'])->equals('Confirmation emails can only be deleted from the list settings.');
+
+      $this->entityManager->clear();
+      $existingNewsletter = $this->newsletterRepository->findOneById($confirmationEmail->getId());
+      $this->assertInstanceOf(NewsletterEntity::class, $existingNewsletter);
+      verify($existingNewsletter->getDeletedAt())->null();
+    }
+  }
+
+  public function testItRefusesToDeleteConfirmationEmailsThroughGenericAction() {
+    $defaultConfirmationEmail = (new Newsletter())->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)->create();
+    $settingsController = $this->diContainer->get(SettingsController::class);
+    $settingsController->set(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, (string)$defaultConfirmationEmail->getId());
+    $customConfirmationEmail = (new Newsletter())->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)->create();
+
+    foreach ([$defaultConfirmationEmail, $customConfirmationEmail] as $confirmationEmail) {
+      $response = $this->endpoint->delete(['id' => $confirmationEmail->getId()]);
+      verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+      verify($response->errors[0]['message'])->equals('Confirmation emails can only be deleted from the list settings.');
+
+      $this->entityManager->clear();
+      $existingNewsletter = $this->newsletterRepository->findOneById($confirmationEmail->getId());
+      $this->assertInstanceOf(NewsletterEntity::class, $existingNewsletter);
+      verify($existingNewsletter->getDeletedAt())->null();
+    }
+  }
+
   public function testItDeletesConfirmationEmailAndResetsListsUsingIt() {
     $confirmationEmail = (new Newsletter())->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)->create();
     $otherConfirmationEmail = (new Newsletter())->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)->create();
@@ -366,13 +402,26 @@ class NewslettersTest extends \MailPoetTest {
 
     $response = $this->endpoint->deleteConfirmationEmail(['id' => 0]);
     verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+  }
 
+  public function testItDeletesATrashedNonDefaultConfirmationEmail() {
     $trashedConfirmationEmail = (new Newsletter())
       ->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)
       ->withDeleted()
       ->create();
+    $segment = (new Segment())->withConfirmationEmailId((int)$trashedConfirmationEmail->getId())->create();
+
     $response = $this->endpoint->deleteConfirmationEmail(['id' => $trashedConfirmationEmail->getId()]);
-    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(1);
+
+    $this->entityManager->clear();
+    verify($this->newsletterRepository->findOneById($trashedConfirmationEmail->getId()))->null();
+
+    $segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
+    $refreshedSegment = $segmentsRepository->findOneById($segment->getId());
+    $this->assertInstanceOf(\MailPoet\Entities\SegmentEntity::class, $refreshedSegment);
+    verify($refreshedSegment->getConfirmationEmailId())->null();
   }
 
   public function testItCanCreateANewsletter() {
