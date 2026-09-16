@@ -4,7 +4,7 @@
 
 ## `array updateList(array $list)`
 
-This method provides functionality for updating a list name or description. Only lists of type 'default' are supported.
+This method provides functionality for updating a list name or description. Only lists of type 'default' are supported. Other list settings, such as the confirmation email, confirmation page, and visibility on the manage subscription page, are left unchanged.
 
 It returns the updated list. See [Get Lists](GetLists.md) for a list data structure description.
 

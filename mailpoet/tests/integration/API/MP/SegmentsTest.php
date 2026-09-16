@@ -9,6 +9,7 @@ use MailPoet\API\MP\v1\Segments;
 use MailPoet\API\MP\v1\Subscribers;
 use MailPoet\API\MP\v1\Tags;
 use MailPoet\Config\Changelog;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
@@ -219,6 +220,60 @@ class SegmentsTest extends \MailPoetTest {
     } catch (\Exception $e) {
       verify($e->getMessage())->equals('List name is required.');
     }
+  }
+
+  public function testItKeepsListSettingsWhenUpdatingList(): void {
+    $newsletter = (new Newsletter())
+      ->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)
+      ->create();
+    $segment = $this->segmentFactory
+      ->withName('Current Segment name')
+      ->withDescription('Description')
+      ->withDisplayInManageSubscriptionPage(false)
+      ->withConfirmationEmailId((int)$newsletter->getId())
+      ->create();
+    $segment->setConfirmationPageId(123);
+    $this->entityManager->flush();
+
+    $data = [
+      'id' => (string)$segment->getId(),
+      'name' => 'new Segment name',
+      'description' => 'new description',
+    ];
+    $result = $this->getApi()->updateList($data);
+    verify($result['name'])->equals($data['name']);
+    verify($result['description'])->equals($data['description']);
+
+    $this->entityManager->clear();
+    $updatedSegment = $this->segmentsRepository->findOneById($segment->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $updatedSegment);
+    verify($updatedSegment->getConfirmationEmailId())->equals($newsletter->getId());
+    verify($updatedSegment->getConfirmationPageId())->equals(123);
+    verify($updatedSegment->getDisplayInManageSubscriptionPage())->equals(false);
+  }
+
+  public function testItDropsStaleConfirmationEmailWhenUpdatingList(): void {
+    $segment = $this->segmentFactory
+      ->withName('Current Segment name')
+      ->withDescription('Description')
+      ->withDisplayInManageSubscriptionPage(false)
+      ->create();
+    $segment->setConfirmationEmailId(999999);
+    $segment->setConfirmationPageId(123);
+    $this->entityManager->flush();
+
+    $data = [
+      'id' => (string)$segment->getId(),
+      'name' => 'new Segment name',
+    ];
+    $this->getApi()->updateList($data);
+
+    $this->entityManager->clear();
+    $updatedSegment = $this->segmentsRepository->findOneById($segment->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $updatedSegment);
+    verify($updatedSegment->getConfirmationEmailId())->null();
+    verify($updatedSegment->getConfirmationPageId())->equals(123);
+    verify($updatedSegment->getDisplayInManageSubscriptionPage())->equals(false);
   }
 
   public function testItDoesNotAllowUpdateWPSegment(): void {

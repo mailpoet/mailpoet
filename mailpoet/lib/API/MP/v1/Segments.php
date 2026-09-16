@@ -68,13 +68,24 @@ class Segments {
     $name = isset($data['name']) ? sanitize_text_field($data['name']) : '';
     $description = isset($data['description']) ? sanitize_textarea_field($data['description']) : '';
 
+    $existingSegment = $this->segmentsRepository->findOneById((int)$data['id']);
+    if (!$existingSegment instanceof SegmentEntity) {
+      throw new APIException(
+        __('The list does not exist.', 'mailpoet'),
+        APIException::LIST_NOT_EXISTS
+      );
+    }
+
     try {
       $segment = $this->segmentsRepository->createOrUpdate(
         $name,
         $description,
         SegmentEntity::TYPE_DEFAULT,
         [],
-        (int)$data['id']
+        (int)$data['id'],
+        $existingSegment->getDisplayInManageSubscriptionPage(),
+        $existingSegment->getConfirmationEmailId(),
+        $existingSegment->getConfirmationPageId()
       );
     } catch (\Exception $e) {
       throw new APIException(
