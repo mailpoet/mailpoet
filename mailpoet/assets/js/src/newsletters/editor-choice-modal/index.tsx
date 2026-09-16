@@ -29,9 +29,8 @@ type EditorChoiceModalProps = {
 export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
   const [initialChoice] = useState<EditorChoice | null>(getInitialEditorChoice);
   const [choice, setChoice] = useState<EditorChoice | null>(initialChoice);
-  const [remember, setRemember] = useState(
-    !window.mailpoet_editor_choice_modal_enabled,
-  );
+  const isRemembered = !window.mailpoet_editor_choice_modal_enabled;
+  const [remember, setRemember] = useState(isRemembered);
   const [isCreating, setIsCreating] = useState(false);
   const { notices } = useContext<GlobalContextValue>(GlobalContext);
   const navigate = useNavigate();
@@ -61,7 +60,10 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
           action: 'set',
           data: {
             last_email_editor_choice: choice,
-            remember_email_editor_choice: remember ? 1 : 0,
+            // an untouched checkbox leaves the site-wide rollout setting in control
+            ...(remember !== isRemembered && {
+              remember_email_editor_choice: remember ? 1 : 0,
+            }),
           },
         });
         window.mailpoet_last_email_editor_choice = choice;
@@ -83,7 +85,7 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
           notices.apiError(response, { scroll: true });
         }
       });
-  }, [choice, remember, navigate, notices, onClose]);
+  }, [choice, remember, isRemembered, navigate, notices, onClose]);
 
   return (
     <Dialog.Root
