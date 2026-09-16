@@ -284,6 +284,33 @@ describe('MailPoetModal', function modalSuite() {
     expect(document.activeElement).to.equal(heading);
   });
 
+  it('falls back to .wrap h1 when the popup was opened with body focused', () => {
+    document.body.focus();
+    expect(document.activeElement).to.equal(document.body);
+
+    openPopup();
+    modalModule.MailPoetModal.close();
+
+    const heading = document.querySelector('.wrap h1');
+    expect(document.activeElement).to.equal(heading);
+  });
+
+  it('falls back to returnFocus when the popup was opened with body focused', () => {
+    document.body.focus();
+    expect(document.activeElement).to.equal(document.body);
+
+    const fallbackTarget = document.createElement('button');
+    fallbackTarget.id = 'fallback-target-body-opener';
+    document.body.appendChild(fallbackTarget);
+
+    openPopup({ returnFocus: '#fallback-target-body-opener' });
+    modalModule.MailPoetModal.close();
+
+    expect(document.activeElement && document.activeElement.id).to.equal(
+      'fallback-target-body-opener',
+    );
+  });
+
   it('does not move focus to .wrap h1 when a panel closes with no previous focus', () => {
     const activeBeforeOpen = document.activeElement;
 

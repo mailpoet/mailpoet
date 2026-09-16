@@ -922,8 +922,22 @@ export const MailPoetModal = {
     var prevFocusElement = this.toFocusableElement(prevFocusValue);
     var returnFocusElement;
     var heading;
+    // Safari doesn't focus buttons on mouse click, and popups can also be
+    // opened from script with nothing focused. In both cases the "captured
+    // opener" is document.body, which is always in the DOM, so treating it
+    // as a valid opener would skip the returnFocus/heading fallback chain
+    // below. Panels keep their original behaviour (restore prevFocus if
+    // present, even if it's body, else do nothing).
+    var prevFocusIsUnfocusedBody =
+      modalType === 'popup' &&
+      (prevFocusElement === document.body ||
+        prevFocusElement === document.documentElement);
 
-    if (prevFocusElement && document.contains(prevFocusElement)) {
+    if (
+      prevFocusElement &&
+      document.contains(prevFocusElement) &&
+      !prevFocusIsUnfocusedBody
+    ) {
       prevFocusElement.focus();
       return;
     }
