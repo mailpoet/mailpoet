@@ -2,9 +2,13 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
@@ -268,6 +272,81 @@ class ManageListsCest {
     $i->waitForText('Move to trash');
     $i->click('Move to trash');
     $i->waitForText("List cannot be deleted because it’s used for '{$formName}' form");
+  }
+
+  public function deleteConfirmationEmailFromList(\AcceptanceTester $i) {
+    $i->wantTo('Delete a per-list confirmation email');
+
+    $defaultSubject = 'Global Default Confirmation';
+    $defaultConfirmationEmail = (new Newsletter())
+      ->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)
+      ->withSubject($defaultSubject)
+      ->create();
+    $settings = SettingsController::getInstance();
+    $settings->set(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, $defaultConfirmationEmail->getId());
+
+    $listATitle = 'List A ' . bin2hex(random_bytes(4)); // phpcs:ignore
+    $listBTitle = 'List B ' . bin2hex(random_bytes(4)); // phpcs:ignore
+    (new Segment())->withName($listATitle)->create();
+    (new Segment())->withName($listBTitle)->create();
+
+    $confirmationEmailSelect = '#field_confirmation_email_id';
+    $deleteButton = '[data-automation-id="delete_confirmation_email"]';
+
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+
+    $i->wantTo('Create a confirmation email for a list');
+    $i->waitForText($listATitle);
+    $i->clickItemRowActionByItemName($listATitle, 'Edit');
+    $i->waitForText('Edit list');
+    $i->waitForElementNotVisible('.mailpoet_form_loading');
+    $i->waitForElement($confirmationEmailSelect);
+    $i->click('Create new');
+    $i->waitForText('Confirmation email created.');
+    $i->waitForElement($deleteButton);
+    $createdEmailIdValue = $i->executeJS(
+      "return document.querySelector('" . $confirmationEmailSelect . "').value;"
+    );
+    $createdEmailId = is_string($createdEmailIdValue) ? $createdEmailIdValue : '';
+    $createdEmailOption = $confirmationEmailSelect . ' option[value="' . $createdEmailId . '"]';
+
+    $i->wantTo('Cancel the delete confirmation dialog and keep the email');
+    $i->click($deleteButton);
+    $i->waitForElementVisible('.mailpoet_popup_wrapper');
+    $i->pressKey('body', WebDriverKeys::ESCAPE);
+    $i->waitForElementNotVisible('.mailpoet_popup_wrapper');
+    $i->seeElement($deleteButton);
+    $i->seeElement($createdEmailOption);
+
+    $i->wantTo('Delete the confirmation email');
+    $i->click($deleteButton);
+    $i->waitForElementVisible('.mailpoet_popup_wrapper');
+    $i->click('#mailpoet_alert_confirm');
+    $i->waitForNoticeAndClose('Confirmation email deleted.');
+    $i->waitForElementNotVisible($deleteButton);
+    $i->dontSeeElement($createdEmailOption);
+    $confirmationEmailValueAfterDelete = $i->executeJS(
+      "return document.querySelector('" . $confirmationEmailSelect . "').value;"
+    );
+    Assert::assertSame(
+      '0',
+      is_string($confirmationEmailValueAfterDelete) ? $confirmationEmailValueAfterDelete : ''
+    );
+
+    $i->wantTo('Go back to Lists and open a different list');
+    $i->click(['xpath' => '//a[@aria-label="Navigate to the lists page"]']);
+    $i->waitForText($listBTitle);
+    $i->clickItemRowActionByItemName($listBTitle, 'Edit');
+    $i->waitForText('Edit list');
+    $i->waitForElementNotVisible('.mailpoet_form_loading');
+    $i->waitForElement($confirmationEmailSelect);
+    $i->dontSeeElement($createdEmailOption);
+
+    $i->wantTo('Select the global default confirmation email and see no delete button');
+    $i->selectOption($confirmationEmailSelect, $defaultSubject . ' (global default)');
+    $i->dontSeeElement($deleteButton);
+    $i->seeNoJSErrors();
   }
 
   public function cannotDisableWPUserList(\AcceptanceTester $i) {
