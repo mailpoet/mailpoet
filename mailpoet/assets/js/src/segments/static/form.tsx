@@ -43,7 +43,7 @@ function ConfirmationEmailField({
   item,
 }: {
   onValueChange: (e: { target: { name: string; value: string } }) => void;
-  item: Record<string, string>;
+  item: Record<string, string | number | boolean>;
 }) {
   const [emails, setEmails] = useState<Array<{ id: number; subject: string }>>(
     sharedConfirmationEmails,
@@ -53,11 +53,13 @@ function ConfirmationEmailField({
   const deletingRef = useRef<boolean>(false);
   const savedConfirmationEmailIdRef = useRef<string>('0');
 
-  const selectedId = item.confirmation_email_id || '0';
+  const selectedId = String(item.confirmation_email_id || '0');
 
   useEffect(() => {
     if (item.id !== undefined) {
-      savedConfirmationEmailIdRef.current = item.confirmation_email_id || '0';
+      savedConfirmationEmailIdRef.current = String(
+        item.confirmation_email_id || '0',
+      );
     }
     // Only capture the saved value when the loaded list changes, not on every edit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
