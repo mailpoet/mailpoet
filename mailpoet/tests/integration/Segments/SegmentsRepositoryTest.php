@@ -103,6 +103,83 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     verify($refreshedNullSegment->getConfirmationEmailId())->null();
   }
 
+  public function testItStoresConfirmationEmailIdWhenItPointsToAValidConfirmationEmail(): void {
+    $confirmationEmail = (new NewsletterFactory())->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)->create();
+
+    $segment = $this->segmentsRepository->createOrUpdate(
+      'Segment with confirmation email',
+      '',
+      SegmentEntity::TYPE_DEFAULT,
+      [],
+      null,
+      true,
+      (int)$confirmationEmail->getId()
+    );
+
+    $this->entityManager->clear();
+    $refreshedSegment = $this->segmentsRepository->findOneById($segment->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $refreshedSegment);
+    verify($refreshedSegment->getConfirmationEmailId())->equals($confirmationEmail->getId());
+  }
+
+  public function testItNullsConfirmationEmailIdWhenItDoesNotExist(): void {
+    $segment = $this->segmentsRepository->createOrUpdate(
+      'Segment with missing confirmation email',
+      '',
+      SegmentEntity::TYPE_DEFAULT,
+      [],
+      null,
+      true,
+      999999
+    );
+
+    $this->entityManager->clear();
+    $refreshedSegment = $this->segmentsRepository->findOneById($segment->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $refreshedSegment);
+    verify($refreshedSegment->getConfirmationEmailId())->null();
+  }
+
+  public function testItNullsConfirmationEmailIdWhenItIsAStandardNewsletter(): void {
+    $newsletter = (new NewsletterFactory())->withType(NewsletterEntity::TYPE_STANDARD)->create();
+
+    $segment = $this->segmentsRepository->createOrUpdate(
+      'Segment with standard newsletter as confirmation email',
+      '',
+      SegmentEntity::TYPE_DEFAULT,
+      [],
+      null,
+      true,
+      (int)$newsletter->getId()
+    );
+
+    $this->entityManager->clear();
+    $refreshedSegment = $this->segmentsRepository->findOneById($segment->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $refreshedSegment);
+    verify($refreshedSegment->getConfirmationEmailId())->null();
+  }
+
+  public function testItNullsConfirmationEmailIdWhenItIsTrashed(): void {
+    $confirmationEmail = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)
+      ->withDeleted()
+      ->create();
+
+    $segment = $this->segmentsRepository->createOrUpdate(
+      'Segment with trashed confirmation email',
+      '',
+      SegmentEntity::TYPE_DEFAULT,
+      [],
+      null,
+      true,
+      (int)$confirmationEmail->getId()
+    );
+
+    $this->entityManager->clear();
+    $refreshedSegment = $this->segmentsRepository->findOneById($segment->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $refreshedSegment);
+    verify($refreshedSegment->getConfirmationEmailId())->null();
+  }
+
   public function testItReturnsCountsOfSegmentsWithMultipleFilters(): void {
     // No Segments
     $count = $this->segmentsRepository->getSegmentCountWithMultipleFilters();

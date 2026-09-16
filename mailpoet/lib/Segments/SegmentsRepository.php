@@ -7,6 +7,7 @@ use MailPoet\ConflictException;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -212,6 +213,9 @@ class SegmentsRepository extends Repository {
     if ($confirmationEmailId !== null && $confirmationEmailId <= 0) {
       $confirmationEmailId = null;
     }
+    if ($confirmationEmailId !== null && !$this->isValidConfirmationEmail($confirmationEmailId)) {
+      $confirmationEmailId = null;
+    }
     if ($confirmationPageId !== null && $confirmationPageId <= 0) {
       $confirmationPageId = null;
     }
@@ -276,6 +280,13 @@ class SegmentsRepository extends Repository {
 
     $this->flush();
     return $segment;
+  }
+
+  private function isValidConfirmationEmail(int $confirmationEmailId): bool {
+    $newsletter = $this->entityManager->find(NewsletterEntity::class, $confirmationEmailId);
+    return $newsletter instanceof NewsletterEntity
+      && $newsletter->getDeletedAt() === null
+      && $newsletter->getType() === NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER;
   }
 
   public function bulkDelete(array $ids, string $type = SegmentEntity::TYPE_DEFAULT): int {
