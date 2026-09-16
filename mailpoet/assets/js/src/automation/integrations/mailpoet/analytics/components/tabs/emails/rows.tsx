@@ -21,7 +21,13 @@ export function transformEmailsToRows(emails: EmailStats[]) {
     // Open and click rates are based on the recipients we were allowed to
     // measure. Older payloads carry no trackedSent, so fall back.
     const trackedSent = email.trackedSent ?? email.sent.current;
-    const clickedPercentage = calculatePercentage(email.clicked, trackedSent);
+    // With nobody to measure, a rate would read 0% and mean nothing.
+    const rate = (value: number): string =>
+      trackedSent === 0
+        ? '-'
+        : percentageFormatter.format(
+            calculatePercentage(value, trackedSent) / 100,
+          );
 
     const rows = [
       {
@@ -62,17 +68,7 @@ export function transformEmailsToRows(emails: EmailStats[]) {
         value: email.sent.current,
       },
       {
-        display: (
-          <Cell
-            value={email.opened}
-            subValue={
-              // Based on the recipients we were allowed to measure.
-              percentageFormatter.format(
-                calculatePercentage(email.opened, trackedSent) / 100,
-              )
-            }
-          />
-        ),
+        display: <Cell value={email.opened} subValue={rate(email.opened)} />,
         value: email.opened,
       },
       {
@@ -84,7 +80,7 @@ export function transformEmailsToRows(emails: EmailStats[]) {
                 ? 'mailpoet-automation-analytics-email-clicked'
                 : ''
             }
-            subValue={percentageFormatter.format(clickedPercentage / 100)}
+            subValue={rate(email.clicked)}
           />
         ),
         value: email.clicked,

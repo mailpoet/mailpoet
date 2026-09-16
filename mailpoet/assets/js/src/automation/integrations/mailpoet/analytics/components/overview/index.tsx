@@ -10,7 +10,10 @@ import { CurrentAndPrevious, OverviewSection, storeName } from '../../store';
 import { storeName as editorStoreName } from '../../../../../editor/store';
 import { locale } from '../../../../../config';
 import { formattedPrice } from '../../formatter';
-import { calculateDelta } from '../../formatter/calculate-delta';
+import {
+  calculateCoverageDelta,
+  calculateDelta,
+} from '../../formatter/calculate-delta';
 
 // WooSummaryNumber has return type annotated as Object and has all props mandatory
 const SummaryNumber = WooSummaryNumber as unknown as (
@@ -44,22 +47,15 @@ function getEmailDelta(type: 'opened' | 'clicked'): number | undefined {
     return 0;
   }
 
-  if (previous === 0) {
-    return 0;
-  }
-
-  const newValue = current - previous;
-  return (newValue / previous) * 100;
+  return calculateDelta(current, previous);
 }
 
 function getTrackingCoverageDelta(): number | undefined {
   const overview = select(storeName).getSection('overview');
-  const coverage = (overview.data?.trackingCoverage ??
-    null) as CurrentAndPrevious | null;
-  if (!coverage) {
-    return 0;
-  }
-  return calculateDelta(coverage.current, coverage.previous);
+  return calculateCoverageDelta(
+    overview.data?.trackingCoverage as CurrentAndPrevious | undefined,
+    overview.data?.sent as CurrentAndPrevious | undefined,
+  );
 }
 
 function getWooCommerceTotal(
@@ -86,11 +82,7 @@ function getWooCommerceDelta(type: 'revenue' | 'orders'): number | undefined {
   if (current === undefined || previous === undefined) {
     return undefined;
   }
-  const newValue = current - previous;
-  if (newValue === 0 || previous === 0) {
-    return 0;
-  }
-  return (newValue / previous) * 100;
+  return calculateDelta(current, previous);
 }
 
 export function Overview(): JSX.Element | null {
@@ -124,6 +116,7 @@ export function Overview(): JSX.Element | null {
     );
     // Only when something is untracked, so an automation with no opted-out
     // recipients looks exactly as it does today.
+    const coverageDelta = getTrackingCoverageDelta();
     if ((overview.data.notTracked?.current ?? 0) > 0) {
       items.push(
         <SummaryNumber
@@ -135,7 +128,11 @@ export function Overview(): JSX.Element | null {
             numberFormatter.format(overview.data.trackedSent?.current ?? 0),
             numberFormatter.format(overview.data.sent?.current ?? 0),
           )}
-          delta={Number((getTrackingCoverageDelta() ?? 0).toFixed(2))}
+          delta={
+            coverageDelta === undefined
+              ? undefined
+              : Number(coverageDelta.toFixed(2))
+          }
         />,
       );
     }
