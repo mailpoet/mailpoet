@@ -32,6 +32,7 @@ use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Subscription\ManageSubscriptionFormRenderer;
 use MailPoet\Subscription\Pages;
 use MailPoet\Subscription\SubscriptionUrlFactory;
@@ -376,6 +377,30 @@ class PagesTest extends \MailPoetTest {
     return (int)$value;
   }
 
+  public function testItRecordsNoClickForAOneClickUnsubscribeWithoutConsent() {
+    SettingsController::getInstance()->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
+    $this->subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $this->subscribersRepository->flush();
+    $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $this->testData['queueId'] = $queue->getId();
+    (new NewsletterLink($newsletter))->withHash($newsletter->getHash())->create();
+    $renderedNewsletter = ['html' => '', 'text' => ''];
+    $this->links->process($renderedNewsletter, $newsletter, $queue);
+    $sentRow = (new StatisticsNewsletters($newsletter, $this->subscriber))->withSentWithTracking(false)->create();
+    $pages = $this->getPages()->init('unsubscribe', $this->testData);
+
+    $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
+
+    $clickStat = $this->statisticsClicksRepository->getAllForSubscriber($this->subscriber)->getQuery()->getResult();
+    verify($clickStat)->arrayCount(0);
+    verify($this->getSentWithTracking((int)$sentRow->getId()))->equals(0);
+    $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
+    verify($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+  }
+
   public function testItRendersSubscriberEmailOnConfirmUnsubscribePage() {
     $pages = $this->getPages()->init(Pages::ACTION_CONFIRM_UNSUBSCRIBE, $this->testData);
 
@@ -541,7 +566,8 @@ class PagesTest extends \MailPoetTest {
       $container->get(SendingQueuesRepository::class),
       $container->get(SettingsController::class),
       $container->get(UnsubscribeReasonTracker::class),
-      $container->get(Request::class)
+      $container->get(Request::class),
+      $container->get(TrackingConsentController::class)
     );
   }
 
