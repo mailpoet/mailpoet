@@ -14,6 +14,7 @@ import SuperModel from 'backbone.supermodel/build/backbone.supermodel';
 var Module = {};
 var saveTimeout;
 var skipNextAutoSave;
+var newsletterNotFound;
 
 Module.isConfirmationEmailValid = function () {
   var json = App.toJSON();
@@ -218,7 +219,16 @@ Module.SaveView = Marionette.View.extend({
     ).removeClass('mailpoet_hidden');
     this.$('.mailpoet_autosaved_at').text('');
   },
-  handleSavingErrors: function () {
+  handleSavingErrors: function (options, response) {
+    var firstError = response && response.errors && response.errors[0];
+
+    if (firstError && firstError.error === 'not_found') {
+      newsletterNotFound = true;
+      Module._cancelAutosave();
+      this.showError(_.escape(firstError.message));
+      return;
+    }
+
     this.showError(
       __(
         'The email could not be saved. Please, clear browser cache and reload the page. If the problem persists, duplicate the email and try again.',
@@ -643,6 +653,9 @@ Module.autoSave = function () {
   var AUTOSAVE_DELAY_DURATION = 1000;
 
   Module._cancelAutosave();
+  if (newsletterNotFound) {
+    return;
+  }
   saveTimeout = setTimeout(function () {
     if (skipNextAutoSave) {
       skipNextAutoSave = false;

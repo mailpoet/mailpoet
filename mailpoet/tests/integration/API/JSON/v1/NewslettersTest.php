@@ -5,6 +5,7 @@ namespace MailPoet\Test\API\JSON\v1;
 use Codeception\Stub\Expected;
 use Codeception\Util\Stub;
 use Helper\WordPressHooks as WPHooksHelper;
+use MailPoet\API\JSON\ErrorHandler;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\API\JSON\v1\Newsletters;
@@ -218,6 +219,17 @@ class NewslettersTest extends \MailPoetTest {
     verify($updatedNewsletter->getReplyToName())->equals('Updated reply-to name');
     verify($updatedNewsletter->getReplyToAddress())->equals('Updated reply-to address');
     verify($updatedNewsletter->getGaCampaign())->equals('Updated GA campaign');
+  }
+
+  public function testItReturnsNotFoundWhenSavingANonExistentNewsletter() {
+    try {
+      $this->endpoint->save(['id' => 987654321]);
+      $this->fail('NotFoundException was not thrown');
+    } catch (\MailPoet\NotFoundException $e) {
+      $response = (new ErrorHandler())->convertToResponse($e);
+      verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+      verify($response->errors[0]['message'])->equals('This email does not exist.');
+    }
   }
 
   public function testItCanSaveAndLoadArchiveVisibilityOption(): void {
