@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter;
 
 use Codeception\Util\Fixtures;
+use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
@@ -586,6 +587,16 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $data = ['subject' => 'My Automation Newsletter', 'id' => $activableNewsletter->getId()];
     $activableNewsletter = $this->saveController->save($data);
     verify($activableNewsletter->getStatus())->equals(NewsletterEntity::STATUS_ACTIVE);
+  }
+
+  public function testItThrowsUserFacingErrorWhenNewsletterDoesNotExist(): void {
+    try {
+      $this->saveController->save(['id' => 987654321]);
+      $this->fail('NotFoundException was not thrown');
+    } catch (\MailPoet\NotFoundException $e) {
+      verify($e->getErrors())->arrayHasKey(APIError::NOT_FOUND);
+      verify($e->getErrors()[APIError::NOT_FOUND])->equals('This email does not exist.');
+    }
   }
 
   private function createNewsletter(string $type, string $status = NewsletterEntity::STATUS_DRAFT): NewsletterEntity {
