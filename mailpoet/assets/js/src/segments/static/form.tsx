@@ -38,7 +38,7 @@ const defaultConfirmationEmailId = String(
   window.mailpoet_default_confirmation_email_id || 0,
 );
 
-function ConfirmationEmailField({
+export function ConfirmationEmailField({
   onValueChange,
   item,
 }: {
