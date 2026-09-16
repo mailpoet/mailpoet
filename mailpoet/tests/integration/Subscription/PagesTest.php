@@ -10,6 +10,7 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -39,6 +40,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
+use MailPoet\Test\DataFactories\StatisticsNewsletters;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Util\Request;
 use MailPoet\WP\Functions as WPFunctions;
@@ -342,6 +344,36 @@ class PagesTest extends \MailPoetTest {
     $clickStat = $this->statisticsClicksRepository->getAllForSubscriber($this->subscriber)->getQuery()->getResult();
     verify($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
     verify($clickStat)->arrayCount(1);
+  }
+
+  public function testItMarksTheSentRowTrackedWhenAOneClickUnsubscribeRecordsAClick() {
+    SettingsController::getInstance()->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
+    $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $this->testData['queueId'] = $queue->getId();
+    (new NewsletterLink($newsletter))->withHash($newsletter->getHash())->create();
+    $renderedNewsletter = ['html' => '', 'text' => ''];
+    $this->links->process($renderedNewsletter, $newsletter, $queue);
+    $sentRow = (new StatisticsNewsletters($newsletter, $this->subscriber))->withSentWithTracking(false)->create();
+    $pages = $this->getPages()->init('unsubscribe', $this->testData);
+
+    $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
+
+    $clickStat = $this->statisticsClicksRepository->getAllForSubscriber($this->subscriber)->getQuery()->getResult();
+    verify($clickStat)->arrayCount(1);
+    verify($this->getSentWithTracking((int)$sentRow->getId()))->equals(1);
+  }
+
+  private function getSentWithTracking(int $rowId): int {
+    $entityManager = $this->diContainer->get(EntityManager::class);
+    $table = $entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $value = $entityManager->getConnection()->fetchOne(
+      "SELECT sent_with_tracking FROM `{$table}` WHERE id = ?",
+      [$rowId]
+    );
+    $this->assertIsNumeric($value);
+    return (int)$value;
   }
 
   public function testItRendersSubscriberEmailOnConfirmUnsubscribePage() {

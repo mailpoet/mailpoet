@@ -4,9 +4,7 @@ namespace MailPoet\Statistics;
 
 use MailPoet\Doctrine\Repository;
 use MailPoet\Doctrine\WPDB\Connection;
-use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -14,7 +12,6 @@ use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
-use MailPoetVendor\Doctrine\DBAL\Exception as DBALException;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
@@ -36,34 +33,6 @@ class StatisticsOpensRepository extends Repository {
 
   protected function getEntityClassName(): string {
     return StatisticsOpenEntity::class;
-  }
-
-  /**
-   * An open or click recorded for a recipient whose email went out without tracking (for example
-   * through the web version after they allowed tracking) would count them in the open and click
-   * rates but not in the recipients those rates divide by, so their sent row becomes tracked.
-   * Runs on the tracking endpoint: a database error must not break the open or the click redirect.
-   */
-  public function markSentWithTracking(NewsletterEntity $newsletter, SendingQueueEntity $queue, SubscriberEntity $subscriber): void {
-    $sentStatsTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
-    global $wpdb;
-    $suppressErrors = $wpdb->suppress_errors();
-    try {
-      $this->entityManager->getConnection()->executeStatement(
-        "UPDATE {$sentStatsTable} SET sent_with_tracking = 1
-         WHERE newsletter_id = :newsletterId AND queue_id = :queueId AND subscriber_id = :subscriberId
-           AND sent_with_tracking = 0",
-        [
-          'newsletterId' => $newsletter->getId(),
-          'queueId' => $queue->getId(),
-          'subscriberId' => $subscriber->getId(),
-        ]
-      );
-    } catch (DBALException $e) {
-      return;
-    } finally {
-      $wpdb->suppress_errors($suppressErrors);
-    }
   }
 
   public function recalculateSubscriberScore(SubscriberEntity $subscriber): void {

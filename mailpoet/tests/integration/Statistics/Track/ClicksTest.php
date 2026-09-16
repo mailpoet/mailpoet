@@ -24,6 +24,7 @@ use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsClicksRepository;
+use MailPoet\Statistics\StatisticsNewslettersRepository;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;
@@ -835,6 +836,7 @@ class ClicksTest extends \MailPoetTest {
     $statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
     $opens = new Opens(
       $statisticsOpensRepository,
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $subscribersRepository,
       $this->diContainer->get(TrackingConsentController::class)
@@ -883,6 +885,7 @@ class ClicksTest extends \MailPoetTest {
     $statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
     $opens = new Opens(
       $statisticsOpensRepository,
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $subscribersRepository,
       $this->diContainer->get(TrackingConsentController::class)
@@ -931,6 +934,7 @@ class ClicksTest extends \MailPoetTest {
     $statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
     $opens = new Opens(
       $statisticsOpensRepository,
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $subscribersRepository,
       $this->diContainer->get(TrackingConsentController::class)

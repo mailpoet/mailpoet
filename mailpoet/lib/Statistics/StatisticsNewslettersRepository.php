@@ -98,6 +98,35 @@ class StatisticsNewslettersRepository extends Repository {
     }
   }
 
+  /**
+   * An open or click recorded for a recipient whose email went out without tracking (for example
+   * through the web version after they allowed tracking, or a one-click unsubscribe) would count
+   * them in the open and click rates but not in the recipients those rates divide by, so their
+   * sent row becomes tracked.
+   * Runs on the tracking endpoint: a database error must not break the open or the click redirect.
+   */
+  public function markSentWithTracking(NewsletterEntity $newsletter, SendingQueueEntity $queue, SubscriberEntity $subscriber): void {
+    $table = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    global $wpdb;
+    $suppressErrors = $wpdb->suppress_errors();
+    try {
+      $this->entityManager->getConnection()->executeStatement(
+        "UPDATE `{$table}` SET sent_with_tracking = 1
+         WHERE newsletter_id = :newsletterId AND queue_id = :queueId AND subscriber_id = :subscriberId
+           AND sent_with_tracking = 0",
+        [
+          'newsletterId' => $newsletter->getId(),
+          'queueId' => $queue->getId(),
+          'subscriberId' => $subscriber->getId(),
+        ]
+      );
+    } catch (DBALException $e) {
+      return;
+    } finally {
+      $wpdb->suppress_errors($suppressErrors);
+    }
+  }
+
   /** @param int[] $ids */
   public function deleteByNewsletterIds(array $ids): void {
     $this->entityManager->createQueryBuilder()

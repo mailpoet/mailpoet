@@ -12,6 +12,7 @@ use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
+use MailPoet\Statistics\StatisticsNewslettersRepository;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Statistics\UserAgentsRepository;
@@ -84,6 +85,7 @@ class OpensTest extends \MailPoetTest {
     $this->statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
     $this->opens = new Opens(
       $this->statisticsOpensRepository,
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class)
@@ -93,6 +95,7 @@ class OpensTest extends \MailPoetTest {
   public function testItReturnsImageWhenTrackDataIsEmpty() {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
@@ -109,6 +112,7 @@ class OpensTest extends \MailPoetTest {
     $data->preview = true;
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
@@ -126,6 +130,7 @@ class OpensTest extends \MailPoetTest {
   public function testItTracksOpenEvent() {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
@@ -139,6 +144,7 @@ class OpensTest extends \MailPoetTest {
   public function testItDoesNotTrackRepeatedOpenEvents() {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
@@ -154,6 +160,7 @@ class OpensTest extends \MailPoetTest {
   public function testItReturnsImageAfterTracking() {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
@@ -167,6 +174,7 @@ class OpensTest extends \MailPoetTest {
     $this->trackData->userAgent = 'User agent';
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
@@ -187,6 +195,7 @@ class OpensTest extends \MailPoetTest {
     $this->trackData->userAgent = 'User agent1';
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
@@ -207,6 +216,7 @@ class OpensTest extends \MailPoetTest {
   public function testItOverridesOldUserAgent() {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
@@ -229,6 +239,7 @@ class OpensTest extends \MailPoetTest {
   public function testItDoesNotOverrideHumanUserAgentWithMachine(): void {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
@@ -268,6 +279,7 @@ class OpensTest extends \MailPoetTest {
   public function testItOverridesMachineUserAgentWithHuman(): void {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
@@ -307,6 +319,7 @@ class OpensTest extends \MailPoetTest {
   public function testItDoesNotOverrideUnknownUserAgentWithMachine(): void {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
@@ -339,6 +352,7 @@ class OpensTest extends \MailPoetTest {
   public function testItOverridesUnknownUserAgentWithHuman(): void {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
@@ -376,6 +390,7 @@ class OpensTest extends \MailPoetTest {
     $this->entityManager->flush();
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
@@ -394,6 +409,7 @@ class OpensTest extends \MailPoetTest {
     $this->trackData->userAgent = 'User agent';
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
@@ -417,6 +433,7 @@ class OpensTest extends \MailPoetTest {
     $this->trackData->userAgent = null;
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
@@ -440,6 +457,7 @@ class OpensTest extends \MailPoetTest {
     $this->trackData->userAgent = UserAgentEntity::MACHINE_USER_AGENTS[0];
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
@@ -487,6 +505,7 @@ class OpensTest extends \MailPoetTest {
     $this->entityManager->flush();
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConsentController::class),
