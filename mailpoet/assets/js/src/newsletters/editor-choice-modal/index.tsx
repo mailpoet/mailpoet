@@ -112,6 +112,7 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
           <Stack
             direction="row"
             gap="lg"
+            wrap="wrap"
             role="group"
             aria-label={__('Email editor', 'mailpoet')}
           >
