@@ -2,6 +2,7 @@
 
 namespace MailPoet\Migrations\Db;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Doctrine\WPDB\Connection;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -10,7 +11,7 @@ use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Migrator\DbMigration;
-use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 
 /**
@@ -31,9 +32,20 @@ use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
  * stopped instead of starting again.
  */
 class Migration_20260914_145549_Db extends DbMigration {
-  private const PROGRESS_OPTION = 'mailpoet_sent_with_tracking_backfill';
+  private const PROGRESS_SETTING = 'sent_with_tracking_backfill';
   private const STEP_OPT_OUT = 'opt-out';
   private const STEP_LINKS = 'links';
+  private const WINDOWS_PER_SAVE = 50;
+
+  /** @var SettingsController */
+  private $settings;
+
+  public function __construct(
+    ContainerWrapper $container
+  ) {
+    parent::__construct($container);
+    $this->settings = $container->get(SettingsController::class);
+  }
 
   public function run(): void {
     // The SQLite integration used by WordPress Playground does not support UPDATE with JOIN.
@@ -62,14 +74,19 @@ class Migration_20260914_145549_Db extends DbMigration {
     return 10000;
   }
 
+  private function windowSize(): int {
+    return max(1, $this->getWindowSize());
+  }
+
   private function markSendsAfterOptOut(int $lastId): void {
     $statisticsTable = $this->getTableName(StatisticsNewsletterEntity::class);
     $subscribersTable = $this->getTableName(SubscriberEntity::class);
     $opensTable = $this->getTableName(StatisticsOpenEntity::class);
     $clicksTable = $this->getTableName(StatisticsClickEntity::class);
     $maxId = $this->getMaxId($subscribersTable);
+    $windowsSinceSave = 0;
     while ($lastId < $maxId) {
-      $windowEnd = min($lastId + $this->getWindowSize(), $maxId);
+      $windowEnd = min($lastId + $this->windowSize(), $maxId);
       $ids = $this->fetchIds(
         "SELECT id FROM `{$subscribersTable}`
          WHERE id > ? AND id <= ? AND tracking_consent = ?
@@ -94,8 +111,12 @@ class Migration_20260914_145549_Db extends DbMigration {
           ['ids' => ArrayParameterType::INTEGER]
         );
       }
-      $lastId = count($ids) === $this->getBatchSize() ? (int)end($ids) : $windowEnd;
-      $this->saveProgress(self::STEP_OPT_OUT, $lastId);
+      $lastId = count($ids) === $this->getBatchSize() ? (int)end($ids) : $this->nextId($subscribersTable, $windowEnd, $maxId);
+      $windowsSinceSave++;
+      if ($ids || $windowsSinceSave >= self::WINDOWS_PER_SAVE || $lastId >= $maxId) {
+        $this->saveProgress(self::STEP_OPT_OUT, $lastId);
+        $windowsSinceSave = 0;
+      }
     }
   }
 
@@ -104,8 +125,9 @@ class Migration_20260914_145549_Db extends DbMigration {
     $queuesTable = $this->getTableName(SendingQueueEntity::class);
     $linksTable = $this->getTableName(NewsletterLinkEntity::class);
     $maxId = $this->getMaxId($queuesTable);
+    $windowsSinceSave = 0;
     while ($lastId < $maxId) {
-      $windowEnd = min($lastId + $this->getWindowSize(), $maxId);
+      $windowEnd = min($lastId + $this->windowSize(), $maxId);
       $queues = $this->connection->fetchAllAssociative(
         "SELECT q.id, q.newsletter_id FROM `{$queuesTable}` q
          WHERE q.id > ? AND q.id <= ?
@@ -116,8 +138,12 @@ class Migration_20260914_145549_Db extends DbMigration {
       );
       $queueIds = $this->toIntegers(array_column($queues, 'id'));
       $this->markQueues($statisticsTable, $queues, $this->withoutRecordedTracking($queueIds));
-      $lastId = count($queues) === $this->getBatchSize() ? (int)end($queueIds) : $windowEnd;
-      $this->saveProgress(self::STEP_LINKS, $lastId);
+      $lastId = count($queues) === $this->getBatchSize() ? (int)end($queueIds) : $this->nextId($queuesTable, $windowEnd, $maxId);
+      $windowsSinceSave++;
+      if ($queues || $windowsSinceSave >= self::WINDOWS_PER_SAVE || $lastId >= $maxId) {
+        $this->saveProgress(self::STEP_LINKS, $lastId);
+        $windowsSinceSave = 0;
+      }
     }
   }
 
@@ -181,6 +207,15 @@ class Migration_20260914_145549_Db extends DbMigration {
     );
   }
 
+  /**
+   * Skips straight to the next row instead of stepping through empty id space, which a table
+   * with old rows deleted has plenty of.
+   */
+  private function nextId(string $table, int $windowEnd, int $maxId): int {
+    $nextId = $this->connection->fetchOne("SELECT MIN(id) FROM `{$table}` WHERE id > ?", [$windowEnd]);
+    return is_numeric($nextId) ? (int)$nextId - 1 : $maxId;
+  }
+
   private function getMaxId(string $table): int {
     $maxId = $this->connection->fetchOne("SELECT MAX(id) FROM `{$table}`");
     return is_numeric($maxId) ? (int)$maxId : 0;
@@ -190,21 +225,30 @@ class Migration_20260914_145549_Db extends DbMigration {
    * @return array{step: string, lastId: int}
    */
   private function loadProgress(): array {
-    $stored = WPFunctions::get()->getOption(self::PROGRESS_OPTION);
+    $stored = $this->settings->get(self::PROGRESS_SETTING);
+    $start = ['step' => self::STEP_OPT_OUT, 'lastId' => 0];
     if (!is_array($stored)) {
-      return ['step' => self::STEP_OPT_OUT, 'lastId' => 0];
+      return $start;
     }
-    $lastId = is_numeric($stored['lastId'] ?? null) ? (int)$stored['lastId'] : 0;
-    $step = ($stored['step'] ?? null) === self::STEP_LINKS ? self::STEP_LINKS : self::STEP_OPT_OUT;
-    return ['step' => $step, 'lastId' => $lastId];
+    // A cursor whose step is not one of ours says nothing about where to carry on, so its
+    // position goes with it.
+    $step = $stored['step'] ?? null;
+    if ($step !== self::STEP_OPT_OUT && $step !== self::STEP_LINKS) {
+      return $start;
+    }
+    $lastId = $stored['lastId'] ?? null;
+    if (!is_numeric($lastId) || $lastId < 0) {
+      return ['step' => $step, 'lastId' => 0];
+    }
+    return ['step' => $step, 'lastId' => (int)$lastId];
   }
 
   private function saveProgress(string $step, int $lastId): void {
-    WPFunctions::get()->updateOption(self::PROGRESS_OPTION, ['step' => $step, 'lastId' => $lastId], 'no');
+    $this->settings->set(self::PROGRESS_SETTING, ['step' => $step, 'lastId' => $lastId]);
   }
 
   private function clearProgress(): void {
-    WPFunctions::get()->deleteOption(self::PROGRESS_OPTION);
+    $this->settings->delete(self::PROGRESS_SETTING);
   }
 
   /**

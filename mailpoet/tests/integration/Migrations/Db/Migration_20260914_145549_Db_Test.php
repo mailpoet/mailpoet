@@ -6,13 +6,13 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\StatisticsClicks;
 use MailPoet\Test\DataFactories\StatisticsNewsletters;
 use MailPoet\Test\DataFactories\StatisticsOpens;
 use MailPoet\Test\DataFactories\Subscriber;
-use MailPoet\WP\Functions as WPFunctions;
 
 require_once __DIR__ . '/../../../../lib/Migrations/Db/Migration_20260914_145549_Db.php';
 
@@ -21,15 +21,19 @@ class Migration_20260914_145549_Db_Test extends \MailPoetTest {
   /** @var Migration_20260914_145549_Db */
   private $migration;
 
+  /** @var SettingsController */
+  private $settings;
+
   public function _before() {
     parent::_before();
-    WPFunctions::get()->deleteOption('mailpoet_sent_with_tracking_backfill');
+    $this->settings = $this->diContainer->get(SettingsController::class);
+    $this->settings->delete('sent_with_tracking_backfill');
     $this->migration = new Migration_20260914_145549_Db($this->diContainer);
   }
 
   public function _after() {
     parent::_after();
-    WPFunctions::get()->deleteOption('mailpoet_sent_with_tracking_backfill');
+    $this->settings->delete('sent_with_tracking_backfill');
   }
 
   public function testItMarksSendsMadeAfterTheRecipientOptedOut() {
@@ -162,20 +166,48 @@ class Migration_20260914_145549_Db_Test extends \MailPoetTest {
 
     $this->migration->run();
 
-    verify(WPFunctions::get()->getOption('mailpoet_sent_with_tracking_backfill'))->false();
+    verify($this->settings->get('sent_with_tracking_backfill'))->null();
   }
 
   public function testItCarriesOnFromWhereAStoppedRunLeftOff() {
-    $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $alreadyDone = (new Newsletter())->withSendingQueue()->create();
     $subscriber = $this->createSubscriber(SubscriberEntity::TRACKING_CONSENT_GRANTED, null);
-    $row = $this->createRow($newsletter, $subscriber, '-1 day');
-    $queue = $newsletter->getLatestQueue();
-    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
-    WPFunctions::get()->updateOption('mailpoet_sent_with_tracking_backfill', ['step' => 'links', 'lastId' => (int)$queue->getId()]);
+    $skippedRow = $this->createRow($alreadyDone, $subscriber, '-1 day');
+    $doneQueue = $alreadyDone->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $doneQueue);
+    $laterNewsletter = (new Newsletter())->withSendingQueue()->create();
+    $laterRow = $this->createRow($laterNewsletter, $subscriber, '-1 day');
+    $this->settings->set('sent_with_tracking_backfill', ['step' => 'links', 'lastId' => (int)$doneQueue->getId()]);
 
     $this->migration->run();
 
-    verify($this->getStoredValue($row))->equals(1);
+    verify($this->getStoredValue($skippedRow))->equals(1);
+    verify($this->getStoredValue($laterRow))->equals(0);
+  }
+
+  public function testItCarriesOnWithinTheOptOutStep() {
+    $newsletter = $this->createNewsletterWithLink();
+    $early = $this->createSubscriber(SubscriberEntity::TRACKING_CONSENT_DENIED, '-3 days');
+    $earlyRow = $this->createRow($newsletter, $early, '-1 day');
+    $later = $this->createSubscriber(SubscriberEntity::TRACKING_CONSENT_DENIED, '-3 days');
+    $laterRow = $this->createRow($newsletter, $later, '-1 day');
+    $this->settings->set('sent_with_tracking_backfill', ['step' => 'opt-out', 'lastId' => (int)$early->getId()]);
+
+    $this->migration->run();
+
+    verify($this->getStoredValue($earlyRow))->equals(1);
+    verify($this->getStoredValue($laterRow))->equals(0);
+  }
+
+  public function testItStartsOverWhenTheStoredStepIsNotOneOfItsOwn() {
+    $newsletter = $this->createNewsletterWithLink();
+    $subscriber = $this->createSubscriber(SubscriberEntity::TRACKING_CONSENT_DENIED, '-3 days');
+    $row = $this->createRow($newsletter, $subscriber, '-1 day');
+    $this->settings->set('sent_with_tracking_backfill', ['step' => 'nonsense', 'lastId' => PHP_INT_MAX]);
+
+    $this->migration->run();
+
+    verify($this->getStoredValue($row))->equals(0);
   }
 
   public function testItPicksUpQueuesThatAStoppedRunDidNotReach() {
@@ -184,7 +216,7 @@ class Migration_20260914_145549_Db_Test extends \MailPoetTest {
     $row = $this->createRow($newsletter, $subscriber, '-1 day');
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
-    WPFunctions::get()->updateOption('mailpoet_sent_with_tracking_backfill', ['step' => 'links', 'lastId' => (int)$queue->getId() - 1]);
+    $this->settings->set('sent_with_tracking_backfill', ['step' => 'links', 'lastId' => (int)$queue->getId() - 1]);
 
     $this->migration->run();
 
