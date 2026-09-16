@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { Card, Stack } from '@wordpress/ui';
 
 export type EditorChoice = 'classic' | 'block';
@@ -19,13 +20,17 @@ export function EditorChoiceOption({
   isSelected,
   onSelect,
 }: EditorChoiceOptionProps): JSX.Element {
+  const titleId = useId();
+  const descriptionId = useId();
+
   return (
     <Card.Root
       render={
-        // eslint-disable-next-line jsx-a11y/control-has-associated-label -- the label comes from the Card.Title children Card.Root renders into this button.
         <button
           type="button"
           aria-pressed={isSelected}
+          aria-labelledby={titleId}
+          aria-describedby={descriptionId}
           onClick={() => onSelect(value)}
           data-automation-id={`editor_choice_${value}`}
         />
@@ -34,17 +39,22 @@ export function EditorChoiceOption({
         isSelected ? ' is-selected' : ''
       }`}
     >
-      <Card.Header>
-        <Card.Title>{title}</Card.Title>
+      <Card.Header render={<span />}>
+        <Card.Title render={<span />} id={titleId}>
+          {title}
+        </Card.Title>
       </Card.Header>
-      <Card.Content>
-        <Stack direction="column" gap="md">
+      <Card.Content render={<span />}>
+        <Stack render={<span />} direction="column" gap="md">
           {illustration && (
-            <div className="mailpoet-editor-choice-modal__option-illustration">
+            <span
+              className="mailpoet-editor-choice-modal__option-illustration"
+              aria-hidden="true"
+            >
               {illustration}
-            </div>
+            </span>
           )}
-          {description}
+          <span id={descriptionId}>{description}</span>
         </Stack>
       </Card.Content>
     </Card.Root>
