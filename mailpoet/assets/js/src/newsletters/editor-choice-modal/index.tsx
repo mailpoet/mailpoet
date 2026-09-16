@@ -61,7 +61,7 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
           action: 'set',
           data: {
             last_email_editor_choice: choice,
-            editor_choice_modal: remember ? 0 : 1,
+            remember_email_editor_choice: remember ? 1 : 0,
           },
         });
         window.mailpoet_last_email_editor_choice = choice;
