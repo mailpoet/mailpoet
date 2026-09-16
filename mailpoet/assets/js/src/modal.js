@@ -386,6 +386,19 @@ export const MailPoetModal = {
     first = focusableElements[0];
     last = focusableElements[focusableElements.length - 1];
 
+    // When focus sits on the popup container itself (no initialFocus was
+    // set), it isn't one of the focusable elements inside it, so it never
+    // matches `first`/`last` below — trap it explicitly in both directions.
+    if (target === popup) {
+      e.preventDefault();
+      if (e.shiftKey) {
+        last.focus();
+      } else {
+        first.focus();
+      }
+      return;
+    }
+
     if (e.shiftKey) {
       if (target === first) {
         e.preventDefault();
