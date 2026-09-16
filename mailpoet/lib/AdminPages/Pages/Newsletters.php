@@ -183,7 +183,8 @@ class Newsletters {
     $data['legacy_automatic_emails_notice_dismissed'] = (bool)$this->userFlagsController->get('legacy_automatic_emails_notice_dismissed');
 
     $data['block_email_editor_enabled'] = $this->dependencyCheck->are_dependencies_met(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    $showEditorChoiceModal = $this->userFlagsController->get('editor_choice_modal') ?? $this->settings->get('editor_choice_modal.enabled', false);
+    $rememberEditorChoice = $this->userFlagsController->get('remember_email_editor_choice');
+    $showEditorChoiceModal = $rememberEditorChoice === null ? $this->settings->get('editor_choice_modal.enabled', false) : !(bool)$rememberEditorChoice;
     $data['editor_choice_modal_enabled'] = $data['block_email_editor_enabled'] && (bool)$showEditorChoiceModal;
     $data['last_email_editor_choice'] = $this->userFlagsController->get('last_email_editor_choice');
     $this->dependencyNotice->displayMessageIfNeeded();
