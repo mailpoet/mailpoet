@@ -386,6 +386,37 @@ class NewslettersTest extends \MailPoetTest {
     verify($refreshedSegmentC->getConfirmationEmailId())->null();
   }
 
+  public function testItRollsBackNewsletterDeletionWhenListResetFails() {
+    $confirmationEmail = (new Newsletter())->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)->create();
+    $segment = (new Segment())->withConfirmationEmailId((int)$confirmationEmail->getId())->create();
+
+    $endpoint = $this->getServiceWithOverrides(Newsletters::class, [
+      'segmentsRepository' => Stub::make(SegmentsRepository::class, [
+        'resetConfirmationEmailId' => function () {
+          throw new \Exception('Simulated list reset failure');
+        },
+      ]),
+    ]);
+
+    $thrown = null;
+    try {
+      $endpoint->deleteConfirmationEmail(['id' => $confirmationEmail->getId()]);
+    } catch (\Exception $e) {
+      $thrown = $e;
+    }
+    $this->assertInstanceOf(\Exception::class, $thrown);
+    verify($thrown->getMessage())->equals('Simulated list reset failure');
+
+    $this->entityManager->clear();
+    $existingNewsletter = $this->newsletterRepository->findOneById($confirmationEmail->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $existingNewsletter);
+
+    $segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
+    $refreshedSegment = $segmentsRepository->findOneById($segment->getId());
+    $this->assertInstanceOf(\MailPoet\Entities\SegmentEntity::class, $refreshedSegment);
+    verify($refreshedSegment->getConfirmationEmailId())->equals($confirmationEmail->getId());
+  }
+
   public function testItRefusesToDeleteDefaultConfirmationEmail() {
     $confirmationEmail = (new Newsletter())->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)->create();
     $segment = (new Segment())->withConfirmationEmailId((int)$confirmationEmail->getId())->create();

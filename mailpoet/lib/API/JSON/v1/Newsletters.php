@@ -22,6 +22,8 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
+use Throwable;
 
 class Newsletters extends APIEndpoint {
 
@@ -64,6 +66,8 @@ class Newsletters extends APIEndpoint {
   /** @var SettingsController */
   private $settings;
 
+  private EntityManager $entityManager;
+
   public function __construct(
     WPFunctions $wp,
     NewslettersRepository $newslettersRepository,
@@ -76,7 +80,8 @@ class Newsletters extends APIEndpoint {
     ConfirmationEmailCustomizer $confirmationEmailCustomizer,
     ApiDataSanitizer $apiDataSanitizer,
     SegmentsRepository $segmentsRepository,
-    SettingsController $settings
+    SettingsController $settings,
+    EntityManager $entityManager
   ) {
     $this->wp = $wp;
     $this->newslettersRepository = $newslettersRepository;
@@ -90,6 +95,7 @@ class Newsletters extends APIEndpoint {
     $this->apiDataSanitizer = $apiDataSanitizer;
     $this->segmentsRepository = $segmentsRepository;
     $this->settings = $settings;
+    $this->entityManager = $entityManager;
   }
 
   public function get($data = []) {
@@ -395,8 +401,15 @@ class Newsletters extends APIEndpoint {
     }
 
     $this->wp->doAction('mailpoet_api_newsletters_delete_before', [$id]);
-    $this->newsletterDeleteController->bulkDelete([$id]);
-    $this->segmentsRepository->resetConfirmationEmailId($id);
+    $this->entityManager->beginTransaction();
+    try {
+      $this->newsletterDeleteController->bulkDelete([$id]);
+      $this->segmentsRepository->resetConfirmationEmailId($id);
+      $this->entityManager->commit();
+    } catch (Throwable $e) {
+      $this->entityManager->rollback();
+      throw $e;
+    }
     $this->wp->doAction('mailpoet_api_newsletters_delete_after', [$id]);
     return $this->successResponse(null, ['count' => 1]);
   }
