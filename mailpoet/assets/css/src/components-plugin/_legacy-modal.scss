@@ -161,6 +161,11 @@ body.mailpoet_modal_opened {
   outline: 0 none;
 }
 
+.mailpoet_modal_close:focus-visible {
+  outline: 2px solid $color-text;
+  outline-offset: 1px;
+}
+
 .mailpoet_align_left {
   margin: 0;
   text-align: left;
