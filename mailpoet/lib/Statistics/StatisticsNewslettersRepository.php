@@ -111,7 +111,7 @@ class StatisticsNewslettersRepository extends Repository {
     $suppressErrors = $wpdb->suppress_errors();
     try {
       $this->entityManager->getConnection()->executeStatement(
-        "UPDATE `{$table}` SET sent_with_tracking = 1
+        "UPDATE `{$table}` SET sent_with_tracking = 1, sent_at = sent_at
          WHERE newsletter_id = :newsletterId AND queue_id = :queueId AND subscriber_id = :subscriberId
            AND sent_with_tracking = 0",
         [

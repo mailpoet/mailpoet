@@ -23,6 +23,7 @@ use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Util\Headers;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Request;
@@ -106,6 +107,9 @@ class Pages {
   /*** @var Request */
   private $request;
 
+  /*** @var TrackingConsentController */
+  private $trackingConsentController;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
@@ -127,7 +131,8 @@ class Pages {
     SendingQueuesRepository $sendingQueuesRepository,
     SettingsController $settings,
     UnsubscribeReasonTracker $unsubscribeReasonTracker,
-    Request $request
+    Request $request,
+    TrackingConsentController $trackingConsentController
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
@@ -150,6 +155,7 @@ class Pages {
     $this->settings = $settings;
     $this->unsubscribeReasonTracker = $unsubscribeReasonTracker;
     $this->request = $request;
+    $this->trackingConsentController = $trackingConsentController;
   }
 
   public function init($action = false, $data = [], $initShortcodes = false, $initPageFilters = false) {
@@ -285,7 +291,12 @@ class Pages {
     ) {
       $queueId = isset($this->data['queueId']) ? (int)$this->data['queueId'] : null;
       if ($queueId !== null) {
-        if ($this->trackingConfig->isEmailTrackingEnabled() && $method === StatisticsUnsubscribeEntity::METHOD_ONE_CLICK) {
+        if (
+          $this->trackingConfig->isEmailTrackingEnabled()
+          && $method === StatisticsUnsubscribeEntity::METHOD_ONE_CLICK
+          // The click redirect skips recording without consent, and this path stands in for it.
+          && $this->trackingConsentController->isTrackingAllowed($this->subscriber)
+        ) {
           /**
            * With 1-click method, redirect shouldn't happen that's why the click state should be directly recorded
            */
