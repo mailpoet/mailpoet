@@ -5,6 +5,8 @@ namespace MailPoet\Test\Config;
 use Codeception\Stub\Expected;
 use MailPoet\API\JSON\Error;
 use MailPoet\API\JSON\Response;
+use MailPoet\Automation\Engine\Control\ActionScheduler as AutomationActionScheduler;
+use MailPoet\Automation\Engine\Hooks as AutomationHooks;
 use MailPoet\Config\Env;
 use MailPoet\Config\Menu;
 use MailPoet\Config\SchemaNotReadyResponder;
@@ -130,6 +132,34 @@ class SchemaNotReadyResponderTest extends \MailPoetTest {
     verify(has_action('admin_post_mailpoet_subscription_update', [$this->responder, 'sendUnavailablePage']))->notEmpty();
     verify(has_action('admin_post_nopriv_mailpoet_subscription_update', [$this->responder, 'sendUnavailablePage']))->notEmpty();
     verify(has_action('admin_init', [$this->responder, 'redirectEmailEditorScreen']))->notEmpty();
+    verify(has_action(AutomationHooks::AUTOMATION_STEP, [$this->responder, 'deferAutomationStep']))->notEmpty();
+  }
+
+  public function testItBooksADueAutomationStepAgainForLater(): void {
+    $args = ['automation_run_id' => 42, 'step_id' => 'send-email'];
+    $now = time();
+    $scheduler = $this->make(AutomationActionScheduler::class, [
+      'schedule' => Expected::once(function (int $timestamp, string $hook, array $actionArgs) use ($args, $now): int {
+        verify($timestamp)->greaterThanOrEqual($now + 60);
+        verify($hook)->equals(AutomationHooks::AUTOMATION_STEP);
+        verify($actionArgs)->equals([$args]);
+        return 1;
+      }),
+    ]);
+    $responder = new SchemaNotReadyResponder($this->schemaState, $this->diContainer->get(Migrator::class), $scheduler, $this->diContainer->get(WPFunctions::class));
+
+    $responder->deferAutomationStep($args);
+  }
+
+  public function testADeferredStepIsReallyScheduledWithActionScheduler(): void {
+    $args = ['automation_run_id' => 43, 'step_id' => 'send-email'];
+    try {
+      // called directly: in this process the real step handler is hooked too and would run
+      $this->responder->deferAutomationStep($args);
+      verify(as_has_scheduled_action(AutomationHooks::AUTOMATION_STEP, [$args], 'mailpoet-automation'))->true();
+    } finally {
+      as_unschedule_all_actions(AutomationHooks::AUTOMATION_STEP, [$args], 'mailpoet-automation');
+    }
   }
 
   public function testItAddsTheNoticeExceptOnMailPoetScreens(): void {
@@ -266,6 +296,7 @@ class SchemaNotReadyResponderTest extends \MailPoetTest {
     return new SchemaNotReadyResponder(
       $this->schemaState,
       $migrator ?? $this->diContainer->get(Migrator::class),
+      $this->diContainer->get(AutomationActionScheduler::class),
       $wp ?? $this->diContainer->get(WPFunctions::class)
     );
   }

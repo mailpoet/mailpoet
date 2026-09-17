@@ -6,6 +6,8 @@ use MailPoet\API\JSON\Error;
 use MailPoet\API\JSON\ErrorResponse;
 use MailPoet\API\JSON\Response;
 use MailPoet\API\REST\API as RestApi;
+use MailPoet\Automation\Engine\Control\ActionScheduler as AutomationActionScheduler;
+use MailPoet\Automation\Engine\Hooks as AutomationHooks;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Migrator\Migrator;
 use MailPoet\Router\Router;
@@ -32,19 +34,25 @@ class SchemaNotReadyResponder {
     'mailpoet_subscription_update',
   ];
 
+  private const AUTOMATION_STEP_RETRY_DELAY = 60;
+
   private SchemaState $schemaState;
 
   private Migrator $migrator;
+
+  private AutomationActionScheduler $automationActionScheduler;
 
   private WPFunctions $wp;
 
   public function __construct(
     SchemaState $schemaState,
     Migrator $migrator,
+    AutomationActionScheduler $automationActionScheduler,
     WPFunctions $wp
   ) {
     $this->schemaState = $schemaState;
     $this->migrator = $migrator;
+    $this->automationActionScheduler = $automationActionScheduler;
     $this->wp = $wp;
   }
 
@@ -57,6 +65,7 @@ class SchemaNotReadyResponder {
     $this->wp->addAction('wp_loaded', [$this, 'rejectRouterRequest']);
     $this->wp->addAction('admin_menu', [$this, 'registerMenu']);
     $this->wp->addAction('admin_init', [$this, 'redirectEmailEditorScreen']);
+    $this->wp->addAction(AutomationHooks::AUTOMATION_STEP, [$this, 'deferAutomationStep']);
     foreach (self::ADMIN_POST_ACTIONS as $action) {
       $this->wp->addAction('admin_post_' . $action, [$this, 'sendUnavailablePage']);
       $this->wp->addAction('admin_post_nopriv_' . $action, [$this, 'sendUnavailablePage']);
@@ -114,6 +123,21 @@ class SchemaNotReadyResponder {
   private function isMailPoetRoute(string $route): bool {
     $namespace = '/' . RestApi::PREFIX;
     return $route === $namespace || strpos($route, $namespace . '/') === 0;
+  }
+
+  /**
+   * Action Scheduler keeps running while MailPoet is gated, and it marks an action whose
+   * hook has no callback as failed for good. Automation steps due in the window would
+   * be lost with them, so this handler takes the step and books it again for later.
+   *
+   * @param mixed $args
+   */
+  public function deferAutomationStep($args): void {
+    $this->automationActionScheduler->schedule(
+      (int)$this->wp->currentTime('timestamp', true) + self::AUTOMATION_STEP_RETRY_DELAY,
+      AutomationHooks::AUTOMATION_STEP,
+      [$args]
+    );
   }
 
   public function rejectRouterRequest(): void {
