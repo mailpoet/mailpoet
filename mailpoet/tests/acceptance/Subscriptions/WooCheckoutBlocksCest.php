@@ -232,16 +232,10 @@ class WooCheckoutBlocksCest {
     }
     $this->closeDialog($i);
     $i->waitForElement('iframe[name="editor-canvas"]', 30);
-    $i->switchToIframe('iframe[name="editor-canvas"]');
-    $i->click('[aria-label="Add title"]');
-    $i->switchToIframe();
-    $i->click('[aria-label="Block Inserter"]');
-    $i->waitForElementVisible('.block-editor-inserter__search [placeholder="Search"]');
-    $i->fillField('.block-editor-inserter__search [placeholder="Search"]', 'Checkout');
-    // Match the block title exactly, a substring match also hits the "Classic Checkout" block.
-    $checkoutBlockTitle = '//*[contains(@class, "block-editor-block-types-list__item-title")][normalize-space() = "Checkout"]';
-    $i->waitForElement($checkoutBlockTitle);
-    $i->click($checkoutBlockTitle);
+    // Insert the block through the editor store rather than the inserter UI. The inserter lists
+    // "Checkout" before the search filters, so a click could land while the list re-renders.
+    $i->waitForJS('return !!window.wp?.blocks?.getBlockType("woocommerce/checkout");', 30);
+    $i->executeJS('wp.data.dispatch("core/block-editor").insertBlocks(wp.blocks.createBlock("woocommerce/checkout"));');
     $i->switchToIframe('iframe[name="editor-canvas"]');
     $i->waitForElement('[aria-label="Block: Checkout"]');
 
