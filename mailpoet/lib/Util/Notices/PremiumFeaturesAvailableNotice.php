@@ -23,18 +23,23 @@ class PremiumFeaturesAvailableNotice {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var bool */
+  private $isPremiumPluginInstalled;
+
   const DISMISS_NOTICE_TIMEOUT_SECONDS = 2592000; // 30 days
   const OPTION_NAME = 'dismissed-premium-features-available-notice';
 
   public function __construct(
     SubscribersFeature $subscribersFeature,
     ServicesChecker $servicesChecker,
-    WPFunctions $wp
+    WPFunctions $wp,
+    ?bool $isPremiumPluginInstalled = null
   ) {
     $this->subscribersFeature = $subscribersFeature;
     $this->servicesChecker = $servicesChecker;
     $this->premiumInstaller = new Installer(Installer::PREMIUM_PLUGIN_PATH);
     $this->wp = $wp;
+    $this->isPremiumPluginInstalled = $isPremiumPluginInstalled ?? Installer::isPluginInstalled(Installer::PREMIUM_PLUGIN_SLUG);
   }
 
   public function init($shouldDisplay): ?Notice {
@@ -42,7 +47,7 @@ class PremiumFeaturesAvailableNotice {
       $shouldDisplay
       && !$this->wp->getTransient(self::OPTION_NAME)
       && $this->subscribersFeature->hasValidPremiumKey()
-      && (!Installer::isPluginInstalled(Installer::PREMIUM_PLUGIN_SLUG) || !$this->servicesChecker->isPremiumPluginActive())
+      && (!$this->isPremiumPluginInstalled || !$this->servicesChecker->isPremiumPluginActive())
     ) {
       return $this->display();
     }
@@ -55,7 +60,7 @@ class PremiumFeaturesAvailableNotice {
     $extraClasses = 'mailpoet-dismissible-notice is-dismissible';
 
     // We reuse already existing translations from premium_messages.tsx
-    if (!Installer::isPluginInstalled(Installer::PREMIUM_PLUGIN_SLUG)) {
+    if (!$this->isPremiumPluginInstalled) {
       // The download URL requires the premium API key, which must not end up in a browser-visible
       // URL (history, referrers, access logs) -- it's submitted as a POST body field instead.
       $noticeString .= ' ' . $this->renderDownloadForm();
