@@ -44,8 +44,10 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->wantTo('Change Campaign name');
     $i->click('Email', '.editor-sidebar__panel-tabs');
     $i->click('.editor-all-actions-button');
-    $i->waitForElementVisible('//div[@role="menuitem"]//span[normalize-space(.)="Rename"]');
-    $i->click('//div[@role="menuitem"][.//span[normalize-space(.)="Rename"]]');
+    // Gutenberg 24.0 renamed "Rename" to "Rename…", match both labels.
+    $renameMenuItem = '//*[@role="menuitem"][.//span[starts-with(normalize-space(.), "Rename")]]';
+    $i->waitForElementVisible($renameMenuItem);
+    $i->click($renameMenuItem);
     $i->fillField('Name', 'My Campaign Name');
     $i->click('.components-modal__content .components-button.is-primary');
 
@@ -116,16 +118,17 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('Save draft', '.edit-post-header');
     $i->waitForText('Saved');
     $i->click('.editor-preview-dropdown__toggle');
-    $i->waitForElementVisible('//a[contains(., "Preview in new tab")]');
-    $i->waitForElementClickable('//a[contains(., "Preview in new tab")]');
-    $i->click('//a[contains(., "Preview in new tab")]');
+    // Gutenberg 24.0 renamed "Preview in new tab" to "Preview", so match the menu link by its URL.
+    $previewMenuItem = '//a[@role="menuitem"][contains(@href, "preview=true")]';
+    $i->waitForElementClickable($previewMenuItem);
+    $i->click($previewMenuItem);
     $i->switchToNextTab();
     $i->canSeeInCurrentUrl('post_type=mailpoet_email');
     $i->canSee('Sample text');
     $i->closeTab();
 
     $i->wantTo('Send preview email and verify it was delivered');
-    $sendTestEmailMenuItem = '//button[@role="menuitem" and .//span[normalize-space(.)="Send a test email"]]';
+    $sendTestEmailMenuItem = '//*[@role="menuitem"][.//span[normalize-space(.)="Send a test email"]]';
     $sendTestEmailButton = '//button[normalize-space(.)="Send test email"]';
     $i->click('.editor-preview-dropdown__toggle');
     $i->waitForElementClickable($sendTestEmailMenuItem);
