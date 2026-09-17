@@ -11,6 +11,8 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\UserFlagsController;
 
 class ContextFactory {
   /** @var SegmentsRepository */
@@ -30,12 +32,18 @@ class ContextFactory {
 
   private Dependency_Check $dependencyCheck;
 
+  private SettingsController $settings;
+
+  private UserFlagsController $userFlagsController;
+
   public function __construct(
     SegmentsRepository $segmentsRepository,
     Bridge $bridge,
     ServicesChecker $servicesChecker,
     AuthorizedSenderDomainController $authorizedSenderDomainController,
-    AuthorizedEmailsController $authorizedEmailsController
+    AuthorizedEmailsController $authorizedEmailsController,
+    SettingsController $settings,
+    UserFlagsController $userFlagsController
   ) {
     $this->segmentsRepository = $segmentsRepository;
     $this->servicesChecker = $servicesChecker;
@@ -43,16 +51,23 @@ class ContextFactory {
     $this->authorizedSenderDomainController = $authorizedSenderDomainController;
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->dependencyCheck = Email_Editor_Container::container()->get(Dependency_Check::class);
+    $this->settings = $settings;
+    $this->userFlagsController = $userFlagsController;
   }
 
   /** @return mixed[] */
   public function getContextData(): array {
+    $blockEmailEditorEnabled = $this->dependencyCheck->are_dependencies_met(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $rememberEditorChoice = $this->userFlagsController->get('remember_email_editor_choice');
+    $showEditorChoiceModal = $rememberEditorChoice === null ? $this->settings->get('editor_choice_modal.enabled', false) : !(bool)$rememberEditorChoice;
     $data = [
       'segments' => $this->getSegments(),
       'userRoles' => $this->getUserRoles(),
       'transactional_triggers' => SendEmailAction::TRANSACTIONAL_TRIGGERS,
       'delay_action_key' => DelayAction::KEY,
-      'block_email_editor_enabled' => $this->dependencyCheck->are_dependencies_met(), // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      'block_email_editor_enabled' => $blockEmailEditorEnabled,
+      'editor_choice_modal_enabled' => $blockEmailEditorEnabled && (bool)$showEditorChoiceModal,
+      'last_email_editor_choice' => $this->userFlagsController->get('last_email_editor_choice'),
     ];
 
     if ($this->isMSSEnabled()) {

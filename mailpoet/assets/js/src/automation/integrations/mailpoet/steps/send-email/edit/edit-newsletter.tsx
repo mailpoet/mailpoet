@@ -1,6 +1,6 @@
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { plus } from '@wordpress/icons';
+import { chevronDown, plus } from '@wordpress/icons';
 import classnames from 'classnames';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { store as noticesStore } from '@wordpress/notices';
@@ -9,6 +9,10 @@ import { EmailPreviewModal } from '../../../../../components/email-preview-modal
 import { useSelectContext } from '../../../context';
 import { storeName } from '../../../../../editor/store/constants';
 import { MailPoet } from '../../../../../../mailpoet';
+import {
+  EditorChoiceModal,
+  EditorChoice as ModalEditorChoice,
+} from '../../../../../../newsletters/editor-choice-modal';
 import type {
   CreatedAutomationEmail,
   EditorChoice,
@@ -158,9 +162,13 @@ export function EditNewsletter(): JSX.Element {
   const [isHandlingDuplicatedStep, setIsHandlingDuplicatedStep] =
     useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isEditorChoiceModalOpen, setIsEditorChoiceModalOpen] = useState(false);
   const blockEmailEditorHelpId = useId();
-  const { block_email_editor_enabled: blockEmailEditorEnabled = false } =
-    useSelectContext();
+  const {
+    block_email_editor_enabled: blockEmailEditorEnabled = false,
+    editor_choice_modal_enabled: showEditorChoiceModal = false,
+    last_email_editor_choice: lastEditorChoice = null,
+  } = useSelectContext();
 
   const { selectedStep, automationId, errors } = useSelect(
     (select) => ({
@@ -234,13 +242,16 @@ export function EditNewsletter(): JSX.Element {
   );
 
   const createEmail = useCallback(
-    async (editorChoice: EditorChoice) => {
+    async (
+      editorChoice: EditorChoice,
+      { deferRedirect = false } = {},
+    ): Promise<(() => void) | undefined> => {
       if (creatingEditor) {
-        return;
+        return undefined;
       }
 
       if (editorChoice === 'new' && !isBlockEmailEditorEnabled) {
-        return;
+        return undefined;
       }
 
       setCreatingEditor(editorChoice);
@@ -297,7 +308,7 @@ export function EditNewsletter(): JSX.Element {
                   'mailpoet',
                 ),
           );
-          return;
+          return undefined;
         }
 
         void dispatch(storeName).updateStepArgs(
@@ -332,11 +343,25 @@ export function EditNewsletter(): JSX.Element {
               'mailpoet',
             ),
           );
-          return;
+          return undefined;
         }
 
-        redirectToEmailEditor(createdEmail, editorChoice);
         redirected = true;
+        const openEditor = () =>
+          redirectToEmailEditor(createdEmail, editorChoice);
+        if (deferRedirect) {
+          return openEditor;
+        }
+        MailPoet.trackEvent(
+          'Emails > Email editor opened',
+          {
+            context: 'automation',
+            editor: editorChoice === 'new' ? 'block' : 'classic',
+            via: 'direct',
+          },
+          { send_immediately: true },
+          openEditor,
+        );
       } catch {
         if (stagedStepArgs) {
           rollbackStepArgs();
@@ -360,6 +385,7 @@ export function EditNewsletter(): JSX.Element {
           setCreatingEditor(null);
         }
       }
+      return undefined;
     },
     [
       automationId,
@@ -372,6 +398,27 @@ export function EditNewsletter(): JSX.Element {
       selectedStep?.args?.email_wp_post_id,
       showEditorChoiceError,
     ],
+  );
+
+  const rememberedEditor: EditorChoice =
+    !showEditorChoiceModal &&
+    lastEditorChoice === 'block' &&
+    isBlockEmailEditorEnabled
+      ? 'new'
+      : 'classic';
+
+  const createEmailFromModal = useCallback(
+    async (choice: ModalEditorChoice) => {
+      const openEditor = await createEmail(
+        choice === 'block' ? 'new' : 'classic',
+        { deferRedirect: true },
+      );
+      if (!openEditor) {
+        throw new Error('Email creation failed');
+      }
+      return openEditor;
+    },
+    [createEmail],
   );
 
   const emailIdRef = useRef(emailId);
@@ -509,20 +556,46 @@ export function EditNewsletter(): JSX.Element {
           'mailpoet-automation-field__error': hasEmailIdError,
         })}
       >
-        <Button
-          variant="sidebar-primary"
-          centered
-          icon={plus}
-          onClick={() => void createEmail('new')}
-          isBusy={creatingEditor === 'new'}
-          disabled={creatingEditor !== null || !isBlockEmailEditorEnabled}
-          aria-describedby={
-            isBlockEmailEditorEnabled ? undefined : blockEmailEditorHelpId
-          }
-          data-automation-id="automation_send_email_design_new_editor"
-        >
-          {__('Design with the new editor', 'mailpoet')}
-        </Button>
+        {showEditorChoiceModal ? (
+          <Button
+            variant="sidebar-primary"
+            centered
+            icon={plus}
+            onClick={() => setIsEditorChoiceModalOpen(true)}
+            isBusy={creatingEditor !== null}
+            disabled={creatingEditor !== null}
+            data-automation-id="automation_send_email_design"
+          >
+            {__('Edit content', 'mailpoet')}
+          </Button>
+        ) : (
+          <div className="mailpoet-automation-email-design-split">
+            <Button
+              variant="sidebar-primary"
+              centered
+              icon={plus}
+              onClick={() => void createEmail(rememberedEditor)}
+              isBusy={creatingEditor !== null}
+              disabled={creatingEditor !== null}
+              aria-describedby={
+                isBlockEmailEditorEnabled ? undefined : blockEmailEditorHelpId
+              }
+              data-automation-id="automation_send_email_design"
+            >
+              {__('Edit content', 'mailpoet')}
+            </Button>
+            {isBlockEmailEditorEnabled && (
+              <Button
+                variant="sidebar-primary"
+                icon={chevronDown}
+                label={__('Choose an email editor', 'mailpoet')}
+                onClick={() => setIsEditorChoiceModalOpen(true)}
+                disabled={creatingEditor !== null}
+                data-automation-id="automation_send_email_editor_choice"
+              />
+            )}
+          </div>
+        )}
         {!isBlockEmailEditorEnabled && (
           <span
             id={blockEmailEditorHelpId}
@@ -534,19 +607,17 @@ export function EditNewsletter(): JSX.Element {
             )}
           </span>
         )}
-        <Button
-          variant="secondary"
-          centered
-          icon={plus}
-          onClick={() => void createEmail('classic')}
-          isBusy={creatingEditor === 'classic'}
-          disabled={creatingEditor !== null}
-          data-automation-id="automation_send_email_design_classic_editor"
-        >
-          {__('Design with the classic editor', 'mailpoet')}
-        </Button>
         {hasEmailIdError && (
           <EmailIdValidationMessage message={emailIdErrorMessage} />
+        )}
+        {isEditorChoiceModalOpen && (
+          <EditorChoiceModal
+            context="automation"
+            lastChoice={lastEditorChoice}
+            isRemembered={!showEditorChoiceModal}
+            onClose={() => setIsEditorChoiceModalOpen(false)}
+            onContinue={createEmailFromModal}
+          />
         )}
       </div>
     );

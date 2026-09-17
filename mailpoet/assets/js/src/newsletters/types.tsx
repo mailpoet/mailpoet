@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from '@wordpress/components';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { chevronDown, Icon } from '@wordpress/icons';
 import { MailPoet } from 'mailpoet';
@@ -7,9 +7,10 @@ import { Hooks } from 'wp-js-hooks';
 import _ from 'underscore';
 import { useNavigate } from 'react-router-dom';
 import { Heading } from 'common/typography/heading/heading';
+import { GlobalContext, GlobalContextValue } from 'context';
 import {
+  EditorChoice,
   EditorChoiceModal,
-  getRememberedEditorChoice,
 } from 'newsletters/editor-choice-modal';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { APIErrorsNotice } from '../notices/api-errors-notice';
@@ -20,11 +21,22 @@ interface Props {
   hideScreenOptions?: boolean;
 }
 
+const getLastEditorChoice = (): EditorChoice | null => {
+  const lastChoice = window.mailpoet_last_email_editor_choice;
+  return lastChoice === 'classic' || lastChoice === 'block' ? lastChoice : null;
+};
+
+const getRememberedEditorChoice = (): EditorChoice =>
+  window.mailpoet_editor_choice_modal_enabled
+    ? 'classic'
+    : getLastEditorChoice() ?? 'classic';
+
 export function NewsletterTypes({
   filter = null,
   hideScreenOptions = true,
 }: Props): JSX.Element {
   const navigate = useNavigate();
+  const { notices } = useContext<GlobalContextValue>(GlobalContext);
 
   const [isCreating, setIsCreating] = useState(null);
 
@@ -76,13 +88,20 @@ export function NewsletterTypes({
       },
     })
       .done((response) => {
-        if (editor === 'block') {
-          window.location.href = MailPoet.getBlockEmailEditorUrl(
-            response.data.wp_post_id as string,
-          );
-          return;
-        }
-        navigate(`/template/${response.data.id}`);
+        MailPoet.trackEvent(
+          'Emails > Email editor opened',
+          { context: 'newsletter', editor, via: 'direct' },
+          { send_immediately: true },
+          () => {
+            if (editor === 'block') {
+              window.location.href = MailPoet.getBlockEmailEditorUrl(
+                response.data.wp_post_id as string,
+              );
+              return;
+            }
+            navigate(`/template/${response.data.id as number}`);
+          },
+        );
       })
       .fail((response) => {
         setIsCreating(null);
@@ -98,6 +117,40 @@ export function NewsletterTypes({
       'standard',
       isNewEmailEditorEnabled ? getRememberedEditorChoice() : 'classic',
     );
+
+  const createNewsletterInEditor = (editor: EditorChoice) =>
+    new Promise<() => void>((resolve, reject) => {
+      MailPoet.trackEvent('Emails > Type selected', {
+        'Email type': 'standard',
+      });
+      void MailPoet.Ajax.post({
+        api_version: MailPoet.apiVersion,
+        endpoint: 'newsletters',
+        action: 'create',
+        data: {
+          type: 'standard',
+          subject: __('Subject', 'mailpoet'),
+          new_editor: editor === 'block',
+        },
+      })
+        .done((response) => {
+          resolve(() => {
+            if (editor === 'block') {
+              window.location.href = MailPoet.getBlockEmailEditorUrl(
+                response.data.wp_post_id as string,
+              );
+              return;
+            }
+            navigate(`/template/${response.data.id as number}`);
+          });
+        })
+        .fail((response) => {
+          if (response.errors.length > 0) {
+            notices.apiError(response, { scroll: true });
+          }
+          reject(new Error('Newsletter creation failed'));
+        });
+    });
   const createNotificationNewsletter = _.partial(
     setupNewsletter,
     'notification',
@@ -278,7 +331,17 @@ export function NewsletterTypes({
 
       <link rel="prefetch" href={templatesGETUrl} as="fetch" />
       {isEditorChoiceModalOpen && (
-        <EditorChoiceModal onClose={() => setIsEditorChoiceModalOpen(false)} />
+        <EditorChoiceModal
+          context="newsletter"
+          lastChoice={getLastEditorChoice()}
+          isRemembered={!window.mailpoet_editor_choice_modal_enabled}
+          onClose={() => setIsEditorChoiceModalOpen(false)}
+          onContinue={createNewsletterInEditor}
+          onChoiceSaved={(choice, remember) => {
+            window.mailpoet_last_email_editor_choice = choice;
+            window.mailpoet_editor_choice_modal_enabled = !remember;
+          }}
+        />
       )}
     </>
   );

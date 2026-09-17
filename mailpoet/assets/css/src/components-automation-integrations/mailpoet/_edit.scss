@@ -20,6 +20,16 @@
   }
 }
 
+.mailpoet-automation-email-design-split {
+  display: flex;
+  gap: 4px;
+
+  .components-button:last-child:not(:only-child) {
+    flex: 0 0 auto;
+    width: auto;
+  }
+}
+
 .mailpoet-automation-email-design-help {
   color: #646970;
   display: block;

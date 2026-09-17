@@ -11,5 +11,8 @@ class ContextFactoryTest extends \MailPoetTest {
 
     $this->assertArrayHasKey('block_email_editor_enabled', $context);
     $this->assertIsBool($context['block_email_editor_enabled']);
+    $this->assertArrayHasKey('editor_choice_modal_enabled', $context);
+    $this->assertIsBool($context['editor_choice_modal_enabled']);
+    $this->assertArrayHasKey('last_email_editor_choice', $context);
   }
 }

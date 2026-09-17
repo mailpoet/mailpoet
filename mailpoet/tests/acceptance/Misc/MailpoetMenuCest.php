@@ -79,7 +79,7 @@ class MailpoetMenuCest {
     $i->fillField('"From" name', 'From Test');
     $i->fillField('"From" email address', 'test@mailpoet.com');
     $i->fillField('Subject', 'Automation-Test-Subject');
-    $i->click('Design with the classic editor');
+    $i->click('[data-automation-id="automation_send_email_design"]');
     $i->waitForElementClickable('[data-automation-id="select_template_0"]');
     $this->assertSelectedMenuItem($i, 'Automations');
 
@@ -240,7 +240,7 @@ class MailpoetMenuCest {
     $i->click('[aria-label="Delete email"]');
     $i->waitForText('This removes the email from the automation step.');
     $i->click('Delete email', '.components-modal__frame');
-    $i->waitForText('Design with the classic editor');
+    $i->waitForElement('[data-automation-id="automation_send_email_design"]');
   }
 
   private function clickMenuItem(\AcceptanceTester $i, string $label): void {
