@@ -155,11 +155,8 @@ class Menu {
     $this->wp->doAction('mailpoet_conflict_resolver_styles');
     $this->wp->doAction('mailpoet_conflict_resolver_scripts');
 
-    if (
-      !isset($_REQUEST['page'])
-      || !is_string($_REQUEST['page'])
-      || sanitize_text_field(wp_unslash($_REQUEST['page'])) !== 'mailpoet-newsletter-editor'
-    ) {
+    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized through WPFunctions below.
+    if (self::sanitizeRequestValue($this->wp, $_REQUEST['page'] ?? null) !== 'mailpoet-newsletter-editor') {
       return;
     }
     // Disable WP emojis to not interfere with the newsletter editor emoji handling
@@ -808,11 +805,14 @@ class Menu {
    * to display admin notices only
    */
   public static function addErrorPage(AccessControl $accessControl) {
-    if (!self::isOnMailPoetAdminPage() || !isset($_REQUEST['page']) || !is_string($_REQUEST['page'])) {
+    if (!self::isOnMailPoetAdminPage()) {
       return false;
     }
-
-    $page = sanitize_text_field(wp_unslash($_REQUEST['page']));
+    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized through WPFunctions below.
+    $page = self::sanitizeRequestValue(WPFunctions::get(), $_REQUEST['page'] ?? null);
+    if ($page === null) {
+      return false;
+    }
     // Check if page already exists
     if (
       get_plugin_page_hook($page, '')
@@ -852,19 +852,24 @@ class Menu {
       return true;
     }
     // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized through WPFunctions below.
-    $rawScriptName = $_SERVER['SCRIPT_NAME'] ?? '';
-    if (!is_string($rawScriptName)) {
-      return false;
+    $scriptName = self::sanitizeRequestValue($this->wp, $_SERVER['SCRIPT_NAME'] ?? null);
+    return $scriptName !== null && stripos($scriptName, 'plugins.php') !== false;
+  }
+
+  /**
+   * @param mixed $raw
+   */
+  private static function sanitizeRequestValue(WPFunctions $wp, $raw): ?string {
+    if (!is_string($raw)) {
+      return null;
     }
-    $scriptName = $this->wp->wpUnslash($rawScriptName);
-    if (!is_string($scriptName)) {
-      return false;
-    }
-    return stripos($this->wp->sanitizeTextField($scriptName), 'plugins.php') !== false;
+    $unslashed = $wp->wpUnslash($raw);
+    return is_string($unslashed) ? $wp->sanitizeTextField($unslashed) : null;
   }
 
   public function getPageFromContext(): ?string {
-    $context = isset($_GET['context']) && is_string($_GET['context']) ? sanitize_text_field(wp_unslash($_GET['context'])) : null;
+    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized through WPFunctions below.
+    $context = self::sanitizeRequestValue($this->wp, $_GET['context'] ?? null);
     if ($context === 'automation') {
       return self::AUTOMATIONS_PAGE_SLUG;
     }
