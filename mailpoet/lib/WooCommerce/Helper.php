@@ -216,10 +216,16 @@ class Helper {
   }
 
   public function wcGetStoreAddress(): string {
+    if (!class_exists(\WC_Emails::class)) {
+      return '';
+    }
     return \WC_Emails::instance()->get_store_address();
   }
 
   public function wcGetStoreEmail(): string {
+    if (!class_exists(\WC_Emails::class)) {
+      return '';
+    }
     return \WC_Emails::instance()->get_from_address();
   }
 
