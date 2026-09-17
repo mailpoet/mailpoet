@@ -1,9 +1,7 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Badge, Button, Dialog, Stack, Text } from '@wordpress/ui';
 import { CheckboxControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { useNavigate } from 'react-router-dom';
-import { GlobalContext, GlobalContextValue } from 'context';
 import { MailPoet } from '../../mailpoet';
 import { EditorChoice, EditorChoiceOption } from './editor-choice-option';
 import {
@@ -11,88 +9,77 @@ import {
   ClassicEditorIllustration,
 } from './illustrations';
 
-export function getInitialEditorChoice(): EditorChoice | null {
-  const lastChoice = window.mailpoet_last_email_editor_choice;
-  return lastChoice === 'classic' || lastChoice === 'block' ? lastChoice : null;
-}
+export type { EditorChoice } from './editor-choice-option';
 
-export function getRememberedEditorChoice(): EditorChoice {
-  return window.mailpoet_editor_choice_modal_enabled
-    ? 'classic'
-    : getInitialEditorChoice() ?? 'classic';
-}
-
-type EditorChoiceModalProps = {
+export type EditorChoiceModalProps = {
+  context: 'newsletter' | 'automation';
+  lastChoice: EditorChoice | null;
+  isRemembered: boolean;
   onClose: () => void;
+  // creates the email and resolves with the function that opens its editor
+  onContinue: (choice: EditorChoice) => Promise<() => void>;
+  onChoiceSaved?: (choice: EditorChoice, remember: boolean) => void;
 };
 
-export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
-  const [initialChoice] = useState<EditorChoice | null>(getInitialEditorChoice);
-  const [choice, setChoice] = useState<EditorChoice | null>(initialChoice);
-  const isRemembered = !window.mailpoet_editor_choice_modal_enabled;
+export function EditorChoiceModal({
+  context,
+  lastChoice,
+  isRemembered,
+  onClose,
+  onContinue,
+  onChoiceSaved,
+}: EditorChoiceModalProps) {
+  const [choice, setChoice] = useState<EditorChoice | null>(lastChoice);
   const [remember, setRemember] = useState(isRemembered);
   const [isCreating, setIsCreating] = useState(false);
-  const { notices } = useContext<GlobalContextValue>(GlobalContext);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    MailPoet.trackEvent('Emails > Editor choice modal opened');
-  }, []);
+    MailPoet.trackEvent('Emails > Editor choice modal opened', { context });
+  }, [context]);
 
-  const createNewsletter = useCallback(() => {
+  const saveChoiceAndContinue = async () => {
     if (choice === null) {
       return;
     }
-    void MailPoet.Ajax.post({
+    let openEditor: () => void;
+    try {
+      openEditor = await onContinue(choice);
+    } catch {
+      setIsCreating(false);
+      onClose();
+      return;
+    }
+    const saveChoice = MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
-      endpoint: 'newsletters',
-      action: 'create',
+      endpoint: 'user_flags',
+      action: 'set',
       data: {
-        type: 'standard',
-        subject: __('Subject', 'mailpoet'),
-        new_editor: choice === 'block',
+        last_email_editor_choice: choice,
+        // an untouched checkbox leaves the site-wide rollout setting in control
+        ...(remember !== isRemembered && {
+          remember_email_editor_choice: remember ? 1 : 0,
+        }),
       },
-    })
-      .done((response) => {
-        const saveChoice = MailPoet.Ajax.post({
-          api_version: window.mailpoet_api_version,
-          endpoint: 'user_flags',
-          action: 'set',
-          data: {
-            last_email_editor_choice: choice,
-            // an untouched checkbox leaves the site-wide rollout setting in control
-            ...(remember !== isRemembered && {
-              remember_email_editor_choice: remember ? 1 : 0,
-            }),
-          },
-        });
-        window.mailpoet_last_email_editor_choice = choice;
-        window.mailpoet_editor_choice_modal_enabled = !remember;
-        if (choice === 'block') {
-          void saveChoice.always(() => {
-            window.location.href = MailPoet.getBlockEmailEditorUrl(
-              response.data.wp_post_id as string,
-            );
-          });
-        } else {
-          navigate(`/template/${response.data.id as number}`);
-        }
-      })
-      .fail((response) => {
-        setIsCreating(false);
-        onClose();
-        if (response.errors.length > 0) {
-          notices.apiError(response, { scroll: true });
-        }
-      });
-  }, [choice, remember, isRemembered, navigate, notices, onClose]);
+    });
+    onChoiceSaved?.(choice, remember);
+    void saveChoice.always(() => {
+      MailPoet.trackEvent(
+        'Emails > Email editor opened',
+        { context, editor: choice, via: 'modal' },
+        { send_immediately: true },
+        openEditor,
+      );
+    });
+  };
 
   return (
     <Dialog.Root
       open
       onOpenChange={(open) => {
         if (!open && !isCreating) {
-          MailPoet.trackEvent('Emails > Editor choice modal closed');
+          MailPoet.trackEvent('Emails > Editor choice modal closed', {
+            context,
+          });
           onClose();
         }
       }}
@@ -159,7 +146,9 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
             variant="outline"
             disabled={isCreating}
             onClick={() => {
-              MailPoet.trackEvent('Emails > Editor choice modal cancelled');
+              MailPoet.trackEvent('Emails > Editor choice modal cancelled', {
+                context,
+              });
               onClose();
             }}
           >
@@ -172,14 +161,11 @@ export function EditorChoiceModal({ onClose }: EditorChoiceModalProps) {
             data-automation-id="editor_choice_continue"
             onClick={() => {
               setIsCreating(true);
-              MailPoet.trackEvent('Emails > Type selected', {
-                'Email type': 'standard',
-              });
               MailPoet.trackEvent(
                 'Emails > Editor choice modal continue clicked',
-                { editor: choice, remember, preselected: initialChoice },
+                { context, editor: choice, remember, preselected: lastChoice },
                 { send_immediately: true },
-                createNewsletter,
+                () => void saveChoiceAndContinue(),
               );
             }}
           >

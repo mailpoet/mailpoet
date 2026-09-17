@@ -51,7 +51,7 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->wantTo('Delete the pre-filled welcome email to design it manually');
     $this->deleteAssignedEmail($i);
 
-    $i->click('Design with the classic editor');
+    $i->click('[data-automation-id="automation_send_email_design"]');
     $i->waitForText('Newsletters');
     $i->click('Newsletters');
     $i->click('button[data-automation-id="select_template_0"]');
@@ -133,7 +133,7 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->click('[aria-label="Delete email"]');
     $i->waitForText('This removes the email from the automation step.');
     $i->click('Delete email', '.components-modal__frame');
-    $i->waitForText('Design with the classic editor');
+    $i->waitForElement('[data-automation-id="automation_send_email_design"]');
   }
 
   private function grabAutomationIdFromCurrentUrl(\AcceptanceTester $i): string {

@@ -47,10 +47,11 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->wantTo('Delete the pre-filled welcome email to choose an editor');
     $this->deleteAssignedEmail($i);
 
-    $i->wantTo('Verify that choosing the new editor redirects to block editor');
-    $i->see('Design with the new editor');
-    $i->see('Design with the classic editor');
-    $i->click('Design with the new editor');
+    $i->wantTo('Verify that choosing the block editor redirects to block editor');
+    $i->click('[data-automation-id="automation_send_email_editor_choice"]');
+    $i->waitForText('Choose an email editor');
+    $i->click('[data-automation-id="editor_choice_block"]');
+    $i->click('[data-automation-id="editor_choice_continue"]');
     $i->waitForText('Start with an email preset');
 
     $this->closeTemplateSelectionModal($i);
@@ -137,10 +138,8 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->wantTo('Delete the pre-filled welcome email to choose an editor');
     $this->deleteAssignedEmail($i);
 
-    $i->wantTo('Verify that choosing the classic editor redirects to legacy newsletter editor');
-    $i->see('Design with the new editor');
-    $i->see('Design with the classic editor');
-    $i->click('Design with the classic editor');
+    $i->wantTo('Verify that Edit content opens the classic editor when nothing is remembered');
+    $i->click('[data-automation-id="automation_send_email_design"]');
     $i->waitForText('Newsletters');
     $i->click('Newsletters');
     $i->waitForElementClickable('button[data-automation-id="select_template_0"]');
@@ -157,7 +156,7 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->click('[aria-label="Delete email"]');
     $i->waitForText('This removes the email from the automation step.');
     $i->click('Delete email', '.components-modal__frame');
-    $i->waitForText('Design with the classic editor');
+    $i->waitForElement('[data-automation-id="automation_send_email_design"]');
   }
 
   private function closeTemplateSelectionModal(\AcceptanceTester $i): void {

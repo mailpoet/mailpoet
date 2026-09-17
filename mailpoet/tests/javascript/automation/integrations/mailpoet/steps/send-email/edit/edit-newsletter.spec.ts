@@ -88,6 +88,7 @@ const fakeMailPoet = {
   },
   getBlockEmailEditorUrl: (postId: number) =>
     `post.php?post=${postId}&action=edit`,
+  trackEvent: () => undefined,
   getNewsletterEditorUrl: (newsletterId: number, context: string) =>
     `admin.php?page=mailpoet-newsletter-editor&id=${newsletterId}&context=${context}`,
 };
@@ -159,7 +160,11 @@ const installModuleMocks = () => {
     }
 
     if (request === '@wordpress/icons') {
-      return { plus: 'plus' };
+      return { chevronDown: 'chevronDown', plus: 'plus' };
+    }
+
+    if (request.endsWith('newsletters/editor-choice-modal')) {
+      return { EditorChoiceModal: () => null };
     }
 
     if (request === '@wordpress/notices') {
