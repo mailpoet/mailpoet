@@ -12,6 +12,22 @@ use MailPoet\WP\Functions as WPFunctions;
 class TransactionalEmails {
   const SETTING_EMAIL_ID = 'woocommerce.transactional_email_id';
 
+  /**
+   * Tokens resolvable by resolvePlaceholdersInFooterText(). Deliberately excludes
+   * {order_date}/{order_number}: those are only meaningful in email headings
+   * (see replacePlaceholders()), and resolving them in footer/migrated content
+   * would bake a fixed, wrong value into saved template text.
+   */
+  const FOOTER_PLACEHOLDER_TOKENS = [
+    '{site_title}',
+    '{site_address}',
+    '{site_url}',
+    '{store_address}',
+    '{store_email}',
+    '{woocommerce}',
+    '{WooCommerce}',
+  ];
+
   /** @var WPFunctions */
   private $wp;
 
@@ -103,17 +119,22 @@ class TransactionalEmails {
   }
 
   private function replacePlaceholders($text) {
+    $text = $this->resolveSitePlaceholders($text);
+    $text = str_replace(['{woocommerce}', '{WooCommerce}'], 'WooCommerce', $text);
+    $replacements = [
+      '{order_date}' => date('Y-m-d'),
+      '{order_number}' => '0001',
+    ];
+    return str_replace(array_keys($replacements), array_values($replacements), $text);
+  }
+
+  private function resolveSitePlaceholders(string $text): string {
     $title = $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES);
     $address = $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST);
-    $orderDate = date('Y-m-d');
     $replacements = [
       '{site_title}' => $title,
       '{site_address}' => $address,
       '{site_url}' => $address,
-      '{woocommerce}' => 'WooCommerce',
-      '{WooCommerce}' => 'WooCommerce',
-      '{order_date}' => $orderDate,
-      '{order_number}' => '0001',
     ];
     // Resolved lazily: they require WooCommerce to be loaded, unlike the placeholders above.
     if (strpos($text, '{store_address}') !== false) {
@@ -158,6 +179,9 @@ class TransactionalEmails {
    * also calls this directly on already-persisted, already-formatted footer blocks, where
    * strip_tags() would strip surrounding markup (e.g. the wrapping <p style="...">) that was
    * never meant to be re-sanitized.
+   *
+   * Deliberately uses resolveSitePlaceholders() rather than replacePlaceholders(): footer/migrated
+   * content must never have {order_date}/{order_number} rewritten into it (see FOOTER_PLACEHOLDER_TOKENS).
    */
   public function resolvePlaceholdersInFooterText(string $text): string {
     // WooCommerce's own WC_Emails::replace_placeholders() links these; matched here so footer text stays consistent with core.
@@ -166,6 +190,6 @@ class TransactionalEmails {
       '<a href="https://woocommerce.com">WooCommerce</a>',
       $text
     );
-    return $this->replacePlaceholders($text);
+    return $this->resolveSitePlaceholders($text);
   }
 }
