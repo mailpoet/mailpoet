@@ -51,12 +51,12 @@ class StatisticsClicksRepository extends Repository {
         $statistics->setUserAgentType($userAgent->getUserAgentType());
       }
       $this->persist($statistics);
+      // Covers the one-click unsubscribe too, which never reaches the tracking endpoint.
+      // A repeat click cannot change anything, the first one already marked the row.
+      $this->statisticsNewslettersRepository->markSentWithTracking($newsletter, $queue, $subscriber);
     } else {
       $statistics->setCount($statistics->getCount() + 1);
     }
-    // Every writer of a click row goes through here, including the one-click unsubscribe in
-    // Subscription\Pages, which never reaches the tracking endpoint.
-    $this->statisticsNewslettersRepository->markSentWithTracking($newsletter, $queue, $subscriber);
     return $statistics;
   }
 
