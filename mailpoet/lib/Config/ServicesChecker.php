@@ -57,24 +57,47 @@ class ServicesChecker {
       $mssKey['state'] == Bridge::KEY_EXPIRING
       && !empty($mssKey['data']['expire_at'])
     ) {
-      if ($displayErrorNotice) {
-        $dateTime = new DateTime();
-        $date = $dateTime->formatDate(strtotime($mssKey['data']['expire_at']));
-        $error = Helpers::replaceLinkTags(
-          // translators: %s is a date.
-          __('Your MailPoet sending plan expires on %s. [link]Reactivate it or update your payment details[/link] to keep sending emails to your subscribers.', 'mailpoet'),
-          'https://account.mailpoet.com/account',
-          ['target' => '_blank']
-        );
-        $error = sprintf($error, $date);
-        WPNotice::displayWarning($error);
-      }
       return true;
     } elseif ($mssKey['state'] == Bridge::KEY_VALID) {
       return true;
     }
 
     return false;
+  }
+
+  // The invalid key notice is rendered by the React app, so only the expiring one is shown here
+  public function isMailPoetAPIKeyExpiring($displayErrorNotice = true) {
+    if (!Bridge::isMPSendingServiceEnabled() || !Bridge::isMSSKeySpecified()) {
+      return false;
+    }
+
+    $mssKey = $this->settings->get(Bridge::API_KEY_STATE_SETTING_NAME);
+
+    if (
+      empty($mssKey['state'])
+      || $mssKey['state'] !== Bridge::KEY_EXPIRING
+      || empty($mssKey['data']['expire_at'])
+    ) {
+      return false;
+    }
+
+    if ($displayErrorNotice) {
+      $this->displayExpiringMSSKeyNotice($mssKey['data']['expire_at']);
+    }
+    return true;
+  }
+
+  private function displayExpiringMSSKeyNotice($expireAt) {
+    $dateTime = new DateTime();
+    $date = $dateTime->formatDate(strtotime($expireAt));
+    $error = Helpers::replaceLinkTags(
+      // translators: %s is a date.
+      __('Your MailPoet sending plan expires on %s. [link]Reactivate it or update your payment details[/link] to keep sending emails to your subscribers.', 'mailpoet'),
+      'https://account.mailpoet.com/account',
+      ['target' => '_blank']
+    );
+    $error = sprintf($error, $date);
+    WPNotice::displayWarning($error);
   }
 
   public function isPremiumKeyValid($displayErrorNotice = true) {

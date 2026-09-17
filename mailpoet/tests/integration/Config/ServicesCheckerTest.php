@@ -71,7 +71,7 @@ class ServicesCheckerTest extends \MailPoetTest {
     verify($result)->true();
   }
 
-  public function testItLinksExpiringMSSKeyNoticeToAccountPage() {
+  public function testItDoesNotRenderExpiringNoticeAnymoreFromValidityCheck() {
     $this->settings->set(
       Bridge::API_KEY_STATE_SETTING_NAME,
       [
@@ -82,11 +82,83 @@ class ServicesCheckerTest extends \MailPoetTest {
     $output = $this->renderAdminNotices(function () {
       $this->servicesChecker->isMailPoetAPIKeyValid();
     });
+    verify($output)->equals('');
+  }
+
+  public function testItLinksExpiringMSSKeyNoticeToAccountPage() {
+    $this->settings->set(
+      Bridge::API_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_EXPIRING,
+        'data' => ['expire_at' => date('c')],
+      ]
+    );
+    $output = $this->renderAdminNotices(function () {
+      $this->servicesChecker->isMailPoetAPIKeyExpiring();
+    });
     verify($output)->stringContainsString('Your MailPoet sending plan expires on');
     verify($output)->stringContainsString('Reactivate it or update your payment details</a>');
     verify(substr_count($output, 'href="https://account.mailpoet.com/account"'))->equals(1);
     verify($output)->stringNotContainsString('?s=');
     verify($output)->stringNotContainsString('/orders/upgrade/');
+  }
+
+  public function testItReturnsTrueIfMSSKeyIsExpiringForExpiringCheck() {
+    $this->settings->set(
+      Bridge::API_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_EXPIRING,
+        'data' => ['expire_at' => date('c')],
+      ]
+    );
+    $result = $this->servicesChecker->isMailPoetAPIKeyExpiring();
+    verify($result)->true();
+  }
+
+  public function testItReturnsFalseForExpiringCheckIfMSSKeyIsNotSpecified() {
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, '');
+    $this->settings->set(
+      Bridge::API_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_EXPIRING,
+        'data' => ['expire_at' => date('c')],
+      ]
+    );
+    $result = $this->servicesChecker->isMailPoetAPIKeyExpiring();
+    verify($result)->false();
+
+    $output = $this->renderAdminNotices(function () {
+      $this->servicesChecker->isMailPoetAPIKeyExpiring();
+    });
+    verify($output)->equals('');
+  }
+
+  public function testItDoesNotRenderInvalidKeyNoticeForExpiringCheck() {
+    $this->settings->set(
+      Bridge::API_KEY_STATE_SETTING_NAME,
+      ['state' => Bridge::KEY_INVALID]
+    );
+    $result = $this->servicesChecker->isMailPoetAPIKeyExpiring();
+    verify($result)->false();
+
+    $output = $this->renderAdminNotices(function () {
+      $this->servicesChecker->isMailPoetAPIKeyExpiring();
+    });
+    verify($output)->stringNotContainsString('Purchase a key');
+    verify($output)->equals('');
+  }
+
+  public function testItDoesNotCheckExpiringMSSKeyIfMPSendingServiceIsDisabled() {
+    $this->disableMailPoetSendingMethod();
+    $this->settings->set(
+      Bridge::API_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_EXPIRING,
+        'data' => ['expire_at' => date('c')],
+      ]
+    );
+    $result = $this->servicesChecker->isMailPoetAPIKeyExpiring();
+    verify($result)->false();
   }
 
   public function testItReturnsFalseIfMSSKeyStateIsUnexpected() {
