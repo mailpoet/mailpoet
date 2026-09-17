@@ -838,17 +838,29 @@ class Menu {
   }
 
   public function checkPremiumKey(?ServicesChecker $checker = null) {
-    $showNotices = self::isOnMailPoetAdminPage() || (isset($_SERVER['SCRIPT_NAME']) && is_string($_SERVER['SCRIPT_NAME'])
-      && stripos(sanitize_text_field(wp_unslash($_SERVER['SCRIPT_NAME'])), 'plugins.php') !== false);
     $checker = $checker ?: $this->servicesChecker;
-    $this->premiumKeyValid = $checker->isPremiumKeyValid($showNotices);
+    $this->premiumKeyValid = $checker->isPremiumKeyValid($this->shouldShowKeyNotices());
   }
 
   public function checkMSSKey(?ServicesChecker $checker = null) {
-    $showNotices = self::isOnMailPoetAdminPage() || (isset($_SERVER['SCRIPT_NAME']) && is_string($_SERVER['SCRIPT_NAME'])
-      && stripos(sanitize_text_field(wp_unslash($_SERVER['SCRIPT_NAME'])), 'plugins.php') !== false);
     $checker = $checker ?: $this->servicesChecker;
-    $this->mssKeyExpiring = $checker->isMailPoetAPIKeyExpiring($showNotices);
+    $this->mssKeyExpiring = $checker->isMailPoetAPIKeyExpiring($this->shouldShowKeyNotices());
+  }
+
+  private function shouldShowKeyNotices(): bool {
+    if (self::isOnMailPoetAdminPage()) {
+      return true;
+    }
+    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized through WPFunctions below.
+    $rawScriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+    if (!is_string($rawScriptName)) {
+      return false;
+    }
+    $scriptName = $this->wp->wpUnslash($rawScriptName);
+    if (!is_string($scriptName)) {
+      return false;
+    }
+    return stripos($this->wp->sanitizeTextField($scriptName), 'plugins.php') !== false;
   }
 
   public function getPageFromContext(): ?string {
