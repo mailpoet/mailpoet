@@ -42,6 +42,29 @@ class MenuTest extends \MailPoetTest {
     verify($result)->false();
   }
 
+  public function testItReturnsAutomationsSlugForAutomationContext() {
+    $menu = $this->diContainer->get(Menu::class);
+
+    $_GET['context'] = 'automation';
+    verify($menu->getPageFromContext())->equals(Menu::AUTOMATIONS_PAGE_SLUG);
+
+    $_GET['context'] = " automation\n";
+    verify($menu->getPageFromContext())->equals(Menu::AUTOMATIONS_PAGE_SLUG);
+  }
+
+  public function testItIgnoresUnknownOrNonStringContext() {
+    $menu = $this->diContainer->get(Menu::class);
+
+    $_GET['context'] = 'something-else';
+    verify($menu->getPageFromContext())->null();
+
+    $_GET['context'] = ['automation'];
+    verify($menu->getPageFromContext())->null();
+
+    unset($_GET['context']);
+    verify($menu->getPageFromContext())->null();
+  }
+
   public function testItChecksPremiumKey() {
     $menu = $this->diContainer->get(Menu::class);
 
