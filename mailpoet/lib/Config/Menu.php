@@ -73,6 +73,7 @@ class Menu {
 
   public $mpApiKeyValid;
   public $premiumKeyValid;
+  public $mssKeyExpiring;
 
   /** @var AccessControl */
   private $accessControl;
@@ -123,6 +124,7 @@ class Menu {
 
   public function init() {
     $this->checkPremiumKey();
+    $this->checkMSSKey();
 
     $this->wp->addAction('admin_init', [$this, 'maybeRenderAutomationPreviewEmbed'], 1);
     $this->wp->addAction('admin_init', [$this, 'maybeRenderAutomationFlowEmbed'], 1);
@@ -840,6 +842,13 @@ class Menu {
       && stripos(sanitize_text_field(wp_unslash($_SERVER['SCRIPT_NAME'])), 'plugins.php') !== false);
     $checker = $checker ?: $this->servicesChecker;
     $this->premiumKeyValid = $checker->isPremiumKeyValid($showNotices);
+  }
+
+  public function checkMSSKey(?ServicesChecker $checker = null) {
+    $showNotices = self::isOnMailPoetAdminPage() || (isset($_SERVER['SCRIPT_NAME']) && is_string($_SERVER['SCRIPT_NAME'])
+      && stripos(sanitize_text_field(wp_unslash($_SERVER['SCRIPT_NAME'])), 'plugins.php') !== false);
+    $checker = $checker ?: $this->servicesChecker;
+    $this->mssKeyExpiring = $checker->isMailPoetAPIKeyExpiring($showNotices);
   }
 
   public function getPageFromContext(): ?string {
