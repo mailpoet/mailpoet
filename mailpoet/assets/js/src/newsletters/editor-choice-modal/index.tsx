@@ -61,15 +61,16 @@ export function EditorChoiceModal({
         }),
       },
     });
-    onChoiceSaved?.(choice, remember);
-    void saveChoice.always(() => {
-      MailPoet.trackEvent(
-        'Emails > Email editor opened',
-        { context, editor: choice, via: 'modal' },
-        { send_immediately: true },
-        openEditor,
-      );
-    });
+    void saveChoice
+      .done(() => onChoiceSaved?.(choice, remember))
+      .always(() => {
+        MailPoet.trackEvent(
+          'Emails > Email editor opened',
+          { context, editor: choice, via: 'modal' },
+          { send_immediately: true },
+          openEditor,
+        );
+      });
   };
 
   return (
