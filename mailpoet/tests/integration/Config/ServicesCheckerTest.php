@@ -71,6 +71,24 @@ class ServicesCheckerTest extends \MailPoetTest {
     verify($result)->true();
   }
 
+  public function testItLinksExpiringMSSKeyNoticeToAccountPage() {
+    $this->settings->set(
+      Bridge::API_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_EXPIRING,
+        'data' => ['expire_at' => date('c')],
+      ]
+    );
+    $output = $this->renderAdminNotices(function () {
+      $this->servicesChecker->isMailPoetAPIKeyValid();
+    });
+    verify($output)->stringContainsString('Your MailPoet sending plan expires on');
+    verify($output)->stringContainsString('Reactivate it or update your payment details</a>');
+    verify(substr_count($output, 'href="https://account.mailpoet.com/account"'))->equals(1);
+    verify($output)->stringNotContainsString('?s=');
+    verify($output)->stringNotContainsString('/orders/upgrade/');
+  }
+
   public function testItReturnsFalseIfMSSKeyStateIsUnexpected() {
     $this->settings->set(
       Bridge::API_KEY_STATE_SETTING_NAME,
@@ -350,5 +368,13 @@ class ServicesCheckerTest extends \MailPoetTest {
 
   private function fillPremiumKey() {
     $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, '123457890abcdef');
+  }
+
+  private function renderAdminNotices(callable $trigger): string {
+    remove_all_actions('admin_notices');
+    $trigger();
+    ob_start();
+    do_action('admin_notices');
+    return (string)ob_get_clean();
   }
 }

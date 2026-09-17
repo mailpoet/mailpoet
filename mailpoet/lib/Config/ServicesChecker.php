@@ -62,8 +62,8 @@ class ServicesChecker {
         $date = $dateTime->formatDate(strtotime($mssKey['data']['expire_at']));
         $error = Helpers::replaceLinkTags(
           // translators: %s is a date.
-          __("Your newsletters are awesome! Don't forget to [link]upgrade your MailPoet email plan[/link] by %s to keep sending them to your subscribers.", 'mailpoet'),
-          'https://account.mailpoet.com?s=' . $this->subscribersFeature->getSubscribersCount(),
+          __('Your MailPoet sending plan expires on %s. [link]Reactivate it or update your payment details[/link] to keep sending emails to your subscribers.', 'mailpoet'),
+          'https://account.mailpoet.com/account',
           ['target' => '_blank']
         );
         $error = sprintf($error, $date);
@@ -119,7 +119,7 @@ class ServicesChecker {
         $error = Helpers::replaceLinkTags(
           // translators: %s is a date.
           __("Your License Key for MailPoet is expiring! Don't forget to [link]renew your license[/link] by %s to keep enjoying automatic updates and Premium support.", 'mailpoet'),
-          'https://account.mailpoet.com',
+          'https://account.mailpoet.com/account',
           ['target' => '_blank']
         );
         $error = sprintf($error, $date);
