@@ -316,7 +316,7 @@ class Initializer {
     // readiness check. The post-upgrade trigger must stay available even while gated,
     // so an update that repairs a failed migration starts it right away.
     if ($this->schemaState->isReady()) {
-      $this->setupAbilities();
+      $this->setupEarlyWiring();
     }
     $this->hooks->triggerDatabaseUpdateAfterPluginUpgrade();
 
@@ -390,14 +390,17 @@ class Initializer {
       'afterPluginActivation',
     ]);
 
-    if ($this->schemaState->isReady()) {
-      $this->hooks->initEarlyHooks();
-    }
   }
 
-  private function setupAbilities(): void {
+  /**
+   * Hooks that belong before plugins_loaded: the mailer replacement and the WooCommerce
+   * abilities. Registered at plugin load when the schema is ready, otherwise by
+   * maybeRunActivator() once this request has migrated; never both.
+   */
+  private function setupEarlyWiring(): void {
     require_once __DIR__ . '/../Abilities/Abilities.php';
     Abilities::init();
+    $this->hooks->initEarlyHooks();
   }
 
   public function runActivator() {
@@ -559,6 +562,9 @@ class Initializer {
     }
 
     if ($this->schemaState->isReady()) {
+      // plugins_loaded has passed, so its callbacks cannot run on this request any more;
+      // the login and lost-password mailer hooks still can.
+      $this->setupEarlyWiring();
       $this->pluginsLoaded();
       return;
     }

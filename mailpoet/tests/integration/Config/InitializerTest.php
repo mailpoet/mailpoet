@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Config;
 
 use Codeception\Stub\Expected;
+use MailPoet\Automation\Engine\Control\ActionScheduler as AutomationActionScheduler;
 use MailPoet\Config\ActivationInProgressException;
 use MailPoet\Config\Activator;
 use MailPoet\Config\Env;
@@ -37,7 +38,7 @@ class InitializerTest extends \MailPoetTest {
     $this->settings = $this->diContainer->get(SettingsController::class);
     // fresh instances: the container's shared SchemaState would carry a failure across tests
     $this->schemaState = new SchemaState($this->settings);
-    $this->responder = new SchemaNotReadyResponder($this->schemaState, $this->diContainer->get(Migrator::class), $this->diContainer->get(WPFunctions::class));
+    $this->responder = new SchemaNotReadyResponder($this->schemaState, $this->diContainer->get(Migrator::class), $this->diContainer->get(AutomationActionScheduler::class), $this->diContainer->get(WPFunctions::class));
   }
 
   public function _after(): void {
@@ -68,7 +69,7 @@ class InitializerTest extends \MailPoetTest {
   public function testItDefersPluginsLoadedHooksUntilThisRequestMigrates(): void {
     $this->settings->set('db_version', '0.0.1');
     $initializer = $this->createInitializer([
-      'hooks' => $this->makeEmpty(Hooks::class, ['init' => Expected::once()]),
+      'hooks' => $this->makeEmpty(Hooks::class, ['init' => Expected::once(), 'initEarlyHooks' => Expected::once()]),
       'publicEmailRoute' => $this->makeEmpty(PublicEmailRoute::class, ['init' => Expected::once()]),
       'activator' => $this->makeEmpty(Activator::class, [
         'activate' => Expected::once(function () {
