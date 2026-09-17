@@ -51,6 +51,13 @@ if (strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
 }
 
 $container = \MailPoet\DI\ContainerWrapper::getInstance(WP_DEBUG);
+// Loading wp-load.php above ran MailPoet's init, which brings the database up to date when
+// it can; if it could not, the workers must not run new code against the old schema.
+$schemaState = $container->get(\MailPoet\Config\SchemaState::class);
+if (!$schemaState->isReady()) {
+  echo $schemaState->getMessage() . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- command-line output, never rendered as HTML
+  exit(1);
+}
 
 // Check if Linux Cron method is set in plugin settings
 $settings = $container->get(\MailPoet\Settings\SettingsController::class);
