@@ -344,7 +344,10 @@ export const MailPoetModal = {
     }
     elements = Array.prototype.slice.call(popup.querySelectorAll(selector));
     return elements.filter(function (el) {
-      return self.isElementVisible(el, popup);
+      // tag-specific selector parts (a[href], button, input, …) also match
+      // elements with tabindex="-1", which are deliberately excluded from
+      // sequential keyboard navigation.
+      return el.tabIndex >= 0 && self.isElementVisible(el, popup);
     });
   },
   handleTabTrap: function (e) {
@@ -667,17 +670,16 @@ export const MailPoetModal = {
   popup: function (opts) {
     // get options
     var options = opts || {};
-    // capture the currently focused element before init() can close
-    // (and restore focus for) a previously open modal
-    var activeElementBeforeInit = document.activeElement;
     // set modal type
     options.type = 'popup';
     // set overlay state
     options.overlay = options.overlay || true;
-    // initialize modal
+    // initialize modal (closes a previously open modal, if any, restoring
+    // focus to that modal's own opener first)
     this.init(options);
-    // remember it as the element to restore focus to on close
-    this.prevFocus = activeElementBeforeInit;
+    // capture the focused element after init() so a prior modal's close
+    // doesn't leave us pointing at a control that init() just removed
+    this.prevFocus = document.activeElement;
     // open modal
     this.open();
 

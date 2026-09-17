@@ -340,4 +340,44 @@ describe('MailPoetModal', function modalSuite() {
     expect(ids).to.not.include('mailpoet_hidden');
     expect(ids).to.include('mailpoet_a');
   });
+
+  it('excludes an element with a negative tabindex from the focus list and tab trap', () => {
+    openPopup({
+      template:
+        '<button id="mailpoet_a">A</button>' +
+        '<button id="mailpoet_b">B</button>' +
+        '<button id="mailpoet_negative" tabindex="-1">Negative</button>',
+    });
+
+    const ids = modalModule.MailPoetModal.getFocusableElements().map(
+      (el) => el.id,
+    );
+    expect(ids).to.not.include('mailpoet_negative');
+
+    const last = document.getElementById('mailpoet_b');
+    last.focus();
+    dispatchKey(last, 'keydown', { key: 'Tab', keyCode: 9 });
+
+    expect(document.activeElement && document.activeElement.id).to.equal(
+      'mailpoet_modal_close',
+    );
+  });
+
+  it('restores focus to the original opener when a popup replaces another', () => {
+    const pageButton = document.createElement('button');
+    pageButton.id = 'page-button';
+    document.body.appendChild(pageButton);
+    pageButton.focus();
+
+    openPopup();
+    const buttonInFirstPopup = document.getElementById('mailpoet_a');
+    buttonInFirstPopup.focus();
+
+    openPopup();
+    modalModule.MailPoetModal.close();
+
+    expect(document.activeElement && document.activeElement.id).to.equal(
+      'page-button',
+    );
+  });
 });
