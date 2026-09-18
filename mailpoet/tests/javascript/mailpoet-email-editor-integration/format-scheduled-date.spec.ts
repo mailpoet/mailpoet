@@ -25,7 +25,13 @@ describe('formatScheduledDate', () => {
   });
 
   after(() => {
-    process.env.TZ = originalTz;
+    // Assigning an undefined original would store the string "undefined",
+    // which is not a valid zone and leaves later specs stuck on UTC.
+    if (originalTz === undefined) {
+      delete process.env.TZ;
+    } else {
+      process.env.TZ = originalTz;
+    }
     setSettings(defaultSettings);
   });
 
