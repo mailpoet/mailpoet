@@ -17,7 +17,15 @@ class ScheduleEmailUsingGutenbergCest {
   }
 
   public function _after(\AcceptanceTester $i) {
-    // Never leave a non-UTC timezone behind for the rest of the suite.
+    // Never leave a non-UTC timezone behind for the rest of the suite. A site
+    // that had no timezone set needs the option deleted rather than updated:
+    // `option update` with a blank value waits for one on stdin and hangs
+    // until the runner kills it.
+    if ($this->originalTimezone === '') {
+      $i->cli(['option', 'delete', 'timezone_string']);
+      return;
+    }
+
     $i->cli(['option', 'update', 'timezone_string', $this->originalTimezone]);
   }
 
