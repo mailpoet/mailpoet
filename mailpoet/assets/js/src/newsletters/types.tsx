@@ -21,15 +21,11 @@ interface Props {
   hideScreenOptions?: boolean;
 }
 
-const getLastEditorChoice = (): EditorChoice | null => {
-  const lastChoice = window.mailpoet_last_email_editor_choice;
-  return lastChoice === 'classic' || lastChoice === 'block' ? lastChoice : null;
-};
-
 const getRememberedEditorChoice = (): EditorChoice =>
-  window.mailpoet_editor_choice_modal_enabled
-    ? 'classic'
-    : getLastEditorChoice() ?? 'classic';
+  !window.mailpoet_editor_choice_modal_enabled &&
+  window.mailpoet_last_email_editor_choice === 'block'
+    ? 'block'
+    : 'classic';
 
 export function NewsletterTypes({
   filter = null,
@@ -333,7 +329,7 @@ export function NewsletterTypes({
       {isEditorChoiceModalOpen && (
         <EditorChoiceModal
           context="newsletter"
-          lastChoice={getLastEditorChoice()}
+          lastChoice={window.mailpoet_last_email_editor_choice}
           isRemembered={!window.mailpoet_editor_choice_modal_enabled}
           onClose={() => setIsEditorChoiceModalOpen(false)}
           onContinue={createNewsletterInEditor}
