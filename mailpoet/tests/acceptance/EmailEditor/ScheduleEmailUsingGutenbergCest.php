@@ -17,15 +17,22 @@ class ScheduleEmailUsingGutenbergCest {
   }
 
   public function _after(\AcceptanceTester $i) {
-    // Never leave a non-UTC timezone behind for the rest of the suite. The site
-    // usually stores this option empty, and `option update` cannot write an
-    // empty value: wp-cli waits for one on stdin and hangs until the runner
-    // kills it. Writing it from PHP restores the value whether it is empty or
-    // not, and keeps the option itself in place.
-    $i->cli([
-      'eval',
-      sprintf('update_option("timezone_string", %s);', var_export($this->originalTimezone, true)),
-    ]);
+    // Never leave a non-UTC timezone behind for the rest of the suite.
+    //
+    // An empty value has to be put back by deleting the option. `option update`
+    // cannot write one, because wp-cli reads a missing value from stdin and
+    // hangs there until the runner kills it. Writing it from PHP with `eval` is
+    // not available either: the module builds a shell command without escaping
+    // its arguments, so the parentheses arrive at the shell unquoted.
+    //
+    // Deleting is equivalent here, since WordPress falls back to the GMT offset
+    // whether the option is empty or missing.
+    if ($this->originalTimezone === '') {
+      $i->cli(['option', 'delete', 'timezone_string']);
+      return;
+    }
+
+    $i->cli(['option', 'update', 'timezone_string', $this->originalTimezone]);
   }
 
   public function scheduleEmailStoresSiteLocalTimeAsUtc(\AcceptanceTester $i, $scenario) {
