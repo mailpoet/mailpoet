@@ -123,8 +123,9 @@ class Menu {
   }
 
   public function init() {
-    $this->checkPremiumKey();
+    // Runs first: checkPremiumKey() suppresses its expiring notice when this one already covered it.
     $this->checkMSSKey();
+    $this->checkPremiumKey();
 
     $this->wp->addAction('admin_init', [$this, 'maybeRenderAutomationPreviewEmbed'], 1);
     $this->wp->addAction('admin_init', [$this, 'maybeRenderAutomationFlowEmbed'], 1);
@@ -839,7 +840,9 @@ class Menu {
 
   public function checkPremiumKey(?ServicesChecker $checker = null) {
     $checker = $checker ?: $this->servicesChecker;
-    $this->premiumKeyValid = $checker->isPremiumKeyValid($this->shouldShowKeyNotices());
+    // Same key, same expiry: don't tell the customer to "renew" when the sending-plan notice already covers it.
+    $suppressExpiringNotice = $this->mssKeyExpiring && $checker->isSameKeyUsedForMSSAndPremium();
+    $this->premiumKeyValid = $checker->isPremiumKeyValid($this->shouldShowKeyNotices(), $suppressExpiringNotice);
   }
 
   public function checkMSSKey(?ServicesChecker $checker = null) {

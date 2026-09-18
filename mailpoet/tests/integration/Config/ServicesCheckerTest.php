@@ -161,6 +161,37 @@ class ServicesCheckerTest extends \MailPoetTest {
     verify($result)->false();
   }
 
+  public function testItDetectsSameKeyUsedForMSSAndPremium() {
+    $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, 'some_key');
+    $result = $this->servicesChecker->isSameKeyUsedForMSSAndPremium();
+    verify($result)->true();
+  }
+
+  public function testItDetectsDifferentKeysAsNotSameForMSSAndPremium() {
+    $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, 'a_different_key');
+    $result = $this->servicesChecker->isSameKeyUsedForMSSAndPremium();
+    verify($result)->false();
+  }
+
+  public function testItDoesNotTreatBothEmptyKeysAsSame() {
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, '');
+    $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, '');
+    $result = $this->servicesChecker->isSameKeyUsedForMSSAndPremium();
+    verify($result)->false();
+  }
+
+  public function testItReturnsTrueForExpiringPremiumKeyRegardlessOfNoticeSuppression() {
+    $this->settings->set(
+      Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_EXPIRING,
+        'data' => ['expire_at' => date('c')],
+      ]
+    );
+    verify($this->servicesChecker->isPremiumKeyValid(true, true))->true();
+    verify($this->servicesChecker->isPremiumKeyValid(true, false))->true();
+  }
+
   public function testItReturnsFalseIfMSSKeyStateIsUnexpected() {
     $this->settings->set(
       Bridge::API_KEY_STATE_SETTING_NAME,
