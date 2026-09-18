@@ -755,6 +755,7 @@ class RoboFile extends \Robo\Tasks {
       'tests/_data',
       'tests/_output',
       'tests/_support/_generated',
+      'tests/plugins',
       'vendor',
       'vendor-prefixed',
       'views',
