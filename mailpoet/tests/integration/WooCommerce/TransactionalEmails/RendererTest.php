@@ -118,7 +118,8 @@ class RendererTest extends \MailPoetTest {
 
     /** @var string $blogName - for PHPStan */
     $blogName = get_option('blogname');
-    $siteName = strval($blogName);
+    // [site:title] decodes entities and strips tags, so assert against that, not the raw stored option.
+    $siteName = wp_strip_all_tags(htmlspecialchars_decode(strval($blogName), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401));
     verify($html)->stringContainsString($siteName); // [site:title]
     /** @var string $home - for PHPStan */
     $home = get_option('home');
