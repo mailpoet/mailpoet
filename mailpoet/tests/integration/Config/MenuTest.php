@@ -105,8 +105,6 @@ class MenuTest extends \MailPoetTest {
     );
     $menu->checkMSSKey($checker);
     verify($menu->mssKeyExpiring)->false();
-
-    unset($_REQUEST['page']);
   }
 
   public function testItSuppressesPremiumExpiringNoticeWhenMSSExpiringWithSameKey() {
@@ -211,7 +209,6 @@ class MenuTest extends \MailPoetTest {
       $menu->init();
     } finally {
       $servicesCheckerProperty->setValue($menu, $previousChecker);
-      unset($_REQUEST['page']);
     }
 
     verify($suppressArgument)->true();
