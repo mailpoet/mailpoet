@@ -414,11 +414,12 @@ class EmailApiControllerTest extends \MailPoetTest {
   }
 
   private function withTimezone(string $timezone, callable $callback): void {
+    $previousTimezone = get_option('timezone_string');
     update_option('timezone_string', $timezone);
     try {
       $callback();
     } finally {
-      delete_option('timezone_string');
+      update_option('timezone_string', $previousTimezone);
     }
   }
 
