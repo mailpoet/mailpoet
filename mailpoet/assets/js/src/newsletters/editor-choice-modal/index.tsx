@@ -11,9 +11,12 @@ import {
 
 export type { EditorChoice } from './editor-choice-option';
 
+const isEditorChoice = (value: unknown): value is EditorChoice =>
+  value === 'classic' || value === 'block';
+
 export type EditorChoiceModalProps = {
   context: 'newsletter' | 'automation';
-  lastChoice: EditorChoice | null;
+  lastChoice: string | null | undefined;
   isRemembered: boolean;
   onClose: () => void;
   // creates the email and resolves with the function that opens its editor
@@ -29,7 +32,8 @@ export function EditorChoiceModal({
   onContinue,
   onChoiceSaved,
 }: EditorChoiceModalProps) {
-  const [choice, setChoice] = useState<EditorChoice | null>(lastChoice);
+  const preselected = isEditorChoice(lastChoice) ? lastChoice : null;
+  const [choice, setChoice] = useState<EditorChoice | null>(preselected);
   const [remember, setRemember] = useState(isRemembered);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -164,7 +168,7 @@ export function EditorChoiceModal({
               setIsCreating(true);
               MailPoet.trackEvent(
                 'Emails > Editor choice modal continue clicked',
-                { context, editor: choice, remember, preselected: lastChoice },
+                { context, editor: choice, remember, preselected },
                 { send_immediately: true },
                 () => void saveChoiceAndContinue(),
               );
