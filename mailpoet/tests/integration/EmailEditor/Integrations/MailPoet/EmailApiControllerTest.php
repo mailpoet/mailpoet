@@ -26,10 +26,15 @@ class EmailApiControllerTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
+  /** @var string */
+  private $originalTimezone = '';
+
   public function _before() {
     $this->emailApiController = $this->diContainer->get(EmailApiController::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->settings = $this->diContainer->get(SettingsController::class);
+    $timezone = get_option('timezone_string');
+    $this->originalTimezone = is_string($timezone) ? $timezone : '';
   }
 
   public function testItGetsEmailDataFromNewsletterEntity(): void {
@@ -359,6 +364,36 @@ class EmailApiControllerTest extends \MailPoetTest {
       $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
       $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
       verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT))->equals('2024-12-25 14:30:00');
+    });
+  }
+
+  public function testItRejectsADateThatDoesNotExist(): void {
+    $this->withTimezone('America/Toronto', function () {
+      $wpPostId = 74;
+      $newsletter = (new NewsletterFactory())
+        ->withWpPostId($wpPostId)
+        ->create();
+
+      (new NewsletterOptionField())->findOrCreate(
+        NewsletterOptionFieldEntity::NAME_SCHEDULED_AT,
+        NewsletterEntity::TYPE_STANDARD
+      );
+      (new NewsletterOptionField())->findOrCreate(
+        NewsletterOptionFieldEntity::NAME_IS_SCHEDULED,
+        NewsletterEntity::TYPE_STANDARD
+      );
+      $this->entityManager->flush();
+
+      // PHP rolls 30 February over to 1 March instead of refusing it, which
+      // would schedule the email on a day nobody picked.
+      $this->expectException(UnexpectedValueException::class);
+      $this->expectExceptionMessage('Invalid scheduled_at format. Expected a valid datetime string.');
+      $this->emailApiController->saveEmailData([
+        'id' => $newsletter->getId(),
+        'subject' => 'Test Subject',
+        'preheader' => 'Test Preheader',
+        'scheduled_at' => '2024-02-30T10:00:00',
+      ], new \WP_Post((object)['ID' => $wpPostId]));
     });
   }
 
@@ -743,6 +778,6 @@ class EmailApiControllerTest extends \MailPoetTest {
   public function _after() {
     parent::_after();
     $this->truncateEntity(NewsletterEntity::class);
-    delete_option('timezone_string');
+    update_option('timezone_string', $this->originalTimezone);
   }
 }
