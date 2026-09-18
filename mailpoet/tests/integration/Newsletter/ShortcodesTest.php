@@ -687,13 +687,24 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function testItCanProcessSiteTitleShortcode() {
-    $siteName = "Test site name with characters like ', <, >, &";
+    $siteName = "Test site name with characters like ', & and more";
     update_option('blogname', $siteName);
 
     $shortcode = '[site:title]';
     $shortcodesObject = $this->shortcodesObject;
     $result = $shortcodesObject->process([$shortcode]);
     verify($result[0])->equals($siteName);
+  }
+
+  public function testItDoesNotTurnEncodedSiteTitleIntoMarkup() {
+    update_option('blogname', '<img src=x onerror=alert(1)>Site');
+    verify(get_option('blogname'))->equals('&lt;img src=x onerror=alert(1)&gt;Site');
+
+    $shortcode = '[site:title]';
+    $shortcodesObject = $this->shortcodesObject;
+    $result = $shortcodesObject->process([$shortcode]);
+    verify($result[0])->equals('Site');
+    verify($result[0])->stringNotContainsString('<img');
   }
 
   public function testItCanProcessSiteHomepageLinkShortcode() {
