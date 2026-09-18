@@ -27,8 +27,9 @@ class Site implements CategoryInterface {
   ): ?string {
     switch ($shortcodeDetails['action']) {
       case 'title':
-        // Decoding special characters such as &amp; to &, etc.
-        return htmlspecialchars_decode($this->wp->getBloginfo('name'), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
+        // blogname is stored esc_html-encoded, so decode entities before stripping any tags.
+        $title = htmlspecialchars_decode($this->wp->getBloginfo('name'), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
+        return $this->wp->wpStripAllTags($title);
 
       case 'homepage_url':
         return $this->wp->getBloginfo('url');

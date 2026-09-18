@@ -45,6 +45,9 @@ class ShortcodesTest extends \MailPoetTest {
   /** @var string */
   private $blognameBackup;
 
+  /** @var int[] */
+  private $additionalPostIds = [];
+
   public function _before() {
     parent::_before();
     $this->cleanup();
@@ -169,7 +172,68 @@ class ShortcodesTest extends \MailPoetTest {
       $shortcodesObject->process(['[newsletter:post_title]'], $content);
     $wpPost = get_post($this->wPPost);
     $this->assertInstanceOf(WP_Post::class, $wpPost);
-    verify($result['0'])->equals('Sample Post &, <, >, strong');
+    verify($result['0'])->equals('Sample Post & strong');
+  }
+
+  public function testItDoesNotTurnEncodedImgTagInPostTitleIntoMarkup() {
+    $postId = $this->createPostWithTitle('&lt;img src=x onerror=alert(1)&gt;Title');
+    $out = $this->processPostTitle($postId);
+    verify($out)->stringNotContainsString('<img');
+    verify($out)->equals('Title');
+  }
+
+  public function testItDoesNotTurnEncodedScriptTagInPostTitleIntoMarkup() {
+    $postId = $this->createPostWithTitle('&lt;script&gt;alert(1)&lt;/script&gt;Title');
+    $out = $this->processPostTitle($postId);
+    verify($out)->equals('Title');
+  }
+
+  public function testItDoesNotTurnNumericEntityTagsInPostTitleIntoMarkup() {
+    // WP pads decimal numeric entities to 3 digits on save (wp_kses_normalize_entities), hence &#060;/&#062;.
+    $postId = $this->createPostWithTitle('&#060;img src=x onerror=alert(1)&#062;Title');
+    $out = $this->processPostTitle($postId);
+    verify($out)->equals('Title');
+  }
+
+  public function testItDoesNotTurnHexEntityTagsInPostTitleIntoMarkup() {
+    $postId = $this->createPostWithTitle('&#x3c;img src=x onerror=alert(1)&#x3e;Title');
+    $out = $this->processPostTitle($postId);
+    verify($out)->equals('Title');
+  }
+
+  public function testItKeepsDoubleEncodedPostTitleMarkupAsText() {
+    $postId = $this->createPostWithTitle('&amp;lt;img src=x&amp;gt;Title');
+    $out = $this->processPostTitle($postId);
+    verify($out)->equals('&lt;img src=x&gt;Title');
+    verify($out)->stringNotContainsString('<img');
+  }
+
+  public function testItDecodesAmpersandInPostTitleOnce() {
+    $postId = $this->createPostWithTitle('Sales &amp; Marketing');
+    $out = $this->processPostTitle($postId);
+    verify($out)->equals('Sales & Marketing');
+  }
+
+  public function testItDecodesApostropheInPostTitleOnce() {
+    $postId = $this->createPostWithTitle('Rock &#039;n&#039; Roll');
+    $out = $this->processPostTitle($postId);
+    verify($out)->equals("Rock 'n' Roll");
+  }
+
+  public function testItTruncatesPostTitleAtAnUnspacedLessThanSign() {
+    // Known, accepted consequence of stripping tags after decoding entities:
+    // a decoded '<' immediately followed by a non-space character reads as
+    // the start of a tag, so everything from it on is stripped.
+    $postId = $this->createPostWithTitle('Save &lt;50% this week');
+    $out = $this->processPostTitle($postId);
+    verify($out)->equals('Save');
+  }
+
+  public function testItDoesNotTruncatePostTitleAtALessThanSignFollowedBySpace() {
+    // A '<' followed by whitespace is not mistaken for a tag start, so it survives.
+    $postId = $this->createPostWithTitle('Price &lt; $10');
+    $out = $this->processPostTitle($postId);
+    verify($out)->equals('Price < $10');
   }
 
   public function itCanProcessPostNotificationNewsletterNumberShortcode() {
@@ -639,13 +703,35 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function testItCanProcessSiteTitleShortcode() {
-    $siteName = "Test site name with characters like ', <, >, &";
+    $siteName = "Test site name with characters like ', & and more";
     update_option('blogname', $siteName);
 
     $shortcode = '[site:title]';
     $shortcodesObject = $this->shortcodesObject;
     $result = $shortcodesObject->process([$shortcode]);
     verify($result[0])->equals($siteName);
+  }
+
+  public function testItDoesNotTurnEncodedSiteTitleIntoMarkup() {
+    update_option('blogname', '<img src=x onerror=alert(1)>Site');
+    verify(get_option('blogname'))->equals('&lt;img src=x onerror=alert(1)&gt;Site');
+
+    $shortcode = '[site:title]';
+    $shortcodesObject = $this->shortcodesObject;
+    $result = $shortcodesObject->process([$shortcode]);
+    verify($result[0])->equals('Site');
+    verify($result[0])->stringNotContainsString('<img');
+  }
+
+  public function testItTruncatesSiteTitleAtAnUnspacedLessThanSign() {
+    // Same known limitation as post titles: an unspaced '<' after decoding
+    // reads as the start of a tag and everything from it on is stripped.
+    update_option('blogname', 'Save &lt;50% this week');
+
+    $shortcode = '[site:title]';
+    $shortcodesObject = $this->shortcodesObject;
+    $result = $shortcodesObject->process([$shortcode]);
+    verify($result[0])->equals('Save');
   }
 
   public function testItCanProcessSiteHomepageLinkShortcode() {
@@ -675,11 +761,30 @@ class ShortcodesTest extends \MailPoetTest {
   public function _createWPPost() {
     // Because when a user with role author publish a post containing in the title the character "&", the title is saved as "&amp;"
     $data = [
-      'post_title' => 'Sample Post &amp;, &lt;, &gt;, <strong>strong</strong>',
+      'post_title' => 'Sample Post &amp; <strong>strong</strong>',
       'post_content' => 'contents',
       'post_status' => 'publish',
     ];
     return wp_insert_post($data);
+  }
+
+  private function createPostWithTitle(string $title): int {
+    $postId = wp_insert_post([
+      'post_title' => $title,
+      'post_content' => 'contents',
+      'post_status' => 'publish',
+    ]);
+    $this->additionalPostIds[] = $postId;
+    $post = get_post($postId);
+    $this->assertInstanceOf(WP_Post::class, $post);
+    verify($post->post_title)->equals($title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    return $postId;
+  }
+
+  private function processPostTitle(int $postId): string {
+    $content = '<a data-post-id="' . $postId . '" href="#">x</a>';
+    $result = $this->shortcodesObject->process(['[newsletter:post_title]'], $content);
+    return $result[0];
   }
 
   public function _createWPUser() {
@@ -729,5 +834,9 @@ class ShortcodesTest extends \MailPoetTest {
   public function cleanup() {
     if ($this->wPPost) wp_delete_post($this->wPPost, true);
     if ($this->wPUser) wp_delete_user($this->wPUser->ID);
+    foreach ($this->additionalPostIds as $postId) {
+      wp_delete_post($postId, true);
+    }
+    $this->additionalPostIds = [];
   }
 }

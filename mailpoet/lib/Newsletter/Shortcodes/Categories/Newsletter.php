@@ -43,11 +43,9 @@ class Newsletter implements CategoryInterface {
         $postIds = array_unique($posts[1]);
         $latestPost = (!empty($postIds)) ? $this->getLatestWPPost($postIds) : null;
         if ($latestPost) {
-          // When a user with role author publish a post containing "&" in the title, the character is saved as "&amp;" in the database.
-          // Removing HTML tags from the title because
-          $title = $this->wp->wpStripAllTags($latestPost['post_title']);
-          // Decoding special characters such as &amp; to &, etc.
-          return htmlspecialchars_decode($title, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
+          // Titles are stored entity-encoded for users without unfiltered_html, so decode first and strip after so decoding never creates markup.
+          $title = htmlspecialchars_decode($latestPost['post_title'], ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
+          return $this->wp->wpStripAllTags($title);
         }
         return null;
 
