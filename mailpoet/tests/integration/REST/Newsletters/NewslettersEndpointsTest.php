@@ -227,6 +227,36 @@ class NewslettersEndpointsTest extends Test {
     $this->assertSame(400, $errorData['status']);
   }
 
+  public function testBulkDeleteIgnoresConfirmationEmailInSelection(): void {
+    $standard = (new NewsletterFactory())
+      ->withSubject('BulkStandard_' . uniqid())
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->create();
+    $confirmationEmail = (new NewsletterFactory())
+      ->withSubject('BulkConfirmation_' . uniqid())
+      ->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)
+      ->create();
+    $standardId = (int)$standard->getId();
+    $confirmationEmailId = (int)$confirmationEmail->getId();
+
+    $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+      'action' => 'delete',
+      'type' => NewsletterEntity::TYPE_STANDARD,
+      'selection' => [$standardId, $confirmationEmailId],
+    ]]);
+
+    $this->assertIsArray($response);
+    $payload = $response['data'];
+    $this->assertIsArray($payload);
+    $this->assertSame(1, $payload['count']);
+
+    $this->assertNull($this->newslettersRepository->findOneById($standardId));
+    $this->assertInstanceOf(
+      NewsletterEntity::class,
+      $this->newslettersRepository->findOneById($confirmationEmailId)
+    );
+  }
+
   public function testStatusEndpointRejectsEmptyStatus(): void {
     $newsletter = (new NewsletterFactory())
       ->withSubject('Status_' . uniqid())

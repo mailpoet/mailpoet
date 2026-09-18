@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter;
 
+use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterQueueTask;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Entities\NewsletterEntity;
@@ -311,7 +312,8 @@ class NewsletterSaveController {
 
     $newsletter = $this->newslettersRepository->findOneById((int)$data['id']);
     if (!$newsletter) {
-      throw new NotFoundException('Newsletter not found');
+      throw (new NotFoundException('Newsletter not found'))
+        ->withError(APIError::NOT_FOUND, __('This email does not exist.', 'mailpoet'));
     }
     return $newsletter;
   }

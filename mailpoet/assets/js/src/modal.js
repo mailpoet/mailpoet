@@ -1,6 +1,7 @@
 /* eslint-disable func-names */
 import jQuery from 'jquery';
 import Handlebars from 'handlebars';
+import { __ } from '@wordpress/i18n';
 
 var closeModalImage =
   '<svg viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">' +
@@ -137,6 +138,7 @@ export const MailPoetModal = {
   },
   init: function (options) {
     var modal;
+    var $accessiblePopup;
     if (this.initialized === true) {
       this.close();
     }
@@ -164,6 +166,21 @@ export const MailPoetModal = {
           Boolean(this.options.title),
         );
         jQuery('#mailpoet_popup_title h2').html(this.options.title);
+
+        // accessibility: dialog role and label
+        $accessiblePopup = jQuery('#mailpoet_popup');
+        $accessiblePopup.attr({ role: 'dialog', 'aria-modal': 'true' });
+        if (this.options.title) {
+          $accessiblePopup.removeAttr('aria-label');
+          $accessiblePopup.attr('aria-labelledby', 'mailpoet_popup_title');
+        } else {
+          $accessiblePopup.removeAttr('aria-labelledby');
+          $accessiblePopup.attr('aria-label', __('Dialog', 'mailpoet'));
+        }
+        jQuery('#mailpoet_modal_close').attr(
+          'aria-label',
+          __('Close', 'mailpoet'),
+        );
       } else if (this.options.type === 'panel') {
         // create panel
         jQuery('#mailpoet_modal_overlay').after(
@@ -260,10 +277,25 @@ export const MailPoetModal = {
       }.bind(this),
     );
 
+    // trap keyboard focus inside the popup
+    jQuery(document).on(
+      'keydown.mailpoet_modal',
+      function (e) {
+        if (this.opened === false || this.options.type !== 'popup') {
+          return true;
+        }
+        if (e.key === 'Tab' || e.keyCode === 9) {
+          this.handleTabTrap(e);
+        }
+        return true;
+      }.bind(this),
+    );
+
     return this;
   },
   removeEvents: function () {
     jQuery(document).off('keyup.mailpoet_modal');
+    jQuery(document).off('keydown.mailpoet_modal');
     jQuery(window).off('resize.mailpoet_modal');
     jQuery('#mailpoet_modal_close').off('click');
     if (this.options.overlay === true) {
@@ -271,6 +303,114 @@ export const MailPoetModal = {
     }
 
     return this;
+  },
+  isSingleElementVisible: function (el) {
+    // offsetParent/getClientRects rely on layout, which jsdom (our test
+    // environment) never computes, so they always read as hidden there.
+    // Computed style is layout-independent and works in both browsers and jsdom.
+    var style = window.getComputedStyle(el);
+    if (el.hidden) {
+      return false;
+    }
+    if (!style) {
+      return true;
+    }
+    return style.display !== 'none' && style.visibility !== 'hidden';
+  },
+  isElementVisible: function (el, boundary) {
+    // A hidden ancestor (e.g. a conditionally jQuery.hide()'d wrapper) hides
+    // an element even though the element's own computed style looks visible,
+    // so walk up to the popup boundary checking every ancestor too.
+    var node = el;
+    while (node && node !== boundary) {
+      if (!this.isSingleElementVisible(node)) {
+        return false;
+      }
+      node = node.parentElement;
+    }
+    return true;
+  },
+  getFocusableElements: function () {
+    var selector =
+      'a[href], button:not([disabled]), ' +
+      'input:not([disabled]):not([type="hidden"]), ' +
+      'select:not([disabled]), textarea:not([disabled]), ' +
+      '[tabindex]:not([tabindex="-1"])';
+    var popup = document.getElementById('mailpoet_popup');
+    var elements;
+    var self = this;
+    if (!popup) {
+      return [];
+    }
+    elements = Array.prototype.slice.call(popup.querySelectorAll(selector));
+    return elements.filter(function (el) {
+      // tag-specific selector parts (a[href], button, input, …) also match
+      // elements with tabindex="-1", which are deliberately excluded from
+      // sequential keyboard navigation.
+      return el.tabIndex >= 0 && self.isElementVisible(el, popup);
+    });
+  },
+  handleTabTrap: function (e) {
+    var popup = document.getElementById('mailpoet_popup');
+    var target = e.target;
+    var isInsidePopup;
+    var focusableOutside;
+    var focusableElements;
+    var first;
+    var last;
+
+    if (!popup) {
+      return;
+    }
+
+    isInsidePopup = popup.contains(target);
+
+    if (!isInsidePopup) {
+      if (target && target.closest && target.closest('.media-modal')) {
+        return;
+      }
+      focusableOutside = this.getFocusableElements();
+      e.preventDefault();
+      if (focusableOutside.length > 0) {
+        focusableOutside[0].focus();
+      } else {
+        popup.focus();
+      }
+      return;
+    }
+
+    focusableElements = this.getFocusableElements();
+    if (focusableElements.length === 0) {
+      e.preventDefault();
+      popup.focus();
+      return;
+    }
+
+    first = focusableElements[0];
+    last = focusableElements[focusableElements.length - 1];
+
+    // When focus sits on the popup container itself (no initialFocus was
+    // set), it isn't one of the focusable elements inside it, so it never
+    // matches `first`/`last` below — trap it explicitly in both directions.
+    if (target === popup) {
+      e.preventDefault();
+      if (e.shiftKey) {
+        last.focus();
+      } else {
+        first.focus();
+      }
+      return;
+    }
+
+    if (e.shiftKey) {
+      if (target === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else if (target === last) {
+      e.preventDefault();
+      first.focus();
+    }
   },
   lock: function () {
     this.locked = true;
@@ -425,8 +565,11 @@ export const MailPoetModal = {
     // set modal dimensions
     this.setDimensions();
 
-    // remember the previously focused element
-    this.prevFocus = jQuery(':focus');
+    // remember the previously focused element (popup captures this earlier,
+    // in popup(), so the opener isn't lost when init() closes a prior modal)
+    if (this.options.type !== 'popup') {
+      this.prevFocus = jQuery(':focus');
+    }
 
     // show popup
     jQuery('#mailpoet_' + this.options.type).show();
@@ -462,8 +605,22 @@ export const MailPoetModal = {
     return this;
   },
   focus: function () {
+    var $popup;
+    var $initial;
+    var focused;
     if (this.options.type === 'popup') {
-      jQuery('#mailpoet_' + this.options.type).trigger('focus');
+      $popup = jQuery('#mailpoet_popup');
+      focused = false;
+      if (this.options.initialFocus) {
+        $initial = $popup.find(this.options.initialFocus);
+        if ($initial.length > 0) {
+          $initial.trigger('focus');
+          focused = true;
+        }
+      }
+      if (!focused) {
+        $popup.trigger('focus');
+      }
     } else {
       // panel and subpanel
       jQuery('#mailpoet_' + this.options.type + ' .mailpoet_panel_wrapper')
@@ -517,8 +674,12 @@ export const MailPoetModal = {
     options.type = 'popup';
     // set overlay state
     options.overlay = options.overlay || true;
-    // initialize modal
+    // initialize modal (closes a previously open modal, if any, restoring
+    // focus to that modal's own opener first)
     this.init(options);
+    // capture the focused element after init() so a prior modal's close
+    // doesn't leave us pointing at a control that init() just removed
+    this.prevFocus = document.activeElement;
     // open modal
     this.open();
 
@@ -682,6 +843,11 @@ export const MailPoetModal = {
     return this;
   },
   close: function () {
+    // read focus-restoration state before destroy()/options reset touch it
+    var returnFocusOption = this.options.returnFocus;
+    var prevFocusValue = this.prevFocus;
+    var modalType = this.options.type;
+
     if (this.isLocked() === true) {
       return this;
     }
@@ -717,17 +883,86 @@ export const MailPoetModal = {
     // destroy modal element
     this.destroy();
 
-    // restore the previously focused element
-    if (this.prevFocus !== undefined) {
-      this.prevFocus.focus();
-    }
+    // restore focus to the opener, a requested target, or the page heading
+    this.restoreFocus(prevFocusValue, returnFocusOption, modalType);
 
     // reset options
     this.options = {
       onSuccess: null,
       onCancel: null,
     };
+    this.prevFocus = null;
 
     return this;
+  },
+  toFocusableElement: function (value) {
+    if (!value) {
+      return null;
+    }
+    if (value instanceof Element) {
+      return value;
+    }
+    // support the jQuery-wrapped values used for panels
+    if (value.jquery && value.length > 0) {
+      return value.get(0);
+    }
+    return null;
+  },
+  resolveReturnFocus: function (returnFocus) {
+    if (!returnFocus) {
+      return null;
+    }
+    if (typeof returnFocus === 'function') {
+      return this.toFocusableElement(returnFocus());
+    }
+    if (typeof returnFocus === 'string') {
+      return document.querySelector(returnFocus);
+    }
+    return this.toFocusableElement(returnFocus);
+  },
+  restoreFocus: function (prevFocusValue, returnFocusOption, modalType) {
+    var prevFocusElement = this.toFocusableElement(prevFocusValue);
+    var returnFocusElement;
+    var heading;
+    // Safari doesn't focus buttons on mouse click, and popups can also be
+    // opened from script with nothing focused. In both cases the "captured
+    // opener" is document.body, which is always in the DOM, so treating it
+    // as a valid opener would skip the returnFocus/heading fallback chain
+    // below. Panels keep their original behaviour (restore prevFocus if
+    // present, even if it's body, else do nothing).
+    var prevFocusIsUnfocusedBody =
+      modalType === 'popup' &&
+      (prevFocusElement === document.body ||
+        prevFocusElement === document.documentElement);
+
+    if (
+      prevFocusElement &&
+      document.contains(prevFocusElement) &&
+      !prevFocusIsUnfocusedBody
+    ) {
+      prevFocusElement.focus();
+      return;
+    }
+
+    // The returnFocus -> page heading fallback chain is a popup-only
+    // feature. Panels/subpanels (legacy editor side panels) keep their
+    // original behaviour: restore prevFocus if present, else do nothing.
+    if (modalType !== 'popup') {
+      return;
+    }
+
+    returnFocusElement = this.resolveReturnFocus(returnFocusOption);
+    if (returnFocusElement && document.contains(returnFocusElement)) {
+      returnFocusElement.focus();
+      return;
+    }
+
+    heading = document.querySelector('.wrap h1');
+    if (heading) {
+      if (!heading.hasAttribute('tabindex')) {
+        heading.setAttribute('tabindex', '-1');
+      }
+      heading.focus();
+    }
   },
 };
