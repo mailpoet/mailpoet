@@ -3,8 +3,14 @@
 namespace MailPoet\Test\Automation\Integrations\MailPoet;
 
 use MailPoet\Automation\Integrations\MailPoet\ContextFactory;
+use MailPoet\Config\ServicesChecker;
+use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Services\AuthorizedSenderDomainController;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
+use MailPoet\Settings\UserFlagsRepository;
 
 class ContextFactoryTest extends \MailPoetTest {
   private ContextFactory $contextFactory;
@@ -16,9 +22,18 @@ class ContextFactoryTest extends \MailPoetTest {
   public function _before(): void {
     parent::_before();
     wp_set_current_user(1);
-    $this->contextFactory = $this->diContainer->get(ContextFactory::class);
     $this->settings = $this->diContainer->get(SettingsController::class);
-    $this->userFlags = $this->diContainer->get(UserFlagsController::class);
+    // UserFlagsController is not public in the container and caches the flags it loaded
+    $this->userFlags = new UserFlagsController($this->diContainer->get(UserFlagsRepository::class));
+    $this->contextFactory = new ContextFactory(
+      $this->diContainer->get(SegmentsRepository::class),
+      $this->diContainer->get(Bridge::class),
+      $this->diContainer->get(ServicesChecker::class),
+      $this->diContainer->get(AuthorizedSenderDomainController::class),
+      $this->diContainer->get(AuthorizedEmailsController::class),
+      $this->settings,
+      $this->userFlags
+    );
     $this->userFlags->delete('remember_email_editor_choice');
     $this->userFlags->delete('last_email_editor_choice');
   }
