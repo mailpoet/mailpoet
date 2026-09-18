@@ -229,7 +229,7 @@ class Helper {
 
   public function getRawPrice($price, array $args = []) {
     $htmlPrice = $this->wcPrice($price, $args);
-    return html_entity_decode(strip_tags($htmlPrice), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
+    return strip_tags(html_entity_decode($htmlPrice, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401));
   }
 
   public function getAllowedCountries(): array {
