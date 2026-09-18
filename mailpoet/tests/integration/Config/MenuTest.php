@@ -7,6 +7,9 @@ use MailPoet\Config\Menu;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Mailer\Mailer;
+use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class MenuTest extends \MailPoetTest {
@@ -39,6 +42,29 @@ class MenuTest extends \MailPoetTest {
     verify($result)->false();
   }
 
+  public function testItReturnsAutomationsSlugForAutomationContext() {
+    $menu = $this->diContainer->get(Menu::class);
+
+    $_GET['context'] = 'automation';
+    verify($menu->getPageFromContext())->equals(Menu::AUTOMATIONS_PAGE_SLUG);
+
+    $_GET['context'] = " automation\n";
+    verify($menu->getPageFromContext())->equals(Menu::AUTOMATIONS_PAGE_SLUG);
+  }
+
+  public function testItIgnoresUnknownOrNonStringContext() {
+    $menu = $this->diContainer->get(Menu::class);
+
+    $_GET['context'] = 'something-else';
+    verify($menu->getPageFromContext())->null();
+
+    $_GET['context'] = ['automation'];
+    verify($menu->getPageFromContext())->null();
+
+    unset($_GET['context']);
+    verify($menu->getPageFromContext())->null();
+  }
+
   public function testItChecksPremiumKey() {
     $menu = $this->diContainer->get(Menu::class);
 
@@ -58,6 +84,291 @@ class MenuTest extends \MailPoetTest {
     );
     $menu->checkPremiumKey($checker);
     verify($menu->premiumKeyValid)->false();
+  }
+
+  public function testItChecksMSSKeyOnMailPoetPage() {
+    $menu = $this->diContainer->get(Menu::class);
+
+    $_REQUEST['page'] = 'mailpoet-newsletters';
+    $checker = Stub::make(
+      new ServicesChecker(),
+      ['isMailPoetAPIKeyExpiring' => true],
+      $this
+    );
+    $menu->checkMSSKey($checker);
+    verify($menu->mssKeyExpiring)->true();
+
+    $checker = Stub::make(
+      new ServicesChecker(),
+      ['isMailPoetAPIKeyExpiring' => false],
+      $this
+    );
+    $menu->checkMSSKey($checker);
+    verify($menu->mssKeyExpiring)->false();
+  }
+
+  public function testItSuppressesPremiumExpiringNoticeWhenMSSExpiringWithSameKey() {
+    $menu = $this->diContainer->get(Menu::class);
+    $_REQUEST['page'] = 'mailpoet-newsletters';
+
+    $suppressArgument = null;
+    $checker = Stub::make(
+      new ServicesChecker(),
+      [
+        'isMailPoetAPIKeyExpiring' => true,
+        'isSameKeyUsedForMSSAndPremium' => true,
+        'isPremiumKeyValid' => function ($displayErrorNotice, $suppressExpiringNotice = false) use (&$suppressArgument) {
+          $suppressArgument = $suppressExpiringNotice;
+          return true;
+        },
+      ],
+      $this
+    );
+
+    $menu->checkMSSKey($checker);
+    $menu->checkPremiumKey($checker);
+
+    unset($_REQUEST['page']);
+    verify($suppressArgument)->true();
+  }
+
+  public function testItKeepsPremiumExpiringNoticeWhenKeysDiffer() {
+    $menu = $this->diContainer->get(Menu::class);
+    $_REQUEST['page'] = 'mailpoet-newsletters';
+
+    $suppressArgument = null;
+    $checker = Stub::make(
+      new ServicesChecker(),
+      [
+        'isMailPoetAPIKeyExpiring' => true,
+        'isSameKeyUsedForMSSAndPremium' => false,
+        'isPremiumKeyValid' => function ($displayErrorNotice, $suppressExpiringNotice = false) use (&$suppressArgument) {
+          $suppressArgument = $suppressExpiringNotice;
+          return true;
+        },
+      ],
+      $this
+    );
+
+    $menu->checkMSSKey($checker);
+    $menu->checkPremiumKey($checker);
+
+    unset($_REQUEST['page']);
+    verify($suppressArgument)->false();
+  }
+
+  public function testItKeepsPremiumExpiringNoticeWhenMSSNotExpiring() {
+    $menu = $this->diContainer->get(Menu::class);
+    $_REQUEST['page'] = 'mailpoet-newsletters';
+
+    $suppressArgument = null;
+    $checker = Stub::make(
+      new ServicesChecker(),
+      [
+        'isMailPoetAPIKeyExpiring' => false,
+        'isSameKeyUsedForMSSAndPremium' => true,
+        'isPremiumKeyValid' => function ($displayErrorNotice, $suppressExpiringNotice = false) use (&$suppressArgument) {
+          $suppressArgument = $suppressExpiringNotice;
+          return true;
+        },
+      ],
+      $this
+    );
+
+    $menu->checkMSSKey($checker);
+    $menu->checkPremiumKey($checker);
+
+    unset($_REQUEST['page']);
+    verify($suppressArgument)->false();
+  }
+
+  public function testItRunsMSSCheckBeforePremiumCheckInInit() {
+    $menu = $this->diContainer->get(Menu::class);
+
+    $suppressArgument = null;
+    $checker = Stub::make(
+      new ServicesChecker(),
+      [
+        'isMailPoetAPIKeyExpiring' => true,
+        'isSameKeyUsedForMSSAndPremium' => true,
+        'isPremiumKeyValid' => function ($displayErrorNotice, $suppressExpiringNotice = false) use (&$suppressArgument) {
+          $suppressArgument = $suppressExpiringNotice;
+          return true;
+        },
+      ],
+      $this
+    );
+
+    $servicesCheckerProperty = new \ReflectionProperty(Menu::class, 'servicesChecker');
+    $servicesCheckerProperty->setAccessible(true);
+    $previousChecker = $servicesCheckerProperty->getValue($menu);
+    $servicesCheckerProperty->setValue($menu, $checker);
+
+    $_REQUEST['page'] = 'mailpoet-newsletters';
+    try {
+      $menu->init();
+    } finally {
+      $servicesCheckerProperty->setValue($menu, $previousChecker);
+    }
+
+    verify($suppressArgument)->true();
+  }
+
+  public function testItPassesDisplayNoticeFalseWhenNotOnMailPoetPageOrPluginsPage() {
+    $menu = $this->diContainer->get(Menu::class);
+
+    unset($_REQUEST['page']);
+    $_SERVER['SCRIPT_NAME'] = '/wp-admin/index.php';
+
+    $displayErrorNoticeArgument = null;
+    $checker = Stub::make(
+      new ServicesChecker(),
+      [
+        'isMailPoetAPIKeyExpiring' => function ($displayErrorNotice) use (&$displayErrorNoticeArgument) {
+          $displayErrorNoticeArgument = $displayErrorNotice;
+          return false;
+        },
+      ],
+      $this
+    );
+    $menu->checkMSSKey($checker);
+    verify($displayErrorNoticeArgument)->false();
+  }
+
+  public function testItRendersExpiringMSSNoticeOnMailPoetAdminPage() {
+    $settings = SettingsController::getInstance();
+    $settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, [
+      'method' => 'MailPoet',
+      'mailpoet_api_key' => 'some_key',
+    ]);
+    $settings->set(Bridge::API_KEY_STATE_SETTING_NAME, [
+      'state' => Bridge::KEY_EXPIRING,
+      'data' => ['expire_at' => date('c')],
+    ]);
+    unset($_SERVER['SCRIPT_NAME']);
+    $_REQUEST['page'] = 'mailpoet-newsletters';
+
+    $menu = $this->diContainer->get(Menu::class);
+    $output = $this->renderAdminNotices(function () use ($menu) {
+      $menu->checkMSSKey();
+    });
+
+    unset($_REQUEST['page']);
+    verify($output)->stringContainsString('Your MailPoet sending plan expires on');
+  }
+
+  public function testItDoesNotRenderExpiringMSSNoticeOffMailPoetAdminPage() {
+    $settings = SettingsController::getInstance();
+    $settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, [
+      'method' => 'MailPoet',
+      'mailpoet_api_key' => 'some_key',
+    ]);
+    $settings->set(Bridge::API_KEY_STATE_SETTING_NAME, [
+      'state' => Bridge::KEY_EXPIRING,
+      'data' => ['expire_at' => date('c')],
+    ]);
+    unset($_REQUEST['page']);
+    $_SERVER['SCRIPT_NAME'] = '/wp-admin/index.php';
+
+    $menu = $this->diContainer->get(Menu::class);
+    $output = $this->renderAdminNotices(function () use ($menu) {
+      $menu->checkMSSKey();
+    });
+
+    unset($_SERVER['SCRIPT_NAME']);
+    verify($output)->equals('');
+  }
+
+  public function testItDoesNotRenderPurchaseKeyNoticeFromEarlyMSSCheckWhenKeyInvalid() {
+    $settings = SettingsController::getInstance();
+    $settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, [
+      'method' => 'MailPoet',
+      'mailpoet_api_key' => 'some_key',
+    ]);
+    $settings->set(Bridge::API_KEY_STATE_SETTING_NAME, [
+      'state' => Bridge::KEY_INVALID,
+    ]);
+    unset($_SERVER['SCRIPT_NAME']);
+    $_REQUEST['page'] = 'mailpoet-newsletters';
+
+    $menu = $this->diContainer->get(Menu::class);
+    $output = $this->renderAdminNotices(function () use ($menu) {
+      $menu->checkMSSKey();
+    });
+
+    unset($_REQUEST['page']);
+    verify($output)->equals('');
+  }
+
+  public function testItDoesNotRenderExpiringMSSNoticeWhenMSSIsNotSendingMethod() {
+    $settings = SettingsController::getInstance();
+    $settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, [
+      'method' => 'PHPMail',
+    ]);
+    $settings->set(Bridge::API_KEY_STATE_SETTING_NAME, [
+      'state' => Bridge::KEY_EXPIRING,
+      'data' => ['expire_at' => date('c')],
+    ]);
+    unset($_SERVER['SCRIPT_NAME']);
+    $_REQUEST['page'] = 'mailpoet-newsletters';
+
+    $menu = $this->diContainer->get(Menu::class);
+    $output = $this->renderAdminNotices(function () use ($menu) {
+      $menu->checkMSSKey();
+    });
+
+    unset($_REQUEST['page']);
+    verify($output)->equals('');
+  }
+
+  public function testItRendersExpiringMSSNoticeViaInitOnMailPoetAdminPage() {
+    $settings = SettingsController::getInstance();
+    $settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, [
+      'method' => 'MailPoet',
+      'mailpoet_api_key' => 'some_key',
+    ]);
+    $settings->set(Bridge::API_KEY_STATE_SETTING_NAME, [
+      'state' => Bridge::KEY_EXPIRING,
+      'data' => ['expire_at' => date('c')],
+    ]);
+    unset($_SERVER['SCRIPT_NAME']);
+    $_REQUEST['page'] = 'mailpoet-newsletters';
+
+    $menu = $this->diContainer->get(Menu::class);
+    $output = $this->renderAdminNotices(function () use ($menu) {
+      $menu->init();
+    });
+
+    verify($output)->stringContainsString('Your MailPoet sending plan expires on');
+  }
+
+  public function testItRendersExpiringMSSNoticeViaInitOnPluginsPage() {
+    $settings = SettingsController::getInstance();
+    $settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, [
+      'method' => 'MailPoet',
+      'mailpoet_api_key' => 'some_key',
+    ]);
+    $settings->set(Bridge::API_KEY_STATE_SETTING_NAME, [
+      'state' => Bridge::KEY_EXPIRING,
+      'data' => ['expire_at' => date('c')],
+    ]);
+    unset($_REQUEST['page']);
+    $_SERVER['SCRIPT_NAME'] = '/wp-admin/plugins.php';
+
+    $menu = $this->diContainer->get(Menu::class);
+    $output = $this->renderAdminNotices(function () use ($menu) {
+      $menu->init();
+    });
+
+    verify($output)->stringContainsString('Your MailPoet sending plan expires on');
+  }
+
+  private function renderAdminNotices(callable $trigger): string {
+    remove_all_actions('admin_notices');
+    $trigger();
+    ob_start();
+    do_action('admin_notices');
+    return (string)ob_get_clean();
   }
 
   public function testItHighlightsAutomationsWhenEditingAutomationEmail() {
