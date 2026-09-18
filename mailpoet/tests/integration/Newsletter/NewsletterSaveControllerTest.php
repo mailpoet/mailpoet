@@ -15,8 +15,10 @@ use MailPoet\Entities\WpPostEntity;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -438,6 +440,27 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
 
     verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE))->equals('1');
     verify($duplicate->getOptionValue(NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE))->null();
+  }
+
+  public function testItDoesNotDuplicateScheduleOptions(): void {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SCHEDULED);
+    (new NewsletterOption())->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_IS_SCHEDULED => '1',
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_AT => '2030-01-01 10:00:00',
+      NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE => TimeZoneCampaignScheduler::SCHEDULE_MODE_SUBSCRIBER_TIMEZONE,
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_DATE => '2030-01-01',
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_TIME => '10:00',
+    ]);
+
+    $duplicate = $this->saveController->duplicate($newsletter);
+
+    verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE))
+      ->equals(TimeZoneCampaignScheduler::SCHEDULE_MODE_SUBSCRIBER_TIMEZONE);
+    verify($duplicate->getOptionValue(NewsletterOptionFieldEntity::NAME_IS_SCHEDULED))->null();
+    verify($duplicate->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT))->null();
+    verify($duplicate->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE))->null();
+    verify($duplicate->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_DATE))->null();
+    verify($duplicate->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_TIME))->null();
   }
 
   public function testItDuplicatesNewsletterWithAssociatedPost() {
