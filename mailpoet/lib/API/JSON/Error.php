@@ -10,6 +10,8 @@ final class Error {
   const FORBIDDEN = 'forbidden';
   const NOT_FOUND = 'not_found';
   const REINSTALL_PLUGIN = 'reinstall_plugin';
+  const UPDATE_IN_PROGRESS = 'update_in_progress';
+  const UPDATE_FAILED = 'update_failed';
 
   private function __construct() {
 
