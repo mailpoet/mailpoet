@@ -220,6 +220,22 @@ class ShortcodesTest extends \MailPoetTest {
     verify($out)->equals("Rock 'n' Roll");
   }
 
+  public function testItTruncatesPostTitleAtAnUnspacedLessThanSign() {
+    // Known, accepted consequence of stripping tags after decoding entities:
+    // a decoded '<' immediately followed by a non-space character reads as
+    // the start of a tag, so everything from it on is stripped.
+    $postId = $this->createPostWithTitle('Save &lt;50% this week');
+    $out = $this->processPostTitle($postId);
+    verify($out)->equals('Save');
+  }
+
+  public function testItDoesNotTruncatePostTitleAtALessThanSignFollowedBySpace() {
+    // A '<' followed by whitespace is not mistaken for a tag start, so it survives.
+    $postId = $this->createPostWithTitle('Price &lt; $10');
+    $out = $this->processPostTitle($postId);
+    verify($out)->equals('Price < $10');
+  }
+
   public function itCanProcessPostNotificationNewsletterNumberShortcode() {
     // create first post notification
     $postNotificationHistory = $this->_createNewsletter(
@@ -705,6 +721,17 @@ class ShortcodesTest extends \MailPoetTest {
     $result = $shortcodesObject->process([$shortcode]);
     verify($result[0])->equals('Site');
     verify($result[0])->stringNotContainsString('<img');
+  }
+
+  public function testItTruncatesSiteTitleAtAnUnspacedLessThanSign() {
+    // Same known limitation as post titles: an unspaced '<' after decoding
+    // reads as the start of a tag and everything from it on is stripped.
+    update_option('blogname', 'Save &lt;50% this week');
+
+    $shortcode = '[site:title]';
+    $shortcodesObject = $this->shortcodesObject;
+    $result = $shortcodesObject->process([$shortcode]);
+    verify($result[0])->equals('Save');
   }
 
   public function testItCanProcessSiteHomepageLinkShortcode() {
