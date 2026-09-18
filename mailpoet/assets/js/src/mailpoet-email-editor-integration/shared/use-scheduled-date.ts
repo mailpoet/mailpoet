@@ -1,5 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { date as formatWpDate, dateI18n, getSettings } from '@wordpress/date';
+import { date as formatWpDate } from '@wordpress/date';
 import { select, dispatch } from '@wordpress/data';
 import { store as coreDataStore, useEntityProp } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
@@ -13,6 +13,7 @@ import {
   getScheduleModeOptionChanges,
 } from 'common/newsletter-schedule-mode';
 import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
+import { formatScheduledDate } from './format-scheduled-date';
 
 type UseScheduledDate = {
   scheduledDate: string | null;
@@ -92,7 +93,6 @@ export function useScheduledDate(): UseScheduledDate {
   // consistent with what the picker shows.
   const effectiveLocalDate = scheduledLocalDate || getSiteTomorrowDate();
   const effectiveLocalTime = scheduledLocalTime || DEFAULT_SCHEDULED_LOCAL_TIME;
-  const settings = getSettings();
 
   const setScheduledDate = (date: string | null) => {
     editMailpoetData({ scheduled_at: date });
@@ -131,11 +131,7 @@ export function useScheduledDate(): UseScheduledDate {
     );
   } else {
     formattedDate = scheduledDate
-      ? dateI18n(
-          settings.formats.datetime,
-          scheduledDate,
-          settings.timezone.string,
-        )
+      ? formatScheduledDate(scheduledDate)
       : __('Immediately', 'mailpoet');
   }
 
