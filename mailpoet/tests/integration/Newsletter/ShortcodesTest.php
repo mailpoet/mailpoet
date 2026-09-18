@@ -45,6 +45,9 @@ class ShortcodesTest extends \MailPoetTest {
   /** @var string */
   private $blognameBackup;
 
+  /** @var int[] */
+  private $additionalPostIds = [];
+
   public function _before() {
     parent::_before();
     $this->cleanup();
@@ -169,7 +172,52 @@ class ShortcodesTest extends \MailPoetTest {
       $shortcodesObject->process(['[newsletter:post_title]'], $content);
     $wpPost = get_post($this->wPPost);
     $this->assertInstanceOf(WP_Post::class, $wpPost);
-    verify($result['0'])->equals('Sample Post &, <, >, strong');
+    verify($result['0'])->equals('Sample Post & strong');
+  }
+
+  public function testItDoesNotTurnEncodedImgTagInPostTitleIntoMarkup() {
+    $postId = $this->createPostWithTitle('&lt;img src=x onerror=alert(1)&gt;Title');
+    $out = $this->processPostTitle($postId);
+    verify($out)->stringNotContainsString('<img');
+    verify($out)->equals('Title');
+  }
+
+  public function testItDoesNotTurnEncodedScriptTagInPostTitleIntoMarkup() {
+    $postId = $this->createPostWithTitle('&lt;script&gt;alert(1)&lt;/script&gt;Title');
+    $out = $this->processPostTitle($postId);
+    verify($out)->equals('Title');
+  }
+
+  public function testItDoesNotTurnNumericEntityTagsInPostTitleIntoMarkup() {
+    // WP pads decimal numeric entities to 3 digits on save (wp_kses_normalize_entities), hence &#060;/&#062;.
+    $postId = $this->createPostWithTitle('&#060;img src=x onerror=alert(1)&#062;Title');
+    $out = $this->processPostTitle($postId);
+    verify($out)->equals('Title');
+  }
+
+  public function testItDoesNotTurnHexEntityTagsInPostTitleIntoMarkup() {
+    $postId = $this->createPostWithTitle('&#x3c;img src=x onerror=alert(1)&#x3e;Title');
+    $out = $this->processPostTitle($postId);
+    verify($out)->equals('Title');
+  }
+
+  public function testItKeepsDoubleEncodedPostTitleMarkupAsText() {
+    $postId = $this->createPostWithTitle('&amp;lt;img src=x&amp;gt;Title');
+    $out = $this->processPostTitle($postId);
+    verify($out)->equals('&lt;img src=x&gt;Title');
+    verify($out)->stringNotContainsString('<img');
+  }
+
+  public function testItDecodesAmpersandInPostTitleOnce() {
+    $postId = $this->createPostWithTitle('Sales &amp; Marketing');
+    $out = $this->processPostTitle($postId);
+    verify($out)->equals('Sales & Marketing');
+  }
+
+  public function testItDecodesApostropheInPostTitleOnce() {
+    $postId = $this->createPostWithTitle('Rock &#039;n&#039; Roll');
+    $out = $this->processPostTitle($postId);
+    verify($out)->equals("Rock 'n' Roll");
   }
 
   public function itCanProcessPostNotificationNewsletterNumberShortcode() {
@@ -675,11 +723,30 @@ class ShortcodesTest extends \MailPoetTest {
   public function _createWPPost() {
     // Because when a user with role author publish a post containing in the title the character "&", the title is saved as "&amp;"
     $data = [
-      'post_title' => 'Sample Post &amp;, &lt;, &gt;, <strong>strong</strong>',
+      'post_title' => 'Sample Post &amp; <strong>strong</strong>',
       'post_content' => 'contents',
       'post_status' => 'publish',
     ];
     return wp_insert_post($data);
+  }
+
+  private function createPostWithTitle(string $title): int {
+    $postId = wp_insert_post([
+      'post_title' => $title,
+      'post_content' => 'contents',
+      'post_status' => 'publish',
+    ]);
+    $this->additionalPostIds[] = $postId;
+    $post = get_post($postId);
+    $this->assertInstanceOf(WP_Post::class, $post);
+    verify($post->post_title)->equals($title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    return $postId;
+  }
+
+  private function processPostTitle(int $postId): string {
+    $content = '<a data-post-id="' . $postId . '" href="#">x</a>';
+    $result = $this->shortcodesObject->process(['[newsletter:post_title]'], $content);
+    return $result[0];
   }
 
   public function _createWPUser() {
@@ -729,5 +796,9 @@ class ShortcodesTest extends \MailPoetTest {
   public function cleanup() {
     if ($this->wPPost) wp_delete_post($this->wPPost, true);
     if ($this->wPUser) wp_delete_user($this->wPUser->ID);
+    foreach ($this->additionalPostIds as $postId) {
+      wp_delete_post($postId, true);
+    }
+    $this->additionalPostIds = [];
   }
 }
