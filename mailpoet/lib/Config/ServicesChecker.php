@@ -100,7 +100,7 @@ class ServicesChecker {
     WPNotice::displayWarning($error);
   }
 
-  public function isPremiumKeyValid($displayErrorNotice = true) {
+  public function isPremiumKeyValid($displayErrorNotice = true, $suppressExpiringNotice = false) {
     $premiumKeySpecified = Bridge::isPremiumKeySpecified();
     $premiumPluginActive = License::getLicense();
     $premiumKey = $this->settings->get(Bridge::PREMIUM_KEY_STATE_SETTING_NAME);
@@ -136,7 +136,7 @@ class ServicesChecker {
       $premiumKey['state'] === Bridge::KEY_EXPIRING
       && !empty($premiumKey['data']['expire_at'])
     ) {
-      if ($displayErrorNotice) {
+      if ($displayErrorNotice && !$suppressExpiringNotice) {
         $dateTime = new DateTime();
         $date = $dateTime->formatDate(strtotime($premiumKey['data']['expire_at']));
         $error = Helpers::replaceLinkTags(
@@ -154,6 +154,12 @@ class ServicesChecker {
     }
 
     return false;
+  }
+
+  public function isSameKeyUsedForMSSAndPremium(): bool {
+    $mssKey = $this->settings->get(Bridge::API_KEY_SETTING_NAME);
+    $premiumKey = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
+    return !empty($mssKey) && $mssKey === $premiumKey;
   }
 
   public function isBundledSubscription(): bool {
