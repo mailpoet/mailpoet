@@ -26,15 +26,17 @@ class EmailApiControllerTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  /** @var string */
-  private $originalTimezone = '';
+  /** @var string|false */
+  private $originalTimezone = false;
 
   public function _before() {
     $this->emailApiController = $this->diContainer->get(EmailApiController::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->settings = $this->diContainer->get(SettingsController::class);
+    // False when the site has no such option, which is different from having
+    // one that is empty, and has to be put back the way it was found.
     $timezone = get_option('timezone_string');
-    $this->originalTimezone = is_string($timezone) ? $timezone : '';
+    $this->originalTimezone = is_string($timezone) ? $timezone : false;
   }
 
   public function testItGetsEmailDataFromNewsletterEntity(): void {
@@ -454,7 +456,11 @@ class EmailApiControllerTest extends \MailPoetTest {
     try {
       $callback();
     } finally {
-      update_option('timezone_string', $previousTimezone);
+      if (is_string($previousTimezone)) {
+        update_option('timezone_string', $previousTimezone);
+      } else {
+        delete_option('timezone_string');
+      }
     }
   }
 
@@ -778,6 +784,11 @@ class EmailApiControllerTest extends \MailPoetTest {
   public function _after() {
     parent::_after();
     $this->truncateEntity(NewsletterEntity::class);
+    if ($this->originalTimezone === false) {
+      delete_option('timezone_string');
+      return;
+    }
+
     update_option('timezone_string', $this->originalTimezone);
   }
 }
