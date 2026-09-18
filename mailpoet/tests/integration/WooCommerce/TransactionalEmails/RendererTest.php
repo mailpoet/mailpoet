@@ -25,8 +25,14 @@ class RendererTest extends \MailPoetTest {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
+  /** @var string */
+  private $blognameBackup;
+
   public function _before() {
     parent::_before();
+    $blogname = get_option('blogname');
+    $this->assertIsString($blogname);
+    $this->blognameBackup = $blogname;
     $this->newsletter = new NewsletterEntity();
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->newsletter->setSubject('WooCommerce Transactional Email');
@@ -111,16 +117,13 @@ class RendererTest extends \MailPoetTest {
         ])]),
       ]),
     ]);
+    update_option('blogname', 'Some &amp; Site Name');
     $this->newslettersRepository->persist($this->newsletter);
     $renderer = $this->getRenderer();
     $renderer->render($this->newsletter, 'Heading Text');
     $html = $renderer->getHTMLAfterContent();
 
-    /** @var string $blogName - for PHPStan */
-    $blogName = get_option('blogname');
-    // [site:title] decodes entities and strips tags, so assert against that, not the raw stored option.
-    $siteName = wp_strip_all_tags(htmlspecialchars_decode(strval($blogName), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401));
-    verify($html)->stringContainsString($siteName); // [site:title]
+    verify($html)->stringContainsString('Some & Site Name'); // [site:title]
     /** @var string $home - for PHPStan */
     $home = get_option('home');
     $siteUrl = strval($home);
@@ -415,6 +418,13 @@ class RendererTest extends \MailPoetTest {
       return trim($matches[1]);
     } else {
       return '';
+    }
+  }
+
+  public function _after() {
+    parent::_after();
+    if (get_option('blogname') !== $this->blognameBackup) {
+      update_option('blogname', $this->blognameBackup);
     }
   }
 }
