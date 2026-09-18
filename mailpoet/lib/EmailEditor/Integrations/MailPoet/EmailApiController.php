@@ -305,9 +305,18 @@ class EmailApiController {
   /**
    * Converts a site-local (or explicitly offset) datetime string, as emitted by the
    * block editor's DateTimePicker, into the UTC string format used for storage.
+   * A date that does not exist, such as 31 February, is reported by the parser as a
+   * warning rather than an error, and would otherwise be stored as the day it rolls
+   * over to.
    */
   private function toUtcOptionValue(string $value): string {
     $date = new \DateTimeImmutable($value, $this->wp->wpTimezone());
+
+    $parseResult = \DateTimeImmutable::getLastErrors();
+    if (is_array($parseResult) && ($parseResult['warning_count'] > 0 || $parseResult['error_count'] > 0)) {
+      throw new \InvalidArgumentException('The date does not exist.');
+    }
+
     return $date->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d H:i:s');
   }
 
