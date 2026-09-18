@@ -26,10 +26,17 @@ class EmailApiControllerTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
+  /** @var string|false */
+  private $originalTimezone = false;
+
   public function _before() {
     $this->emailApiController = $this->diContainer->get(EmailApiController::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->settings = $this->diContainer->get(SettingsController::class);
+    // False when the site has no such option, which is different from having
+    // one that is empty, and has to be put back the way it was found.
+    $timezone = get_option('timezone_string');
+    $this->originalTimezone = is_string($timezone) ? $timezone : false;
   }
 
   public function testItGetsEmailDataFromNewsletterEntity(): void {
@@ -263,34 +270,198 @@ class EmailApiControllerTest extends \MailPoetTest {
   }
 
   public function testItUpdatesScheduledAtAndSetsIsScheduledTo1(): void {
-    $wpPostId = 7;
-    $newsletter = (new NewsletterFactory())
-      ->withWpPostId($wpPostId)
-      ->create();
+    $this->withTimezone('America/Toronto', function () {
+      $wpPostId = 7;
+      $newsletter = (new NewsletterFactory())
+        ->withWpPostId($wpPostId)
+        ->create();
 
-    (new NewsletterOptionField())->findOrCreate(
-      NewsletterOptionFieldEntity::NAME_SCHEDULED_AT,
-      NewsletterEntity::TYPE_STANDARD
-    );
-    (new NewsletterOptionField())->findOrCreate(
-      NewsletterOptionFieldEntity::NAME_IS_SCHEDULED,
-      NewsletterEntity::TYPE_STANDARD
-    );
-    $this->entityManager->flush();
+      (new NewsletterOptionField())->findOrCreate(
+        NewsletterOptionFieldEntity::NAME_SCHEDULED_AT,
+        NewsletterEntity::TYPE_STANDARD
+      );
+      (new NewsletterOptionField())->findOrCreate(
+        NewsletterOptionFieldEntity::NAME_IS_SCHEDULED,
+        NewsletterEntity::TYPE_STANDARD
+      );
+      $this->entityManager->flush();
 
-    $scheduledAt = '2024-12-25 14:30:00';
-    $this->emailApiController->saveEmailData([
-      'id' => $newsletter->getId(),
-      'subject' => 'Test Subject',
-      'preheader' => 'Test Preheader',
-      'scheduled_at' => $scheduledAt,
-    ], new \WP_Post((object)['ID' => $wpPostId]));
+      $scheduledAt = '2024-12-25 14:30:00';
+      $this->emailApiController->saveEmailData([
+        'id' => $newsletter->getId(),
+        'subject' => 'Test Subject',
+        'preheader' => 'Test Preheader',
+        'scheduled_at' => $scheduledAt,
+      ], new \WP_Post((object)['ID' => $wpPostId]));
 
-    $this->entityManager->clear();
-    $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
-    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
-    verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT))->equals($scheduledAt);
-    verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_IS_SCHEDULED))->equals('1');
+      $this->entityManager->clear();
+      $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+      $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+      // Toronto is EST (UTC-5) in December, so 14:30 local is stored as 19:30 UTC.
+      verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT))->equals('2024-12-25 19:30:00');
+      verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_IS_SCHEDULED))->equals('1');
+    });
+  }
+
+  public function testItUpdatesScheduledAtFromTFormUsingDstOffset(): void {
+    $this->withTimezone('America/Toronto', function () {
+      $wpPostId = 71;
+      $newsletter = (new NewsletterFactory())
+        ->withWpPostId($wpPostId)
+        ->create();
+
+      (new NewsletterOptionField())->findOrCreate(
+        NewsletterOptionFieldEntity::NAME_SCHEDULED_AT,
+        NewsletterEntity::TYPE_STANDARD
+      );
+      (new NewsletterOptionField())->findOrCreate(
+        NewsletterOptionFieldEntity::NAME_IS_SCHEDULED,
+        NewsletterEntity::TYPE_STANDARD
+      );
+      $this->entityManager->flush();
+
+      // Summer date: Toronto is EDT (UTC-4), a different offset than December's EST.
+      $scheduledAt = '2024-07-20T10:00:00';
+      $this->emailApiController->saveEmailData([
+        'id' => $newsletter->getId(),
+        'subject' => 'Test Subject',
+        'preheader' => 'Test Preheader',
+        'scheduled_at' => $scheduledAt,
+      ], new \WP_Post((object)['ID' => $wpPostId]));
+
+      $this->entityManager->clear();
+      $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+      $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+      verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT))->equals('2024-07-20 14:00:00');
+    });
+  }
+
+  public function testItUpdatesScheduledAtHonouringExplicitOffset(): void {
+    $this->withTimezone('America/Toronto', function () {
+      $wpPostId = 72;
+      $newsletter = (new NewsletterFactory())
+        ->withWpPostId($wpPostId)
+        ->create();
+
+      (new NewsletterOptionField())->findOrCreate(
+        NewsletterOptionFieldEntity::NAME_SCHEDULED_AT,
+        NewsletterEntity::TYPE_STANDARD
+      );
+      (new NewsletterOptionField())->findOrCreate(
+        NewsletterOptionFieldEntity::NAME_IS_SCHEDULED,
+        NewsletterEntity::TYPE_STANDARD
+      );
+      $this->entityManager->flush();
+
+      // An explicit offset in the value must be honoured instead of the site timezone.
+      $scheduledAt = '2024-12-25T14:30:00+00:00';
+      $this->emailApiController->saveEmailData([
+        'id' => $newsletter->getId(),
+        'subject' => 'Test Subject',
+        'preheader' => 'Test Preheader',
+        'scheduled_at' => $scheduledAt,
+      ], new \WP_Post((object)['ID' => $wpPostId]));
+
+      $this->entityManager->clear();
+      $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+      $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+      verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT))->equals('2024-12-25 14:30:00');
+    });
+  }
+
+  public function testItRejectsADateThatDoesNotExist(): void {
+    $this->withTimezone('America/Toronto', function () {
+      $wpPostId = 74;
+      $newsletter = (new NewsletterFactory())
+        ->withWpPostId($wpPostId)
+        ->create();
+
+      (new NewsletterOptionField())->findOrCreate(
+        NewsletterOptionFieldEntity::NAME_SCHEDULED_AT,
+        NewsletterEntity::TYPE_STANDARD
+      );
+      (new NewsletterOptionField())->findOrCreate(
+        NewsletterOptionFieldEntity::NAME_IS_SCHEDULED,
+        NewsletterEntity::TYPE_STANDARD
+      );
+      $this->entityManager->flush();
+
+      // PHP rolls 30 February over to 1 March instead of refusing it, which
+      // would schedule the email on a day nobody picked.
+      $this->expectException(UnexpectedValueException::class);
+      $this->expectExceptionMessage('Invalid scheduled_at format. Expected a valid datetime string.');
+      $this->emailApiController->saveEmailData([
+        'id' => $newsletter->getId(),
+        'subject' => 'Test Subject',
+        'preheader' => 'Test Preheader',
+        'scheduled_at' => '2024-02-30T10:00:00',
+      ], new \WP_Post((object)['ID' => $wpPostId]));
+    });
+  }
+
+  public function testItReturnsScheduledAtConvertedToSiteLocalOnBothSidesOfDst(): void {
+    $this->withTimezone('America/Toronto', function () {
+      $wpPostId = 73;
+      $newsletter = (new NewsletterFactory())
+        ->withWpPostId($wpPostId)
+        ->create();
+
+      (new NewsletterOptionField())->findOrCreate(
+        NewsletterOptionFieldEntity::NAME_SCHEDULED_AT,
+        NewsletterEntity::TYPE_STANDARD
+      );
+      $this->entityManager->flush();
+
+      (new NewsletterOption())->createMultipleOptions($newsletter, [
+        NewsletterOptionFieldEntity::NAME_SCHEDULED_AT => '2024-12-25 19:30:00',
+      ]);
+
+      $emailData = $this->emailApiController->getEmailData(['id' => $wpPostId]);
+      verify($emailData['scheduled_at'])->equals('2024-12-25T14:30:00');
+
+      (new NewsletterOption())->createMultipleOptions($newsletter, [
+        NewsletterOptionFieldEntity::NAME_SCHEDULED_AT => '2024-07-20 14:00:00',
+      ]);
+
+      $emailData = $this->emailApiController->getEmailData(['id' => $wpPostId]);
+      verify($emailData['scheduled_at'])->equals('2024-07-20T10:00:00');
+    });
+  }
+
+  public function testItReturnsUnparseableStoredScheduledAtRawInsteadOfThrowing(): void {
+    $this->withTimezone('America/Toronto', function () {
+      $wpPostId = 74;
+      $newsletter = (new NewsletterFactory())
+        ->withWpPostId($wpPostId)
+        ->create();
+
+      (new NewsletterOptionField())->findOrCreate(
+        NewsletterOptionFieldEntity::NAME_SCHEDULED_AT,
+        NewsletterEntity::TYPE_STANDARD
+      );
+      $this->entityManager->flush();
+
+      (new NewsletterOption())->createMultipleOptions($newsletter, [
+        NewsletterOptionFieldEntity::NAME_SCHEDULED_AT => 'not-a-real-date',
+      ]);
+
+      $emailData = $this->emailApiController->getEmailData(['id' => $wpPostId]);
+      verify($emailData['scheduled_at'])->equals('not-a-real-date');
+    });
+  }
+
+  private function withTimezone(string $timezone, callable $callback): void {
+    $previousTimezone = get_option('timezone_string');
+    update_option('timezone_string', $timezone);
+    try {
+      $callback();
+    } finally {
+      if (is_string($previousTimezone)) {
+        update_option('timezone_string', $previousTimezone);
+      } else {
+        delete_option('timezone_string');
+      }
+    }
   }
 
   public function testItUpdatesShareVisibility(): void {
@@ -613,5 +784,11 @@ class EmailApiControllerTest extends \MailPoetTest {
   public function _after() {
     parent::_after();
     $this->truncateEntity(NewsletterEntity::class);
+    if ($this->originalTimezone === false) {
+      delete_option('timezone_string');
+      return;
+    }
+
+    update_option('timezone_string', $this->originalTimezone);
   }
 }

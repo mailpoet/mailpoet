@@ -284,6 +284,9 @@ class NewsletterSaveController {
     $ignoredOptions = [
       NewsletterOptionFieldEntity::NAME_IS_SCHEDULED,
       NewsletterOptionFieldEntity::NAME_SCHEDULED_AT,
+      NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE,
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_DATE,
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_TIME,
       NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE,
     ];
     foreach ($newsletter->getOptions() as $newsletterOption) {

@@ -17,6 +17,7 @@ use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\NotFoundException;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Validator\Builder;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class EmailApiController {
@@ -41,6 +42,9 @@ class EmailApiController {
   /** @var ShareVisibility */
   private $shareVisibility;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     NewslettersRepository $newsletterRepository,
     NewsletterUrl $newsletterUrl,
@@ -48,7 +52,8 @@ class EmailApiController {
     NewsletterOptionsRepository $newsletterOptionsRepository,
     NewsletterSegmentRepository $newsletterSegmentRepository,
     EntityManager $entityManager,
-    ShareVisibility $shareVisibility
+    ShareVisibility $shareVisibility,
+    WPFunctions $wp
   ) {
     $this->newsletterRepository = $newsletterRepository;
     $this->newsletterUrl = $newsletterUrl;
@@ -57,6 +62,7 @@ class EmailApiController {
     $this->newsletterSegmentRepository = $newsletterSegmentRepository;
     $this->entityManager = $entityManager;
     $this->shareVisibility = $shareVisibility;
+    $this->wp = $wp;
   }
 
   /**
@@ -80,7 +86,7 @@ class EmailApiController {
       'reply_to_address' => $newsletter ? $newsletter->getReplyToAddress() : '',
       'preview_url' => $this->newsletterUrl->getViewInBrowserUrl($newsletter),
       'deleted_at' => $newsletter && $newsletter->getDeletedAt() !== null ? $newsletter->getDeletedAt()->format('c') : null,
-      'scheduled_at' => $newsletter ? $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT) : null,
+      'scheduled_at' => $newsletter ? $this->toSiteLocal($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT)) : null,
       'schedule_mode' => $newsletter ? $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE) : null,
       'scheduled_local_date' => $newsletter ? $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_DATE) : null,
       'scheduled_local_time' => $newsletter ? $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_TIME) : null,
@@ -277,10 +283,10 @@ class EmailApiController {
   }
 
   private function updateScheduledAtOption($newsletter, $scheduledAtValue): void {
-    // Validate the scheduled_at value
+    // Validate and convert the scheduled_at value from site-local time to UTC
     if ($scheduledAtValue !== null && $scheduledAtValue !== '') {
       try {
-        new \DateTime($scheduledAtValue);
+        $scheduledAtValue = $this->toUtcOptionValue($scheduledAtValue);
       } catch (\Exception $e) {
         throw new UnexpectedValueException('Invalid scheduled_at format. Expected a valid datetime string.');
       }
@@ -294,6 +300,43 @@ class EmailApiController {
       NewsletterOptionFieldEntity::NAME_IS_SCHEDULED,
       $scheduledAtValue !== null && $scheduledAtValue !== '' ? '1' : '0'
     );
+  }
+
+  /**
+   * Converts a site-local (or explicitly offset) datetime string, as emitted by the
+   * block editor's DateTimePicker, into the UTC string format used for storage.
+   * A date that does not exist, such as 31 February, is reported by the parser as a
+   * warning rather than an error, and would otherwise be stored as the day it rolls
+   * over to.
+   */
+  private function toUtcOptionValue(string $value): string {
+    $date = new \DateTimeImmutable($value, $this->wp->wpTimezone());
+
+    $parseResult = \DateTimeImmutable::getLastErrors();
+    if (is_array($parseResult) && ($parseResult['warning_count'] > 0 || $parseResult['error_count'] > 0)) {
+      throw new \InvalidArgumentException('The date does not exist.');
+    }
+
+    return $date->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d H:i:s');
+  }
+
+  /**
+   * Converts a UTC datetime string, as stored in the scheduledAt option, into the
+   * site-local T-form expected by the block editor's DateTimePicker. Falls back to
+   * the raw stored value if it cannot be parsed, since older/legacy rows may contain
+   * non-standard strings (e.g. relative dates) that were never validated on write.
+   */
+  private function toSiteLocal($value) {
+    if ($value === null || $value === '') {
+      return $value;
+    }
+
+    try {
+      $date = new \DateTimeImmutable($value, new \DateTimeZone('UTC'));
+      return $date->setTimezone($this->wp->wpTimezone())->format('Y-m-d\TH:i:s');
+    } catch (\Exception $e) {
+      return $value;
+    }
   }
 
   /**
