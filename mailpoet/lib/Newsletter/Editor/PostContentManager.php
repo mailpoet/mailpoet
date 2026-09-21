@@ -31,7 +31,17 @@ class PostContentManager {
       return '';
     }
 
-    if ($this->hasPassword($post)) {
+    /**
+     * Filters whether the body or excerpt of a password-protected post is included in an email.
+     *
+     * @param bool                 $show Whether to include the content. Default false.
+     * @param \WP_Post|\WC_Product $post The post or WooCommerce product being rendered.
+     * @return bool
+     */
+    if (
+      $this->hasPassword($post)
+      && !$this->wp->applyFilters('mailpoet_newsletter_show_password_protected_post_content', false, $post)
+    ) {
       return '';
     }
 
