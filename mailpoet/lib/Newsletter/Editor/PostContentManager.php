@@ -31,7 +31,9 @@ class PostContentManager {
       return '';
     }
 
-
+    if ($this->hasPassword($post)) {
+      return '';
+    }
 
     if ($this->woocommerceHelper->isWooCommerceActive()) {
       if ($this->isWcProduct($post)) {
@@ -176,6 +178,16 @@ class PostContentManager {
 
   private function isWcProduct($post) {
     return class_exists('\WC_Product') && $post instanceof \WC_Product;
+  }
+
+  /**
+   * Don't use post_password_required() here: it returns false when the current
+   * request carries the visitor's post password cookie, e.g. an admin who
+   * unlocked the post on the front end, and the content would end up in emails.
+   */
+  private function hasPassword($post): bool {
+    $password = $this->isWcProduct($post) ? $post->get_post_password() : ($post->post_password ?? ''); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    return $password !== '';
   }
 
   private function fixAnchorLinks($content, $post) {
