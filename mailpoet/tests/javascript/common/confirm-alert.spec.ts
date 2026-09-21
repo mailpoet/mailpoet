@@ -22,6 +22,7 @@ type ConfirmAlertModule = {
 
 type PopupOptions = {
   initialFocus?: string;
+  returnFocus?: string | (() => Element | null);
   onInit?: () => void;
 };
 
@@ -126,6 +127,25 @@ describe('confirmAlert', function confirmAlertSuite() {
 
     expect(lastPopupOptions && lastPopupOptions.initialFocus).to.equal(
       '#mailpoet_alert_cancel',
+    );
+  });
+
+  // The actual Cancel/Escape restoreFocus fallback chain (returnFocus wins
+  // over the page heading when the opener isn't focusable) is covered
+  // generically by modal.spec.ts's "falls back to returnFocus when the
+  // popup was opened with body focused" test. What's specific to
+  // confirmAlert -- and was the bug here -- is that returnFocus actually
+  // reaches popup()'s options, so modal.js has something to fall back to.
+  it('passes returnFocus through to the popup options, so Cancel/Escape can use it', () => {
+    const returnFocus = '#some-target';
+    confirmAlertModule.confirmAlert({
+      message: 'Are you sure?',
+      onConfirm: () => undefined,
+      returnFocus,
+    });
+
+    expect(lastPopupOptions && lastPopupOptions.returnFocus).to.equal(
+      returnFocus,
     );
   });
 

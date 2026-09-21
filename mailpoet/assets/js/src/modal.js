@@ -953,7 +953,10 @@ export const MailPoetModal = {
 
     returnFocusElement = this.resolveReturnFocus(returnFocusOption);
     if (returnFocusElement && document.contains(returnFocusElement)) {
-      returnFocusElement.focus();
+      // preventScroll: this fallback runs on every mouse-driven close in
+      // Safari (which doesn't focus buttons on click), so it must not jump
+      // the page to wherever the target happens to sit.
+      returnFocusElement.focus({ preventScroll: true });
       return;
     }
 
@@ -962,7 +965,9 @@ export const MailPoetModal = {
       if (!heading.hasAttribute('tabindex')) {
         heading.setAttribute('tabindex', '-1');
       }
-      heading.focus();
+      // preventScroll: same reasoning as above -- the heading sits at the
+      // top of the page, so without this the page jumps to scrollY 0.
+      heading.focus({ preventScroll: true });
     }
   },
 };

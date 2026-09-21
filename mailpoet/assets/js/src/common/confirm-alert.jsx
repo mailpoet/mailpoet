@@ -39,6 +39,9 @@ function ConfirmAlert({
     title,
     // Cancel is destructive-safe: these confirmations guard trash/delete actions
     initialFocus: '#mailpoet_alert_cancel',
+    // Used by restoreFocus() on Cancel/Escape when the opener isn't
+    // focusable (e.g. Safari mouse clicks land on document.body).
+    returnFocus,
     template: ReactDOMServer.renderToString(
       <>
         <p>{message}</p>
