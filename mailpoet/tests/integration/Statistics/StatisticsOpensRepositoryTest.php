@@ -287,6 +287,65 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     verify($zero->getEngagementScore())->equals(0.0);
   }
 
+  public function testItScoresOnlyEmailsSentWithTracking() {
+    $untracked = $this->createSubscriber();
+    $partlyTracked = $this->createSubscriber();
+    for ($i = 0; $i < 5; $i++) {
+      $this->createStatisticsNewsletter($this->createNewsletter(), $untracked);
+    }
+    $this->createOpenOnNewsletter($this->createStatisticsNewsletter($this->createNewsletter(), $partlyTracked), $partlyTracked);
+    $this->createStatisticsNewsletter($this->createNewsletter(), $partlyTracked);
+    $this->createStatisticsNewsletter($this->createNewsletter(), $partlyTracked);
+    $this->createStatisticsNewsletter($this->createNewsletter(), $partlyTracked);
+    $this->createStatisticsNewsletter($this->createNewsletter(), $partlyTracked);
+    $this->entityManager->flush();
+    $this->markSentWithoutTracking($untracked);
+    $this->markSentWithoutTracking($partlyTracked, 2);
+
+    $this->repository->recalculateSubscribersScore([(int)$untracked->getId(), (int)$partlyTracked->getId()]);
+
+    $this->entityManager->refresh($untracked);
+    $this->entityManager->refresh($partlyTracked);
+    verify($untracked->getEngagementScore())->null();
+    verify($untracked->getEngagementScoreUpdatedAt())->notNull();
+    verify($partlyTracked->getEngagementScore())->equalsWithDelta(33, 1);
+  }
+
+  public function testItCountsEverySendWhenTheTrackingColumnDoesNotExistYet() {
+    $subscriber = $this->createSubscriber();
+    $this->createOpenOnNewsletter($this->createStatisticsNewsletter($this->createNewsletter(), $subscriber), $subscriber);
+    for ($i = 0; $i < 3; $i++) {
+      $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber);
+    }
+    $this->entityManager->flush();
+    $table = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $connection = $this->entityManager->getConnection();
+    $connection->executeStatement("ALTER TABLE `{$table}` DROP INDEX `newsletter_id_sent_with_tracking`, DROP COLUMN `sent_with_tracking`");
+
+    try {
+      ob_start();
+      $this->repository->recalculateSubscriberScore($subscriber);
+      $output = ob_get_clean();
+    } finally {
+      $connection->executeStatement(
+        "ALTER TABLE `{$table}` ADD COLUMN `sent_with_tracking` tinyint(1) NOT NULL DEFAULT 1, ADD INDEX `newsletter_id_sent_with_tracking` (`newsletter_id`, `sent_with_tracking`, `queue_id`)"
+      );
+    }
+
+    verify($output)->equals('');
+    $this->entityManager->refresh($subscriber);
+    verify($subscriber->getEngagementScore())->equalsWithDelta(25, 1);
+  }
+
+  private function markSentWithoutTracking(SubscriberEntity $subscriber, ?int $limit = null): void {
+    $table = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $limitClause = $limit ? " ORDER BY id DESC LIMIT {$limit}" : '';
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE `{$table}` SET sent_with_tracking = 0 WHERE subscriber_id = :subscriberId{$limitClause}",
+      ['subscriberId' => $subscriber->getId()]
+    );
+  }
+
   private function createOpenOnNewsletter(StatisticsNewsletterEntity $statisticsNewsletter, SubscriberEntity $subscriber): void {
     $newsletter = $statisticsNewsletter->getNewsletter();
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
