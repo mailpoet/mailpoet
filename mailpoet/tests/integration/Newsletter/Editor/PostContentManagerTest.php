@@ -317,6 +317,29 @@ EOT;
     verify($postContent->getContent(get_post($product->get_id()), 'excerpt'))->equals('');
   }
 
+  public function testItReturnsContentForPasswordProtectedPostsWhenAllowedViaHook(): void {
+    $postId = wp_insert_post([
+      'post_title' => 'Protected post',
+      'post_content' => '<p>Protected body</p>',
+      'post_status' => 'publish',
+      'post_password' => 'secret',
+    ]);
+    $this->postIds[] = $postId;
+
+    $filteredPostIds = [];
+    $filter = function ($show, $post) use (&$filteredPostIds) {
+      $filteredPostIds[] = $post->ID;
+      return true;
+    };
+    add_filter('mailpoet_newsletter_show_password_protected_post_content', $filter, 10, 2);
+    try {
+      verify($this->postContent->getContent(get_post($postId), 'full'))->equals('<p>Protected body</p>');
+      verify($filteredPostIds)->equals([$postId]);
+    } finally {
+      remove_filter('mailpoet_newsletter_show_password_protected_post_content', $filter, 10);
+    }
+  }
+
   public function _after() {
     foreach ($this->postIds as $postId) {
       wp_delete_post($postId, true);
