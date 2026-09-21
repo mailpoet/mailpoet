@@ -21,13 +21,28 @@ describe('sanitizePreviewHtml', () => {
     expect(result).to.contain('src="a.png"');
   });
 
-  it('removes elements that are not on the allow list', () => {
+  it('unwraps elements that are not on the allow list', () => {
     expect(
       sanitizePreviewHtml('<iframe src="https://x.test"></iframe><p>kept</p>'),
     ).to.equal('<p>kept</p>');
     expect(
       sanitizePreviewHtml('<svg onload="broken()"></svg><p>kept</p>'),
     ).to.equal('<p>kept</p>');
+    // The tag goes, the text inside it stays as text, the same as wp_kses.
+    expect(sanitizePreviewHtml('<p>a</p><script>inert()</script>')).to.equal(
+      '<p>a</p>inert()',
+    );
+  });
+
+  it('checks the protocol of a cite attribute as well', () => {
+    expect(
+      sanitizePreviewHtml(
+        '<blockquote cite="javascript:broken()">q</blockquote>',
+      ),
+    ).to.equal('<blockquote>q</blockquote>');
+    expect(
+      sanitizePreviewHtml('<blockquote cite="https://x.test">q</blockquote>'),
+    ).to.contain('cite="https://x.test"');
   });
 
   it('drops a url attribute whose protocol an email client would not follow', () => {
