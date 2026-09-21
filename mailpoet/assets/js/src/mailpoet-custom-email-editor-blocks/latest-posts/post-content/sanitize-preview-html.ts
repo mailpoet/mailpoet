@@ -52,8 +52,9 @@ const ALLOWED_ATTRIBUTES: Record<string, string[]> = {
 
 /**
  * wp_kses filters tags and attributes without enforcing nesting rules, so every
- * allowed element may contain any other allowed element and text. Anything outside
- * the list is dropped along with its attributes.
+ * allowed element may contain any other allowed element and text. An element outside
+ * the list is unwrapped rather than deleted: the tag and its attributes go and the
+ * text inside it stays, which is what wp_kses does with the same content.
  */
 function buildSchema(): Schema {
   const schema: Schema = {};
@@ -81,7 +82,8 @@ function buildSchema(): Schema {
 
 const SCHEMA = buildSchema();
 
-const URL_ATTRIBUTES = ['href', 'src'];
+// The URI attributes wp_kses_uri_attributes() covers that this allow-list permits.
+const URL_ATTRIBUTES = ['href', 'src', 'cite'];
 
 /** wp_allowed_protocols(), the set wp_kses() applies to the same content. */
 const SAFE_PROTOCOLS = [
