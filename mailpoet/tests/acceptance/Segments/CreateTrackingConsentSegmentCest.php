@@ -8,6 +8,7 @@ use MailPoet\Test\DataFactories\Subscriber;
 class CreateTrackingConsentSegmentCest {
   private const ENGAGEMENT_NOTICE = 'MailPoet has no open or click data for subscribers who opted out of tracking';
   private const OMITTED_NOTICE = 'Subscribers who opted out of tracking are not counted here';
+  private const SCORE_NOTICE = 'Subscribers who opted out of tracking have no engagement score, so they count as Unknown';
 
   public function _before() {
     (new Subscriber())
@@ -122,6 +123,23 @@ class CreateTrackingConsentSegmentCest {
     $i->wantTo('Switch to "none of" and see the stronger wording instead');
     $i->selectOption('[data-automation-id="select-operator"]', 'none of');
     $i->waitForText(self::ENGAGEMENT_NOTICE);
+    $i->dontSee(self::OMITTED_NOTICE);
+    $i->seeNoJSErrors();
+  }
+
+  public function testEngagementScoreFilterShowsTheScoreNotice(\AcceptanceTester $i) {
+    $i->wantTo('See the score notice on an engagement score filter');
+    $i->login();
+    $i->amOnMailpoetPage('Segments');
+    $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
+    $i->fillField(['name' => 'name'], 'Score notice segment');
+    $i->fillField(['name' => 'description'], 'description');
+
+    $i->selectOptionInReactSelect('engagement score', '[data-automation-id="select-segment-action"]');
+    $i->waitForText(self::SCORE_NOTICE);
+    $i->dontSee(self::ENGAGEMENT_NOTICE);
     $i->dontSee(self::OMITTED_NOTICE);
     $i->seeNoJSErrors();
   }
