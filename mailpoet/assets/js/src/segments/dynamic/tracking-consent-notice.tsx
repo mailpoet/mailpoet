@@ -8,7 +8,6 @@ import {
   SubscriberActionTypes,
 } from './types';
 import { storeName } from './store';
-import { SubscriberScoreOperator } from './dynamic-segments-filters/fields/subscriber/subscriber-score';
 
 /**
  * Filters that read open or click data and have no way to tell "did not engage"
@@ -46,13 +45,6 @@ const actionsAffectedByOperator: string[] = [
   EmailActionTypes.CLICKED,
 ];
 
-const engagementScoreOperators: string[] = [
-  SubscriberScoreOperator.UNKNOWN,
-  SubscriberScoreOperator.NOT_UNKNOWN,
-  SubscriberScoreOperator.DORMANT,
-  SubscriberScoreOperator.NOT_DORMANT,
-];
-
 function TrackingConsentNotice(): JSX.Element {
   const segment: Segment = useSelect(
     (select) => select(storeName).getSegment(),
@@ -67,17 +59,17 @@ function TrackingConsentNotice(): JSX.Element {
     if (engagementActions.includes(action)) {
       return true;
     }
-    if (
+    return (
       actionsAffectedByOperator.includes(action) &&
       operator === AnyValueTypes.NONE
-    ) {
-      return true;
-    }
-    return (
-      action === SubscriberActionTypes.SUBSCRIBER_SCORE &&
-      engagementScoreOperators.includes(operator)
     );
   });
+
+  // Subscribers we cannot track have no score, so every score operator puts
+  // them in the Unknown group.
+  const usesEngagementScore = filters.some(
+    (formItem) => formItem.action === SubscriberActionTypes.SUBSCRIBER_SCORE,
+  );
 
   const leavesThemOut = filters.some((formItem) => {
     const operator =
@@ -90,11 +82,14 @@ function TrackingConsentNotice(): JSX.Element {
 
   // The stronger warning wins when a segment has both, rather than stacking two
   // notices that say overlapping things.
-  const message = countsThemAsNotEngaged
-    ? 'trackingConsentEngagementNotice'
-    : 'trackingConsentOmittedNotice';
+  let message = 'trackingConsentOmittedNotice';
+  if (countsThemAsNotEngaged) {
+    message = 'trackingConsentEngagementNotice';
+  } else if (usesEngagementScore) {
+    message = 'trackingConsentScoreNotice';
+  }
 
-  if (!countsThemAsNotEngaged && !leavesThemOut) {
+  if (!countsThemAsNotEngaged && !usesEngagementScore && !leavesThemOut) {
     return <span />;
   }
 

@@ -12,6 +12,7 @@ use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Exception\InvalidFieldNameException;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -24,15 +25,19 @@ class StatisticsOpensRepository extends Repository {
   /** @var TrackingConfig */
   private $trackingConfig;
 
+  private TrackingConsentController $trackingConsentController;
+
   private bool $missingTrackingColumnLogged = false;
 
   public function __construct(
     EntityManager $entityManager,
-    TrackingConfig $trackingConfig
+    TrackingConfig $trackingConfig,
+    TrackingConsentController $trackingConsentController
   ) {
     parent::__construct($entityManager);
     $this->entityManager = $entityManager;
     $this->trackingConfig = $trackingConfig;
+    $this->trackingConsentController = $trackingConsentController;
   }
 
   protected function getEntityClassName(): string {
@@ -91,6 +96,11 @@ class StatisticsOpensRepository extends Repository {
     $humanOpensCondition = $this->trackingConfig->areOpensSeparated() ? ' AND so.user_agent_type = :userAgentType' : '';
     $trackedSentCondition = $onlyTrackedSends ? ' AND sent_with_tracking = 1' : '';
     $trackedOpenCondition = $onlyTrackedSends ? ' AND sn.sent_with_tracking = 1' : '';
+    // Sends before sent_with_tracking existed cannot tell whether a never-asked
+    // subscriber got the pixel, so on sites asking everyone they get no score.
+    $neverAskedCondition = $this->trackingConsentController->shouldTrackUnknownConsent()
+      ? ''
+      : "\n            WHEN s.tracking_consent = :unknownConsent THEN NULL";
 
     $sql = "
       UPDATE {$subscribersTable} s
@@ -111,7 +121,7 @@ class StatisticsOpensRepository extends Repository {
         GROUP BY so.subscriber_id
       ) opens ON opens.subscriber_id = s.id
       SET s.engagement_score = CASE
-            WHEN COALESCE(sent.sent_count, 0) < :minSentCount THEN NULL
+            WHEN COALESCE(sent.sent_count, 0) < :minSentCount THEN NULL{$neverAskedCondition}
             ELSE COALESCE(opens.open_count, 0) / sent.sent_count * 100
           END,
           s.engagement_score_updated_at = :now
@@ -124,6 +134,9 @@ class StatisticsOpensRepository extends Repository {
       'minSentCount' => SubscriberStatisticsRepository::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE,
       'now' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
     ];
+    if ($neverAskedCondition) {
+      $parameters['unknownConsent'] = SubscriberEntity::TRACKING_CONSENT_UNKNOWN;
+    }
     if ($humanOpensCondition) {
       $parameters['userAgentType'] = UserAgentEntity::USER_AGENT_TYPE_HUMAN;
     }
@@ -141,7 +154,7 @@ class StatisticsOpensRepository extends Repository {
     $this->missingTrackingColumnLogged = true;
     try {
       LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->warning(
-        'Engagement scores count every send because statistics_newsletters.sent_with_tracking is missing',
+        'Engagement scores count every send because statistics_newsletters.sent_with_tracking could not be read',
         ['error' => $e->getMessage()]
       );
     } catch (\Throwable $loggingError) {

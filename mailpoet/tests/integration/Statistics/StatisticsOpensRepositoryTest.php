@@ -13,7 +13,9 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Carbon\CarbonImmutable;
 
@@ -309,6 +311,50 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     verify($untracked->getEngagementScore())->null();
     verify($untracked->getEngagementScoreUpdatedAt())->notNull();
     verify($partlyTracked->getEngagementScore())->equalsWithDelta(33, 1);
+  }
+
+  public function testItGivesNeverAskedSubscribersNoScoreWhenAskingEveryone() {
+    $neverAsked = $this->createSubscriber();
+    $granted = $this->createSubscriber();
+    $granted->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    foreach ([$neverAsked, $granted] as $subscriber) {
+      $this->createOpenOnNewsletter($this->createStatisticsNewsletter($this->createNewsletter(), $subscriber), $subscriber);
+      for ($i = 0; $i < 3; $i++) {
+        $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber);
+      }
+    }
+    $this->entityManager->flush();
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_ALL);
+
+    $this->repository->recalculateSubscribersScore([(int)$neverAsked->getId(), (int)$granted->getId()]);
+
+    $this->entityManager->refresh($neverAsked);
+    $this->entityManager->refresh($granted);
+    verify($neverAsked->getEngagementScore())->null();
+    verify($granted->getEngagementScore())->equalsWithDelta(25, 1);
+
+    $settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_NEW);
+    $this->repository->recalculateSubscribersScore([(int)$neverAsked->getId()]);
+
+    $this->entityManager->refresh($neverAsked);
+    verify($neverAsked->getEngagementScore())->equalsWithDelta(25, 1);
+    $settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_TRACK_ALL);
+  }
+
+  public function testItIgnoresOpensOnEmailsSentWithoutTracking() {
+    $subscriber = $this->createSubscriber();
+    for ($i = 0; $i < 4; $i++) {
+      $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber);
+    }
+    $this->createOpenOnNewsletter($this->createStatisticsNewsletter($this->createNewsletter(), $subscriber), $subscriber);
+    $this->entityManager->flush();
+    $this->markSentWithoutTracking($subscriber, 1);
+
+    $this->repository->recalculateSubscriberScore($subscriber);
+
+    $this->entityManager->refresh($subscriber);
+    verify($subscriber->getEngagementScore())->equals(0.0);
   }
 
   public function testItCountsEverySendWhenTheTrackingColumnDoesNotExistYet() {
