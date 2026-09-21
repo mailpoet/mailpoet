@@ -9,6 +9,9 @@ use MailPoet\WP\Functions as WPFunctions;
 class PostContentManagerTest extends \MailPoetTest {
   public $postContent;
 
+  /** @var int[] */
+  private $postIds = [];
+
   public function _before() {
     parent::_before();
     $this->postContent = new PostContentManager(
@@ -241,5 +244,83 @@ EOT;
     verify($content)->stringContainsString('https://example.com/test-post/#section-2');
     verify($content)->stringNotContainsString('href="#section1"');
     verify($content)->stringNotContainsString('href="#section-2"');
+  }
+
+  public function testItReturnsNoContentForPasswordProtectedPosts(): void {
+    $postId = wp_insert_post([
+      'post_title' => 'Protected post',
+      'post_content' => '<p>Protected body</p>',
+      'post_status' => 'publish',
+      'post_password' => 'secret',
+    ]);
+    $this->postIds[] = $postId;
+    $post = get_post($postId);
+
+    verify($this->postContent->getContent($post, 'full'))->equals('');
+    verify($this->postContent->getContent($post, 'excerpt'))->equals('');
+
+    wp_update_post(['ID' => $postId, 'post_excerpt' => 'Protected excerpt']);
+    verify($this->postContent->getContent(get_post($postId), 'excerpt'))->equals('');
+  }
+
+  public function testItReturnsNoContentForPasswordProtectedPostsWhenPasswordCookieIsSet(): void {
+    $postId = wp_insert_post([
+      'post_title' => 'Protected post',
+      'post_content' => '<p>Protected body</p>',
+      'post_status' => 'publish',
+      'post_password' => 'secret',
+    ]);
+    $this->postIds[] = $postId;
+
+    require_once ABSPATH . WPINC . '/class-phpass.php';
+    $cookieName = 'wp-postpass_' . constant('COOKIEHASH');
+    $_COOKIE[$cookieName] = (new \PasswordHash(8, true))->HashPassword('secret');
+    try {
+      verify(post_password_required($postId))->false();
+      verify($this->postContent->getContent(get_post($postId), 'full'))->equals('');
+    } finally {
+      unset($_COOKIE[$cookieName]);
+    }
+  }
+
+  public function testItReturnsContentForPostsWithoutPassword(): void {
+    $postId = wp_insert_post([
+      'post_title' => 'Public post',
+      'post_content' => '<p>Public body</p>',
+      'post_status' => 'publish',
+    ]);
+    $this->postIds[] = $postId;
+
+    verify($this->postContent->getContent(get_post($postId), 'full'))->equals('<p>Public body</p>');
+  }
+
+  /**
+   * @group woo
+   */
+  public function testItReturnsNoContentForPasswordProtectedProducts(): void {
+    $product = new \WC_Product_Simple();
+    $product->set_name('Protected product');
+    $product->set_description('Protected description');
+    $product->set_short_description('Protected short description');
+    $product->set_status('publish');
+    $product->save();
+    $this->postIds[] = $product->get_id();
+    wp_update_post(['ID' => $product->get_id(), 'post_password' => 'secret']);
+    $product = wc_get_product($product->get_id());
+    $this->assertInstanceOf(\WC_Product::class, $product);
+
+    $postContent = new PostContentManager(new WooCommerceHelper(new WPFunctions()));
+
+    verify($postContent->getContent($product, 'full'))->equals('');
+    verify($postContent->getContent($product, 'excerpt'))->equals('');
+    verify($postContent->getContent(get_post($product->get_id()), 'full'))->equals('');
+    verify($postContent->getContent(get_post($product->get_id()), 'excerpt'))->equals('');
+  }
+
+  public function _after() {
+    foreach ($this->postIds as $postId) {
+      wp_delete_post($postId, true);
+    }
+    parent::_after();
   }
 }
