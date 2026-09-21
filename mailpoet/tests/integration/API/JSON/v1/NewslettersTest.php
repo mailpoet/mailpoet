@@ -452,7 +452,10 @@ class NewslettersTest extends \MailPoetTest {
       ->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)
       ->withDeleted()
       ->create();
-    $segment = (new Segment())->withConfirmationEmailId((int)$trashedConfirmationEmail->getId())->create();
+    $segment = (new Segment())->create();
+    $segment->setConfirmationEmailId((int)$trashedConfirmationEmail->getId());
+    $this->entityManager->flush();
+    verify($segment->getConfirmationEmailId())->equals((int)$trashedConfirmationEmail->getId());
 
     $response = $this->endpoint->deleteConfirmationEmail(['id' => $trashedConfirmationEmail->getId()]);
     verify($response->status)->equals(APIResponse::STATUS_OK);
