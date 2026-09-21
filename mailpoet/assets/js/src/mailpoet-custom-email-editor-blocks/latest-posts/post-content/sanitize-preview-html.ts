@@ -1,13 +1,17 @@
 import { removeInvalidHTML } from '@wordpress/dom';
-import type {
-  Schema,
-  SchemaItem,
-} from '@wordpress/dom/build-types/dom/clean-node-list';
+
+// Taken from the function's own signature: @wordpress/dom does not export these
+// types from its package root, and a deep import into build-types would break the
+// build the first time the package moves a file.
+type Schema = Parameters<typeof removeInvalidHTML>[1];
+type SchemaItem = Schema[string];
 
 /**
  * Mirrors CLASSIC_CONTENT_ALLOWED_HTML in
- * lib/EmailEditor/Integrations/MailPoet/Blocks/BlockTypes/LatestPosts.php, so the
- * editor preview shows the markup the email will carry. Keep the two in step.
+ * lib/EmailEditor/Integrations/MailPoet/Blocks/BlockTypes/LatestPosts.php, which is
+ * what a classic post's content is reduced to before it reaches the email. Keep the
+ * two in step. A block post is rendered block by block instead and can carry more
+ * than this, so for those the preview shows less than the email does.
  */
 const ALLOWED_ATTRIBUTES: Record<string, string[]> = {
   a: ['href', 'title'],
@@ -78,19 +82,56 @@ function buildSchema(): Schema {
 const SCHEMA = buildSchema();
 
 const URL_ATTRIBUTES = ['href', 'src'];
-const SAFE_PROTOCOLS = ['http:', 'https:', 'mailto:'];
+
+/** wp_allowed_protocols(), the set wp_kses() applies to the same content. */
+const SAFE_PROTOCOLS = [
+  'fax:',
+  'feed:',
+  'ftp:',
+  'ftps:',
+  'gopher:',
+  'http:',
+  'https:',
+  'irc:',
+  'irc6:',
+  'ircs:',
+  'mailto:',
+  'mms:',
+  'news:',
+  'nntp:',
+  'rtsp:',
+  'sms:',
+  'svn:',
+  'tel:',
+  'telnet:',
+  'urn:',
+  'webcal:',
+  'xmpp:',
+];
+
+// Only the protocol of the parsed result is read, so any absolute base works. A
+// fixed one keeps the answer the same in the editor and under test.
+const PROTOCOL_BASE = 'https://email-preview.invalid';
 
 /**
- * The schema keeps an allowed attribute whatever its value, so a URL still has to
- * be checked on its own. Relative and protocol-relative URLs carry no protocol and
- * are left alone.
+ * The URL parser rather than a pattern: a browser drops tabs, newlines and leading
+ * control characters before it reads the protocol, so a pattern that does not would
+ * keep a value the browser still resolves to a script URL. A value the parser
+ * rejects is dropped too, since nothing can follow it safely.
  */
+function hasSafeProtocol(value: string): boolean {
+  try {
+    return SAFE_PROTOCOLS.includes(new URL(value, PROTOCOL_BASE).protocol);
+  } catch {
+    return false;
+  }
+}
+
+/** The schema keeps an allowed attribute whatever its value, so URLs need their own pass. */
 function stripUnsafeUrls(doc: Document): void {
   URL_ATTRIBUTES.forEach((attribute) => {
     doc.body.querySelectorAll(`[${attribute}]`).forEach((element) => {
-      const value = (element.getAttribute(attribute) ?? '').trim();
-      const match = /^([a-z][a-z0-9+.-]*):/i.exec(value);
-      if (match && !SAFE_PROTOCOLS.includes(`${match[1].toLowerCase()}:`)) {
+      if (!hasSafeProtocol(element.getAttribute(attribute) ?? '')) {
         element.removeAttribute(attribute);
       }
     });
@@ -99,7 +140,7 @@ function stripUnsafeUrls(doc: Document): void {
 
 /**
  * Returns markup that is safe to place in the editor canvas: the allow-list above,
- * with URL attributes limited to protocols an email client will follow.
+ * with URL attributes limited to the protocols wp_kses() allows.
  */
 export function sanitizePreviewHtml(html: string): string {
   if (!html) {
