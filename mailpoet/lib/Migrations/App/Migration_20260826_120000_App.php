@@ -3,6 +3,7 @@
 namespace MailPoet\Migrations\App;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Migrator\AppMigration;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController;
@@ -44,7 +45,11 @@ class Migration_20260826_120000_App extends AppMigration {
         $this->resolveExistingTemplate();
       } catch (Throwable $e) {
         // This runs outside the migrator's own try/catch (the migration already returned
-        // and was marked completed), so a failure here must not escape as a fatal.
+        // and was marked completed), so a failure here must not escape as a fatal, but it
+        // must leave a trace: the saved template would otherwise stay unresolved silently.
+        $this->container->get(LoggerFactory::class)
+          ->getLogger(LoggerFactory::TOPIC_MIGRATIONS)
+          ->error(sprintf('%s: %s', static::class, $e->getMessage()));
       }
     });
   }
