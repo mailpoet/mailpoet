@@ -66,6 +66,7 @@
     "@wordpress/data-controls": "^4.43.0",
     "@wordpress/dataviews": "^14.1.0",
     "@wordpress/date": "^5.43.0",
+    "@wordpress/dom": "^4.39.0",
     "@wordpress/edit-post": "^8.43.0",
     "@wordpress/edit-site": "^6.43.0",
     "@wordpress/editor": "^14.43.0",

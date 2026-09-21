@@ -3,6 +3,7 @@ import { useSelect } from '@wordpress/data';
 import { useBlockProps } from '@wordpress/block-editor';
 import { Spinner } from '@wordpress/components';
 import { store as coreStore } from '@wordpress/core-data';
+import { sanitizePreviewHtml } from './sanitize-preview-html';
 
 type EditProps = {
   context: {
@@ -72,9 +73,12 @@ export function Edit({ context }: EditProps): JSX.Element {
   return (
     <div
       {...blockProps}
-      // Read-only preview using the rendered content from the site's own REST API.
+      // Read-only preview of the post's rendered content, reduced to the same
+      // markup the email itself carries before it goes into the canvas.
       // eslint-disable-next-line react/no-danger
-      dangerouslySetInnerHTML={{ __html: record.content?.rendered ?? '' }}
+      dangerouslySetInnerHTML={{
+        __html: sanitizePreviewHtml(record.content?.rendered ?? ''),
+      }}
     />
   );
 }
