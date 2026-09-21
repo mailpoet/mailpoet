@@ -9,32 +9,6 @@ use MailPoet\Test\DataFactories\Settings;
  * @group gutenberg-latest
  */
 class ScheduleEmailUsingGutenbergCest {
-  /** @var string */
-  private $originalTimezone = '';
-
-  public function _before(\AcceptanceTester $i) {
-    $this->originalTimezone = (string)$i->cliToString(['option', 'get', 'timezone_string']);
-  }
-
-  public function _after(\AcceptanceTester $i) {
-    // Never leave a non-UTC timezone behind for the rest of the suite.
-    //
-    // An empty value has to be put back by deleting the option. `option update`
-    // cannot write one, because wp-cli reads a missing value from stdin and
-    // hangs there until the runner kills it. Writing it from PHP with `eval` is
-    // not available either: the module builds a shell command without escaping
-    // its arguments, so the parentheses arrive at the shell unquoted.
-    //
-    // Deleting is equivalent here, since WordPress falls back to the GMT offset
-    // whether the option is empty or missing.
-    if ($this->originalTimezone === '') {
-      $i->cli(['option', 'delete', 'timezone_string']);
-      return;
-    }
-
-    $i->cli(['option', 'update', 'timezone_string', $this->originalTimezone]);
-  }
-
   public function scheduleEmailStoresSiteLocalTimeAsUtc(\AcceptanceTester $i, $scenario) {
     if (!$i->checkEmailEditorRequiredWordpressVersion()) {
       $scenario->skip('Temporally skip this test because new email editor is not compatible with WP versions below ' . \AcceptanceTester::EMAIL_EDITOR_MINIMAL_WP_VERSION);
