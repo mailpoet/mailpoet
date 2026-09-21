@@ -1,5 +1,6 @@
 import { JSDOM } from 'jsdom';
 import NodeModule from 'module';
+import sinon from 'sinon';
 
 type ModuleLoader = (
   request: string,
@@ -295,6 +296,20 @@ describe('MailPoetModal', function modalSuite() {
     expect(document.activeElement).to.equal(heading);
   });
 
+  it('focuses the page heading fallback without scrolling the page', () => {
+    const heading = document.querySelector('.wrap h1');
+    const focusSpy = sinon.spy(heading, 'focus');
+
+    document.body.focus();
+    openPopup();
+    modalModule.MailPoetModal.close();
+
+    expect(focusSpy.calledOnce).to.equal(true);
+    expect(focusSpy.firstCall.args[0]).to.deep.equal({ preventScroll: true });
+
+    focusSpy.restore();
+  });
+
   it('falls back to returnFocus when the popup was opened with body focused', () => {
     document.body.focus();
     expect(document.activeElement).to.equal(document.body);
@@ -308,6 +323,26 @@ describe('MailPoetModal', function modalSuite() {
 
     expect(document.activeElement && document.activeElement.id).to.equal(
       'fallback-target-body-opener',
+    );
+  });
+
+  // Same scenario as confirmAlert's Cancel button (a mouse click that
+  // doesn't focus the opener in Safari), but via the Escape key instead of
+  // a direct close() call -- exercises the same fallback chain through the
+  // keyup handler.
+  it('falls back to returnFocus on Escape when the popup was opened with body focused', () => {
+    document.body.focus();
+    expect(document.activeElement).to.equal(document.body);
+
+    const fallbackTarget = document.createElement('button');
+    fallbackTarget.id = 'fallback-target-escape';
+    document.body.appendChild(fallbackTarget);
+
+    openPopup({ returnFocus: '#fallback-target-escape' });
+    dispatchKey(document.body, 'keyup', { key: 'Escape', keyCode: 27 });
+
+    expect(document.activeElement && document.activeElement.id).to.equal(
+      'fallback-target-escape',
     );
   });
 
