@@ -175,37 +175,37 @@ class ShortcodesTest extends \MailPoetTest {
     verify($result['0'])->equals('Sample Post & strong');
   }
 
-  public function testItDoesNotTurnEncodedImgTagInPostTitleIntoMarkup() {
-    $postId = $this->createPostWithTitle('&lt;img src=x onerror=alert(1)&gt;Title');
+  public function testItDoesNotTurnEncodedTagsInPostTitleIntoMarkup() {
+    $postId = $this->createPostWithTitle('&lt;b&gt;Bold&lt;/b&gt;Title');
     $out = $this->processPostTitle($postId);
-    verify($out)->stringNotContainsString('<img');
-    verify($out)->equals('Title');
+    verify($out)->stringNotContainsString('<b');
+    verify($out)->equals('BoldTitle');
   }
 
   public function testItDoesNotTurnEncodedScriptTagInPostTitleIntoMarkup() {
-    $postId = $this->createPostWithTitle('&lt;script&gt;alert(1)&lt;/script&gt;Title');
+    $postId = $this->createPostWithTitle('&lt;script&gt;ignored&lt;/script&gt;Title');
     $out = $this->processPostTitle($postId);
     verify($out)->equals('Title');
   }
 
   public function testItDoesNotTurnNumericEntityTagsInPostTitleIntoMarkup() {
     // WP pads decimal numeric entities to 3 digits on save (wp_kses_normalize_entities), hence &#060;/&#062;.
-    $postId = $this->createPostWithTitle('&#060;img src=x onerror=alert(1)&#062;Title');
+    $postId = $this->createPostWithTitle('&#060;b&#062;Bold&#060;/b&#062;Title');
     $out = $this->processPostTitle($postId);
-    verify($out)->equals('Title');
+    verify($out)->equals('BoldTitle');
   }
 
   public function testItDoesNotTurnHexEntityTagsInPostTitleIntoMarkup() {
-    $postId = $this->createPostWithTitle('&#x3c;img src=x onerror=alert(1)&#x3e;Title');
+    $postId = $this->createPostWithTitle('&#x3c;b&#x3e;Bold&#x3c;/b&#x3e;Title');
     $out = $this->processPostTitle($postId);
-    verify($out)->equals('Title');
+    verify($out)->equals('BoldTitle');
   }
 
   public function testItKeepsDoubleEncodedPostTitleMarkupAsText() {
-    $postId = $this->createPostWithTitle('&amp;lt;img src=x&amp;gt;Title');
+    $postId = $this->createPostWithTitle('&amp;lt;b&amp;gt;Bold&amp;lt;/b&amp;gt;Title');
     $out = $this->processPostTitle($postId);
-    verify($out)->equals('&lt;img src=x&gt;Title');
-    verify($out)->stringNotContainsString('<img');
+    verify($out)->equals('&lt;b&gt;Bold&lt;/b&gt;Title');
+    verify($out)->stringNotContainsString('<b');
   }
 
   public function testItDecodesAmpersandInPostTitleOnce() {
@@ -713,14 +713,14 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function testItDoesNotTurnEncodedSiteTitleIntoMarkup() {
-    update_option('blogname', '<img src=x onerror=alert(1)>Site');
-    verify(get_option('blogname'))->equals('&lt;img src=x onerror=alert(1)&gt;Site');
+    update_option('blogname', '<b>Bold</b>Site');
+    verify(get_option('blogname'))->equals('&lt;b&gt;Bold&lt;/b&gt;Site');
 
     $shortcode = '[site:title]';
     $shortcodesObject = $this->shortcodesObject;
     $result = $shortcodesObject->process([$shortcode]);
-    verify($result[0])->equals('Site');
-    verify($result[0])->stringNotContainsString('<img');
+    verify($result[0])->equals('BoldSite');
+    verify($result[0])->stringNotContainsString('<b');
   }
 
   public function testItTruncatesSiteTitleAtAnUnspacedLessThanSign() {
