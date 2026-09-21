@@ -50,8 +50,10 @@ class SubscriberScore implements Filter {
       $queryBuilder->andWhere("engagement_score != :$parameter");
     } elseif ($operator === self::UNKNOWN) {
       $queryBuilder->andWhere($this->getUnknownEngagementScoreCondition());
+      $queryBuilder->setParameter('engagement_score_recent_cutoff', (new \DateTimeImmutable('-1 year'))->format('Y-m-d H:i:s'));
     } elseif ($operator === self::NOT_UNKNOWN) {
       $queryBuilder->andWhere('NOT ' . $this->getUnknownEngagementScoreCondition());
+      $queryBuilder->setParameter('engagement_score_recent_cutoff', (new \DateTimeImmutable('-1 year'))->format('Y-m-d H:i:s'));
     } elseif ($operator === self::DORMANT) {
       $queryBuilder->andWhere($this->getDormantEngagementScoreCondition());
       $queryBuilder->setParameter('engagement_score_recent_cutoff', (new \DateTimeImmutable('-1 year'))->format('Y-m-d H:i:s'));
@@ -66,20 +68,23 @@ class SubscriberScore implements Filter {
     return $queryBuilder;
   }
 
+  /**
+   * A missing score that is not dormant. Covers subscribers we cannot track, whose
+   * score is missing however many emails they were sent.
+   */
   private function getUnknownEngagementScoreCondition(): string {
-    $lifetimeSentCount = $this->getSentCountSubquery();
-    return sprintf(
-      '(engagement_score IS NULL AND %s < %d)',
-      $lifetimeSentCount,
-      SubscriberStatisticsRepository::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE
-    );
+    return sprintf('(engagement_score IS NULL AND NOT %s)', $this->getDormantSentCountsCondition());
   }
 
   private function getDormantEngagementScoreCondition(): string {
+    return sprintf('(engagement_score IS NULL AND %s)', $this->getDormantSentCountsCondition());
+  }
+
+  private function getDormantSentCountsCondition(): string {
     $lifetimeSentCount = $this->getSentCountSubquery();
     $recentSentCount = $this->getSentCountSubquery('engagement_score_recent_cutoff');
     return sprintf(
-      '(engagement_score IS NULL AND %s >= %d AND %s < %d)',
+      '(%s >= %d AND %s < %d)',
       $lifetimeSentCount,
       SubscriberStatisticsRepository::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE,
       $recentSentCount,

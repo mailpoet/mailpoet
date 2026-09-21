@@ -319,7 +319,7 @@ class SubscriberListingRepository extends ListingRepository {
     $engagementScoreInclude = $filters['engagementScoreInclude'] ?? [];
     if (!empty($engagementScoreInclude)) {
       $engagementScoreInclude = is_array($engagementScoreInclude) ? $engagementScoreInclude : [$engagementScoreInclude];
-      if (in_array(self::ENGAGEMENT_SCORE_DORMANT, $engagementScoreInclude, true)) {
+      if (array_intersect([self::ENGAGEMENT_SCORE_UNKNOWN, self::ENGAGEMENT_SCORE_DORMANT], $engagementScoreInclude)) {
         $query->setParameter('engagement_score_recent_cutoff', (new \DateTimeImmutable('-1 year'))->format('Y-m-d H:i:s'), ParameterType::STRING);
       }
       $conditions = $this->getDbalEngagementScoreConditions($engagementScoreInclude);
@@ -331,7 +331,7 @@ class SubscriberListingRepository extends ListingRepository {
     $engagementScoreExclude = $filters['engagementScoreExclude'] ?? [];
     if (!empty($engagementScoreExclude)) {
       $engagementScoreExclude = is_array($engagementScoreExclude) ? $engagementScoreExclude : [$engagementScoreExclude];
-      if (in_array(self::ENGAGEMENT_SCORE_DORMANT, $engagementScoreExclude, true)) {
+      if (array_intersect([self::ENGAGEMENT_SCORE_UNKNOWN, self::ENGAGEMENT_SCORE_DORMANT], $engagementScoreExclude)) {
         $query->setParameter('engagement_score_recent_cutoff', (new \DateTimeImmutable('-1 year'))->format('Y-m-d H:i:s'), ParameterType::STRING);
       }
       foreach ($engagementScoreExclude as $score) {
@@ -387,19 +387,18 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   private function getDbalUnknownEngagementScoreCondition(): string {
-    $lifetimeSentCount = $this->getDbalSentCountSubquery('s.id');
-    return sprintf(
-      '(s.engagement_score IS NULL AND %s < %d)',
-      $lifetimeSentCount,
-      SubscriberStatisticsRepository::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE
-    );
+    return sprintf('(s.engagement_score IS NULL AND NOT %s)', $this->getDbalDormantSentCountsCondition());
   }
 
   private function getDbalDormantEngagementScoreCondition(): string {
+    return sprintf('(s.engagement_score IS NULL AND %s)', $this->getDbalDormantSentCountsCondition());
+  }
+
+  private function getDbalDormantSentCountsCondition(): string {
     $lifetimeSentCount = $this->getDbalSentCountSubquery('s.id');
     $recentSentCount = $this->getDbalSentCountSubquery('s.id', 'engagement_score_recent_cutoff');
     return sprintf(
-      '(s.engagement_score IS NULL AND %s >= %d AND %s < %d)',
+      '(%s >= %d AND %s < %d)',
       $lifetimeSentCount,
       SubscriberStatisticsRepository::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE,
       $recentSentCount,
@@ -676,7 +675,7 @@ class SubscriberListingRepository extends ListingRepository {
     $engagementScoreInclude = $filters['engagementScoreInclude'] ?? [];
     if (!empty($engagementScoreInclude)) {
       $engagementScoreInclude = is_array($engagementScoreInclude) ? $engagementScoreInclude : [$engagementScoreInclude];
-      if (in_array(self::ENGAGEMENT_SCORE_DORMANT, $engagementScoreInclude, true)) {
+      if (array_intersect([self::ENGAGEMENT_SCORE_UNKNOWN, self::ENGAGEMENT_SCORE_DORMANT], $engagementScoreInclude)) {
         $queryBuilder->setParameter('engagementScoreRecentCutoff', new \DateTimeImmutable('-1 year'));
       }
       $conditions = $this->getDqlEngagementScoreConditions($engagementScoreInclude, 'engagementScoreInclude');
@@ -690,7 +689,7 @@ class SubscriberListingRepository extends ListingRepository {
     $engagementScoreExclude = $filters['engagementScoreExclude'] ?? [];
     if (!empty($engagementScoreExclude)) {
       $engagementScoreExclude = is_array($engagementScoreExclude) ? $engagementScoreExclude : [$engagementScoreExclude];
-      if (in_array(self::ENGAGEMENT_SCORE_DORMANT, $engagementScoreExclude, true)) {
+      if (array_intersect([self::ENGAGEMENT_SCORE_UNKNOWN, self::ENGAGEMENT_SCORE_DORMANT], $engagementScoreExclude)) {
         $queryBuilder->setParameter('engagementScoreRecentCutoff', new \DateTimeImmutable('-1 year'));
       }
 
@@ -757,19 +756,24 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   private function getDqlUnknownEngagementScoreCondition(string $aliasPrefix): string {
-    $lifetimeSentCount = $this->getDqlSentCountSubquery($aliasPrefix . 'TotalStats');
     return sprintf(
-      '(s.engagementScore IS NULL AND %s < %d)',
-      $lifetimeSentCount,
-      SubscriberStatisticsRepository::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE
+      '(s.engagementScore IS NULL AND NOT %s)',
+      $this->getDqlDormantSentCountsCondition($aliasPrefix . 'Unknown')
     );
   }
 
   private function getDqlDormantEngagementScoreCondition(string $aliasPrefix): string {
+    return sprintf(
+      '(s.engagementScore IS NULL AND %s)',
+      $this->getDqlDormantSentCountsCondition($aliasPrefix)
+    );
+  }
+
+  private function getDqlDormantSentCountsCondition(string $aliasPrefix): string {
     $lifetimeSentCount = $this->getDqlSentCountSubquery($aliasPrefix . 'LifetimeStats');
     $recentSentCount = $this->getDqlSentCountSubquery($aliasPrefix . 'RecentStats', 'engagementScoreRecentCutoff');
     return sprintf(
-      '(s.engagementScore IS NULL AND %s >= %d AND %s < %d)',
+      '(%s >= %d AND %s < %d)',
       $lifetimeSentCount,
       SubscriberStatisticsRepository::MIN_SENT_EMAILS_FOR_ENGAGEMENT_SCORE,
       $recentSentCount,

@@ -931,6 +931,56 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->listingData['filter'] = [];
   }
 
+  public function testUnknownEngagementScoreIncludesMissingScoresWithRecentSends() {
+    $untracked = (new Subscriber())->create();
+    $this->createSentEmails($untracked, 5, Carbon::now()->subDays(10));
+    $dormant = (new Subscriber())->create();
+    $this->createSentEmails($dormant, 3, Carbon::now()->subMonths(13));
+    $scored = (new Subscriber())->withEngagementScore(35)->create();
+
+    $this->listingData['sort_by'] = 'id';
+    $this->listingData['filter'] = ['engagementScoreInclude' => 'unknown'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(array_map(fn($subscriber) => $subscriber->getEmail(), $data))->equals([$untracked->getEmail()]);
+
+    $this->listingData['filter'] = ['engagementScoreExclude' => 'unknown'];
+    $data = $this->repository->getData($this->getListingDefinition());
+    verify(array_map(fn($subscriber) => $subscriber->getEmail(), $data))->equals([$dormant->getEmail(), $scored->getEmail()]);
+
+    $this->listingData['sort_by'] = '';
+    $this->listingData['filter'] = [];
+  }
+
+  public function testResendQueueUsesTheSameUnknownEngagementScoreGroup() {
+    $untracked = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->create();
+    $this->createSentEmails($untracked, 5, Carbon::now()->subDays(10));
+    $dormant = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->create();
+    $this->createSentEmails($dormant, 3, Carbon::now()->subMonths(13));
+
+    $this->listingData['group'] = SubscriberEntity::STATUS_UNCONFIRMED;
+    $this->listingData['filter'] = ['engagementScoreInclude' => 'unknown'];
+    $included = $this->repository->getConfirmationEmailResendQueueData(
+      $this->getListingDefinition(),
+      Carbon::now()->subDay(),
+      Carbon::now()->subYears(5),
+      10,
+      100
+    );
+    $this->listingData['filter'] = ['engagementScoreExclude' => 'unknown'];
+    $excluded = $this->repository->getConfirmationEmailResendQueueData(
+      $this->getListingDefinition(),
+      Carbon::now()->subDay(),
+      Carbon::now()->subYears(5),
+      10,
+      100
+    );
+
+    verify($included['queued_ids'])->equals([$untracked->getId()]);
+    verify($excluded['queued_ids'])->equals([$dormant->getId()]);
+    $this->listingData['group'] = '';
+    $this->listingData['filter'] = [];
+  }
+
   public function testFilterSubscribersByEngagementScoreCategories() {
     $unknownScore = (new Subscriber())->create(); // No engagement score set (null)
     $dormantScore = (new Subscriber())->create();

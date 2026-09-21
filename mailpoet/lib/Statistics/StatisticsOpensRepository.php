@@ -9,9 +9,11 @@ use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
+use MailPoetVendor\Doctrine\DBAL\Exception\InvalidFieldNameException;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
@@ -21,6 +23,8 @@ use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 class StatisticsOpensRepository extends Repository {
   /** @var TrackingConfig */
   private $trackingConfig;
+
+  private bool $missingTrackingColumnLogged = false;
 
   public function __construct(
     EntityManager $entityManager,
@@ -62,17 +66,38 @@ class StatisticsOpensRepository extends Repository {
     if (!$subscriberIds) {
       return;
     }
+
+    global $wpdb;
+    $suppressErrors = $wpdb->suppress_errors();
+    try {
+      $this->runScoreUpdate($subscriberIds, true);
+    } catch (InvalidFieldNameException $e) {
+      // The column may not exist yet during a plugin update. Count every send,
+      // which is what the score did before, until the migration runs.
+      $this->logMissingTrackingColumn($e);
+      $this->runScoreUpdate($subscriberIds, false);
+    } finally {
+      $wpdb->suppress_errors($suppressErrors);
+    }
+  }
+
+  /**
+   * @param int[] $subscriberIds
+   */
+  private function runScoreUpdate(array $subscriberIds, bool $onlyTrackedSends): void {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $sentStatsTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
     $openStatsTable = $this->entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName();
     $humanOpensCondition = $this->trackingConfig->areOpensSeparated() ? ' AND so.user_agent_type = :userAgentType' : '';
+    $trackedSentCondition = $onlyTrackedSends ? ' AND sent_with_tracking = 1' : '';
+    $trackedOpenCondition = $onlyTrackedSends ? ' AND sn.sent_with_tracking = 1' : '';
 
     $sql = "
       UPDATE {$subscribersTable} s
       LEFT JOIN (
         SELECT subscriber_id, COUNT(DISTINCT newsletter_id) AS sent_count
         FROM {$sentStatsTable}
-        WHERE subscriber_id IN (:ids) AND sent_at >= :yearAgo
+        WHERE subscriber_id IN (:ids) AND sent_at >= :yearAgo{$trackedSentCondition}
         GROUP BY subscriber_id
       ) sent ON sent.subscriber_id = s.id
       LEFT JOIN (
@@ -81,7 +106,7 @@ class StatisticsOpensRepository extends Repository {
         JOIN {$sentStatsTable} sn
           ON sn.newsletter_id = so.newsletter_id
           AND sn.subscriber_id = so.subscriber_id
-          AND sn.sent_at >= :yearAgo
+          AND sn.sent_at >= :yearAgo{$trackedOpenCondition}
         WHERE so.subscriber_id IN (:ids){$humanOpensCondition}
         GROUP BY so.subscriber_id
       ) opens ON opens.subscriber_id = s.id
@@ -107,6 +132,21 @@ class StatisticsOpensRepository extends Repository {
       $parameters,
       ['ids' => ArrayParameterType::INTEGER]
     );
+  }
+
+  private function logMissingTrackingColumn(InvalidFieldNameException $e): void {
+    if ($this->missingTrackingColumnLogged) {
+      return;
+    }
+    $this->missingTrackingColumnLogged = true;
+    try {
+      LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->warning(
+        'Engagement scores count every send because statistics_newsletters.sent_with_tracking is missing',
+        ['error' => $e->getMessage()]
+      );
+    } catch (\Throwable $loggingError) {
+      // Scores must still update if the log cannot be written.
+    }
   }
 
   public function resetSubscribersScoreCalculation() {

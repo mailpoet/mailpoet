@@ -53,6 +53,12 @@ class SubscriberScoreTest extends \MailPoetTest {
     $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
     $this->createSentEmails($subscriber, 3, Carbon::now()->subMonths(13));
+
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail('untracked@example.com');
+    $this->entityManager->persist($subscriber);
+    $this->entityManager->flush();
+    $this->createSentEmails($subscriber, 5, Carbon::now()->subDays(10));
   }
 
   public function testGetHigherThan(): void {
@@ -82,7 +88,7 @@ class SubscriberScoreTest extends \MailPoetTest {
   public function testGetUnknown(): void {
     $segmentFilterData = $this->getSegmentFilterData(SubscriberScore::UNKNOWN, '');
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
-    $this->assertEqualsCanonicalizing(['e123456@example.com'], $emails);
+    $this->assertEqualsCanonicalizing(['e123456@example.com', 'untracked@example.com'], $emails);
   }
 
   public function testGetNotUnknown(): void {
@@ -100,7 +106,7 @@ class SubscriberScoreTest extends \MailPoetTest {
   public function testGetNotDormant(): void {
     $segmentFilterData = $this->getSegmentFilterData(SubscriberScore::NOT_DORMANT, '');
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
-    $this->assertEqualsCanonicalizing(['e1@example.com', 'e12@example.com', 'e123@example.com', 'e1234@example.com', 'e12345@example.com', 'e123456@example.com'], $emails);
+    $this->assertEqualsCanonicalizing(['e1@example.com', 'e12@example.com', 'e123@example.com', 'e1234@example.com', 'e12345@example.com', 'e123456@example.com', 'untracked@example.com'], $emails);
   }
 
   private function getSegmentFilterData(string $operator, string $value): DynamicSegmentFilterData {
