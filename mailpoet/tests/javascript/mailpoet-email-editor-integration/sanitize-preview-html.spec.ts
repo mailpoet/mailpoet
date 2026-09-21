@@ -42,6 +42,42 @@ describe('sanitizePreviewHtml', () => {
     ).to.equal('<a>text</a>');
   });
 
+  it('drops a url whose protocol is hidden behind control characters', () => {
+    // A browser strips these before it reads the protocol, so the value still
+    // resolves to a script url even though it does not start with one.
+    const tab = String.fromCharCode(9);
+    const newline = String.fromCharCode(10);
+    const carriageReturn = String.fromCharCode(13);
+    const control = String.fromCharCode(1);
+
+    expect(
+      sanitizePreviewHtml(`<a href="java${tab}script:broken()">t</a>`),
+    ).to.equal('<a>t</a>');
+    expect(
+      sanitizePreviewHtml(`<a href="java${newline}script:broken()">t</a>`),
+    ).to.equal('<a>t</a>');
+    expect(
+      sanitizePreviewHtml(
+        `<a href="java${carriageReturn}script:broken()">t</a>`,
+      ),
+    ).to.equal('<a>t</a>');
+    expect(
+      sanitizePreviewHtml(`<a href="${control}javascript:broken()">t</a>`),
+    ).to.equal('<a>t</a>');
+  });
+
+  it('keeps the other protocols wp_kses allows', () => {
+    expect(sanitizePreviewHtml('<a href="tel:+123">t</a>')).to.contain(
+      'href="tel:+123"',
+    );
+    expect(sanitizePreviewHtml('<a href="ftp://x.test/f">t</a>')).to.contain(
+      'href="ftp://x.test/f"',
+    );
+    expect(sanitizePreviewHtml('<a href="mailto:a@x.test">t</a>')).to.contain(
+      'href="mailto:a@x.test"',
+    );
+  });
+
   it('keeps relative and protocol-relative urls', () => {
     expect(sanitizePreviewHtml('<a href="/page">text</a>')).to.contain(
       'href="/page"',
