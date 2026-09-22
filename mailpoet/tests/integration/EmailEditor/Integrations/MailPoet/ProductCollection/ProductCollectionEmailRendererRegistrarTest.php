@@ -3,6 +3,7 @@
 namespace MailPoet\Test\EmailEditor\Integrations\MailPoet\ProductCollection;
 
 use Automattic\WooCommerce\Blocks\BlockTypesController as WooCommerceBlockTypesController;
+use MailPoet\EmailEditor\Integrations\MailPoet\ProductCollection\ProductCollectionEmailRendererRegistrar;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Newsletter\Renderer\Renderer;
@@ -86,6 +87,23 @@ class ProductCollectionEmailRendererRegistrarTest extends \MailPoetTest {
     $html = $this->render($this->createProductCollectionContent());
 
     $this->assertStringContainsString('Product collection email', $html);
+  }
+
+  public function testItDoesNotRegisterWooCommerceBlocksForOtherEmails(): void {
+    $this->simulateSkippedWooCommerceBlockRegistration();
+    $originalPost = $GLOBALS['post'] ?? null;
+    $postId = wp_insert_post(['post_type' => 'post', 'post_title' => 'WooCommerce email', 'post_status' => 'publish']);
+    $this->assertIsInt($postId);
+    $this->postIds[] = $postId;
+    $GLOBALS['post'] = get_post($postId);
+
+    try {
+      $this->diContainer->get(ProductCollectionEmailRendererRegistrar::class)->registerEmailRenderers();
+    } finally {
+      $GLOBALS['post'] = $originalPost;
+    }
+
+    $this->assertFalse(\WP_Block_Type_Registry::get_instance()->is_registered('woocommerce/product-collection'));
   }
 
   private function render(string $postContent): string {
