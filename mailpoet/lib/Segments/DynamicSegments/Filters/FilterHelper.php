@@ -5,6 +5,8 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
+use MailPoet\Settings\TrackingConfig;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Util\Security;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Carbon\CarbonImmutable;
@@ -21,10 +23,52 @@ class FilterHelper {
   /** @var EntityManager */
   private $entityManager;
 
+  private TrackingConsentController $trackingConsentController;
+
+  private TrackingConfig $trackingConfig;
+
   public function __construct(
-    EntityManager $entityManager
+    EntityManager $entityManager,
+    TrackingConsentController $trackingConsentController,
+    TrackingConfig $trackingConfig
   ) {
     $this->entityManager = $entityManager;
+    $this->trackingConsentController = $trackingConsentController;
+    $this->trackingConfig = $trackingConfig;
+  }
+
+  public function isOnlyTrackable(DynamicSegmentFilterData $filterData): bool {
+    return $filterData->getParam(DynamicSegmentFilterData::ONLY_TRACKABLE) === true;
+  }
+
+  /**
+   * For filters with the "only subscribers we can track" option, leaves out
+   * subscribers whose opens and clicks we are not allowed to record today.
+   */
+  public function applyOnlyTrackable(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filterData): void {
+    if (!$this->isOnlyTrackable($filterData)) {
+      return;
+    }
+    $queryBuilder->andWhere($this->getTrackableConsentCondition());
+  }
+
+  /**
+   * For "did not open/click this email" with the "only subscribers we can track"
+   * option: keep only subscribers the email went out to with tracking. With
+   * engagement tracking off no send is tracked, so it falls back to consent.
+   */
+  public function getOnlyTrackableSendCondition(DynamicSegmentFilterData $filterData, string $sentAlias): ?string {
+    if (!$this->isOnlyTrackable($filterData)) {
+      return null;
+    }
+    if (!$this->trackingConfig->isEmailTrackingEnabled()) {
+      return $this->getTrackableConsentCondition();
+    }
+    return "$sentAlias.sent_with_tracking = 1";
+  }
+
+  private function getTrackableConsentCondition(): string {
+    return $this->trackingConsentController->getTrackableConsentCondition($this->getSubscribersTable() . '.tracking_consent');
   }
 
   public function getPrefixedTable(string $table): string {

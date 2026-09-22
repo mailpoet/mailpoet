@@ -98,7 +98,7 @@ class EmailAction implements Filter {
 
     $isNoneOperator = ($action === self::ACTION_NOT_CLICKED) || ($operator === DynamicSegmentFilterData::OPERATOR_NONE);
     if ($isNoneOperator) {
-      $queryBuilder = $this->joinStatsForNoneOperator($queryBuilder, $linkFilter, $newsletterId, $parameterSuffix);
+      $queryBuilder = $this->joinStatsForNoneOperator($queryBuilder, $linkFilter, $newsletterId, $parameterSuffix, $filterData);
       $where .= ' AND stats.id IS NULL';
     } else {
       $queryBuilder = $this->joinStatsForAnyOrAllOperator($queryBuilder, $linkFilter, $newsletterId, $linksTable, $parameterSuffix, $isAllOperator);
@@ -116,7 +116,13 @@ class EmailAction implements Filter {
     return $queryBuilder;
   }
 
-  private function joinStatsForNoneOperator(QueryBuilder $queryBuilder, EmailLinkFilter $linkFilter, int $newsletterId, string $parameterSuffix): QueryBuilder {
+  private function joinStatsForNoneOperator(
+    QueryBuilder $queryBuilder,
+    EmailLinkFilter $linkFilter,
+    int $newsletterId,
+    string $parameterSuffix,
+    DynamicSegmentFilterData $filterData
+  ): QueryBuilder {
     $statsSentTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $statsTable = $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName();
@@ -125,7 +131,7 @@ class EmailAction implements Filter {
       $subscribersTable,
       $statsSentTable,
       'statssent',
-      "$subscribersTable.id = statssent.subscriber_id AND statssent.newsletter_id = :newsletter" . $parameterSuffix
+      "$subscribersTable.id = statssent.subscriber_id AND statssent.newsletter_id = :newsletter" . $parameterSuffix . $this->getOnlyTrackableSendJoinCondition($filterData)
     )->leftJoin(
       'statssent',
       $statsTable,
@@ -220,7 +226,7 @@ class EmailAction implements Filter {
         $subscribersTable,
         $statsSentTable,
         'statssent',
-        "$subscribersTable.id = statssent.subscriber_id AND statssent.newsletter_id IN (:newsletters" . $parameterSuffix . ')'
+        "$subscribersTable.id = statssent.subscriber_id AND statssent.newsletter_id IN (:newsletters" . $parameterSuffix . ')' . $this->getOnlyTrackableSendJoinCondition($filterData)
       )->leftJoin(
         'statssent',
         $statsTable,
@@ -251,6 +257,11 @@ class EmailAction implements Filter {
     }
     $queryBuilder = $queryBuilder->andWhere($where);
     return $queryBuilder;
+  }
+
+  private function getOnlyTrackableSendJoinCondition(DynamicSegmentFilterData $filterData): string {
+    $condition = $this->filterHelper->getOnlyTrackableSendCondition($filterData, 'statssent');
+    return $condition === null ? '' : " AND $condition";
   }
 
   private function createNotStatsJoinCondition(string $parameterSuffix, array $linkIds = [], array $linkUrls = []): string {

@@ -99,6 +99,7 @@ export interface FormItem {
   action?: string;
   group_id?: number;
   group_operator?: SegmentConnectTypes;
+  onlyTrackable?: boolean;
 }
 
 export interface DateFormItem extends FormItem {

@@ -1366,6 +1366,77 @@ class FilterDataMapperTest extends \MailPoetTest {
     ]);
   }
 
+  public function testItKeepsOnlyTrackableOnEngagementFilters(): void {
+    $filters = $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => 'numberOfClicks',
+      'operator' => 'equals',
+      'clicks' => '0',
+      'timeframe' => 'allTime',
+      'onlyTrackable' => 'true',
+    ]]]);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getParam(DynamicSegmentFilterData::ONLY_TRACKABLE))->same(true);
+  }
+
+  public function testItDropsOnlyTrackableWhenOff(): void {
+    $filters = $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailAction::ACTION_OPENED,
+      'newsletters' => [1],
+      'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
+      'onlyTrackable' => 'false',
+    ]]]);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getParam(DynamicSegmentFilterData::ONLY_TRACKABLE))->null();
+  }
+
+  public function testItDropsOnlyTrackableOnFiltersThatDoNotSupportIt(): void {
+    $filters = $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailAction::ACTION_WAS_SENT,
+      'newsletters' => [1],
+      'onlyTrackable' => true,
+    ]]]);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getParam(DynamicSegmentFilterData::ONLY_TRACKABLE))->null();
+  }
+
+  public function testItDropsOnlyTrackableInsideNoneGroups(): void {
+    $filters = $this->mapper->map([
+      'filters_connect' => DynamicSegmentFilterData::CONNECT_TYPE_NONE,
+      'filters' => [[
+        'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+        'action' => 'lastOpenDate',
+        'operator' => 'before',
+        'value' => '2023-07-13',
+        'onlyTrackable' => 'true',
+      ]],
+    ]);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getParam(DynamicSegmentFilterData::ONLY_TRACKABLE))->null();
+
+    $filters = $this->mapper->map([
+      'filters_connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+      'filters' => [[
+        'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+        'action' => 'lastOpenDate',
+        'operator' => 'before',
+        'value' => '2023-07-13',
+        'onlyTrackable' => 'true',
+        'group_id' => 1,
+        'group_operator' => DynamicSegmentFilterData::CONNECT_TYPE_NONE,
+      ]],
+    ]);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getParam(DynamicSegmentFilterData::ONLY_TRACKABLE))->null();
+  }
+
   public function testItDefaultsInvalidGroupOperatorToAnd(): void {
     $data = [
       'filters' => [[

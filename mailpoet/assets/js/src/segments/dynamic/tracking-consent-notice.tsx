@@ -54,6 +54,9 @@ function TrackingConsentNotice(): JSX.Element {
   const filters = segment.filters ?? [];
 
   const countsThemAsNotEngaged = filters.some((formItem) => {
+    if (formItem.onlyTrackable) {
+      return false;
+    }
     const action = formItem.action;
     const operator = 'operator' in formItem ? formItem.operator : undefined;
     if (engagementActions.includes(action)) {

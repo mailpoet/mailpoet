@@ -104,4 +104,16 @@ class TrackingConsentController {
   public function shouldTrackUnknownConsent(): bool {
     return $this->getSubscriberChoice() !== self::CHOICE_ASK_ALL;
   }
+
+  /**
+   * SQL condition on a tracking_consent column for "subscribers we can track now".
+   * With engagement tracking off nobody is tracked, so it falls back to leaving out
+   * only the subscribers who opted out, instead of matching nobody.
+   */
+  public function getTrackableConsentCondition(string $column): string {
+    if ($this->trackingConfig->isEmailTrackingEnabled() && !$this->shouldTrackUnknownConsent()) {
+      return sprintf("%s = '%s'", $column, SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    }
+    return sprintf("%s != '%s'", $column, SubscriberEntity::TRACKING_CONSENT_DENIED);
+  }
 }

@@ -203,6 +203,7 @@ export function Form({ isNewSegment, newsletterId }: Props): JSX.Element {
                                   {
                                     segmentType: newValue.group,
                                     action: newValue.value,
+                                    onlyTrackable: false,
                                   },
                                   filterRow.index,
                                 );

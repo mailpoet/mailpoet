@@ -10,6 +10,8 @@ use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\TrackingConsentController;
 use MailPoetVendor\Carbon\CarbonImmutable;
 
 class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
@@ -128,6 +130,34 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['opened-old-opens@example.com', 'opened-no-opens@example.com'], $emails);
   }
 
+  public function testGetOpenedEqualsZeroOnlyTrackableLeavesOutOptedOut(): void {
+    $this->createSubscriberWithConsent('no-opens-denied@example.com', SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $segmentFilterData = $this->getSegmentFilterData(0, 'equals', 2);
+    $this->assertEqualsCanonicalizing(
+      ['opened-old-opens@example.com', 'opened-no-opens@example.com', 'no-opens-denied@example.com'],
+      $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->action)
+    );
+
+    $segmentFilterData = $this->getSegmentFilterData(0, 'equals', 2, DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST, EmailOpensAbsoluteCountAction::TYPE, true);
+    $this->assertEqualsCanonicalizing(
+      ['opened-old-opens@example.com', 'opened-no-opens@example.com'],
+      $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->action)
+    );
+  }
+
+  public function testGetOpenedEqualsZeroOnlyTrackableKeepsOnlyGrantedWhenAskingEveryone(): void {
+    $this->createSubscriberWithConsent('no-opens-granted@example.com', SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_ALL);
+    try {
+      $segmentFilterData = $this->getSegmentFilterData(0, 'equals', 2, DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST, EmailOpensAbsoluteCountAction::TYPE, true);
+      $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->action);
+    } finally {
+      $settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_TRACK_ALL);
+    }
+    $this->assertEqualsCanonicalizing(['no-opens-granted@example.com'], $emails);
+  }
+
   public function testGetOpenedLessThanOne(): void {
     $segmentFilterData = $this->getSegmentFilterData(1, 'less', 2);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->action);
@@ -176,13 +206,30 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['between-in-range@example.com'], $emails);
   }
 
-  private function getSegmentFilterData(int $opens, string $operator, int $days, string $timeframe = DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST, string $action = EmailOpensAbsoluteCountAction::TYPE): DynamicSegmentFilterData {
-    return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, [
+  private function getSegmentFilterData(
+    int $opens,
+    string $operator,
+    int $days,
+    string $timeframe = DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST,
+    string $action = EmailOpensAbsoluteCountAction::TYPE,
+    bool $onlyTrackable = false
+  ): DynamicSegmentFilterData {
+    $data = [
       'operator' => $operator,
       'opens' => $opens,
       'days' => $days,
       'timeframe' => $timeframe,
-    ]);
+    ];
+    if ($onlyTrackable) {
+      $data[DynamicSegmentFilterData::ONLY_TRACKABLE] = true;
+    }
+    return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, $data);
+  }
+
+  private function createSubscriberWithConsent(string $email, string $consent): void {
+    $subscriber = $this->createSubscriber($email);
+    $subscriber->setTrackingConsent($consent);
+    $this->entityManager->flush();
   }
 
   private function createSubscriber(string $email): SubscriberEntity {

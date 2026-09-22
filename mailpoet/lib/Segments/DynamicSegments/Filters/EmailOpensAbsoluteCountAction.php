@@ -44,6 +44,7 @@ class EmailOpensAbsoluteCountAction implements Filter {
 
     $queryBuilder->leftJoin($subscribersTable, $statsTable, 'opens', $joinCondition);
 
+    $this->filterHelper->applyOnlyTrackable($queryBuilder, $filterData);
     $queryBuilder->groupBy("$subscribersTable.id");
     if ($operator === 'equals') {
       $queryBuilder->having("count(opens.id) = :opens" . $parameterSuffix);

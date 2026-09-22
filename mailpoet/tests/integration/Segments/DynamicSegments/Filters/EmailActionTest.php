@@ -12,6 +12,8 @@ use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 
 class EmailActionTest extends \MailPoetTest {
   /** @var EmailAction */
@@ -141,6 +143,56 @@ class EmailActionTest extends \MailPoetTest {
     );
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
     $this->assertEqualsCanonicalizing(['not_opened@example.com'], $emails);
+  }
+
+  public function testGetOpenedOperatorNoneOnlyTrackableLeavesOutUntrackedSends(): void {
+    $untracked = $this->createSubscriber('not_opened_untracked@example.com');
+    $this->markSentWithoutTracking($this->createStatsNewsletter($untracked, $this->newsletter));
+
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_OPENED, [
+      'newsletters' => [(int)$this->newsletter->getId()],
+      'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
+      DynamicSegmentFilterData::ONLY_TRACKABLE => true,
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+    $this->assertEqualsCanonicalizing(['not_opened@example.com'], $emails);
+  }
+
+  public function testGetClickedOperatorNoneOnlyTrackableLeavesOutUntrackedSends(): void {
+    $untracked = $this->createSubscriber('not_clicked_untracked@example.com');
+    $this->markSentWithoutTracking($this->createStatsNewsletter($untracked, $this->newsletter));
+    $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked);
+
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_CLICKED, [
+      'newsletter_id' => (int)$this->newsletter->getId(),
+      'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
+      DynamicSegmentFilterData::ONLY_TRACKABLE => true,
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+    $this->assertEqualsCanonicalizing(['opened_not_clicked@example.com', 'not_opened@example.com'], $emails);
+  }
+
+  public function testGetOpenedOperatorNoneOnlyTrackableFallsBackToConsentWithoutTracking(): void {
+    $untracked = $this->createSubscriber('untracked_unknown@example.com');
+    $this->markSentWithoutTracking($this->createStatsNewsletter($untracked, $this->newsletter));
+    $optedOut = $this->createSubscriber('untracked_denied@example.com');
+    $optedOut->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $this->entityManager->flush();
+    $this->markSentWithoutTracking($this->createStatsNewsletter($optedOut, $this->newsletter));
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
+
+    try {
+      $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_OPENED, [
+        'newsletters' => [(int)$this->newsletter->getId()],
+        'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
+        DynamicSegmentFilterData::ONLY_TRACKABLE => true,
+      ]);
+      $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+    } finally {
+      $settings->set('tracking.level', TrackingConfig::LEVEL_FULL);
+    }
+    $this->assertEqualsCanonicalizing(['not_opened@example.com', 'untracked_unknown@example.com'], $emails);
   }
 
   public function testGetOpenedOperatorAllCountsRepeatedAutomationEmailSendsOnce(): void {
@@ -593,6 +645,14 @@ class EmailActionTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(
       ['automation_matches_url@example.com', 'automation_clicks_other@example.com'],
       $emails
+    );
+  }
+
+  private function markSentWithoutTracking(StatisticsNewsletterEntity $stats): void {
+    $table = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE `{$table}` SET sent_with_tracking = 0 WHERE id = ?",
+      [$stats->getId()]
     );
   }
 
