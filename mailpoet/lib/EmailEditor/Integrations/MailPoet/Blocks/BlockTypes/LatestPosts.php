@@ -32,6 +32,9 @@ class LatestPosts extends AbstractBlock {
   private const TEMPLATE_BLOCK = 'mailpoet/latest-posts-template';
   private const POST_CONTENT_BLOCK = 'mailpoet/post-content';
   private const DEFAULT_COLUMNS = 1;
+  /** Marks the inner blocks as a post loop for core's post blocks. */
+  private const QUERY_ID = 0;
+
   private const MAX_COLUMNS = 2;
   private const DEFAULT_POSTS = 3;
   private const MAX_POSTS = 100;
@@ -899,6 +902,9 @@ class LatestPosts extends AbstractBlock {
     $injectContext = static function (array $context) use ($postId, $postType): array {
       $context['postId'] = $postId;
       $context['postType'] = $postType; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      // Core's post blocks treat a finite queryId as "inside a post loop", which is
+      // what these are. It keeps the editor and the email on the same branch.
+      $context['queryId'] = self::QUERY_ID;
       return $context;
     };
 
