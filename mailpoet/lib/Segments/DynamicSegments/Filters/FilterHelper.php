@@ -3,6 +3,7 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Settings\TrackingConfig;
@@ -26,6 +27,8 @@ class FilterHelper {
   private TrackingConsentController $trackingConsentController;
 
   private TrackingConfig $trackingConfig;
+
+  private ?bool $hasSentWithTrackingColumn = null;
 
   public function __construct(
     EntityManager $entityManager,
@@ -54,17 +57,38 @@ class FilterHelper {
 
   /**
    * For "did not open/click this email" with the "only subscribers we can track"
-   * option: keep only subscribers the email went out to with tracking. With
-   * engagement tracking off no send is tracked, so it falls back to consent.
+   * option: keep subscribers the email went out to with tracking who we can still
+   * track today. Sends from before the flag existed are all marked as tracked, so
+   * the consent check is needed as well. With engagement tracking off, or before
+   * the flag's column exists, only the consent check is used.
    */
   public function getOnlyTrackableSendCondition(DynamicSegmentFilterData $filterData, string $sentAlias): ?string {
     if (!$this->isOnlyTrackable($filterData)) {
       return null;
     }
-    if (!$this->trackingConfig->isEmailTrackingEnabled()) {
-      return $this->getTrackableConsentCondition();
+    $consentCondition = $this->getTrackableConsentCondition();
+    if (!$this->trackingConfig->isEmailTrackingEnabled() || !$this->hasSentWithTrackingColumn()) {
+      return $consentCondition;
     }
-    return "$sentAlias.sent_with_tracking = 1";
+    return "$sentAlias.sent_with_tracking = 1 AND $consentCondition";
+  }
+
+  private function hasSentWithTrackingColumn(): bool {
+    if ($this->hasSentWithTrackingColumn !== null) {
+      return $this->hasSentWithTrackingColumn;
+    }
+    global $wpdb;
+    $table = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $suppressErrors = $wpdb->suppress_errors();
+    try {
+      $this->entityManager->getConnection()->executeQuery("SELECT sent_with_tracking FROM `$table` LIMIT 0");
+      $this->hasSentWithTrackingColumn = true;
+    } catch (\Throwable $e) {
+      $this->hasSentWithTrackingColumn = false;
+    } finally {
+      $wpdb->suppress_errors($suppressErrors);
+    }
+    return $this->hasSentWithTrackingColumn;
   }
 
   private function getTrackableConsentCondition(): string {

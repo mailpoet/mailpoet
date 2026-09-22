@@ -8,6 +8,7 @@ import {
   SubscriberActionTypes,
 } from './types';
 import { storeName } from './store';
+import { isOnlyTrackableActive } from './dynamic-segments-filters/fields/only-trackable-field';
 
 /**
  * Filters that read open or click data and have no way to tell "did not engage"
@@ -54,7 +55,7 @@ function TrackingConsentNotice(): JSX.Element {
   const filters = segment.filters ?? [];
 
   const countsThemAsNotEngaged = filters.some((formItem) => {
-    if (formItem.onlyTrackable) {
+    if (isOnlyTrackableActive(segment, formItem)) {
       return false;
     }
     const action = formItem.action;

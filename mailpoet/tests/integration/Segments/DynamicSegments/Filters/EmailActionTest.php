@@ -14,6 +14,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
+use MailPoet\Subscribers\TrackingConsentController;
 
 class EmailActionTest extends \MailPoetTest {
   /** @var EmailAction */
@@ -193,6 +194,58 @@ class EmailActionTest extends \MailPoetTest {
       $settings->set('tracking.level', TrackingConfig::LEVEL_FULL);
     }
     $this->assertEqualsCanonicalizing(['not_opened@example.com', 'untracked_unknown@example.com'], $emails);
+  }
+
+  public function testGetOpenedOperatorNoneOnlyTrackableLeavesOutSubscribersWeCannotTrackToday(): void {
+    $optedOutLater = $this->createSubscriber('opted_out_later@example.com');
+    $this->createStatsNewsletter($optedOutLater, $this->newsletter);
+    $optedOutLater->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $granted = $this->createSubscriber('granted@example.com');
+    $granted->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_GRANTED);
+    $this->entityManager->flush();
+    $this->createStatsNewsletter($granted, $this->newsletter);
+    $settings = $this->diContainer->get(SettingsController::class);
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_OPENED, [
+      'newsletters' => [(int)$this->newsletter->getId()],
+      'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
+      DynamicSegmentFilterData::ONLY_TRACKABLE => true,
+    ]);
+
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+    $this->assertEqualsCanonicalizing(['not_opened@example.com', 'granted@example.com'], $emails);
+
+    $settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_ASK_ALL);
+    try {
+      $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+    } finally {
+      $settings->set(TrackingConsentController::SETTING_SUBSCRIBER_CHOICE, TrackingConsentController::CHOICE_TRACK_ALL);
+    }
+    $this->assertEqualsCanonicalizing(['granted@example.com'], $emails);
+  }
+
+  public function testGetOpenedOperatorNoneOnlyTrackableFallsBackToConsentWithoutTheTrackingColumn(): void {
+    $untracked = $this->createSubscriber('not_opened_untracked@example.com');
+    $this->markSentWithoutTracking($this->createStatsNewsletter($untracked, $this->newsletter));
+    $table = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $connection = $this->entityManager->getConnection();
+    $connection->executeStatement("ALTER TABLE `{$table}` DROP INDEX `newsletter_id_sent_with_tracking`, DROP COLUMN `sent_with_tracking`");
+    $filterHelper = $this->diContainer->get(FilterHelper::class);
+    $this->resetColumnCheck($filterHelper);
+
+    try {
+      $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_OPENED, [
+        'newsletters' => [(int)$this->newsletter->getId()],
+        'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
+        DynamicSegmentFilterData::ONLY_TRACKABLE => true,
+      ]);
+      $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+    } finally {
+      $connection->executeStatement(
+        "ALTER TABLE `{$table}` ADD COLUMN `sent_with_tracking` tinyint(1) NOT NULL DEFAULT 1, ADD INDEX `newsletter_id_sent_with_tracking` (`newsletter_id`, `sent_with_tracking`, `queue_id`)"
+      );
+      $this->resetColumnCheck($filterHelper);
+    }
+    $this->assertEqualsCanonicalizing(['not_opened@example.com', 'not_opened_untracked@example.com'], $emails);
   }
 
   public function testGetOpenedOperatorAllCountsRepeatedAutomationEmailSendsOnce(): void {
@@ -646,6 +699,12 @@ class EmailActionTest extends \MailPoetTest {
       ['automation_matches_url@example.com', 'automation_clicks_other@example.com'],
       $emails
     );
+  }
+
+  private function resetColumnCheck(FilterHelper $filterHelper): void {
+    $property = new \ReflectionProperty(FilterHelper::class, 'hasSentWithTrackingColumn');
+    $property->setAccessible(true);
+    $property->setValue($filterHelper, null);
   }
 
   private function markSentWithoutTracking(StatisticsNewsletterEntity $stats): void {
