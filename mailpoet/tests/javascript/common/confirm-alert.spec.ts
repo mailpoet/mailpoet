@@ -189,6 +189,12 @@ describe('confirmAlert', function confirmAlertSuite() {
     const target = document.createElement('button');
     target.id = 'return-target';
     document.body.appendChild(target);
+    const focusCalls: unknown[] = [];
+    const originalFocus = target.focus.bind(target);
+    target.focus = (options?: FocusOptions): void => {
+      focusCalls.push(options);
+      originalFocus(options);
+    };
 
     confirmAlertModule.confirmAlert({
       message: 'Are you sure?',
@@ -209,6 +215,8 @@ describe('confirmAlert', function confirmAlertSuite() {
     expect(document.activeElement && document.activeElement.id).to.equal(
       'return-target',
     );
+    // jsdom ignores preventScroll, so assert on the call argument instead
+    expect(focusCalls).to.deep.equal([{ preventScroll: true }]);
   });
 
   it('focuses returnFocus after a promise-returning onConfirm settles', async () => {
