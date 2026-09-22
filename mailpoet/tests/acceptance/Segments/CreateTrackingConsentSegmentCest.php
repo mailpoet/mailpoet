@@ -8,7 +8,7 @@ use MailPoet\Test\DataFactories\Subscriber;
 class CreateTrackingConsentSegmentCest {
   private const ENGAGEMENT_NOTICE = 'MailPoet has no open or click data for subscribers who opted out of tracking';
   private const OMITTED_NOTICE = 'Subscribers who opted out of tracking are not counted here';
-  private const SCORE_NOTICE = 'Subscribers who opted out of tracking have no engagement score, so they count as Unknown';
+  private const SCORE_NOTICE = 'Subscribers we cannot track have no engagement score, so they count as Unknown or Dormant';
 
   public function _before() {
     (new Subscriber())
