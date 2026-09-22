@@ -66,6 +66,18 @@ type BlockContext = { postId: number; postType: string; queryId: number };
 // editable field takes its value as HTML rather than as text.
 const QUERY_ID = 0;
 
+/**
+ * The context each previewed post is rendered under. Exported so the queryId
+ * cannot be dropped without a test noticing.
+ */
+export function buildBlockContexts(posts: PostRecord[]): BlockContext[] {
+  return posts.map((post) => ({
+    postId: post.id,
+    postType: post.type,
+    queryId: QUERY_ID,
+  }));
+}
+
 // This is the default layout for each post. Users can customize it by adding, removing, or rearranging the inner blocks below.
 const POST_TEMPLATE: Array<[string, Record<string, unknown>?]> = [
   ['core/post-featured-image'],
@@ -235,12 +247,7 @@ export function Edit({ clientId, context }: EditProps): JSX.Element {
   );
 
   const blockContexts = useMemo<BlockContext[]>(
-    () =>
-      posts?.map((post) => ({
-        postId: post.id,
-        postType: post.type,
-        queryId: QUERY_ID,
-      })) ?? [],
+    () => buildBlockContexts(posts ?? []),
     [posts],
   );
 
