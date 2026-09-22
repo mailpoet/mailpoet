@@ -108,6 +108,21 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
         },
         onend: function onend(event) {
           var target = event.target;
+          // When the pointer is released over a different element than where the
+          // drag started, the browser fires a click on their common ancestor.
+          // That click would reach click-outside handlers and e.g. close the
+          // settings panel the drop has just opened, so swallow it.
+          var suppressClick = function suppressClick(clickEvent) {
+            clickEvent.stopPropagation();
+            clickEvent.preventDefault();
+          };
+          document.addEventListener('click', suppressClick, {
+            capture: true,
+            once: true,
+          });
+          setTimeout(function removeClickSuppression() {
+            document.removeEventListener('click', suppressClick, true);
+          }, 0);
           target.style.transform = '';
           target.style.webkitTransform = target.style.transform;
           target.removeAttribute('data-x');
