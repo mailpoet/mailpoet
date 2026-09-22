@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use Facebook\WebDriver\Exception\TimeoutException;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class EditorImageBlockCest {
@@ -14,17 +13,8 @@ class EditorImageBlockCest {
       ->create();
     $i->login();
     $i->amEditingNewsletter($newsletter->getId());
-    for ($attempt = 1; $attempt <= 3; $attempt++) {
-      $i->dragAndDrop('#automation_editor_block_image', '#mce_0');
-      try {
-        $i->waitForText('Add images');
-        break;
-      } catch (TimeoutException $e) {
-        if ($attempt === 3) {
-          throw $e;
-        }
-      }
-    }
+    $i->dragAndDrop('#automation_editor_block_image', '#mce_0');
+    $i->waitForText('Add images');
     $i->click('Media Library');
     $i->waitForElementClickable('.thumbnail');
     $i->click('.thumbnail');
