@@ -32,14 +32,13 @@ class LatestPosts extends AbstractBlock {
   private const TEMPLATE_BLOCK = 'mailpoet/latest-posts-template';
   private const POST_CONTENT_BLOCK = 'mailpoet/post-content';
   private const DEFAULT_COLUMNS = 1;
-  /** Marks the inner blocks as a post loop for core's post blocks. */
-  private const QUERY_ID = 0;
-
   private const MAX_COLUMNS = 2;
   private const DEFAULT_POSTS = 3;
   private const MAX_POSTS = 100;
   private const DEFAULT_BLOCK_GAP = '20px';
   private const DEFAULT_CONTENT_WIDTH_PX = 600;
+  /** Marks the inner blocks as a post loop for core's post blocks. */
+  private const QUERY_ID = 0;
 
   /** Template blocks. Not email-enabled by default, so we opt them in. */
   private const TEMPLATE_CORE_BLOCKS = [
