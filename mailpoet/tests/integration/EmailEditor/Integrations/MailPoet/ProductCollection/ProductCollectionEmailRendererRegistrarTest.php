@@ -72,6 +72,21 @@ class ProductCollectionEmailRendererRegistrarTest extends \MailPoetTest {
     $this->assertSame(array_keys($this->originalWooCommerceBlocks), array_keys($this->getRegisteredWooCommerceBlocks()));
   }
 
+  public function testItRendersWhenWooCommerceBlockRegistrationThrows(): void {
+    $this->simulateSkippedWooCommerceBlockRegistration();
+    $throwOnWooCommerceBlock = function (array $args, string $blockName): array {
+      if (strpos($blockName, 'woocommerce/') === 0) {
+        throw new \Error('Block registration failed');
+      }
+      return $args;
+    };
+    add_filter('register_block_type_args', $throwOnWooCommerceBlock, 10, 2);
+
+    $html = $this->render($this->createProductCollectionContent());
+
+    $this->assertStringContainsString('Product collection email', $html);
+  }
+
   private function render(string $postContent): string {
     $postId = wp_insert_post([
       'post_type' => 'mailpoet_email',
