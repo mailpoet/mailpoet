@@ -61,6 +61,7 @@ class ProductCollectionEmailRendererRegistrarTest extends \MailPoetTest {
     $html = $this->render($this->createProductCollectionContent());
 
     $this->assertStringContainsString(self::PRODUCT_NAME, $html);
+    $this->assertStringNotContainsString('data-block-name', $html);
   }
 
   public function testItDoesNotRegisterWooCommerceBlocksAgainWhenAlreadyRegistered(): void {

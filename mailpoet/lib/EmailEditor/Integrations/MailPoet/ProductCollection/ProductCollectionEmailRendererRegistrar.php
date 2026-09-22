@@ -115,6 +115,11 @@ class ProductCollectionEmailRendererRegistrar {
   }
 
   private function registerWooCommerceBlocks(WooCommerceBlockTypesController $blockTypesController): void {
+    // The controller's constructor adds this filter. When the controller is created during an
+    // email render, the filter runs after the email renderer's filter and adds every block
+    // attribute to the sent email as a data-* attribute.
+    $this->wp->removeFilter('render_block', [$blockTypesController, 'add_data_attributes']);
+
     // Registration runs third-party hooks. The sending worker only catches \Exception, so an
     // \Error thrown there would leave the sending task stuck.
     try {
