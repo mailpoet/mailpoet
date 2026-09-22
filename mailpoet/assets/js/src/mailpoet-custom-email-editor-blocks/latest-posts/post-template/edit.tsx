@@ -58,7 +58,13 @@ type EditProps = {
 };
 
 type PostRecord = { id: number; type: string };
-type BlockContext = { postId: number; postType: string };
+type BlockContext = { postId: number; postType: string; queryId: number };
+
+// Core's post blocks show an editable field bound to the source post unless they
+// are inside a post loop, which they decide from a finite queryId. Without it the
+// email editor would let someone rewrite the post being previewed, and the
+// editable field takes its value as HTML rather than as text.
+const QUERY_ID = 0;
 
 // This is the default layout for each post. Users can customize it by adding, removing, or rearranging the inner blocks below.
 const POST_TEMPLATE: Array<[string, Record<string, unknown>?]> = [
@@ -233,6 +239,7 @@ export function Edit({ clientId, context }: EditProps): JSX.Element {
       posts?.map((post) => ({
         postId: post.id,
         postType: post.type,
+        queryId: QUERY_ID,
       })) ?? [],
     [posts],
   );
