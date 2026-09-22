@@ -7,6 +7,7 @@ use Automattic\WooCommerce\Blocks\Package as WooCommerceBlocksPackage;
 use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context;
 use Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Initializer as WooCommerceBlocksInitializer;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -84,12 +85,16 @@ class ProductCollectionEmailRendererRegistrar {
 
   /**
    * WooCommerce 11.1+ skips registering its blocks on cron and AJAX requests,
-   * which is where MailPoet sends emails from. Register them on demand the same
-   * way WooCommerce does for blocks in product descriptions
-   * (Bootstrap::maybe_register_blocks_from_content).
+   * which is where MailPoet sends emails from, so register them on demand. Only
+   * MailPoet emails are covered: WooCommerce's own emails also fire
+   * woocommerce_email_editor_render_start, for example during checkout, and are
+   * left to WooCommerce.
    */
   private function registerWooCommerceBlocksIfSkipped(): void {
     if (\WP_Block_Type_Registry::get_instance()->is_registered('woocommerce/product-collection')) {
+      return;
+    }
+    if (!$this->isRenderingMailPoetEmail()) {
       return;
     }
     if (!class_exists(WooCommerceBlocksPackage::class) || !class_exists(WooCommerceBlockTypesController::class)) {
@@ -112,6 +117,15 @@ class ProductCollectionEmailRendererRegistrar {
     }
 
     $this->registerWooCommerceBlocks($blockTypesController);
+  }
+
+  /**
+   * The email editor sets $post to the email it renders before firing
+   * woocommerce_email_editor_render_start.
+   */
+  private function isRenderingMailPoetEmail(): bool {
+    global $post;
+    return $post instanceof \WP_Post && $post->post_type === EmailEditor::MAILPOET_EMAIL_POST_TYPE; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   private function registerWooCommerceBlocks(WooCommerceBlockTypesController $blockTypesController): void {
