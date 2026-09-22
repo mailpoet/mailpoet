@@ -9,6 +9,7 @@ import { Input } from 'common/form/input/input';
 import { DateFormItem, FilterProps } from '../../types';
 import { storeName } from '../../store';
 import { convertDateToString, parseDate } from './date-helpers';
+import { OnlyTrackableField } from './only-trackable-field';
 
 export enum DateOperator {
   BEFORE = 'before',
@@ -231,3 +232,13 @@ export const DateFieldsDefaultBefore = withDefaults(DateOperator.BEFORE);
 export const DateFieldsDefaultInTheLast = withDefaults(
   DateOperator.IN_THE_LAST,
 );
+
+export function EngagementDateFields(props: FilterProps): JSX.Element {
+  const { filterIndex } = props;
+  return (
+    <>
+      <DateFieldsDefaultInTheLast {...props} />
+      <OnlyTrackableField filterIndex={filterIndex} />
+    </>
+  );
+}

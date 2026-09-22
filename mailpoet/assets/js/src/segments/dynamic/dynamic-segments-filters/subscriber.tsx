@@ -15,6 +15,7 @@ import {
   DateFieldsDefaultBefore,
   DateFieldsDefaultInTheLast,
   DateOperator,
+  EngagementDateFields,
   validateDateField,
 } from './fields/date-fields';
 import {
@@ -112,13 +113,11 @@ const componentsMap = {
   [SubscriberActionTypes.SUBSCRIBER_EMAIL]: TextField,
   [SubscriberActionTypes.SUBSCRIBED_VIA_FORM]: SubscribedViaForm,
   [SubscriberActionTypes.TRACKING_CONSENT]: TrackingConsentFields,
-  [SubscriberActionTypes.SUBSCRIBER_LAST_ENGAGEMENT_DATE]:
-    DateFieldsDefaultInTheLast,
+  [SubscriberActionTypes.SUBSCRIBER_LAST_ENGAGEMENT_DATE]: EngagementDateFields,
   [SubscriberActionTypes.SUBSCRIBER_LAST_PURCHASE_DATE]:
     DateFieldsDefaultInTheLast,
-  [SubscriberActionTypes.SUBSCRIBER_LAST_OPEN_DATE]: DateFieldsDefaultInTheLast,
-  [SubscriberActionTypes.SUBSCRIBER_LAST_CLICK_DATE]:
-    DateFieldsDefaultInTheLast,
+  [SubscriberActionTypes.SUBSCRIBER_LAST_OPEN_DATE]: EngagementDateFields,
+  [SubscriberActionTypes.SUBSCRIBER_LAST_CLICK_DATE]: EngagementDateFields,
   [SubscriberActionTypes.SUBSCRIBER_LAST_PAGE_VIEW_DATE]:
     DateFieldsDefaultInTheLast,
   [SubscriberActionTypes.SUBSCRIBER_LAST_SENDING_DATE]:

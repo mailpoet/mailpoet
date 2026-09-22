@@ -39,6 +39,7 @@ class NumberOfClicks implements Filter {
 
     $queryBuilder->leftJoin($subscribersTable, $statsTable, 'clicks', $joinCondition);
 
+    $this->filterHelper->applyOnlyTrackable($queryBuilder, $filterData);
     $queryBuilder->groupBy("$subscribersTable.id");
     $clicksCountParam = $this->filterHelper->getUniqueParameterName('clicks');
 

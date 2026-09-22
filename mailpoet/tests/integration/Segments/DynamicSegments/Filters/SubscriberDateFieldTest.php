@@ -3,6 +3,7 @@
 namespace integration\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberDateField;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoetVendor\Carbon\CarbonImmutable;
@@ -211,6 +212,25 @@ class SubscriberDateFieldTest extends \MailPoetTest {
       ->withLastSubscribedAt((new CarbonImmutable()))
       ->create();
     $this->assertFilterReturnsEmails('subscribedDate', 'notInTheLast', '3', ['1@example.com', '2@example.com']);
+  }
+
+  public function testOnlyTrackableLeavesOutOptedOutSubscribers(): void {
+    (new Subscriber())
+      ->withEmail('tracked@example.com')
+      ->withLastEngagementAt(new CarbonImmutable('2023-07-11'))
+      ->create();
+    (new Subscriber())
+      ->withEmail('denied@example.com')
+      ->withLastEngagementAt(new CarbonImmutable('2023-07-11'))
+      ->withTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED)
+      ->create();
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberDateField::LAST_ENGAGEMENT_DATE, [
+      'operator' => 'before',
+      'value' => '2023-07-13',
+      DynamicSegmentFilterData::ONLY_TRACKABLE => true,
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['tracked@example.com'], $emails);
   }
 
   private function assertFilterReturnsEmails(string $action, string $operator, string $value, array $expectedEmails, ?string $value2 = null): void {

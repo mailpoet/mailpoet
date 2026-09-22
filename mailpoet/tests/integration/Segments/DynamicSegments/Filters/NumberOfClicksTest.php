@@ -104,6 +104,20 @@ class NumberOfClicksTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['start@e.com', 'end@e.com'], $emails);
   }
 
+  public function testOnlyTrackableLeavesOutOptedOutSubscribers(): void {
+    (new Subscriber())->withEmail('no-clicks@e.com')->create();
+    (new Subscriber())->withEmail('no-clicks-denied@e.com')->withTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED)->create();
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, NumberOfClicks::ACTION, [
+      'operator' => 'equals',
+      'clicks' => 0,
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_ALL_TIME,
+      DynamicSegmentFilterData::ONLY_TRACKABLE => true,
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->filter);
+    verify($emails)->arrayContains('no-clicks@e.com');
+    verify($emails)->arrayNotContains('no-clicks-denied@e.com');
+  }
+
   private function getSegmentFilterData(int $clicks, string $operator, int $days, string $timeframe = DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST, string $action = NumberOfClicks::ACTION): DynamicSegmentFilterData {
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, [
       'operator' => $operator,

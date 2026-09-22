@@ -10,6 +10,7 @@ import { MailPoet } from 'mailpoet';
 import { EmailFormItem, FilterProps } from '../../../types';
 import { storeName } from '../../../store';
 import { DaysPeriodField } from '../days-period-field';
+import { OnlyTrackableField } from '../only-trackable-field';
 
 function replaceEmailActionNumberOfClicks(
   fn: (value) => JSX.Element,
@@ -79,6 +80,7 @@ export function NumberOfClicksFields({
         })}
       </Grid.CenteredRow>
       <DaysPeriodField filterIndex={filterIndex} />
+      <OnlyTrackableField filterIndex={filterIndex} />
     </>
   );
 }

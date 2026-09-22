@@ -22,6 +22,9 @@ class DynamicSegmentFilterData {
   public const CONNECT_TYPE_OR = 'or';
   public const CONNECT_TYPE_NONE = 'none';
 
+  /** Leaves out subscribers we cannot track, see FilterHelper::applyOnlyTrackable(). */
+  public const ONLY_TRACKABLE = 'onlyTrackable';
+
   public const OPERATOR_ALL = 'all';
   public const OPERATOR_ANY = 'any';
   public const OPERATOR_NONE = 'none';

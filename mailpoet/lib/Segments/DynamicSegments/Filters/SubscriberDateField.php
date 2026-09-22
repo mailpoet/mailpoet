@@ -57,6 +57,7 @@ class SubscriberDateField implements Filter {
     }
 
     $columnName = $this->getColumnNameForAction($action);
+    $this->filterHelper->applyOnlyTrackable($queryBuilder, $filter->getFilterData());
 
     switch ($operator) {
       case DateFilterHelper::BEFORE:

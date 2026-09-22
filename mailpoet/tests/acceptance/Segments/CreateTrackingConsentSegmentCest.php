@@ -144,6 +144,46 @@ class CreateTrackingConsentSegmentCest {
     $i->seeNoJSErrors();
   }
 
+  public function testOnlyTrackableOptionLeavesOutOptedOutSubscribers(\AcceptanceTester $i) {
+    $i->wantTo('Leave out subscribers we cannot track from an engagement filter');
+    $segmentTitle = 'Trackable non-openers';
+    $i->login();
+    $i->amOnMailpoetPage('Segments');
+    $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
+    $i->fillField(['name' => 'name'], $segmentTitle);
+    $i->fillField(['name' => 'description'], 'description');
+    $i->selectOptionInReactSelect('number of opens', '[data-automation-id="select-segment-action"]');
+    $i->waitForElementVisible('[data-automation-id="segment-number-of-opens"]');
+    $i->selectOption('select', 'not equals');
+    $i->fillField('[data-automation-id="segment-number-of-opens"]', 5);
+    $i->fillField('[data-automation-id="segment-number-of-days"]', 30);
+    $i->waitForText(self::ENGAGEMENT_NOTICE);
+
+    $i->click('[data-automation-id="segment-only-trackable"]');
+    $i->waitForElementNotVisible('//*[contains(text(), "' . self::ENGAGEMENT_NOTICE . '")]');
+    $i->waitForText('This segment has 3 subscribers.');
+    $i->click('Save');
+    $i->waitForNoticeAndClose('Segment successfully added!');
+
+    $i->wantTo('See the option kept and the opted-out subscriber left out');
+    $i->waitForText($segmentTitle);
+    $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
+    $i->waitForText('Edit segment');
+    $i->waitForElementNotVisible('#mailpoet_loading');
+    $i->waitForElementVisible('[data-automation-id="segment-only-trackable"]');
+    $i->seeCheckboxIsChecked('[data-automation-id="segment-only-trackable"] input');
+    $i->seeNoJSErrors();
+
+    $i->amOnMailpoetPage('Segments');
+    $i->waitForText($segmentTitle);
+    $i->clickWooTableActionByItemName($segmentTitle, 'View subscribers');
+    $i->waitForText('consent_granted@example.com');
+    $i->see('consent_unknown@example.com');
+    $i->dontSee('consent_denied@example.com');
+  }
+
   private function startNewSegment(\AcceptanceTester $i, string $segmentTitle): void {
     $i->login();
     $i->amOnMailpoetPage('Segments');
