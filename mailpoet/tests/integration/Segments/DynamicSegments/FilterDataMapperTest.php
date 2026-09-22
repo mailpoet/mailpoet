@@ -1405,6 +1405,56 @@ class FilterDataMapperTest extends \MailPoetTest {
     verify($filter->getParam(DynamicSegmentFilterData::ONLY_TRACKABLE))->null();
   }
 
+  public function testItKeepsOnlyTrackableForOneAndOnNoneOperatorOnly(): void {
+    $map = function (string $operator, $value) {
+      $filters = $this->mapper->map(['filters' => [[
+        'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+        'action' => EmailAction::ACTION_OPENED,
+        'newsletters' => [1],
+        'operator' => $operator,
+        'onlyTrackable' => $value,
+      ]]]);
+      $filter = reset($filters);
+      $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+      return $filter->getParam(DynamicSegmentFilterData::ONLY_TRACKABLE);
+    };
+    verify($map(DynamicSegmentFilterData::OPERATOR_NONE, '1'))->same(true);
+    verify($map(DynamicSegmentFilterData::OPERATOR_ANY, 'true'))->null();
+  }
+
+  public function testItDropsOnlyTrackableWhenTheQueryTreatsTheGroupAsNone(): void {
+    $mapAllFilters = function ($data, $processFilter) {
+      return array_map(function ($filter) use ($data, $processFilter) {
+        return $processFilter($filter, $data);
+      }, $data['filters']);
+    };
+    add_filter('mailpoet_dynamic_segments_filters_map', $mapAllFilters, 10, 2);
+    try {
+      $filters = $this->mapper->map([
+      'filters_connect' => DynamicSegmentFilterData::CONNECT_TYPE_NONE,
+      'filters' => [
+        [
+          'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+          'action' => EmailAction::ACTION_WAS_SENT,
+          'newsletters' => [1],
+        ],
+        [
+          'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+          'action' => 'lastOpenDate',
+          'operator' => 'before',
+          'value' => '2023-07-13',
+          'onlyTrackable' => 'true',
+          'group_id' => 0,
+          'group_operator' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+        ],
+      ],
+      ]);
+    } finally {
+      remove_filter('mailpoet_dynamic_segments_filters_map', $mapAllFilters, 10);
+    }
+    verify($this->mapFilterWithAction($filters, 'lastOpenDate')->getParam(DynamicSegmentFilterData::ONLY_TRACKABLE))->null();
+  }
+
   public function testItDropsOnlyTrackableInsideNoneGroups(): void {
     $filters = $this->mapper->map([
       'filters_connect' => DynamicSegmentFilterData::CONNECT_TYPE_NONE,
@@ -1721,5 +1771,17 @@ class FilterDataMapperTest extends \MailPoetTest {
     verify($persisted['days'])->equals(0);
     $this->assertArrayNotHasKey('value', $persisted);
     $this->assertArrayNotHasKey('value2', $persisted);
+  }
+
+  /**
+   * @param DynamicSegmentFilterData[] $filters
+   */
+  private function mapFilterWithAction(array $filters, string $action): DynamicSegmentFilterData {
+    foreach ($filters as $filter) {
+      if ($filter->getAction() === $action) {
+        return $filter;
+      }
+    }
+    $this->fail("No filter with action $action");
   }
 }
