@@ -2,14 +2,16 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet\ProductCollection;
 
+use Automattic\WooCommerce\Blocks\BlockTypesController as WooCommerceBlockTypesController;
+use Automattic\WooCommerce\Blocks\Package as WooCommerceBlocksPackage;
 use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context;
 use Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Initializer as WooCommerceBlocksInitializer;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
- * Wires WooCommerce's email block renderers when WooCommerce registers the
- * blocks but leaves render_email_callback unset.
+ * Makes sure WooCommerce's product blocks are registered and wired to their
+ * email renderers before an email renders.
  *
  * WooCommerce sets render_email_callback through the block_type_metadata_settings
  * filter while blocks register. On some builds the product blocks are registered
@@ -55,6 +57,8 @@ class ProductCollectionEmailRendererRegistrar {
       return;
     }
 
+    $this->registerWooCommerceBlocksIfSkipped();
+
     $renderEmailCallbackProperty = 'render_email_callback';
     $registry = \WP_Block_Type_Registry::get_instance();
     foreach (self::PRODUCT_BLOCK_NAMES as $blockName) {
@@ -71,6 +75,38 @@ class ProductCollectionEmailRendererRegistrar {
       // @phpstan-ignore-next-line -- WooCommerce email editor reads this dynamic block setting.
       $blockType->{$renderEmailCallbackProperty} = [$renderer, 'render_block'];
     }
+  }
+
+  /**
+   * WooCommerce 11.1+ skips registering its blocks on cron and AJAX requests,
+   * which is where MailPoet sends emails from. Register them on demand the same
+   * way WooCommerce does for blocks in product descriptions
+   * (Bootstrap::maybe_register_blocks_from_content).
+   */
+  private function registerWooCommerceBlocksIfSkipped(): void {
+    if (\WP_Block_Type_Registry::get_instance()->is_registered('woocommerce/product-collection')) {
+      return;
+    }
+    if (!class_exists(WooCommerceBlocksPackage::class) || !class_exists(WooCommerceBlockTypesController::class)) {
+      return;
+    }
+
+    try {
+      $blockTypesController = WooCommerceBlocksPackage::container()->get(WooCommerceBlockTypesController::class);
+    } catch (\Throwable $e) {
+      return;
+    }
+    if (!$blockTypesController instanceof WooCommerceBlockTypesController) {
+      return;
+    }
+
+    // register_blocks_has_run() ships with WC 11.1, the version that started skipping registration; older WC always registers.
+    // @phpstan-ignore function.impossibleType (WC stub predates this method)
+    if (!method_exists($blockTypesController, 'register_blocks_has_run') || $blockTypesController->register_blocks_has_run()) {
+      return;
+    }
+
+    $blockTypesController->register_blocks();
   }
 
   private function getWooCommerceBlocksRenderer(): ?WooCommerceBlocksInitializer {
