@@ -66,7 +66,7 @@ function TrackingConsentNotice(): JSX.Element {
   });
 
   // Subscribers we cannot track have no score, so every score operator puts
-  // them in the Unknown group.
+  // them in the Unknown or Dormant group.
   const usesEngagementScore = filters.some(
     (formItem) => formItem.action === SubscriberActionTypes.SUBSCRIBER_SCORE,
   );
@@ -80,24 +80,29 @@ function TrackingConsentNotice(): JSX.Element {
     );
   });
 
+  const messages: string[] = [];
   // The stronger warning wins when a segment has both, rather than stacking two
   // notices that say overlapping things.
-  let message = 'trackingConsentOmittedNotice';
   if (countsThemAsNotEngaged) {
-    message = 'trackingConsentEngagementNotice';
-  } else if (usesEngagementScore) {
-    message = 'trackingConsentScoreNotice';
+    messages.push('trackingConsentEngagementNotice');
+  } else if (leavesThemOut) {
+    messages.push('trackingConsentOmittedNotice');
+  }
+  if (usesEngagementScore) {
+    messages.push('trackingConsentScoreNotice');
   }
 
-  if (!countsThemAsNotEngaged && !usesEngagementScore && !leavesThemOut) {
+  if (messages.length === 0) {
     return <span />;
   }
 
   return (
     <div className="mailpoet-form-field">
-      <span className="mailpoet-form-notice-message">
-        {MailPoet.I18n.t(message)}
-      </span>
+      {messages.map((message) => (
+        <div key={message} className="mailpoet-form-notice-message">
+          {MailPoet.I18n.t(message)}
+        </div>
+      ))}
     </div>
   );
 }
