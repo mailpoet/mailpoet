@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 7.0
 Tested up to: 7.1
-Stable tag: 5.38.1
+Stable tag: 5.39.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,20 +227,25 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.38.1 - 2026-09-14 =
-* Added: Turning off open and click tracking in MailPoet now also turns it off in AutomateWoo, so a subscriber only has to say it once. Turning it back on clears it in both places too;
-* Improved: Input validation and block sanitization for the newsletter browser preview request;
-* Improved: Sanitization of nested content blocks in emails;
-* Improved: WP-CLI subscriber import now supports CSVs exported from the plugin;
-* Changed: Shorten customer email addresses in WooCommerce automatic email logs;
-* Fixed: Emails page failing to load on sites with a large log table;
-* Fixed: Subscriber and statistics exports of values a spreadsheet reads as a formula, such as a phone number starting with a plus;
-* Fixed: Keep the original tracking consent record when a list is imported again;
-* Fixed: Stop a subscriber's tracking choice being changed by someone else;
-* Fixed: Email template selector layout with Gutenberg 23.9 or newer;
-* Fixed: Pop-up, fixed bar, and slide-in forms not appearing on single posts and pages when the theme or page builder renders the content outside the main loop;
-* Fixed: Stop block checkout recording a tracking decline for customers who were never asked;
-* Fixed: Use the first row for an email listed twice within one batch of a WP-CLI subscriber import, as the import screen does;
-* Fixed: Bulk unsubscribe of large subscriber selections timing out instead of completing.
+= 5.39.0 - 2026-09-22 =
+* Added: Editor choice modal that lets users pick between the classic and block editor when creating a newsletter and remember their choice;
+* Added: Show a notice on the forms pages when CAPTCHA is disabled and MailPoet Sending Service is active;
+* Added: Option to delete custom confirmation emails from the list settings;
+* Added: Editor choice modal to the automation Send email step, replacing the two editor buttons;
+* Improved: Open, machine-open and click rates are now based on the recipients who allow email tracking, instead of everyone the campaign was sent to. Subscribers who opted out of tracking can never register an open or a click, so counting them was pulling the figures down. Rates will go up on sites that capture tracking consent; nothing broke, the old number was understated. The email listing, campaign stats, automation analytics and the stats notification emails also show how many recipients were not tracked. Unsubscribe and bounce rates are unchanged;
+* Improved: Keyboard and screen reader support in MailPoet popups;
+* Improved: Clearer message in the email editor when the email was deleted in another tab;
+* Changed: Expiring key notices now link to the MailPoet account page, where a plan can be reactivated or payment details updated;
+* Fixed: Embedded forms setting popup dismissal cookies after subscription;
+* Fixed: Show the actual store address and email in WooCommerce emails customized with MailPoet, instead of a raw placeholder;
+* Fixed: Sending stuck in a paused state after a MailPoet Sending Service subscription was approved when the sending method had been changed in the meantime;
+* Fixed: Alignment of the dropdown arrow on the Save button in the newsletter editor;
+* Fixed: Height of dropdowns in the admin so they align with search fields and buttons;
+* Fixed: Emails page showing empty tabs instead of the email type selection on a site with no emails of its own;
+* Fixed: Updating a list through the developer API no longer clears its confirmation email, confirmation page, and manage subscription page settings;
+* Fixed: The expiring sending plan notice now shows on MailPoet admin pages;
+* Fixed: Scheduled emails created in the new email editor now send at the selected time in the site's timezone;
+* Fixed: Duplicated emails no longer keep the schedule settings of the email they were copied from;
+* Fixed: Missing products in WooCommerce blocks of emails sent in the background on WooCommerce 11.1 or newer.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
