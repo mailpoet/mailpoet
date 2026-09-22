@@ -22,7 +22,7 @@ function focusReturnTarget(returnFocus) {
   setTimeout(() => {
     const element = resolveReturnFocusElement(returnFocus);
     if (element && !element.disabled) {
-      element.focus();
+      element.focus({ preventScroll: true });
     }
   }, 0);
 }
