@@ -3,6 +3,7 @@
 namespace unit\EmailEditor\Integrations\MailPoet\ProductCollection;
 
 use MailPoet\EmailEditor\Integrations\MailPoet\ProductCollection\ProductCollectionEmailRendererRegistrar;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ProductCollectionEmailRendererRegistrarTest extends \MailPoetUnitTest {
@@ -11,7 +12,10 @@ class ProductCollectionEmailRendererRegistrarTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
-    $this->registrar = new ProductCollectionEmailRendererRegistrar($this->makeEmpty(WPFunctions::class));
+    $this->registrar = new ProductCollectionEmailRendererRegistrar(
+      $this->makeEmpty(WPFunctions::class),
+      $this->makeEmpty(LoggerFactory::class)
+    );
   }
 
   public function testItRegistersTheRendererOnlyWhenNoCallbackIsWired(): void {

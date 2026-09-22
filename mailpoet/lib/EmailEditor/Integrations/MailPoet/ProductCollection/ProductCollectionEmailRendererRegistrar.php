@@ -7,6 +7,7 @@ use Automattic\WooCommerce\Blocks\Package as WooCommerceBlocksPackage;
 use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context;
 use Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Initializer as WooCommerceBlocksInitializer;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
@@ -33,10 +34,14 @@ class ProductCollectionEmailRendererRegistrar {
 
   private WPFunctions $wp;
 
+  private LoggerFactory $loggerFactory;
+
   public function __construct(
-    WPFunctions $wp
+    WPFunctions $wp,
+    LoggerFactory $loggerFactory
   ) {
     $this->wp = $wp;
+    $this->loggerFactory = $loggerFactory;
   }
 
   public function init(): void {
@@ -106,7 +111,20 @@ class ProductCollectionEmailRendererRegistrar {
       return;
     }
 
-    $blockTypesController->register_blocks();
+    $this->registerWooCommerceBlocks($blockTypesController);
+  }
+
+  private function registerWooCommerceBlocks(WooCommerceBlockTypesController $blockTypesController): void {
+    // Registration runs third-party hooks. The sending worker only catches \Exception, so an
+    // \Error thrown there would leave the sending task stuck.
+    try {
+      $blockTypesController->register_blocks();
+    } catch (\Throwable $e) {
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_EMAIL_EDITOR)->error(
+        'Registering WooCommerce blocks for email rendering failed: {message}',
+        ['message' => $e->getMessage()]
+      );
+    }
   }
 
   private function getWooCommerceBlocksRenderer(): ?WooCommerceBlocksInitializer {
