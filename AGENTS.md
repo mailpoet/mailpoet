@@ -246,6 +246,25 @@ When writing tests:
 - Acceptance tests use browser automation (Selenium/Codeception)
 - Place test `DataFactories` in `tests/DataFactories/` for reusable test data builders
 
+### Verify in the context the feature runs in
+
+WordPress loads differently per request type: front-end page, wp-admin, REST, AJAX,
+cron (WP-Cron / Action Scheduler) and WP-CLI. WooCommerce and other plugins also
+skip work in some of them (for example, WooCommerce 11.1+ does not register its
+blocks on cron or AJAX requests). A check that passes in WP-CLI or a custom script
+can hide a bug that only shows up in the real request.
+
+- Before calling a feature verified, find out which request type runs it in
+  production. Emails are rendered and sent from cron; checkout hooks run in
+  front-end or Store API requests.
+- Verify through the real flow when you can: trigger it the way a user or the
+  site would, and let WP-Cron or Action Scheduler process it through a web request.
+- If you use WP-CLI or a script to save time, make it match the real context
+  (e.g. `wp --exec='define("DOING_CRON", true);' eval-file ...` for cron code)
+  and say in your report which context you tested and which you did not.
+- Treat "works in the editor preview" or "works in WP-CLI" as a partial check,
+  not proof that the real flow works.
+
 ## Architecture & Key Patterns
 
 ### Doctrine ORM
