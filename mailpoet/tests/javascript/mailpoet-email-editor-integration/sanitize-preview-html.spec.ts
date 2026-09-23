@@ -137,12 +137,55 @@ describe('sanitizePreviewHtml', () => {
     );
   });
 
+  it('keeps the classes block markup relies on', () => {
+    expect(sanitizePreviewHtml('<p class="alignleft">t</p>')).to.contain(
+      'class="alignleft"',
+    );
+    expect(
+      sanitizePreviewHtml(
+        '<figure class="wp-block-image size-large">f</figure>',
+      ),
+    ).to.contain('class="wp-block-image size-large"');
+  });
+
+  it('keeps the text-level elements the editor writes', () => {
+    expect(
+      sanitizePreviewHtml('<p>H<sub>2</sub>O and x<sup>2</sup></p>'),
+    ).to.equal('<p>H<sub>2</sub>O and x<sup>2</sup></p>');
+    expect(
+      sanitizePreviewHtml('<p><del>old</del><ins>new</ins><mark>hi</mark></p>'),
+    ).to.equal('<p><del>old</del><ins>new</ins><mark>hi</mark></p>');
+    expect(
+      sanitizePreviewHtml(
+        '<p><small>s</small><abbr title="a">b</abbr><kbd>k</kbd></p>',
+      ),
+    ).to.contain('title="a"');
+    expect(sanitizePreviewHtml('<dl><dt>t</dt><dd>d</dd></dl>')).to.equal(
+      '<dl><dt>t</dt><dd>d</dd></dl>',
+    );
+    expect(
+      sanitizePreviewHtml('<address>a</address><q cite="https://x.test">q</q>'),
+    ).to.contain('cite="https://x.test"');
+  });
+
+  it('keeps the table attributes email clients need', () => {
+    const table = sanitizePreviewHtml(
+      '<table width="600" border="0" cellpadding="4" cellspacing="0" align="center">' +
+        '<tbody><tr valign="top"><td align="left" width="300">c</td></tr></tbody></table>',
+    );
+    expect(table).to.contain('width="600"');
+    expect(table).to.contain('cellpadding="4"');
+    expect(table).to.contain('align="center"');
+    expect(table).to.contain('valign="top"');
+  });
+
   it('drops attributes that are not on the allow list', () => {
     expect(sanitizePreviewHtml('<p style="color:red">styled</p>')).to.equal(
       '<p>styled</p>',
     );
+    // class is kept, id is not: an id in the canvas can shadow a global.
     expect(sanitizePreviewHtml('<p class="x" id="y">t</p>')).to.equal(
-      '<p>t</p>',
+      '<p class="x">t</p>',
     );
   });
 
