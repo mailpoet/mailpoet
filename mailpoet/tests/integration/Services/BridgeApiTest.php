@@ -370,4 +370,90 @@ class BridgeApiTest extends \MailPoetTest {
     verify($errorLog->getMessage())->stringContainsString('verifyAuthorizedSenderDomain API response was not in expected format.');
     verify($errorLog->getMessage())->stringContainsString('trololo');
   }
+
+  public function testItVerifiesBlackboxSessionWithSessionId() {
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemotePost')
+      ->with(
+        $this->api->urlBlackboxVerify . '/bb-session',
+        $this->callback(function($params) {
+          verify($params['headers']['Authorization'])->equals('Basic ' . base64_encode('api:test-api-key'));
+          verify(json_decode((string)$params['body'], true))->equals(['context' => ['action' => 'subscribe']]);
+          verify($params['timeout'])->equals(API::BLACKBOX_VERIFY_REQUEST_TIMEOUT);
+          return true;
+        })
+      )
+      ->willReturn('raw-response');
+    $this->wpMock->method('wpRemoteRetrieveResponseCode')->willReturn(200);
+    $this->wpMock
+      ->method('wpRemoteRetrieveBody')
+      ->willReturn((string)json_encode(['message' => 'OK', 'data' => ['session_id' => 'bb-session', 'risk_score' => 0.18, 'decision' => 'allow']]));
+
+    verify($this->api->verifyBlackbox('bb-session', ['action' => 'subscribe']))->equals(['decision' => 'allow', 'risk_score' => 0.18]);
+  }
+
+  public function testItTakesTheNoSessionPathWhenSessionIdIsNull() {
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemotePost')
+      ->with($this->api->urlBlackboxVerify, $this->anything())
+      ->willReturn('raw-response');
+    $this->wpMock->method('wpRemoteRetrieveResponseCode')->willReturn(200);
+    $this->wpMock
+      ->method('wpRemoteRetrieveBody')
+      ->willReturn((string)json_encode(['message' => 'OK', 'data' => ['session_id' => null, 'risk_score' => 0.4, 'decision' => 'challenge']]));
+
+    verify($this->api->verifyBlackbox(null))->equals(['decision' => 'challenge', 'risk_score' => 0.4]);
+  }
+
+  public function testItThrowsWithTheResponseCodeWhenBlackboxVerifyRequestFails() {
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(500);
+
+    $this->expectException(BlackboxVerifyException::class);
+    $this->expectExceptionCode(500);
+    $this->api->verifyBlackbox('bb-session');
+  }
+
+  public function testItTreatsAnAlreadyVerifiedSessionAsNoSignalInsteadOfThrowing() {
+    // A 409 (already verified) is not guaranteed to carry a fresh decision — the
+    // verdict was already delivered on the earlier call. It must not throw, and
+    // must not be logged as a failure the way a genuine malformed payload would be.
+    $this->wpMock
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(409);
+    $this->wpMock
+      ->method('wpRemoteRetrieveBody')
+      ->willReturn((string)json_encode(['message' => 'Conflict', 'data' => ['error' => 'Session already verified']]));
+
+    verify($this->api->verifyBlackbox('bb-session'))->equals(['decision' => null, 'risk_score' => null]);
+    verify($this->logRepository->findAll())->arrayCount(0);
+  }
+
+  public function testItThrowsWithoutACodeWhenBlackboxVerifyPayloadIsMalformed() {
+    $this->wpMock
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(200);
+    // Valid JSON, but missing data.decision.
+    $this->wpMock
+      ->method('wpRemoteRetrieveBody')
+      ->willReturn((string)json_encode(['message' => 'OK', 'data' => ['session_id' => 'bb-session']]));
+
+    try {
+      $this->api->verifyBlackbox('bb-session');
+      $this->fail('Expected a BlackboxVerifyException.');
+    } catch (BlackboxVerifyException $e) {
+      verify($e->getCode())->equals(0);
+    }
+
+    $logs = $this->logRepository->findAll();
+    verify($logs)->arrayCount(1);
+    $errorLog = $logs[0];
+    $this->assertInstanceOf(LogEntity::class, $errorLog);
+    verify($errorLog->getLevel())->equals(Logger::ERROR);
+    verify($errorLog->getMessage())->stringContainsString('verifyBlackbox API response was not in expected format.');
+  }
 }

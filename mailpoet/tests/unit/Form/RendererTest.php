@@ -8,6 +8,7 @@ use MailPoet\Form\BlocksRenderer;
 use MailPoet\Form\Renderer;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Form\Util\Styles;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -29,6 +30,9 @@ class RendererTest extends \MailPoetUnitTest {
   /** @var MockObject & CustomFonts */
   private $customFonts;
 
+  /** @var MockObject & Bridge */
+  private $bridgeMock;
+
   /** @var HtmlParser */
   private $htmlParser;
 
@@ -38,7 +42,8 @@ class RendererTest extends \MailPoetUnitTest {
     $this->settingsMock = $this->createMock(SettingsController::class);
     $this->blocksRendererMock = $this->createMock(BlocksRenderer::class);
     $this->customFonts = $this->createMock(CustomFonts::class);
-    $this->renderer = new Renderer($this->stylesMock, $this->settingsMock, $this->customFonts, $this->blocksRendererMock);
+    $this->bridgeMock = $this->createMock(Bridge::class);
+    $this->renderer = new Renderer($this->stylesMock, $this->settingsMock, $this->customFonts, $this->blocksRendererMock, $this->bridgeMock);
     $this->htmlParser = new HtmlParser();
   }
 

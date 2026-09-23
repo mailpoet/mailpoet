@@ -197,6 +197,62 @@ jQuery(($) => {
     };
   }
 
+  // window.Blackbox is a page-global singleton (one configure() call per page), so a
+  // page with more than one MailPoet form shares a single challenge container/callback
+  // set — whichever form's container was found first. A known limitation, not solved
+  // here.
+  let blackboxInitialized = false;
+  let blackboxChallengeActive = false;
+  let blackboxChallengeSettled: Promise<void> = Promise.resolve();
+  let resolveBlackboxChallengeSettled: () => void = () => {};
+  const BLACKBOX_SESSION_ID_TIMEOUT_MS = 2000;
+
+  function initBlackbox() {
+    if (blackboxInitialized) return;
+    if (!window.MailPoetForm?.blackbox_enabled || !window.Blackbox) return;
+    blackboxInitialized = true;
+    const challengeContainer = document.querySelector(
+      '.mailpoet_blackbox_challenge_container',
+    );
+    window.Blackbox.configure({
+      apiKey: window.MailPoetForm.blackbox_public_key || '',
+      challengeContainer,
+      onChallengeStart: () => {
+        blackboxChallengeActive = true;
+        blackboxChallengeSettled = new Promise((resolve) => {
+          resolveBlackboxChallengeSettled = resolve;
+        });
+      },
+      onChallengeComplete: () => {
+        blackboxChallengeActive = false;
+        resolveBlackboxChallengeSettled();
+      },
+      onChallengeFailure: () => {
+        blackboxChallengeActive = false;
+        resolveBlackboxChallengeSettled();
+      },
+    });
+    window.Blackbox.init();
+  }
+
+  // getSessionId() resolves only once the background collect call finishes, which can
+  // stall (slow network, blocked script). A tight timeout keeps a broken/slow client
+  // from ever delaying a subscription attempt — the backend falls back to its own
+  // no-session verify path when blackbox_session_id is missing.
+  async function getBlackboxSessionId(): Promise<string | undefined> {
+    if (!window.Blackbox) return undefined;
+    try {
+      return await Promise.race([
+        window.Blackbox.getSessionId(),
+        new Promise<undefined>((resolve) => {
+          setTimeout(() => resolve(undefined), BLACKBOX_SESSION_ID_TIMEOUT_MS);
+        }),
+      ]);
+    } catch {
+      return undefined;
+    }
+  }
+
   function playCaptcha(e?: Event) {
     if (e) e.preventDefault();
     const audioSelector = '.mailpoet_captcha_player';
@@ -955,6 +1011,7 @@ jQuery(($) => {
   });
 
   (() => {
+    initBlackbox();
     $('.mailpoet_form').each((_, element) => {
       $(element)
         .children(
@@ -1096,7 +1153,15 @@ jQuery(($) => {
         }
 
         if (size !== 'invisible') {
-          void submitSubscribeForm(form, formData, parsley);
+          void (async () => {
+            if (blackboxChallengeActive) {
+              await blackboxChallengeSettled;
+            }
+            if (window.MailPoetForm?.blackbox_enabled && formData.data) {
+              formData.data.blackbox_session_id = await getBlackboxSessionId();
+            }
+            void submitSubscribeForm(form, formData, parsley);
+          })();
         }
 
         return false;

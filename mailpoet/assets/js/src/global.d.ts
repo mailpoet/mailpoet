@@ -40,6 +40,7 @@ interface JQuery {
         focus_count: number;
         touch: boolean;
       };
+      blackbox_session_id?: string;
     };
   };
   velocity: (selector: string, options?: Record<string, unknown>) => void;
@@ -225,8 +226,24 @@ interface Window {
     captcha_audio_title?: string;
     assets_url?: string;
     collect_subscriber_timezones?: boolean | '' | '1';
+    blackbox_enabled?: boolean;
+    blackbox_public_key?: string;
     openPopup?: (formId: number | string) => boolean;
     closePopup?: (formId: number | string) => boolean;
+  };
+  Blackbox?: {
+    configure: (options: {
+      apiKey: string;
+      challengeContainer?: Element | null;
+      onChallengeStart?: () => void;
+      onChallengeComplete?: () => void;
+      onChallengeFailure?: () => void;
+      onError?: (error: unknown) => void;
+      onSuccess?: (result: { sessionId?: string; visitorId?: string }) => void;
+    }) => void;
+    init: () => void;
+    getSessionId: () => Promise<string | undefined>;
+    reset: () => void;
   };
   mailpoet_authorized_emails?: string[];
   mailpoet_verified_sender_domains?: string[];

@@ -3,6 +3,7 @@
 namespace MailPoet\Form;
 
 use MailPoet\Config\Renderer as TemplateRenderer;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -17,6 +18,9 @@ class AssetsControllerTest extends \MailPoetUnitTest {
   /** @var SettingsController & MockObject */
   private $settings;
 
+  /** @var Bridge & MockObject */
+  private $bridge;
+
   /** @var AssetsController */
   private $controller;
 
@@ -28,7 +32,8 @@ class AssetsControllerTest extends \MailPoetUnitTest {
     $this->renderer->method('getCssAsset')->willReturnArgument(0);
     $this->settings = $this->createMock(SettingsController::class);
     $this->settings->method('get')->willReturn([]);
-    $this->controller = new AssetsController($this->wp, $this->renderer, $this->settings);
+    $this->bridge = $this->createMock(Bridge::class);
+    $this->controller = new AssetsController($this->wp, $this->renderer, $this->settings, $this->bridge);
   }
 
   public function testPublicScriptUsesMinJsNameSoOptimizersSkipReminifyingIt() {

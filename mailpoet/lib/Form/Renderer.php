@@ -7,6 +7,7 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Templates\FormTemplate;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Form\Util\Styles;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 
 class Renderer {
@@ -22,16 +23,21 @@ class Renderer {
   /** @var CustomFonts */
   private $customFonts;
 
+  /** @var Bridge */
+  private $bridge;
+
   public function __construct(
     Styles $styleUtils,
     SettingsController $settings,
     CustomFonts $customFonts,
-    BlocksRenderer $blocksRenderer
+    BlocksRenderer $blocksRenderer,
+    Bridge $bridge
   ) {
     $this->styleUtils = $styleUtils;
     $this->settings = $settings;
     $this->blocksRenderer = $blocksRenderer;
     $this->customFonts = $customFonts;
+    $this->bridge = $bridge;
   }
 
   public function renderStyles(FormEntity $form, string $prefix, string $displayType): string {
@@ -94,7 +100,23 @@ class Renderer {
     if (CaptchaConstants::isTurnstile($type)) {
       return $this->renderTurnstile();
     }
+    if (
+      (CaptchaConstants::isBuiltIn($type) || CaptchaConstants::isDisabled($type))
+      && $this->bridge->isMailpoetSendingServiceEnabled()
+    ) {
+      return $this->renderBlackboxChallengeContainer();
+    }
     return '';
+  }
+
+  /**
+   * A container for Blackbox's own checkbox challenge, shown only when the JS client
+   * decides mid-collect that the visitor needs it (see assets/js/src/public.tsx's
+   * configure() call). Needed specifically for the built-in/disabled captcha cases,
+   * which otherwise have no widget container in the form markup at all.
+   */
+  private function renderBlackboxChallengeContainer(): string {
+    return '<div class="mailpoet_blackbox_challenge_container"></div>';
   }
 
   private function renderReCaptcha(): string {

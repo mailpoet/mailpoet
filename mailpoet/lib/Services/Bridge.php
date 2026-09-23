@@ -191,6 +191,16 @@ class Bridge {
   }
 
   /**
+   * @return array{decision: string|null, risk_score: float|null}
+   * @throws Bridge\BlackboxVerifyException
+   */
+  public function verifyBlackbox(?string $sessionId, array $context = []): array {
+    return $this
+      ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
+      ->verifyBlackbox($sessionId, $context);
+  }
+
+  /**
    * Create a new Sender domain record
    * returns an Array of DNS response or array of error
    * @see https://github.com/mailpoet/services-bridge#verify-a-sender-domain for response format

@@ -13,6 +13,9 @@ class API {
   const SENDING_STATUS_SEND_ERROR = 'send_error';
 
   const REQUEST_TIMEOUT = 10; // seconds
+  // Shorter than REQUEST_TIMEOUT: this call sits on the interactive form-submit hot
+  // path, so it must fail fast rather than stall a visitor's subscription attempt.
+  const BLACKBOX_VERIFY_REQUEST_TIMEOUT = 3; // seconds
 
   // ISO 8601 in UTC, e.g. 2026-06-15T23:59:59Z. The bounces report endpoint
   // parses the `from`/`to` parameters with `new DateTime($value, UTC)`.
@@ -69,6 +72,11 @@ class API {
   // bridge.mailpoet.com like the other endpoints. Authenticated with the same
   // `Basic api:<key>` header that auth() produces.
   public $urlBouncesReport = 'https://public-api.wordpress.com/wpcom/v2/mailpoet-bridge/v2/bounces/report';
+  // Same pattern as urlBouncesReport: registered directly on the WPCOM mailpoet-bridge
+  // plugin, authenticated with `Basic api:<key>` rather than the Blackbox service's own
+  // `Authorization: Bearer <key>` scheme. The bridge is responsible for translating the
+  // site's MSS key into the shared MailPoet Blackbox client's real credential.
+  public $urlBlackboxVerify = 'https://public-api.wordpress.com/wpcom/v2/mailpoet-bridge/v2/blackbox-verify';
   public $urlStats = 'https://bridge.mailpoet.com/api/v0/stats';
   public $urlAuthorizedEmailAddresses = 'https://bridge.mailpoet.com/api/v1/authorized_email_address';
   public $urlAuthorizedSenderDomains = 'https://bridge.mailpoet.com/api/v1/sender_domain';
@@ -254,6 +262,72 @@ class API {
       }
     }
     return true;
+  }
+
+  /**
+   * Verifies a Blackbox session and returns its verdict. Passing null $sessionId takes
+   * the documented no-session path (e.g. the visitor's browser never produced one),
+   * scored from server-observed signals only.
+   *
+   * @return array{decision: string|null, risk_score: float|null}
+   * @throws BlackboxVerifyException The response status is carried on the exception
+   *   code so callers can distinguish a rejected key (401/403) from a transient
+   *   failure (0, 5xx) and decide whether to fail open.
+   */
+  public function verifyBlackbox(?string $sessionId, array $context = []): array {
+    $url = $sessionId !== null
+      ? $this->urlBlackboxVerify . '/' . rawurlencode($sessionId)
+      : $this->urlBlackboxVerify;
+
+    $result = $this->request($url, ['context' => $context], 'POST', self::BLACKBOX_VERIFY_REQUEST_TIMEOUT);
+    $responseCode = (int)$this->wp->wpRemoteRetrieveResponseCode($result);
+    // A session that was already verified is not a failure: the verdict was already
+    // produced and returning it as an error would wrongly trip the fail-open path.
+    if ($responseCode !== 200 && $responseCode !== 409) {
+      $isWpError = $this->wp->isWpError($result);
+      $logData = [
+        'code' => $responseCode,
+        'error' => $isWpError ? $result->get_error_message() : $this->wp->wpRemoteRetrieveBody($result),
+      ];
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('verifyBlackbox API call failed.', $logData);
+      $message = $isWpError
+        ? __('The Blackbox verify request failed without a response', 'mailpoet')
+        // translators: %d is the HTTP response code.
+        : sprintf(__('The Blackbox verify request failed with response code %d', 'mailpoet'), $responseCode);
+      throw BlackboxVerifyException::create()
+        ->withCode($responseCode)
+        ->withMessage($message);
+    }
+    $body = $this->wp->wpRemoteRetrieveBody($result);
+    $data = json_decode($body, true);
+    if (!$this->isValidBlackboxVerifyResponse($data)) {
+      // A 409 (already verified) is not guaranteed to carry a fresh decision in its
+      // body — the verdict was already delivered on the earlier call. Rather than
+      // throw (which callers would read as a rejected key or transient outage), report
+      // "no new signal" so BlackboxValidator's fail-open path takes over.
+      if ($responseCode === 409) {
+        return ['decision' => null, 'risk_score' => null];
+      }
+      $this->logInvalidDataFormat('verifyBlackbox', is_string($body) ? $body : null);
+      throw BlackboxVerifyException::create()
+        ->withMessage(__('The Blackbox verify response was not in the expected format', 'mailpoet'));
+    }
+    return [
+      'decision' => $data['data']['decision'],
+      'risk_score' => $data['data']['risk_score'] ?? null,
+    ];
+  }
+
+  /**
+   * @param mixed $data
+   * @phpstan-assert-if-true array{data: array{decision: string, risk_score?: float}} $data
+   */
+  private function isValidBlackboxVerifyResponse($data): bool {
+    return is_array($data)
+      && isset($data['data'])
+      && is_array($data['data'])
+      && isset($data['data']['decision'])
+      && is_string($data['data']['decision']);
   }
 
   public function updateSubscriberCount($count): bool {
@@ -489,9 +563,9 @@ class API {
     return 'Basic ' . base64_encode('api:' . $this->apiKey);
   }
 
-  private function request($url, $body, $method = 'POST') {
+  private function request($url, $body, $method = 'POST', ?int $timeout = null) {
     $params = [
-      'timeout' => $this->wp->applyFilters('mailpoet_bridge_api_request_timeout', self::REQUEST_TIMEOUT),
+      'timeout' => $this->wp->applyFilters('mailpoet_bridge_api_request_timeout', $timeout ?? self::REQUEST_TIMEOUT),
       'httpversion' => '1.0',
       'method' => $method,
       'headers' => [

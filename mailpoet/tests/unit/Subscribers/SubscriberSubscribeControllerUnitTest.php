@@ -5,6 +5,7 @@ namespace MailPoet\Subscribers;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Captcha\BehavioralSignals;
+use MailPoet\Captcha\BlackboxValidator;
 use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Captcha\Validator\CaptchaValidator;
@@ -16,6 +17,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsFormsRepository;
 use MailPoet\Subscription\Throttling;
@@ -86,7 +88,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $recaptchaValidator,
       $turnstileValidator,
       Stub::makeEmpty(BehavioralSignals::class),
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $this->expectException(UnexpectedValueException::class);
@@ -179,7 +183,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $recaptchaValidator,
       $turnstileValidator,
       Stub::make(BehavioralSignals::class, ['looksHuman' => true], $this),
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
@@ -268,7 +274,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $recaptchaValidator,
       $turnstileValidator,
       Stub::make(BehavioralSignals::class, ['looksHuman' => true], $this),
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $this->expectException(UnexpectedValueException::class);
@@ -394,7 +402,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $recaptchaValidator,
       $turnstileValidator,
       Stub::makeEmpty(BehavioralSignals::class),
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
@@ -533,7 +543,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $recaptchaValidator,
       $turnstileValidator,
       Stub::makeEmpty(BehavioralSignals::class),
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
@@ -592,7 +604,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
       Stub::makeEmpty(BehavioralSignals::class),
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $result = $testee->isSubscribedToAnyFormSegments($form, $subscriber);
@@ -648,7 +662,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
       Stub::makeEmpty(BehavioralSignals::class),
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $result = $testee->isSubscribedToAnyFormSegments($form, $subscriber);
@@ -789,7 +805,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $recaptchaValidator,
       $turnstileValidator,
       Stub::make(BehavioralSignals::class, ['looksHuman' => true], $this),
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
@@ -874,7 +892,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
       $behavioralSignals,
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $result = $testee->subscribe(['form_id' => 1, 'segments' => [1]]);
@@ -964,7 +984,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
       $behavioralSignals,
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $result = $testee->subscribe(['form_id' => 1]);
@@ -1061,7 +1083,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
       $behavioralSignals,
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $result = $testee->subscribe([
@@ -1163,7 +1187,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
       $behavioralSignals,
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $result = $testee->subscribe([
@@ -1261,7 +1287,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
       $behavioralSignals,
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $result = $testee->subscribe([
@@ -1368,7 +1396,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
       $behavioralSignals,
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $result = $testee->subscribe([
@@ -1471,7 +1501,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
       $behavioralSignals,
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $result = $testee->subscribe([
@@ -1570,7 +1602,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
       $behavioralSignals,
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $result = $testee->subscribe([
@@ -1679,7 +1713,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(RecaptchaValidator::class),
       Stub::makeEmpty(TurnstileValidator::class),
       $behavioralSignals,
-      Stub::makeEmpty(TrackingConsentCapture::class)
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      Stub::makeEmpty(Bridge::class),
+      Stub::makeEmpty(BlackboxValidator::class)
     );
 
     $result = $testee->subscribe([
@@ -1690,5 +1726,360 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     ]);
     verify($result)->equals([]);
     verify($capturedSignals)->equals($freshSignals);
+  }
+
+  private function makeBlackboxTestForm(): FormEntity {
+    return Stub::makeEmpty(
+      FormEntity::class,
+      [
+        'getId' => 1,
+        'getSettingsSegmentIds' => function(): array { return [1];
+        },
+        'getBlocksByTypes' => function(): array { return [];
+        },
+        'getSettings' => function(): array { return [];
+        },
+      ]
+    );
+  }
+
+  public function testBlackboxBlockDecisionRejectsSubscriptionWithoutConsultingBehavioralSignals() {
+    $form = $this->makeBlackboxTestForm();
+    $formsRepository = Stub::makeEmpty(
+      FormsRepository::class,
+      ['findOneById' => function() use ($form): FormEntity { return $form;
+      }]
+    );
+    $settings = Stub::makeEmpty(
+      SettingsController::class,
+      ['get' => function() { return ['type' => null];
+      }]
+    );
+    $fieldNameObfuscator = Stub::makeEmpty(
+      FieldNameObfuscator::class,
+      ['deobfuscateFormPayload' => function($data) { return $data;
+      }]
+    );
+    $bridge = Stub::makeEmpty(Bridge::class, ['isMailpoetSendingServiceEnabled' => true]);
+    $blackboxValidator = Stub::make(
+      BlackboxValidator::class,
+      ['verify' => Expected::once(BlackboxValidator::DECISION_BLOCK)],
+      $this
+    );
+    $builtInCaptchaValidator = Stub::make(
+      CaptchaValidator::class,
+      [
+        'isUserExemptFromCaptcha' => false,
+        'getInlineCaptchaChallenge' => Expected::never(),
+        'validate' => Expected::never(),
+        'validateChallenge' => Expected::never(),
+      ],
+      $this
+    );
+    $behavioralSignals = Stub::make(BehavioralSignals::class, ['looksHuman' => Expected::never()], $this);
+    $subscriberActions = Stub::makeEmpty(SubscriberActions::class, ['subscribe' => Expected::never()], $this);
+
+    $testee = new SubscriberSubscribeController(
+      Stub::makeEmpty(CaptchaSession::class),
+      $subscriberActions,
+      Stub::makeEmpty(SubscribersFinder::class),
+      Stub::makeEmpty(SubscriptionThrottling::class),
+      $fieldNameObfuscator,
+      Stub::makeEmpty(RequiredCustomFieldValidator::class),
+      $settings,
+      $formsRepository,
+      Stub::makeEmpty(StatisticsFormsRepository::class),
+      Stub::makeEmpty(TagRepository::class),
+      Stub::makeEmpty(SubscriberTagRepository::class),
+      Stub::makeEmpty(WPFunctions::class),
+      $builtInCaptchaValidator,
+      Stub::makeEmpty(RecaptchaValidator::class),
+      Stub::makeEmpty(TurnstileValidator::class),
+      $behavioralSignals,
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      $bridge,
+      $blackboxValidator
+    );
+
+    $result = $testee->subscribe(['form_id' => 1, 'blackbox_session_id' => 'bb-session']);
+    verify($result)->equals(['error' => 'We couldn\'t complete your subscription. Please try again later.']);
+  }
+
+  public function testBlackboxChallengeDecisionEscalatesToInlineCaptcha() {
+    $form = $this->makeBlackboxTestForm();
+    $formsRepository = Stub::makeEmpty(
+      FormsRepository::class,
+      ['findOneById' => function() use ($form): FormEntity { return $form;
+      }]
+    );
+    $settings = Stub::makeEmpty(
+      SettingsController::class,
+      ['get' => function() { return ['type' => null];
+      }]
+    );
+    $fieldNameObfuscator = Stub::makeEmpty(
+      FieldNameObfuscator::class,
+      ['deobfuscateFormPayload' => function($data) { return $data;
+      }]
+    );
+    $bridge = Stub::makeEmpty(Bridge::class, ['isMailpoetSendingServiceEnabled' => true]);
+    $blackboxValidator = Stub::make(
+      BlackboxValidator::class,
+      ['verify' => Expected::once(BlackboxValidator::DECISION_CHALLENGE)],
+      $this
+    );
+    $challengeMeta = [
+      'show_captcha' => true,
+      'captcha_session_id' => 'new_session',
+      'captcha_image_url' => 'https://example.com/image',
+      'captcha_audio_url' => 'https://example.com/audio',
+      'redirect_url' => 'https://example.com/page',
+    ];
+    $builtInCaptchaValidator = Stub::make(
+      CaptchaValidator::class,
+      [
+        'isUserExemptFromCaptcha' => false,
+        'getInlineCaptchaChallenge' => Expected::once($challengeMeta),
+        'validate' => Expected::never(),
+        'validateChallenge' => Expected::never(),
+      ],
+      $this
+    );
+    $behavioralSignals = Stub::make(BehavioralSignals::class, ['looksHuman' => Expected::never()], $this);
+    $subscriberActions = Stub::makeEmpty(SubscriberActions::class, ['subscribe' => Expected::never()], $this);
+
+    $testee = new SubscriberSubscribeController(
+      Stub::makeEmpty(CaptchaSession::class),
+      $subscriberActions,
+      Stub::makeEmpty(SubscribersFinder::class),
+      Stub::makeEmpty(SubscriptionThrottling::class),
+      $fieldNameObfuscator,
+      Stub::makeEmpty(RequiredCustomFieldValidator::class),
+      $settings,
+      $formsRepository,
+      Stub::makeEmpty(StatisticsFormsRepository::class),
+      Stub::makeEmpty(TagRepository::class),
+      Stub::makeEmpty(SubscriberTagRepository::class),
+      Stub::makeEmpty(WPFunctions::class),
+      $builtInCaptchaValidator,
+      Stub::makeEmpty(RecaptchaValidator::class),
+      Stub::makeEmpty(TurnstileValidator::class),
+      $behavioralSignals,
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      $bridge,
+      $blackboxValidator
+    );
+
+    $result = $testee->subscribe(['form_id' => 1, 'blackbox_session_id' => 'bb-session']);
+    verify($result['show_captcha'])->true();
+    verify($result['error'])->equals('Please fill in the CAPTCHA.');
+  }
+
+  public function testBlackboxAllowDecisionFallsThroughToBehavioralSignals() {
+    $subscriber = Stub::makeEmpty(SubscriberEntity::class);
+    $form = $this->makeBlackboxTestForm();
+    $formsRepository = Stub::makeEmpty(
+      FormsRepository::class,
+      ['findOneById' => function() use ($form): FormEntity { return $form;
+      }]
+    );
+    $settings = Stub::makeEmpty(
+      SettingsController::class,
+      ['get' => function() { return ['type' => null];
+      }]
+    );
+    $fieldNameObfuscator = Stub::makeEmpty(
+      FieldNameObfuscator::class,
+      ['deobfuscateFormPayload' => function($data) { return $data;
+      }]
+    );
+    $bridge = Stub::makeEmpty(Bridge::class, ['isMailpoetSendingServiceEnabled' => true]);
+    $blackboxValidator = Stub::make(
+      BlackboxValidator::class,
+      ['verify' => Expected::once(BlackboxValidator::DECISION_ALLOW)],
+      $this
+    );
+    $builtInCaptchaValidator = Stub::make(
+      CaptchaValidator::class,
+      [
+        'isUserExemptFromCaptcha' => false,
+        'getInlineCaptchaChallenge' => Expected::never(),
+        'validate' => Expected::never(),
+        'validateChallenge' => Expected::never(),
+      ],
+      $this
+    );
+    $behavioralSignals = Stub::make(BehavioralSignals::class, ['looksHuman' => Expected::once(true)], $this);
+    $subscriberActions = Stub::make(
+      SubscriberActions::class,
+      ['subscribe' => Expected::once(function() use ($subscriber) {
+        return [$subscriber, ['confirmationEmailResult' => true]];
+      }),
+      ],
+      $this
+    );
+
+    $testee = new SubscriberSubscribeController(
+      Stub::makeEmpty(CaptchaSession::class),
+      $subscriberActions,
+      Stub::makeEmpty(SubscribersFinder::class),
+      Stub::makeEmpty(SubscriptionThrottling::class),
+      $fieldNameObfuscator,
+      Stub::makeEmpty(RequiredCustomFieldValidator::class),
+      $settings,
+      $formsRepository,
+      Stub::makeEmpty(StatisticsFormsRepository::class),
+      Stub::makeEmpty(TagRepository::class),
+      Stub::makeEmpty(SubscriberTagRepository::class),
+      Stub::makeEmpty(WPFunctions::class),
+      $builtInCaptchaValidator,
+      Stub::makeEmpty(RecaptchaValidator::class),
+      Stub::makeEmpty(TurnstileValidator::class),
+      $behavioralSignals,
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      $bridge,
+      $blackboxValidator
+    );
+
+    $result = $testee->subscribe(['form_id' => 1, 'blackbox_session_id' => 'bb-session']);
+    verify($result)->equals([]);
+  }
+
+  public function testBlackboxErrorDecisionFailsOpenAndFallsThroughToBehavioralSignals() {
+    $subscriber = Stub::makeEmpty(SubscriberEntity::class);
+    $form = $this->makeBlackboxTestForm();
+    $formsRepository = Stub::makeEmpty(
+      FormsRepository::class,
+      ['findOneById' => function() use ($form): FormEntity { return $form;
+      }]
+    );
+    $settings = Stub::makeEmpty(
+      SettingsController::class,
+      ['get' => function() { return ['type' => null];
+      }]
+    );
+    $fieldNameObfuscator = Stub::makeEmpty(
+      FieldNameObfuscator::class,
+      ['deobfuscateFormPayload' => function($data) { return $data;
+      }]
+    );
+    // BlackboxValidator never throws (that's its own contract), so a Blackbox outage
+    // surfaces here as a plain 'error' decision, not an exception to catch.
+    $bridge = Stub::makeEmpty(Bridge::class, ['isMailpoetSendingServiceEnabled' => true]);
+    $blackboxValidator = Stub::make(
+      BlackboxValidator::class,
+      ['verify' => Expected::once(BlackboxValidator::DECISION_ERROR)],
+      $this
+    );
+    $builtInCaptchaValidator = Stub::make(
+      CaptchaValidator::class,
+      [
+        'isUserExemptFromCaptcha' => false,
+        'getInlineCaptchaChallenge' => Expected::never(),
+        'validate' => Expected::never(),
+        'validateChallenge' => Expected::never(),
+      ],
+      $this
+    );
+    $behavioralSignals = Stub::make(BehavioralSignals::class, ['looksHuman' => Expected::once(true)], $this);
+    $subscriberActions = Stub::make(
+      SubscriberActions::class,
+      ['subscribe' => Expected::once(function() use ($subscriber) {
+        return [$subscriber, ['confirmationEmailResult' => true]];
+      }),
+      ],
+      $this
+    );
+
+    $testee = new SubscriberSubscribeController(
+      Stub::makeEmpty(CaptchaSession::class),
+      $subscriberActions,
+      Stub::makeEmpty(SubscribersFinder::class),
+      Stub::makeEmpty(SubscriptionThrottling::class),
+      $fieldNameObfuscator,
+      Stub::makeEmpty(RequiredCustomFieldValidator::class),
+      $settings,
+      $formsRepository,
+      Stub::makeEmpty(StatisticsFormsRepository::class),
+      Stub::makeEmpty(TagRepository::class),
+      Stub::makeEmpty(SubscriberTagRepository::class),
+      Stub::makeEmpty(WPFunctions::class),
+      $builtInCaptchaValidator,
+      Stub::makeEmpty(RecaptchaValidator::class),
+      Stub::makeEmpty(TurnstileValidator::class),
+      $behavioralSignals,
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      $bridge,
+      $blackboxValidator
+    );
+
+    $result = $testee->subscribe(['form_id' => 1, 'blackbox_session_id' => 'bb-session']);
+    verify($result)->equals([]);
+  }
+
+  public function testBlackboxNotInvokedWhenMssDisabled() {
+    $subscriber = Stub::makeEmpty(SubscriberEntity::class);
+    $form = $this->makeBlackboxTestForm();
+    $formsRepository = Stub::makeEmpty(
+      FormsRepository::class,
+      ['findOneById' => function() use ($form): FormEntity { return $form;
+      }]
+    );
+    $settings = Stub::makeEmpty(
+      SettingsController::class,
+      ['get' => function() { return ['type' => null];
+      }]
+    );
+    $fieldNameObfuscator = Stub::makeEmpty(
+      FieldNameObfuscator::class,
+      ['deobfuscateFormPayload' => function($data) { return $data;
+      }]
+    );
+    $bridge = Stub::makeEmpty(Bridge::class, ['isMailpoetSendingServiceEnabled' => false]);
+    $blackboxValidator = Stub::make(BlackboxValidator::class, ['verify' => Expected::never()], $this);
+    $builtInCaptchaValidator = Stub::make(
+      CaptchaValidator::class,
+      [
+        'isUserExemptFromCaptcha' => false,
+        'getInlineCaptchaChallenge' => Expected::never(),
+        'validate' => Expected::never(),
+        'validateChallenge' => Expected::never(),
+      ],
+      $this
+    );
+    $behavioralSignals = Stub::make(BehavioralSignals::class, ['looksHuman' => Expected::once(true)], $this);
+    $subscriberActions = Stub::make(
+      SubscriberActions::class,
+      ['subscribe' => Expected::once(function() use ($subscriber) {
+        return [$subscriber, ['confirmationEmailResult' => true]];
+      }),
+      ],
+      $this
+    );
+
+    $testee = new SubscriberSubscribeController(
+      Stub::makeEmpty(CaptchaSession::class),
+      $subscriberActions,
+      Stub::makeEmpty(SubscribersFinder::class),
+      Stub::makeEmpty(SubscriptionThrottling::class),
+      $fieldNameObfuscator,
+      Stub::makeEmpty(RequiredCustomFieldValidator::class),
+      $settings,
+      $formsRepository,
+      Stub::makeEmpty(StatisticsFormsRepository::class),
+      Stub::makeEmpty(TagRepository::class),
+      Stub::makeEmpty(SubscriberTagRepository::class),
+      Stub::makeEmpty(WPFunctions::class),
+      $builtInCaptchaValidator,
+      Stub::makeEmpty(RecaptchaValidator::class),
+      Stub::makeEmpty(TurnstileValidator::class),
+      $behavioralSignals,
+      Stub::makeEmpty(TrackingConsentCapture::class),
+      $bridge,
+      $blackboxValidator
+    );
+
+    $result = $testee->subscribe(['form_id' => 1, 'blackbox_session_id' => 'bb-session']);
+    verify($result)->equals([]);
   }
 }

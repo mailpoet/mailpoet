@@ -3,6 +3,7 @@
 namespace MailPoet\Subscribers;
 
 use MailPoet\Captcha\BehavioralSignals;
+use MailPoet\Captcha\BlackboxValidator;
 use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Captcha\Validator\CaptchaValidator;
@@ -16,6 +17,7 @@ use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\NotFoundException;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsFormsRepository;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
@@ -74,6 +76,12 @@ class SubscriberSubscribeController {
   /** @var TrackingConsentCapture */
   private $trackingConsentCapture;
 
+  /** @var Bridge */
+  private $bridge;
+
+  /** @var BlackboxValidator */
+  private $blackboxValidator;
+
   public function __construct(
     CaptchaSession $captchaSession,
     SubscriberActions $subscriberActions,
@@ -91,7 +99,9 @@ class SubscriberSubscribeController {
     RecaptchaValidator $recaptchaValidator,
     TurnstileValidator $turnstileValidator,
     BehavioralSignals $behavioralSignals,
-    TrackingConsentCapture $trackingConsentCapture
+    TrackingConsentCapture $trackingConsentCapture,
+    Bridge $bridge,
+    BlackboxValidator $blackboxValidator
   ) {
     $this->formsRepository = $formsRepository;
     $this->captchaSession = $captchaSession;
@@ -110,6 +120,8 @@ class SubscriberSubscribeController {
     $this->turnstileValidator = $turnstileValidator;
     $this->behavioralSignals = $behavioralSignals;
     $this->trackingConsentCapture = $trackingConsentCapture;
+    $this->bridge = $bridge;
+    $this->blackboxValidator = $blackboxValidator;
   }
 
   public function subscribe(array $data): array {
@@ -315,6 +327,9 @@ class SubscriberSubscribeController {
         if (isset($data[BehavioralSignals::FIELD_NAME])) {
           $preserve[BehavioralSignals::FIELD_NAME] = $data[BehavioralSignals::FIELD_NAME];
         }
+        if (isset($data['blackbox_session_id'])) {
+          $preserve['blackbox_session_id'] = $data['blackbox_session_id'];
+        }
         $data = array_merge($this->captchaSession->getFormData($sessionId), $preserve);
       }
       return $data;
@@ -338,6 +353,9 @@ class SubscriberSubscribeController {
         ];
         if (isset($data[BehavioralSignals::FIELD_NAME])) {
           $preserve[BehavioralSignals::FIELD_NAME] = $data[BehavioralSignals::FIELD_NAME];
+        }
+        if (isset($data['blackbox_session_id'])) {
+          $preserve['blackbox_session_id'] = $data['blackbox_session_id'];
         }
         $data = array_merge($stashed, $preserve);
       }
@@ -385,8 +403,8 @@ class SubscriberSubscribeController {
   }
 
   /**
-   * Throws a fresh CAPTCHA challenge unless behavioral signals look human.
-   * Admin/editor exempt. The suspect signals are dropped from the stash so the
+   * Throws a fresh CAPTCHA challenge unless Blackbox and behavioral signals both look
+   * human. Admin/editor exempt. The suspect signals are dropped from the stash so the
    * resubmit is evaluated on the current request's freshest counters (via
    * initCaptcha's preserve step).
    */
@@ -394,6 +412,7 @@ class SubscriberSubscribeController {
     if ($this->builtInCaptchaValidator->isUserExemptFromCaptcha()) {
       return;
     }
+    $this->requireBlackboxAllow($data, $form);
     if ($this->behavioralSignals->looksHuman($data)) {
       return;
     }
@@ -401,6 +420,33 @@ class SubscriberSubscribeController {
     unset($stash[BehavioralSignals::FIELD_NAME]);
     $challenge = $this->builtInCaptchaValidator->getInlineCaptchaChallenge($stash);
     throw new ValidationError(__('Please fill in the CAPTCHA.', 'mailpoet'), $challenge);
+  }
+
+  /**
+   * Runs Blackbox verify when the site sends with MSS — the only setup where MailPoet's
+   * own bridge can proxy the call. 'allow' and 'error' (fail-open: never block a real
+   * subscriber over a Blackbox hiccup) fall through to the behavioral-signals check that
+   * follows this method. 'block' hard-rejects with no retry path. 'challenge' escalates
+   * to MailPoet's own inline CAPTCHA — Blackbox decides a challenge is warranted, the
+   * existing built-in widget is what renders it.
+   */
+  private function requireBlackboxAllow(array $data, FormEntity $form): void {
+    if (!$this->bridge->isMailpoetSendingServiceEnabled()) {
+      return;
+    }
+    $decision = $this->blackboxValidator->verify(
+      $data['blackbox_session_id'] ?? null,
+      ['action' => 'subscribe']
+    );
+    if ($decision === BlackboxValidator::DECISION_BLOCK) {
+      throw new ValidationError(__('We couldn\'t complete your subscription. Please try again later.', 'mailpoet'));
+    }
+    if ($decision === BlackboxValidator::DECISION_CHALLENGE) {
+      $stash = array_merge($data, ['form_id' => $form->getId()]);
+      unset($stash[BehavioralSignals::FIELD_NAME]);
+      $challenge = $this->builtInCaptchaValidator->getInlineCaptchaChallenge($stash);
+      throw new ValidationError(__('Please fill in the CAPTCHA.', 'mailpoet'), $challenge);
+    }
   }
 
   private function getSegmentIds(FormEntity $form, array $segmentIds): array {

@@ -5,6 +5,7 @@ namespace MailPoet\Form;
 use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Config\Env;
 use MailPoet\Config\Renderer as BasicRenderer;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -18,17 +19,30 @@ class AssetsController {
   /** @var SettingsController */
   private $settings;
 
+  /** @var Bridge */
+  private $bridge;
+
   const RECAPTCHA_API_URL = 'https://www.google.com/recaptcha/api.js?render=explicit';
   const TURNSTILE_API_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+  const BLACKBOX_API_URL = 'https://blackbox-api.wp.com/v1/dist/v.js';
+  const BLACKBOX_PUBLIC_KEY = '993c63987c8e9310ddee47cca16a4a43';
 
   public function __construct(
     WPFunctions $wp,
     BasicRenderer $renderer,
-    SettingsController $settings
+    SettingsController $settings,
+    Bridge $bridge
   ) {
     $this->wp = $wp;
     $this->renderer = $renderer;
     $this->settings = $settings;
+    $this->bridge = $bridge;
+  }
+
+  private function isBlackboxApplicable(): bool {
+    $type = $this->settings->get(CaptchaConstants::TYPE_SETTING_NAME);
+    return $this->bridge->isMailpoetSendingServiceEnabled()
+      && (CaptchaConstants::isBuiltIn($type) || CaptchaConstants::isDisabled($type));
   }
 
   /**
@@ -45,6 +59,10 @@ class AssetsController {
     if (!empty($captcha['type']) && CaptchaConstants::isTurnstile($captcha['type'])) {
       // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WPFunctions::escUrl() wraps esc_url().
       echo '<script src="' . $this->wp->escUrl(self::TURNSTILE_API_URL) . '" async defer></script>';
+    }
+    if ($this->isBlackboxApplicable()) {
+      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WPFunctions::escUrl() wraps esc_url().
+      echo '<script src="' . $this->wp->escUrl(self::BLACKBOX_API_URL) . '" async defer></script>';
     }
 
     $this->wp->wpPrintScripts('jquery');
@@ -84,6 +102,15 @@ class AssetsController {
         self::TURNSTILE_API_URL
       );
     }
+    $blackboxApplies = $this->isBlackboxApplicable();
+    if ($blackboxApplies) {
+      // No `data-apikey` attribute: the challenge container/callbacks need the
+      // programmatic configure()/init() pattern rather than script-tag auto-init.
+      $this->wp->wpEnqueueScript(
+        'mailpoet_blackbox',
+        self::BLACKBOX_API_URL
+      );
+    }
 
     $this->wp->wpEnqueueStyle(
       'mailpoet_public',
@@ -113,6 +140,8 @@ class AssetsController {
       'captcha_audio_title' => __('Play CAPTCHA', 'mailpoet'),
       'assets_url' => Env::$assetsUrl,
       'collect_subscriber_timezones' => $this->settings->isSettingEnabled('collect_subscriber_timezones.enabled'),
+      'blackbox_enabled' => $blackboxApplies,
+      'blackbox_public_key' => self::BLACKBOX_PUBLIC_KEY,
     ]);
   }
 

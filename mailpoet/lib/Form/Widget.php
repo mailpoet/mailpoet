@@ -9,6 +9,7 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Util\CustomFonts;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -42,7 +43,12 @@ class Widget extends \WP_Widget {
 
     $this->renderer = (new RendererFactory())->getRenderer();
     $this->settings = SettingsController::getInstance();
-    $this->assetsController = new AssetsController($this->wp, $this->renderer, $this->settings);
+    $this->assetsController = new AssetsController(
+      $this->wp,
+      $this->renderer,
+      $this->settings,
+      ContainerWrapper::getInstance()->get(Bridge::class)
+    );
     $this->formRenderer = ContainerWrapper::getInstance()->get(FormRenderer::class);
     $this->formsRepository = ContainerWrapper::getInstance()->get(FormsRepository::class);
     $this->customFonts = ContainerWrapper::getInstance()->get(CustomFonts::class);
