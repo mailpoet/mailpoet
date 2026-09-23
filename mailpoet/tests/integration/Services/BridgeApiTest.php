@@ -397,14 +397,27 @@ class BridgeApiTest extends \MailPoetTest {
     $this->wpMock
       ->expects($this->once())
       ->method('wpRemotePost')
-      ->with($this->api->urlBlackboxVerify, $this->anything())
+      ->with(
+        $this->api->urlBlackboxVerify,
+        $this->callback(function($params) {
+          verify(json_decode((string)$params['body'], true))->equals(['visitor_ip' => '203.0.113.1', 'context' => []]);
+          return true;
+        })
+      )
       ->willReturn('raw-response');
     $this->wpMock->method('wpRemoteRetrieveResponseCode')->willReturn(200);
     $this->wpMock
       ->method('wpRemoteRetrieveBody')
       ->willReturn((string)json_encode(['message' => 'OK', 'data' => ['session_id' => null, 'risk_score' => 0.4, 'decision' => 'challenge']]));
 
-    verify($this->api->verifyBlackbox(null))->equals(['decision' => 'challenge', 'risk_score' => 0.4]);
+    verify($this->api->verifyBlackbox(null, [], '203.0.113.1'))->equals(['decision' => 'challenge', 'risk_score' => 0.4]);
+  }
+
+  public function testItThrowsRatherThanCallBlackboxWhenThereIsNoSessionAndNoVisitorIp() {
+    $this->wpMock->expects($this->never())->method('wpRemotePost');
+
+    $this->expectException(BlackboxVerifyException::class);
+    $this->api->verifyBlackbox(null);
   }
 
   public function testItThrowsWithTheResponseCodeWhenBlackboxVerifyRequestFails() {

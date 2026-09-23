@@ -194,10 +194,10 @@ class Bridge {
    * @return array{decision: string|null, risk_score: float|null}
    * @throws Bridge\BlackboxVerifyException
    */
-  public function verifyBlackbox(?string $sessionId, array $context = []): array {
+  public function verifyBlackbox(?string $sessionId, array $context = [], ?string $visitorIp = null): array {
     return $this
       ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
-      ->verifyBlackbox($sessionId, $context);
+      ->verifyBlackbox($sessionId, $context, $visitorIp);
   }
 
   /**

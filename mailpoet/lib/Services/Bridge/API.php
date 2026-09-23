@@ -266,20 +266,33 @@ class API {
 
   /**
    * Verifies a Blackbox session and returns its verdict. Passing null $sessionId takes
-   * the documented no-session path (e.g. the visitor's browser never produced one),
-   * scored from server-observed signals only.
+   * the documented no-session path (e.g. the visitor's browser never produced one, or
+   * this request never ran through the JS-intercepted AJAX submission at all — see the
+   * native admin-post.php fallback in Subscription\Form::onSubmit()), scored from
+   * server-observed signals only. $visitorIp is required on that path; a missing one
+   * throws immediately rather than sending a request that Blackbox would reject anyway.
    *
    * @return array{decision: string|null, risk_score: float|null}
    * @throws BlackboxVerifyException The response status is carried on the exception
    *   code so callers can distinguish a rejected key (401/403) from a transient
    *   failure (0, 5xx) and decide whether to fail open.
    */
-  public function verifyBlackbox(?string $sessionId, array $context = []): array {
-    $url = $sessionId !== null
-      ? $this->urlBlackboxVerify . '/' . rawurlencode($sessionId)
-      : $this->urlBlackboxVerify;
+  public function verifyBlackbox(?string $sessionId, array $context = [], ?string $visitorIp = null): array {
+    if ($sessionId !== null) {
+      $url = $this->urlBlackboxVerify . '/' . rawurlencode($sessionId);
+      $body = ['context' => $context];
+    } else {
+      // The no-session path requires visitor_ip; omitting it is a guaranteed 400, not
+      // a meaningful "no signal" response, so don't spend a request finding that out.
+      if (empty($visitorIp)) {
+        throw BlackboxVerifyException::create()
+          ->withMessage(__('Cannot verify without a Blackbox session or a visitor IP', 'mailpoet'));
+      }
+      $url = $this->urlBlackboxVerify;
+      $body = ['visitor_ip' => $visitorIp, 'context' => $context];
+    }
 
-    $result = $this->request($url, ['context' => $context], 'POST', self::BLACKBOX_VERIFY_REQUEST_TIMEOUT);
+    $result = $this->request($url, $body, 'POST', self::BLACKBOX_VERIFY_REQUEST_TIMEOUT);
     $responseCode = (int)$this->wp->wpRemoteRetrieveResponseCode($result);
     // A session that was already verified is not a failure: the verdict was already
     // produced and returning it as an error would wrongly trip the fail-open path.
