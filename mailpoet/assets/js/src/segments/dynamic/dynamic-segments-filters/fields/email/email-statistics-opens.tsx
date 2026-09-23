@@ -12,7 +12,10 @@ import {
   WindowNewslettersList,
 } from '../../../types';
 import { storeName } from '../../../store';
-import { OnlyTrackableField } from '../only-trackable-field';
+import {
+  OnlyTrackableField,
+  supportsOnlyTrackable,
+} from '../only-trackable-field';
 import {
   getGroupedNewsletterOptions,
   NewsletterOption,
@@ -89,9 +92,10 @@ export function EmailOpenStatisticsFields({
           );
         }}
       />
-      {segment.operator === AnyValueTypes.NONE && (
-        <OnlyTrackableField filterIndex={filterIndex} />
-      )}
+      {segment.operator === AnyValueTypes.NONE &&
+        supportsOnlyTrackable(segment.action) && (
+          <OnlyTrackableField filterIndex={filterIndex} />
+        )}
     </>
   );
 }
