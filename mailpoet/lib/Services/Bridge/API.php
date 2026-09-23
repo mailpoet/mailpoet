@@ -76,7 +76,7 @@ class API {
   // plugin, authenticated with `Basic api:<key>` rather than the Blackbox service's own
   // `Authorization: Bearer <key>` scheme. The bridge is responsible for translating the
   // site's MSS key into the shared MailPoet Blackbox client's real credential.
-  public $urlBlackboxVerify = 'https://public-api.wordpress.com/wpcom/v2/mailpoet-bridge/v2/blackbox-verify';
+  public $urlBlackboxVerify = 'https://public-api.wordpress.com/wpcom/v2/mailpoet-bridge/v2/blackbox/verify';
   public $urlStats = 'https://bridge.mailpoet.com/api/v0/stats';
   public $urlAuthorizedEmailAddresses = 'https://bridge.mailpoet.com/api/v1/authorized_email_address';
   public $urlAuthorizedSenderDomains = 'https://bridge.mailpoet.com/api/v1/sender_domain';
