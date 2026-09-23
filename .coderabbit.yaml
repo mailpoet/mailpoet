@@ -24,7 +24,9 @@ reviews:
         - If there are no real issues, say "No issues found"; do not invent problems to fill the review.
   poem: false
   in_progress_fortune: false
-  high_level_summary_instructions: "Write a brief summary listing the number of issues found and their categories (Bug, Security, Performance, Suggestion). If no issues, state 'No issues found.'"
+  # The summary is written into the pull request description, replacing what the
+  # author put there, so it is off rather than moved elsewhere.
+  high_level_summary: false
 
 knowledge_base:
   code_guidelines:
