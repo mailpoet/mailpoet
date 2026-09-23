@@ -11,6 +11,7 @@ import {
   FormItem,
   Segment,
   SegmentConnectTypes,
+  SubscriberActionTypes,
 } from '../../types';
 import { storeName } from '../../store';
 
@@ -31,6 +32,21 @@ const actionsUsingNoneOperator: string[] = [
   EmailActionTypes.CLICKED,
 ];
 
+/** The filters FilterDataMapper keeps the option for. */
+const supportedActions: string[] = [
+  ...actionsUsingNoneOperator,
+  EmailActionTypes.OPENS_ABSOLUTE_COUNT,
+  EmailActionTypes.MACHINE_OPENS_ABSOLUTE_COUNT,
+  EmailActionTypes.NUMBER_OF_CLICKS,
+  SubscriberActionTypes.SUBSCRIBER_LAST_OPEN_DATE,
+  SubscriberActionTypes.SUBSCRIBER_LAST_CLICK_DATE,
+  SubscriberActionTypes.SUBSCRIBER_LAST_ENGAGEMENT_DATE,
+];
+
+export function supportsOnlyTrackable(action: string): boolean {
+  return supportedActions.includes(action);
+}
+
 /**
  * Mirrors FilterDataMapper::withOnlyTrackable(): the option only takes effect
  * where the server keeps it.
@@ -39,7 +55,7 @@ export function isOnlyTrackableActive(
   segment: Segment,
   filter: FormItem,
 ): boolean {
-  if (filter.onlyTrackable !== true) {
+  if (filter.onlyTrackable !== true || !supportsOnlyTrackable(filter.action)) {
     return false;
   }
   if (getGroupOperator(segment, filter) === SegmentConnectTypes.NONE) {

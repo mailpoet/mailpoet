@@ -1393,6 +1393,19 @@ class FilterDataMapperTest extends \MailPoetTest {
     verify($filter->getParam(DynamicSegmentFilterData::ONLY_TRACKABLE))->null();
   }
 
+  public function testItDropsOnlyTrackableOnWasSentWithNoneOperator(): void {
+    $filters = $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailAction::ACTION_WAS_SENT,
+      'newsletters' => [1],
+      'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
+      'onlyTrackable' => 'true',
+    ]]]);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter->getParam(DynamicSegmentFilterData::ONLY_TRACKABLE))->null();
+  }
+
   public function testItDropsOnlyTrackableOnFiltersThatDoNotSupportIt(): void {
     $filters = $this->mapper->map(['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
@@ -1782,6 +1795,6 @@ class FilterDataMapperTest extends \MailPoetTest {
         return $filter;
       }
     }
-    $this->fail("No filter with action $action");
+    throw new \RuntimeException("No filter with action $action");
   }
 }
