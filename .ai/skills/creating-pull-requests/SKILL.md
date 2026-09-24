@@ -27,9 +27,27 @@ Always create pull requests as **drafts** and follow the repository's PR templat
 
    Fix any issues with `./do qa:prettier-write` and `./do qa:fix-file <path>`. See the `mailpoet-dev-cycle` skill for the full pre-commit checklist (PHPStan, ESLint, Stylelint, tests). Commit any auto-formatting changes before opening the PR — landing a "fix Prettier" follow-up commit on a fresh PR is wasteful.
 
-5. **Create as draft**
-6. **Follow template sections exactly** - Not all sections are mandatory, use `_N/A_` for non-applicable ones
-7. There are some checkboxes on the bottom of the template, only check the ones that are applicable.
+5. **Run the acceptance variants CI skips on feature branches.** On a feature branch CI runs only `acceptance_tests_base_and_woo`. The HPOS-off, HPOS-sync and block-theme variants run on `trunk` and `release`, after merge. Run the ones your change needs before opening the PR. List candidate tests with `grep -rlw '@group woo' tests/acceptance` (or `@group frontend`) from `mailpoet/`, and pick the Cests that cover the code you changed.
+
+   - **Change touches WooCommerce order code** (orders, checkout, WooCommerce Subscriptions, purchase emails, revenue tracking, WooCommerce segments): run the affected `@group woo` Cests twice.
+
+     ```bash
+     pnpm test:acceptance --file=tests/acceptance/<Path>Cest.php --disable-hpos
+     pnpm test:acceptance --file=tests/acceptance/<Path>Cest.php --enable-hpos-sync
+     ```
+
+   - **Change touches what visitors see on the site** (forms, subscription pages, checkout, My Account, blocks, theme output): run the affected `@group frontend` Cests with a block theme.
+
+     ```bash
+     pnpm test:acceptance --file=tests/acceptance/<Path>Cest.php --blockbased-theme
+     ```
+
+   - Both can apply. Many Cests are in both groups, including the checkout, My Account and purchase email ones. For those, run all three commands.
+   - In the PR's **QA notes**, say which of these ran and on which Cests, or that none applied.
+
+6. **Create as draft**
+7. **Follow template sections exactly** - Not all sections are mandatory, use `_N/A_` for non-applicable ones
+8. There are some checkboxes on the bottom of the template, only check the ones that are applicable.
 
 ## Code Review Notes Section
 
@@ -62,3 +80,4 @@ If every bullet could be derived by reading the code, use `_N/A_` instead.
 | Narrating the diff in review notes | Only write what the reviewer can't see from the code. Use `_N/A_` if nothing to add |
 | Missing changelog entry            | Check for changelog before creating the PR. Use the `writing-changelog` skill       |
 | Skipping Prettier / QA before push | Run `./do qa:prettier-check` + `./do qa` first; CI will fail the PR otherwise       |
+| Skipping the trunk-only variants   | If the change touches Woo order code or site output, run step 5 before opening      |
