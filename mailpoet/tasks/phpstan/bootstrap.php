@@ -6,6 +6,8 @@ define('WP_MEMORY_LIMIT', 268435456);
 define('WP_MAX_MEMORY_LIMIT', 268435456);
 define('MAILPOET_VERSION', '1.0.0');
 define('MAILPOET_PREMIUM_VERSION', '1.0.0');
+define('MAILPOET_MINIMUM_REQUIRED_PHP_VERSION', '7.4');
+define('MAILPOET_RECOMMENDED_PHP_VERSION', '8.5');
 
 // This needs to be set because \MailPoet\Doctrine\TablePrefixMetadataFactory can't construct without it
 MailPoet\Config\Env::$dbPrefix = 'wp_';
