@@ -1085,6 +1085,7 @@ workflows:
             - build
       - acceptance_tests:
           <<: *slack-fail-post-step
+          <<: *only_trunk_and_release
           name: acceptance_tests_woo_hpos_sync_on
           group: woo
           enable_hpos_sync: 1
@@ -1092,6 +1093,7 @@ workflows:
             - build
       - acceptance_tests:
           <<: *slack-fail-post-step
+          <<: *only_trunk_and_release
           name: acceptance_tests_woo_hpos_off
           group: woo
           disable_hpos: 1
@@ -1099,6 +1101,7 @@ workflows:
             - build
       - acceptance_tests:
           <<: *slack-fail-post-step
+          <<: *only_trunk_and_release
           name: acceptance_tests_blockbased_theme
           group: frontend
           blockbased_theme: 1
