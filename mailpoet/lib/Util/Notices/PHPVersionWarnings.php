@@ -83,10 +83,10 @@ class PHPVersionWarnings {
     $date = (string)$this->wp->wpDate($dateFormat, $this->cutoff(), new \DateTimeZone('UTC'));
 
     if ($this->now() < $this->cutoff()) {
-      // translators: %1$s is the PHP version the site is running, %2$s is the date the requirement takes effect (e.g. February 23, 2027), %3$s is the required PHP version, %4$s is the recommended PHP version
+      // translators: %1$s is the PHP version the site is running, %2$s is the date the requirement takes effect, already translated and in the site’s date format (e.g. February 23, 2027), %3$s is the required PHP version, %4$s is the recommended PHP version
       $text = __('Your website is running PHP %1$s. Starting %2$s, new versions of MailPoet will require PHP %3$s or newer. MailPoet will keep working on this site, but it won’t receive updates, including security fixes. Ask your hosting provider to upgrade PHP. We recommend PHP %4$s. Read our [link]simple PHP upgrade guide.[/link]', 'mailpoet');
     } else {
-      // translators: %1$s is the PHP version the site is running, %2$s is the date the requirement took effect (e.g. February 23, 2027), %3$s is the required PHP version, %4$s is the recommended PHP version
+      // translators: %1$s is the PHP version the site is running, %2$s is the date the requirement took effect, already translated and in the site’s date format (e.g. February 23, 2027), %3$s is the required PHP version, %4$s is the recommended PHP version
       $text = __('Your website is running PHP %1$s. Since %2$s, new versions of MailPoet require PHP %3$s or newer. This site no longer receives MailPoet updates, including security fixes. Ask your hosting provider to upgrade PHP. We recommend PHP %4$s. Read our [link]simple PHP upgrade guide.[/link]', 'mailpoet');
     }
 
