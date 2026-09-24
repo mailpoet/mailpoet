@@ -239,7 +239,7 @@ cd /wp-core/wp-content/plugins/mailpoet-premium
 ./do test:integration --file=tests/integration/Config/EnvTest.php
 ```
 
-**Acceptance variants that run only on `trunk` and `release`.** On feature branches CI runs one acceptance job, `acceptance_tests_base_and_woo`. The HPOS-off, HPOS-sync and block-theme variants run after merge. If your change touches WooCommerce order code, run the affected `@group woo` Cests with `--disable-hpos` and again with `--enable-hpos-sync`. If it touches what visitors see on the site, including checkout and My Account, run the affected `@group frontend` Cests with `--blockbased-theme`. Both can apply to the same change. Say which ran in the PR's QA notes. Details in the `creating-pull-requests` skill.
+**HPOS acceptance variants run only on `trunk` and `release`.** The HPOS-off and HPOS-sync acceptance jobs run after merge. If your change touches WooCommerce order code, run the affected `@group woo` Cests with `--disable-hpos` and again with `--enable-hpos-sync`, and say so in the PR's QA notes. Details in the `creating-pull-requests` skill.
 
 When writing tests:
 
