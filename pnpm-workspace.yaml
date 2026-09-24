@@ -23,7 +23,7 @@ overrides:
   '@wp-playground/blueprints>ajv': 8.18.0
   '@wp-playground/cli>ajv': 8.18.0
   '@wp-playground/tools>ajv': 8.18.0
-  'adm-zip@<0.6.0': 0.6.0
+  'adm-zip@<0.6.1': 0.6.1
   'browserslist@<4.28.9': 4.28.9
   'colord@<2.10.0': 2.10.0
   'd3-color@<3.1.0': 3.1.0
