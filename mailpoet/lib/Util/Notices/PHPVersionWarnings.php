@@ -76,17 +76,21 @@ class PHPVersionWarnings {
   }
 
   private function getBelowRequiredMessage(string $phpVersion): string {
-    $month = (string)$this->wp->wpDate('F Y', $this->cutoff(), new \DateTimeZone('UTC'));
+    $dateFormat = (string)$this->wp->getOption('date_format');
+    if ($dateFormat === '') {
+      $dateFormat = 'F j, Y';
+    }
+    $date = (string)$this->wp->wpDate($dateFormat, $this->cutoff(), new \DateTimeZone('UTC'));
 
     if ($this->now() < $this->cutoff()) {
-      // translators: %1$s is the PHP version the site is running, %2$s is the month and year the requirement takes effect (e.g. February 2027), %3$s is the required PHP version, %4$s is the recommended PHP version
-      $text = __('Your website is running PHP %1$s. Starting in %2$s, new versions of MailPoet will require PHP %3$s or newer. MailPoet will keep working on this site, but it won\'t receive updates, including security fixes. Ask your hosting provider to upgrade PHP. We recommend PHP %4$s. Read our [link]simple PHP upgrade guide.[/link]', 'mailpoet');
+      // translators: %1$s is the PHP version the site is running, %2$s is the date the requirement takes effect (e.g. February 23, 2027), %3$s is the required PHP version, %4$s is the recommended PHP version
+      $text = __('Your website is running PHP %1$s. Starting %2$s, new versions of MailPoet will require PHP %3$s or newer. MailPoet will keep working on this site, but it won\'t receive updates, including security fixes. Ask your hosting provider to upgrade PHP. We recommend PHP %4$s. Read our [link]simple PHP upgrade guide.[/link]', 'mailpoet');
     } else {
-      // translators: %1$s is the PHP version the site is running, %2$s is the month and year the requirement took effect (e.g. February 2027), %3$s is the required PHP version, %4$s is the recommended PHP version
+      // translators: %1$s is the PHP version the site is running, %2$s is the date the requirement took effect (e.g. February 23, 2027), %3$s is the required PHP version, %4$s is the recommended PHP version
       $text = __('Your website is running PHP %1$s. Since %2$s, new versions of MailPoet require PHP %3$s or newer. This site no longer receives MailPoet updates, including security fixes. Ask your hosting provider to upgrade PHP. We recommend PHP %4$s. Read our [link]simple PHP upgrade guide.[/link]', 'mailpoet');
     }
 
-    $text = sprintf($text, $phpVersion, $month, self::REQUIRED_VERSION, self::RECOMMENDED_VERSION);
+    $text = sprintf($text, $phpVersion, $date, self::REQUIRED_VERSION, self::RECOMMENDED_VERSION);
     return $this->withLink($text);
   }
 
@@ -107,7 +111,7 @@ class PHPVersionWarnings {
   }
 
   private function dismissWindow(string $phpVersion): int {
-    if ($this->isBelowRequired($phpVersion) && $this->now() >= (int)strtotime(self::SHORT_DISMISS_BEFORE_CUTOFF, $this->cutoff())) {
+    if ($this->isBelowRequired($phpVersion) && $this->now() >= (int)strtotime(self::SHORT_DISMISS_BEFORE_CUTOFF, $this->cutoff()) && $this->now() < $this->cutoff()) {
       return self::SHORT_DISMISS_NOTICE_TIMEOUT_SECONDS;
     }
     return self::DISMISS_NOTICE_TIMEOUT_SECONDS;
