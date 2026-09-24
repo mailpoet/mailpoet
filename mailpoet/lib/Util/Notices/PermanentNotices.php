@@ -102,7 +102,7 @@ class PermanentNotices {
     CaptchaDisabledNotice $captchaDisabledNotice
   ) {
     $this->wp = $wp;
-    $this->phpVersionWarnings = new PHPVersionWarnings();
+    $this->phpVersionWarnings = new PHPVersionWarnings($wp);
     $this->afterMigrationNotice = new AfterMigrationNotice();
     $this->unauthorizedEmailsNotice = new UnauthorizedEmailNotice($wp, $settings, $senderDomainController);
     $this->unauthorizedEmailsInNewslettersNotice = new UnauthorizedEmailInNewslettersNotice($settings, $wp, $senderDomainController);

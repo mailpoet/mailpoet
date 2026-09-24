@@ -2,79 +2,158 @@
 
 namespace MailPoet\Util\Notices;
 
+use Codeception\Stub\Expected;
+use Codeception\Util\Stub;
+use MailPoet\WP\Functions as WPFunctions;
+
 class PHPVersionWarningsTest extends \MailPoetTest {
-
-  /** @var PHPVersionWarnings */
-  private $phpVersionWarning;
-
   public function _before() {
     parent::_before();
-    $this->phpVersionWarning = new PHPVersionWarnings();
-    delete_transient('dismissed-php-version-outdated-notice');
+    delete_transient(PHPVersionWarnings::OPTION_NAME);
   }
 
   public function _after() {
     parent::_after();
-    delete_transient('dismissed-php-version-outdated-notice');
+    delete_transient(PHPVersionWarnings::OPTION_NAME);
   }
 
-  public function testPHP70IsOutdated() {
-    verify($this->phpVersionWarning->isOutdatedPHPVersion('7.0.8'))->true();
+  private function warningsAt(int $timestamp): PHPVersionWarnings {
+    $wp = Stub::make(new WPFunctions, [
+      'currentTime' => function () use ($timestamp) {
+        return $timestamp;
+      },
+    ], $this);
+    return new PHPVersionWarnings($wp);
   }
 
-  public function testPHP71IsOutdated() {
-    verify($this->phpVersionWarning->isOutdatedPHPVersion('7.1.8'))->true();
+  public function testItShowsDatedMessageBelowRequiredVersion() {
+    $ts = strtotime('2026-09-24 00:00:00 UTC');
+    $warnings = $this->warningsAt($ts);
+
+    foreach (['7.4.33', '8.0.30'] as $version) {
+      $message = $warnings->getMessage($version);
+      verify($message)->stringContainsString('Your website is running PHP ' . $version);
+      verify($message)->stringContainsString('Starting in February 2027');
+      verify($message)->stringContainsString('require PHP 8.1 or newer');
+      verify($message)->stringContainsString('We recommend PHP 8.5');
+      verify($message)->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
+      verify($message)->stringNotContainsString('Since');
+    }
   }
 
-  public function testPHP72IsOutdated() {
-    verify($this->phpVersionWarning->isOutdatedPHPVersion('7.2'))->true();
+  public function testItSwitchesToSinceWordingAtCutoff() {
+    $beforeCutoff = strtotime('2027-02-22 23:59:59 UTC');
+    $message = $this->warningsAt($beforeCutoff)->getMessage('7.4.33');
+    verify($message)->stringContainsString('Starting in');
+
+    $atCutoff = strtotime('2027-02-23 00:00:00 UTC');
+    $message = $this->warningsAt($atCutoff)->getMessage('7.4.33');
+    verify($message)->stringContainsString('Since February 2027');
+    verify($message)->stringContainsString('no longer receives MailPoet updates');
   }
 
-  public function testPHP73IsOutdated() {
-    verify($this->phpVersionWarning->isOutdatedPHPVersion('7.3'))->true();
+  public function testItShowsUndatedMessageForPHP81() {
+    $warnings = $this->warningsAt(strtotime('2026-09-24 00:00:00 UTC'));
+    $message = $warnings->getMessage('8.1.0');
+    verify($message)->stringContainsString('outdated version of PHP (8.1.0)');
+    verify($message)->stringContainsString('upgrading to 8.5 or greater');
+    verify($message)->stringNotContainsString('February');
   }
 
-  public function testPHP74IsOutdated() {
-    verify($this->phpVersionWarning->isOutdatedPHPVersion('7.4'))->true();
+  public function testItGatesPHP82NoticeByDate() {
+    foreach (['8.2.0', '8.2.20-1ubuntu1', '8.2.0RC1'] as $version) {
+      $beforeGate = $this->warningsAt(strtotime('2026-12-31 23:59:59 UTC'));
+      verify($beforeGate->getMessage($version))->null();
+
+      $atGate = $this->warningsAt(strtotime('2027-01-01 00:00:00 UTC'));
+      $message = $atGate->getMessage($version);
+      verify($message)->stringContainsString('outdated version of PHP (' . $version . ')');
+    }
   }
 
-  public function testPHP80IsNotOutdated() {
-    verify($this->phpVersionWarning->isOutdatedPHPVersion('8.0'))->false();
+  public function testItShowsNoNoticeForPHP83AndNewer() {
+    $warnings = $this->warningsAt(strtotime('2026-09-24 00:00:00 UTC'));
+    foreach (['8.3.0', '8.3.0RC1', '8.5.1'] as $version) {
+      verify($warnings->getMessage($version))->null();
+      verify($warnings->init($version, true))->null();
+    }
   }
 
-  public function testItPrintsWarningFor71() {
-    $warning = $this->phpVersionWarning->init('7.1.0', true);
-    verify($warning->getMessage())->stringContainsString('Your website is running an outdated version of PHP (7.1.0)');
-    verify($warning->getMessage())->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
+  public function testInitReturnsNullWhenNotDisplayed() {
+    $warnings = $this->warningsAt(strtotime('2026-09-24 00:00:00 UTC'));
+    verify($warnings->init('7.4.33', false))->null();
   }
 
-  public function testItPrintsWarningFor72() {
-    $warning = $this->phpVersionWarning->init('7.2.0', true);
-    verify($warning->getMessage())->stringContainsString('Your website is running an outdated version of PHP (7.2.0)');
-    verify($warning->getMessage())->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
+  public function testDisableStoresCurrentTimestamp() {
+    $ts = strtotime('2026-09-24 00:00:00 UTC');
+    $wp = Stub::make(new WPFunctions, [
+      'currentTime' => function () use ($ts) {
+        return $ts;
+      },
+      'setTransient' => Expected::once(function ($name, $value, $expiration) use ($ts) {
+        verify($name)->equals(PHPVersionWarnings::OPTION_NAME);
+        verify($value)->equals($ts);
+        verify($expiration)->equals(PHPVersionWarnings::DISMISS_NOTICE_TIMEOUT_SECONDS);
+        return true;
+      }),
+    ], $this);
+    $warnings = new PHPVersionWarnings($wp);
+    $warnings->disable();
   }
 
-  public function testItPrintsWarningFor73() {
-    $warning = $this->phpVersionWarning->init('7.3.0', true);
-    verify($warning->getMessage())->stringContainsString('Your website is running an outdated version of PHP (7.3.0)');
-    verify($warning->getMessage())->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
+  public function testDismissalWindowIsThirtyDaysWellBeforeCutoffOn74() {
+    $dismissedAt = strtotime('2026-09-24 00:00:00 UTC');
+    set_transient(PHPVersionWarnings::OPTION_NAME, $dismissedAt, PHPVersionWarnings::DISMISS_NOTICE_TIMEOUT_SECONDS);
+
+    $stillHidden = strtotime('2026-10-23 23:59:59 UTC');
+    verify($this->warningsAt($stillHidden)->init('7.4.33', true))->null();
+
+    $shownAgain = strtotime('2026-10-24 00:00:00 UTC');
+    verify($this->warningsAt($shownAgain)->init('7.4.33', true))->notNull();
   }
 
-  public function testItPrintsWarningFor74() {
-    $warning = $this->phpVersionWarning->init('7.4.0', true);
-    verify($warning->getMessage())->stringContainsString('Your website is running an outdated version of PHP (7.4.0)');
-    verify($warning->getMessage())->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
+  public function testDismissalWindowShortensNearCutoffOn74() {
+    $dismissedAt = strtotime('2026-12-22 23:59:59 UTC');
+    set_transient(PHPVersionWarnings::OPTION_NAME, $dismissedAt, PHPVersionWarnings::DISMISS_NOTICE_TIMEOUT_SECONDS);
+
+    $shownAgain = strtotime('2026-12-30 00:00:00 UTC');
+    verify($this->warningsAt($shownAgain)->init('7.4.33', true))->notNull();
   }
 
-  public function testItPrintsNoWarningWhenDisabled() {
-    $warning = $this->phpVersionWarning->init('5.5.3', false);
-    verify($warning)->null();
+  public function testDismissalWindowIsSevenDaysAtCutoffThresholdOn74() {
+    $dismissedAt = strtotime('2026-12-23 00:00:00 UTC');
+    set_transient(PHPVersionWarnings::OPTION_NAME, $dismissedAt, PHPVersionWarnings::DISMISS_NOTICE_TIMEOUT_SECONDS);
+
+    $stillHidden = strtotime('2026-12-29 23:59:59 UTC');
+    verify($this->warningsAt($stillHidden)->init('7.4.33', true))->null();
+
+    $shownAgain = strtotime('2026-12-30 00:00:00 UTC');
+    verify($this->warningsAt($shownAgain)->init('7.4.33', true))->notNull();
   }
 
-  public function testItPrintsNoWarningWhenDismised() {
-    $this->phpVersionWarning->init('5.5.3', true);
-    $this->phpVersionWarning->disable();
-    $warning = $this->phpVersionWarning->init('5.5.3', true);
-    verify($warning)->null();
+  public function testDismissalWindowStaysThirtyDaysOnUndatedNoticeNearCutoff() {
+    $dismissedAt = strtotime('2026-12-23 00:00:00 UTC');
+    set_transient(PHPVersionWarnings::OPTION_NAME, $dismissedAt, PHPVersionWarnings::DISMISS_NOTICE_TIMEOUT_SECONDS);
+
+    $stillHidden = strtotime('2027-01-21 00:00:00 UTC');
+    verify($this->warningsAt($stillHidden)->init('8.1.0', true))->null();
+  }
+
+  public function testNoticeIsShownWhenNoDismissalStored() {
+    $warnings = $this->warningsAt(strtotime('2026-09-24 00:00:00 UTC'));
+    verify($warnings->init('7.4.33', true))->notNull();
+  }
+
+  public function testNoticeIsShownForLegacyBooleanDismissal() {
+    set_transient(PHPVersionWarnings::OPTION_NAME, true, PHPVersionWarnings::DISMISS_NOTICE_TIMEOUT_SECONDS);
+    $warnings = $this->warningsAt(strtotime('2026-09-24 00:00:00 UTC'));
+    verify($warnings->init('7.4.33', true))->notNull();
+  }
+
+  public function testNoticeIsHiddenForRecentNumericStringDismissal() {
+    $ts = strtotime('2026-09-24 00:00:00 UTC');
+    set_transient(PHPVersionWarnings::OPTION_NAME, (string)($ts - 100), PHPVersionWarnings::DISMISS_NOTICE_TIMEOUT_SECONDS);
+    $warnings = $this->warningsAt($ts);
+    verify($warnings->init('7.4.33', true))->null();
   }
 }
