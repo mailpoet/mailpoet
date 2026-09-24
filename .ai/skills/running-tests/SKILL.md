@@ -57,6 +57,7 @@ Source of truth: `mailpoet/RoboFile.php` (search for `public function test*`).
 - `--stop-on-fail` — integration only. Halt on the first failure.
 - `--skip-plugins` — integration, acceptance. Don't load extra plugins (WC, etc.).
 - `--enable-hpos` / `--disable-hpos` / `--enable-hpos-sync` — integration (incl. variants), acceptance (incl. multisite). Toggle WooCommerce High-Performance Order Storage for the run. Use when your change touches WC order data paths.
+- `--blockbased-theme` — acceptance only, free plugin only. Activates Twenty Twenty-Four (a block theme) instead of Twenty Twenty-One, as CI's `acceptance_tests_blockbased_theme` job does.
 - `--wordpress-version=<ver>` — integration, acceptance. Run against a specific WP version, including beta/RC — see [[mailpoet-beta-compat-test]].
 - `--timeout=<seconds>` — acceptance, acceptance-multisite. Per-test timeout override.
 - `--skip-deps` — integration, acceptance (incl. multisite). Skip in-container `composer install`. The `pnpm test:integration` / `:acceptance` wrappers (and their premium variants) pass this by default.
