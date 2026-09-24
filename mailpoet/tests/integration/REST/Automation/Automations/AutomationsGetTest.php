@@ -289,6 +289,8 @@ class AutomationsGetTest extends AutomationTest {
 
   public function _after() {
     parent::_after();
+    require_once ABSPATH . 'wp-admin/includes/user.php';
+    require_once ABSPATH . 'wp-admin/includes/ms.php';
     foreach ($this->userIds as $userId) {
       is_multisite() ? wpmu_delete_user($userId) : wp_delete_user($userId);
     }

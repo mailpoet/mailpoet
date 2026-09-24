@@ -2,8 +2,6 @@
 
 namespace MailPoet\Test\Segments;
 
-require_once(ABSPATH . 'wp-admin/includes/user.php');
-
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;

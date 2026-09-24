@@ -23,9 +23,6 @@ use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\DBAL\Result;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
-require_once(ABSPATH . 'wp-admin/includes/user.php');
-require_once(ABSPATH . 'wp-admin/includes/ms.php');
-
 /**
  * Inherited Methods
  * @method void wantToTest($text)
@@ -137,8 +134,10 @@ class IntegrationTester extends \Codeception\Actor {
       return;
     }
     if (is_multisite()) {
+      require_once ABSPATH . 'wp-admin/includes/ms.php';
       wpmu_delete_user($user->ID);
     } else {
+      require_once ABSPATH . 'wp-admin/includes/user.php';
       wp_delete_user($user->ID);
     }
   }

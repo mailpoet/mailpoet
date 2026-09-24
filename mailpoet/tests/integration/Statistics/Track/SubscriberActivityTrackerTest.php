@@ -245,6 +245,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
   }
 
   private function cleanUp() {
+    require_once ABSPATH . 'wp-admin/includes/user.php';
     $user = $this->wp->getUserBy('email', 'editoruser@test.com');
     if ($user) {
       wp_delete_user($user->ID);

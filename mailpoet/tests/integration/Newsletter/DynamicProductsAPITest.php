@@ -116,6 +116,8 @@ class DynamicProductsAPITest extends \MailPoetTest {
   }
 
   private function loginWithRole(string $role): \WP_User {
+    require_once ABSPATH . 'wp-admin/includes/user.php';
+    require_once ABSPATH . 'wp-admin/includes/ms.php';
     $username = uniqid("testUser");
     $email = "$username@test.com";
     $existingUser = $this->wp->getUserBy("email", $email);

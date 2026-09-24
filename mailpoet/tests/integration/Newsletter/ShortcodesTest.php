@@ -20,8 +20,6 @@ use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use WP_Post;
 
-require_once(ABSPATH . 'wp-admin/includes/user.php');
-
 class ShortcodesTest extends \MailPoetTest {
   private $wPPost;
   private $wPUser;
@@ -832,6 +830,7 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function cleanup() {
+    require_once ABSPATH . 'wp-admin/includes/user.php';
     if ($this->wPPost) wp_delete_post($this->wPPost, true);
     if ($this->wPUser) wp_delete_user($this->wPUser->ID);
     foreach ($this->additionalPostIds as $postId) {

@@ -31,6 +31,8 @@ class TagsEndpointsTest extends Test {
 
   public function _after() {
     parent::_after();
+    require_once ABSPATH . 'wp-admin/includes/user.php';
+    require_once ABSPATH . 'wp-admin/includes/ms.php';
     wp_set_current_user(0);
     is_multisite() ? wpmu_delete_user($this->editorUserId) : wp_delete_user($this->editorUserId);
   }

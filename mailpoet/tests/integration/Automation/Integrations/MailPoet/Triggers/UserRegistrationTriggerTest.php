@@ -144,6 +144,8 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
+    require_once ABSPATH . 'wp-admin/includes/user.php';
+    require_once ABSPATH . 'wp-admin/includes/ms.php';
     if (!$this->userId) {
       return;
     }

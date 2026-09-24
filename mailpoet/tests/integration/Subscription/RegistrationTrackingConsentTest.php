@@ -32,6 +32,7 @@ class RegistrationTrackingConsentTest extends \MailPoetTest {
   }
 
   public function _after() {
+    require_once ABSPATH . 'wp-admin/includes/user.php';
     unset($_POST['mailpoet']);
     // These tests create real WP users so the whole user_register chain runs. WP users
     // are not truncated between tests, so leaving them behind would skew any later test
