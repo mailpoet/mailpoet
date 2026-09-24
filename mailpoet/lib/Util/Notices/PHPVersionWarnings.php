@@ -107,14 +107,18 @@ class PHPVersionWarnings {
   private function isDismissed(string $phpVersion): bool {
     $stored = $this->wp->getTransient(self::OPTION_NAME);
     $dismissedAt = (int)$stored;
-    return $dismissedAt + $this->dismissWindow($phpVersion) > $this->now();
+    return $dismissedAt + $this->dismissWindow($phpVersion, $dismissedAt) > $this->now();
   }
 
-  private function dismissWindow(string $phpVersion): int {
-    if ($this->isBelowRequired($phpVersion) && $this->now() >= (int)strtotime(self::SHORT_DISMISS_BEFORE_CUTOFF, $this->cutoff()) && $this->now() < $this->cutoff()) {
+  private function dismissWindow(string $phpVersion, int $dismissedAt): int {
+    if ($this->isBelowRequired($phpVersion) && ($this->isInShortPeriod($dismissedAt) || $this->isInShortPeriod($this->now()))) {
       return self::SHORT_DISMISS_NOTICE_TIMEOUT_SECONDS;
     }
     return self::DISMISS_NOTICE_TIMEOUT_SECONDS;
+  }
+
+  private function isInShortPeriod(int $timestamp): bool {
+    return $timestamp >= (int)strtotime(self::SHORT_DISMISS_BEFORE_CUTOFF, $this->cutoff()) && $timestamp < $this->cutoff();
   }
 
   private function now(): int {
