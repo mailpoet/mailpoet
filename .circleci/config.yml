@@ -1101,7 +1101,6 @@ workflows:
             - build
       - acceptance_tests:
           <<: *slack-fail-post-step
-          <<: *only_trunk_and_release
           name: acceptance_tests_blockbased_theme
           group: frontend
           blockbased_theme: 1
