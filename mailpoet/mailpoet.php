@@ -29,6 +29,8 @@ $mailpoetPlugin = [
 
 const MAILPOET_MINIMUM_REQUIRED_WP_VERSION = '7.0'; // L-1 version, not the latest
 const MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION = '11.0'; // L-1 version, not the latest
+const MAILPOET_MINIMUM_REQUIRED_PHP_VERSION = '7.4';
+const MAILPOET_RECOMMENDED_PHP_VERSION = '8.5';
 
 
 // Display WP version error notice
@@ -101,8 +103,8 @@ function mailpoet_php_version_notice() {
     // translators: %1$s is the plugin name (MailPoet or MailPoet Premium), %2$s, %3$s, and %4$s are PHP version (e.g. "8.1.30")
     __('%1$s requires PHP version %2$s or newer (%3$s recommended). You are running version %4$s.', 'mailpoet'),
     'MailPoet',
-    '7.4',
-    '8.5',
+    MAILPOET_MINIMUM_REQUIRED_PHP_VERSION,
+    MAILPOET_RECOMMENDED_PHP_VERSION,
     phpversion()
   );
 
@@ -163,7 +165,7 @@ function mailpoet_check_requirements(array $mailpoetPlugin) {
   }
 
   // Check for minimum supported PHP version
-  if (version_compare(phpversion(), '7.4.0', '<')) {
+  if (version_compare(phpversion(), MAILPOET_MINIMUM_REQUIRED_PHP_VERSION, '<')) {
     add_action('admin_notices', 'mailpoet_php_version_notice');
     return false;
   }
