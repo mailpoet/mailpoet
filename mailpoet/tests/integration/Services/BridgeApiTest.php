@@ -372,6 +372,7 @@ class BridgeApiTest extends \MailPoetTest {
   }
 
   public function testItVerifiesBlackboxSessionWithSessionId() {
+    $this->wpMock->method('applyFilters')->willReturnArgument(1);
     $this->wpMock
       ->expects($this->once())
       ->method('wpRemotePost')
