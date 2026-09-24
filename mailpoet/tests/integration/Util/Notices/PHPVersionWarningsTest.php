@@ -42,6 +42,7 @@ class PHPVersionWarningsTest extends \MailPoetTest {
       verify($message)->stringContainsString('Your website is running PHP ' . $version);
       verify($message)->stringContainsString('Starting February 23, 2027');
       verify($message)->stringContainsString('require PHP 8.1 or newer');
+      verify($message)->stringContainsString('won’t receive updates');
       verify($message)->stringContainsString('We recommend PHP 8.5');
       verify($message)->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
       verify($message)->stringNotContainsString('Since');
