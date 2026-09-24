@@ -58,6 +58,7 @@ class PermanentNoticesTest extends \MailPoetTest {
   }
 
   public function testItDismissesNoticeWithCapabilityAndValidNonce() {
+    $ts = strtotime('2026-09-24 00:00:00 UTC');
     $wp = Stub::make(new WPFunctions, [
       'currentUserCan' => true,
       'wpVerifyNonce' => Expected::once(function ($nonce, $action) {
@@ -66,13 +67,16 @@ class PermanentNoticesTest extends \MailPoetTest {
         return true;
       }),
       'wpDie' => Expected::never(),
+      'currentTime' => function () use ($ts) {
+        return $ts;
+      },
     ], $this);
 
     $_POST['type'] = PHPVersionWarnings::OPTION_NAME;
     $_POST['nonce'] = 'valid-nonce';
     $this->createPermanentNotices($wp)->ajaxDismissNoticeHandler();
 
-    verify(get_transient(PHPVersionWarnings::OPTION_NAME))->true();
+    verify(get_transient(PHPVersionWarnings::OPTION_NAME))->equals($ts);
   }
 
   public function testDismissibleNoticeMarkupContainsNonce() {

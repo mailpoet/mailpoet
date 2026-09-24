@@ -172,6 +172,11 @@ class Functions {
     return date_i18n($dateformatstring, $timestampWithOffset, $gmt);
   }
 
+  /** @return string|false */
+  public function wpDate($format, $timestamp = null, $timezone = null) {
+    return wp_date($format, $timestamp, $timezone);
+  }
+
   public function deleteCommentMeta($commentId, $metaKey, $metaValue = '') {
     return delete_comment_meta($commentId, $metaKey, $metaValue);
   }
