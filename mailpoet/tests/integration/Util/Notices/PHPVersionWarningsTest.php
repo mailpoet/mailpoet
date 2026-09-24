@@ -154,19 +154,40 @@ class PHPVersionWarningsTest extends \MailPoetTest {
     verify($this->warningsAt($shownAgain)->init('7.4.33', true))->notNull();
   }
 
-  public function testDismissalWindowRevertsToThirtyDaysAfterCutoffOn74() {
-    // Dismissed while the short window is in effect, but the window is evaluated
-    // against the read-time clock, not the dismissal-time clock. Once the read
-    // time crosses the cutoff, the 30-day window applies again, so a dismissal
-    // made just before the cutoff is not treated as expired after only 7 days.
+  public function testDismissalWindowStaysSevenDaysWhenDismissedInShortPeriodOn74() {
+    // The short window is decided by whether the dismissal itself fell in the
+    // short period, not only by the read-time clock. Otherwise a dismissal made
+    // just before the cutoff would regain a 30-day window once the read time
+    // crosses the cutoff, hiding the notice again right when the "Since…"
+    // wording should show.
     $dismissedAt = strtotime('2027-02-22 12:00:00 UTC');
     set_transient(PHPVersionWarnings::OPTION_NAME, $dismissedAt, PHPVersionWarnings::DISMISS_NOTICE_TIMEOUT_SECONDS);
 
-    $stillHidden = strtotime('2027-03-01 12:00:00 UTC');
+    $stillHidden = strtotime('2027-03-01 11:59:59 UTC');
     verify($this->warningsAt($stillHidden)->init('7.4.33', true))->null();
 
-    $shownAgain = strtotime('2027-03-24 12:00:01 UTC');
+    $shownAgain = strtotime('2027-03-01 12:00:00 UTC');
     verify($this->warningsAt($shownAgain)->init('7.4.33', true))->notNull();
+  }
+
+  public function testDismissalWindowStaysSevenDaysAcrossCutoffOn74() {
+    // Regression: a dismissal made shortly before the cutoff must keep the
+    // 7-day window even after the read-time clock crosses the cutoff into the
+    // period where new dismissals get the 30-day window.
+    $dismissedAt = strtotime('2027-02-12 00:00:00 UTC');
+    set_transient(PHPVersionWarnings::OPTION_NAME, $dismissedAt, PHPVersionWarnings::DISMISS_NOTICE_TIMEOUT_SECONDS);
+
+    $stillHidden = strtotime('2027-02-18 23:59:59 UTC');
+    verify($this->warningsAt($stillHidden)->init('7.4.33', true))->null();
+
+    $shownAgain = strtotime('2027-02-19 00:00:00 UTC');
+    verify($this->warningsAt($shownAgain)->init('7.4.33', true))->notNull();
+
+    $shownAtCutoff = strtotime('2027-02-23 00:00:00 UTC');
+    verify($this->warningsAt($shownAtCutoff)->init('7.4.33', true))->notNull();
+
+    $shownAfterCutoff = strtotime('2027-02-24 00:00:00 UTC');
+    verify($this->warningsAt($shownAfterCutoff)->init('7.4.33', true))->notNull();
   }
 
   public function testDismissalWindowIsThirtyDaysAfterCutoffOn74() {
