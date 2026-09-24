@@ -150,6 +150,18 @@ class PHPVersionWarningsTest extends \MailPoetTest {
     verify($warnings->init('7.4.33', true))->notNull();
   }
 
+  public function testDismissalRoundTripsThroughRealTransientStorage() {
+    $clock = strtotime('2026-09-24 00:00:00 UTC');
+
+    verify($this->warningsAt($clock)->init('7.4.33', true))->notNull();
+
+    $this->warningsAt($clock)->disable();
+    verify($this->warningsAt($clock)->init('7.4.33', true))->null();
+
+    $justAfterWindow = $clock + PHPVersionWarnings::DISMISS_NOTICE_TIMEOUT_SECONDS + 1;
+    verify($this->warningsAt($justAfterWindow)->init('7.4.33', true))->notNull();
+  }
+
   public function testNoticeIsHiddenForRecentNumericStringDismissal() {
     $ts = strtotime('2026-09-24 00:00:00 UTC');
     set_transient(PHPVersionWarnings::OPTION_NAME, (string)($ts - 100), PHPVersionWarnings::DISMISS_NOTICE_TIMEOUT_SECONDS);
