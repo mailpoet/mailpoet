@@ -211,6 +211,7 @@ class MetaInformationManagerTest extends \MailPoetTest {
   }
 
   public function _after() {
+    require_once ABSPATH . 'wp-admin/includes/user.php';
     foreach ($this->registeredFilters as [$name, $callback]) {
       $this->wp->removeFilter($name, $callback, 10);
     }

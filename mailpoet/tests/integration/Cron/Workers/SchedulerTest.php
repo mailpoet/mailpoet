@@ -1048,6 +1048,8 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function _after() {
+    require_once ABSPATH . 'wp-admin/includes/user.php';
+    require_once ABSPATH . 'wp-admin/includes/ms.php';
     if (is_int($this->wpUserId)) {
       is_multisite() ? wpmu_delete_user($this->wpUserId) : wp_delete_user($this->wpUserId);
     }

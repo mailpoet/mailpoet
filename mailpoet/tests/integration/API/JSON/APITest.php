@@ -22,8 +22,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 
-// required to be able to use wp_delete_user()
-require_once(ABSPATH . 'wp-admin/includes/user.php');
 require_once('APITestNamespacedEndpointStubV1.php');
 require_once('APITestNamespacedEndpointStubV2.php');
 
@@ -559,6 +557,7 @@ class APITest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
+    require_once ABSPATH . 'wp-admin/includes/user.php';
     wp_delete_user($this->wpUserId);
   }
 }

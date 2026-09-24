@@ -106,6 +106,7 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
+    require_once ABSPATH . 'wp-admin/includes/user.php';
 
     // we've switched to blog_id=1
     if (is_multisite()) {
@@ -120,6 +121,7 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
   }
 
   private function loginWithRole(string $role): \WP_User {
+    require_once ABSPATH . 'wp-admin/includes/user.php';
     $username = uniqid("testUser");
     $email = "$username@test.com";
     $existingUser = $this->wp->getUserBy("email", $email);

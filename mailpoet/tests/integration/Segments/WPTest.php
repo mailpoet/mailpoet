@@ -2,8 +2,6 @@
 
 namespace MailPoet\Test\Segments;
 
-require_once(ABSPATH . 'wp-admin/includes/user.php');
-
 use Codeception\Stub;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -47,6 +45,7 @@ class WPTest extends \MailPoetTest {
 
   public function _before(): void {
     parent::_before();
+    require_once ABSPATH . 'wp-admin/includes/user.php';
     $this->settings = $this->diContainer->get(SettingsController::class);
     $this->wpSegment = $this->diContainer->get(WP::class);
     $currentTime = Carbon::now();
