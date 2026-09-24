@@ -7,14 +7,20 @@ use Codeception\Util\Stub;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PHPVersionWarningsTest extends \MailPoetTest {
+  /** @var string */
+  private $originalDateFormat;
+
   public function _before() {
     parent::_before();
     delete_transient(PHPVersionWarnings::OPTION_NAME);
+    $dateFormat = get_option('date_format');
+    $this->originalDateFormat = is_string($dateFormat) ? $dateFormat : '';
   }
 
   public function _after() {
     parent::_after();
     delete_transient(PHPVersionWarnings::OPTION_NAME);
+    update_option('date_format', $this->originalDateFormat);
   }
 
   private function warningsAt(int $timestamp): PHPVersionWarnings {
@@ -27,13 +33,14 @@ class PHPVersionWarningsTest extends \MailPoetTest {
   }
 
   public function testItShowsDatedMessageBelowRequiredVersion() {
+    update_option('date_format', 'F j, Y');
     $ts = strtotime('2026-09-24 00:00:00 UTC');
     $warnings = $this->warningsAt($ts);
 
     foreach (['7.4.33', '8.0.30'] as $version) {
       $message = $warnings->getMessage($version);
       verify($message)->stringContainsString('Your website is running PHP ' . $version);
-      verify($message)->stringContainsString('Starting in February 2027');
+      verify($message)->stringContainsString('Starting February 23, 2027');
       verify($message)->stringContainsString('require PHP 8.1 or newer');
       verify($message)->stringContainsString('We recommend PHP 8.5');
       verify($message)->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
@@ -42,14 +49,29 @@ class PHPVersionWarningsTest extends \MailPoetTest {
   }
 
   public function testItSwitchesToSinceWordingAtCutoff() {
+    update_option('date_format', 'F j, Y');
     $beforeCutoff = strtotime('2027-02-22 23:59:59 UTC');
     $message = $this->warningsAt($beforeCutoff)->getMessage('7.4.33');
-    verify($message)->stringContainsString('Starting in');
+    verify($message)->stringContainsString('Starting February 23, 2027');
 
     $atCutoff = strtotime('2027-02-23 00:00:00 UTC');
     $message = $this->warningsAt($atCutoff)->getMessage('7.4.33');
-    verify($message)->stringContainsString('Since February 2027');
+    verify($message)->stringContainsString('Since February 23, 2027');
     verify($message)->stringContainsString('no longer receives MailPoet updates');
+  }
+
+  public function testItUsesTheSiteDateFormat() {
+    update_option('date_format', 'Y-m-d');
+    $ts = strtotime('2026-09-24 00:00:00 UTC');
+    $message = $this->warningsAt($ts)->getMessage('7.4.33');
+    verify($message)->stringContainsString('Starting 2027-02-23');
+  }
+
+  public function testItFallsBackToDefaultFormatWhenDateFormatIsEmpty() {
+    update_option('date_format', '');
+    $ts = strtotime('2026-09-24 00:00:00 UTC');
+    $message = $this->warningsAt($ts)->getMessage('7.4.33');
+    verify($message)->stringContainsString('Starting February 23, 2027');
   }
 
   public function testItShowsUndatedMessageForPHP81() {
@@ -128,6 +150,32 @@ class PHPVersionWarningsTest extends \MailPoetTest {
     verify($this->warningsAt($stillHidden)->init('7.4.33', true))->null();
 
     $shownAgain = strtotime('2026-12-30 00:00:00 UTC');
+    verify($this->warningsAt($shownAgain)->init('7.4.33', true))->notNull();
+  }
+
+  public function testDismissalWindowRevertsToThirtyDaysAfterCutoffOn74() {
+    // Dismissed while the short window is in effect, but the window is evaluated
+    // against the read-time clock, not the dismissal-time clock. Once the read
+    // time crosses the cutoff, the 30-day window applies again, so a dismissal
+    // made just before the cutoff is not treated as expired after only 7 days.
+    $dismissedAt = strtotime('2027-02-22 12:00:00 UTC');
+    set_transient(PHPVersionWarnings::OPTION_NAME, $dismissedAt, PHPVersionWarnings::DISMISS_NOTICE_TIMEOUT_SECONDS);
+
+    $stillHidden = strtotime('2027-03-01 12:00:00 UTC');
+    verify($this->warningsAt($stillHidden)->init('7.4.33', true))->null();
+
+    $shownAgain = strtotime('2027-03-24 12:00:01 UTC');
+    verify($this->warningsAt($shownAgain)->init('7.4.33', true))->notNull();
+  }
+
+  public function testDismissalWindowIsThirtyDaysAfterCutoffOn74() {
+    $dismissedAt = strtotime('2027-03-01 00:00:00 UTC');
+    set_transient(PHPVersionWarnings::OPTION_NAME, $dismissedAt, PHPVersionWarnings::DISMISS_NOTICE_TIMEOUT_SECONDS);
+
+    $stillHidden = strtotime('2027-03-20 00:00:00 UTC');
+    verify($this->warningsAt($stillHidden)->init('7.4.33', true))->null();
+
+    $shownAgain = strtotime('2027-03-31 00:00:01 UTC');
     verify($this->warningsAt($shownAgain)->init('7.4.33', true))->notNull();
   }
 
