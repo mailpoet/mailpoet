@@ -76,10 +76,7 @@ class PHPVersionWarnings {
   }
 
   private function getBelowRequiredMessage(string $phpVersion): string {
-    $month = $this->wp->wpDate('F Y', $this->cutoff(), new \DateTimeZone('UTC'));
-    if (!$month) {
-      $month = gmdate('F Y', $this->cutoff());
-    }
+    $month = (string)$this->wp->wpDate('F Y', $this->cutoff(), new \DateTimeZone('UTC'));
 
     if ($this->now() < $this->cutoff()) {
       // translators: %1$s is the PHP version the site is running, %2$s is the month and year the requirement takes effect (e.g. February 2027), %3$s is the required PHP version, %4$s is the recommended PHP version
