@@ -102,7 +102,7 @@ function mailpoet_php_version_notice() {
     __('%1$s requires PHP version %2$s or newer (%3$s recommended). You are running version %4$s.', 'mailpoet'),
     'MailPoet',
     '7.4',
-    '8.1',
+    '8.5',
     phpversion()
   );
 

@@ -42,7 +42,7 @@ if (wp_is_maintenance_mode()) {
 
 // Check for minimum supported PHP version
 if (version_compare(phpversion(), '7.4.0', '<')) {
-  echo 'MailPoet requires PHP version 7.4 or newer (version 8.1 recommended).';
+  echo 'MailPoet requires PHP version 7.4 or newer (version 8.5 recommended).';
   exit(1);
 }
 
