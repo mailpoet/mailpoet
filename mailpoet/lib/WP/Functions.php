@@ -262,6 +262,9 @@ class Functions {
   }
 
   public function getEditableRoles() {
+    if (!function_exists('get_editable_roles')) {
+      require_once ABSPATH . 'wp-admin/includes/user.php';
+    }
     return get_editable_roles();
   }
 

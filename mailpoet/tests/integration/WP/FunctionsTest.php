@@ -91,6 +91,10 @@ class FunctionsTest extends \MailPoetTest {
     verify($called)->false();
   }
 
+  public function testItReturnsEditableRolesOutsideAdminScreens() {
+    verify($this->wp->getEditableRoles())->arrayHasKey('subscriber');
+  }
+
   public function testPluginisNotUninstallablePlugin() {
     self::assertFalse(is_uninstallable_plugin('mailpoet/mailpoet.php'));
   }
