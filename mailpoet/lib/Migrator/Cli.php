@@ -123,6 +123,7 @@ class Cli {
       WP_CLI::log("MIGRATIONS:\n");
       $table = array_map(function (array $data): array {
         $data['name'] .= $data['unknown'] ? ' (unknown)' : '';
+        $data['error'] = $data['error'] === null ? null : mb_strimwidth($data['error'], 0, 20, '…');
         unset($data['unknown']);
         return array_map(function ($field) {
           return $field === null ? '' : $field;

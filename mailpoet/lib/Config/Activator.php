@@ -66,7 +66,7 @@ class Activator {
         $this->unlockActivation();
       }
     } else {
-      throw new InvalidStateException(__('MailPoet version update is in progress, please refresh the page in a minute.', 'mailpoet'));
+      throw new ActivationInProgressException(__('MailPoet version update is in progress, please refresh the page in a minute.', 'mailpoet'));
     }
   }
 

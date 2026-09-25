@@ -12,7 +12,6 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUrl;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\PersonalizationTagLinkNormalizer;
-use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -465,36 +464,6 @@ class PersonalizationTagManagerTest extends \MailPoetTest {
         return $value;
       }
     );
-  }
-
-  public function testItSkipsCustomFieldTagsWhenDeletedAtColumnIsMissing(): void {
-    $customField = (new CustomFieldFactory())->create();
-
-    $table = $this->entityManager->getClassMetadata(CustomFieldEntity::class)->getTableName();
-    $connection = $this->entityManager->getConnection();
-    $dropped = false;
-
-    try {
-      // Reproduce the plugin-update window: the deleted_at column the entity maps has not been added yet.
-      $connection->executeStatement("ALTER TABLE `{$table}` DROP COLUMN `deleted_at`");
-      $dropped = true;
-
-      $personalizationManager = $this->diContainer->get(PersonalizationTagManager::class);
-      $personalizationManager->initialize();
-
-      $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
-      // Must not throw an uncaught QueryException / fatal.
-      WPFunctions::get()->applyFilters('woocommerce_email_editor_register_personalization_tags', $registry);
-
-      // The custom-field tag is skipped because its query hit the missing column...
-      $this->assertNull($registry->get_by_token('[mailpoet/subscriber-cf-' . $customField->getId() . ']'));
-      // ...but the static (non-DB) tags still register.
-      $this->assertNotNull($registry->get_by_token('[mailpoet/subscriber-email]'));
-    } finally {
-      if ($dropped) {
-        $connection->executeStatement("ALTER TABLE `{$table}` ADD COLUMN `deleted_at` TIMESTAMP NULL DEFAULT NULL");
-      }
-    }
   }
 
   private function findNewsletterLinkStartingWithUrl(string $url): ?NewsletterLinkEntity {

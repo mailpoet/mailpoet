@@ -266,6 +266,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Config\Menu::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\RendererFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\ServicesChecker::class)->setPublic(true);
+    $container->autowire(\MailPoet\Config\SchemaState::class)->setPublic(true);
+    $container->autowire(\MailPoet\Config\SchemaNotReadyResponder::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Router::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\SubscriberChangesNotifier::class);
     $container->autowire(\MailPoet\Config\Shortcodes::class)

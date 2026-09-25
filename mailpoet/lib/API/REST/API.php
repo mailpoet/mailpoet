@@ -10,7 +10,7 @@ use WP_REST_Request;
 class API {
   public const REST_API_INIT_ACTION = 'mailpoet/rest-api/init';
 
-  private const PREFIX = 'mailpoet/v1';
+  public const PREFIX = 'mailpoet/v1';
   private const WP_REST_API_INIT_ACTION = 'rest_api_init';
 
   /** @var EndpointContainer */
