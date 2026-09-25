@@ -134,15 +134,10 @@ class GATracking {
       $params['utm_campaign'] = $gaCampaign;
     }
 
-    // Do not overwrite existing query parameters
-    $parsedUrl = parse_url($link);
-    if (isset($parsedUrl['query'])) {
-      foreach (array_keys($params) as $param) {
-        if (strpos($parsedUrl['query'], $param . '=') !== false) {
-          unset($params[$param]);
-        }
-      }
-    }
+    // Do not overwrite existing query parameters. Hrefs from the rendered HTML may still
+    // carry encoded ampersands ("&amp;"), which would hide the parameter names.
+    parse_str((string)parse_url(html_entity_decode($link, ENT_QUOTES), PHP_URL_QUERY), $existingParams);
+    $params = array_diff_key($params, $existingParams);
 
     // Extract shortcodes from query parameters to preserve them
     list($linkWithPlaceholders, $shortcodeMap) = $this->extractShortcodes($link);
