@@ -7,12 +7,14 @@ use MailPoetVendor\Doctrine\DBAL\Exception\TableNotFoundException;
 class FeaturesController {
   const FEATURE_BRAND_TEMPLATES = 'brand_templates';
   const FEATURE_SEND_BY_TIMEZONE = 'send_by_timezone';
+  const FEATURE_MSS_TEMPLATED_SENDING = 'mss_templated_sending';
 
   // Define feature defaults in the array below in the following form:
   //   self::FEATURE_NAME_OF_FEATURE => true,
   private $defaults = [
     self::FEATURE_BRAND_TEMPLATES => false,
     self::FEATURE_SEND_BY_TIMEZONE => false,
+    self::FEATURE_MSS_TEMPLATED_SENDING => false,
   ];
 
   /** @var array|null */
