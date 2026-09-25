@@ -12,6 +12,7 @@ use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\TrackingConfig;
+use MailPoet\Statistics\GATracking;
 use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -63,6 +64,8 @@ class Clicks {
 
   private PersonalizationTagLinkResolver $linkResolver;
 
+  private GATracking $gaTracking;
+
   public function __construct(
     Cookies $cookies,
     SubscriberCookie $subscriberCookie,
@@ -75,7 +78,8 @@ class Clicks {
     TrackingConfig $trackingConfig,
     Request $request,
     TrackingConsentController $trackingConsentController,
-    PersonalizationTagLinkResolver $linkResolver
+    PersonalizationTagLinkResolver $linkResolver,
+    GATracking $gaTracking
   ) {
     $this->cookies = $cookies;
     $this->subscriberCookie = $subscriberCookie;
@@ -89,6 +93,7 @@ class Clicks {
     $this->request = $request;
     $this->trackingConsentController = $trackingConsentController;
     $this->linkResolver = $linkResolver;
+    $this->gaTracking = $gaTracking;
   }
 
   /**
@@ -179,13 +184,14 @@ class Clicks {
     bool $wpUserPreview
   ) {
     if ($this->linkResolver->isTokenUrl($url)) {
-      // A link stored as a personalization tag token; its destination only exists per recipient.
+      // A link stored as a personalization tag token; its destination only exists per recipient,
+      // so it gets the GA params ordinary links have baked in at send time only now.
       $resolvedUrl = $this->linkResolver->resolve($url, $newsletter, $subscriber, $queue, $wpUserPreview);
       if ($resolvedUrl === null) {
         $this->abort();
         return $url;
       }
-      return $this->appendRequestMethod($resolvedUrl);
+      return $this->appendRequestMethod($this->gaTracking->addParamsToUrl($resolvedUrl, $newsletter));
     }
     if (preg_match('/\[link:(?P<action>.*?)\]/', $url, $shortcode)) {
       if (empty($shortcode['action'])) $this->abort();
