@@ -254,6 +254,24 @@ class GATrackingTest extends \MailPoetTest {
     verify($url)->equals(home_url('/review/?key=wc_order_abc&utm_source=shop&utm_medium=email&utm_source_platform=mailpoet&utm_campaign=SpringEmail'));
   }
 
+  public function testItAddsParamsWhoseNameOnlyAppearsInsideAnotherQueryParam() {
+    $url = $this->tracking->addParamsToUrl(home_url('/review/?return=utm_source=shop&xutm_medium=x'), $this->newsletter);
+    verify($url)->stringContainsString('&utm_source=mailpoet');
+    verify($url)->stringContainsString('&utm_medium=email');
+  }
+
+  public function testItDoesNotOverwriteExistingParametersBehindEncodedAmpersands() {
+    $link = 'http://newsletters.mailpoet.com/?a=1&amp;utm_source=shop&amp;utm_medium=social';
+    $renderedNewsletter = [
+      'html' => '<p><a href="' . $link . '">Click here</a></p>',
+      'text' => '',
+    ];
+    $result = $this->tracking->applyGATracking($renderedNewsletter, $this->newsletter, $this->internalHost);
+    verify($result['html'])->stringNotContainsString('utm_source=mailpoet');
+    verify($result['html'])->stringNotContainsString('utm_medium=email');
+    verify($result['html'])->stringContainsString('utm_source_platform=mailpoet');
+  }
+
   public function testItDoesNotAddParamsToMailPoetUrls() {
     $routerUrl = home_url('/?mailpoet_router&endpoint=view_in_browser&action=view&data=abc');
     $pageUrl = home_url('/?mailpoet_page=subscriptions&action=manage');
