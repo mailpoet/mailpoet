@@ -745,6 +745,35 @@ class NewsletterTest extends \MailPoetTest {
     $this->assertStringContainsString('[Gone]()', $result['body']['text']);
   }
 
+  public function testItAddsGAParamsToResolvedTagLinksForSubscriberWithoutConsent(): void {
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+    [$newsletter, , $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink(
+      '[acme/review-url]',
+      'Review'
+    );
+    $newsletter->setGaCampaign('SpringEmail');
+    $this->entityManager->flush();
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+
+    try {
+      $registry->register(new Personalization_Tag('Review URL', 'acme/review-url', 'Test', function (): string {
+        return home_url('/review/?key=wc_order_abc');
+      }));
+      $result = $this->newsletterTask->prepareNewsletterForSending($newsletter, $this->subscriber, $sendingQueue);
+    } finally {
+      $registry->unregister('[acme/review-url]');
+    }
+
+    // The same params GATracking bakes into ordinary internal links at send time
+    $expectedUrl = home_url('/review/?key=wc_order_abc&utm_source=mailpoet&utm_medium=email&utm_source_platform=mailpoet&utm_campaign=SpringEmail');
+    $this->assertStringContainsString('href="' . $expectedUrl . '"', html_entity_decode($result['body']['html']));
+    $this->assertStringContainsString('[Review](' . $expectedUrl . ')', $result['body']['text']);
+  }
+
   public function testItResolvesTagLinksInTextBodyWhenTrackingIsDisabled(): void {
     $newsletterTask = Stub::copy($this->newsletterTask, ['trackingEnabled' => false]);
     [$newsletter, , $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink(
