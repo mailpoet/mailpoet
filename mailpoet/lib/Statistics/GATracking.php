@@ -4,6 +4,7 @@ namespace MailPoet\Statistics;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
+use MailPoet\Router\Router;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\SecondLevelDomainNames;
@@ -38,14 +39,33 @@ class GATracking {
     if (!$this->tackingConfig->isEmailTrackingEnabled()) {
       return $renderedNewsletter;
     }
-    if ($newsletter->getType() == NewsletterEntity::TYPE_NOTIFICATION_HISTORY && $newsletter->getParent() instanceof NewsletterEntity) {
-      $parentNewsletter = $newsletter->getParent();
-      $field = $parentNewsletter->getGaCampaign();
-    } else {
-      $field = $newsletter->getGaCampaign();
-    }
+    return $this->addGAParamsToLinks($renderedNewsletter, $this->getGaCampaign($newsletter), $internalHost);
+  }
 
-    return $this->addGAParamsToLinks($renderedNewsletter, $field, $internalHost);
+  /**
+   * Adds the params applyGATracking() bakes into links at send time to a URL that only exists
+   * per recipient, e.g. a personalization tag link resolved at click time.
+   *
+   * URLs of MailPoet's own pages (unsubscribe, manage subscription, view in browser) are left
+   * alone, so that clicks on them are not reported to GA as campaign traffic.
+   */
+  public function addParamsToUrl(string $url, NewsletterEntity $newsletter): string {
+    if (!$this->tackingConfig->isEmailTrackingEnabled() || $this->isMailPoetUrl($url)) {
+      return $url;
+    }
+    return $this->addParamsToInternalUrl($url, $this->getGaCampaign($newsletter), $this->getInternalDomain()) ?? $url;
+  }
+
+  private function getGaCampaign(NewsletterEntity $newsletter) {
+    $parentNewsletter = $newsletter->getParent();
+    if ($newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY && $parentNewsletter instanceof NewsletterEntity) {
+      return $parentNewsletter->getGaCampaign();
+    }
+    return $newsletter->getGaCampaign();
+  }
+
+  private function isMailPoetUrl(string $url): bool {
+    return strpos($url, Router::NAME) !== false || strpos($url, 'mailpoet_page=') !== false;
   }
 
   private function addGAParamsToLinks($renderedNewsletter, $gaCampaign, $internalHost = null) {
@@ -62,6 +82,49 @@ class GATracking {
 
   private function addParams($extractedLinks, $gaCampaign, $internalHost = null) {
     $processedLinks = [];
+    $internalDomain = $this->getInternalDomain($internalHost);
+    foreach ($extractedLinks as $extractedLink) {
+      if ($extractedLink['type'] !== NewsletterLinks::LINK_TYPE_URL) {
+        continue;
+      }
+      $link = $extractedLink['link'];
+      $processedLink = $this->addParamsToInternalUrl($link, $gaCampaign, $internalDomain);
+      if ($processedLink === null) {
+        continue;
+      }
+      $processedLinks[$link] = [
+        'type' => $extractedLink['type'],
+        'link' => $link,
+        'processed_link' => $processedLink,
+      ];
+    }
+    return $processedLinks;
+  }
+
+  private function getInternalDomain($internalHost = null) {
+    $internalHost = $internalHost ?: parse_url($this->wp->homeUrl(), PHP_URL_HOST);
+    return $this->secondLevelDomainNames->get($internalHost);
+  }
+
+  /**
+   * The site's domain itself or any of its subdomains, but not a host that merely contains
+   * it, e.g. "example.com.other.org" or "notexample.com".
+   */
+  private function isInternalHost(string $host, string $internalDomain): bool {
+    $host = strtolower($host);
+    $internalDomain = strtolower($internalDomain);
+    return $host === $internalDomain || substr($host, -strlen('.' . $internalDomain)) === '.' . $internalDomain;
+  }
+
+  /**
+   * @return string|null null when the URL does not point to the current site or a
+   *   mailpoet_ga_tracking_link callback returned a non-string to keep it undecorated
+   */
+  private function addParamsToInternalUrl(string $link, $gaCampaign, $internalDomain): ?string {
+    if (!$this->isInternalHost((string)parse_url($link, PHP_URL_HOST), (string)$internalDomain)) {
+      return null;
+    }
+
     $params = [
       'utm_source' => 'mailpoet',
       'utm_medium' => 'email',
@@ -70,52 +133,29 @@ class GATracking {
     if ($gaCampaign) {
       $params['utm_campaign'] = $gaCampaign;
     }
-    $internalHost = $internalHost ?: parse_url(home_url(), PHP_URL_HOST);
-    $internalHost = $this->secondLevelDomainNames->get($internalHost);
-    foreach ($extractedLinks as $extractedLink) {
-      if ($extractedLink['type'] !== NewsletterLinks::LINK_TYPE_URL) {
-        continue;
-      } elseif (strpos((string)parse_url($extractedLink['link'], PHP_URL_HOST), $internalHost) === false) {
-        // Process only internal links (i.e. pointing to current site)
-        continue;
-      }
 
-      $link = $extractedLink['link'];
+    // Do not overwrite existing query parameters. Hrefs from the rendered HTML may still
+    // carry encoded ampersands ("&amp;"), which would hide the parameter names.
+    parse_str((string)parse_url(html_entity_decode($link, ENT_QUOTES), PHP_URL_QUERY), $existingParams);
+    $params = array_diff_key($params, $existingParams);
 
-      // Do not overwrite existing query parameters
-      $parsedUrl = parse_url($link);
-      $linkParams = $params;
-      if (isset($parsedUrl['query'])) {
-        foreach (array_keys($params) as $param) {
-          if (strpos($parsedUrl['query'], $param . '=') !== false) {
-            unset($linkParams[$param]);
-          }
-        }
-      }
+    // Extract shortcodes from query parameters to preserve them
+    list($linkWithPlaceholders, $shortcodeMap) = $this->extractShortcodes($link);
 
-      // Extract shortcodes from query parameters to preserve them
-      list($linkWithPlaceholders, $shortcodeMap) = $this->extractShortcodes($link);
+    // Add GA parameters to the link with placeholders
+    $linkWithGAParams = $this->wp->addQueryArg($params, $linkWithPlaceholders);
 
-      // Add GA parameters to the link with placeholders
-      $linkWithGAParams = $this->wp->addQueryArg($linkParams, $linkWithPlaceholders);
+    // Restore the original shortcodes
+    $linkWithGAParams = $this->restoreShortcodes($linkWithGAParams, $shortcodeMap);
 
-      // Restore the original shortcodes
-      $linkWithGAParams = $this->restoreShortcodes($linkWithGAParams, $shortcodeMap);
-
-      $processedLink = $this->wp->applyFilters(
-        'mailpoet_ga_tracking_link',
-        $linkWithGAParams,
-        $extractedLink['link'],
-        $linkParams,
-        $extractedLink['type']
-      );
-      $processedLinks[$link] = [
-        'type' => $extractedLink['type'],
-        'link' => $link,
-        'processed_link' => $processedLink,
-      ];
-    }
-    return $processedLinks;
+    $processedLink = $this->wp->applyFilters(
+      'mailpoet_ga_tracking_link',
+      $linkWithGAParams,
+      $link,
+      $params,
+      NewsletterLinks::LINK_TYPE_URL
+    );
+    return is_string($processedLink) ? $processedLink : null;
   }
 
   /**

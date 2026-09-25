@@ -23,6 +23,7 @@ use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\TrackingConfig;
+use MailPoet\Statistics\GATracking;
 use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\StatisticsNewslettersRepository;
 use MailPoet\Statistics\StatisticsOpensRepository;
@@ -118,7 +119,8 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
-      $this->diContainer->get(PersonalizationTagLinkResolver::class)
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class)
     );
 
     $this->statisticsClicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
@@ -140,6 +142,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'abort' => Expected::exactly(2),
     ], $this);
@@ -169,6 +172,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -193,6 +197,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -220,6 +225,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -249,6 +255,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -278,6 +285,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -313,6 +321,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -358,6 +367,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -403,6 +413,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -441,6 +452,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -481,6 +493,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'redirectToUrl' => Expected::exactly(1),
     ], $this);
@@ -506,6 +519,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'redirectToUrl' => Expected::exactly(1),
     ], $this);
@@ -542,6 +556,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       // The redirect still happens: this is about not recording, not about
       // breaking the link.
@@ -566,6 +581,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -615,6 +631,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'abort' => Expected::exactly(1),
     ], $this);
@@ -675,6 +692,45 @@ class ClicksTest extends \MailPoetTest {
     verify($link)->equals('https://example.com/order/' . $order->get_id());
   }
 
+  public function testItAddsGAParamsToInternalPersonalizationTagTokenUrls() {
+    $this->newsletter->setGaCampaign('SpringEmail');
+    $this->entityManager->flush();
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $registry->register(new Personalization_Tag('Review URL', 'acme/review-url', 'Test', function (): string {
+      return home_url('/review/?key=wc_order_abc');
+    }));
+
+    try {
+      $link = $this->clicks->processUrl(
+        '[acme/review-url]',
+        $this->newsletter,
+        $this->subscriber,
+        $this->queue,
+        $preview = false
+      );
+    } finally {
+      $registry->unregister('[acme/review-url]');
+    }
+
+    verify($link)->equals(home_url('/review/?key=wc_order_abc&utm_source=mailpoet&utm_medium=email&utm_source_platform=mailpoet&utm_campaign=SpringEmail'));
+  }
+
+  public function testItDoesNotAddGAParamsToPersonalizationTagTokenUrlsPointingToMailPoet() {
+    $this->newsletter->setGaCampaign('SpringEmail');
+    $this->entityManager->flush();
+
+    $link = $this->clicks->processUrl(
+      '[mailpoet/subscription-unsubscribe-url]',
+      $this->newsletter,
+      $this->subscriber,
+      $this->queue,
+      $preview = false
+    );
+
+    verify($link)->stringContainsString('action=confirm_unsubscribe');
+    verify($link)->stringNotContainsString('utm_');
+  }
+
   public function testItAddsMethodForPostRequestsToPersonalizationTagTokenUrls() {
     $requestMock = $this->createMock(Request::class);
     $requestMock->method('isPost')->willReturn(true);
@@ -732,6 +788,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'abort' => Expected::exactly(1),
       'redirectToUrl' => null,
@@ -854,6 +911,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -903,6 +961,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -952,6 +1011,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -983,6 +1043,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Request::class),
       $this->diContainer->get(TrackingConsentController::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
     ], [
       'redirectToUrl' => null,
     ], $this);

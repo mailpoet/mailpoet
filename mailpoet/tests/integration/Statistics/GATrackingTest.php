@@ -229,4 +229,96 @@ class GATrackingTest extends \MailPoetTest {
     verify($result['text'])->stringContainsString('note=[random text]');
     verify($result['text'])->stringContainsString('email=[subscriber:email]');
   }
+
+  public function testItAddsParamsToInternalUrl() {
+    $url = $this->tracking->addParamsToUrl(home_url('/review/'), $this->newsletter);
+    verify($url)->equals(home_url('/review/?utm_source=mailpoet&utm_medium=email&utm_source_platform=mailpoet&utm_campaign=SpringEmail'));
+  }
+
+  public function testItDoesNotAddParamsToExternalUrl() {
+    $url = $this->tracking->addParamsToUrl('https://example.org/review/', $this->newsletter);
+    verify($url)->equals('https://example.org/review/');
+  }
+
+  public function testItDoesNotAddParamsToHostsThatOnlyContainTheSiteDomain() {
+    $internalHost = (string)parse_url(home_url(), PHP_URL_HOST);
+    foreach (['https://' . $internalHost . '.example.org/', 'https://not' . $internalHost . '/'] as $url) {
+      verify($this->tracking->addParamsToUrl($url, $this->newsletter))->equals($url);
+    }
+    $subdomainUrl = 'https://shop.' . $internalHost . '/';
+    verify($this->tracking->addParamsToUrl($subdomainUrl, $this->newsletter))->stringContainsString('utm_source=mailpoet');
+  }
+
+  public function testItKeepsExistingQueryParamsOfUrl() {
+    $url = $this->tracking->addParamsToUrl(home_url('/review/?key=wc_order_abc&utm_source=shop'), $this->newsletter);
+    verify($url)->equals(home_url('/review/?key=wc_order_abc&utm_source=shop&utm_medium=email&utm_source_platform=mailpoet&utm_campaign=SpringEmail'));
+  }
+
+  public function testItAddsParamsWhoseNameOnlyAppearsInsideAnotherQueryParam() {
+    $url = $this->tracking->addParamsToUrl(home_url('/review/?return=utm_source=shop&xutm_medium=x'), $this->newsletter);
+    verify($url)->stringContainsString('&utm_source=mailpoet');
+    verify($url)->stringContainsString('&utm_medium=email');
+  }
+
+  public function testItDoesNotOverwriteExistingParametersBehindEncodedAmpersands() {
+    $link = 'http://newsletters.mailpoet.com/?a=1&amp;utm_source=shop&amp;utm_medium=social';
+    $renderedNewsletter = [
+      'html' => '<p><a href="' . $link . '">Click here</a></p>',
+      'text' => '',
+    ];
+    $result = $this->tracking->applyGATracking($renderedNewsletter, $this->newsletter, $this->internalHost);
+    verify($result['html'])->stringNotContainsString('utm_source=mailpoet');
+    verify($result['html'])->stringNotContainsString('utm_medium=email');
+    verify($result['html'])->stringContainsString('utm_source_platform=mailpoet');
+  }
+
+  public function testItDoesNotAddParamsToMailPoetUrls() {
+    $routerUrl = home_url('/?mailpoet_router&endpoint=view_in_browser&action=view&data=abc');
+    $pageUrl = home_url('/?mailpoet_page=subscriptions&action=manage');
+    verify($this->tracking->addParamsToUrl($routerUrl, $this->newsletter))->equals($routerUrl);
+    verify($this->tracking->addParamsToUrl($pageUrl, $this->newsletter))->equals($pageUrl);
+  }
+
+  public function testItDoesNotAddParamsToUrlWhenTrackingIsDisabled() {
+    $this->diContainer->get(SettingsController::class)->set('tracking.level', TrackingConfig::LEVEL_BASIC);
+    verify($this->tracking->addParamsToUrl(home_url('/review/'), $this->newsletter))->equals(home_url('/review/'));
+  }
+
+  public function testItAddsParentCampaignToUrlForPostNotifications() {
+    $notificationHistory = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
+      ->withParent($this->newsletter)
+      ->create();
+
+    $url = $this->tracking->addParamsToUrl(home_url('/review/'), $notificationHistory);
+    verify($url)->stringContainsString('utm_campaign=SpringEmail');
+  }
+
+  public function testItAppliesLinkFilterToUrl() {
+    $filter = function (string $link, string $originalLink, array $params, string $type): string {
+      return $link . '&filtered=' . $type . '-' . count($params);
+    };
+    add_filter('mailpoet_ga_tracking_link', $filter, 10, 4);
+    try {
+      $url = $this->tracking->addParamsToUrl(home_url('/review/'), $this->newsletter);
+    } finally {
+      remove_filter('mailpoet_ga_tracking_link', $filter, 10);
+    }
+    verify($url)->stringEndsWith('&filtered=link-4');
+  }
+
+  public function testItKeepsLinksUndecoratedWhenLinkFilterReturnsNonString() {
+    $filter = function () {
+      return false;
+    };
+    add_filter('mailpoet_ga_tracking_link', $filter);
+    try {
+      $url = $this->tracking->addParamsToUrl(home_url('/review/'), $this->newsletter);
+      $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);
+    } finally {
+      remove_filter('mailpoet_ga_tracking_link', $filter);
+    }
+    verify($url)->equals(home_url('/review/'));
+    verify($result)->equals($this->renderedNewsletter);
+  }
 }
