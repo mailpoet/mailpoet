@@ -3,6 +3,7 @@ import { Modal } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import {
+  AddSenderDomain,
   ManageSenderDomain,
   SenderDomainDnsItem,
   SenderDomainEntity,
@@ -78,6 +79,7 @@ function AuthorizeSenderDomainModal({
   const [errorMessage, setErrorMessage] = useState('');
   const [loadingButton, setLoadingButton] = useState(false);
   const [rowData, setRowData] = useState<SenderDomainEntity[]>([]);
+  const [needsAdding, setNeedsAdding] = useState(false);
   const modalIsOpened = useRef<boolean>(false);
 
   const performStateUpdate = (callback: (param) => void, args) => {
@@ -122,28 +124,22 @@ function AuthorizeSenderDomainModal({
 
     const allSenderDomains = window.mailpoet_all_sender_domains || [];
 
+    if (!allSenderDomains.includes(senderDomain)) {
+      // The domain is not on the account. Creating it is what generates the DNS records, so there
+      // is nothing to fetch yet - and creating it changes what the account holds, which must not
+      // happen just because somebody opened this dialog. Ask first instead. See STOMAIL-8425.
+      setNeedsAdding(true);
+      return () => {
+        modalIsOpened.current = false;
+      };
+    }
+
     (async () => {
       try {
-        if (allSenderDomains.includes(senderDomain)) {
-          // sender domain already exist
-          const res: SenderDomainApiResponseType = await makeApiRequest(
-            senderDomain,
-          );
-          performStateUpdate(
-            setRowData,
-            generateRowData(senderDomain, res.data),
-          );
-        } else {
-          // create new sender domain
-          const res: SenderDomainApiResponseType = await makeApiRequest(
-            senderDomain,
-            'create',
-          );
-          performStateUpdate(
-            setRowData,
-            generateRowData(senderDomain, res.data),
-          );
-        }
+        const res: SenderDomainApiResponseType = await makeApiRequest(
+          senderDomain,
+        );
+        performStateUpdate(setRowData, generateRowData(senderDomain, res.data));
       } catch (e) {
         const apiErrorMessage = getApiErrorMessage(e);
 
@@ -158,7 +154,32 @@ function AuthorizeSenderDomainModal({
     };
   }, [senderDomain]);
 
-  const content = (
+  const addDomainButtonClicked = async () => {
+    setLoadingButton(true);
+    setErrorMessage('');
+
+    try {
+      const res: SenderDomainApiResponseType = await makeApiRequest(
+        senderDomain,
+        'create',
+      );
+      performStateUpdate(setRowData, generateRowData(senderDomain, res.data));
+      performStateUpdate(setNeedsAdding, false);
+    } catch (e) {
+      performStateUpdate(setErrorMessage, getApiErrorMessage(e));
+    }
+
+    performStateUpdate(setLoadingButton, false);
+  };
+
+  const content = needsAdding ? (
+    <AddSenderDomain
+      senderDomain={senderDomain}
+      addDomainButtonClicked={addDomainButtonClicked}
+      loadingButton={loadingButton}
+      error={errorMessage}
+    />
+  ) : (
     <ManageSenderDomain
       rows={rowData}
       verifyDnsButtonClicked={verifyDnsButtonClicked}
