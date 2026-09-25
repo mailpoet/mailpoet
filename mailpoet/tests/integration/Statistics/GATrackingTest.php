@@ -240,6 +240,15 @@ class GATrackingTest extends \MailPoetTest {
     verify($url)->equals('https://example.org/review/');
   }
 
+  public function testItDoesNotAddParamsToHostsThatOnlyContainTheSiteDomain() {
+    $internalHost = (string)parse_url(home_url(), PHP_URL_HOST);
+    foreach (['https://' . $internalHost . '.example.org/', 'https://not' . $internalHost . '/'] as $url) {
+      verify($this->tracking->addParamsToUrl($url, $this->newsletter))->equals($url);
+    }
+    $subdomainUrl = 'https://shop.' . $internalHost . '/';
+    verify($this->tracking->addParamsToUrl($subdomainUrl, $this->newsletter))->stringContainsString('utm_source=mailpoet');
+  }
+
   public function testItKeepsExistingQueryParamsOfUrl() {
     $url = $this->tracking->addParamsToUrl(home_url('/review/?key=wc_order_abc&utm_source=shop'), $this->newsletter);
     verify($url)->equals(home_url('/review/?key=wc_order_abc&utm_source=shop&utm_medium=email&utm_source_platform=mailpoet&utm_campaign=SpringEmail'));

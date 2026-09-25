@@ -107,11 +107,21 @@ class GATracking {
   }
 
   /**
+   * The site's domain itself or any of its subdomains, but not a host that merely contains
+   * it, e.g. "example.com.other.org" or "notexample.com".
+   */
+  private function isInternalHost(string $host, string $internalDomain): bool {
+    $host = strtolower($host);
+    $internalDomain = strtolower($internalDomain);
+    return $host === $internalDomain || substr($host, -strlen('.' . $internalDomain)) === '.' . $internalDomain;
+  }
+
+  /**
    * @return string|null null when the URL does not point to the current site or a
    *   mailpoet_ga_tracking_link callback returned a non-string to keep it undecorated
    */
   private function addParamsToInternalUrl(string $link, $gaCampaign, $internalDomain): ?string {
-    if (strpos((string)parse_url($link, PHP_URL_HOST), $internalDomain) === false) {
+    if (!$this->isInternalHost((string)parse_url($link, PHP_URL_HOST), (string)$internalDomain)) {
       return null;
     }
 
