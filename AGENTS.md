@@ -239,6 +239,8 @@ cd /wp-core/wp-content/plugins/mailpoet-premium
 ./do test:integration --file=tests/integration/Config/EnvTest.php
 ```
 
+**HPOS acceptance variants run only on `trunk` and `release`.** The HPOS-off and HPOS-sync acceptance jobs run after merge. If your change touches WooCommerce order code, run the affected `@group woo` Cests with `--disable-hpos` and again with `--enable-hpos-sync`, and say so in the PR's QA notes. Details in the `creating-pull-requests` skill.
+
 When writing tests:
 
 - Unit tests should be fast and isolated with no database or WordPress dependency

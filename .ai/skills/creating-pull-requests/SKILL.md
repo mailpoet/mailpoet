@@ -27,9 +27,18 @@ Always create pull requests as **drafts** and follow the repository's PR templat
 
    Fix any issues with `./do qa:prettier-write` and `./do qa:fix-file <path>`. See the `mailpoet-dev-cycle` skill for the full pre-commit checklist (PHPStan, ESLint, Stylelint, tests). Commit any auto-formatting changes before opening the PR — landing a "fix Prettier" follow-up commit on a fresh PR is wasteful.
 
-5. **Create as draft**
-6. **Follow template sections exactly** - Not all sections are mandatory, use `_N/A_` for non-applicable ones
-7. There are some checkboxes on the bottom of the template, only check the ones that are applicable.
+5. **Run the HPOS acceptance variants CI skips on feature branches.** The HPOS-off and HPOS-sync acceptance jobs run only on `trunk` and `release`, after merge. If your change touches WooCommerce order code (orders, checkout, WooCommerce Subscriptions, purchase emails, revenue tracking, WooCommerce segments), run the affected `@group woo` Cests in both modes before opening the PR. List them with `grep -rlw '@group woo' tests/acceptance` from `mailpoet/`, and pick the Cests that cover the code you changed.
+
+   ```bash
+   pnpm test:acceptance --file=tests/acceptance/<Path>Cest.php --disable-hpos
+   pnpm test:acceptance --file=tests/acceptance/<Path>Cest.php --enable-hpos-sync
+   ```
+
+   In the PR's **QA notes**, say which Cests ran, or that this did not apply.
+
+6. **Create as draft**
+7. **Follow template sections exactly** - Not all sections are mandatory, use `_N/A_` for non-applicable ones
+8. There are some checkboxes on the bottom of the template, only check the ones that are applicable.
 
 ## Code Review Notes Section
 
@@ -62,3 +71,4 @@ If every bullet could be derived by reading the code, use `_N/A_` instead.
 | Narrating the diff in review notes | Only write what the reviewer can't see from the code. Use `_N/A_` if nothing to add |
 | Missing changelog entry            | Check for changelog before creating the PR. Use the `writing-changelog` skill       |
 | Skipping Prettier / QA before push | Run `./do qa:prettier-check` + `./do qa` first; CI will fail the PR otherwise       |
+| Skipping the trunk-only variants   | If the change touches Woo order code, run step 5 before opening                     |

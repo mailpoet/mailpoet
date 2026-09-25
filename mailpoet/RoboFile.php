@@ -408,7 +408,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->testIntegration($opts);
   }
 
-  public function testAcceptance($opts = ['file' => null, 'skip-deps' => false, 'group' => null, 'timeout' => null, 'disable-hpos' => false, 'enable-hpos-sync' => false, 'enable-hpos' => false, 'wordpress-version' => null, 'skip-plugins' => false]) {
+  public function testAcceptance($opts = ['file' => null, 'skip-deps' => false, 'group' => null, 'timeout' => null, 'disable-hpos' => false, 'enable-hpos-sync' => false, 'enable-hpos' => false, 'wordpress-version' => null, 'skip-plugins' => false, 'blockbased-theme' => false]) {
     return $this->runTestsInContainer($opts);
   }
 
@@ -1707,6 +1707,7 @@ class RoboFile extends \Robo\Tasks {
       (isset($opts['enable-hpos-sync']) && $opts['enable-hpos-sync'] ? '-e ENABLE_HPOS_SYNC=1 ' : '') .
       (isset($opts['enable-hpos']) && $opts['enable-hpos'] ? '-e ENABLE_HPOS=1 ' : '') .
       (isset($opts['skip-plugins']) && $opts['skip-plugins'] ? '-e SKIP_PLUGINS=1 ' : '') .
+      (isset($opts['blockbased-theme']) && $opts['blockbased-theme'] ? '-e BLOCKBASED_THEME=1 ' : '') .
       (isset($opts['timeout']) && $opts['timeout'] ? '-e WAIT_TIMEOUT=' . (int)$opts['timeout'] . ' ' : '') .
       (isset($opts['multisite']) && $opts['multisite'] ? '-e MULTISITE=1 ' : '-e MULTISITE=0 ') .
       "codeception_{$testType} --steps --debug -vvv " .
