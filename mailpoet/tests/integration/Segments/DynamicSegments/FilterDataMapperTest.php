@@ -1441,7 +1441,11 @@ class FilterDataMapperTest extends \MailPoetTest {
         return $processFilter($filter, $data);
       }, $data['filters']);
     };
-    add_filter('mailpoet_dynamic_segments_filters_map', $mapAllFilters, 10, 2);
+    // Premium already maps every filter through this hook; add ours only without it.
+    $addedFilter = !has_filter('mailpoet_dynamic_segments_filters_map');
+    if ($addedFilter) {
+      add_filter('mailpoet_dynamic_segments_filters_map', $mapAllFilters, 10, 2);
+    }
     try {
       $filters = $this->mapper->map([
       'filters_connect' => DynamicSegmentFilterData::CONNECT_TYPE_NONE,
@@ -1463,7 +1467,9 @@ class FilterDataMapperTest extends \MailPoetTest {
       ],
       ]);
     } finally {
-      remove_filter('mailpoet_dynamic_segments_filters_map', $mapAllFilters, 10);
+      if ($addedFilter) {
+        remove_filter('mailpoet_dynamic_segments_filters_map', $mapAllFilters, 10);
+      }
     }
     verify($this->mapFilterWithAction($filters, 'lastOpenDate')->getParam(DynamicSegmentFilterData::ONLY_TRACKABLE))->null();
   }
