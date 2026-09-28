@@ -48,14 +48,10 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->fillField('"From" email address', 'test@mailpoet.com');
     $i->fillField('Subject', 'Automation-Test-Subject');
 
-    $i->wantTo('Delete the pre-filled welcome email to design it manually');
-    $this->deleteAssignedEmail($i);
-
+    $i->wantTo('Open the pre-filled welcome email in the classic editor');
     $i->click('[data-automation-id="automation_send_email_design"]');
-    $i->waitForText('Newsletters');
-    $i->click('Newsletters');
-    $i->click('button[data-automation-id="select_template_0"]');
-    $i->waitForText('Design');
+    $this->chooseClassicEditorIfAsked($i);
+    $i->waitForText('Design', 30);
     $i->click('Return back to the Automation');
 
     $i->waitForText('Inactive');
@@ -128,12 +124,14 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->see('Automation-Test-Subject');
   }
 
-  private function deleteAssignedEmail(\AcceptanceTester $i): void {
-    $i->waitForElementVisible('[aria-label="Delete email"]');
-    $i->click('[aria-label="Delete email"]');
-    $i->waitForText('This removes the email from the automation step.');
-    $i->click('Delete email', '.components-modal__frame');
-    $i->waitForElement('[data-automation-id="automation_send_email_design"]');
+  // The editor chooser only appears when the block editor is available.
+  private function chooseClassicEditorIfAsked(\AcceptanceTester $i): void {
+    if (!$i->checkEmailEditorRequiredWordpressVersion()) {
+      return;
+    }
+    $i->waitForText('Choose an email editor');
+    $i->click('[data-automation-id="editor_choice_classic"]');
+    $i->click('[data-automation-id="editor_choice_continue"]');
   }
 
   private function grabAutomationIdFromCurrentUrl(\AcceptanceTester $i): string {

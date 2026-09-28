@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Settings;
 
 /**
@@ -44,19 +45,13 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->fillField('"From" email address', 'test@mailpoet.com');
     $i->fillField('Subject', 'Automation-Block-Editor-Subject');
 
-    $i->wantTo('Delete the pre-filled welcome email to choose an editor');
-    $this->deleteAssignedEmail($i);
-
     $i->wantTo('Verify that choosing the block editor redirects to block editor');
-    $i->click('[data-automation-id="automation_send_email_editor_choice"]');
+    $i->click('[data-automation-id="automation_send_email_design"]');
     $i->waitForText('Choose an email editor');
     $i->click('[data-automation-id="editor_choice_block"]');
     $i->click('[data-automation-id="editor_choice_continue"]');
-    $i->waitForText('Start with an email preset');
 
-    $this->closeTemplateSelectionModal($i);
-
-    $i->wantTo('Verify we are in the block editor interface');
+    $i->wantTo('Verify we are in the block editor interface with the welcome email content');
     $i->waitForElement('[name="editor-canvas"]');
     $i->wait(1); // we need to wait for the iframe to initialize otherwise the switch does not work properly
     $i->switchToIFrame('[name="editor-canvas"]');
@@ -65,7 +60,8 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->waitForElementVisible('[aria-label^="Block: Heading"]');
 
     $i->wantTo('Add content to the email using block editor');
-    $i->click('[aria-label="Block: Paragraph"]');
+    // The first paragraph starts with a personalization tag, so type into a plain one.
+    $i->click(Locator::contains('[aria-label="Block: Paragraph"]', 'Happy shopping!'));
     $i->type('This is automation email content created with block editor');
     $i->switchToIFrame();
 
@@ -135,37 +131,16 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->fillField('"From" email address', 'test@mailpoet.com');
     $i->fillField('Subject', 'Legacy-Editor-Subject');
 
-    $i->wantTo('Delete the pre-filled welcome email to choose an editor');
-    $this->deleteAssignedEmail($i);
-
-    $i->wantTo('Verify that Edit content opens the classic editor when nothing is remembered');
+    $i->wantTo('Verify that choosing the classic editor opens it with the welcome email content');
     $i->click('[data-automation-id="automation_send_email_design"]');
-    $i->waitForText('Newsletters');
-    $i->click('Newsletters');
-    $i->waitForElementClickable('button[data-automation-id="select_template_0"]');
-    $i->click('button[data-automation-id="select_template_0"]');
+    $i->waitForText('Choose an email editor');
+    $i->click('[data-automation-id="editor_choice_classic"]');
+    $i->click('[data-automation-id="editor_choice_continue"]');
     $i->waitForElement('#mailpoet_editor');
 
     $i->wantTo('Verify we are in the legacy newsletter editor interface');
     $i->dontSeeElement('[name="editor-canvas"]'); // Block editor iframe should not be present
     $i->seeElement('#mailpoet_editor');
-  }
-
-  private function deleteAssignedEmail(\AcceptanceTester $i): void {
-    $i->waitForElementVisible('[aria-label="Delete email"]');
-    $i->click('[aria-label="Delete email"]');
-    $i->waitForText('This removes the email from the automation step.');
-    $i->click('Delete email', '.components-modal__frame');
-    $i->waitForElement('[data-automation-id="automation_send_email_design"]');
-  }
-
-  private function closeTemplateSelectionModal(\AcceptanceTester $i): void {
-    $i->wantTo('Close template selector');
-    $i->waitForElementClickable('.email-editor-start_from_scratch_button');
-    $i->waitForText('Newsletter - Newsletter');
-    $i->click('[aria-label="Newsletter"]');
-    $i->waitForElementVisible('.block-editor-block-preview__container');
-    $i->click('[aria-label="Close"]');
   }
 
   private function grabAutomationIdFromCurrentUrl(\AcceptanceTester $i): string {
