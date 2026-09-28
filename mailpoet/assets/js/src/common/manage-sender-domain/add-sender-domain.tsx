@@ -67,6 +67,8 @@ function AddSenderDomain({
       <Button
         variant="primary"
         isBusy={loadingButton}
+        disabled={loadingButton}
+        accessibleWhenDisabled
         onClick={addDomainButtonClicked}
       >
         {__('Add domain', 'mailpoet')}
