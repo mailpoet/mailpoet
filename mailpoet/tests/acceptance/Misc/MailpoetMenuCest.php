@@ -72,20 +72,24 @@ class MailpoetMenuCest {
     $i->seeInCurrentUrl('?page=mailpoet-automation-editor');
     $this->assertSelectedMenuItem($i, 'Automations');
 
-    $i->wantTo('Check if the menu is still selected if I go to the choose template page');
+    $i->wantTo('Check if the menu is still selected if I go to the emails editor');
     $i->waitForText('Send email');
     $i->click('Send email');
-    $this->deleteAssignedEmail($i);
     $i->fillField('"From" name', 'From Test');
     $i->fillField('"From" email address', 'test@mailpoet.com');
     $i->fillField('Subject', 'Automation-Test-Subject');
     $i->click('[data-automation-id="automation_send_email_design"]');
-    $i->waitForElementClickable('[data-automation-id="select_template_0"]');
+    $this->chooseClassicEditorIfAsked($i);
+    $i->waitForElement('#mailpoet_editor', 30);
     $this->assertSelectedMenuItem($i, 'Automations');
 
-    $i->wantTo('Check if the menu is still selected if I go to the emails editor');
-    $i->click('[data-automation-id="select_template_0"]');
-    $i->waitForElement('#mailpoet_editor');
+    $i->wantTo('Check if the menu is still selected if I go to the choose template page');
+    $newsletterId = $i->grabFromCurrentUrl('~[?&]id=(\d+)~');
+    if (!is_string($newsletterId)) {
+      throw new \RuntimeException('Newsletter ID was not found in the current URL.');
+    }
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters&context=automation#/template/' . $newsletterId);
+    $i->waitForElementClickable('[data-automation-id="select_template_0"]');
     $this->assertSelectedMenuItem($i, 'Automations');
   }
 
@@ -235,12 +239,14 @@ class MailpoetMenuCest {
     $this->assertSelectedMailPoetTopMenu($i);
   }
 
-  private function deleteAssignedEmail(\AcceptanceTester $i): void {
-    $i->waitForElementVisible('[aria-label="Delete email"]');
-    $i->click('[aria-label="Delete email"]');
-    $i->waitForText('This removes the email from the automation step.');
-    $i->click('Delete email', '.components-modal__frame');
-    $i->waitForElement('[data-automation-id="automation_send_email_design"]');
+  // The editor chooser only appears when the block editor is available.
+  private function chooseClassicEditorIfAsked(\AcceptanceTester $i): void {
+    if (!$i->checkEmailEditorRequiredWordpressVersion()) {
+      return;
+    }
+    $i->waitForText('Choose an email editor');
+    $i->click('[data-automation-id="editor_choice_classic"]');
+    $i->click('[data-automation-id="editor_choice_continue"]');
   }
 
   private function clickMenuItem(\AcceptanceTester $i, string $label): void {
