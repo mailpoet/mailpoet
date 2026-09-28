@@ -69,6 +69,26 @@ const renderHeading = (newsletterType, newsletterOptions) => {
   }
 };
 
+const hasContentBlocks = (block) => {
+  if (!block) {
+    return false;
+  }
+  if (block.type !== 'container') {
+    return true;
+  }
+  return (block.blocks || []).some(hasContentBlocks);
+};
+
+// Mirrors the block editor, which offers its presets again when the email becomes empty.
+const openTemplatePickerWhenEmptied = (newsletter) => {
+  window.EditorApplication.getChannel().on('afterEditorSave', (json) => {
+    if (hasContentBlocks(json.body?.content)) {
+      return;
+    }
+    window.location = `admin.php?page=mailpoet-newsletters&context=automation#/template/${newsletter.id}`;
+  });
+};
+
 const initializeEditor = (config) => {
   const editorContainer = document.getElementById('mailpoet_editor');
   const getUrlParam = (param) =>
@@ -184,6 +204,10 @@ const initializeEditor = (config) => {
             config,
           });
         });
+
+      if (newsletter.options?.automationId) {
+        openTemplatePickerWhenEmptied(newsletter);
+      }
 
       renderHeading(
         newsletter.type === 'automatic'

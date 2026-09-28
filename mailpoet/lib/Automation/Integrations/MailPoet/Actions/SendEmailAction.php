@@ -185,6 +185,9 @@ class SendEmailAction implements Action {
         : Builder::string()->formatEmail(),
       'ga_campaign' => Builder::string()->minLength(1),
       'email_wp_post_id' => Builder::integer(),
+      // template email pattern, used to create the email once the user picks an editor
+      'pattern' => Builder::string()->minLength(1),
+      'template_email_created' => Builder::boolean(),
     ]);
   }
 
