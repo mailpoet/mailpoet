@@ -7,6 +7,8 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Newsletter\Links\Links;
+use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
+use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
 use MailPoet\Router\Router;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterLink as NewsletterLinkFactory;
@@ -300,5 +302,54 @@ class LinksTest extends \MailPoetTest {
     $result = $this->links->convertHashedLinksToShortcodesAndUrls($content, $newsletterLink1->getQueue()->getId(), $convertAll = true);
     verify($result)->stringContainsString($newsletterLink1->getUrl());
     verify($result)->stringContainsString($newsletterLink2->getUrl());
+  }
+
+  public function testItReplacesHashedLinksWithPlaceholdersStandingForTrackingUrls() {
+    $subscriber = (new SubscriberFactory())->create();
+    $queue = $this->newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $collector = new PlaceholderCollector('ns');
+    $template = '<a href="[mailpoet_click_data]-1234">one</a><a href="[mailpoet_click_data]-1234">again</a><img src="[mailpoet_open_data]"/>';
+
+    $result = $this->links->replaceSubscriberDataWithPlaceholders($subscriber->getId(), $queue->getId(), $template, $collector, PlaceholderCollector::PART_HTML);
+
+    // one placeholder per data tag, however often it occurs
+    verify($result)->equals('<a href="{{mp_mss_ns_1}}">one</a><a href="{{mp_mss_ns_1}}">again</a><img src="{{mp_mss_ns_2}}"/>');
+    $values = $collector->getValues()['html'];
+    verify($values['{{mp_mss_ns_1}}'])->stringContainsString('endpoint=track&action=click');
+    verify($values['{{mp_mss_ns_2}}'])->stringContainsString('endpoint=track&action=open');
+    verify(strtr($result, $values))->equals($this->links->replaceSubscriberData($subscriber->getId(), $queue->getId(), $template));
+  }
+
+  public function testItGivesUntrackedPlaceholdersTheSameShapeAsTrackedOnes() {
+    $subscriber = (new SubscriberFactory())->create();
+    $link = $this->newsletterLinkFactory->withHash('abc')->withUrl('http://example.com/page')->create();
+    $queue = $link->getQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    // "nope" has no stored link; "[mailpoet_open_data]" in the text part is left as it is by the rendered path too
+    $parts = [
+      PlaceholderCollector::PART_HTML => '<img src="[mailpoet_open_data]"/><a href="[mailpoet_click_data]-abc">a</a><a href="[mailpoet_click_data]-nope">b</a>',
+      PlaceholderCollector::PART_TEXT => '[a]([mailpoet_click_data]-abc) [mailpoet_open_data]',
+    ];
+    $resolver = function (string $url): string {
+      return $url . '?untracked';
+    };
+
+    $tracked = new PlaceholderCollector('ns');
+    $trackedParts = [];
+    foreach ($parts as $part => $content) {
+      $trackedParts[$part] = $this->links->replaceSubscriberDataWithPlaceholders($subscriber->getId(), $queue->getId(), $content, $tracked, $part);
+    }
+    $untracked = new PlaceholderCollector('ns');
+    $untrackedParts = $this->links->replaceHashedLinksWithUntrackedPlaceholders($this->links->getUrlsByHash($queue->getId()), $parts, $untracked, $resolver);
+
+    verify($untrackedParts)->equals($trackedParts);
+    $values = $untracked->getValues();
+    verify($values['html']['{{mp_mss_ns_1}}'])->equals(OpenTracking::UNTRACKED_PIXEL_SRC);
+    verify($values['html']['{{mp_mss_ns_2}}'])->equals('http://example.com/page?untracked');
+    verify($values['html']['{{mp_mss_ns_3}}'])->equals('[mailpoet_click_data]-nope');
+    verify($values['text']['{{mp_mss_ns_4}}'])->equals('http://example.com/page?untracked');
+    verify($values['text']['{{mp_mss_ns_5}}'])->equals('[mailpoet_open_data]');
+    verify(implode(' ', array_merge($values['html'], $values['text'])))->stringNotContainsString('endpoint=track');
   }
 }

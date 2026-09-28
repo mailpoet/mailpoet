@@ -110,16 +110,23 @@ class PersonalizationTagLinkResolver {
    * Unresolvable tokens are replaced by an empty target rather than shipping as literal text.
    *
    * @param array<string, mixed> $context
+   * @param (callable(string, string): string)|null $urlInterceptor Receives the resolved URL (empty when the
+   *   token does not resolve) and its token, and returns what to write instead, e.g. a placeholder standing
+   *   for the URL. It runs for every token so that the output does not depend on the recipient's data.
    */
-  public function resolveMarkdownLinks(string $text, array $context): string {
+  public function resolveMarkdownLinks(string $text, array $context, ?callable $urlInterceptor = null): string {
     return (string)preg_replace_callback(
       '/\]\(([^)\s]+)\)/',
-      function (array $matches) use ($context): string {
+      function (array $matches) use ($context, $urlInterceptor): string {
         $token = self::extractToken($matches[1]);
         if ($token === null) {
           return $matches[0];
         }
-        return '](' . ($this->resolveWithContext($token, $context) ?? '') . ')';
+        $url = $this->resolveWithContext($token, $context) ?? '';
+        if ($urlInterceptor !== null) {
+          $url = $urlInterceptor($url, $token);
+        }
+        return '](' . $url . ')';
       },
       $text
     );

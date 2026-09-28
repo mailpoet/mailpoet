@@ -3,6 +3,7 @@
 namespace MailPoet\Services\Bridge;
 
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use WP_Error;
 
@@ -13,6 +14,14 @@ class API {
   const SENDING_STATUS_SEND_ERROR = 'send_error';
 
   const REQUEST_TIMEOUT = 10; // seconds
+  // One templated request sends a whole batch, so the service may need more time to process it.
+  // The value is the same as the cron daemon's execution limit (CronHelper::DAEMON_EXECUTION_LIMIT):
+  // a request that needs more time would not fit into one cron run anyway. When it times out, the
+  // connection error halves the batch size for the next attempt.
+  const TEMPLATE_BATCH_REQUEST_TIMEOUT = 20; // seconds
+
+  // Wire-format identifier of the templated batch payload, expected by the template-messages endpoint.
+  public const SENDING_FORMAT_TEMPLATE_BATCH = 'template_batch_v1';
 
   // ISO 8601 in UTC, e.g. 2026-06-15T23:59:59Z. The bounces report endpoint
   // parses the `from`/`to` parameters with `new DateTime($value, UTC)`.
@@ -55,20 +64,33 @@ class API {
   public const KEY_CHECK_TYPE_PREMIUM = 'premium';
   public const KEY_CHECK_TYPE_MSS = 'mss';
 
+  // Server-advertised ceiling on messages per request, returned by the
+  // template-messages endpoint. Persisted so the sending worker can cap batches.
+  public const SETTING_KEY_MAX_MESSAGES_PER_REQUEST = 'sending_service_max_messages_per_request';
+
   private $apiKey;
   private $wp;
+  /** @var SettingsController */
+  private $settings;
   /** @var LoggerFactory */
   private $loggerFactory;
   /** @var mixed|null It is an instance of \CurlHandle in PHP8 and above but a resource in PHP7 */
   private $curlHandle = null;
 
+  // Endpoints registered directly on the WPCOM mailpoet-bridge plugin and called
+  // there, not proxied through bridge.mailpoet.com like the v0 and v1 ones. They
+  // accept the same `Basic api:<key>` header that auth() produces.
+  private const API_BASE_URL_V2 = 'https://public-api.wordpress.com/wpcom/v2/mailpoet-bridge/v2';
+
   public $urlMe = 'https://bridge.mailpoet.com/api/v0/me';
   public $urlPremium = 'https://bridge.mailpoet.com/api/v0/premium';
   public $urlMessages = 'https://bridge.mailpoet.com/api/v0/messages';
-  // Registered directly on the WPCOM mailpoet-bridge plugin, not proxied through
-  // bridge.mailpoet.com like the other endpoints. Authenticated with the same
-  // `Basic api:<key>` header that auth() produces.
-  public $urlBouncesReport = 'https://public-api.wordpress.com/wpcom/v2/mailpoet-bridge/v2/bounces/report';
+  // The two endpoints called directly on WPCOM, see API_BASE_URL_V2. Templated batch
+  // sending is sendTemplateMessages(); urlMessages stays on bridge.mailpoet.com and
+  // still serves the transactional/test/non-bulk sends that post fully rendered messages.
+  public $urlTemplateMessages = self::API_BASE_URL_V2 . '/template-messages';
+  // Bounced recipients report, see getBouncesReport().
+  public $urlBouncesReport = self::API_BASE_URL_V2 . '/bounces/report';
   public $urlStats = 'https://bridge.mailpoet.com/api/v0/stats';
   public $urlAuthorizedEmailAddresses = 'https://bridge.mailpoet.com/api/v1/authorized_email_address';
   public $urlAuthorizedSenderDomains = 'https://bridge.mailpoet.com/api/v1/sender_domain';
@@ -76,7 +98,8 @@ class API {
 
   public function __construct(
     $apiKey,
-    $wp = null
+    $wp = null,
+    ?SettingsController $settings = null
   ) {
     $this->setKey($apiKey);
     if (is_null($wp)) {
@@ -84,6 +107,7 @@ class API {
     } else {
       $this->wp = $wp;
     }
+    $this->settings = $settings ?? SettingsController::getInstance();
     $this->loggerFactory = LoggerFactory::getInstance();
   }
 
@@ -141,13 +165,29 @@ class API {
   }
 
   public function sendMessages($messageBody) {
+    return $this->postMessages($this->urlMessages, $messageBody, self::REQUEST_TIMEOUT);
+  }
+
+  /**
+   * One shared template plus a substitution map per recipient, in the SENDING_FORMAT_TEMPLATE_BATCH
+   * shape composed by the MailPoet mailer method. Only this endpoint advertises the per-request
+   * ceiling, so only its responses feed the persisted maximum.
+   *
+   * @param array<string, mixed> $batchBody
+   */
+  public function sendTemplateMessages(array $batchBody) {
+    return $this->postMessages($this->urlTemplateMessages, $batchBody, self::TEMPLATE_BATCH_REQUEST_TIMEOUT, true);
+  }
+
+  /**
+   * @param mixed $messageBody
+   * @return array{status: string, message?: string, code?: int, error?: mixed}
+   */
+  private function postMessages(string $url, $messageBody, int $timeout, bool $advertisesMaxMessagesPerRequest = false): array {
     $this->curlHandle = null;
     add_action('requests-curl.before_request', [$this, 'setCurlHandle'], 10, 1);
     add_action('requests-curl.after_request', [$this, 'logCurlInformation'], 10, 2);
-    $result = $this->request(
-      $this->urlMessages,
-      $messageBody
-    );
+    $result = $this->request($url, $messageBody, 'POST', $timeout);
     remove_action('requests-curl.after_request', [$this, 'logCurlInformation']);
     remove_action('requests-curl.before_request', [$this, 'setCurlHandle']);
     if ($this->wp->isWpError($result)) {
@@ -159,13 +199,42 @@ class API {
     }
 
     $responseCode = $this->wp->wpRemoteRetrieveResponseCode($result);
+    $responseBody = $this->wp->wpRemoteRetrieveBody($result);
+    if ($advertisesMaxMessagesPerRequest) {
+      $this->storeMaxMessagesPerRequest($responseBody);
+    }
     if ($responseCode !== 201) {
-      $response = ($this->wp->wpRemoteRetrieveBody($result)) ?
-        $this->wp->wpRemoteRetrieveBody($result) :
-        $this->wp->wpRemoteRetrieveResponseMessage($result);
+      $response = $responseBody ?: $this->wp->wpRemoteRetrieveResponseMessage($result);
       return $this->createErrorResponse((int)$responseCode, $response, self::SENDING_STATUS_SEND_ERROR);
     }
     return ['status' => self::RESPONSE_STATUS_OK];
+  }
+
+  /**
+   * The template-messages endpoint advertises its current per-request ceiling in
+   * its responses. Persist it whenever it changes so the sending worker can stay
+   * within the server-imposed limit.
+   *
+   * @param mixed $responseBody
+   */
+  private function storeMaxMessagesPerRequest($responseBody): void {
+    if (!is_string($responseBody) || $responseBody === '') {
+      return;
+    }
+    $decoded = json_decode($responseBody, true);
+    if (!is_array($decoded) || !isset($decoded['max_messages_per_request'])) {
+      return;
+    }
+    $advertised = $decoded['max_messages_per_request'];
+    if (!is_numeric($advertised) || (int)$advertised <= 0) {
+      return;
+    }
+    $max = (int)$advertised;
+    $current = $this->settings->get(self::SETTING_KEY_MAX_MESSAGES_PER_REQUEST);
+    if (is_numeric($current) && (int)$current === $max) {
+      return;
+    }
+    $this->settings->set(self::SETTING_KEY_MAX_MESSAGES_PER_REQUEST, $max);
   }
 
   /**
@@ -489,9 +558,9 @@ class API {
     return 'Basic ' . base64_encode('api:' . $this->apiKey);
   }
 
-  private function request($url, $body, $method = 'POST') {
+  private function request($url, $body, $method = 'POST', int $timeout = self::REQUEST_TIMEOUT) {
     $params = [
-      'timeout' => $this->wp->applyFilters('mailpoet_bridge_api_request_timeout', self::REQUEST_TIMEOUT),
+      'timeout' => $this->wp->applyFilters('mailpoet_bridge_api_request_timeout', $timeout),
       'httpversion' => '1.0',
       'method' => $method,
       'headers' => [
