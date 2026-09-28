@@ -168,6 +168,7 @@ export function EditNewsletter(): JSX.Element {
     block_email_editor_enabled: blockEmailEditorEnabled = false,
     editor_choice_modal_enabled: showEditorChoiceModal = false,
     last_email_editor_choice: lastEditorChoice = null,
+    has_remembered_email_editor_choice: hasRememberedEditorChoice = false,
   } = useSelectContext();
 
   const { selectedStep, automationId, errors } = useSelect(
@@ -182,6 +183,14 @@ export function EditNewsletter(): JSX.Element {
   );
 
   const emailId = selectedStep?.args?.email_id as number | undefined;
+  const templatePattern =
+    typeof selectedStep?.args?.pattern === 'string' &&
+    selectedStep.args.pattern !== ''
+      ? selectedStep.args.pattern
+      : undefined;
+  // The starter design is used only for the first email. If that email is deleted, the next one starts blank.
+  const starterDesignUsed = selectedStep?.args?.template_email_created === true;
+  const starterPattern = starterDesignUsed ? undefined : templatePattern;
   const automationStepId = selectedStep.id;
   const errorFields = errors?.fields ?? {};
   const emailIdError = errorFields?.email_id ?? '';
@@ -236,9 +245,12 @@ export function EditNewsletter(): JSX.Element {
         return;
       }
 
-      window.location.href = `admin.php?page=mailpoet-newsletters&context=automation#/template/${createdEmail.emailId}`;
+      // Starter emails already have classic content, so skip the template picker.
+      window.location.href = starterPattern
+        ? MailPoet.getNewsletterEditorUrl(createdEmail.emailId, 'automation')
+        : `admin.php?page=mailpoet-newsletters&context=automation#/template/${createdEmail.emailId}`;
     },
-    [],
+    [starterPattern],
   );
 
   const createEmail = useCallback(
@@ -258,6 +270,8 @@ export function EditNewsletter(): JSX.Element {
 
       const previousEmailId = selectedStep?.args?.email_id;
       const previousEmailWpPostId = selectedStep?.args?.email_wp_post_id;
+      const previousStarterDesignUsed =
+        selectedStep?.args?.template_email_created;
       const rollbackStepArgs = () => {
         void dispatch(storeName).updateStepArgs(
           automationStepId,
@@ -268,6 +282,11 @@ export function EditNewsletter(): JSX.Element {
           automationStepId,
           'email_wp_post_id',
           previousEmailWpPostId,
+        );
+        void dispatch(storeName).updateStepArgs(
+          automationStepId,
+          'template_email_created',
+          previousStarterDesignUsed,
         );
       };
       let createdEmail: CreatedAutomationEmail | undefined;
@@ -288,6 +307,9 @@ export function EditNewsletter(): JSX.Element {
             subject: '',
             options,
             new_editor: editorChoice === 'new',
+            ...(starterPattern && {
+              automation_template_pattern: starterPattern,
+            }),
           },
         });
 
@@ -322,6 +344,13 @@ export function EditNewsletter(): JSX.Element {
           'email_wp_post_id',
           editorChoice === 'new' ? createdEmail.emailWpPostId : undefined,
         );
+        if (starterPattern) {
+          void dispatch(storeName).updateStepArgs(
+            automationStepId,
+            'template_email_created',
+            true,
+          );
+        }
         stagedStepArgs = true;
 
         const saveResult = (await dispatch(
@@ -396,9 +425,17 @@ export function EditNewsletter(): JSX.Element {
       redirectToEmailEditor,
       selectedStep?.args?.email_id,
       selectedStep?.args?.email_wp_post_id,
+      selectedStep?.args?.template_email_created,
       showEditorChoiceError,
+      starterPattern,
     ],
   );
+
+  // Template emails ask for an editor on every site unless the user remembered a choice.
+  const hasRememberedEditor = hasRememberedEditorChoice && !!lastEditorChoice;
+  const showChooserFirst =
+    showEditorChoiceModal ||
+    (!!templatePattern && isBlockEmailEditorEnabled && !hasRememberedEditor);
 
   const rememberedEditor: EditorChoice =
     !showEditorChoiceModal &&
@@ -556,7 +593,7 @@ export function EditNewsletter(): JSX.Element {
           'mailpoet-automation-field__error': hasEmailIdError,
         })}
       >
-        {showEditorChoiceModal ? (
+        {showChooserFirst ? (
           <Button
             variant="sidebar-primary"
             centered
@@ -614,7 +651,9 @@ export function EditNewsletter(): JSX.Element {
           <EditorChoiceModal
             context="automation"
             lastChoice={lastEditorChoice}
-            isRemembered={!showEditorChoiceModal}
+            isRemembered={
+              templatePattern ? hasRememberedEditor : !showEditorChoiceModal
+            }
             onClose={() => setIsEditorChoiceModalOpen(false)}
             onContinue={createEmailFromModal}
           />
