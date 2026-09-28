@@ -32,6 +32,8 @@ let originalModuleLoad: ModuleLoader;
 let root: ReturnType<typeof createRoot>;
 let rootElement: HTMLDivElement;
 let ajaxCalls: AjaxCall[] = [];
+// What the read-only fetch returns: no records for a domain that isn't on the account.
+let recordsOnAccount: Array<{ host: string }> = [];
 
 const patchedGlobals = [
   'window',
@@ -159,7 +161,12 @@ const installModuleMocks = () => {
           Ajax: {
             post: (options: AjaxCall) => {
               ajaxCalls.push(options);
-              return Promise.resolve({ data: [] });
+              return Promise.resolve({
+                data:
+                  options.action === 'getAuthorizedSenderDomains'
+                    ? recordsOnAccount
+                    : [],
+              });
             },
           },
         },
@@ -222,6 +229,7 @@ describe('authorize sender domain modal', function authorizeSenderDomainModal() 
 
   beforeEach(() => {
     ajaxCalls = [];
+    recordsOnAccount = [];
   });
 
   afterEach(async () => {
@@ -244,7 +252,7 @@ describe('authorize sender domain modal', function authorizeSenderDomainModal() 
 
     await renderModal('example.com');
 
-    expect(actionsCalled()).to.deep.equal([]);
+    expect(actionsCalled()).to.deep.equal(['getAuthorizedSenderDomains']);
     expect(addDomainButton()).to.not.equal(undefined);
   });
 
@@ -257,16 +265,35 @@ describe('authorize sender domain modal', function authorizeSenderDomainModal() 
       await Promise.resolve();
     });
 
-    expect(actionsCalled()).to.deep.equal(['createAuthorizedSenderDomain']);
-    expect(ajaxCalls[0].data.domain).to.equal('example.com');
+    expect(actionsCalled()).to.deep.equal([
+      'getAuthorizedSenderDomains',
+      'createAuthorizedSenderDomain',
+    ]);
+    expect(ajaxCalls[1].data.domain).to.equal('example.com');
   });
 
   it('fetches the records for a domain already on the account', async () => {
     window.mailpoet_all_sender_domains = ['example.com'];
+    recordsOnAccount = [{ host: 'mailpoet1._domainkey.example.com' }];
 
     await renderModal('example.com');
 
     expect(actionsCalled()).to.deep.equal(['getAuthorizedSenderDomains']);
     expect(addDomainButton()).to.equal(undefined);
+  });
+
+  // Most MailPoet pages show the "authenticate your sender domain" notice without localizing
+  // mailpoet_all_sender_domains, and the list goes stale once a domain is added.
+  it('shows the records, not the Add panel, for a domain on the account that the page does not list', async () => {
+    recordsOnAccount = [{ host: 'mailpoet1._domainkey.example.com' }];
+
+    await renderModal('example.com');
+
+    expect(actionsCalled()).to.deep.equal(['getAuthorizedSenderDomains']);
+    expect(addDomainButton()).to.equal(undefined);
+    expect(
+      document.querySelector('[data-automation-id="manage_sender_domain"]')
+        .textContent,
+    ).to.equal('example.com');
   });
 });
