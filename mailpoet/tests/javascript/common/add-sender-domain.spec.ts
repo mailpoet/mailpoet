@@ -81,14 +81,21 @@ function FakeButton({
   children,
   onClick,
   isBusy,
+  disabled,
 }: {
   children?: React.ReactNode;
   onClick?: () => void;
   isBusy?: boolean;
+  disabled?: boolean;
 }): JSX.Element {
   return React.createElement(
     'button',
-    { type: 'button', onClick, 'data-busy': isBusy ? 'true' : 'false' },
+    {
+      type: 'button',
+      onClick,
+      disabled,
+      'data-busy': isBusy ? 'true' : 'false',
+    },
     children,
   );
 }
@@ -201,10 +208,17 @@ describe('add sender domain panel', function addSenderDomainPanel() {
     expect(clicks).to.equal(1);
   });
 
-  it('marks the button busy while the request is in flight', async () => {
+  it('marks the button busy and disabled while the request is in flight', async () => {
     await render({ loadingButton: true });
 
     expect(button().getAttribute('data-busy')).to.equal('true');
+    expect(button().disabled).to.equal(true);
+  });
+
+  it('leaves the button enabled when nothing is in flight', async () => {
+    await render({});
+
+    expect(button().disabled).to.equal(false);
   });
 
   it('shows what went wrong when adding the domain fails', async () => {

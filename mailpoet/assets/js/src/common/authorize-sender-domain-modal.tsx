@@ -157,6 +157,8 @@ function AuthorizeSenderDomainModal({
   }, [senderDomain]);
 
   const addDomainButtonClicked = async () => {
+    // A second click while the first create is in flight would send another create.
+    if (loadingButton) return;
     setLoadingButton(true);
     setErrorMessage('');
 
