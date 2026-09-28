@@ -34,6 +34,8 @@ let rootElement: HTMLDivElement;
 let ajaxCalls: AjaxCall[] = [];
 // What the read-only fetch returns: no records for a domain that isn't on the account.
 let recordsOnAccount: Array<{ host: string }> = [];
+// When set, the create request never resolves, as if it were still in flight.
+let holdCreate = false;
 
 const patchedGlobals = [
   'window',
@@ -161,6 +163,14 @@ const installModuleMocks = () => {
           Ajax: {
             post: (options: AjaxCall) => {
               ajaxCalls.push(options);
+              if (
+                holdCreate &&
+                options.action === 'createAuthorizedSenderDomain'
+              ) {
+                return new Promise(() => {
+                  // never settles: the create is still in flight
+                });
+              }
               return Promise.resolve({
                 data:
                   options.action === 'getAuthorizedSenderDomains'
@@ -230,6 +240,7 @@ describe('authorize sender domain modal', function authorizeSenderDomainModal() 
   beforeEach(() => {
     ajaxCalls = [];
     recordsOnAccount = [];
+    holdCreate = false;
   });
 
   afterEach(async () => {
@@ -270,6 +281,26 @@ describe('authorize sender domain modal', function authorizeSenderDomainModal() 
       'createAuthorizedSenderDomain',
     ]);
     expect(ajaxCalls[1].data.domain).to.equal('example.com');
+  });
+
+  it('sends one create when Add domain is clicked twice while the first is in flight', async () => {
+    window.mailpoet_all_sender_domains = [];
+    holdCreate = true;
+
+    await renderModal('example.com');
+    await React.act(async () => {
+      addDomainButton().click();
+      await Promise.resolve();
+    });
+    await React.act(async () => {
+      addDomainButton().click();
+      await Promise.resolve();
+    });
+
+    expect(actionsCalled()).to.deep.equal([
+      'getAuthorizedSenderDomains',
+      'createAuthorizedSenderDomain',
+    ]);
   });
 
   it('fetches the records for a domain already on the account', async () => {
