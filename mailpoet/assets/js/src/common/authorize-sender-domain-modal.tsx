@@ -122,23 +122,25 @@ function AuthorizeSenderDomainModal({
     }
     modalIsOpened.current = true;
 
+    // Only some pages localize this list, and it goes stale once a domain is added, so a domain
+    // missing from it may still be on the account.
     const allSenderDomains = window.mailpoet_all_sender_domains || [];
-
-    if (!allSenderDomains.includes(senderDomain)) {
-      // The domain is not on the account. Creating it is what generates the DNS records, so there
-      // is nothing to fetch yet - and creating it changes what the account holds, which must not
-      // happen just because somebody opened this dialog. Ask first instead. See STOMAIL-8425.
-      setNeedsAdding(true);
-      return () => {
-        modalIsOpened.current = false;
-      };
-    }
+    const knownToThisPage = allSenderDomains.includes(senderDomain);
 
     (async () => {
       try {
         const res: SenderDomainApiResponseType = await makeApiRequest(
           senderDomain,
         );
+
+        // Fetching is read-only and returns no records for a domain that isn't on the account.
+        // Creating it is what generates the records, but it changes what the account holds, which
+        // must not happen just because somebody opened this dialog. Ask first. See STOMAIL-8425.
+        if (!knownToThisPage && (!res.data || res.data.length === 0)) {
+          performStateUpdate(setNeedsAdding, true);
+          return;
+        }
+
         performStateUpdate(setRowData, generateRowData(senderDomain, res.data));
       } catch (e) {
         const apiErrorMessage = getApiErrorMessage(e);
