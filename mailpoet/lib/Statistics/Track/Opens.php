@@ -71,16 +71,11 @@ class Opens {
       ]);
       // Open was already tracked
       if ($oldStatistics) {
-        if (!empty($data->userAgent)) {
+        if ($this->shouldUpgradeToHumanOpen($oldStatistics, $data->userAgent ?? null)) {
           $userAgent = $this->userAgentsRepository->findOrCreate($data->userAgent);
-          if (
-            $userAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_HUMAN
-            || $oldStatistics->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_MACHINE
-          ) {
-            $oldStatistics->setUserAgent($userAgent);
-            $oldStatistics->setUserAgentType($userAgent->getUserAgentType());
-            $this->statisticsOpensRepository->flush();
-          }
+          $oldStatistics->setUserAgent($userAgent);
+          $oldStatistics->setUserAgentType($userAgent->getUserAgentType());
+          $this->statisticsOpensRepository->flush();
         }
         $this->subscribersRepository->maybeUpdateLastOpenAt($subscriber);
         return $this->returnResponse($displayImage);
@@ -98,6 +93,14 @@ class Opens {
       $this->statisticsOpensRepository->recalculateSubscriberScore($subscriber);
     }
     return $this->returnResponse($displayImage);
+  }
+
+  private function shouldUpgradeToHumanOpen(StatisticsOpenEntity $open, $userAgent): bool {
+    if (empty($userAgent) || $open->getUserAgentType() !== UserAgentEntity::USER_AGENT_TYPE_MACHINE) {
+      return false;
+    }
+    $newUserAgent = new UserAgentEntity($userAgent);
+    return $newUserAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_HUMAN;
   }
 
   public function returnResponse($displayImage) {
