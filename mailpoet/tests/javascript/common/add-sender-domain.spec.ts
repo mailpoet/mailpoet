@@ -123,10 +123,6 @@ const installModuleMocks = () => {
       // breaks the suites that run after this one.
       return { createInterpolateElement: (text: string) => text };
     }
-    if (request === 'common/functions') {
-      // The barrel boots analytics and other module-level side effects that outlive this suite.
-      return { getIsGarden: () => false };
-    }
     return originalModuleLoad.apply(this, [request, parent, isMain]);
   };
 };
