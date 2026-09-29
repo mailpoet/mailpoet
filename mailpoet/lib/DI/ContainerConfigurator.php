@@ -513,6 +513,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Mailer\MetaInfo::class);
     $container->autowire(\MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper::class)->setPublic(true);
     // Subscribers
+    $container->autowire(\MailPoet\Subscribers\ApiSourcePluginResolver::class);
     $container->autowire(\MailPoet\Subscribers\NewSubscriberNotificationMailer::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscriberLimitNotificationEvaluator::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscriberLimitNotificationMailer::class)->setPublic(true);

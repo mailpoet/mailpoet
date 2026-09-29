@@ -244,6 +244,7 @@ class SubscriberSaveController {
       );
     }
     if (isset($data['source'])) $subscriber->setSource($data['source']);
+    if (array_key_exists('source_plugin', $data)) $subscriber->setSourcePlugin($data['source_plugin']);
     if (isset($data['wp_user_id'])) $subscriber->setWpUserId($data['wp_user_id']);
     if (isset($data['subscribed_ip'])) $subscriber->setSubscribedIp($data['subscribed_ip']);
     if (isset($data['confirmed_ip'])) $subscriber->setConfirmedIp($data['confirmed_ip']);
