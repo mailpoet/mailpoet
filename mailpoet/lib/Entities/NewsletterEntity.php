@@ -554,7 +554,10 @@ class NewsletterEntity {
     if ($body === null) {
       return null;
     }
-    return $body['globalStyles'][$category][$style] ?? null;
+    $value = $body['globalStyles'][$category][$style] ?? null;
+    // A saved style can be any JSON type; honor the ?string contract instead of
+    // letting an array-valued style throw a TypeError during rendering.
+    return is_scalar($value) ? (string)$value : null;
   }
 
   public function setGlobalStyle(string $category, string $style, $value): void {

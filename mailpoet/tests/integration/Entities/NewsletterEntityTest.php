@@ -31,6 +31,25 @@ class NewsletterEntityTest extends \MailPoetTest {
     $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
   }
 
+  public function testItReturnsGlobalStyleAsStringOrNull(): void {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setBody([
+      'globalStyles' => [
+        'woocommerce' => [
+          'brandingColor' => '#123456',
+          'isSavedWithUpdatedStyles' => true,
+          'headingFontColor' => ['unexpected', 'array'],
+        ],
+      ],
+    ]);
+
+    verify($newsletter->getGlobalStyle('woocommerce', 'brandingColor'))->equals('#123456');
+    // A non-scalar saved style is ignored rather than throwing a TypeError against the ?string return.
+    verify($newsletter->getGlobalStyle('woocommerce', 'headingFontColor'))->null();
+    verify($newsletter->getGlobalStyle('woocommerce', 'isSavedWithUpdatedStyles'))->equals('1');
+    verify($newsletter->getGlobalStyle('woocommerce', 'missing'))->null();
+  }
+
   public function testItRemovesOrphanedSegmentRelations() {
     $newsletter = $this->createNewsletter();
     $segment = $this->segmentRepository->createOrUpdate('Segment', 'Segment description');

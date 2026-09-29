@@ -230,6 +230,39 @@ class RendererTest extends \MailPoetTest {
     verify($headerStyles)->stringContainsString('color: #ff0000 !important');
   }
 
+  public function testItSkipsInvalidHeadingColorForWooHeading(): void {
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'woocommerce' => [
+          'isSavedWithUpdatedStyles' => true,
+          'headingFontColor' => 'red;}td{color:#654321',
+        ],
+      ],
+    ]);
+    $css = $this->getWooEmailStyles();
+    $updatedCss = $this->getRenderer(true)->enhanceCss($css, $this->newsletter);
+    verify($this->getCssDefinitionsForSelector('#mailpoet-woo-email-header', $updatedCss))->empty();
+    verify($updatedCss)->stringNotContainsString('#654321');
+  }
+
+  public function testItSkipsInvalidContentStyles(): void {
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'text' => ['fontSize' => '1px}td{color:#654321'],
+        'h1' => ['fontSize' => '2px}td{color:#654321'],
+        'woocommerce' => [
+          'isSavedWithUpdatedStyles' => true,
+          'contentHeadingFontColor' => 'red}td{color:#654321',
+          'brandingColor' => '#aaaaaa',
+        ],
+      ],
+    ]);
+    $css = $this->getWooEmailStyles();
+    $updatedCss = $this->getRenderer(true)->enhanceCss($css, $this->newsletter);
+    verify($updatedCss)->stringNotContainsString('#654321');
+    verify($this->getCssDefinitionsForSelector('#mailpoet_woocommerce_container h1', $updatedCss))->stringContainsString('color:#aaaaaa');
+  }
+
   public function testItUpdatesFontFamilyInsideWooContentAndRemovesSeparators() {
     $emailContent = '<h1 style="font-family:Arial;">Heading not in Woo</h1><!--WooContent--><p style="font-family:Arial;">Content</p><!--WooContent--><h2 style="font-family:Arial;">Footer not in Woo</h2>';
     $this->newsletter->setBody([
