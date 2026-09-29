@@ -88,6 +88,10 @@ class Initializer {
   /** @var PublicEmailRoute */
   private $publicEmailRoute;
 
+  private SchemaState $schemaState;
+
+  private SchemaNotReadyResponder $schemaNotReadyResponder;
+
   /** @var Menu */
   private $menu;
 
@@ -225,7 +229,9 @@ class Initializer {
     SubscribersRestApi $subscribersRestApi,
     NewslettersRestApi $newslettersRestApi,
     LogsDownload $logsDownload,
-    PublicEmailRoute $publicEmailRoute
+    PublicEmailRoute $publicEmailRoute,
+    SchemaState $schemaState,
+    SchemaNotReadyResponder $schemaNotReadyResponder
   ) {
     $this->rendererFactory = $rendererFactory;
     $this->accessControl = $accessControl;
@@ -269,6 +275,8 @@ class Initializer {
     $this->newslettersRestApi = $newslettersRestApi;
     $this->logsDownload = $logsDownload;
     $this->publicEmailRoute = $publicEmailRoute;
+    $this->schemaState = $schemaState;
+    $this->schemaNotReadyResponder = $schemaNotReadyResponder;
 
     $emailEditorContainer = Email_Editor_Container::container();
     $this->emailEditorBootstrap = $emailEditorContainer->get(EmailEditorBootstrap::class);
@@ -304,7 +312,13 @@ class Initializer {
     );
 
     $this->emailEditorBootstrap->init();
-    $this->setupAbilities();
+    // Hooked at plugin load, before pluginsLoaded() decides, so these need their own
+    // readiness check. The post-upgrade trigger must stay available even while gated,
+    // so an update that repairs a failed migration starts it right away.
+    if ($this->schemaState->isReady()) {
+      $this->setupEarlyWiring();
+    }
+    $this->hooks->triggerDatabaseUpdateAfterPluginUpgrade();
 
     $this->wpFunctions->addAction('activated_plugin', [
       new PluginActivatedHook(new DeferredAdminNotices),
@@ -376,31 +390,45 @@ class Initializer {
       'afterPluginActivation',
     ]);
 
-    $this->hooks->initEarlyHooks();
   }
 
-  private function setupAbilities(): void {
+  /**
+   * Hooks that belong before plugins_loaded: the mailer replacement and the WooCommerce
+   * abilities. Registered at plugin load when the schema is ready, otherwise by
+   * maybeRunActivator() once this request has migrated; never both.
+   */
+  private function setupEarlyWiring(): void {
     require_once __DIR__ . '/../Abilities/Abilities.php';
     Abilities::init();
+    $this->hooks->initEarlyHooks();
   }
 
   public function runActivator() {
     try {
       $this->wpFunctions->addOption(self::PLUGIN_ACTIVATED, true); // used in afterPluginActivation
       $this->activator->activate();
-    } catch (InvalidStateException $e) {
+    } catch (ActivationInProgressException $e) {
       return $this->handleRunningMigration($e);
     } catch (\Exception $e) {
       return $this->handleFailedInitialization($e);
     }
   }
 
+  /**
+   * Nothing here may touch the database before the schema is ready.
+   */
   public function pluginsLoaded() {
+    if (!$this->schemaState->isReady()) {
+      return;
+    }
     $this->hooks->init();
     $this->publicEmailRoute->init();
   }
 
   public function preInitialize() {
+    if (!$this->schemaState->isReady()) {
+      return;
+    }
     try {
       $this->renderer = $this->rendererFactory->getRenderer();
       $this->setupWidget();
@@ -419,6 +447,11 @@ class Initializer {
   public function initialize() {
     try {
       $this->migratorCli->initialize();
+      // The migrations CLI stays available so `wp mailpoet:migrations:*` can repair a stuck
+      // update; everything below assumes the schema matches the code.
+      if (!$this->schemaState->isReady()) {
+        return;
+      }
       $this->importCli->initialize();
       $this->cronCli->initialize();
       $this->setupInstaller();
@@ -471,8 +504,6 @@ class Initializer {
       $this->logsDownload->initialize();
       $this->blockTypesController->initialize();
       $this->wpFunctions->doAction('mailpoet_initialized', MAILPOET_VERSION);
-    } catch (InvalidStateException $e) {
-      return $this->handleRunningMigration($e);
     } catch (\Exception $e) {
       return $this->handleFailedInitialization($e);
     }
@@ -509,28 +540,35 @@ class Initializer {
    * Checks if the plugin was updated and runs the activator if needed. The activator
    * will run the database migrations and update the db version among a few other things.
    *
+   * When this request cannot bring the schema up to date (another request holds the
+   * activation lock, or a migration failed) the rest of the plugin stays unwired for
+   * this request and only the "not ready" responders are registered.
+   *
    * @return void
-   * @throws InvalidStateException
    */
   public function maybeRunActivator() {
-    try {
-      $currentDbVersion = $this->settings->get('db_version');
-    } catch (\Exception $e) {
-      $currentDbVersion = null;
-    }
-
-    if (version_compare((string)$currentDbVersion, Env::$version) === 0) {
+    if ($this->schemaState->isReady()) {
       return;
     }
 
-    // if current db version and plugin version differ
     try {
       $this->activator->activate();
-    } catch (InvalidStateException $e) {
-      $this->handleRunningMigration($e);
-    } catch (\Exception $e) {
-      $this->handleFailedInitialization($e);
+    } catch (ActivationInProgressException $e) {
+      // The request holding the lock may have finished by now; a release with no or only
+      // small migrations takes well under a second. Re-read db_version before giving up.
+      $this->schemaState->refresh();
+    } catch (\Throwable $e) {
+      $this->schemaState->markFailed($e);
     }
+
+    if ($this->schemaState->isReady()) {
+      // plugins_loaded has passed, so its callbacks cannot run on this request any more;
+      // the login and lost-password mailer hooks still can.
+      $this->setupEarlyWiring();
+      $this->pluginsLoaded();
+      return;
+    }
+    $this->schemaNotReadyResponder->init();
   }
 
   public function setupInstaller() {
@@ -656,6 +694,10 @@ class Initializer {
   }
 
   public function setupEmailEditorIntegrations() {
+    // Hooked from init() at plugin load, so it needs its own readiness check.
+    if (!$this->schemaState->isReady()) {
+      return;
+    }
     $this->mailpoetEmailEditorIntegration->initialize();
   }
 
@@ -673,6 +715,10 @@ class Initializer {
   }
 
   public function setupMarketingConfirmationEmail() {
+    // Hooked from init() at plugin load, so it needs its own readiness check.
+    if (!$this->schemaState->isReady()) {
+      return;
+    }
     $wcEnabled = $this->wcHelper->isWooCommerceActive();
     if ($wcEnabled) {
       $emails = new \MailPoet\WooCommerce\Emails();

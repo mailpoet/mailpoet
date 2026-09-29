@@ -897,6 +897,56 @@ class Hooks {
     return $response;
   }
 
+  /**
+   * Registered from Initializer::init() rather than init(), so it is in place even while
+   * the schema gate keeps the rest of these hooks off.
+   */
+  public function triggerDatabaseUpdateAfterPluginUpgrade(): void {
+    $this->wp->addAction(
+      'upgrader_process_complete',
+      [$this, 'triggerDatabaseUpdate'],
+      10,
+      2
+    );
+  }
+
+  /**
+   * Fires one non-blocking request at the site right after MailPoet's files were replaced,
+   * so a fresh process running the new code migrates the database now rather than on the
+   * next visitor's request. The updater's own process still has the old classes loaded,
+   * which is why the migration is not run in place. If the loopback is blocked, the
+   * init-time check in Initializer::maybeRunActivator() covers it.
+   *
+   * On multisite the request targets the current site only; other sites migrate on their
+   * own next request, as before.
+   *
+   * @param mixed $upgrader
+   * @param mixed $options The upgrader's hook_extra: single and automatic updates carry `plugin`, bulk updates carry `plugins`.
+   */
+  public function triggerDatabaseUpdate($upgrader, $options): void {
+    if (!is_array($options) || ($options['action'] ?? null) !== 'update' || ($options['type'] ?? null) !== 'plugin') {
+      return;
+    }
+    $plugins = is_array($options['plugins'] ?? null) ? $options['plugins'] : [];
+    if (isset($options['plugin'])) {
+      $plugins[] = $options['plugin'];
+    }
+    if (!in_array(Env::$pluginPath, $plugins, true)) {
+      return;
+    }
+    // Same request shape WordPress core uses for its own loopback in spawn_cron(): the
+    // response is never read, the tiny timeout returns control immediately, and TLS
+    // verification follows the site's https_local_ssl_verify choice so self-signed local
+    // certificates do not break the trigger. Any action would do because the migration
+    // runs on init before the handler; mailpoet_token is the cheapest nopriv one.
+    $this->wp->wpRemotePost($this->wp->adminUrl('admin-ajax.php'), [
+      'timeout' => 0.01,
+      'blocking' => false,
+      'sslverify' => $this->wp->applyFilters('https_local_ssl_verify', false),
+      'body' => ['action' => 'mailpoet_token'],
+    ]);
+  }
+
   public function deactivateCronWhenInMaintenanceMode(): void {
     if (!$this->wp->wpIsMaintenanceMode()) {
       return;
