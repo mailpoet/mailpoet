@@ -1,10 +1,7 @@
 import { Button } from '@wordpress/components';
 import { createInterpolateElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
-import { getIsGarden } from 'common/functions';
 import { ErrorIcon } from './icons';
-
-const isGarden = getIsGarden();
 
 type Props = {
   senderDomain: string;
@@ -40,16 +37,11 @@ function AddSenderDomain({
         )}
       </div>
 
-      <div>
-        {isGarden
-          ? __(
-              'Adding it generates the DNS records you need to authenticate it. You can then copy those records into your domain’s DNS settings.',
-              'mailpoet',
-            )
-          : __(
-              'Adding it to MailPoet generates the DNS records you need to authenticate it. You can then copy those records into your domain’s DNS settings.',
-              'mailpoet',
-            )}
+      <div className="mailpoet_manage_sender_domain_step_header">
+        {__(
+          'Adding it to MailPoet generates the DNS records you need to authenticate it. You can then copy those records into your domain’s DNS settings.',
+          'mailpoet',
+        )}
       </div>
 
       {error && (
