@@ -92,11 +92,33 @@ class StylesHelper {
     $style = self::applyHeadingMargin($style, $selector);
     $style = self::applyLineHeight($style, $selector);
     foreach ($style as $attribute => $individualStyle) {
+      $property = self::translateCSSAttribute($attribute);
+      if (!self::isValidCssPropertyName($property) || !self::isValidCssValue($individualStyle)) {
+        continue;
+      }
       $individualStyle = self::applyFontFamily($attribute, $individualStyle);
-      $css .= self::translateCSSAttribute($attribute) . ':' . $individualStyle . ';' . PHP_EOL;
+      $css .= $property . ':' . $individualStyle . ';' . PHP_EOL;
     }
     $css .= '}' . PHP_EOL;
     return $css;
+  }
+
+  /**
+   * Rejects characters that can break out of the declaration or the <style> element,
+   * and "@", because an at-rule without a block stalls the CSS inliner.
+   * @param mixed $value
+   */
+  public static function isValidCssValue($value): bool {
+    return is_scalar($value) && strpbrk((string)$value, '<>{};@') === false;
+  }
+
+  /**
+   * @param mixed $property
+   */
+  private static function isValidCssPropertyName($property): bool {
+    return is_string($property)
+      && $property !== ''
+      && strspn($property, 'abcdefghijklmnopqrstuvwxyz-') === strlen($property);
   }
 
   public static function applyTextAlignment($block, string $defaultAlignment = 'left', string $styleType = 'block') {

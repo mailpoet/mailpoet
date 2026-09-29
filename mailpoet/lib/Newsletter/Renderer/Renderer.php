@@ -26,6 +26,16 @@ class Renderer {
   const NEWSLETTER_TEMPLATE = 'Template.html';
   const FILTER_POST_PROCESS = 'mailpoet_rendering_post_process';
 
+  private const GLOBAL_STYLES_SELECTORS = [
+    'text' => 'td.mailpoet_paragraph, td.mailpoet_blockquote, li.mailpoet_paragraph, td.mailpoet_footer',
+    'body' => 'body, .mailpoet-wrapper',
+    'link' => '.mailpoet-wrapper a',
+    'wrapper' => '.mailpoet_content-wrapper',
+    'h1' => 'h1',
+    'h2' => 'h2',
+    'h3' => 'h3',
+  ];
+
   /** @var BodyRenderer */
   private $bodyRenderer;
 
@@ -221,27 +231,11 @@ class Renderer {
    */
   private function renderStyles(array $styles) {
     $css = '';
-    foreach ($styles as $selector => $style) {
-      switch ($selector) {
-        case 'text':
-          $selector = 'td.mailpoet_paragraph, td.mailpoet_blockquote, li.mailpoet_paragraph, td.mailpoet_footer';
-          break;
-        case 'body':
-          $selector = 'body, .mailpoet-wrapper';
-          break;
-        case 'link':
-          $selector = '.mailpoet-wrapper a';
-          break;
-        case 'wrapper':
-          $selector = '.mailpoet_content-wrapper';
-          break;
-      }
-
-      if (!is_array($style)) {
+    foreach ($styles as $key => $style) {
+      if (!isset(self::GLOBAL_STYLES_SELECTORS[$key]) || !is_array($style)) {
         continue;
       }
-
-      $css .= StylesHelper::setStyle($style, $selector);
+      $css .= StylesHelper::setStyle($style, self::GLOBAL_STYLES_SELECTORS[$key]);
     }
     return $css;
   }

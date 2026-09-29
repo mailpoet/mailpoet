@@ -87,6 +87,44 @@ class StylesHelperTest extends \MailPoetUnitTest {
     verify($styles)->stringContainsString('mso-line-height-alt:20px;');
   }
 
+  public function testItKeepsValidDeclarations(): void {
+    $css = StylesHelper::setStyle([
+      'fontColor' => 'rgba(0, 0, 0, 0.5)',
+      'fontFamily' => 'Merriweather Sans',
+      'fontSize' => '16px',
+      'fontWeight' => 700,
+      'textDecoration' => 'underline',
+    ], '.mailpoet-wrapper a');
+    verify($css)->stringContainsString('color:rgba(0, 0, 0, 0.5);');
+    verify($css)->stringContainsString("font-family:'merriweather sans', 'helvetica neue', helvetica, arial, sans-serif;");
+    verify($css)->stringContainsString('font-size:16px;');
+    verify($css)->stringContainsString('font-weight:700;');
+    verify($css)->stringContainsString('text-decoration:underline;');
+  }
+
+  public function testItSkipsDeclarationsWithInvalidValues(): void {
+    $css = StylesHelper::setStyle([
+      'fontColor' => '#000000',
+      'backgroundColor' => 'red<br>',
+      'textDecoration' => 'underline;position:fixed',
+      'borderColor' => 'red}body{display:none',
+      'lineHeight' => '1 @media',
+      'borderStyle' => ['solid'],
+      'fontFamily' => ['Arial'],
+    ], '.mailpoet-wrapper a');
+    verify($css)->equals('.mailpoet-wrapper a{' . PHP_EOL . 'color:#000000;' . PHP_EOL . '}' . PHP_EOL);
+  }
+
+  public function testItSkipsDeclarationsWithInvalidPropertyNames(): void {
+    $css = StylesHelper::setStyle([
+      'fontColor' => '#000000',
+      '<br>' => 'red',
+      'color:red;background' => 'blue',
+      'Color' => 'blue',
+    ], '.mailpoet-wrapper a');
+    verify($css)->equals('.mailpoet-wrapper a{' . PHP_EOL . 'color:#000000;' . PHP_EOL . '}' . PHP_EOL);
+  }
+
   public function testItAppendsTextAlignmentWithSemicolon(): void {
     $blockWithoutSemicolon = "color: #000000";
     verify(StylesHelper::applyTextAlignment($blockWithoutSemicolon))
