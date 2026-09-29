@@ -620,6 +620,23 @@ class RendererTest extends \MailPoetTest {
     verify($subject)->equals($this->newsletter->getSubject());
   }
 
+  public function testItRendersOnlyValidGlobalStyles(): void {
+    $body = $this->newsletter->getBody();
+    $this->assertIsArray($body);
+    $body['globalStyles']['td'] = ['backgroundColor' => '#123456'];
+    $body['globalStyles']['wrapper']['backgroundColor'] = '#ffffff}td{color:#654321';
+    $this->newsletter->setBody($body);
+
+    $html = $this->renderer->render($this->newsletter)['html'];
+
+    verify($html)->stringNotContainsString('#123456');
+    verify($html)->stringNotContainsString('#654321');
+    $DOM = $this->dOMParser->parseStr($html);
+    verify($DOM('body', 0)->attr('style'))->stringContainsString('background-color:#333333');
+    verify($DOM('td.mailpoet_paragraph', 0)->attr('style'))->stringContainsString('color:#565656');
+    verify($DOM('h1', 0)->attr('style'))->stringContainsString('font-size:36px');
+  }
+
   public function testItSetsPreheader() {
     $body = json_decode(Fixtures::get('newsletter_body_template'), true);
     $this->assertIsArray($body);
