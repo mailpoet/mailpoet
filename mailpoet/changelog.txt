@@ -1,5 +1,12 @@
 == Changelog ==
 
+= 5.40.0 - 2026-09-29 =
+* Added: "Only subscribers we can track" option on engagement segment filters, so segments like "did not open" leave out subscribers whose opens are not recorded;
+* Improved: PHP upgrade notice, which now tells sites on PHP 8.0 and older that MailPoet will require PHP 8.1 from February 2027;
+* Fixed: Engagement score shows as unknown for subscribers who cannot be tracked, instead of dropping toward 0%;
+* Fixed: Automated Latest Content, Posts, and Products blocks now hide the content of password-protected posts;
+* Fixed: Post titles and site names render as plain text in emails, and the Latest Posts block previews posts as read-only text.
+
 = 5.39.0 - 2026-09-22 =
 * Added: Editor choice modal that lets users pick between the classic and block editor when creating a newsletter and remember their choice;
 * Added: Show a notice on the forms pages when CAPTCHA is disabled and MailPoet Sending Service is active;
