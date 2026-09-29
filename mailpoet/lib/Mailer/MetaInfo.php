@@ -7,6 +7,12 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\Source;
 
 class MetaInfo {
+  private const SOURCE_PLUGINS = [
+    Source::FORM => 'mailpoet',
+    Source::WOOCOMMERCE_USER => 'woocommerce',
+    Source::WOOCOMMERCE_CHECKOUT => 'woocommerce',
+  ];
+
   public function getSendingTestMetaInfo() {
     return $this->makeMetaInfo('sending_test', 'unknown', 'administrator');
   }
@@ -68,8 +74,9 @@ class MetaInfo {
       'subscriber_status' => $subscriberStatus,
       'subscriber_source' => $subscriberSource ?: 'unknown',
     ];
-    if ($subscriberSource === Source::API && $subscriberSourcePlugin) {
-      $metaInfo['subscriber_source_plugin'] = $subscriberSourcePlugin;
+    $plugin = $subscriberSource === Source::API ? $subscriberSourcePlugin : (self::SOURCE_PLUGINS[$subscriberSource] ?? null);
+    if ($plugin) {
+      $metaInfo['subscriber_source_plugin'] = $plugin;
     }
     return $metaInfo;
   }
