@@ -4,6 +4,7 @@ namespace MailPoet\Mailer;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Subscribers\Source;
 
 class MetaInfo {
   public function getSendingTestMetaInfo() {
@@ -22,12 +23,13 @@ class MetaInfo {
     return $this->makeMetaInfo(
       'transactional',
       $subscriber ? $subscriber->getStatus() : 'unknown',
-      $subscriber ? $subscriber->getSource() : 'unknown'
+      $subscriber ? $subscriber->getSource() : 'unknown',
+      $subscriber ? $subscriber->getSourcePlugin() : null
     );
   }
 
   public function getConfirmationMetaInfo(SubscriberEntity $subscriber) {
-    return $this->makeMetaInfo('confirmation', $subscriber->getStatus(), $subscriber->getSource());
+    return $this->makeMetaInfo('confirmation', $subscriber->getStatus(), $subscriber->getSource(), $subscriber->getSourcePlugin());
   }
 
   public function getNewSubscriberNotificationMetaInfo() {
@@ -57,14 +59,18 @@ class MetaInfo {
         $type = 'post_notification';
         break;
     }
-    return $this->makeMetaInfo($type, $subscriber->getStatus(), $subscriber->getSource());
+    return $this->makeMetaInfo($type, $subscriber->getStatus(), $subscriber->getSource(), $subscriber->getSourcePlugin());
   }
 
-  private function makeMetaInfo($emailType, $subscriberStatus, $subscriberSource) {
-    return [
+  private function makeMetaInfo($emailType, $subscriberStatus, $subscriberSource, ?string $subscriberSourcePlugin = null) {
+    $metaInfo = [
       'email_type' => $emailType,
       'subscriber_status' => $subscriberStatus,
       'subscriber_source' => $subscriberSource ?: 'unknown',
     ];
+    if ($subscriberSource === Source::API && $subscriberSourcePlugin) {
+      $metaInfo['subscriber_source_plugin'] = $subscriberSourcePlugin;
+    }
+    return $metaInfo;
   }
 }
