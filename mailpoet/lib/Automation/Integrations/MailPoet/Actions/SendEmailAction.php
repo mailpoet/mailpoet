@@ -169,7 +169,9 @@ class SendEmailAction implements Action {
     $nonEmptyString = Builder::string()->required()->minLength(1);
     return Builder::object([
       // required fields
-      'email_id' => Builder::integer()->required(),
+      // The email is created when the user first opens the step, so it can be missing in drafts.
+      // validate() blocks activation until it exists.
+      'email_id' => Builder::integer(),
       'name' => $nonEmptyString->default(__('Send email', 'mailpoet')),
       'subject' => $nonEmptyString->default(__('Subject', 'mailpoet')),
       'preheader' => Builder::string()->required()->default(''),
@@ -198,23 +200,23 @@ class SendEmailAction implements Action {
   }
 
   public function validate(StepValidationArgs $args): void {
+    $emailId = $args->getStep()->getArgs()['email_id'] ?? '';
+    if (empty($emailId)) {
+      throw ValidationException::create()
+        ->withMessage(__('Cannot activate the automation because an email has no content.', 'mailpoet'))
+        ->withError('email_id', __('Add email content before activating the automation.', 'mailpoet'));
+    }
+
     try {
       $email = $this->getEmailForStep($args->getStep());
     } catch (InvalidStateException $exception) {
-      $exception = ValidationException::create()
-        ->withMessage(__('Cannot send the email because it was not found. Please, go to the automation editor and update the email contents.', 'mailpoet'));
-
-      $emailId = $args->getStep()->getArgs()['email_id'] ?? '';
-      if (empty($emailId)) {
-        $exception->withError('email_id', __("Automation email not found.", 'mailpoet'));
-      } else {
-        $exception->withError(
+      throw ValidationException::create()
+        ->withMessage(__('Cannot send the email because it was not found. Please, go to the automation editor and update the email contents.', 'mailpoet'))
+        ->withError(
           'email_id',
           // translators: %s is the ID of email.
           sprintf(__("Automation email with ID '%s' not found.", 'mailpoet'), $emailId)
         );
-      }
-      throw $exception;
     }
 
     if ($args->getAutomation()->getStatus() !== Automation::STATUS_ACTIVE) {

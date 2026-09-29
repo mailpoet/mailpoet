@@ -135,7 +135,7 @@ class SendEmailActionTest extends \MailPoetTest {
     try {
       $this->action->validate(new StepValidationArgs($this->automation, $step, []));
     } catch (ValidationException $error) {
-      $this->assertSame('Automation email not found.', $error->getErrors()['email_id']);
+      $this->assertSame('Add email content before activating the automation.', $error->getErrors()['email_id']);
     }
     $this->assertNotNull($error);
   }
