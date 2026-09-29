@@ -16,6 +16,7 @@ use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\SubscriptionUrlFactory;
+use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use WP_Post;
@@ -232,6 +233,104 @@ class ShortcodesTest extends \MailPoetTest {
     $postId = $this->createPostWithTitle('Price &lt; $10');
     $out = $this->processPostTitle($postId);
     verify($out)->equals('Price < $10');
+  }
+
+  public function testItEncodesQuotesInPostTitleReplacedInsideAnAttribute() {
+    $postId = $this->createPostWithTitle('Spring sale" data-extra="yes');
+    $out = $this->replaceWithPostTitle($postId, '<img alt="[newsletter:post_title]" />');
+    verify($out)->equals('<img alt="Spring sale&quot; data-extra=&quot;yes" />');
+  }
+
+  public function testItEncodesApostrophesInPostTitleReplacedInsideASingleQuotedAttribute() {
+    $postId = $this->createPostWithTitle('Rock &#039;n&#039; Roll');
+    $out = $this->replaceWithPostTitle($postId, "<a title='[newsletter:post_title]'>x</a>");
+    verify($out)->equals("<a title='Rock &#039;n&#039; Roll'>x</a>");
+  }
+
+  public function testItEncodesAngleBracketsInPostTitleReplacedInsideAnAttribute() {
+    $postId = $this->createPostWithTitle('Price &lt; $10 &gt; $5');
+    $out = $this->replaceWithPostTitle($postId, '<a title="[newsletter:post_title]">x</a>');
+    verify($out)->equals('<a title="Price &lt; $10 &gt; $5">x</a>');
+  }
+
+  public function testItEncodesPostTitleInsideAnAttributeThatAlsoContainsAGreaterThanSign() {
+    $postId = $this->createPostWithTitle('Spring sale" data-extra="yes');
+    $out = $this->replaceWithPostTitle($postId, '<a title="Read more > [newsletter:post_title]">x</a>');
+    verify($out)->equals('<a title="Read more > Spring sale&quot; data-extra=&quot;yes">x</a>');
+  }
+
+  public function testItKeepsQuotesInPostTitleReplacedInText() {
+    $postId = $this->createPostWithTitle('Spring sale" data-extra="yes');
+    $out = $this->replaceWithPostTitle($postId, '<a title="Read > more">[newsletter:post_title]</a>');
+    verify($out)->equals('<a title="Read > more">Spring sale" data-extra="yes</a>');
+  }
+
+  public function testItKeepsPostTitleUnencodedInTextAfterALessThanSignThatIsNotATag() {
+    $postId = $this->createPostWithTitle('Rock &#039;n&#039; Roll');
+    $out = $this->replaceWithPostTitle($postId, "We <3 you, don't miss [newsletter:post_title]");
+    verify($out)->equals("We <3 you, don't miss Rock 'n' Roll");
+  }
+
+  public function testItKeepsShortcodeMarkupInTextAfterALessThanSignInsideAnAttribute() {
+    $markup = $this->shortcodesObject->process(['[site:homepage_link]'])[0];
+    $out = $this->shortcodesObject->replace('<td title="1<2 deal">[site:homepage_link]</td>');
+    verify($out)->equals('<td title="1<2 deal">' . $markup . '</td>');
+  }
+
+  public function testItEncodesPostTitleInsideAnAttributeThatAlsoContainsALessThanSign() {
+    $postId = $this->createPostWithTitle('Spring sale" data-extra="yes');
+    $out = $this->replaceWithPostTitle($postId, '<a title="Save < 10 [newsletter:post_title]">x</a>');
+    verify($out)->equals('<a title="Save < 10 Spring sale&quot; data-extra=&quot;yes">x</a>');
+  }
+
+  public function testItEncodesPostTitleInsideAnAttributeAfterAnotherAttributeContainingATag() {
+    $postId = $this->createPostWithTitle('Spring sale" data-extra="yes');
+    $out = $this->replaceWithPostTitle($postId, '<img title="Save <b>50%</b>" alt="[newsletter:post_title]" />');
+    verify($out)->equals('<img title="Save <b>50%</b>" alt="Spring sale&quot; data-extra=&quot;yes" />');
+  }
+
+  public function testItKeepsPostTitleUnencodedInTextAfterALessThanSignThatNeverCloses() {
+    $postId = $this->createPostWithTitle('Rock &#039;n&#039; Roll');
+    $out = $this->replaceWithPostTitle($postId, "Sale <ends soon, don't miss [newsletter:post_title]");
+    verify($out)->equals("Sale <ends soon, don't miss Rock 'n' Roll");
+  }
+
+  public function testItEncodesPostTitleInTheHtmlPartWhenTheSubjectPartHasAnUnclosedTag() {
+    $postId = $this->createPostWithTitle('Spring sale" data-extra="yes');
+    $html = '<img title="Read > more" alt="[newsletter:post_title]" />';
+    $out = $this->replaceWithPostTitle($postId, 'Price <b title="x' . Helpers::DIVIDER . $html);
+    verify($out)->equals('Price <b title="x' . Helpers::DIVIDER . '<img title="Read > more" alt="Spring sale&quot; data-extra=&quot;yes" />');
+  }
+
+  public function testItEncodesPostTitleInsideAnAttributeAfterAnUnquotedValueWithAnApostrophe() {
+    $postId = $this->createPostWithTitle('Spring sale" data-extra="yes');
+    $out = $this->replaceWithPostTitle($postId, "<img data-note=it's alt=\"[newsletter:post_title]\" />");
+    verify($out)->equals("<img data-note=it's alt=\"Spring sale&quot; data-extra=&quot;yes\" />");
+  }
+
+  public function testItEncodesOnlyTheAttributeOccurrenceWhenTheSameShortcodeIsAlsoInText() {
+    $postId = $this->createPostWithTitle('Spring sale" data-extra="yes');
+    $out = $this->replaceWithPostTitle($postId, '<img alt="[newsletter:post_title]" /><p>[newsletter:post_title]</p>');
+    verify($out)->equals('<img alt="Spring sale&quot; data-extra=&quot;yes" /><p>Spring sale" data-extra="yes</p>');
+  }
+
+  public function testItDoesNotReplaceShortcodesInsideAValueAlreadyReplacedInAnAttribute() {
+    $postId = $this->createPostWithTitle('Sale [newsletter:post_title]"');
+    $out = $this->replaceWithPostTitle($postId, '<img alt="[newsletter:post_title]" />');
+    verify($out)->equals('<img alt="Sale [newsletter:post_title]&quot;" />');
+  }
+
+  public function testItKeepsLinkShortcodeUrlUnchangedInsideAnAttribute() {
+    $url = $this->shortcodesObject->process(['[link:subscription_unsubscribe_url]'])[0];
+    verify($url)->stringContainsString('&');
+    $out = $this->shortcodesObject->replace('<a href="[link:subscription_unsubscribe_url]">x</a>');
+    verify($out)->equals('<a href="' . $url . '">x</a>');
+  }
+
+  public function testItDoesNotDoubleEncodeSubscriberValuesInsideAnAttribute() {
+    $this->subscriber->setFirstName('Tom & "Jerry"');
+    $out = $this->shortcodesObject->replace('<img alt="[subscriber:firstname]" />');
+    verify($out)->equals('<img alt="Tom &amp; &quot;Jerry&quot;" />');
   }
 
   public function itCanProcessPostNotificationNewsletterNumberShortcode() {
@@ -783,6 +882,12 @@ class ShortcodesTest extends \MailPoetTest {
     $content = '<a data-post-id="' . $postId . '" href="#">x</a>';
     $result = $this->shortcodesObject->process(['[newsletter:post_title]'], $content);
     return $result[0];
+  }
+
+  private function replaceWithPostTitle(int $postId, string $content): string {
+    $postMarker = '<h3 data-post-id="' . $postId . '">x</h3>';
+    $out = $this->shortcodesObject->replace($postMarker . $content);
+    return substr($out, strlen($postMarker));
   }
 
   public function _createWPUser() {

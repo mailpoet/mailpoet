@@ -55,6 +55,9 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
   /** @var SendingQueueEntity */
   private $sendingQueue;
 
+  /** @var int[] */
+  private $postIds = [];
+
   public function _before() {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
@@ -195,6 +198,27 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     verify($renderedBody)->stringContainsString(Router::NAME . '&endpoint=view_in_browser');
   }
 
+  public function testItEncodesPostTitleInAnAttributeOfASentNewsletter() {
+    $postId = wp_insert_post([
+      'post_title' => 'Spring sale" data-extra="yes',
+      'post_content' => 'contents',
+      'post_status' => 'publish',
+    ]);
+    $this->postIds[] = $postId;
+    $this->sendingQueue->setNewsletterRenderedBody([
+      'html' => '<h3 data-post-id="' . $postId . '">[newsletter:post_title]</h3><img src="x.png" alt="[newsletter:post_title]" />',
+      'text' => 'test',
+    ]);
+    $renderedBody = $this->viewInBrowserRenderer->render(
+      $preview = false,
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueue
+    );
+    verify($renderedBody)->stringContainsString('<img src="x.png" alt="Spring sale&quot; data-extra=&quot;yes" />');
+    verify($renderedBody)->stringContainsString('>Spring sale" data-extra="yes</h3>');
+  }
+
   public function testItRewritesLinksToRouterEndpointWhenTrackingIsEnabled() {
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $queue = $this->sendingQueue;
@@ -265,5 +289,13 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     verify($renderedBody)->stringContainsString($this->diContainer->get(NewsletterUrl::class)->getPublicShareUrl($this->newsletter));
     verify($renderedBody)->stringNotContainsString(Router::NAME . '&endpoint=track');
     verify($renderedBody)->stringNotContainsString(Router::NAME . '&endpoint=view_in_browser');
+  }
+
+  public function _after() {
+    parent::_after();
+    foreach ($this->postIds as $postId) {
+      wp_delete_post($postId, true);
+    }
+    $this->postIds = [];
   }
 }
