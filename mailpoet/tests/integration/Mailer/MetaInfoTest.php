@@ -199,4 +199,26 @@ class MetaInfoTest extends \MailPoetTest {
       'subscriber_source' => 'form',
     ]);
   }
+
+  public function testItAddsSourcePluginForApiSubscribers() {
+    $subscriber = (new SubscriberFactory())
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withSource('api')
+      ->withEmail('api@metainfo.com')
+      ->create();
+    verify($this->meta->getConfirmationMetaInfo($subscriber))->arrayHasNotKey('subscriber_source_plugin');
+
+    $subscriber->setSourcePlugin('some-form-plugin');
+    verify($this->meta->getConfirmationMetaInfo($subscriber))->equals([
+      'email_type' => 'confirmation',
+      'subscriber_status' => 'unconfirmed',
+      'subscriber_source' => 'api',
+      'subscriber_source_plugin' => 'some-form-plugin',
+    ]);
+  }
+
+  public function testItDropsSourcePluginWhenSourceIsNotApi() {
+    $this->subscriber->setSourcePlugin('some-form-plugin');
+    verify($this->meta->getConfirmationMetaInfo($this->subscriber))->arrayHasNotKey('subscriber_source_plugin');
+  }
 }
