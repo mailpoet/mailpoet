@@ -34,6 +34,8 @@ let rootElement: HTMLDivElement;
 let ajaxCalls: AjaxCall[] = [];
 // What the read-only fetch returns: no records for a domain that isn't on the account.
 let recordsOnAccount: Array<{ host: string }> = [];
+// What the create returns: the records generated for the newly added domain.
+let recordsCreated: Array<{ host: string }> = [];
 // When set, the create request never resolves, as if it were still in flight.
 let holdCreate = false;
 
@@ -119,11 +121,16 @@ function FakeAddSenderDomain({
 function FakeManageSenderDomain({
   rows,
 }: {
-  rows: Array<{ domain: string }>;
+  rows: Array<{ domain: string; dns: Array<{ host: string }> }>;
 }): JSX.Element {
   return React.createElement(
     'div',
-    { 'data-automation-id': 'manage_sender_domain' },
+    {
+      'data-automation-id': 'manage_sender_domain',
+      'data-hosts': rows.length
+        ? rows[0].dns.map((record) => record.host).join(',')
+        : '',
+    },
     rows.length ? rows[0].domain : '',
   );
 }
@@ -175,7 +182,7 @@ const installModuleMocks = () => {
                 data:
                   options.action === 'getAuthorizedSenderDomains'
                     ? recordsOnAccount
-                    : [],
+                    : recordsCreated,
               });
             },
           },
@@ -220,6 +227,9 @@ const renderModal = async (senderDomain: string) => {
 
 const actionsCalled = () => ajaxCalls.map((call) => call.action);
 
+const manageSenderDomain = () =>
+  document.querySelector('[data-automation-id="manage_sender_domain"]');
+
 const addDomainButton = () =>
   Array.from(document.querySelectorAll('button')).find(
     (button) => button.textContent === 'Add domain',
@@ -240,6 +250,7 @@ describe('authorize sender domain modal', function authorizeSenderDomainModal() 
   beforeEach(() => {
     ajaxCalls = [];
     recordsOnAccount = [];
+    recordsCreated = [];
     holdCreate = false;
   });
 
@@ -267,8 +278,9 @@ describe('authorize sender domain modal', function authorizeSenderDomainModal() 
     expect(addDomainButton()).to.not.equal(undefined);
   });
 
-  it('registers the domain only once the button is clicked', async () => {
+  it('registers the domain only once the button is clicked and shows its records', async () => {
     window.mailpoet_all_sender_domains = [];
+    recordsCreated = [{ host: 'mailpoet1._domainkey.example.com' }];
 
     await renderModal('example.com');
     await React.act(async () => {
@@ -281,6 +293,10 @@ describe('authorize sender domain modal', function authorizeSenderDomainModal() 
       'createAuthorizedSenderDomain',
     ]);
     expect(ajaxCalls[1].data.domain).to.equal('example.com');
+    expect(addDomainButton()).to.equal(undefined);
+    expect(manageSenderDomain().getAttribute('data-hosts')).to.equal(
+      'mailpoet1._domainkey.example.com',
+    );
   });
 
   it('sends one create when Add domain is clicked twice while the first is in flight', async () => {
@@ -322,9 +338,6 @@ describe('authorize sender domain modal', function authorizeSenderDomainModal() 
 
     expect(actionsCalled()).to.deep.equal(['getAuthorizedSenderDomains']);
     expect(addDomainButton()).to.equal(undefined);
-    expect(
-      document.querySelector('[data-automation-id="manage_sender_domain"]')
-        .textContent,
-    ).to.equal('example.com');
+    expect(manageSenderDomain().textContent).to.equal('example.com');
   });
 });
