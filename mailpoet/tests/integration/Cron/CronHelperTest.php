@@ -217,12 +217,12 @@ class CronHelperTest extends \MailPoetTest {
   }
 
   public function testItCreatesRandomToken() {
-    // random token is a string of 5 characters
     $token1 = $this->cronHelper->createToken();
     $token2 = $this->cronHelper->createToken();
     verify($token1)->notEquals($token2);
     verify(is_string($token1))->true();
-    verify(strlen($token1))->equals(5);
+    verify(strlen($token1))->equals(CronHelper::DAEMON_TOKEN_BYTES * 2);
+    verify(ctype_xdigit($token1))->true();
   }
 
   public function testItGetsSiteUrl() {

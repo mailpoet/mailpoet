@@ -5,7 +5,6 @@ namespace MailPoet\Cron;
 use MailPoet\Router\Endpoints\CronDaemon as CronDaemonEndpoint;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CronHelper {
@@ -14,6 +13,7 @@ class CronHelper {
   const DAEMON_SETTING = 'cron_daemon';
   const DAEMON_STATUS_ACTIVE = 'active';
   const DAEMON_STATUS_INACTIVE = 'inactive';
+  const DAEMON_TOKEN_BYTES = 16;
 
   // Error codes
   const DAEMON_EXECUTION_LIMIT_REACHED = 1001;
@@ -103,7 +103,7 @@ class CronHelper {
   }
 
   public function createToken() {
-    return Security::generateRandomString();
+    return bin2hex(random_bytes(self::DAEMON_TOKEN_BYTES));
   }
 
   public function pingDaemon() {
