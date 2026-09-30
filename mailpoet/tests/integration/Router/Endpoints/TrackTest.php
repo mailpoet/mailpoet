@@ -66,7 +66,6 @@ class TrackTest extends \MailPoetTest {
     $this->trackData = [
       'queue_id' => $queue->getId(),
       'subscriber_id' => $subscriber->getId(),
-      'newsletter_id' => $newsletter->getId(),
       'subscriber_token' => $this->linkTokens->getToken($subscriber),
       'link_hash' => $link->getHash(),
       'preview' => false,
@@ -151,7 +150,6 @@ class TrackTest extends \MailPoetTest {
 
   public function testItRequiresValidQueueToGetNewsletter() {
     $data = $this->trackData;
-    $data['newsletter_id'] = false;
     $data['queue_id'] = 99;
     $processedData = $this->track->_processTrackData($data);
     verify($processedData)->false();
@@ -159,7 +157,14 @@ class TrackTest extends \MailPoetTest {
 
   public function testItGetsNewsletterFromQueue() {
     $data = $this->trackData;
-    $data['newsletter_id'] = false;
+    $processedData = $this->track->_processTrackData($data);
+    verify($processedData->newsletter->getId())->equals($this->newsletter->getId());
+  }
+
+  public function testItAlwaysUsesNewsletterOfQueue() {
+    $otherNewsletter = (new NewsletterFactory())->create();
+    $data = $this->trackData;
+    $data['newsletter_id'] = $otherNewsletter->getId();
     $processedData = $this->track->_processTrackData($data);
     verify($processedData->newsletter->getId())->equals($this->newsletter->getId());
   }
@@ -193,7 +198,6 @@ class TrackTest extends \MailPoetTest {
     $queue = $newsletter->getLatestQueue();
     $trackData = $this->trackData;
     $trackData['queue_id'] = $queue->getId();
-    $trackData['newsletter_id'] = $newsletter->getId();
 
     // create another link with the same hash but different queue ID
     $newsletterLinkFactory = new NewsletterLinkFactory($newsletter);
