@@ -435,7 +435,7 @@ export function EditNewsletter(): JSX.Element {
   const hasRememberedEditor = hasRememberedEditorChoice && !!lastEditorChoice;
   const showChooserFirst =
     showEditorChoiceModal ||
-    (!!templatePattern && isBlockEmailEditorEnabled && !hasRememberedEditor);
+    (!!starterPattern && isBlockEmailEditorEnabled && !hasRememberedEditor);
 
   const rememberedEditor: EditorChoice =
     !showEditorChoiceModal &&
@@ -652,7 +652,7 @@ export function EditNewsletter(): JSX.Element {
             context="automation"
             lastChoice={lastEditorChoice}
             isRemembered={
-              templatePattern ? hasRememberedEditor : !showEditorChoiceModal
+              starterPattern ? hasRememberedEditor : !showEditorChoiceModal
             }
             onClose={() => setIsEditorChoiceModalOpen(false)}
             onContinue={createEmailFromModal}
