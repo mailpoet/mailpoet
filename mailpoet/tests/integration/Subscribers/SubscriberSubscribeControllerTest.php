@@ -11,6 +11,7 @@ use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\TagEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
+use MailPoet\NotFoundException;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
@@ -290,6 +291,39 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $this->assertEquals(SubscriberEntity::STATUS_SUBSCRIBED, $subscriber->getStatus());
     $this->assertCount(1, $subscriber->getSubscriberTags());
     $this->assertNotNull($subscriber->getSubscriberTag($tag));
+  }
+
+  public function testItDoesNotSubscribeThroughDisabledForm(): void {
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $form->setStatus(FormEntity::STATUS_DISABLED);
+    $this->entityManager->flush();
+
+    $this->assertSubscriptionRejected($form, $segment);
+  }
+
+  public function testItDoesNotSubscribeThroughTrashedForm(): void {
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $form->setDeletedAt(new DateTimeImmutable());
+    $this->entityManager->flush();
+
+    $this->assertSubscriptionRejected($form, $segment);
+  }
+
+  private function assertSubscriptionRejected(FormEntity $form, SegmentEntity $segment): void {
+    $email = 'inactive-form-' . rand(0, 10000) . '@example.com';
+    try {
+      $this->subscribeController->subscribe([
+        $this->obfuscatedEmail => $email,
+        $this->obfuscatedSegments => [$segment->getId()],
+        'form_id' => $form->getId(),
+      ]);
+      $this->fail('Expected NotFoundException was not thrown.');
+    } catch (NotFoundException $e) {
+      $this->assertSame('Please specify a valid form ID.', $e->getMessage());
+    }
+    $this->assertNull($this->subscribersRepository->findOneBy(['email' => $email]));
   }
 
   /**
