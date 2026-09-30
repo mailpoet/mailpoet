@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Segments;
 
+use MailPoet\Config\HooksWooCommerce;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
@@ -12,6 +13,7 @@ use MailPoet\Subscribers\SegmentsCountRecalculator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoetVendor\Carbon\Carbon;
 
 require_once('WPTestUser.php');
@@ -528,6 +530,45 @@ class WooCommerceTest extends \MailPoetTest {
     $subscriber = $this->findSubscriberByEmail($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($subscriber->getIsWoocommerceUser())->false();
     verify($this->isOnWooCommerceSegment($subscriber))->false();
+    verify($subscriber->getDeletedAt())->null();
+  }
+
+  public function testItTrashesFormerRegisteredCustomerWhoIsOnNoOtherList(): void {
+    $user = $this->insertRegisteredCustomer();
+    $this->synchronizeAllCustomers();
+    $wpUsersSegment = $this->segmentsRepository->getWPUsersSegment();
+    $wpUsersSegment->setDeletedAt(Carbon::now());
+    $this->entityManager->flush();
+    $user->remove_role('customer');
+
+    $this->synchronizeAllCustomers();
+
+    $subscriber = $this->findSubscriberByEmail($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($subscriber->getIsWoocommerceUser())->false();
+    verify($this->isOnWooCommerceSegment($subscriber))->false();
+    verify($subscriber->getDeletedAt())->notNull();
+  }
+
+  public function testItSkipsDeletedWpUserCheckWhenWooCommerceIsInactive(): void {
+    $user = $this->insertRegisteredCustomer();
+    $this->synchronizeAllCustomers();
+    $email = $user->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $hooksWooCommerce = $this->diContainer->get(HooksWooCommerce::class);
+    $this->assertTrue(remove_action('delete_user', [$hooksWooCommerce, 'synchronizeDeletedWpUser'], 2));
+    try {
+      wp_delete_user($user->ID);
+    } finally {
+      add_action('delete_user', [$hooksWooCommerce, 'synchronizeDeletedWpUser'], 2);
+    }
+    $woocommerceHelper = $this->createMock(WCHelper::class);
+    $woocommerceHelper->method('isWooCommerceActive')->willReturn(false);
+    $wooCommerceSegment = $this->getServiceWithOverrides(WooCommerceSegment::class, ['woocommerceHelper' => $woocommerceHelper]);
+
+    $wooCommerceSegment->synchronizeDeletedWpUser($user->ID);
+
+    $subscriber = $this->findSubscriberByEmail($email);
+    verify($subscriber->getIsWoocommerceUser())->true();
+    verify($this->isOnWooCommerceSegment($subscriber))->true();
     verify($subscriber->getDeletedAt())->null();
   }
 

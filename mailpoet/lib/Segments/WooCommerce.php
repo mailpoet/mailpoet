@@ -176,11 +176,11 @@ class WooCommerce {
     if (!$this->woocommerceHelper->isWooCommerceActive()) {
       return;
     }
-    $wpUser = $this->wp->getUserdata($wpUserId);
-    if ($wpUser === false) {
+    $unlinkedSubscriberId = $this->wpSegment->getSubscriberIdUnlinkedFromWpUser($wpUserId);
+    if ($unlinkedSubscriberId === null) {
       return;
     }
-    $subscriber = $this->subscribersRepository->findOneBy(['email' => $wpUser->user_email]); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $subscriber = $this->subscribersRepository->findOneById($unlinkedSubscriberId);
     if (!$subscriber instanceof SubscriberEntity || $subscriber->getWpUserId() !== null || !$subscriber->getIsWoocommerceUser()) {
       return;
     }
@@ -721,32 +721,41 @@ class WooCommerce {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
-    $params['segmentId'] = $this->segmentsRepository->getWooCommerceSegment()->getId();
+    $segmentId = $this->segmentsRepository->getWooCommerceSegment()->getId();
+    $params['segmentId'] = $segmentId;
     $types['segmentId'] = ParameterType::INTEGER;
 
-    $trashedCount = $this->connection->executeStatement("
-      UPDATE {$subscribersTable} s
-      SET s.deleted_at = :deletedAt
-      WHERE s.id IN (SELECT id FROM ({$formerCustomersSql}) AS former_customers)
-        AND s.deleted_at IS NULL
-        AND NOT EXISTS (
-          SELECT 1 FROM {$subscriberSegmentsTable} ss_other
-          INNER JOIN {$segmentsTable} seg ON seg.id = ss_other.segment_id
-          WHERE ss_other.subscriber_id = s.id
-            AND ss_other.segment_id != :segmentId
-            AND seg.deleted_at IS NULL
-        )
-    ", $params + ['deletedAt' => Carbon::now()->format('Y-m-d H:i:s')], $types + ['deletedAt' => ParameterType::STRING]);
-
-    $unmarkedCount = $this->connection->executeStatement("
-      UPDATE {$subscribersTable}
-      SET is_woocommerce_user = 0
-      WHERE id IN (SELECT id FROM ({$formerCustomersSql}) AS former_customers)
-    ", $params, $types);
-
-    if ($trashedCount > 0 || $unmarkedCount > 0) {
-      $this->subscriberChangesNotifier->subscribersBatchUpdate();
+    $formerCustomerIds = array_map(function ($id): int {
+      return is_numeric($id) ? (int)$id : 0;
+    }, $this->connection->executeQuery($formerCustomersSql, $params, $types)->fetchFirstColumn());
+    if (!$formerCustomerIds) {
+      return;
     }
+
+    $deletedAt = Carbon::now()->format('Y-m-d H:i:s');
+    foreach (array_chunk($formerCustomerIds, 1000) as $idsChunk) {
+      $this->connection->executeStatement("
+        UPDATE {$subscribersTable} s
+        SET s.deleted_at = :deletedAt
+        WHERE s.id IN (:ids)
+          AND s.deleted_at IS NULL
+          AND NOT EXISTS (
+            SELECT 1 FROM {$subscriberSegmentsTable} ss_other
+            INNER JOIN {$segmentsTable} seg ON seg.id = ss_other.segment_id
+            WHERE ss_other.subscriber_id = s.id
+              AND ss_other.segment_id != :segmentId
+              AND seg.deleted_at IS NULL
+          )
+      ", ['ids' => $idsChunk, 'segmentId' => $segmentId, 'deletedAt' => $deletedAt], ['ids' => ArrayParameterType::INTEGER, 'segmentId' => ParameterType::INTEGER, 'deletedAt' => ParameterType::STRING]);
+
+      $this->connection->executeStatement("
+        UPDATE {$subscribersTable}
+        SET is_woocommerce_user = 0
+        WHERE id IN (:ids)
+      ", ['ids' => $idsChunk], ['ids' => ArrayParameterType::INTEGER]);
+    }
+
+    $this->subscriberChangesNotifier->subscribersBatchUpdate();
   }
 
   private function updateStatus(): void {
