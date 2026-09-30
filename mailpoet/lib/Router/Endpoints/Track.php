@@ -84,6 +84,7 @@ class Track {
     $data->queue = $this->sendingQueuesRepository->findOneById($data->queue_id);// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $data->subscriber = $this->subscribersRepository->findOneById($data->subscriber_id); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $data->newsletter = ($data->queue instanceof SendingQueueEntity) ? $data->queue->getNewsletter() : null;
+    $data->link = null;
     if (!empty($data->link_hash)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $data->link = $this->newsletterLinkRepository->findOneBy([
         'hash' => $data->link_hash, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
