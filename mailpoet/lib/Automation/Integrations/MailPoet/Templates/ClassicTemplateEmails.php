@@ -40,8 +40,10 @@ class ClassicTemplateEmails {
     switch ($pattern) {
       case 'welcome-email-content':
         return [
-          $this->heading(__('Welcome to [site:title]!', 'mailpoet')),
-          $this->text(__('Hi [subscriber:firstname | default:there], we are so glad to have you onboard.', 'mailpoet')),
+          // translators: %s: site title
+          $this->heading($this->withSiteTitle(__('Welcome to %s!', 'mailpoet'))),
+          // translators: %s: subscriber first name
+          $this->text($this->withFirstName(__('Hi %s, we are so glad to have you onboard.', 'mailpoet'))),
           $this->text(__('We’re absolutely thrilled to have you join us.', 'mailpoet')),
           $this->button(__('Shop now', 'mailpoet')),
           $this->text(__('Happy shopping!', 'mailpoet')),
@@ -63,7 +65,8 @@ class ClassicTemplateEmails {
       case 'first-purchase-thank-you':
         return [
           $this->heading(__('Thank You for Your First Order', 'mailpoet')),
-          $this->text(__('We’re thrilled you chose [site:title]. Your order is being processed, and we can’t wait for you to receive it.', 'mailpoet')),
+          // translators: %s: site title
+          $this->text($this->withSiteTitle(__('We’re thrilled you chose %s. Your order is being processed, and we can’t wait for you to receive it.', 'mailpoet'))),
           $this->button(__('Shop now', 'mailpoet')),
           $this->text(__('Happy shopping!', 'mailpoet')),
         ];
@@ -115,8 +118,10 @@ class ClassicTemplateEmails {
         ];
       case 'educational-campaign':
         return [
-          $this->heading(__('How to Get the Most from [site:title]', 'mailpoet')),
-          $this->text(__('Our latest guide walks you through tips to make the most from [site:title].', 'mailpoet')),
+          // translators: %s: site title
+          $this->heading($this->withSiteTitle(__('How to Get the Most from %s', 'mailpoet'))),
+          // translators: %s: site title
+          $this->text($this->withSiteTitle(__('Our latest guide walks you through tips to make the most from %s.', 'mailpoet'))),
           $this->subheading(__('How it works', 'mailpoet')),
           $this->text('<strong>' . __('Step 1', 'mailpoet') . '</strong><br />' . __('Brief description', 'mailpoet')),
           $this->text('<strong>' . __('Step 2', 'mailpoet') . '</strong><br />' . __('Brief description', 'mailpoet')),
@@ -182,7 +187,8 @@ class ClassicTemplateEmails {
       case 'booking-abandoned-spot':
         return $this->letter(
           __('Your booking spot is waiting', 'mailpoet'),
-          __('Hi [subscriber:firstname | default:there], it looks like you started a booking but did not finish reserving your spot.', 'mailpoet'),
+          // translators: %s: subscriber first name
+          $this->withFirstName(__('Hi %s, it looks like you started a booking but did not finish reserving your spot.', 'mailpoet')),
           __('Booking availability can change quickly, so finishing sooner gives you the best chance of keeping the time you selected.', 'mailpoet'),
           __('Return to our site', 'mailpoet'),
           __('Hope to see you soon,', 'mailpoet')
@@ -190,7 +196,8 @@ class ClassicTemplateEmails {
       case 'booking-new-booking-follow-up':
         return $this->letter(
           __('Your booking is confirmed', 'mailpoet'),
-          __('Hi [subscriber:firstname | default:there], your booking is confirmed. We’re looking forward to seeing you.', 'mailpoet'),
+          // translators: %s: subscriber first name
+          $this->withFirstName(__('Hi %s, your booking is confirmed. We’re looking forward to seeing you.', 'mailpoet')),
           __('If anything changes or you have questions before your visit, reply to this email and we’ll help.', 'mailpoet'),
           __('Visit our site', 'mailpoet'),
           __('See you soon,', 'mailpoet')
@@ -198,7 +205,8 @@ class ClassicTemplateEmails {
       case 'booking-pre-visit-reminder':
         return $this->letter(
           __('Your booking is coming up', 'mailpoet'),
-          __('Hi [subscriber:firstname | default:there], this is a friendly reminder about your upcoming booking.', 'mailpoet'),
+          // translators: %s: subscriber first name
+          $this->withFirstName(__('Hi %s, this is a friendly reminder about your upcoming booking.', 'mailpoet')),
           __('Please arrive a few minutes early so we can get everything started on time. Reply to this email if you need to make a change.', 'mailpoet'),
           __('Visit our site', 'mailpoet'),
           __('We’ll see you soon,', 'mailpoet')
@@ -206,7 +214,8 @@ class ClassicTemplateEmails {
       case 'booking-pre-visit-what-to-expect':
         return $this->letter(
           __('What to expect at your booking', 'mailpoet'),
-          __('Hi [subscriber:firstname | default:there], here are a few details for your upcoming booking.', 'mailpoet'),
+          // translators: %s: subscriber first name
+          $this->withFirstName(__('Hi %s, here are a few details for your upcoming booking.', 'mailpoet')),
           __('Please arrive a few minutes early and bring anything you need for the visit. If you have questions, reply to this email before your appointment.', 'mailpoet'),
           __('View our site', 'mailpoet'),
           __('See you soon,', 'mailpoet')
@@ -214,7 +223,8 @@ class ClassicTemplateEmails {
       case 'booking-pre-visit-tips':
         return $this->letter(
           __('Make the most of your booking', 'mailpoet'),
-          __('Hi [subscriber:firstname | default:there], your booking is coming up soon. A little preparation can help you get the most out of it.', 'mailpoet'),
+          // translators: %s: subscriber first name
+          $this->withFirstName(__('Hi %s, your booking is coming up soon. A little preparation can help you get the most out of it.', 'mailpoet')),
           __('Review the details, plan enough time before and after your visit, and reply to this email if there is anything we should know ahead of time.', 'mailpoet'),
           __('Review details', 'mailpoet'),
           __('We’ll see you soon,', 'mailpoet')
@@ -222,7 +232,8 @@ class ClassicTemplateEmails {
       case 'booking-post-visit-review':
         return $this->letter(
           __('How was your booking?', 'mailpoet'),
-          __('Hi [subscriber:firstname | default:there], thanks for joining us. We hope everything went smoothly.', 'mailpoet'),
+          // translators: %s: subscriber first name
+          $this->withFirstName(__('Hi %s, thanks for joining us. We hope everything went smoothly.', 'mailpoet')),
           __('Your feedback helps us improve future bookings. Send us a quick note or visit our site to leave feedback.', 'mailpoet'),
           __('Leave feedback', 'mailpoet'),
           __('Thank you,', 'mailpoet')
@@ -230,7 +241,8 @@ class ClassicTemplateEmails {
       case 'booking-next-booking-nudge':
         return $this->letter(
           __('Ready for your next booking?', 'mailpoet'),
-          __('Hi [subscriber:firstname | default:there], it’s been a little while since your last booking, and we’d love to welcome you back.', 'mailpoet'),
+          // translators: %s: subscriber first name
+          $this->withFirstName(__('Hi %s, it’s been a little while since your last booking, and we’d love to welcome you back.', 'mailpoet')),
           __('Whenever you’re ready for your next visit, we’ll be glad to have you. Just reply to this email if you’d like a hand picking a time.', 'mailpoet'),
           __('Book again', 'mailpoet'),
           __('Hope to see you soon,', 'mailpoet')
@@ -238,7 +250,8 @@ class ClassicTemplateEmails {
       case 'subscription-purchase-follow-up':
         return $this->letter(
           __('Welcome to your subscription', 'mailpoet'),
-          __('Hi [subscriber:firstname | default:there], thanks for subscribing. Your subscription is active, and we’re glad to have you with us.', 'mailpoet'),
+          // translators: %s: subscriber first name
+          $this->withFirstName(__('Hi %s, thanks for subscribing. Your subscription is active, and we’re glad to have you with us.', 'mailpoet')),
           __('You can review billing, renewals, and subscription details from your account on our site.', 'mailpoet'),
           __('Visit our site', 'mailpoet'),
           __('Thanks for joining us,', 'mailpoet')
@@ -246,7 +259,8 @@ class ClassicTemplateEmails {
       case 'subscription-renewal-follow-up':
         return $this->letter(
           __('Your subscription renewed', 'mailpoet'),
-          __('Hi [subscriber:firstname | default:there], your subscription has renewed successfully. Thanks for staying with us.', 'mailpoet'),
+          // translators: %s: subscriber first name
+          $this->withFirstName(__('Hi %s, your subscription has renewed successfully. Thanks for staying with us.', 'mailpoet')),
           __('We’ll keep working to make every renewal worth it. If you have questions, reply to this email and we’ll help.', 'mailpoet'),
           __('Visit our site', 'mailpoet'),
           __('Thanks for being with us,', 'mailpoet')
@@ -254,7 +268,8 @@ class ClassicTemplateEmails {
       case 'subscription-failed-renewal-follow-up':
         return $this->letter(
           __('We couldn’t renew your subscription', 'mailpoet'),
-          __('Hi [subscriber:firstname | default:there], we tried to renew your subscription but the payment did not go through.', 'mailpoet'),
+          // translators: %s: subscriber first name
+          $this->withFirstName(__('Hi %s, we tried to renew your subscription but the payment did not go through.', 'mailpoet')),
           __('To keep your subscription active, please sign in to your account and update your payment details. If you already updated them, you can ignore this message.', 'mailpoet'),
           __('Visit our site', 'mailpoet'),
           __('We’re here to help,', 'mailpoet')
@@ -262,7 +277,8 @@ class ClassicTemplateEmails {
       case 'subscription-churned-follow-up':
         return $this->letter(
           __('We’d value your feedback', 'mailpoet'),
-          __('Hi [subscriber:firstname | default:there], we noticed your subscription has ended. We’re sorry to see you go.', 'mailpoet'),
+          // translators: %s: subscriber first name
+          $this->withFirstName(__('Hi %s, we noticed your subscription has ended. We’re sorry to see you go.', 'mailpoet')),
           __('You can reply directly to this email. Every note helps us improve the experience for future subscribers.', 'mailpoet'),
           __('Visit our site', 'mailpoet'),
           __('Thanks for your feedback,', 'mailpoet')
@@ -270,7 +286,8 @@ class ClassicTemplateEmails {
       case 'subscription-trial-ended-follow-up':
         return $this->letter(
           __('Your trial has ended', 'mailpoet'),
-          __('Hi [subscriber:firstname | default:there], thanks for trying us. We hope your trial gave you a useful look at what’s included.', 'mailpoet'),
+          // translators: %s: subscriber first name
+          $this->withFirstName(__('Hi %s, thanks for trying us. We hope your trial gave you a useful look at what’s included.', 'mailpoet')),
           __('Still deciding? Reply with any questions and we’ll help you choose the next step.', 'mailpoet'),
           __('Visit our site', 'mailpoet'),
           __('Thanks for trying us,', 'mailpoet')
@@ -278,7 +295,8 @@ class ClassicTemplateEmails {
       case 'subscription-win-back':
         return $this->letter(
           __('See what’s new', 'mailpoet'),
-          __('Hi [subscriber:firstname | default:there], it’s been a while since your subscription ended, and we’d love to welcome you back.', 'mailpoet'),
+          // translators: %s: subscriber first name
+          $this->withFirstName(__('Hi %s, it’s been a while since your subscription ended, and we’d love to welcome you back.', 'mailpoet')),
           __('When you’re ready, visit our site to see what’s changed and start again.', 'mailpoet'),
           __('Visit our site', 'mailpoet'),
           __('Hope to see you again,', 'mailpoet')
@@ -306,6 +324,17 @@ class ClassicTemplateEmails {
       $this->button(__('Shop now', 'mailpoet')),
       $this->text(__('Happy shopping!', 'mailpoet')),
     ];
+  }
+
+  private function withSiteTitle(string $text): string {
+    return sprintf($text, '[site:title]');
+  }
+
+  private function withFirstName(string $text): string {
+    return sprintf($text, sprintf(
+      '[subscriber:firstname | default:%s]',
+      _x('there', 'subscriber name placeholder', 'mailpoet')
+    ));
   }
 
   private function section(string $backgroundColor, array $blocks): array {
