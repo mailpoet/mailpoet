@@ -3,8 +3,11 @@
 namespace MailPoet\Test\Config;
 
 use Codeception\Util\Stub;
+use MailPoet\AdminPages\Pages\AutomationFlowEmbed;
+use MailPoet\Config\AccessControl;
 use MailPoet\Config\Menu;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Mailer\Mailer;
@@ -369,6 +372,29 @@ class MenuTest extends \MailPoetTest {
     ob_start();
     do_action('admin_notices');
     return (string)ob_get_clean();
+  }
+
+  public function testItRendersAutomationFlowEmbedOnlyForUsersWhoCanManageAutomations() {
+    $userId = (int)$this->tester->createWordPressUser('flow-embed-' . uniqid() . '@localhost.test', 'subscriber');
+    $user = wp_set_current_user($userId);
+    $user->add_cap(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN);
+
+    $renderCount = 0;
+    $flowEmbed = Stub::make(AutomationFlowEmbed::class, [
+      'render' => function () use (&$renderCount) {
+        $renderCount++;
+      },
+    ], $this);
+    $container = Stub::makeEmpty(ContainerWrapper::class, ['get' => $flowEmbed], $this);
+    $menu = $this->getServiceWithOverrides(Menu::class, ['container' => $container]);
+
+    $_GET['page'] = Menu::AUTOMATION_FLOW_EMBED_PAGE_SLUG;
+    $menu->maybeRenderAutomationFlowEmbed();
+    verify($renderCount)->equals(0);
+
+    $user->add_cap(AccessControl::PERMISSION_MANAGE_AUTOMATIONS);
+    $menu->maybeRenderAutomationFlowEmbed();
+    verify($renderCount)->equals(1);
   }
 
   public function testItHighlightsAutomationsWhenEditingAutomationEmail() {
