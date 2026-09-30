@@ -424,7 +424,7 @@ class SubscriberSubscribeController {
     $formId = (isset($data['form_id']) ? (int)$data['form_id'] : false);
     $form = $this->formsRepository->findOneById($formId);
 
-    if (!$form) {
+    if (!$form || $form->getDeletedAt() || $form->getStatus() !== FormEntity::STATUS_ENABLED) {
       throw new NotFoundException(__('Please specify a valid form ID.', 'mailpoet'));
     }
 

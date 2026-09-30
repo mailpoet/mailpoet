@@ -39,7 +39,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $fieldNameObfuscator = Stub::makeEmpty(FieldNameObfuscator::class);
     $requiredCustomFieldValidator = Stub::makeEmpty(RequiredCustomFieldValidator::class);
     $settings = Stub::makeEmpty(SettingsController::class);
-    $form = Stub::makeEmpty(FormEntity::class);
+    $form = Stub::makeEmpty(FormEntity::class, ['getStatus' => FormEntity::STATUS_ENABLED]);
     $tagRepository = Stub::makeEmpty(TagRepository::class);
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
     $builtInCaptchaValidator = Stub::makeEmpty(CaptchaValidator::class);
@@ -129,6 +129,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getSettingsSegmentIds' => function() use ($segmentIds): array {
           return $segmentIds;
         },
@@ -214,6 +215,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getSettingsSegmentIds' => function() use ($segmentIds): array {
           return $segmentIds;
         },
@@ -330,6 +332,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getSettingsSegmentIds' => function() use ($segmentIds): array {
           return $segmentIds;
         },
@@ -463,6 +466,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getSettingsSegmentIds' => function() use ($segmentIds): array {
           return $segmentIds;
         },
@@ -552,6 +556,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getSettingsSegmentIds' => function() use ($segmentIds): array {
           return $segmentIds;
         },
@@ -608,6 +613,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getSettingsSegmentIds' => function() use ($segmentIds): array {
           return $segmentIds;
         },
@@ -681,6 +687,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getSettingsSegmentIds' => function() use ($segmentIds): array {
           return $segmentIds;
         },
@@ -804,6 +811,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSettingsSegmentIds' => function(): array { return [1];
         },
@@ -892,6 +900,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSettingsSegmentIds' => function(): array { return [1];
         },
@@ -978,6 +987,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSettingsSegmentIds' => function(): array { return [1];
         },
@@ -1085,6 +1095,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSettingsSegmentIds' => function(): array { return [1];
         },
@@ -1183,6 +1194,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSettingsSegmentIds' => function(): array { return [1];
         },
@@ -1282,6 +1294,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSettingsSegmentIds' => function(): array { return [1];
         },
@@ -1388,6 +1401,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSegmentBlocksSegmentIds' => function(): array { return [1, 2];
         },
@@ -1490,6 +1504,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSettingsSegmentIds' => function(): array { return [1];
         },
@@ -1593,6 +1608,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSettingsSegmentIds' => function(): array { return [1];
         },
