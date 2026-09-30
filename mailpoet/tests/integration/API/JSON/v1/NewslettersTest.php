@@ -513,6 +513,58 @@ class NewslettersTest extends \MailPoetTest {
     verify($response->data['wp_post_id'])->equals($newsletter->getWpPostId());
   }
 
+  public function testItCreatesABlockAutomationNewsletterFromATemplatePattern() {
+    $response = $this->endpoint->create([
+      'subject' => 'Block starter email',
+      'type' => NewsletterEntity::TYPE_AUTOMATION,
+      'new_editor' => true,
+      'automation_template_pattern' => 'welcome-email-content',
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    $newsletter = $this->newsletterRepository->findOneBy(['subject' => 'Block starter email']);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $wpPost = get_post((int)$newsletter->getWpPostId());
+    $this->assertInstanceOf(\WP_Post::class, $wpPost);
+    verify($wpPost->post_content)->stringContainsString('wp:'); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify(get_post_meta((int)$newsletter->getWpPostId(), '_wp_page_template', true))->equals('newsletter');
+  }
+
+  public function testItCreatesAClassicAutomationNewsletterFromATemplatePattern() {
+    $response = $this->endpoint->create([
+      'subject' => 'Classic starter email',
+      'type' => NewsletterEntity::TYPE_AUTOMATION,
+      'automation_template_pattern' => 'welcome-email-content',
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    $newsletter = $this->newsletterRepository->findOneBy(['subject' => 'Classic starter email']);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    verify($newsletter->getWpPostId())->null();
+    $body = $newsletter->getBody();
+    $this->assertIsArray($body);
+    verify($body['content']['type'])->equals('container');
+  }
+
+  public function testItDeletesTheNewsletterWhenTheTemplatePatternIsUnknown() {
+    $response = $this->endpoint->create([
+      'subject' => 'Unknown starter email',
+      'type' => NewsletterEntity::TYPE_AUTOMATION,
+      'automation_template_pattern' => 'no-such-pattern',
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_UNKNOWN);
+    verify($response->errors[0]['message'])->equals('The email could not be created from the template.');
+    verify($this->newsletterRepository->findOneBy(['subject' => 'Unknown starter email']))->null();
+  }
+
+  public function testItRejectsATemplatePatternForNonAutomationNewsletters() {
+    $response = $this->endpoint->create([
+      'subject' => 'Standard starter email',
+      'type' => NewsletterEntity::TYPE_STANDARD,
+      'automation_template_pattern' => 'welcome-email-content',
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_UNKNOWN);
+    verify($this->newsletterRepository->findOneBy(['subject' => 'Standard starter email']))->null();
+  }
+
   public function testItRejectsATemplatePatternForAnExistingNewsletter() {
     $newsletter = (new Newsletter())->withSubject('Existing newsletter')->create();
     $response = $this->endpoint->create([

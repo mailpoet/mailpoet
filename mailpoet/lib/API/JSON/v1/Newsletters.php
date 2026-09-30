@@ -323,7 +323,7 @@ class Newsletters extends APIEndpoint {
         $this->newsletterDeleteController->bulkDelete([(int)$newsletter->getId()]);
         return $this->errorResponse([
           APIError::UNKNOWN => __('The email could not be created from the template.', 'mailpoet'),
-        ]);
+        ], [], Response::STATUS_UNKNOWN);
       }
     }
     $response = $this->newslettersResponseBuilder->build($newsletter);
