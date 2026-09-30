@@ -522,11 +522,6 @@ class Hooks {
       2
     );
     $this->wp->addAction(
-      'remove_user_from_blog',
-      [$this->hooksWooCommerce, 'synchronizeDeletedWpUser'],
-      2
-    );
-    $this->wp->addAction(
       'woocommerce_checkout_update_order_meta',
       [$this->hooksWooCommerce, 'synchronizeGuestCustomer'],
       7

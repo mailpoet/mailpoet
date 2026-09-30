@@ -724,7 +724,7 @@ class WooCommerce {
     $params['segmentId'] = $this->segmentsRepository->getWooCommerceSegment()->getId();
     $types['segmentId'] = ParameterType::INTEGER;
 
-    $this->connection->executeStatement("
+    $trashedCount = $this->connection->executeStatement("
       UPDATE {$subscribersTable} s
       SET s.deleted_at = :deletedAt
       WHERE s.id IN (SELECT id FROM ({$formerCustomersSql}) AS former_customers)
@@ -738,13 +738,15 @@ class WooCommerce {
         )
     ", $params + ['deletedAt' => Carbon::now()->format('Y-m-d H:i:s')], $types + ['deletedAt' => ParameterType::STRING]);
 
-    $this->connection->executeStatement("
+    $unmarkedCount = $this->connection->executeStatement("
       UPDATE {$subscribersTable}
       SET is_woocommerce_user = 0
       WHERE id IN (SELECT id FROM ({$formerCustomersSql}) AS former_customers)
     ", $params, $types);
 
-    $this->subscriberChangesNotifier->subscribersBatchUpdate();
+    if ($trashedCount > 0 || $unmarkedCount > 0) {
+      $this->subscriberChangesNotifier->subscribersBatchUpdate();
+    }
   }
 
   private function updateStatus(): void {
