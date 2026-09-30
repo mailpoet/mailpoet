@@ -1,4 +1,4 @@
-name: 'Plugin Check'
+name: 'CI'
 
 on:
   pull_request:
@@ -18,7 +18,7 @@ permissions: {}
 
 jobs:
   plugin-check:
-    name: 'Run Plugin Check'
+    name: 'WP.org Plugin Check'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -98,7 +98,7 @@ jobs:
           unzip -q mailpoet/mailpoet.zip -d plugin-build
 
       # Report-only for now: results show as annotations, but the job does not fail.
-      - name: 'Run Plugin Check'
+      - name: 'WP.org Plugin Check'
         continue-on-error: true
         uses: wordpress/plugin-check-action@10857da14b6c2246d15402b3e69f777edcf8c12e # v1.1.9
         with:
