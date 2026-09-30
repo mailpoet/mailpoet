@@ -6,6 +6,7 @@ use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\PatternsController;
 use MailPoet\EmailEditor\Integrations\MailPoet\Templates\TemplatesController;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -53,10 +54,13 @@ class TemplateEmailContent {
       throw new NotFoundException('Email pattern not found: ' . $pattern);
     }
 
-    $this->wp->wpUpdatePost([
+    $result = $this->wp->wpUpdatePost([
       'ID' => $wpPostId,
       'post_content' => $patternContent,
-    ]);
+    ], true);
+    if ($result instanceof \WP_Error) {
+      throw InvalidStateException::create()->withMessage('Could not save the email pattern: ' . $result->get_error_message());
+    }
     $this->wp->updatePostMeta($wpPostId, '_wp_page_template', $this->templatesController->getDefaultTemplateSlug());
   }
 

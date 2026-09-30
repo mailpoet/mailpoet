@@ -10,6 +10,7 @@ use MailPoet\Automation\Integrations\MailPoet\Templates\TemplateEmailContent;
 use MailPoet\Config\AccessControl;
 use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\ApiDataSanitizer;
 use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewsletterResendController;
@@ -71,6 +72,8 @@ class Newsletters extends APIEndpoint {
 
   private TemplateEmailContent $templateEmailContent;
 
+  private LoggerFactory $loggerFactory;
+
   public function __construct(
     WPFunctions $wp,
     NewslettersRepository $newslettersRepository,
@@ -85,7 +88,8 @@ class Newsletters extends APIEndpoint {
     SegmentsRepository $segmentsRepository,
     SettingsController $settings,
     EntityManager $entityManager,
-    TemplateEmailContent $templateEmailContent
+    TemplateEmailContent $templateEmailContent,
+    LoggerFactory $loggerFactory
   ) {
     $this->wp = $wp;
     $this->newslettersRepository = $newslettersRepository;
@@ -101,6 +105,7 @@ class Newsletters extends APIEndpoint {
     $this->settings = $settings;
     $this->entityManager = $entityManager;
     $this->templateEmailContent = $templateEmailContent;
+    $this->loggerFactory = $loggerFactory;
   }
 
   public function get($data = []) {
@@ -311,6 +316,10 @@ class Newsletters extends APIEndpoint {
       try {
         $this->applyAutomationTemplateContent($newsletter, $templatePattern);
       } catch (Throwable $e) {
+        $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->error(
+          'Could not apply the automation template content: ' . $e->getMessage(),
+          ['newsletter_id' => $newsletter->getId(), 'pattern' => $templatePattern]
+        );
         $this->newsletterDeleteController->bulkDelete([(int)$newsletter->getId()]);
         return $this->errorResponse([
           APIError::UNKNOWN => __('The email could not be created from the template.', 'mailpoet'),
