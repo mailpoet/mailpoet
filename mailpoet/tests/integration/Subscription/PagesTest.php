@@ -40,6 +40,7 @@ use MailPoet\Test\DataFactories\CustomField;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
+use MailPoet\Test\DataFactories\ScheduledTaskSubscriber as ScheduledTaskSubscriberFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\StatisticsNewsletters;
 use MailPoet\Test\DataFactories\Subscriber;
@@ -332,6 +333,7 @@ class PagesTest extends \MailPoetTest {
   public function testItUnsubscribesAndRecordsClickForOneClickMethod() {
     SettingsController::getInstance()->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $this->markSentToSubscriber($newsletter->getLatestQueue());
     $this->testData['queueId'] = $newsletter->getLatestQueue()->getId();
     (new NewsletterLink($newsletter))->withHash($newsletter->getHash())->create();
     $renderedNewsletter = ['html' => '', 'text' => ''];
@@ -352,6 +354,7 @@ class PagesTest extends \MailPoetTest {
     $newsletter = (new Newsletter())->withSendingQueue()->create();
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $this->markSentToSubscriber($queue);
     $this->testData['queueId'] = $queue->getId();
     (new NewsletterLink($newsletter))->withHash($newsletter->getHash())->create();
     $renderedNewsletter = ['html' => '', 'text' => ''];
@@ -364,6 +367,54 @@ class PagesTest extends \MailPoetTest {
     $clickStat = $this->statisticsClicksRepository->getAllForSubscriber($this->subscriber)->getQuery()->getResult();
     verify($clickStat)->arrayCount(1);
     verify($this->getSentWithTracking((int)$sentRow->getId()))->equals(1);
+  }
+
+  public function testItLinksUnsubscribeToNewsletterSentToSubscriber() {
+    $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $this->markSentToSubscriber($queue);
+    $this->testData['queueId'] = $queue->getId();
+    $pages = $this->getPages()->init('unsubscribe', $this->testData);
+
+    $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
+
+    $unsubscriptionStat = $this->statisticsUnsubscribesRepository->findOneBy(['subscriber' => $this->subscriber->getId()]);
+    $this->assertInstanceOf(StatisticsUnsubscribeEntity::class, $unsubscriptionStat);
+    $this->assertInstanceOf(SendingQueueEntity::class, $unsubscriptionStat->getQueue());
+    verify($unsubscriptionStat->getQueue()->getId())->equals($queue->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $unsubscriptionStat->getNewsletter());
+    verify($unsubscriptionStat->getNewsletter()->getId())->equals($newsletter->getId());
+  }
+
+  public function testItUnsubscribesWithoutNewsletterWhenQueueWasNotSentToSubscriber() {
+    SettingsController::getInstance()->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
+    $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $this->testData['queueId'] = $queue->getId();
+    (new NewsletterLink($newsletter))->withHash($newsletter->getHash())->create();
+    $renderedNewsletter = ['html' => '', 'text' => ''];
+    $this->links->process($renderedNewsletter, $newsletter, $queue);
+    $pages = $this->getPages()->init('unsubscribe', $this->testData);
+
+    $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
+
+    $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
+    verify($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $unsubscriptionStat = $this->statisticsUnsubscribesRepository->findOneBy(['subscriber' => $this->subscriber->getId()]);
+    $this->assertInstanceOf(StatisticsUnsubscribeEntity::class, $unsubscriptionStat);
+    verify($unsubscriptionStat->getQueue())->null();
+    verify($unsubscriptionStat->getNewsletter())->null();
+    $clickStat = $this->statisticsClicksRepository->getAllForSubscriber($this->subscriber)->getQuery()->getResult();
+    verify($clickStat)->arrayCount(0);
+  }
+
+  private function markSentToSubscriber(SendingQueueEntity $queue): void {
+    $task = $queue->getTask();
+    $this->assertNotNull($task);
+    (new ScheduledTaskSubscriberFactory())->createProcessed($task, $this->subscriber);
   }
 
   private function getSentWithTracking(int $rowId): int {
@@ -384,6 +435,7 @@ class PagesTest extends \MailPoetTest {
     $newsletter = (new Newsletter())->withSendingQueue()->create();
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $this->markSentToSubscriber($queue);
     $this->testData['queueId'] = $queue->getId();
     (new NewsletterLink($newsletter))->withHash($newsletter->getHash())->create();
     $renderedNewsletter = ['html' => '', 'text' => ''];
