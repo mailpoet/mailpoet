@@ -42,6 +42,7 @@ class WooCommerceTest extends \MailPoetTest {
   private $subscriberSegmentsRepository;
 
   public function _before(): void {
+    require_once ABSPATH . 'wp-admin/includes/user.php';
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->subscriberSegmentsRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
@@ -458,6 +459,125 @@ class WooCommerceTest extends \MailPoetTest {
     $this->synchronizeAllCustomers();
     $subscribers = $this->getWCSubscribersByEmails($this->userEmails);
     verify($subscribers)->arrayCount(2);
+  }
+
+  public function testItTrashesInsteadOfDeletingFormerGuestCustomers(): void {
+    $guest = $this->insertGuestCustomer();
+    $this->synchronizeAllCustomers();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->entityManager->flush();
+
+    $this->tester->deleteTestWooOrder((int)$guest['order_id']);
+    $this->synchronizeAllCustomers();
+
+    $subscriber = $this->findSubscriberByEmail($guest['email']);
+    verify($subscriber->getIsWoocommerceUser())->false();
+    verify($this->isOnWooCommerceSegment($subscriber))->false();
+    verify($subscriber->getDeletedAt())->notNull();
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+  }
+
+  public function testItKeepsFormerGuestCustomerOnOtherListsOutOfTrash(): void {
+    $guest = $this->insertGuestCustomer();
+    $this->synchronizeAllCustomers();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $otherSegment = $this->createSegment();
+    $this->createSubscriberSegment($subscriber, $otherSegment);
+
+    $this->tester->deleteTestWooOrder((int)$guest['order_id']);
+    $this->synchronizeAllCustomers();
+
+    $subscriber = $this->findSubscriberByEmail($guest['email']);
+    verify($subscriber->getIsWoocommerceUser())->false();
+    verify($this->isOnWooCommerceSegment($subscriber))->false();
+    verify($subscriber->getDeletedAt())->null();
+    verify($subscriber->getSegments()->count())->equals(1);
+  }
+
+  public function testItUnlistsTrashedFormerGuestCustomerSoItBecomesDeletable(): void {
+    $guest = $this->insertGuestCustomer();
+    $this->synchronizeAllCustomers();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $trashedAt = Carbon::now()->subDay()->millisecond(0);
+    $subscriber->setDeletedAt($trashedAt);
+    $this->entityManager->flush();
+
+    $this->tester->deleteTestWooOrder((int)$guest['order_id']);
+    $this->synchronizeAllCustomers();
+
+    $subscriber = $this->findSubscriberByEmail($guest['email']);
+    verify($subscriber->getIsWoocommerceUser())->false();
+    verify($subscriber->getWpUserId())->null();
+    verify($this->isOnWooCommerceSegment($subscriber))->false();
+    $deletedAt = $subscriber->getDeletedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $deletedAt);
+    verify($deletedAt->getTimestamp())->equals($trashedAt->getTimestamp());
+  }
+
+  public function testItRemovesFormerRegisteredCustomerFromSegmentInOneSync(): void {
+    $user = $this->insertRegisteredCustomer();
+    $this->synchronizeAllCustomers();
+    $user->remove_role('customer');
+
+    $this->synchronizeAllCustomers();
+
+    $subscriber = $this->findSubscriberByEmail($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($subscriber->getIsWoocommerceUser())->false();
+    verify($this->isOnWooCommerceSegment($subscriber))->false();
+    verify($subscriber->getDeletedAt())->null();
+  }
+
+  public function testItUnlistsFormerCustomerRightAwayWhenWpUserIsDeleted(): void {
+    $user = $this->insertRegisteredCustomer();
+    $this->synchronizeAllCustomers();
+    $email = $user->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($this->isOnWooCommerceSegment($this->findSubscriberByEmail($email)))->true();
+
+    wp_delete_user($user->ID);
+
+    $subscriber = $this->findSubscriberByEmail($email);
+    verify($subscriber->getWpUserId())->null();
+    verify($subscriber->getIsWoocommerceUser())->false();
+    verify($this->isOnWooCommerceSegment($subscriber))->false();
+    verify($subscriber->getDeletedAt())->notNull();
+  }
+
+  public function testItUnlistsTrashedFormerCustomerWhenWpUserIsDeleted(): void {
+    $user = $this->insertRegisteredCustomer();
+    $this->synchronizeAllCustomers();
+    $email = $user->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $subscriber = $this->findSubscriberByEmail($email);
+    $trashedAt = Carbon::now()->subDay()->millisecond(0);
+    $subscriber->setDeletedAt($trashedAt);
+    $this->entityManager->flush();
+
+    wp_delete_user($user->ID);
+
+    $subscriber = $this->findSubscriberByEmail($email);
+    verify($subscriber->getWpUserId())->null();
+    verify($subscriber->getIsWoocommerceUser())->false();
+    verify($this->isOnWooCommerceSegment($subscriber))->false();
+    $deletedAt = $subscriber->getDeletedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $deletedAt);
+    verify($deletedAt->getTimestamp())->equals($trashedAt->getTimestamp());
+  }
+
+  public function testItKeepsCustomerWithOrdersListedWhenWpUserIsDeleted(): void {
+    $user = $this->insertRegisteredCustomerWithOrder();
+    $this->synchronizeAllCustomers();
+    $email = $user->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
+    wp_delete_user($user->ID);
+
+    $subscriber = $this->findSubscriberByEmail($email);
+    verify($subscriber->getWpUserId())->null();
+    verify($subscriber->getIsWoocommerceUser())->true();
+    verify($this->isOnWooCommerceSegment($subscriber))->true();
+    verify($subscriber->getDeletedAt())->null();
   }
 
   public function testItDoesntDeleteNonWCData(): void {
@@ -1054,6 +1174,21 @@ class WooCommerceTest extends \MailPoetTest {
       }
     }
     return $result;
+  }
+
+  private function findSubscriberByEmail(string $email): SubscriberEntity {
+    $this->entityManager->clear();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $email]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    return $subscriber;
+  }
+
+  private function isOnWooCommerceSegment(SubscriberEntity $subscriber): bool {
+    $wooCommerceSegment = $this->segmentsRepository->getWooCommerceSegment();
+    return $this->subscriberSegmentsRepository->findOneBy([
+      'subscriber' => $subscriber,
+      'segment' => $wooCommerceSegment,
+    ]) instanceof SubscriberSegmentEntity;
   }
 
   private function synchronizeAllCustomers(): void {
