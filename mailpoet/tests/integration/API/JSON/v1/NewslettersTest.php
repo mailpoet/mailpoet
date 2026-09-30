@@ -513,6 +513,18 @@ class NewslettersTest extends \MailPoetTest {
     verify($response->data['wp_post_id'])->equals($newsletter->getWpPostId());
   }
 
+  public function testItRejectsATemplatePatternForAnExistingNewsletter() {
+    $newsletter = (new Newsletter())->withSubject('Existing newsletter')->create();
+    $response = $this->endpoint->create([
+      'id' => $newsletter->getId(),
+      'type' => NewsletterEntity::TYPE_STANDARD,
+      'automation_template_pattern' => 'welcome-email-content',
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('A template pattern can only be used when creating a new email.');
+    $this->assertInstanceOf(NewsletterEntity::class, $this->newsletterRepository->findOneById($newsletter->getId()));
+  }
+
   public function testItHasDefaultSenderAfterCreate() {
     $data = [
       'subject' => 'My First Newsletter',

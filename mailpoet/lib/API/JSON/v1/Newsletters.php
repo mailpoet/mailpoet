@@ -296,6 +296,11 @@ class Newsletters extends APIEndpoint {
   public function create($data = []) {
     $templatePattern = $data['automation_template_pattern'] ?? null;
     unset($data['automation_template_pattern']);
+    if ($templatePattern !== null && !empty($data['id'])) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => __('A template pattern can only be used when creating a new email.', 'mailpoet'),
+      ]);
+    }
     try {
       $newsletter = $this->newsletterSaveController->save($data);
     } catch (ValidationException $exception) {
