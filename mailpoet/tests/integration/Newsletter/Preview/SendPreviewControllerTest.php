@@ -154,6 +154,45 @@ class SendPreviewControllerTest extends \MailPoetTest {
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }
 
+  public function testItKeepsSiteTitleInSubjectUnencodedInsideAngleBrackets() {
+    $this->newsletter->setSubject('Deal <<New from [site:title]>>');
+    $renderer = $this->makeEmpty(Renderer::class, [
+      'renderAsPreview' => ['html' => '<p>Hi</p>', 'text' => 'Hi'],
+    ]);
+    $mailer = $this->makeEmpty(Mailer::class, [
+      'send' => Expected::once(
+        function ($newsletter) {
+          verify($newsletter['subject'])->equals("Deal <<New from O'Brien's shop>>");
+          return ['response' => true];
+        }
+      ),
+    ]);
+
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
+    $shortcodes = $this->diContainer->get(Shortcodes::class);
+    $shortcodes->setQueue(null);
+    $sendPreviewController = new SendPreviewController(
+      $mailerFactory,
+      new MetaInfo(),
+      $renderer,
+      new WPFunctions(),
+      $this->diContainer->get(SubscribersRepository::class),
+      $shortcodes,
+      $this->diContainer->get(PersonalizationTagManager::class),
+      $this->diContainer->get(WooCommerceDummyData::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class)
+    );
+    $previousBlogname = get_option('blogname');
+    $this->assertIsString($previousBlogname);
+    update_option('blogname', "O'Brien's shop");
+    try {
+      $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
+    } finally {
+      update_option('blogname', $previousBlogname);
+    }
+  }
+
   public function testItThrowsWhenSendingFailed() {
     $mailer = $this->makeEmpty(Mailer::class, [
       'send' => function ($newsletter, $subscriber) {
