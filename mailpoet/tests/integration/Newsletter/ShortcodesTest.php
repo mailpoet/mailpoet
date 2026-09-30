@@ -309,6 +309,13 @@ class ShortcodesTest extends \MailPoetTest {
     verify($out)->equals("<img data-note=it's alt=\"Spring sale&quot; data-extra=&quot;yes\" />");
   }
 
+  public function testItKeepsPostTitleUnencodedInsideAngleBracketsInPlainText() {
+    $postId = $this->createPostWithTitle('Rock &#039;n&#039; Roll');
+    $postMarker = '<h3 data-post-id="' . $postId . '">x</h3>';
+    $out = $this->shortcodesObject->replace('Deal <<New: [newsletter:post_title]>>', $postMarker, null, $isPlainText = true);
+    verify($out)->equals("Deal <<New: Rock 'n' Roll>>");
+  }
+
   public function testItEncodesOnlyTheAttributeOccurrenceWhenTheSameShortcodeIsAlsoInText() {
     $postId = $this->createPostWithTitle('Spring sale" data-extra="yes');
     $out = $this->replaceWithPostTitle($postId, '<img alt="[newsletter:post_title]" /><p>[newsletter:post_title]</p>');

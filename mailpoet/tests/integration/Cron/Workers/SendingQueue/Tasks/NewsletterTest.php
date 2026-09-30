@@ -325,6 +325,24 @@ class NewsletterTest extends \MailPoetTest {
       ->stringContainsString(date_i18n('jS', $wp->currentTime('timestamp', true)));
   }
 
+  public function testItKeepsSiteTitleInSubjectUnencodedInsideAngleBracketsWhenPreprocessingNewsletter() {
+    $previousBlogname = get_option('blogname');
+    $this->assertIsString($previousBlogname);
+    update_option('blogname', "O'Brien's shop");
+    $this->newsletter->setSubject('Deal <<New from [site:title]>>');
+    $this->newslettersRepository->persist($this->newsletter);
+    try {
+      $newsletter = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
+    } finally {
+      update_option('blogname', $previousBlogname);
+    }
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+
+    $sendingQueue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
+    verify($sendingQueue->getNewsletterRenderedSubject())->equals("Deal <<New from O'Brien's shop>>");
+  }
+
   public function testItUsesADefaultSubjectIfRenderedSubjectIsEmptyWhenPreprocessingNewsletter() {
     $this->newsletter->setSubject('  [custom_shortcode:should_render_empty]  ');
     $this->newslettersRepository->persist($this->newsletter);
