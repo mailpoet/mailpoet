@@ -186,6 +186,7 @@ class WooCommerceProductVariationTest extends \MailPoetTest {
     ];
     $productId = wp_insert_post($productData);
     $this->assertIsInt($productId);
+    $this->forgetCachedProduct($productId);
     return $productId;
   }
 
@@ -198,7 +199,17 @@ class WooCommerceProductVariationTest extends \MailPoetTest {
     ];
     $variationId = wp_insert_post($variationData);
     $this->assertIsInt($variationId);
+    $this->forgetCachedProduct($variationId);
     return $variationId;
+  }
+
+  /**
+   * wp_insert_post() bypasses WooCommerce's data store, which is what invalidates the product
+   * type WooCommerce caches per ID. Another test truncates the posts table, so IDs get reused
+   * within a run and a stale type would make wc_get_product() reject the new post.
+   */
+  private function forgetCachedProduct(int $productId): void {
+    \WC_Cache_Helper::invalidate_cache_group('product_' . $productId);
   }
 
   private function addToOrder(int $orderItemId, int $orderId, int $productId, int $variationId, int $customerId): void {
