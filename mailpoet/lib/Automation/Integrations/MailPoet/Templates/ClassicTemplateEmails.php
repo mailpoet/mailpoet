@@ -96,9 +96,207 @@ class ClassicTemplateEmails {
           __('Great choice! Here is more you might love', 'mailpoet'),
           __('We picked a few more favorites from the same category as your order.', 'mailpoet')
         );
+      case 'abandoned-cart-reminder-content':
+        return [
+          $this->heading(__('Still thinking it over?', 'mailpoet')),
+          $this->text(__('The items in your cart are still here — but we can’t hold them forever. Popular pieces tend to sell out quickly, so now’s a great time to come back and make them yours.', 'mailpoet')),
+          $this->abandonedCartContent(),
+          $this->text(__('Checkout only takes a minute, and it’s always secure. If anything’s holding you back, just reply to this email — we’re happy to help.', 'mailpoet')),
+          $this->button(__('Complete your purchase', 'mailpoet')),
+        ];
+      case 'abandoned-cart-with-discount-content':
+        return [
+          $this->heading(__('We Saved Your Cart + Little Surprise', 'mailpoet')),
+          $this->text(__('Good news — your cart is still here! Even better? You can get 10% off if you check out in the next 24 hours.', 'mailpoet')),
+          $this->text(__('Use this code at checkout to redeem your discount:', 'mailpoet')),
+          $this->coupon(),
+          $this->button(__('Complete your purchase', 'mailpoet')),
+          $this->abandonedCartContent(),
+        ];
+      case 'educational-campaign':
+        return [
+          $this->heading(__('How to Get the Most from [site:title]', 'mailpoet')),
+          $this->text(__('Our latest guide walks you through tips to make the most from [site:title].', 'mailpoet')),
+          $this->subheading(__('How it works', 'mailpoet')),
+          $this->text('<strong>' . __('Step 1', 'mailpoet') . '</strong><br />' . __('Brief description', 'mailpoet')),
+          $this->text('<strong>' . __('Step 2', 'mailpoet') . '</strong><br />' . __('Brief description', 'mailpoet')),
+          $this->text('<strong>' . __('Step 3', 'mailpoet') . '</strong><br />' . __('Brief description', 'mailpoet')),
+          $this->button(__('Learn more', 'mailpoet')),
+        ];
+      case 'ask-for-review-post-purchase':
+        return [
+          $this->heading(__('How was your experience?', 'mailpoet')),
+          $this->text(__('Thanks again for your order. Your feedback helps other shoppers choose with confidence.', 'mailpoet')),
+          $this->text(__('If you have a minute, your review would mean a lot.', 'mailpoet')),
+          $this->button(__('Leave a review', 'mailpoet'), '[woocommerce/order-review-url]'),
+          $this->text(__('We appreciate your time and hope to see you again soon.', 'mailpoet')),
+        ];
+      case 'positive-review-follow-up':
+        return [
+          $this->heading(__('Thanks for your review!', 'mailpoet')),
+          $this->text(__('Your review made our day. We’re thrilled you had a good experience and grateful that you took the time to share it.', 'mailpoet')),
+          $this->text(__('Reviews like yours help other shoppers choose with confidence. Thanks for being part of our community.', 'mailpoet')),
+          $this->text(__('With appreciation,', 'mailpoet') . '<br />[site:title]'),
+        ];
+      case 'negative-review-follow-up':
+        return [
+          $this->heading(__('Sorry to hear that', 'mailpoet')),
+          $this->text(__('Thank you for being honest in your review. We’re sorry your experience did not meet expectations.', 'mailpoet')),
+          $this->text(__('We’d like to understand what happened and see how we can make things right. Reply to this email and we’ll take care of it.', 'mailpoet')),
+          $this->text(__('We appreciate the chance to improve,', 'mailpoet') . '<br />[site:title]'),
+        ];
+      case 'reward-positive-reviewer':
+        return [
+          $this->heading(__('Thanks for your review!', 'mailpoet')),
+          $this->text(__('Thank you for taking the time to leave such a thoughtful review. We’re grateful for your support.', 'mailpoet')),
+          $this->text(__('As a thank you, here’s a discount coupon for your next order:', 'mailpoet')),
+          $this->coupon(),
+          $this->button(__('Shop now', 'mailpoet')),
+          $this->text(__('See you soon,', 'mailpoet') . '<br />[site:title]'),
+        ];
+      case 'win-back-customer':
+        return [
+          $this->heading(__('We Miss You! Here’s 15% Off', 'mailpoet')),
+          $this->text(__('We’ve got an exclusive deal waiting just for you.', 'mailpoet')),
+          $this->text(__('Use this code at checkout to redeem your discount:', 'mailpoet')),
+          $this->coupon(15),
+          $this->button(__('Shop now', 'mailpoet')),
+          $this->text(__('Happy shopping!', 'mailpoet')),
+        ];
+      case 'win-back-customer-reminder':
+        return [
+          $this->heading(__('We miss you', 'mailpoet')),
+          $this->text(__('It’s been a little while since your last visit, and we’d love to welcome you back.', 'mailpoet')),
+          $this->text(__('New favorites may be waiting for you in the shop.', 'mailpoet')),
+          $this->button(__('Shop now', 'mailpoet')),
+          $this->text(__('See you soon,', 'mailpoet') . '<br />[site:title]'),
+        ];
+      case 'win-back-customer-final-nudge':
+        return [
+          $this->heading(__('Still thinking it over?', 'mailpoet')),
+          $this->text(__('There’s still time to find something you’ll love.', 'mailpoet')),
+          $this->text(__('Come back when you’re ready and continue where you left off.', 'mailpoet')),
+          $this->button(__('Shop now', 'mailpoet')),
+          $this->text(__('Happy shopping!', 'mailpoet')),
+        ];
+      case 'booking-abandoned-spot':
+        return $this->letter(
+          __('Your booking spot is waiting', 'mailpoet'),
+          __('Hi [subscriber:firstname | default:there], it looks like you started a booking but did not finish reserving your spot.', 'mailpoet'),
+          __('Booking availability can change quickly, so finishing sooner gives you the best chance of keeping the time you selected.', 'mailpoet'),
+          __('Return to our site', 'mailpoet'),
+          __('Hope to see you soon,', 'mailpoet')
+        );
+      case 'booking-new-booking-follow-up':
+        return $this->letter(
+          __('Your booking is confirmed', 'mailpoet'),
+          __('Hi [subscriber:firstname | default:there], your booking is confirmed. We’re looking forward to seeing you.', 'mailpoet'),
+          __('If anything changes or you have questions before your visit, reply to this email and we’ll help.', 'mailpoet'),
+          __('Visit our site', 'mailpoet'),
+          __('See you soon,', 'mailpoet')
+        );
+      case 'booking-pre-visit-reminder':
+        return $this->letter(
+          __('Your booking is coming up', 'mailpoet'),
+          __('Hi [subscriber:firstname | default:there], this is a friendly reminder about your upcoming booking.', 'mailpoet'),
+          __('Please arrive a few minutes early so we can get everything started on time. Reply to this email if you need to make a change.', 'mailpoet'),
+          __('Visit our site', 'mailpoet'),
+          __('We’ll see you soon,', 'mailpoet')
+        );
+      case 'booking-pre-visit-what-to-expect':
+        return $this->letter(
+          __('What to expect at your booking', 'mailpoet'),
+          __('Hi [subscriber:firstname | default:there], here are a few details for your upcoming booking.', 'mailpoet'),
+          __('Please arrive a few minutes early and bring anything you need for the visit. If you have questions, reply to this email before your appointment.', 'mailpoet'),
+          __('View our site', 'mailpoet'),
+          __('See you soon,', 'mailpoet')
+        );
+      case 'booking-pre-visit-tips':
+        return $this->letter(
+          __('Make the most of your booking', 'mailpoet'),
+          __('Hi [subscriber:firstname | default:there], your booking is coming up soon. A little preparation can help you get the most out of it.', 'mailpoet'),
+          __('Review the details, plan enough time before and after your visit, and reply to this email if there is anything we should know ahead of time.', 'mailpoet'),
+          __('Review details', 'mailpoet'),
+          __('We’ll see you soon,', 'mailpoet')
+        );
+      case 'booking-post-visit-review':
+        return $this->letter(
+          __('How was your booking?', 'mailpoet'),
+          __('Hi [subscriber:firstname | default:there], thanks for joining us. We hope everything went smoothly.', 'mailpoet'),
+          __('Your feedback helps us improve future bookings. Send us a quick note or visit our site to leave feedback.', 'mailpoet'),
+          __('Leave feedback', 'mailpoet'),
+          __('Thank you,', 'mailpoet')
+        );
+      case 'booking-next-booking-nudge':
+        return $this->letter(
+          __('Ready for your next booking?', 'mailpoet'),
+          __('Hi [subscriber:firstname | default:there], it’s been a little while since your last booking, and we’d love to welcome you back.', 'mailpoet'),
+          __('Whenever you’re ready for your next visit, we’ll be glad to have you. Just reply to this email if you’d like a hand picking a time.', 'mailpoet'),
+          __('Book again', 'mailpoet'),
+          __('Hope to see you soon,', 'mailpoet')
+        );
+      case 'subscription-purchase-follow-up':
+        return $this->letter(
+          __('Welcome to your subscription', 'mailpoet'),
+          __('Hi [subscriber:firstname | default:there], thanks for subscribing. Your subscription is active, and we’re glad to have you with us.', 'mailpoet'),
+          __('You can review billing, renewals, and subscription details from your account on our site.', 'mailpoet'),
+          __('Visit our site', 'mailpoet'),
+          __('Thanks for joining us,', 'mailpoet')
+        );
+      case 'subscription-renewal-follow-up':
+        return $this->letter(
+          __('Your subscription renewed', 'mailpoet'),
+          __('Hi [subscriber:firstname | default:there], your subscription has renewed successfully. Thanks for staying with us.', 'mailpoet'),
+          __('We’ll keep working to make every renewal worth it. If you have questions, reply to this email and we’ll help.', 'mailpoet'),
+          __('Visit our site', 'mailpoet'),
+          __('Thanks for being with us,', 'mailpoet')
+        );
+      case 'subscription-failed-renewal-follow-up':
+        return $this->letter(
+          __('We couldn’t renew your subscription', 'mailpoet'),
+          __('Hi [subscriber:firstname | default:there], we tried to renew your subscription but the payment did not go through.', 'mailpoet'),
+          __('To keep your subscription active, please sign in to your account and update your payment details. If you already updated them, you can ignore this message.', 'mailpoet'),
+          __('Visit our site', 'mailpoet'),
+          __('We’re here to help,', 'mailpoet')
+        );
+      case 'subscription-churned-follow-up':
+        return $this->letter(
+          __('We’d value your feedback', 'mailpoet'),
+          __('Hi [subscriber:firstname | default:there], we noticed your subscription has ended. We’re sorry to see you go.', 'mailpoet'),
+          __('You can reply directly to this email. Every note helps us improve the experience for future subscribers.', 'mailpoet'),
+          __('Visit our site', 'mailpoet'),
+          __('Thanks for your feedback,', 'mailpoet')
+        );
+      case 'subscription-trial-ended-follow-up':
+        return $this->letter(
+          __('Your trial has ended', 'mailpoet'),
+          __('Hi [subscriber:firstname | default:there], thanks for trying us. We hope your trial gave you a useful look at what’s included.', 'mailpoet'),
+          __('Still deciding? Reply with any questions and we’ll help you choose the next step.', 'mailpoet'),
+          __('Visit our site', 'mailpoet'),
+          __('Thanks for trying us,', 'mailpoet')
+        );
+      case 'subscription-win-back':
+        return $this->letter(
+          __('See what’s new', 'mailpoet'),
+          __('Hi [subscriber:firstname | default:there], it’s been a while since your subscription ended, and we’d love to welcome you back.', 'mailpoet'),
+          __('When you’re ready, visit our site to see what’s changed and start again.', 'mailpoet'),
+          __('Visit our site', 'mailpoet'),
+          __('Hope to see you again,', 'mailpoet')
+        );
       default:
         return null;
     }
+  }
+
+  // Heading, greeting, one paragraph, a button and a sign-off. Used by the booking and subscription emails.
+  private function letter(string $heading, string $greeting, string $text, string $buttonText, string $signOff): array {
+    return [
+      $this->heading($heading),
+      $this->text($greeting),
+      $this->text($text),
+      $this->button($buttonText),
+      $this->text($signOff . '<br />[site:title]'),
+    ];
   }
 
   private function purchaseFollowUp(string $heading, string $text): array {
@@ -130,6 +328,10 @@ class ClassicTemplateEmails {
     return $this->textBlock('<h1 style="text-align: center;"><strong>' . $text . '</strong></h1>');
   }
 
+  private function subheading(string $text): array {
+    return $this->textBlock('<h2>' . $text . '</h2>');
+  }
+
   private function text(string $text): array {
     return $this->textBlock('<p>' . $text . '</p>');
   }
@@ -145,11 +347,11 @@ class ClassicTemplateEmails {
     ];
   }
 
-  private function button(string $text): array {
+  private function button(string $text, string $url = '[site:homepage_url]'): array {
     return [
       'type' => 'button',
       'text' => $text,
-      'url' => '[site:homepage_url]',
+      'url' => $url,
       'styles' => [
         'block' => [
           'backgroundColor' => '#2ea1cd',
@@ -169,12 +371,12 @@ class ClassicTemplateEmails {
     ];
   }
 
-  private function coupon(): array {
+  private function coupon(int $amount = 10): array {
     return [
       'type' => 'coupon',
       'source' => 'createNew',
       'code' => 'XXXX-XXXXXXX-XXXX',
-      'amount' => 10,
+      'amount' => $amount,
       'amountMax' => 100,
       'discountType' => 'percent',
       'expiryDay' => 10,
