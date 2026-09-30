@@ -169,6 +169,14 @@ class TrackTest extends \MailPoetTest {
     verify($processedData->newsletter->getId())->equals($this->newsletter->getId());
   }
 
+  public function testItResolvesLinkOnlyFromLinkHash() {
+    $data = $this->trackData;
+    unset($data['link_hash']);
+    $data['link'] = 'https://example.com';
+    $processedData = $this->track->_processTrackData($data);
+    verify($processedData->link)->null();
+  }
+
   public function testItProcessesTrackData() {
     $processedData = $this->track->_processTrackData($this->trackData);
     verify($processedData->queue->getId())->equals($this->queue->getId());
