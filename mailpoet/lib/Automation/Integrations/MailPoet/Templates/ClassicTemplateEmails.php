@@ -133,7 +133,7 @@ class ClassicTemplateEmails {
           $this->heading(__('How was your experience?', 'mailpoet')),
           $this->text(__('Thanks again for your order. Your feedback helps other shoppers choose with confidence.', 'mailpoet')),
           $this->text(__('If you have a minute, your review would mean a lot.', 'mailpoet')),
-          $this->button(__('Leave a review', 'mailpoet'), '[woocommerce/order-review-url]'),
+          $this->button(__('Leave a review', 'mailpoet')),
           $this->text(__('We appreciate your time and hope to see you again soon.', 'mailpoet')),
         ];
       case 'positive-review-follow-up':
