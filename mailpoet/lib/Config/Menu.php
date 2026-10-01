@@ -524,7 +524,7 @@ class Menu {
       self::NO_PARENT_PAGE_SLUG,
       $this->setPageTitle(__('Automation Preview', 'mailpoet')),
       '',
-      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+      AccessControl::PERMISSION_MANAGE_AUTOMATIONS,
       self::AUTOMATION_PREVIEW_EMBED_PAGE_SLUG,
       [$this, 'automationPreviewEmbed']
     );
@@ -623,7 +623,7 @@ class Menu {
       return;
     }
 
-    if (!$this->accessControl->validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN)) {
+    if (!$this->accessControl->validatePermission(AccessControl::PERMISSION_MANAGE_AUTOMATIONS)) {
       return;
     }
 

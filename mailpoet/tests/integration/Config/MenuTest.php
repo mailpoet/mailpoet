@@ -4,6 +4,7 @@ namespace MailPoet\Test\Config;
 
 use Codeception\Util\Stub;
 use MailPoet\AdminPages\Pages\AutomationFlowEmbed;
+use MailPoet\AdminPages\Pages\AutomationPreviewEmbed;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Menu;
 use MailPoet\Config\ServicesChecker;
@@ -394,6 +395,29 @@ class MenuTest extends \MailPoetTest {
 
     $user->add_cap(AccessControl::PERMISSION_MANAGE_AUTOMATIONS);
     $menu->maybeRenderAutomationFlowEmbed();
+    verify($renderCount)->equals(1);
+  }
+
+  public function testItRendersAutomationPreviewEmbedOnlyForUsersWhoCanManageAutomations() {
+    $userId = (int)$this->tester->createWordPressUser('preview-embed-' . uniqid() . '@localhost.test', 'subscriber');
+    $user = wp_set_current_user($userId);
+    $user->add_cap(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN);
+
+    $renderCount = 0;
+    $previewEmbed = Stub::make(AutomationPreviewEmbed::class, [
+      'render' => function () use (&$renderCount) {
+        $renderCount++;
+      },
+    ], $this);
+    $container = Stub::makeEmpty(ContainerWrapper::class, ['get' => $previewEmbed], $this);
+    $menu = $this->getServiceWithOverrides(Menu::class, ['container' => $container]);
+
+    $_GET['page'] = Menu::AUTOMATION_PREVIEW_EMBED_PAGE_SLUG;
+    $menu->maybeRenderAutomationPreviewEmbed();
+    verify($renderCount)->equals(0);
+
+    $user->add_cap(AccessControl::PERMISSION_MANAGE_AUTOMATIONS);
+    $menu->maybeRenderAutomationPreviewEmbed();
     verify($renderCount)->equals(1);
   }
 
