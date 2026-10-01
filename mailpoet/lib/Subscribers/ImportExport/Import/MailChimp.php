@@ -6,7 +6,7 @@ use MailPoet\Util\Helpers;
 
 class MailChimp {
   private const API_BASE_URI = 'https://user:%s@%s.api.mailchimp.com/3.0/';
-  private const API_KEY_REGEX = '/[a-zA-Z0-9]{32}-[a-zA-Z0-9]{2,4}$/';
+  private const API_KEY_REGEX = '/^[a-zA-Z0-9]{32}-[a-zA-Z0-9]{2,4}$/D';
   private const API_BATCH_SIZE = 100;
 
   /** @var false|string  */

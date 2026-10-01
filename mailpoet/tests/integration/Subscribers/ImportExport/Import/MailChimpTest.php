@@ -49,6 +49,13 @@ class MailChimpTest extends \MailPoetTest {
       ->equals($validApiKeyFormat);
   }
 
+  public function testItRejectsAPIKeyWithExtraCharacters(): void {
+    $validApiKeyFormat = '12345678901234567890123456789012-ab1';
+    verify($this->mailchimp->getAPIKey('key ' . $validApiKeyFormat))->false();
+    verify($this->mailchimp->getAPIKey('1' . $validApiKeyFormat))->false();
+    verify($this->mailchimp->getAPIKey($validApiKeyFormat . "\n"))->false();
+  }
+
   public function testItCanGetDatacenter(): void {
     $validApiKeyFormat = '12345678901234567890123456789012-ab1';
     $dataCenter = 'ab1';
