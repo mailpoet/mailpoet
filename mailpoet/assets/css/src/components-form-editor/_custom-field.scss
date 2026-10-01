@@ -36,3 +36,10 @@
     text-align: center;
   }
 }
+
+.mailpoet-custom-field-delete-modal__actions {
+  display: flex;
+  gap: $grid-gap-half;
+  justify-content: flex-end;
+  margin-top: $grid-gap;
+}

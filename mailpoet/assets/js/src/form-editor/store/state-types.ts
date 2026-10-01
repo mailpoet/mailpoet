@@ -52,6 +52,7 @@ export interface FormEditorWindow extends Window {
   mailpoet_tutorial_seen: '0' | '1';
   mailpoet_tutorial_url: string;
   mailpoet_is_administrator: boolean;
+  mailpoet_can_manage_subscribers: boolean;
   mailpoet_tracking_consent_capture_enabled: boolean;
   mailpoet_theme_support_widgets: boolean;
   mailpoet_theme_support_fse: boolean;
@@ -117,6 +118,7 @@ export type State = {
   tutorialUrl: string;
   user: {
     isAdministrator: boolean;
+    canManageSubscribers: boolean;
   };
   theme: {
     hasWidgets: boolean;
