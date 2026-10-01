@@ -87,6 +87,46 @@ class FormsTest extends \MailPoetTest {
     verify($storedData['settings'])->notEmpty();
   }
 
+  public function testPreviewStoresSanitizedFormContent() {
+    $response = $this->endpoint->previewEditor([
+      'id' => $this->form1->getId(),
+      'body' => [
+        [
+          'type' => 'heading',
+          'id' => 'heading',
+          'params' => ['content' => 'Heading <strong>bold</strong><img src="x" onerror="alert(1)">'],
+        ],
+      ],
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+
+    $storedData = $this->wp->getTransient(PreviewPage::PREVIEW_DATA_TRANSIENT_PREFIX . $this->form1->getId());
+    verify($storedData['body'][0]['params']['content'])->equals('Heading <strong>bold</strong><img src="x">');
+  }
+
+  public function testOnlyAdminCanPreviewCustomHtml() {
+    $formId = $this->form1->getId();
+    $data = [
+      'id' => $formId,
+      'body' => [
+        [
+          'type' => FormEntity::HTML_BLOCK_TYPE,
+          'params' => ['content' => 'Hello'],
+        ],
+      ],
+    ];
+
+    wp_set_current_user(0);
+    $response = $this->endpoint->previewEditor($data);
+    verify($response->status)->equals(APIResponse::STATUS_FORBIDDEN);
+    verify($this->wp->getTransient(PreviewPage::PREVIEW_DATA_TRANSIENT_PREFIX . $formId))->false();
+
+    wp_set_current_user(1);
+    $response = $this->endpoint->previewEditor($data);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($this->wp->getTransient(PreviewPage::PREVIEW_DATA_TRANSIENT_PREFIX . $formId))->notEmpty();
+  }
+
   public function testItCanSaveFormEditor() {
     $response = $this->endpoint->saveEditor();
     verify($response->status)->equals(APIResponse::STATUS_OK);
