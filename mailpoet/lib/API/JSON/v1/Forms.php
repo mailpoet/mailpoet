@@ -133,6 +133,14 @@ class Forms extends APIEndpoint {
   public function previewEditor($data = []) {
     // We want to allow preview for unsaved forms
     $formId = $data['id'] ?? 0;
+    if (isset($data['body']) && is_array($data['body'])) {
+      $data['body'] = $this->dataSanitizer->sanitizeBody($data['body']);
+      $formEntity = new FormEntity('');
+      $formEntity->setBody($data['body']);
+      if (!$this->canEditCustomHtml($formEntity)) {
+        return $this->customHtmlForbiddenResponse();
+      }
+    }
     $this->wp->setTransient(PreviewPage::PREVIEW_DATA_TRANSIENT_PREFIX . $formId, $data, PreviewPage::PREVIEW_DATA_EXPIRATION);
     return $this->successResponse();
   }
@@ -181,12 +189,8 @@ class Forms extends APIEndpoint {
       $this->createTagsIfDoNotExist($settings['tags']);
     }
 
-    // Check Custom HTML block permissions
-    $customHtmlBlocks = $formEntity->getBlocksByTypes([FormEntity::HTML_BLOCK_TYPE]);
-    if (count($customHtmlBlocks) && !$this->wp->currentUserCan('administrator')) {
-      return $this->errorResponse([
-        Error::FORBIDDEN => __('Only administrator can edit forms containing Custom HTML block.', 'mailpoet'),
-      ], [], Response::STATUS_FORBIDDEN);
+    if (!$this->canEditCustomHtml($formEntity)) {
+      return $this->customHtmlForbiddenResponse();
     }
 
     if ($body !== null) {
@@ -289,6 +293,17 @@ class Forms extends APIEndpoint {
         APIError::NOT_FOUND => __('This form does not exist.', 'mailpoet'),
       ]);
     }
+  }
+
+  private function canEditCustomHtml(FormEntity $form): bool {
+    $customHtmlBlocks = $form->getBlocksByTypes([FormEntity::HTML_BLOCK_TYPE]);
+    return !count($customHtmlBlocks) || $this->wp->currentUserCan('administrator');
+  }
+
+  private function customHtmlForbiddenResponse(): Response {
+    return $this->errorResponse([
+      Error::FORBIDDEN => __('Only administrator can edit forms containing Custom HTML block.', 'mailpoet'),
+    ], [], Response::STATUS_FORBIDDEN);
   }
 
   private function getForm(array $data): ?FormEntity {
