@@ -162,6 +162,40 @@ class CustomFieldsRepositoryTest extends \MailPoetTest {
     $this->assertNotContains((int)$beta->getId(), $formCustomFieldIds);
   }
 
+  public function testDeletePermanentlyRemovesActiveCustomFieldAndUsageReferences(): void {
+    $subscriber = (new SubscriberFactory())->withEmail('subscriber@example.com')->create();
+    $alpha = (new CustomFieldFactory())
+      ->withName('Alpha')
+      ->withSubscriber($subscriber->getId(), 'value')
+      ->create();
+    $beta = (new CustomFieldFactory())
+      ->withName('Beta')
+      ->withSubscriber($subscriber->getId(), 'value')
+      ->create();
+    $form = (new FormFactory())
+      ->withName('Form with custom fields')
+      ->withCustomField($alpha)
+      ->withCustomField($beta)
+      ->create();
+    (new DynamicSegmentFactory())->withCustomFieldFilter($alpha)->create();
+
+    $this->assertSame(1, $this->repository->deletePermanently((int)$alpha->getId()));
+
+    $this->assertNull($this->repository->findOneById($alpha->getId()));
+    $this->assertNotNull($this->repository->findOneById($beta->getId()));
+    $this->assertSame(0, $this->countSubscriberCustomFieldValues([(int)$alpha->getId()]));
+    $this->assertSame(1, $this->countSubscriberCustomFieldValues([(int)$beta->getId()]));
+    $this->assertSame(0, $this->countDynamicSegmentFilters([(int)$alpha->getId()]));
+
+    /** @var FormsRepository $formsRepository */
+    $formsRepository = $this->diContainer->get(FormsRepository::class);
+    $refreshedForm = $formsRepository->findOneById($form->getId());
+    $this->assertInstanceOf(FormEntity::class, $refreshedForm);
+    $formCustomFieldIds = array_map('intval', array_column($refreshedForm->getBlocksByTypes(FormEntity::FORM_FIELD_TYPES), 'id'));
+    $this->assertNotContains((int)$alpha->getId(), $formCustomFieldIds);
+    $this->assertContains((int)$beta->getId(), $formCustomFieldIds);
+  }
+
   public function testEmptyTrashPermanentlyDeletesTrashedCustomFields(): void {
     $trashed = (new CustomFieldFactory())->withName('Trashed')->create();
     $active = (new CustomFieldFactory())->withName('Active')->create();

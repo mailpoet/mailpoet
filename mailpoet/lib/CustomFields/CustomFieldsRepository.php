@@ -152,17 +152,25 @@ class CustomFieldsRepository extends Repository {
       return 0;
     }
     $ids = $this->findTrashedIds($ids);
-    return $this->deleteTrashedByIds($ids);
+    return $this->deleteByIds($ids);
   }
 
   public function emptyTrash(): int {
-    return $this->deleteTrashedByIds($this->findTrashedIds());
+    return $this->deleteByIds($this->findTrashedIds());
+  }
+
+  /**
+   * Permanently deletes a custom field whether or not it is in the trash and
+   * removes references from subscriber values, forms, and dynamic segments.
+   */
+  public function deletePermanently(int $id): int {
+    return $this->deleteByIds([$id]);
   }
 
   /**
    * @param int[] $ids
    */
-  private function deleteTrashedByIds(array $ids): int {
+  private function deleteByIds(array $ids): int {
     if (!$ids) {
       return 0;
     }
