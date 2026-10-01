@@ -100,7 +100,7 @@ class WooCommerceBlocksIntegration {
   public function registerCheckoutFrontendBlocks($integration_registry) {
     $integration_registry->register(new MarketingOptinBlock(
       [
-      'defaultText' => $this->settings->get('woocommerce.optin_on_checkout.message', ''),
+      'defaultText' => $this->wp->wpKsesPost((string)$this->settings->get('woocommerce.optin_on_checkout.message', '')),
       'optinEnabled' => $this->settings->get('woocommerce.optin_on_checkout.enabled', false),
       'trackingConsentEnabled' => $this->trackingConsentCapture->isCaptureEnabled(),
       'trackingConsentText' => $this->trackingConsentCapture->getCopy(

@@ -2,6 +2,7 @@
 
 namespace MailPoet\PostEditorBlocks;
 
+use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\WooCommerce as WooSegment;
 use MailPoet\Settings\SettingsController;
@@ -169,6 +170,25 @@ class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
     $this->entityManager->refresh($subscriber);
     verify($subscriber->getTrackingConsent())->equals(SubscriberEntity::TRACKING_CONSENT_UNKNOWN);
     verify($subscriber->getTrackingConsentMethod())->null();
+  }
+
+  public function testCheckoutBlockReceivesOptinMessageWithAllowedHtmlOnly() {
+    $this->settings->set(
+      'woocommerce.optin_on_checkout.message',
+      'Send me <strong>offers</strong><img src="x" onerror="alert(1)"><script>alert(2)</script>'
+    );
+    $registry = $this->createMock(IntegrationRegistry::class);
+    $registeredBlock = null;
+    $registry->method('register')
+      ->willReturnCallback(function ($block) use (&$registeredBlock) {
+        $registeredBlock = $block;
+        return true;
+      });
+
+    $this->integration->registerCheckoutFrontendBlocks($registry);
+
+    $this->assertInstanceOf(MarketingOptinBlock::class, $registeredBlock);
+    verify($registeredBlock->get_script_data()['defaultText'])->equals('Send me <strong>offers</strong><img src="x">alert(2)');
   }
 
   private function askForTrackingConsentAtCheckout(): void {
