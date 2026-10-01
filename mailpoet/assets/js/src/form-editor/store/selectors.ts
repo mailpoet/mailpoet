@@ -227,6 +227,9 @@ export const selectors = {
   isUserAdministrator(state: State) {
     return state.user.isAdministrator;
   },
+  canUserManageSubscribers(state: State) {
+    return state.user.canManageSubscribers;
+  },
   getThemeSupport(state: State) {
     return state.theme;
   },
