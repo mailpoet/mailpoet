@@ -5,6 +5,7 @@ import { XMLParser } from 'fast-xml-parser';
 import { z } from 'zod';
 import type { Config } from '../config.js';
 import { exec } from '../util/exec.js';
+import { ToolError } from '../util/errors.js';
 import { runHandler } from './register.js';
 
 const Suite = z.enum(['unit', 'integration']);
@@ -181,7 +182,20 @@ export function registerTestRun(server: McpServer, config: Config): void {
           '--xml',
         ];
         if (args.suite === 'integration') cmdArgs.push('--skip-deps');
-        if (args.file) cmdArgs.push(`--file=${args.file}`);
+        if (args.file) {
+          // ./do resolves --file= from mailpoet/, so keep the path inside it.
+          const absolute = resolve(config.mailpoetDir, args.file);
+          const mailpoetDirWithSep = config.mailpoetDir.endsWith('/')
+            ? config.mailpoetDir
+            : config.mailpoetDir + '/';
+          if (!absolute.startsWith(mailpoetDirWithSep)) {
+            throw new ToolError(
+              'path_outside_plugin',
+              `File '${args.file}' resolves outside the plugin directory (${config.mailpoetDir}).`,
+            );
+          }
+          cmdArgs.push(`--file=${args.file}`);
+        }
         if (args.filter) cmdArgs.push(`--filter=${args.filter}`);
 
         const result = await exec('./do', cmdArgs, {
