@@ -15,6 +15,7 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
+import { isErrorResponse } from '../../ajax';
 import {
   Data,
   premiumFeaturesEnabled,
@@ -61,6 +62,7 @@ function PremiumModal({
   ...props
 }: Props): JSX.Element {
   const [state, setState] = useState<State>();
+  const [forbiddenMessage, setForbiddenMessage] = useState<string>();
   const upgradeInfo = useUpgradeInfo(data, tracking);
 
   //
@@ -79,10 +81,15 @@ function PremiumModal({
     }
 
     setState('busy');
+    setForbiddenMessage(undefined);
     try {
       await upgradeInfo.action.handler();
       setState('success');
-    } catch (_) {
+    } catch (error) {
+      const forbidden = isErrorResponse(error)
+        ? error.errors.find(({ error: code }) => code === 'forbidden')
+        : undefined;
+      setForbiddenMessage(forbidden?.message);
       setState('error');
     }
   }, [state, upgradeInfo.action]);
@@ -125,7 +132,11 @@ function PremiumModal({
       {typeof upgradeInfo.action !== 'string' && state === 'error' && (
         <div className="mailpoet-premium-modal-error">
           <Text isDestructive>
-            {upgradeInfo.action.error} {__('Please try again.', 'mailpoet')}
+            {forbiddenMessage ??
+              `${upgradeInfo.action.error} ${__(
+                'Please try again.',
+                'mailpoet',
+              )}`}
           </Text>
         </div>
       )}
