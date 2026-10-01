@@ -685,6 +685,7 @@ class ClicksTest extends \MailPoetTest {
         return 'https://example.com/order/' . $context['order']->get_id();
       }));
     });
+    $allowExampleCom = $this->allowRedirectsTo('example.com');
 
     try {
       $link = $this->clicks->processUrl(
@@ -696,6 +697,7 @@ class ClicksTest extends \MailPoetTest {
       );
     } finally {
       $wp->removeAllActions('mailpoet_automation_email_extend_personalization_tags_for_sending');
+      $wp->removeFilter('allowed_redirect_hosts', $allowExampleCom);
       $registry->unregister('[acme/order-url]');
       $this->tester->deleteTestWooOrder($order->get_id());
     }
@@ -764,6 +766,7 @@ class ClicksTest extends \MailPoetTest {
     $requestMock = $this->createMock(Request::class);
     $requestMock->method('isPost')->willReturn(true);
     $this->clicks = $this->getServiceWithOverrides(Clicks::class, ['request' => $requestMock]);
+    $allowExampleCom = $this->allowRedirectsTo('example.com');
 
     try {
       $link = $this->clicks->processUrl(
@@ -774,6 +777,7 @@ class ClicksTest extends \MailPoetTest {
         $preview = false
       );
     } finally {
+      WPFunctions::get()->removeFilter('allowed_redirect_hosts', $allowExampleCom);
       $registry->unregister('[acme/anchor-url]');
     }
 
@@ -881,6 +885,95 @@ class ClicksTest extends \MailPoetTest {
       $preview = false
     );
     verify($link)->equals('http://example.com/?email=test@example.com&newsletter_subject=Subject');
+  }
+
+  public function testItRedirectsToHomeWhenShortcodesSetTheDestinationHost() {
+    $this->subscriber->setFirstName('https://example.org/?x=');
+    $this->subscriber->setLastName('');
+    $urls = [
+      '[subscriber:firstname]',
+      'https://[subscriber:firstname]',
+      'https://user:[subscriber:firstname]@example.com/',
+      '//[subscriber:firstname]',
+      'https://example.com[subscriber:firstname]',
+      'ftp://[subscriber:firstname]',
+      '[subscriber:lastname | default:https://example.org/]',
+    ];
+    foreach ($urls as $url) {
+      $link = $this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false);
+      verify($link)->equals(home_url());
+    }
+  }
+
+  public function testItRedirectsToHomeWhenShortcodesFollowTheSchemeDirectly() {
+    $this->subscriber->setFirstName('//example.org/');
+    foreach (['ftp:[subscriber:firstname]', 'mailto:[subscriber:firstname]'] as $url) {
+      $link = $this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false);
+      verify($link)->equals(home_url());
+    }
+  }
+
+  public function testItRedirectsToHomeWhenPersonalizationTagTokensSetAnotherHost() {
+    $this->subscriber->setFirstName('https://example.org/?x=');
+    $this->entityManager->flush();
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $registry->register(new Personalization_Tag('Partner URL', 'acme/partner-url', 'Test', function (): string {
+      return 'https://example.org/partner';
+    }));
+
+    try {
+      foreach (['[mailpoet/subscriber-firstname]', '[acme/partner-url]'] as $url) {
+        $link = $this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false);
+        verify($link)->equals(home_url());
+      }
+    } finally {
+      $registry->unregister('[acme/partner-url]');
+    }
+  }
+
+  public function testItKeepsShortcodesInUrlsWithAFixedDestination() {
+    $this->subscriber->setFirstName('https://example.org/?x=');
+    $urls = [
+      'https://example.com/[subscriber:firstname]' => 'https://example.com/https://example.org/?x=',
+      'http://example.com?name=[subscriber:firstname]' => 'http://example.com?name=https://example.org/?x=',
+      '//example.com/#[subscriber:firstname]' => '//example.com/#https://example.org/?x=',
+      'mailto:info@example.com?subject=[subscriber:firstname]' => 'mailto:info@example.com?subject=https://example.org/?x=',
+      'whatsapp://send?text=[subscriber:firstname]' => 'whatsapp://send?text=https://example.org/?x=',
+      'tel:+15550100;ext=[subscriber:firstname]' => 'tel:+15550100;ext=https://example.org/?x=',
+      'sms:+15550100?body=[subscriber:firstname]' => 'sms:+15550100?body=https://example.org/?x=',
+    ];
+    foreach ($urls as $url => $expected) {
+      $link = $this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false);
+      verify($link)->equals($expected);
+    }
+  }
+
+  public function testItRedirectsToHomeWhenGAParamsChangeATokenUrlToAnotherHost() {
+    $this->newsletter->setGaCampaign('SpringEmail');
+    $this->entityManager->flush();
+    $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);
+    $registry->register(new Personalization_Tag('Review URL', 'acme/review-url', 'Test', function (): string {
+      return home_url('/review/');
+    }));
+    $toOtherHost = function (): string {
+      return 'https://example.org/review/';
+    };
+    WPFunctions::get()->addFilter('mailpoet_ga_tracking_link', $toOtherHost);
+
+    try {
+      $link = $this->clicks->processUrl('[acme/review-url]', $this->newsletter, $this->subscriber, $this->queue, false);
+    } finally {
+      WPFunctions::get()->removeFilter('mailpoet_ga_tracking_link', $toOtherHost);
+      $registry->unregister('[acme/review-url]');
+    }
+
+    verify($link)->equals(home_url());
+  }
+
+  public function testItAllowsShortcodesToSetTheSiteHost() {
+    $this->subscriber->setFirstName(home_url('/page/'));
+    $link = $this->clicks->processUrl('[subscriber:firstname]', $this->newsletter, $this->subscriber, $this->queue, false);
+    verify($link)->equals(home_url('/page/'));
   }
 
   public function testItUpdatesSubscriberTimestampsForHumanAgent() {
@@ -1055,5 +1148,14 @@ class ClicksTest extends \MailPoetTest {
     ], $this);
     $clicks->track($data);
     verify($this->subscriber->getLastClickAt())->equals($lastClickTime);
+  }
+
+  private function allowRedirectsTo(string $host): callable {
+    $filter = function (array $hosts) use ($host): array {
+      $hosts[] = $host;
+      return $hosts;
+    };
+    WPFunctions::get()->addFilter('allowed_redirect_hosts', $filter);
+    return $filter;
   }
 }
