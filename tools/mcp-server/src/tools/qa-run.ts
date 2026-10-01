@@ -457,7 +457,7 @@ async function runPrettier(
   files: string[] | 'all',
   config: Config,
 ): Promise<Violation[]> {
-  const args = ['--list-different'];
+  const args = ['--list-different', '--'];
   if (files !== 'all') {
     if (files.length === 0) return [];
     args.push(...files);
