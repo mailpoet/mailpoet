@@ -25,18 +25,20 @@ Write a **short, user-facing description**:
 
 - Write from the user's perspective — what they see or experience
 - Avoid technical jargon (no class names, method names, internal details)
-- Start with a verb or noun, not "We" or "The plugin"
+- Start with a capital letter, not "We" or "The plugin"
+- Make it read naturally after the type prefix, and don't repeat the type verb: the release notes print `Fixed: <description>`
 - No trailing punctuation — the build system adds it
 - Keep it to one sentence
 
 **Good examples:**
 
-- `Fix email rendering issue in Outlook`
-- `Add ability to filter subscribers by purchase date`
-- `Improve performance of subscriber listing page`
+- `Email rendering issue in Outlook` (type `Fixed`)
+- `Ability to filter subscribers by purchase date` (type `Added`)
+- `Performance of subscriber listing page` (type `Improved`)
 
 **Bad examples:**
 
+- `Fix email rendering issue in Outlook` with type `Fixed` (repeats the type verb)
 - `Refactor SubscriberRepository query method` (technical jargon)
 - `Fix bug in NewsletterEntity::getStatus()` (class/method names)
 - `Update dependencies.` (trailing punctuation)
