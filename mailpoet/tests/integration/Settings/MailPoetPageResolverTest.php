@@ -293,6 +293,19 @@ class MailPoetPageResolverTest extends \MailPoetTest {
     $this->assertCount($count, $this->allPages());
   }
 
+  public function testRepairDoesNotPublishDraftDefaultPageWithPlainHtmlComment() {
+    $defaultId = (int)Pages::getMailPoetPage(Pages::PAGE_SUBSCRIPTIONS)->ID;
+    $content = '<!-- private note -->[mailpoet_page]';
+    wp_update_post(['ID' => $defaultId, 'post_status' => 'draft', 'post_content' => $content]);
+    $this->settings->set('subscription.pages.manage', $defaultId);
+
+    $this->resolver->repairPages();
+
+    $this->assertSame('draft', get_post_status($defaultId));
+    $this->assertSame($content, get_post_field('post_content', $defaultId));
+    $this->assertCleanPublishedReplacement($defaultId, 'subscription.pages.manage');
+  }
+
   public function testRepairDoesNotRestoreTrashedDefaultPageWithCustomContent() {
     $defaultId = (int)Pages::getMailPoetPage(Pages::PAGE_SUBSCRIPTIONS)->ID;
     $content = 'Secret text [mailpoet_page]';
@@ -359,6 +372,7 @@ class MailPoetPageResolverTest extends \MailPoetTest {
   public function blockWrappedShortcodeProvider(): array {
     return [
       'shortcode block' => ["<!-- wp:shortcode -->\n[mailpoet_page]\n<!-- /wp:shortcode -->"],
+      'namespaced block with attributes' => ["<!-- wp:core/shortcode {\"className\":\"x\"} -->\n[mailpoet_page]\n<!-- /wp:core/shortcode -->"],
       'paragraph block' => ["<!-- wp:paragraph -->\n<p>[mailpoet_page]</p>\n<!-- /wp:paragraph -->"],
     ];
   }

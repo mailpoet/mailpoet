@@ -301,8 +301,8 @@ class MailPoetPageResolver {
   }
 
   private function isUntouchedContent(string $content): bool {
-    // Removes block delimiter comments and <p> tags that the block editor wraps around the shortcode
-    $stripped = (string)preg_replace('/<!--.*?-->|<\/?p>/s', '', $content);
+    // Strips only block delimiters (<!-- wp:name {json} -->, <!-- /wp:name -->, <!-- wp:name /-->) and <p> tags; other comments are custom content
+    $stripped = (string)preg_replace('/<!--\s+\/?wp:[a-z][a-z0-9_-]*(?:\/[a-z][a-z0-9_-]*)?(?:\s+\{.*?\})?\s*\/?-->|<\/?p>/s', '', $content);
     return trim($stripped) === '[mailpoet_page]';
   }
 }
