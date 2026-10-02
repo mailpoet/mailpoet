@@ -59,6 +59,66 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $this->subscriberCustomFieldRepository = $this->diContainer->get(SubscriberCustomFieldRepository::class);
   }
 
+  /** @var int[] */
+  private $createdPostIds = [];
+
+  public function _after() {
+    foreach ($this->createdPostIds as $postId) {
+      wp_delete_post($postId, true);
+    }
+    $this->createdPostIds = [];
+    unset($GLOBALS['post']);
+    parent::_after();
+  }
+
+  public function testItRedirectsToPublishedSuccessPage(): void {
+    $pageId = $this->createPage('publish');
+    $meta = $this->subscribeWithSuccessPage($pageId);
+    verify($meta['redirect_url'])->equals(get_permalink($pageId));
+  }
+
+  public function testItRedirectsToPrivateSuccessPage(): void {
+    $pageId = $this->createPage('private');
+    $meta = $this->subscribeWithSuccessPage($pageId);
+    verify($meta['redirect_url'])->equals(get_permalink($pageId));
+  }
+
+  public function testItDoesNotRedirectToDraftSuccessPage(): void {
+    $meta = $this->subscribeWithSuccessPage($this->createPage('draft'));
+    verify($meta)->arrayHasNotKey('redirect_url');
+  }
+
+  public function testItDoesNotRedirectToTrashedSuccessPage(): void {
+    $pageId = $this->createPage('publish');
+    wp_trash_post($pageId);
+    $meta = $this->subscribeWithSuccessPage($pageId);
+    verify($meta)->arrayHasNotKey('redirect_url');
+  }
+
+  public function testItDoesNotRedirectToDeletedSuccessPage(): void {
+    $pageId = $this->createPage('publish');
+    wp_delete_post($pageId, true);
+    $meta = $this->subscribeWithSuccessPage($pageId);
+    verify($meta)->arrayHasNotKey('redirect_url');
+  }
+
+  public function testItDoesNotRedirectWhenSuccessPageHasNoPermalink(): void {
+    $pageId = $this->createPage('publish');
+    add_filter('page_link', '__return_empty_string');
+    try {
+      $meta = $this->subscribeWithSuccessPage($pageId);
+    } finally {
+      remove_filter('page_link', '__return_empty_string');
+    }
+    verify($meta)->arrayHasNotKey('redirect_url');
+  }
+
+  public function testItDoesNotRedirectToCurrentPostWhenSuccessPageIsNotSet(): void {
+    $GLOBALS['post'] = get_post($this->createPage('publish'));
+    $meta = $this->subscribeWithSuccessPage(0);
+    verify($meta)->arrayHasNotKey('redirect_url');
+  }
+
   public function testItCanSubscribeSubscriberWithoutConfirmation(): void {
     $this->settings->set('signup_confirmation.enabled', false);
     $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
@@ -309,6 +369,25 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $this->assertSubscriptionRejected($form, $segment);
+  }
+
+  private function createPage(string $status): int {
+    $pageId = wp_insert_post(['post_type' => 'page', 'post_title' => 'Success', 'post_status' => $status]);
+    $this->createdPostIds[] = $pageId;
+    return $pageId;
+  }
+
+  private function subscribeWithSuccessPage(int $pageId): array {
+    $this->settings->set('signup_confirmation.enabled', false);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $form->setSettings(array_merge($form->getSettings() ?? [], ['on_success' => 'page', 'success_page' => $pageId]));
+    $this->entityManager->flush();
+    return $this->subscribeController->subscribe([
+      $this->obfuscatedEmail => 'redirect' . rand(0, 100000) . '@example.com',
+      $this->obfuscatedSegments => [$segment->getId()],
+      'form_id' => $form->getId(),
+    ]);
   }
 
   private function assertSubscriptionRejected(FormEntity $form, SegmentEntity $segment): void {
