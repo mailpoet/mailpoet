@@ -360,7 +360,8 @@ class Newsletter {
         $renderedNewsletter['html'],
         $newsletter,
         null,
-        $queue
+        $queue,
+        $isPlainText = true
       )
     );
 

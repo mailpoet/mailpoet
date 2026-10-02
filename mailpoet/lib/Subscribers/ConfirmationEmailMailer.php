@@ -172,7 +172,7 @@ class ConfirmationEmailMailer {
       'activation_link'
     );
 
-    $subject = Shortcodes::process($signupConfirmation['subject'], null, null, $subscriber, null);
+    $subject = Shortcodes::process($signupConfirmation['subject'], null, null, $subscriber, null, $isPlainText = true);
 
     $body = Shortcodes::process($body, null, null, $subscriber, null);
 

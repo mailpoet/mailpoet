@@ -209,7 +209,11 @@ class Shortcodes {
     return $processedShortcodes;
   }
 
-  public function replace($content, $contentSource = null, $categories = null) {
+  /**
+   * @param bool $isPlainText Content that is never parsed as HTML, such as a subject line,
+   *   so values are inserted as they are even where the text looks like a tag.
+   */
+  public function replace($content, $contentSource = null, $categories = null, bool $isPlainText = false) {
     $shortcodes = $this->extract($content, $categories);
     if (!$shortcodes) {
       return $content;
@@ -222,7 +226,7 @@ class Shortcodes {
       ($contentSource) ? $contentSource : $content
     );
     $content = (string)$content;
-    $shortcodesInsideTags = $this->findShortcodesInsideTags($content, $shortcodes);
+    $shortcodesInsideTags = $isPlainText ? [] : $this->findShortcodesInsideTags($content, $shortcodes);
     if (!$shortcodesInsideTags) {
       return str_replace($shortcodes, $processedShortcodes, $content);
     }
