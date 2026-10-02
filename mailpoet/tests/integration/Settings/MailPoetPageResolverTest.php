@@ -217,8 +217,8 @@ class MailPoetPageResolverTest extends \MailPoetTest {
   }
 
   public function testRepairLeavesPrivateAndDraftConfiguredPagesUntouched() {
-    $private = $this->createPage('resolver-private', 'private');
-    $draft = $this->createPage('resolver-draft', 'draft');
+    $private = $this->createPage('resolver-private', 'private', 'page');
+    $draft = $this->createPage('resolver-draft', 'draft', 'page');
     $this->settings->set('subscription.pages.manage', $private);
     $this->settings->set('subscription.pages.unsubscribe', $draft);
     $this->settings->set('subscription.pages.captcha', 0);
@@ -230,18 +230,35 @@ class MailPoetPageResolverTest extends \MailPoetTest {
     $this->assertGreaterThan(0, (int)$this->settings->fetch('subscription.pages.captcha'));
   }
 
-  public function testRepairDoesNotRepublishPageReferencedByNonStaleKey() {
-    $this->deleteAllPages();
-    $private = $this->createPage(Pages::PAGE_SUBSCRIPTIONS, 'private');
-    $this->staleAllKeys();
-    $this->settings->set('subscription.pages.confirmation', $private);
+  public function testRepairRepublishesUnpublishedDefaultSubscriptionsPage() {
+    $defaultId = (int)Pages::getMailPoetPage(Pages::PAGE_SUBSCRIPTIONS)->ID;
+    wp_update_post(['ID' => $defaultId, 'post_status' => 'draft']);
+    $before = count($this->allPages());
+    $keys = ['confirmation', 'confirm_unsubscribe', 'manage', 'unsubscribe'];
+    foreach ($keys as $key) {
+      $this->settings->set('subscription.pages.' . $key, $defaultId);
+    }
 
     $this->resolver->repairPages();
 
-    $this->assertSame('private', get_post_status($private));
-    $this->assertSame($private, (int)$this->settings->fetch('subscription.pages.confirmation'));
-    $this->assertNotSame($private, (int)$this->settings->fetch('subscription.pages.unsubscribe'));
-    $this->assertNotNull($this->resolver->getPublishedPage($this->settings->fetch('subscription.pages.unsubscribe')));
+    $this->assertSame('publish', get_post_status($defaultId));
+    $this->assertCount($before, $this->allPages());
+    foreach ($keys as $key) {
+      $this->assertSame($defaultId, (int)$this->settings->fetch('subscription.pages.' . $key));
+    }
+  }
+
+  public function testRepairRepublishesUnpublishedDefaultCaptchaPage() {
+    $defaultId = (int)Pages::getMailPoetPage(Pages::PAGE_CAPTCHA)->ID;
+    wp_update_post(['ID' => $defaultId, 'post_status' => 'private']);
+    $before = count($this->allPages());
+    $this->settings->set('subscription.pages.captcha', $defaultId);
+
+    $this->resolver->repairPages();
+
+    $this->assertSame('publish', get_post_status($defaultId));
+    $this->assertCount($before, $this->allPages());
+    $this->assertSame($defaultId, (int)$this->settings->fetch('subscription.pages.captcha'));
   }
 
   public function testRepairKeepsEmptyReEngagementPageEmptyAndRepairsStaleOne() {
@@ -405,9 +422,9 @@ class MailPoetPageResolverTest extends \MailPoetTest {
     return $id;
   }
 
-  private function createPage(string $slug, string $status = 'publish'): int {
+  private function createPage(string $slug, string $status = 'publish', string $postType = 'mailpoet_page'): int {
     return (int)wp_insert_post([
-      'post_type' => 'mailpoet_page',
+      'post_type' => $postType,
       'post_status' => $status,
       'post_name' => $slug,
       'post_content' => '[mailpoet_page]',
