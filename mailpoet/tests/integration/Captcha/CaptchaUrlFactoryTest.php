@@ -148,6 +148,23 @@ class CaptchaUrlFactoryTest extends \MailPoetTest {
     }
   }
 
+  public function testUrlsUseSubscriptionsPageWhenNoCaptchaPageExists() {
+    foreach ($this->allPages() as $page) {
+      if (strpos((string)$page->post_name, Pages::PAGE_CAPTCHA) === 0) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        wp_delete_post((int)$page->ID, true);
+      }
+    }
+    $this->settings->set('subscription.pages.captcha', 999999);
+    $this->resolver->resetCache();
+    $subscriptions = Pages::getMailPoetPage(Pages::PAGE_SUBSCRIPTIONS);
+    $this->assertInstanceOf(\WP_Post::class, $subscriptions);
+
+    $url = $this->urlFactory->getCaptchaUrlForMPForm('x');
+
+    $this->assertStringStartsWith((string)get_permalink($subscriptions), $url);
+    $this->assertStringContainsString('endpoint=' . CaptchaEndpoint::ENDPOINT, $url);
+  }
+
   public function testUrlsIgnoreGlobalPostWhenNoCaptchaPageExists() {
     $this->removeAllPagesWithStaleSetting();
     $unrelated = $this->createPage('unrelated-page');
