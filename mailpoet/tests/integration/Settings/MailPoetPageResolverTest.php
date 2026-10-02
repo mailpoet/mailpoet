@@ -20,7 +20,7 @@ class MailPoetPageResolverTest extends \MailPoetTest {
   private MailPoetPageResolver $resolver;
   private SettingsController $settings;
 
-  /** @var array<int, array{status: string, name: string}> */
+  /** @var array<int, array{status: string, name: string, content: string}> */
   private array $snapshot = [];
 
   /** @var int[] */
@@ -36,9 +36,12 @@ class MailPoetPageResolverTest extends \MailPoetTest {
     $this->settings = $this->diContainer->get(SettingsController::class);
     $this->resolver = $this->diContainer->get(MailPoetPageResolver::class);
     foreach ($this->allPages() as $page) {
-      $this->snapshot[(int)$page->ID] = ['status' => $page->post_status, 'name' => $page->post_name]; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $this->snapshot[(int)$page->ID] = ['status' => $page->post_status, 'name' => $page->post_name, 'content' => $page->post_content]; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
     $this->diContainer->get(Populator::class)->up();
+    foreach ($this->allPages() as $page) {
+      wp_update_post(['ID' => $page->ID, 'post_content' => '[mailpoet_page]']);
+    }
     $this->settings->resetCache();
     $this->resolver->resetCache();
     delete_option(self::LOCK);
@@ -63,7 +66,7 @@ class MailPoetPageResolverTest extends \MailPoetTest {
     }
     foreach ($this->snapshot as $id => $data) {
       if (get_post($id)) {
-        wp_update_post(['ID' => $id, 'post_status' => $data['status'], 'post_name' => $data['name']]);
+        wp_update_post(['ID' => $id, 'post_status' => $data['status'], 'post_name' => $data['name'], 'post_content' => $data['content']]);
         continue;
       }
       Pages::createMailPoetPage(preg_replace('/__trashed$/', '', $data['name']));
@@ -337,6 +340,27 @@ class MailPoetPageResolverTest extends \MailPoetTest {
     foreach ($keys as $key) {
       $this->assertSame($defaultId, (int)$this->settings->fetch('subscription.pages.' . $key));
     }
+  }
+
+  /** @dataProvider blockWrappedShortcodeProvider */
+  public function testRepairRepublishesDefaultPageWithBlockWrappedShortcode(string $content) {
+    $defaultId = (int)Pages::getMailPoetPage(Pages::PAGE_SUBSCRIPTIONS)->ID;
+    wp_update_post(['ID' => $defaultId, 'post_status' => 'draft', 'post_content' => $content]);
+    $before = count($this->allPages());
+    $this->settings->set('subscription.pages.manage', $defaultId);
+
+    $this->resolver->repairPages();
+
+    $this->assertSame('publish', get_post_status($defaultId));
+    $this->assertCount($before, $this->allPages());
+    $this->assertSame($defaultId, (int)$this->settings->fetch('subscription.pages.manage'));
+  }
+
+  public function blockWrappedShortcodeProvider(): array {
+    return [
+      'shortcode block' => ["<!-- wp:shortcode -->\n[mailpoet_page]\n<!-- /wp:shortcode -->"],
+      'paragraph block' => ["<!-- wp:paragraph -->\n<p>[mailpoet_page]</p>\n<!-- /wp:paragraph -->"],
+    ];
   }
 
   public function testRepairRepublishesUnpublishedDefaultCaptchaPage() {
