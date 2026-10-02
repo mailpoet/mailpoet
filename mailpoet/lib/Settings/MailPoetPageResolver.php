@@ -286,7 +286,7 @@ class MailPoetPageResolver {
     ]);
     foreach ($candidates as $candidate) {
       $id = (int)$candidate->ID;
-      if (trim((string)$candidate->post_content) !== '[mailpoet_page]') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      if (!$this->isUntouchedContent((string)$candidate->post_content)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         continue;
       }
       if ((int)$this->wp->wpUpdatePost(['ID' => $id, 'post_status' => 'publish']) > 0) {
@@ -298,5 +298,11 @@ class MailPoetPageResolver {
 
     $created = Pages::createMailPoetPage($postName, false);
     return $created ? (int)$created : null;
+  }
+
+  private function isUntouchedContent(string $content): bool {
+    // Removes block delimiter comments and <p> tags that the block editor wraps around the shortcode
+    $stripped = (string)preg_replace('/<!--.*?-->|<\/?p>/s', '', $content);
+    return trim($stripped) === '[mailpoet_page]';
   }
 }
