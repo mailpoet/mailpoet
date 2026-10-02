@@ -20,6 +20,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\ApiSourcePluginResolver;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\ConfirmationEmailResolver;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
@@ -196,6 +197,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
         'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
+        'apiSourcePluginResolver' => new ApiSourcePluginResolver(),
       ]
     );
 
@@ -229,6 +231,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
         'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
+        'apiSourcePluginResolver' => new ApiSourcePluginResolver(),
       ],
       $this
     );
@@ -311,6 +314,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
         'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
+        'apiSourcePluginResolver' => new ApiSourcePluginResolver(),
       ],
       $this
     );
@@ -337,6 +341,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
         'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
+        'apiSourcePluginResolver' => new ApiSourcePluginResolver(),
       ],
       $this
     );
@@ -653,6 +658,7 @@ class SubscribersTest extends \MailPoetTest {
         'settings' => $settings,
         'requiredCustomFieldsValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate' => true]),
         'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
+        'apiSourcePluginResolver' => new ApiSourcePluginResolver(),
       ],
       $this
     );
@@ -706,6 +712,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
         'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
+        'apiSourcePluginResolver' => new ApiSourcePluginResolver(),
       ],
       $this
     );
@@ -737,6 +744,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
         'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
+        'apiSourcePluginResolver' => new ApiSourcePluginResolver(),
       ],
       $this
     );
