@@ -308,6 +308,25 @@ class CronHelperTest extends \MailPoetTest {
     $wp->removeFilter('mailpoet_cron_request_args', $filter);
   }
 
+  public function testItRespectsLocalSslVerifyFilter() {
+    $requestArgs = [];
+    $wp = Stub::make(new WPFunctions, [
+      'wpRemotePost' => function($url, array $args) use (&$requestArgs) {
+        $requestArgs = $args;
+        return [];
+      },
+    ]);
+    $cronHelper = new CronHelper($this->settings, $wp);
+
+    $cronHelper->queryCronUrl('test');
+    verify($requestArgs['sslverify'])->false();
+
+    $wp->addFilter('https_local_ssl_verify', '__return_true');
+    $cronHelper->queryCronUrl('test');
+    verify($requestArgs['sslverify'])->true();
+    $wp->removeFilter('https_local_ssl_verify', '__return_true');
+  }
+
   public function testItReturnsErrorMessageAsPingResponseWhenCronUrlCannotBeAccessed() {
     $wp = Stub::make(new WPFunctions, [
       'applyFilters' => function ($name, $args) {

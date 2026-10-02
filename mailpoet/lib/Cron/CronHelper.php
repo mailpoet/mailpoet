@@ -162,7 +162,7 @@ class CronHelper {
   public function queryCronUrl($url) {
     $defaultArgs = [
       'blocking' => true,
-      'sslverify' => false,
+      'sslverify' => $this->wp->applyFilters('https_local_ssl_verify', false, $url),
       'timeout' => self::DAEMON_REQUEST_TIMEOUT,
       'user-agent' => 'MailPoet Cron',
     ];
