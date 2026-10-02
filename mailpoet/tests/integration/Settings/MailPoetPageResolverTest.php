@@ -274,6 +274,39 @@ class MailPoetPageResolverTest extends \MailPoetTest {
     $this->assertSame($count, count($this->allPages()));
   }
 
+  public function testRepairDoesNotPublishPrivateDefaultPageWithCustomContent() {
+    $defaultId = (int)Pages::getMailPoetPage(Pages::PAGE_SUBSCRIPTIONS)->ID;
+    $content = 'Secret text [mailpoet_page]';
+    wp_update_post(['ID' => $defaultId, 'post_status' => 'private', 'post_content' => $content]);
+    $this->settings->set('subscription.pages.manage', $defaultId);
+
+    $this->resolver->repairPages();
+    $count = count($this->allPages());
+    $this->resolver->repairPages();
+
+    $this->assertSame('private', get_post_status($defaultId));
+    $this->assertSame($content, get_post_field('post_content', $defaultId));
+    $this->assertCleanPublishedReplacement($defaultId, 'subscription.pages.manage');
+    $this->assertCount($count, $this->allPages());
+  }
+
+  public function testRepairDoesNotRestoreTrashedDefaultPageWithCustomContent() {
+    $defaultId = (int)Pages::getMailPoetPage(Pages::PAGE_SUBSCRIPTIONS)->ID;
+    $content = 'Secret text [mailpoet_page]';
+    wp_update_post(['ID' => $defaultId, 'post_content' => $content]);
+    wp_trash_post($defaultId);
+    $this->settings->set('subscription.pages.manage', $defaultId);
+
+    $this->resolver->repairPages();
+    $count = count($this->allPages());
+    $this->resolver->repairPages();
+
+    $this->assertSame('trash', get_post_status($defaultId));
+    $this->assertSame($content, get_post_field('post_content', $defaultId));
+    $this->assertCleanPublishedReplacement($defaultId, 'subscription.pages.manage');
+    $this->assertCount($count, $this->allPages());
+  }
+
   public function testRepairLeavesPrivateAndDraftConfiguredPagesUntouched() {
     $private = $this->createPage('resolver-private', 'private', 'page');
     $draft = $this->createPage('resolver-draft', 'draft', 'page');
@@ -673,6 +706,13 @@ class MailPoetPageResolverTest extends \MailPoetTest {
       'post_content' => '[mailpoet_page]',
       'post_title' => 'Test page',
     ]);
+  }
+
+  private function assertCleanPublishedReplacement(int $oldId, string $settingKey): void {
+    $newId = (int)$this->settings->fetch($settingKey);
+    $this->assertNotSame($oldId, $newId);
+    $this->assertSame('publish', get_post_status($newId));
+    $this->assertSame('[mailpoet_page]', get_post_field('post_content', $newId));
   }
 
   private function staleAllKeys(): void {
