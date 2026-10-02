@@ -3,8 +3,11 @@
 namespace MailPoet\Subscribers;
 
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Settings\SettingsController;
+use MailPoetVendor\Carbon\Carbon;
 
 class LinkTokensTest extends \MailPoetTest {
+  private const UPGRADED_TOKEN = 'abcdef-0123456789abcdef012345678';
 
   /** @var LinkTokens */
   private $linkTokens;
@@ -12,10 +15,20 @@ class LinkTokensTest extends \MailPoetTest {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var SettingsController */
+  private $settings;
+
   public function _before() {
     parent::_before();
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
-    $this->linkTokens = new LinkTokens($this->subscribersRepository);
+    $this->settings = $this->diContainer->get(SettingsController::class);
+    $this->settings->delete(LinkTokens::OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING);
+    $this->linkTokens = new LinkTokens($this->subscribersRepository, $this->settings);
+  }
+
+  public function _after() {
+    $this->settings->delete(LinkTokens::OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING);
+    parent::_after();
   }
 
   public function testItGeneratesSubscriberToken() {
@@ -54,6 +67,46 @@ class LinkTokensTest extends \MailPoetTest {
     verify($this->linkTokens->verifyToken($subscriber, 'abcdef'))->true();
     verify($this->linkTokens->verifyToken($subscriber, 'abcdef0123456789abcdef0123456789'))->true();
     verify($this->linkTokens->verifyToken($subscriber, 'abcde0'))->false();
+  }
+
+  public function testItVerifiesUpgradedTokenByItsObsoletePartDuringGracePeriod() {
+    $this->settings->set(LinkTokens::OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING, Carbon::now()->addDay()->getTimestamp());
+    $subscriber = $this->createSubscriber('demo@fake.loc', self::UPGRADED_TOKEN);
+    verify($this->linkTokens->verifyToken($subscriber, self::UPGRADED_TOKEN))->true();
+    verify($this->linkTokens->verifyToken($subscriber, 'abcdef'))->true();
+    verify($this->linkTokens->verifyToken($subscriber, 'abcdef0123456789abcdef0123456789'))->true();
+    verify($this->linkTokens->verifyToken($subscriber, 'abcde0'))->false();
+  }
+
+  public function testItVerifiesWholeUpgradedTokenAfterGracePeriod() {
+    $this->settings->set(LinkTokens::OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING, Carbon::now()->subDay()->getTimestamp());
+    $subscriber = $this->createSubscriber('demo@fake.loc', self::UPGRADED_TOKEN);
+    verify($this->linkTokens->verifyToken($subscriber, self::UPGRADED_TOKEN))->true();
+    verify($this->linkTokens->verifyToken($subscriber, 'abcdef'))->false();
+  }
+
+  public function testItVerifiesWholeUpgradedTokenWhenGracePeriodWasNotStarted() {
+    $subscriber = $this->createSubscriber('demo@fake.loc', self::UPGRADED_TOKEN);
+    verify($this->linkTokens->verifyToken($subscriber, self::UPGRADED_TOKEN))->true();
+    verify($this->linkTokens->verifyToken($subscriber, 'abcdef'))->false();
+  }
+
+  public function testItVerifiesWholeRandomTokenDuringGracePeriod() {
+    $this->settings->set(LinkTokens::OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING, Carbon::now()->addDay()->getTimestamp());
+    $subscriber = $this->createSubscriber('demo@fake.loc');
+    $token = $this->linkTokens->getToken($subscriber);
+    verify($this->linkTokens->verifyToken($subscriber, $token))->true();
+    verify($this->linkTokens->verifyToken($subscriber, substr($token, 0, SubscriberEntity::OBSOLETE_LINK_TOKEN_LENGTH)))->false();
+  }
+
+  public function testItStartsGracePeriodOnlyOnce() {
+    $this->linkTokens->startObsoleteTokensGracePeriod();
+    $acceptedUntil = (int)$this->settings->get(LinkTokens::OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING);
+    verify($acceptedUntil)->greaterThan(Carbon::now()->addMonths(11)->getTimestamp());
+
+    $this->settings->set(LinkTokens::OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING, $acceptedUntil - 100);
+    $this->linkTokens->startObsoleteTokensGracePeriod();
+    verify((int)$this->settings->get(LinkTokens::OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING))->equals($acceptedUntil - 100);
   }
 
   /**
