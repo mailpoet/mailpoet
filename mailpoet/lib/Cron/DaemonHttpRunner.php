@@ -66,7 +66,8 @@ class DaemonHttpRunner {
       } else {
         if (
           !isset($requestData['token']) ||
-          $requestData['token'] !== $this->settingsDaemonData['token']
+          !is_scalar($requestData['token']) ||
+          !hash_equals((string)$this->settingsDaemonData['token'], (string)$requestData['token'])
         ) {
           $error = 'Invalid or missing token.';
         }
