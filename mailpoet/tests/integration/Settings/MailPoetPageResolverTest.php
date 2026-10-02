@@ -240,6 +240,19 @@ class MailPoetPageResolverTest extends \MailPoetTest {
     $this->assertSame($defaultId, (int)$this->settings->fetch('subscription.pages.manage'));
   }
 
+  public function testRepairClearsTrashMetadataWhenRepublishingTrashedPage() {
+    $defaultId = (int)Pages::getMailPoetPage(Pages::PAGE_SUBSCRIPTIONS)->ID;
+    wp_trash_post($defaultId);
+    $this->assertNotEmpty(get_post_meta($defaultId, '_wp_trash_meta_status', true));
+    $this->assertNotEmpty(get_post_meta($defaultId, '_wp_trash_meta_time', true));
+
+    $this->resolver->repairPages();
+
+    $this->assertSame('publish', get_post_status($defaultId));
+    $this->assertEmpty(get_post_meta($defaultId, '_wp_trash_meta_status', true));
+    $this->assertEmpty(get_post_meta($defaultId, '_wp_trash_meta_time', true));
+  }
+
   public function testRepairCreatesNewPageWhenSlugHolderHasNoShortcode() {
     $this->deleteAllPages();
     wp_insert_post([

@@ -290,6 +290,8 @@ class MailPoetPageResolver {
         continue;
       }
       if ((int)$this->wp->wpUpdatePost(['ID' => $id, 'post_status' => 'publish']) > 0) {
+        $this->wp->deletePostMeta($id, '_wp_trash_meta_status');
+        $this->wp->deletePostMeta($id, '_wp_trash_meta_time');
         return $id;
       }
     }
