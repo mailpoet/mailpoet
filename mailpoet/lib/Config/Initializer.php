@@ -31,6 +31,7 @@ use MailPoet\PostEditorBlocks\PostEditorBlock;
 use MailPoet\PostEditorBlocks\WooCommerceBlocksIntegration;
 use MailPoet\Router;
 use MailPoet\Segments\RestApi\Api as SegmentsRestApi;
+use MailPoet\Settings\MailPoetPageResolver;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\SubscriberActivityTracker;
 use MailPoet\Subscribers\ImportExport\Import\Cli as ImportCli;
@@ -179,6 +180,8 @@ class Initializer {
 
   private Email_Editor_Logger $emailEditorLogger;
 
+  private MailPoetPageResolver $mailPoetPageResolver;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   const PLUGIN_ACTIVATED = 'mailpoet_plugin_activated';
@@ -225,7 +228,8 @@ class Initializer {
     SubscribersRestApi $subscribersRestApi,
     NewslettersRestApi $newslettersRestApi,
     LogsDownload $logsDownload,
-    PublicEmailRoute $publicEmailRoute
+    PublicEmailRoute $publicEmailRoute,
+    MailPoetPageResolver $mailPoetPageResolver
   ) {
     $this->rendererFactory = $rendererFactory;
     $this->accessControl = $accessControl;
@@ -269,6 +273,7 @@ class Initializer {
     $this->newslettersRestApi = $newslettersRestApi;
     $this->logsDownload = $logsDownload;
     $this->publicEmailRoute = $publicEmailRoute;
+    $this->mailPoetPageResolver = $mailPoetPageResolver;
 
     $emailEditorContainer = Email_Editor_Container::container();
     $this->emailEditorBootstrap = $emailEditorContainer->get(EmailEditorBootstrap::class);
@@ -436,6 +441,7 @@ class Initializer {
       $this->setupConflictResolver();
 
       $this->setupPages();
+      $this->wpFunctions->addAction('admin_init', [$this->mailPoetPageResolver, 'maybeRepairPages']);
 
       $this->setupPermanentNotices();
       $this->setupAutomaticEmails();
