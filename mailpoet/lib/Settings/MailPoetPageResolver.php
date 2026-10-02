@@ -2,6 +2,7 @@
 
 namespace MailPoet\Settings;
 
+use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
 class MailPoetPageResolver {
@@ -101,7 +102,8 @@ class MailPoetPageResolver {
     if (!$this->getStaleKeys()) {
       return;
     }
-    if (!$this->acquireLock()) {
+    $lock = $this->acquireLock();
+    if ($lock === null) {
       return;
     }
     try {
@@ -130,7 +132,7 @@ class MailPoetPageResolver {
       }
       $this->resetCache();
     } finally {
-      $this->wp->deleteOption(self::LOCK_OPTION);
+      $this->releaseLock($lock);
     }
   }
 
@@ -173,16 +175,46 @@ class MailPoetPageResolver {
     $this->settings->fetch('reEngagement');
   }
 
-  private function acquireLock(): bool {
-    if ($this->wp->addOption(self::LOCK_OPTION, time(), false)) {
-      return true;
+  private function acquireLock(): ?string {
+    $token = time() . ':' . Security::generateRandomString(12);
+    if ($this->wp->addOption(self::LOCK_OPTION, $token, false)) {
+      return $token;
     }
-    $lockedAt = (int)$this->wp->getOption(self::LOCK_OPTION, 0);
-    if ($lockedAt > time() - self::LOCK_TTL) {
-      return false;
+    $this->clearLockCache();
+    $current = $this->wp->getOption(self::LOCK_OPTION, '');
+    $lockedAt = (int)$current;
+    if (!is_string($current) || $current === '' || $lockedAt > time() - self::LOCK_TTL) {
+      return null;
     }
-    $this->wp->updateOption(self::LOCK_OPTION, time());
-    return true;
+    return $this->swapLock($current, $token) ? $token : null;
+  }
+
+  private function releaseLock(string $token): void {
+    global $wpdb;
+    $wpdb->query($wpdb->prepare(
+      "DELETE FROM {$wpdb->options} WHERE option_name = %s AND option_value = %s",
+      self::LOCK_OPTION,
+      $token
+    ));
+    $this->clearLockCache();
+  }
+
+  private function swapLock(string $expected, string $token): bool {
+    global $wpdb;
+    $changed = $wpdb->query($wpdb->prepare(
+      "UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND option_value = %s",
+      $token,
+      self::LOCK_OPTION,
+      $expected
+    ));
+    $this->clearLockCache();
+    return $changed === 1;
+  }
+
+  private function clearLockCache(): void {
+    $this->wp->wpCacheDelete(self::LOCK_OPTION, 'options');
+    $this->wp->wpCacheDelete('notoptions', 'options');
+    $this->wp->wpCacheDelete('alloptions', 'options');
   }
 
   private function obtainDefaultPage(string $postName): ?int {
