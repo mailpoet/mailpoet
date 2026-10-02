@@ -1098,6 +1098,10 @@ class Functions {
     return update_post_meta($postId, $metaKey, $metaValue, $prevValue);
   }
 
+  public function deletePostMeta(int $postId, string $metaKey, $metaValue = ''): bool {
+    return delete_post_meta($postId, $metaKey, $metaValue);
+  }
+
   public function getFileData(string $file, array $default_headers, string $context = 'plugin'): array {
     return get_file_data($file, $default_headers, $context);
   }
