@@ -377,6 +377,52 @@ class MailPoetPageResolverTest extends \MailPoetTest {
     $this->assertFalse(get_option(self::LOCK));
   }
 
+  public function testRepairDoesNotTakeOverStaleLockChangedByCompetitor() {
+    global $wpdb;
+    $this->deleteAllPages();
+    $this->staleAllKeys();
+    add_option(self::LOCK, (string)(time() - 120) . ':stale', '', false);
+    $competitorValue = time() . ':competitor';
+    $reads = 0;
+    // The first read happens inside add_option(); the competitor strikes after the stale read that follows it.
+    $callback = function ($value) use ($wpdb, $competitorValue, &$reads) {
+      if (++$reads === 2) {
+        $wpdb->update($wpdb->options, ['option_value' => $competitorValue], ['option_name' => self::LOCK]);
+      }
+      return $value;
+    };
+    add_filter('option_' . self::LOCK, $callback);
+    try {
+      $this->resolver->repairPages();
+    } finally {
+      remove_filter('option_' . self::LOCK, $callback);
+    }
+
+    $this->assertCount(0, $this->allPages());
+    $this->assertSame(999999, (int)$this->settings->fetch('subscription.pages.manage'));
+    wp_cache_delete(self::LOCK, 'options');
+    $this->assertSame($competitorValue, get_option(self::LOCK));
+  }
+
+  public function testRepairDoesNotReleaseLockTakenOverByAnotherHolder() {
+    global $wpdb;
+    $this->deleteAllPages();
+    $this->staleAllKeys();
+    $otherValue = time() . ':other-holder';
+    $callback = function () use ($wpdb, $otherValue) {
+      $wpdb->update($wpdb->options, ['option_value' => $otherValue], ['option_name' => self::LOCK]);
+    };
+    add_action('wp_insert_post', $callback);
+    try {
+      $this->resolver->repairPages();
+    } finally {
+      remove_action('wp_insert_post', $callback);
+    }
+
+    wp_cache_delete(self::LOCK, 'options');
+    $this->assertSame($otherValue, get_option(self::LOCK));
+  }
+
   public function testCreateMailPoetPageCanKeepHooks() {
     /** @var \ArrayObject<int, int> $calls */
     $calls = new \ArrayObject();
