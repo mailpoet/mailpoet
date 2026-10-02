@@ -6,8 +6,8 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Router\Endpoints\Subscription as SubscriptionEndpoint;
 use MailPoet\Router\Router;
+use MailPoet\Settings\MailPoetPageResolver;
 use MailPoet\Settings\Pages as SettingsPages;
-use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -19,61 +19,58 @@ class SubscriptionUrlFactory {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var SettingsController */
-  private $settings;
-
   /** @var LinkTokens */
   private $linkTokens;
 
+  /** @var MailPoetPageResolver */
+  private $pageResolver;
+
   public function __construct(
     WPFunctions $wp,
-    SettingsController $settings,
-    LinkTokens $linkTokens
+    LinkTokens $linkTokens,
+    MailPoetPageResolver $pageResolver
   ) {
     $this->wp = $wp;
-    $this->settings = $settings;
     $this->linkTokens = $linkTokens;
+    $this->pageResolver = $pageResolver;
   }
 
   public function getConfirmationUrl(?SubscriberEntity $subscriber = null, ?int $confirmationPageId = null) {
-    $pageId = $confirmationPageId ?? $this->settings->get('subscription.pages.confirmation');
-    $post = $this->getPost($pageId);
+    $post = $confirmationPageId ? $this->pageResolver->getPublishedPage($confirmationPageId) : null;
+    $post = $post ?? $this->getPage('subscription.pages.confirmation');
     return $this->getSubscriptionUrl($post, 'confirm', $subscriber);
   }
 
   public function getConfirmUnsubscribeUrl(?SubscriberEntity $subscriber = null, ?int $queueId = null) {
-    $post = $this->getPost($this->settings->get('subscription.pages.confirm_unsubscribe'));
+    $post = $this->getPage('subscription.pages.confirm_unsubscribe');
     $data = $queueId && $subscriber ? ['queueId' => $queueId] : null;
     return $this->getSubscriptionUrl($post, 'confirm_unsubscribe', $subscriber, $data);
   }
 
   public function getManageUrl(?SubscriberEntity $subscriber = null) {
-    $post = $this->getPost($this->settings->get('subscription.pages.manage'));
+    $post = $this->getPage('subscription.pages.manage');
     return $this->getSubscriptionUrl($post, 'manage', $subscriber);
   }
 
   public function getUnsubscribeUrl(?SubscriberEntity $subscriber = null, ?int $queueId = null) {
-    $post = $this->getPost($this->settings->get('subscription.pages.unsubscribe'));
+    $post = $this->getPage('subscription.pages.unsubscribe');
     $data = $queueId && $subscriber ? ['queueId' => $queueId] : null;
     return $this->getSubscriptionUrl($post, 'unsubscribe', $subscriber, $data);
   }
 
   public function getUnsubscribeReasonUrl(?SubscriberEntity $subscriber = null, ?int $queueId = null) {
-    $post = $this->getPost($this->settings->get('subscription.pages.unsubscribe'));
+    $post = $this->getPage('subscription.pages.unsubscribe');
     $data = $queueId && $subscriber ? ['queueId' => $queueId] : null;
     return $this->getSubscriptionUrl($post, 'unsubscribe_reason', $subscriber, $data);
   }
 
   public function getTrackingOptOutUrl(?SubscriberEntity $subscriber = null) {
-    $post = $this->getPost($this->settings->get('subscription.pages.manage'));
+    $post = $this->getPage('subscription.pages.manage');
     return $this->getSubscriptionUrl($post, 'tracking_opt_out', $subscriber);
   }
 
   public function getReEngagementUrl(?SubscriberEntity $subscriber = null) {
-    $reEngagementSetting = $this->settings->get('reEngagement');
-    $postId = $reEngagementSetting['page'] ?? null;
-
-    $post = $this->getPost($postId);
+    $post = $this->getPage('reEngagement.page');
     return $this->getSubscriptionUrl($post, 're_engagement', $subscriber);
   }
 
@@ -83,9 +80,12 @@ class SubscriptionUrlFactory {
     ?SubscriberEntity $subscriber = null,
     $data = null
   ) {
-    if ($post === null || $action === null) return;
+    if ($action === null) return;
 
-    $url = $this->wp->getPermalink($post);
+    $url = $post ? $this->wp->getPermalink($post) : false;
+    if (!is_string($url) || $url === '') {
+      $url = $this->wp->homeUrl('/');
+    }
     if ($subscriber !== null) {
       $subscriberData = [
         'token' => $this->linkTokens->getToken($subscriber),
@@ -122,20 +122,13 @@ class SubscriptionUrlFactory {
   public static function getInstance() {
     if (!self::$instance instanceof SubscriptionUrlFactory) {
       $linkTokens = ContainerWrapper::getInstance()->get(LinkTokens::class);
-      self::$instance = new SubscriptionUrlFactory(new WPFunctions, SettingsController::getInstance(), $linkTokens);
+      $pageResolver = ContainerWrapper::getInstance()->get(MailPoetPageResolver::class);
+      self::$instance = new SubscriptionUrlFactory(new WPFunctions, $linkTokens, $pageResolver);
     }
     return self::$instance;
   }
 
-  private function getPost($post = null) {
-    if ($post) {
-      $postObject = $this->wp->getPost($post);
-      if ($postObject) {
-        return $postObject;
-      }
-    }
-    // Resort to a default MailPoet page if no page is selected
-    $pages = SettingsPages::getMailPoetPages();
-    return reset($pages);
+  private function getPage(string $settingKey): ?\WP_Post {
+    return $this->pageResolver->getPage($settingKey, SettingsPages::PAGE_SUBSCRIPTIONS);
   }
 }
