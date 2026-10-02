@@ -592,14 +592,53 @@ class PagesTest extends \MailPoetTest {
     $this->assertStringContainsString('MailPoet', $result);
   }
 
+  public function testItLeavesUnrelatedPostContentUntouchedForInvalidSubscriber() {
+    $pages = $this->getPages(null, null, $this->getWpForQueriedPost(false))
+      ->init(Pages::ACTION_MANAGE, ['email' => $this->subscriber->getEmail(), 'token' => 'bogus']);
+
+    verify($pages->setPageContent('Unrelated post body'))->equals('Unrelated post body');
+  }
+
+  public function testItReplacesPageShortcodeWithMessageForInvalidSubscriber() {
+    $pages = $this->getPages(null, null, $this->getWpForQueriedPost(false))
+      ->init(Pages::ACTION_MANAGE, ['email' => $this->subscriber->getEmail(), 'token' => 'bogus']);
+
+    verify($pages->setPageContent('[mailpoet_page]'))->stringContainsString("doesn't appear in our lists anymore");
+  }
+
+  public function testItReplacesQueriedCustomPageContentWithMessageForInvalidSubscriber() {
+    $pages = $this->getPages(null, null, $this->getWpForQueriedPost(true))
+      ->init(Pages::ACTION_MANAGE, ['email' => $this->subscriber->getEmail(), 'token' => 'bogus']);
+
+    verify($pages->setPageContent('Custom page body'))->stringContainsString("doesn't appear in our lists anymore");
+  }
+
+  public function testItLeavesUnrelatedPostContentUntouchedForValidSubscriber() {
+    $pages = $this->getPages(null, null, $this->getWpForQueriedPost(false))
+      ->init(Pages::ACTION_MANAGE, $this->testData);
+
+    verify($pages->setPageContent('Unrelated post body'))->equals('Unrelated post body');
+  }
+
+  private function getWpForQueriedPost(bool $isQueriedPost): WPFunctions {
+    return Stub::make(new WPFunctions, [
+      'isSingular' => $isQueriedPost,
+      'inTheLoop' => $isQueriedPost,
+      'isMainQuery' => $isQueriedPost,
+      'getTheId' => 10,
+      'getQueriedObjectId' => $isQueriedPost ? 10 : 20,
+    ]);
+  }
+
   private function getPages(
     ?NewSubscriberNotificationMailer $newSubscriberNotificationsMock = null,
-    ?Unsubscribes $unsubscribesMock = null
+    ?Unsubscribes $unsubscribesMock = null,
+    ?WPFunctions $wp = null
   ): Pages {
     $container = ContainerWrapper::getInstance();
     return new Pages(
       $newSubscriberNotificationsMock ?? $container->get(NewSubscriberNotificationMailer::class),
-      $container->get(WPFunctions::class),
+      $wp ?? $container->get(WPFunctions::class),
       $container->get(WelcomeScheduler::class),
       $container->get(LinkTokens::class),
       $container->get(SubscriptionUrlFactory::class),
