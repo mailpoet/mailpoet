@@ -442,6 +442,7 @@ class Initializer {
 
       $this->setupPages();
       $this->wpFunctions->addAction('admin_init', [$this->mailPoetPageResolver, 'maybeRepairPages']);
+      $this->mailPoetPageResolver->registerPageChangeHooks();
 
       $this->setupPermanentNotices();
       $this->setupAutomaticEmails();
