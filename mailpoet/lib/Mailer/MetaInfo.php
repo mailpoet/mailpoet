@@ -30,12 +30,13 @@ class MetaInfo {
       'transactional',
       $subscriber ? $subscriber->getStatus() : 'unknown',
       $subscriber ? $subscriber->getSource() : 'unknown',
-      $subscriber ? $subscriber->getSourcePlugin() : null
+      $subscriber ? $subscriber->getSourcePlugin() : null,
+      $subscriber ? $subscriber->getSourceUrl() : null
     );
   }
 
   public function getConfirmationMetaInfo(SubscriberEntity $subscriber) {
-    return $this->makeMetaInfo('confirmation', $subscriber->getStatus(), $subscriber->getSource(), $subscriber->getSourcePlugin());
+    return $this->makeMetaInfo('confirmation', $subscriber->getStatus(), $subscriber->getSource(), $subscriber->getSourcePlugin(), $subscriber->getSourceUrl());
   }
 
   public function getNewSubscriberNotificationMetaInfo() {
@@ -65,10 +66,10 @@ class MetaInfo {
         $type = 'post_notification';
         break;
     }
-    return $this->makeMetaInfo($type, $subscriber->getStatus(), $subscriber->getSource(), $subscriber->getSourcePlugin());
+    return $this->makeMetaInfo($type, $subscriber->getStatus(), $subscriber->getSource(), $subscriber->getSourcePlugin(), $subscriber->getSourceUrl());
   }
 
-  private function makeMetaInfo($emailType, $subscriberStatus, $subscriberSource, ?string $subscriberSourcePlugin = null) {
+  private function makeMetaInfo($emailType, $subscriberStatus, $subscriberSource, ?string $subscriberSourcePlugin = null, ?string $subscriberSourceUrl = null) {
     $metaInfo = [
       'email_type' => $emailType,
       'subscriber_status' => $subscriberStatus,
@@ -77,6 +78,9 @@ class MetaInfo {
     $plugin = $subscriberSource === Source::API ? $subscriberSourcePlugin : (self::SOURCE_PLUGINS[$subscriberSource] ?? null);
     if ($plugin) {
       $metaInfo['subscriber_source_plugin'] = $plugin;
+    }
+    if ($subscriberSourceUrl) {
+      $metaInfo['subscriber_source_url'] = $subscriberSourceUrl;
     }
     return $metaInfo;
   }

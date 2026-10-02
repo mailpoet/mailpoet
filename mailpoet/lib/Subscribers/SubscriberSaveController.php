@@ -43,6 +43,9 @@ class SubscriberSaveController {
   /** @var SubscriberTagRepository */
   private $subscriberTagRepository;
 
+  /** @var SourceUrlResolver */
+  private $sourceUrlResolver;
+
   /** @var TagRepository */
   private $tagRepository;
 
@@ -67,7 +70,8 @@ class SubscriberSaveController {
     TagRepository $tagRepository,
     Unsubscribes $unsubscribesTracker,
     WelcomeScheduler $welcomeScheduler,
-    WPFunctions $wp
+    WPFunctions $wp,
+    SourceUrlResolver $sourceUrlResolver
   ) {
     $this->customFieldsRepository = $customFieldsRepository;
     $this->security = $security;
@@ -80,6 +84,7 @@ class SubscriberSaveController {
     $this->unsubscribesTracker = $unsubscribesTracker;
     $this->welcomeScheduler = $welcomeScheduler;
     $this->wp = $wp;
+    $this->sourceUrlResolver = $sourceUrlResolver;
     $this->subscriberTagRepository = $subscriberTagRepository;
   }
 
@@ -330,6 +335,7 @@ class SubscriberSaveController {
     $subscriber = new SubscriberEntity();
     $subscriber->setUnsubscribeToken($this->security->generateUnsubscribeTokenByEntity($subscriber));
     $subscriber->setLinkToken(Security::generateHash(SubscriberEntity::LINK_TOKEN_LENGTH));
+    $subscriber->setSourceUrl($this->sourceUrlResolver->resolve());
     $subscriber->setStatus(!$this->settings->get('signup_confirmation.enabled') ? SubscriberEntity::STATUS_SUBSCRIBED : SubscriberEntity::STATUS_UNCONFIRMED);
 
     return $subscriber;

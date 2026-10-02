@@ -247,4 +247,18 @@ class MetaInfoTest extends \MailPoetTest {
     $subscriber->setSourcePlugin('some-form-plugin');
     verify($this->meta->getConfirmationMetaInfo($subscriber))->arrayHasNotKey('subscriber_source_plugin');
   }
+
+  public function testItAddsSourceUrlForAllSources() {
+    $this->subscriber->setSourceUrl('https://example.com/signup/');
+    verify($this->meta->getConfirmationMetaInfo($this->subscriber)['subscriber_source_url'])->equals('https://example.com/signup/');
+    verify($this->meta->getWordPressTransactionalMetaInfo($this->subscriber)['subscriber_source_url'])->equals('https://example.com/signup/');
+
+    $subscriber = (new SubscriberFactory())->withSource('imported')->withEmail('url@metainfo.com')->create();
+    $subscriber->setSourceUrl('https://example.com/import/');
+    verify($this->meta->getConfirmationMetaInfo($subscriber)['subscriber_source_url'])->equals('https://example.com/import/');
+  }
+
+  public function testItOmitsSourceUrlWhenMissing() {
+    verify($this->meta->getConfirmationMetaInfo($this->subscriber))->arrayHasNotKey('subscriber_source_url');
+  }
 }

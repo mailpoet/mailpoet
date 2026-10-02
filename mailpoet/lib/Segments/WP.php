@@ -15,6 +15,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\SegmentsCountRecalculator;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SourceUrlResolver;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\DBCollationChecker;
@@ -72,6 +73,9 @@ class WP {
   /** @var SegmentsCountRecalculator */
   private $segmentsCountRecalculator;
 
+  /** @var SourceUrlResolver */
+  private $sourceUrlResolver;
+
   public function __construct(
     WPFunctions $wp,
     WelcomeScheduler $welcomeScheduler,
@@ -83,7 +87,8 @@ class WP {
     SegmentsRepository $segmentsRepository,
     EntityManager $entityManager,
     DBCollationChecker $collationChecker,
-    SegmentsCountRecalculator $segmentsCountRecalculator
+    SegmentsCountRecalculator $segmentsCountRecalculator,
+    SourceUrlResolver $sourceUrlResolver
   ) {
     $this->wp = $wp;
     $this->welcomeScheduler = $welcomeScheduler;
@@ -96,6 +101,7 @@ class WP {
     $this->entityManager = $entityManager;
     $this->collationChecker = $collationChecker;
     $this->segmentsCountRecalculator = $segmentsCountRecalculator;
+    $this->sourceUrlResolver = $sourceUrlResolver;
     $this->databaseConnection = $this->entityManager->getConnection();
     $this->subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
   }
@@ -411,6 +417,7 @@ class WP {
   private function createOrUpdateSubscriber(array $data, ?SubscriberEntity $subscriber = null): SubscriberEntity {
     if (is_null($subscriber)) {
       $subscriber = new SubscriberEntity();
+      $subscriber->setSourceUrl($this->sourceUrlResolver->resolve());
     }
 
     $subscriber->setWpUserId($data['wp_user_id']);
