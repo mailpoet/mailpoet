@@ -134,9 +134,6 @@ class PageRenderer {
    */
   public function displayPage($template, array $data = []) {
     $installer = new Installer(Installer::PREMIUM_PLUGIN_SLUG);
-    $premiumDownloadUrl = $this->subscribersFeature->hasValidPremiumKey()
-      ? $installer->buildDownloadUrl()
-      : null;
 
     $wpSegment = $this->segmentRepository->getWPUsersSegment();
     $wpSegmentState = ($wpSegment instanceof SegmentEntity) && $wpSegment->getDeletedAt() === null ?
@@ -177,7 +174,6 @@ class PageRenderer {
       'link_premium' => $this->wp->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-upgrade'),
       'premium_plugin_installed' => Installer::isPluginInstalled(Installer::PREMIUM_PLUGIN_SLUG),
       'premium_plugin_active' => $this->servicesChecker->isPremiumPluginActive(),
-      'premium_plugin_download_url' => $premiumDownloadUrl,
       'premium_plugin_activation_url' => $installer->generatePluginActivationUrl(Installer::PREMIUM_PLUGIN_PATH),
       'has_valid_api_key' => $this->subscribersFeature->hasValidApiKey(),
       'has_valid_premium_key' => $this->subscribersFeature->hasValidPremiumKey(),
