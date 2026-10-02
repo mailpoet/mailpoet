@@ -106,7 +106,6 @@ class CaptchaUrlFactory {
   }
 
   private function getBaseUrl(?\WP_Post $post): string {
-    $url = $post ? $this->wp->getPermalink($post) : false;
-    return is_string($url) && $url !== '' ? $url : $this->wp->homeUrl('/');
+    return $this->pageResolver->getPermalinkOrHome($post);
   }
 }

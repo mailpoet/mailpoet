@@ -82,10 +82,7 @@ class SubscriptionUrlFactory {
   ) {
     if ($action === null) return;
 
-    $url = $post ? $this->wp->getPermalink($post) : false;
-    if (!is_string($url) || $url === '') {
-      $url = $this->wp->homeUrl('/');
-    }
+    $url = $this->pageResolver->getPermalinkOrHome($post);
     if ($subscriber !== null) {
       $subscriberData = [
         'token' => $this->linkTokens->getToken($subscriber),

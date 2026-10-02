@@ -143,6 +143,25 @@ class SubscriptionUrlFactoryTest extends \MailPoetTest {
     }
   }
 
+  public function testItUsesCaptchaPageWhenNoSubscriptionsPageExists() {
+    foreach ($this->allPages() as $page) {
+      if (strpos((string)$page->post_name, SettingPages::PAGE_SUBSCRIPTIONS) === 0) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        wp_delete_post((int)$page->ID, true);
+      }
+    }
+    foreach (['confirmation', 'confirm_unsubscribe', 'manage', 'unsubscribe'] as $key) {
+      $this->settings->set('subscription.pages.' . $key, 999999);
+    }
+    $this->resolver->resetCache();
+    $captcha = SettingPages::getMailPoetPage(SettingPages::PAGE_CAPTCHA);
+    $this->assertInstanceOf(\WP_Post::class, $captcha);
+
+    $url = $this->subscriptionUrlFactory->getConfirmationUrl($this->subscriber);
+
+    $this->assertStringStartsWith((string)get_permalink($captcha), $url);
+    $this->assertStringContainsString('action=confirm', $url);
+  }
+
   public function testConfirmationOverrideToUnpublishedPageUsesGlobalPage() {
     $global = $this->createPage('global-confirmation');
     $this->settings->set('subscription.pages.confirmation', $global);

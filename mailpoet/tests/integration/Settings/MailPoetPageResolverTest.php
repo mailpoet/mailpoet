@@ -120,6 +120,40 @@ class MailPoetPageResolverTest extends \MailPoetTest {
     $this->assertNull($this->resolver->getPage('subscription.pages.captcha', Pages::PAGE_CAPTCHA));
   }
 
+  public function testGetPageFallsBackToSubscriptionsPageWhenCaptchaPageIsMissing() {
+    $this->deletePagesBySlug(Pages::PAGE_CAPTCHA);
+    $this->settings->set('subscription.pages.captcha', 999999);
+    $this->resolver->resetCache();
+    $page = $this->resolver->getPage('subscription.pages.captcha', Pages::PAGE_CAPTCHA);
+    $this->assertInstanceOf(\WP_Post::class, $page);
+    $this->assertSame(Pages::PAGE_SUBSCRIPTIONS, $page->post_name); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  }
+
+  public function testGetPageFallsBackToCaptchaPageWhenSubscriptionsPageIsMissing() {
+    $this->deletePagesBySlug(Pages::PAGE_SUBSCRIPTIONS);
+    $this->settings->set('subscription.pages.manage', 999999);
+    $this->resolver->resetCache();
+    $page = $this->resolver->getPage('subscription.pages.manage', Pages::PAGE_SUBSCRIPTIONS);
+    $this->assertInstanceOf(\WP_Post::class, $page);
+    $this->assertSame(Pages::PAGE_CAPTCHA, $page->post_name); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  }
+
+  public function testGetPageDoesNotUseOtherKindWhenOwnKindIsPublished() {
+    $page = $this->resolver->getPage('subscription.pages.captcha', Pages::PAGE_CAPTCHA);
+    $this->assertInstanceOf(\WP_Post::class, $page);
+    $this->assertSame(Pages::PAGE_CAPTCHA, $page->post_name); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  }
+
+  public function testGetPageSkipsUnpublishedOtherKindPage() {
+    $this->deletePagesBySlug(Pages::PAGE_CAPTCHA);
+    foreach ($this->pagesBySlug(Pages::PAGE_SUBSCRIPTIONS) as $page) {
+      wp_update_post(['ID' => $page->ID, 'post_status' => 'draft']);
+    }
+    $this->settings->set('subscription.pages.captcha', 999999);
+    $this->resolver->resetCache();
+    $this->assertNull($this->resolver->getPage('subscription.pages.captcha', Pages::PAGE_CAPTCHA));
+  }
+
   public function testGetPageIsMemoizedUntilCacheReset() {
     $id = $this->createPage('resolver-memo');
     $this->settings->set('subscription.pages.manage', $id);
@@ -437,6 +471,12 @@ class MailPoetPageResolverTest extends \MailPoetTest {
       $this->settings->set('subscription.pages.' . $key, 999999);
     }
     $this->settings->set('reEngagement.page', '');
+  }
+
+  private function deletePagesBySlug(string $slug): void {
+    foreach ($this->pagesBySlug($slug) as $page) {
+      wp_delete_post((int)$page->ID, true);
+    }
   }
 
   private function deleteAllPages(): void {

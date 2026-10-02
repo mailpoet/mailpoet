@@ -17,6 +17,12 @@ class MailPoetPageResolver {
     self::RE_ENGAGEMENT_KEY => Pages::PAGE_SUBSCRIPTIONS,
   ];
 
+  // Both default pages host any MailPoet router endpoint through [mailpoet_page].
+  private const OTHER_KIND = [
+    Pages::PAGE_SUBSCRIPTIONS => Pages::PAGE_CAPTCHA,
+    Pages::PAGE_CAPTCHA => Pages::PAGE_SUBSCRIPTIONS,
+  ];
+
   private WPFunctions $wp;
 
   private SettingsController $settings;
@@ -52,12 +58,23 @@ class MailPoetPageResolver {
       return $this->pages[$settingKey];
     }
     $page = $this->getPublishedPage($this->settings->get($settingKey));
-    if (!$page) {
-      $default = Pages::getMailPoetPage($defaultPostName);
+    foreach ([$defaultPostName, self::OTHER_KIND[$defaultPostName] ?? null] as $postName) {
+      if ($page || $postName === null) {
+        break;
+      }
+      $default = Pages::getMailPoetPage($postName);
       $page = $default instanceof \WP_Post ? $default : null;
     }
     $this->pages[$settingKey] = $page;
     return $page;
+  }
+
+  /**
+   * @param \WP_Post|int|null $post
+   */
+  public function getPermalinkOrHome($post): string {
+    $url = $post ? $this->wp->getPermalink($post) : false;
+    return is_string($url) && $url !== '' ? $url : $this->wp->homeUrl('/');
   }
 
   public function resetCache(): void {
