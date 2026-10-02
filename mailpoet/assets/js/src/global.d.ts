@@ -197,7 +197,6 @@ interface Window {
   }>;
   mailpoet_display_detailed_stats: boolean;
   mailpoet_premium_plugin_installed: boolean;
-  mailpoet_premium_plugin_download_url: string;
   mailpoet_premium_plugin_activation_url: string;
   mailpoet_plugin_partial_key: string;
   mailpoet_email_volume_limit: string;

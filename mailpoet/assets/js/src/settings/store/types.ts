@@ -260,7 +260,6 @@ export type KeyActivationState = {
   inProgress: boolean;
   congratulatoryMssEmailSentTo: string | null;
   code?: number;
-  downloadUrl?: string;
   activationUrl?: string;
 };
 
@@ -322,7 +321,6 @@ export type SettingsWindow = {
   mailpoet_mss_key_valid: string;
   mailpoet_premium_key_valid: string;
   mailpoet_premium_plugin_installed: string;
-  mailpoet_premium_plugin_download_url: string;
   mailpoet_premium_plugin_activation_url: string;
 };
 

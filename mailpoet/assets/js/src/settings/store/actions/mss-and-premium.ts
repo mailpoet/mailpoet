@@ -106,7 +106,6 @@ export function* verifyPremiumKey(key: string) {
     premiumMessage: null,
     premiumStatus: status,
     code: res?.meta?.code,
-    downloadUrl: res?.meta?.premium_plugin_info?.download_link,
     premiumAccessRestriction: null,
   };
 
