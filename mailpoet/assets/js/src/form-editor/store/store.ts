@@ -125,6 +125,7 @@ export const initStore = () => {
     tutorialUrl: window.mailpoet_tutorial_url,
     user: {
       isAdministrator: window.mailpoet_is_administrator,
+      canManageSubscribers: window.mailpoet_can_manage_subscribers,
     },
     theme: {
       hasWidgets: window.mailpoet_theme_support_widgets,

@@ -10,10 +10,14 @@ use MailPoet\Config\AccessControl;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Form\ApiDataSanitizer;
+use MailPoetVendor\Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 class CustomFields extends APIEndpoint {
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_FORMS,
+    'methods' => [
+      'delete' => AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
+    ],
   ];
 
   /** @var CustomFieldsRepository */
@@ -43,25 +47,54 @@ class CustomFields extends APIEndpoint {
   public function delete($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : null);
     $customField = $this->customFieldsRepository->findOneById($id);
-    if ($customField instanceof CustomFieldEntity) {
-      $this->customFieldsRepository->remove($customField);
-      $this->customFieldsRepository->flush();
-
-      return $this->successResponse($this->customFieldsResponseBuilder->build($customField));
-    } else {
-      return $this->errorResponse([
-        APIError::NOT_FOUND => __('This custom field does not exist.', 'mailpoet'),
-      ]);
+    if (!$customField instanceof CustomFieldEntity) {
+      return $this->notFound();
     }
+
+    $response = $this->customFieldsResponseBuilder->build($customField);
+    $this->customFieldsRepository->deletePermanently((int)$customField->getId());
+    return $this->successResponse($response);
   }
 
   public function save($data = []) {
+    if (isset($data['type']) && is_string($data['type'])) {
+      $data['type'] = strtolower($data['type']);
+    }
     try {
       $data = $this->dataSanitizer->sanitizeBlock($data);
+    } catch (\Exception $e) {
+      return $this->errorResponse($errors = [], $meta = [], $status = Response::STATUS_BAD_REQUEST);
+    }
+
+    $id = isset($data['id']) ? (int)$data['id'] : null;
+    if ($id) {
+      $customField = $this->customFieldsRepository->findOneById($id);
+      if (!$customField instanceof CustomFieldEntity || $customField->getDeletedAt() !== null) {
+        return $this->notFound();
+      }
+      if (
+        isset($data['type'])
+        && $data['type'] !== $customField->getType()
+        && $this->customFieldsRepository->hasSubscriberValues($id)
+      ) {
+        return $this->conflict(__('The custom field type cannot be changed because subscribers have values stored for this field.', 'mailpoet'));
+      }
+    }
+
+    if (isset($data['name'])) {
+      $existing = $this->customFieldsRepository->findOneBy(['name' => $data['name']]);
+      if ($existing instanceof CustomFieldEntity && $existing->getId() !== $id) {
+        return $this->conflict(__('A custom field with this name already exists.', 'mailpoet'));
+      }
+    }
+
+    try {
       $customField = $this->customFieldsRepository->createOrUpdate($data);
       $customField = $this->customFieldsRepository->findOneById($customField->getId());
       if(!$customField instanceof CustomFieldEntity) return $this->errorResponse();
       return $this->successResponse($this->customFieldsResponseBuilder->build($customField));
+    } catch (UniqueConstraintViolationException $e) {
+      return $this->conflict(__('A custom field with this name already exists.', 'mailpoet'));
     } catch (\Exception $e) {
       return $this->errorResponse($errors = [], $meta = [], $status = Response::STATUS_BAD_REQUEST);
     }
@@ -73,8 +106,18 @@ class CustomFields extends APIEndpoint {
     if ($customField instanceof CustomFieldEntity) {
       return $this->successResponse($this->customFieldsResponseBuilder->build($customField));
     }
+    return $this->notFound();
+  }
+
+  private function notFound(): Response {
     return $this->errorResponse([
       APIError::NOT_FOUND => __('This custom field does not exist.', 'mailpoet'),
     ]);
+  }
+
+  private function conflict(string $message): Response {
+    return $this->errorResponse([
+      APIError::CONFLICT => $message,
+    ], [], Response::STATUS_CONFLICT);
   }
 }

@@ -4,8 +4,12 @@ namespace MailPoet\Test\API\JSON\v1;
 
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\CustomFields;
+use MailPoet\Config\AccessControl;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Entities\SubscriberCustomFieldEntity;
+use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class CustomFieldsTest extends \MailPoetTest {
 
@@ -69,6 +73,11 @@ class CustomFieldsTest extends \MailPoetTest {
     $this->endpoint = $this->diContainer->get(CustomFields::class);
   }
 
+  public function testItRequiresManageSubscribersPermissionToDelete() {
+    verify($this->endpoint->permissions['global'])->equals(AccessControl::PERMISSION_MANAGE_FORMS);
+    verify($this->endpoint->permissions['methods']['delete'])->equals(AccessControl::PERMISSION_MANAGE_SUBSCRIBERS);
+  }
+
   public function testItCanGetAllCustomFields() {
     $response = $this->endpoint->getAll();
     verify($response->status)->equals(APIResponse::STATUS_OK);
@@ -94,6 +103,77 @@ class CustomFieldsTest extends \MailPoetTest {
 
     $response = $this->endpoint->delete(['id' => $customFieldId]);
     verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+  }
+
+  public function testItDeletesSubscriberValuesWithTheCustomField() {
+    $subscriber = (new SubscriberFactory())->withEmail('subscriber@example.com')->create();
+    $customField = (new CustomFieldFactory())
+      ->withName('Field with values')
+      ->withSubscriber($subscriber->getId(), 'value')
+      ->create();
+
+    $response = $this->endpoint->delete(['id' => $customField->getId()]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['name'])->equals('Field with values');
+
+    $values = $this->entityManager->getRepository(SubscriberCustomFieldEntity::class)->findBy(['customField' => $customField->getId()]);
+    verify($values)->empty();
+    verify($this->repository->findOneById($customField->getId()))->null();
+  }
+
+  public function testItDoesNotSaveATrashedCustomField() {
+    $customField = $this->repository->findOneBy(['name' => 'CF: text']);
+    $this->assertInstanceOf(CustomFieldEntity::class, $customField);
+    $this->repository->bulkTrash([(int)$customField->getId()]);
+
+    $response = $this->endpoint->save([
+      'id' => $customField->getId(),
+      'name' => 'CF: text',
+      'type' => 'text',
+      'params' => ['label' => 'Changed'],
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+  }
+
+  public function testItDoesNotCreateACustomFieldWithAnExistingName() {
+    $response = $this->endpoint->save([
+      'name' => 'CF: text',
+      'type' => 'date',
+      'params' => [],
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_CONFLICT);
+
+    $this->entityManager->clear();
+    $customField = $this->repository->findOneBy(['name' => 'CF: text']);
+    $this->assertInstanceOf(CustomFieldEntity::class, $customField);
+    verify($customField->getType())->equals('text');
+  }
+
+  public function testItDoesNotChangeTheTypeOfAFieldWithSubscriberValues() {
+    $subscriber = (new SubscriberFactory())->withEmail('subscriber@example.com')->create();
+    $customField = (new CustomFieldFactory())
+      ->withName('Field with values')
+      ->withType('text')
+      ->withSubscriber($subscriber->getId(), 'value')
+      ->create();
+
+    $response = $this->endpoint->save([
+      'id' => $customField->getId(),
+      'name' => 'Field with values',
+      'type' => 'date',
+      'params' => [],
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_CONFLICT);
+
+    $response = $this->endpoint->save([
+      'id' => $customField->getId(),
+      'name' => 'Field with values',
+      'type' => 'TEXT',
+      'params' => ['label' => 'Updated label'],
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['type'])->equals('text');
+    verify($response->data['params']['label'])->equals('Updated label');
   }
 
   public function testItCanSaveACustomField() {
@@ -137,6 +217,21 @@ class CustomFieldsTest extends \MailPoetTest {
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->data['params']['values'][0]['value'])
       ->equals('"&gt;&lt;img src=e onerror=alert(1) <strong>hello</strong><a href="https://example.com">link</a>');
+  }
+
+  public function testItStoresTheTypeInLowercaseAndFormatsCheckboxValues() {
+    $response = $this->endpoint->save([
+      'name' => 'Uppercase checkbox',
+      'type' => 'CHECKBOX',
+      'params' => [
+        'values' => [
+          ['value' => '"><strong>hello</strong>'],
+        ],
+      ],
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['type'])->equals('checkbox');
+    verify($response->data['params']['values'][0]['value'])->equals('"&gt;<strong>hello</strong>');
   }
 
   public function testItCanGetACustomField() {
