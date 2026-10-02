@@ -26,12 +26,13 @@ class SubscriberLinkTokens extends SimpleWorker {
     $count = $subscribersRepository->countBy(['linkToken' => null]);
 
     if ($count) {
-      $authKey = defined('AUTH_KEY') ? AUTH_KEY : '';
+      // Hashing a one-off random secret with the row id gives every subscriber a random 32-character token in one query
+      $secret = bin2hex(random_bytes(32));
 
       $connection->executeStatement(
-        "UPDATE {$subscribersTable} SET link_token = SUBSTRING(MD5(CONCAT(:authKey, email)), 1, :tokenLength) WHERE link_token IS NULL LIMIT :limit",
-        ['authKey' => $authKey, 'tokenLength' => SubscriberEntity::OBSOLETE_LINK_TOKEN_LENGTH, 'limit' => self::BATCH_SIZE],
-        ['authKey' => ParameterType::STRING, 'tokenLength' => ParameterType::INTEGER, 'limit' => ParameterType::INTEGER]
+        "UPDATE {$subscribersTable} SET link_token = MD5(CONCAT(:secret, id)) WHERE link_token IS NULL LIMIT :limit",
+        ['secret' => $secret, 'limit' => self::BATCH_SIZE],
+        ['secret' => ParameterType::STRING, 'limit' => ParameterType::INTEGER]
       );
 
       $this->schedule();
