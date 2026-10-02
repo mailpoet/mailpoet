@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Captcha;
 
+use Codeception\Stub\Expected;
 use MailPoet\Captcha\CaptchaFormRenderer;
 use MailPoet\Captcha\PageRenderer;
 use MailPoet\Form\AssetsController;
@@ -26,10 +27,17 @@ class PageRendererTest extends \MailPoetTest {
     verify($pageRenderer->setPageContent('before [mailpoet_page] after'))->equals('before <form>captcha</form> after');
   }
 
-  private function getPageRenderer($formContent): PageRenderer {
+  public function testItDoesNotRenderFormForContentWithoutShortcode(): void {
+    $formRenderer = $this->makeEmpty(CaptchaFormRenderer::class, ['render' => Expected::never('<form>captcha</form>')]);
+    $pageRenderer = $this->getPageRenderer('<form>captcha</form>', $formRenderer);
+
+    verify($pageRenderer->setPageContent('Unrelated post body'))->equals('Unrelated post body');
+  }
+
+  private function getPageRenderer($formContent, $formRenderer = null): PageRenderer {
     $pageRenderer = new PageRenderer(
       $this->diContainer->get(WPFunctions::class),
-      $this->makeEmpty(CaptchaFormRenderer::class, ['render' => $formContent]),
+      $formRenderer ?: $this->makeEmpty(CaptchaFormRenderer::class, ['render' => $formContent]),
       $this->diContainer->get(AssetsController::class)
     );
     $pageRenderer->render(['captcha_session_id' => 'abc']);
