@@ -4,6 +4,9 @@ namespace MailPoet\Test\Settings;
 
 use Codeception\Stub;
 use MailPoet\Config\Populator;
+use MailPoet\Entities\LogEntity;
+use MailPoet\Logging\LoggerFactory;
+use MailPoet\Logging\LogRepository;
 use MailPoet\Settings\MailPoetPageResolver;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
@@ -469,25 +472,46 @@ class MailPoetPageResolverTest extends \MailPoetTest {
       'currentUserCan' => true,
       'wpDoingAjax' => true,
     ]);
-    $resolver = new MailPoetPageResolver($wp, $this->settings);
+    $resolver = new MailPoetPageResolver($wp, $this->settings, $this->diContainer->get(LoggerFactory::class));
 
     $resolver->maybeRepairPages();
 
     $this->assertSame(999999, (int)$this->settings->fetch('subscription.pages.manage'));
 
     $notAjax = Stub::make(new WPFunctions(), ['currentUserCan' => true, 'wpDoingAjax' => false]);
-    (new MailPoetPageResolver($notAjax, $this->settings))->maybeRepairPages();
+    (new MailPoetPageResolver($notAjax, $this->settings, $this->diContainer->get(LoggerFactory::class)))->maybeRepairPages();
     $this->assertNotSame(999999, (int)$this->settings->fetch('subscription.pages.manage'));
   }
 
-  public function testMaybeRepairPagesDoesNotThrow() {
+  public function testMaybeRepairPagesLogsFailureToMailPoetLog() {
+    $resolver = $this->makeFailingResolver($this->diContainer->get(LoggerFactory::class));
+
+    $resolver->maybeRepairPages();
+
+    $log = $this->diContainer->get(LogRepository::class)->findOneBy(['name' => LoggerFactory::TOPIC_PAGES, 'level' => 400]);
+    $this->assertInstanceOf(LogEntity::class, $log);
+    $this->assertStringContainsString('boom', (string)$log->getMessage());
+    $this->assertSame(__FILE__, $log->getContext()['file'] ?? null);
+  }
+
+  public function testMaybeRepairPagesDoesNotThrowWhenLoggingFails() {
+    $loggerFactory = Stub::make(LoggerFactory::class, [
+      'getLogger' => function () {
+        throw new \RuntimeException('logger down');
+      },
+    ]);
+
+    $this->expectNotToPerformAssertions();
+    $this->makeFailingResolver($loggerFactory)->maybeRepairPages();
+  }
+
+  private function makeFailingResolver(LoggerFactory $loggerFactory): MailPoetPageResolver {
     $resolver = $this->getMockBuilder(MailPoetPageResolver::class)
-      ->setConstructorArgs([Stub::make(new WPFunctions(), ['currentUserCan' => true, 'wpDoingAjax' => false]), $this->settings])
+      ->setConstructorArgs([Stub::make(new WPFunctions(), ['currentUserCan' => true, 'wpDoingAjax' => false]), $this->settings, $loggerFactory])
       ->onlyMethods(['repairPages'])
       ->getMock();
     $resolver->expects($this->once())->method('repairPages')->willThrowException(new \RuntimeException('boom'));
-
-    $resolver->maybeRepairPages();
+    return $resolver;
   }
 
   private function createUser(string $role): int {

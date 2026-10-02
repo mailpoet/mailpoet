@@ -2,6 +2,7 @@
 
 namespace MailPoet\Settings;
 
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -28,15 +29,19 @@ class MailPoetPageResolver {
 
   private SettingsController $settings;
 
+  private LoggerFactory $loggerFactory;
+
   /** @var array<string, \WP_Post|null> */
   private array $pages = [];
 
   public function __construct(
     WPFunctions $wp,
-    SettingsController $settings
+    SettingsController $settings,
+    LoggerFactory $loggerFactory
   ) {
     $this->wp = $wp;
     $this->settings = $settings;
+    $this->loggerFactory = $loggerFactory;
   }
 
   /**
@@ -89,11 +94,14 @@ class MailPoetPageResolver {
     try {
       $this->repairPages();
     } catch (\Throwable $e) {
-      // Repairing pages must never break loading of the admin.
-      if (function_exists('error_log')) {
-        // phpcs:disable QITStandard.PHP.DebugCode.DebugFunctionFound
-        error_log('[MailPoet] Repairing MailPoet pages failed: ' . (string)$e); // phpcs:ignore Squiz.PHP.DiscouragedFunctions
-        // phpcs:enable QITStandard.PHP.DebugCode.DebugFunctionFound
+      // Repairing pages must never break loading of the admin, not even when logging fails.
+      try {
+        $this->loggerFactory->getLogger(LoggerFactory::TOPIC_PAGES)->error(
+          'Repairing MailPoet pages failed: ' . $e->getMessage(),
+          ['exception' => get_class($e), 'file' => $e->getFile(), 'line' => $e->getLine()]
+        );
+      } catch (\Throwable $loggingError) {
+        return;
       }
     }
   }
