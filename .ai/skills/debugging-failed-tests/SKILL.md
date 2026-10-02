@@ -80,7 +80,7 @@ A green run on its own does not prove your change is what fixed it. This matters
 Stop and report findings — root cause, why no fix was applied, options considered, confidence, unknowns — when:
 
 - The bug is in `vendor/`, `vendor-prefixed/`, `lib-3rd-party/`, `generated/`, or WordPress / WooCommerce core.
-- The fix needs a DB migration, schema change, public API change (`lib/API/MP/`), or modifications to `.wp-env.json`, `tests_env/`, or CI config. These are "ask first" territory per project guidelines.
+- The fix needs a DB migration, schema change, public API change (`lib/API/MP/`), or modifications to `.wp-env.json`, `tests_env/`, or CI config. These change shared schema, environments, or contracts, so the team should decide.
 - The fix requires a judgment call that should be a human/team decision (which deprecated API to migrate to, which behaviour to preserve, etc.).
 - You can't reproduce locally after reasonable effort AND the CircleCI artifacts don't clarify enough — you'd be guessing.
 - The failure-data sources contradict each other (e.g. the `failed` artifact lists a test but the tests endpoint and JUnit report it as passing, or there's no `.fail.png` / `.fail.html` for an assertion). The signal is broken — stop and report rather than chase a guess.
