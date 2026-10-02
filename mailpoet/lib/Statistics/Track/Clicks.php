@@ -26,6 +26,15 @@ class Clicks {
   /** The link whose whole purpose is to switch tracking off. Its own click is never recorded. */
   const TRACKING_OPT_OUT_SHORTCODE = '[link:subscription_tracking_opt_out_url]';
 
+  /**
+   * Matches the start of a link whose destination is already fixed:
+   * - "https://example.com/", "//example.com#", "whatsapp://send?": an optional URI scheme (RFC 3986),
+   *   "//", a host, and the "/", "?" or "#" that ends it;
+   * - "mailto:info@", "tel:+1": a scheme other than http(s) followed by anything but "/", so the
+   *   link has no host part.
+   */
+  private const FIXED_DESTINATION_PATTERN = '~^(?:(?:[a-z][a-z0-9+.-]*:)?//[^/?#\\\\]+[/?#]|(?!https?:)[a-z][a-z0-9+.-]*:[^/])~i';
+
   const REVENUE_TRACKING_COOKIE_NAME = 'mailpoet_revenue_tracking';
   const REVENUE_TRACKING_COOKIE_EXPIRY = 60 * 60 * 24 * 14;
 
@@ -185,13 +194,14 @@ class Clicks {
   ) {
     if ($this->linkResolver->isTokenUrl($url)) {
       // A link stored as a personalization tag token; its destination only exists per recipient,
-      // so it gets the GA params ordinary links have baked in at send time only now.
+      // so it gets the GA params ordinary links have baked in at send time only now. The tag sets
+      // the whole URL, so it may only lead to the site's own host or allowed redirect hosts.
       $resolvedUrl = $this->linkResolver->resolve($url, $newsletter, $subscriber, $queue, $wpUserPreview);
       if ($resolvedUrl === null) {
         $this->abort();
         return $url;
       }
-      return $this->appendRequestMethod($this->gaTracking->addParamsToUrl($resolvedUrl, $newsletter));
+      return $this->appendRequestMethod($this->validateRedirect($this->gaTracking->addParamsToUrl($resolvedUrl, $newsletter)));
     }
     if (preg_match('/\[link:(?P<action>.*?)\]/', $url, $shortcode)) {
       if (empty($shortcode['action'])) $this->abort();
@@ -212,9 +222,27 @@ class Clicks {
       $this->shortcodes->setNewsletter($newsletter);
       $this->shortcodes->setSubscriber($subscriber);
       $this->shortcodes->setWpUserPreview($wpUserPreview);
-      $url = $this->shortcodes->replace($url);
+      $processedUrl = $this->shortcodes->replace($url);
+      if ($processedUrl !== $url && !$this->isDestinationFixedBeforeShortcodes($url)) {
+        return $this->validateRedirect($processedUrl);
+      }
+      $url = $processedUrl;
     }
     return $url;
+  }
+
+  private function validateRedirect(string $url): string {
+    $wp = WPFunctions::get();
+    return $wp->wpValidateRedirect($url, $wp->homeUrl());
+  }
+
+  /**
+   * Shortcode values (e.g. subscriber fields) may fill in the path or query of a link, but the
+   * destination host may only come from them when it is the site's own.
+   */
+  private function isDestinationFixedBeforeShortcodes(string $url): bool {
+    $textBeforeShortcodes = (string)strstr($url, '[', true);
+    return preg_match(self::FIXED_DESTINATION_PATTERN, $textBeforeShortcodes) === 1;
   }
 
   /**
