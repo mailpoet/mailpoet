@@ -26,6 +26,8 @@ class MailPoetPageResolverTest extends \MailPoetTest {
   /** @var int[] */
   private array $userIds = [];
 
+  private bool $hooksWereRegistered = false;
+
   public function _before() {
     parent::_before();
     require_once ABSPATH . 'wp-admin/includes/user.php';
@@ -40,9 +42,12 @@ class MailPoetPageResolverTest extends \MailPoetTest {
     $this->settings->resetCache();
     $this->resolver->resetCache();
     delete_option(self::LOCK);
+    $this->hooksWereRegistered = (bool)has_action('trashed_post', [$this->resolver, 'handlePageChange']);
+    $this->removePageChangeHooks();
   }
 
   public function _after() {
+    $this->removePageChangeHooks();
     delete_option(self::LOCK);
     wp_set_current_user(0);
     foreach ($this->userIds as $userId) {
@@ -65,6 +70,9 @@ class MailPoetPageResolverTest extends \MailPoetTest {
     }
     $this->resolver->resetCache();
     $this->settings->resetCache();
+    if ($this->hooksWereRegistered) {
+      $this->resolver->registerPageChangeHooks();
+    }
     parent::_after();
   }
 
@@ -444,6 +452,114 @@ class MailPoetPageResolverTest extends \MailPoetTest {
     }
   }
 
+  public function testTrashingDefaultSubscriptionsPageRepairsItInSameRequest() {
+    $this->enablePageChangeHooks();
+    $defaultId = (int)Pages::getMailPoetPage(Pages::PAGE_SUBSCRIPTIONS)->ID;
+    $this->settings->set('subscription.pages.manage', $defaultId);
+    wp_set_current_user(0);
+
+    wp_trash_post($defaultId);
+
+    $this->assertSame('publish', get_post_status($defaultId));
+    $this->assertSame($defaultId, (int)$this->settings->fetch('subscription.pages.manage'));
+    $this->assertCount(1, $this->pagesBySlug(Pages::PAGE_SUBSCRIPTIONS));
+    $this->assertFalse(get_option(self::LOCK));
+  }
+
+  public function testDeletingConfiguredCaptchaPageRepairsSettingInSameRequest() {
+    $this->enablePageChangeHooks();
+    $id = $this->createPage('resolver-captcha');
+    $this->settings->set('subscription.pages.captcha', $id);
+    $captchaId = (int)Pages::getMailPoetPage(Pages::PAGE_CAPTCHA)->ID;
+
+    wp_delete_post($id, true);
+
+    $this->assertSame($captchaId, (int)$this->settings->fetch('subscription.pages.captcha'));
+  }
+
+  public function testDeletingOnlyDefaultPageCreatesNewOne() {
+    $this->enablePageChangeHooks();
+    $this->deletePagesBySlug(Pages::PAGE_CAPTCHA);
+    $this->settings->set('subscription.pages.captcha', 999999);
+    $oldId = (int)Pages::getMailPoetPage(Pages::PAGE_SUBSCRIPTIONS)->ID;
+    $this->settings->set('subscription.pages.manage', $oldId);
+
+    wp_delete_post($oldId, true);
+
+    $newId = (int)$this->settings->fetch('subscription.pages.manage');
+    $this->assertNotSame($oldId, $newId);
+    $this->assertSame('publish', get_post_status($newId));
+  }
+
+  public function testUnpublishingDefaultMailPoetPageRepublishesIt() {
+    $this->enablePageChangeHooks();
+    $defaultId = (int)Pages::getMailPoetPage(Pages::PAGE_SUBSCRIPTIONS)->ID;
+
+    wp_update_post(['ID' => $defaultId, 'post_status' => 'draft']);
+
+    $this->assertSame('publish', get_post_status($defaultId));
+    $this->assertCount(1, $this->pagesBySlug(Pages::PAGE_SUBSCRIPTIONS));
+  }
+
+  public function testTrashingUnpublishedConfiguredMailPoetPageRepairsSetting() {
+    $id = $this->createPage('resolver-draft-captcha', 'draft');
+    $this->settings->set('subscription.pages.captcha', $id);
+    $captchaId = (int)Pages::getMailPoetPage(Pages::PAGE_CAPTCHA)->ID;
+    $this->enablePageChangeHooks();
+
+    wp_trash_post($id);
+
+    $this->assertSame($captchaId, (int)$this->settings->fetch('subscription.pages.captcha'));
+  }
+
+  public function testUnrelatedPostChangesDoNotTriggerRepair() {
+    $this->enablePageChangeHooks();
+    $this->staleAllKeys();
+    $before = count($this->allPages());
+    $trashed = (int)wp_insert_post(['post_type' => 'post', 'post_status' => 'publish', 'post_title' => 'Unrelated']);
+    $deleted = (int)wp_insert_post(['post_type' => 'post', 'post_status' => 'publish', 'post_title' => 'Unrelated 2']);
+    $drafted = (int)wp_insert_post(['post_type' => 'post', 'post_status' => 'publish', 'post_title' => 'Unrelated 3']);
+
+    wp_trash_post($trashed);
+    wp_delete_post($deleted, true);
+    wp_update_post(['ID' => $drafted, 'post_status' => 'draft']);
+
+    $this->assertSame(999999, (int)$this->settings->fetch('subscription.pages.manage'));
+    $this->assertCount($before, $this->allPages());
+    $this->assertFalse(get_option(self::LOCK));
+    wp_delete_post($trashed, true);
+    wp_delete_post($drafted, true);
+  }
+
+  public function testDraftingRegularChosenPageLeavesSettingUntouched() {
+    $this->enablePageChangeHooks();
+    $id = $this->createPage('resolver-regular', 'publish', 'page');
+    $this->settings->set('subscription.pages.confirmation', $id);
+    $before = count($this->allPages());
+
+    wp_update_post(['ID' => $id, 'post_status' => 'draft']);
+
+    $this->assertSame($id, (int)$this->settings->fetch('subscription.pages.confirmation'));
+    $this->assertSame('draft', get_post_status($id));
+    $this->assertCount($before, $this->allPages());
+    wp_delete_post($id, true);
+  }
+
+  public function testPageChangeRepairDoesNotRecurseOrDuplicatePages() {
+    $this->enablePageChangeHooks();
+    $this->deleteAllPages();
+    $this->staleAllKeys();
+    $id = $this->createPage('resolver-configured');
+    $this->settings->set('subscription.pages.manage', $id);
+
+    wp_trash_post($id);
+    wp_trash_post($id);
+
+    $this->assertCount(1, $this->pagesBySlug(Pages::PAGE_SUBSCRIPTIONS));
+    $this->assertCount(1, $this->pagesBySlug(Pages::PAGE_CAPTCHA));
+    $this->assertFalse(get_option(self::LOCK));
+  }
+
   public function testMaybeRepairPagesSkipsUsersWithoutCapability() {
     $this->staleAllKeys();
     wp_set_current_user($this->createUser('subscriber'));
@@ -512,6 +628,16 @@ class MailPoetPageResolverTest extends \MailPoetTest {
       ->getMock();
     $resolver->expects($this->once())->method('repairPages')->willThrowException(new \RuntimeException('boom'));
     return $resolver;
+  }
+
+  private function enablePageChangeHooks(): void {
+    $this->resolver->registerPageChangeHooks();
+  }
+
+  private function removePageChangeHooks(): void {
+    remove_action('trashed_post', [$this->resolver, 'handlePageChange']);
+    remove_action('after_delete_post', [$this->resolver, 'handlePageChange']);
+    remove_action('transition_post_status', [$this->resolver, 'handleStatusTransition']);
   }
 
   private function createUser(string $role): int {

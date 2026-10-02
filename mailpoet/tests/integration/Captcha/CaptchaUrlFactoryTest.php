@@ -13,6 +13,7 @@ use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
 
 class CaptchaUrlFactoryTest extends \MailPoetTest {
+  private bool $hooksWereRegistered = false;
 
   private CaptchaUrlFactory $urlFactory;
   private MailPoetPageResolver $resolver;
@@ -25,6 +26,8 @@ class CaptchaUrlFactoryTest extends \MailPoetTest {
     parent::_before();
     $this->settings = $this->diContainer->get(SettingsController::class);
     $this->resolver = $this->diContainer->get(MailPoetPageResolver::class);
+    $this->hooksWereRegistered = (bool)has_action('trashed_post', [$this->resolver, 'handlePageChange']);
+    $this->removePageChangeHooks();
     foreach ($this->allPages() as $page) {
       $this->snapshot[(int)$page->ID] = ['status' => $page->post_status, 'name' => $page->post_name]; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
@@ -35,6 +38,12 @@ class CaptchaUrlFactoryTest extends \MailPoetTest {
     $this->settings->resetCache();
     $this->resolver->resetCache();
     $this->urlFactory = $this->diContainer->get(CaptchaUrlFactory::class);
+  }
+
+  private function removePageChangeHooks(): void {
+    remove_action('trashed_post', [$this->resolver, 'handlePageChange']);
+    remove_action('after_delete_post', [$this->resolver, 'handlePageChange']);
+    remove_action('transition_post_status', [$this->resolver, 'handleStatusTransition']);
   }
 
   public function _after() {
@@ -54,6 +63,9 @@ class CaptchaUrlFactoryTest extends \MailPoetTest {
     $this->snapshot = [];
     $this->settings->resetCache();
     $this->resolver->resetCache();
+    if ($this->hooksWereRegistered) {
+      $this->resolver->registerPageChangeHooks();
+    }
     parent::_after();
   }
 

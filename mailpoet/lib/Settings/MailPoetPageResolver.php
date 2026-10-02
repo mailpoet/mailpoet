@@ -87,10 +87,55 @@ class MailPoetPageResolver {
     $this->pages = [];
   }
 
+  public function registerPageChangeHooks(): void {
+    $this->wp->addAction('trashed_post', [$this, 'handlePageChange']);
+    $this->wp->addAction('after_delete_post', [$this, 'handlePageChange'], 10, 2);
+    $this->wp->addAction('transition_post_status', [$this, 'handleStatusTransition'], 10, 3);
+  }
+
   public function maybeRepairPages(): void {
     if (!$this->wp->currentUserCan('manage_options') || $this->wp->wpDoingAjax()) {
       return;
     }
+    $this->safelyRepairPages();
+  }
+
+  /**
+   * @param int|string $postId
+   * @param \WP_Post|null $post
+   */
+  public function handlePageChange($postId, $post = null): void {
+    $postId = (int)$postId;
+    if (!$this->isRelevantPost($postId, $post)) {
+      return;
+    }
+    $this->safelyRepairPages();
+  }
+
+  /**
+   * @param mixed $post
+   */
+  public function handleStatusTransition(string $newStatus, string $oldStatus, $post): void {
+    if ($newStatus === 'publish' || !$post instanceof \WP_Post) {
+      return;
+    }
+    $this->handlePageChange((int)$post->ID, $post);
+  }
+
+  private function isRelevantPost(int $postId, ?\WP_Post $post): bool {
+    if ($postId <= 0) {
+      return false;
+    }
+    foreach (array_keys(self::REPAIRABLE_KEYS) as $key) {
+      if ((int)$this->settings->get($key) === $postId) {
+        return true;
+      }
+    }
+    $post = $post ?? $this->wp->getPost($postId);
+    return $post instanceof \WP_Post && $post->post_type === 'mailpoet_page'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  }
+
+  private function safelyRepairPages(): void {
     try {
       $this->repairPages();
     } catch (\Throwable $e) {

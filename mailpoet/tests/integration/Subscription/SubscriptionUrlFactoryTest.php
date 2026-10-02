@@ -11,6 +11,8 @@ use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class SubscriptionUrlFactoryTest extends \MailPoetTest {
+  private bool $hooksWereRegistered = false;
+
   /** @var SubscriberEntity */
   private $subscriber;
 
@@ -30,6 +32,8 @@ class SubscriptionUrlFactoryTest extends \MailPoetTest {
     parent::_before();
     $this->settings = $this->diContainer->get(SettingsController::class);
     $this->resolver = $this->diContainer->get(MailPoetPageResolver::class);
+    $this->hooksWereRegistered = (bool)has_action('trashed_post', [$this->resolver, 'handlePageChange']);
+    $this->removePageChangeHooks();
     foreach ($this->allPages() as $page) {
       $this->snapshot[(int)$page->ID] = ['status' => $page->post_status, 'name' => $page->post_name]; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
@@ -63,6 +67,12 @@ class SubscriptionUrlFactoryTest extends \MailPoetTest {
     $this->assertStringContainsString($expectedUrl, $this->subscriptionUrlFactory->getReEngagementUrl($this->subscriber));
   }
 
+  private function removePageChangeHooks(): void {
+    remove_action('trashed_post', [$this->resolver, 'handlePageChange']);
+    remove_action('after_delete_post', [$this->resolver, 'handlePageChange']);
+    remove_action('transition_post_status', [$this->resolver, 'handleStatusTransition']);
+  }
+
   public function _after() {
     foreach ($this->allPages() as $page) {
       if (!isset($this->snapshot[(int)$page->ID])) {
@@ -79,6 +89,9 @@ class SubscriptionUrlFactoryTest extends \MailPoetTest {
     $this->snapshot = [];
     $this->settings->resetCache();
     $this->resolver->resetCache();
+    if ($this->hooksWereRegistered) {
+      $this->resolver->registerPageChangeHooks();
+    }
     parent::_after();
   }
 
