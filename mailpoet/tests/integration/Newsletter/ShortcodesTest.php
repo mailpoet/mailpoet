@@ -11,6 +11,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\Settings\MailPoetPageResolver;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\LinkTokens;
@@ -66,7 +67,7 @@ class ShortcodesTest extends \MailPoetTest {
     $this->shortcodesObject->setSubscriber($this->subscriber);
     $this->shortcodesObject->setWpUserPreview(false);
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
-    $this->subscriptionUrlFactory = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, $this->linkTokens);
+    $this->subscriptionUrlFactory = new SubscriptionUrlFactory(WPFunctions::get(), $this->linkTokens, $this->diContainer->get(MailPoetPageResolver::class));
     $this->entityManager->flush();
 
     $blogname = get_option('blogname');

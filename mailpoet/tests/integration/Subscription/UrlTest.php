@@ -5,6 +5,7 @@ namespace MailPoet\Test\Subscription;
 use MailPoet\Config\Populator;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Router\Router;
+use MailPoet\Settings\MailPoetPageResolver;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\SubscriptionUrlFactory;
@@ -24,7 +25,7 @@ class UrlTest extends \MailPoetTest {
     $populator = $this->diContainer->get(Populator::class);
     $linkTokens = $this->diContainer->get(LinkTokens::class);
     $populator->up();
-    $this->url = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, $linkTokens);
+    $this->url = new SubscriptionUrlFactory(WPFunctions::get(), $linkTokens, $this->diContainer->get(MailPoetPageResolver::class));
   }
 
   public function testItReturnsTheDefaultPageUrlIfNoPageIsSetInSettings() {
