@@ -94,10 +94,9 @@ class MailPoetPageResolver {
         return;
       }
 
-      $referencedIds = $this->getReferencedPageIds($staleKeys);
       $pageIds = [];
       foreach (array_unique(array_values($staleKeys)) as $kind) {
-        $pageId = $this->obtainDefaultPage($kind, $referencedIds);
+        $pageId = $this->obtainDefaultPage($kind);
         if ($pageId) {
           $pageIds[$kind] = $pageId;
         }
@@ -132,7 +131,7 @@ class MailPoetPageResolver {
         continue;
       }
       $post = $this->wp->getPost($id);
-      if (!$post instanceof \WP_Post || $post->post_status === 'trash') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      if ($this->isStalePost($post)) {
         $stale[$key] = $kind;
       }
     }
@@ -140,18 +139,16 @@ class MailPoetPageResolver {
   }
 
   /**
-   * @param array<string, string> $staleKeys
-   * @return int[]
+   * @param \WP_Post|mixed $post
    */
-  private function getReferencedPageIds(array $staleKeys): array {
-    $ids = [];
-    foreach (array_keys(self::REPAIRABLE_KEYS) as $key) {
-      $id = (int)$this->settings->get($key);
-      if (!isset($staleKeys[$key]) && $id > 0) {
-        $ids[] = $id;
-      }
+  private function isStalePost($post): bool {
+    if (!$post instanceof \WP_Post) {
+      return true;
     }
-    return $ids;
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    return $post->post_status === 'trash'
+      || ($post->post_type === 'mailpoet_page' && $post->post_status !== 'publish');
+    // phpcs:enable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   private function fetchSettings(): void {
@@ -171,10 +168,7 @@ class MailPoetPageResolver {
     return true;
   }
 
-  /**
-   * @param int[] $referencedIds
-   */
-  private function obtainDefaultPage(string $postName, array $referencedIds): ?int {
+  private function obtainDefaultPage(string $postName): ?int {
     $published = Pages::getMailPoetPage($postName);
     if ($published instanceof \WP_Post) {
       return (int)$published->ID;
@@ -190,10 +184,7 @@ class MailPoetPageResolver {
     ]);
     foreach ($candidates as $candidate) {
       $id = (int)$candidate->ID;
-      if (
-        in_array($id, $referencedIds, true)
-        || strpos((string)$candidate->post_content, '[mailpoet_page]') === false // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      ) {
+      if (strpos((string)$candidate->post_content, '[mailpoet_page]') === false) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         continue;
       }
       if ((int)$this->wp->wpUpdatePost(['ID' => $id, 'post_status' => 'publish']) > 0) {
