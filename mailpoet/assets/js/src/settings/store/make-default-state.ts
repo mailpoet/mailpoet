@@ -89,7 +89,6 @@ export function makeDefaultState(): State {
     key: data.premium.premium_key || data.mta.mailpoet_api_key,
     inProgress: false,
     congratulatoryMssEmailSentTo: null,
-    downloadUrl: window.mailpoet_premium_plugin_download_url,
     activationUrl: window.mailpoet_premium_plugin_activation_url,
   };
   const testEmail = {

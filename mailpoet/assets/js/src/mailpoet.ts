@@ -96,7 +96,6 @@ export const MailPoet = {
   helpTooltip: MailPoetHelpTooltip,
   Iframe: MailPoetIframe,
   isPremiumPluginInstalled: window.mailpoet_premium_plugin_installed,
-  premiumPluginDownloadUrl: window.mailpoet_premium_plugin_download_url,
   premiumPluginActivationUrl: window.mailpoet_premium_plugin_activation_url,
   pluginPartialKey: window.mailpoet_plugin_partial_key,
   emailVolumeLimit: window.mailpoet_email_volume_limit,
