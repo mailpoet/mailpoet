@@ -119,6 +119,14 @@ class HooksWooCommerce {
     }
   }
 
+  public function synchronizeDeletedWpUser($wpUserId) {
+    try {
+      $this->woocommerceSegment->synchronizeDeletedWpUser((int)$wpUserId);
+    } catch (\Throwable $e) {
+      $this->logError($e, 'WooCommerce Sync');
+    }
+  }
+
   public function synchronizeGuestCustomer($orderId) {
     try {
       $this->woocommerceSegment->synchronizeGuestCustomer($orderId);
