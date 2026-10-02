@@ -67,6 +67,7 @@ class MetaInfoTest extends \MailPoetTest {
       'email_type' => 'transactional',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
+      'subscriber_source_plugin' => 'mailpoet',
     ]);
   }
 
@@ -81,6 +82,7 @@ class MetaInfoTest extends \MailPoetTest {
       'email_type' => 'confirmation',
       'subscriber_status' => 'unconfirmed',
       'subscriber_source' => 'form',
+      'subscriber_source_plugin' => 'mailpoet',
     ]);
   }
 
@@ -113,6 +115,7 @@ class MetaInfoTest extends \MailPoetTest {
       'email_type' => 'newsletter',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
+      'subscriber_source_plugin' => 'mailpoet',
     ]);
   }
 
@@ -124,6 +127,7 @@ class MetaInfoTest extends \MailPoetTest {
       'email_type' => 'welcome',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
+      'subscriber_source_plugin' => 'mailpoet',
     ]);
   }
 
@@ -139,11 +143,13 @@ class MetaInfoTest extends \MailPoetTest {
       'email_type' => 'post_notification',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
+      'subscriber_source_plugin' => 'mailpoet',
     ]);
     verify($this->meta->getNewsletterMetaInfo($newsletter2, $this->subscriber))->equals([
       'email_type' => 'post_notification',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
+      'subscriber_source_plugin' => 'mailpoet',
     ]);
   }
 
@@ -161,11 +167,13 @@ class MetaInfoTest extends \MailPoetTest {
       'email_type' => 'automatic_woocommerce_woocommerce_first_purchase',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
+      'subscriber_source_plugin' => 'mailpoet',
     ]);
     verify($this->meta->getNewsletterMetaInfo($newsletter2, $this->subscriber))->equals([
       'email_type' => 'automatic_woocommerce_woocommerce_product_purchased_in_category',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
+      'subscriber_source_plugin' => 'mailpoet',
     ]);
   }
 
@@ -180,11 +188,13 @@ class MetaInfoTest extends \MailPoetTest {
       'email_type' => 're_engagement',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
+      'subscriber_source_plugin' => 'mailpoet',
     ]);
     verify($this->meta->getNewsletterMetaInfo($newsletter2, $this->subscriber))->equals([
       'email_type' => 're_engagement',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
+      'subscriber_source_plugin' => 'mailpoet',
     ]);
   }
 
@@ -197,6 +207,58 @@ class MetaInfoTest extends \MailPoetTest {
       'email_type' => 'random',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
+      'subscriber_source_plugin' => 'mailpoet',
     ]);
+  }
+
+  public function testItAddsSourcePluginForApiSubscribers() {
+    $subscriber = (new SubscriberFactory())
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withSource('api')
+      ->withEmail('api@metainfo.com')
+      ->create();
+    verify($this->meta->getConfirmationMetaInfo($subscriber))->arrayHasNotKey('subscriber_source_plugin');
+
+    $subscriber->setSourcePlugin('some-form-plugin');
+    verify($this->meta->getConfirmationMetaInfo($subscriber))->equals([
+      'email_type' => 'confirmation',
+      'subscriber_status' => 'unconfirmed',
+      'subscriber_source' => 'api',
+      'subscriber_source_plugin' => 'some-form-plugin',
+    ]);
+  }
+
+  public function testItUsesMailPoetAsPluginForFormSource() {
+    verify($this->meta->getConfirmationMetaInfo($this->subscriber)['subscriber_source_plugin'])->equals('mailpoet');
+  }
+
+  public function testItUsesWooCommerceAsPluginForWooCommerceSources() {
+    foreach (['woocommerce_user', 'woocommerce_checkout'] as $source) {
+      $subscriber = (new SubscriberFactory())->withSource($source)->withEmail("$source@metainfo.com")->create();
+      verify($this->meta->getConfirmationMetaInfo($subscriber)['subscriber_source_plugin'])->equals('woocommerce');
+    }
+  }
+
+  public function testItIgnoresStoredPluginWhenSourceIsNotApi() {
+    $this->subscriber->setSourcePlugin('some-form-plugin');
+    verify($this->meta->getConfirmationMetaInfo($this->subscriber)['subscriber_source_plugin'])->equals('mailpoet');
+
+    $subscriber = (new SubscriberFactory())->withSource('imported')->withEmail('imported@metainfo.com')->create();
+    $subscriber->setSourcePlugin('some-form-plugin');
+    verify($this->meta->getConfirmationMetaInfo($subscriber))->arrayHasNotKey('subscriber_source_plugin');
+  }
+
+  public function testItAddsSourceUrlForAllSources() {
+    $this->subscriber->setSourceUrl('https://example.com/signup/');
+    verify($this->meta->getConfirmationMetaInfo($this->subscriber)['subscriber_source_url'])->equals('https://example.com/signup/');
+    verify($this->meta->getWordPressTransactionalMetaInfo($this->subscriber)['subscriber_source_url'])->equals('https://example.com/signup/');
+
+    $subscriber = (new SubscriberFactory())->withSource('imported')->withEmail('url@metainfo.com')->create();
+    $subscriber->setSourceUrl('https://example.com/import/');
+    verify($this->meta->getConfirmationMetaInfo($subscriber)['subscriber_source_url'])->equals('https://example.com/import/');
+  }
+
+  public function testItOmitsSourceUrlWhenMissing() {
+    verify($this->meta->getConfirmationMetaInfo($this->subscriber))->arrayHasNotKey('subscriber_source_url');
   }
 }

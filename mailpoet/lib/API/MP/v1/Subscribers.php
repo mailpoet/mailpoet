@@ -13,6 +13,7 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Unsubscribes;
+use MailPoet\Subscribers\ApiSourcePluginResolver;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\ConfirmationEmailResolver;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
@@ -84,6 +85,9 @@ class Subscribers {
   /** @var TrackingConsentCapture */
   private $trackingConsentCapture;
 
+  /** @var ApiSourcePluginResolver */
+  private $apiSourcePluginResolver;
+
   public function __construct (
     ConfirmationEmailMailer $confirmationEmailMailer,
     NewSubscriberNotificationMailer $newSubscriberNotificationMailer,
@@ -101,7 +105,8 @@ class Subscribers {
     TagRepository $tagRepository,
     SubscriberTagRepository $subscriberTagRepository,
     ConfirmationEmailResolver $confirmationEmailResolver,
-    TrackingConsentCapture $trackingConsentCapture
+    TrackingConsentCapture $trackingConsentCapture,
+    ApiSourcePluginResolver $apiSourcePluginResolver
   ) {
     $this->confirmationEmailMailer = $confirmationEmailMailer;
     $this->newSubscriberNotificationMailer = $newSubscriberNotificationMailer;
@@ -120,6 +125,7 @@ class Subscribers {
     $this->subscriberTagRepository = $subscriberTagRepository;
     $this->confirmationEmailResolver = $confirmationEmailResolver;
     $this->trackingConsentCapture = $trackingConsentCapture;
+    $this->apiSourcePluginResolver = $apiSourcePluginResolver;
   }
 
   public function getSubscriber($subscriberIdOrEmail): array {
@@ -160,6 +166,7 @@ class Subscribers {
       $defaultFields['subscribed_ip'] = Helpers::getIP();
     }
     $defaultFields['source'] = Source::API;
+    $defaultFields['source_plugin'] = $this->apiSourcePluginResolver->resolve();
 
     // Pre-resolve tag names before any persistence so invalid tags fail fast
     // and don't leave a half-created subscriber behind.
@@ -231,6 +238,7 @@ class Subscribers {
       $defaultFields['subscribed_ip'] = Helpers::getIP();
     }
     $defaultFields['source'] = Source::API;
+    $defaultFields['source_plugin'] = $this->apiSourcePluginResolver->resolve();
 
     // Pre-resolve tag names before any persistence so invalid tags fail fast
     // and don't leave the subscriber partially updated.

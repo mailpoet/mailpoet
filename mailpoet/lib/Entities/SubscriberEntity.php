@@ -229,6 +229,18 @@ class SubscriberEntity {
   private $source = 'unknown';
 
   /**
+   * @ORM\Column(type="string", nullable=true)
+   * @var string|null
+   */
+  private $sourcePlugin;
+
+  /**
+   * @ORM\Column(type="text", nullable=true)
+   * @var string|null
+   */
+  private $sourceUrl;
+
+  /**
    * @ORM\Column(type="integer")
    * @var int
    */
@@ -654,6 +666,25 @@ class SubscriberEntity {
       throw new \InvalidArgumentException("Invalid source '{$source}' given to subscriber!");
     }
     $this->source = $source;
+    if ($source !== 'api') {
+      $this->sourcePlugin = null;
+    }
+  }
+
+  public function getSourcePlugin(): ?string {
+    return $this->sourcePlugin;
+  }
+
+  public function setSourcePlugin(?string $sourcePlugin): void {
+    $this->sourcePlugin = $sourcePlugin ?: null;
+  }
+
+  public function getSourceUrl(): ?string {
+    return $this->sourceUrl;
+  }
+
+  public function setSourceUrl(?string $sourceUrl): void {
+    $this->sourceUrl = $sourceUrl ?: null;
   }
 
   /**
