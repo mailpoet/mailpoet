@@ -286,7 +286,7 @@ class MailPoetPageResolver {
     ]);
     foreach ($candidates as $candidate) {
       $id = (int)$candidate->ID;
-      if (strpos((string)$candidate->post_content, '[mailpoet_page]') === false) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      if (trim((string)$candidate->post_content) !== '[mailpoet_page]') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         continue;
       }
       if ((int)$this->wp->wpUpdatePost(['ID' => $id, 'post_status' => 'publish']) > 0) {
