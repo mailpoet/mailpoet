@@ -388,6 +388,10 @@ class Pages {
   }
 
   public function setPageContent($pageContent = '[mailpoet_page]') {
+    if (strpos($pageContent, '[mailpoet_page]') === false && !$this->isMainQueriedPost()) {
+      return $pageContent;
+    }
+
     if ($this->isPreview() === false && $this->subscriber === null) {
       return __("Your email address doesn't appear in our lists anymore. Sign up again or contact us if this appears to be a mistake.", 'mailpoet');
     }
@@ -421,6 +425,13 @@ class Pages {
     } else {
       return $pageContent;
     }
+  }
+
+  private function isMainQueriedPost(): bool {
+    return $this->wp->isSingular()
+      && $this->wp->inTheLoop()
+      && $this->wp->isMainQuery()
+      && (int)$this->wp->getTheId() === (int)$this->wp->getQueriedObjectId();
   }
 
   public function setWindowTitle($title, $separator = '', $separatorLocation = 'right') {

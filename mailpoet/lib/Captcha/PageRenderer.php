@@ -83,7 +83,7 @@ class PageRenderer {
     } else {
       $content = $this->formRenderer->render($this->data);
       if (!$content) {
-        return false;
+        return str_replace('[mailpoet_page]', '', $pageContent);
       }
     }
 
