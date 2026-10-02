@@ -1,489 +1,75 @@
 # MailPoet - Agent Guidelines
 
-## Project Overview
-
-MailPoet is a WordPress email marketing plugin that lets users create, send, and manage newsletters and automated emails from the WordPress dashboard. It integrates deeply with WordPress and WooCommerce.
-
-This repository (`mailpoet/mailpoet`) holds the free plugin in `mailpoet/`, plus the shared JS
-packages, build tooling, and dev environment used by both plugins.
-
-The premium plugin lives in a **separate repository**. During setup
-it is cloned into `mailpoet-premium/` here, so both plugins share one working copy and one dev
-environment — but they remain two repositories with independent branches, commits, and PRs.
-`mailpoet-premium/` is gitignored by this repo, so premium changes never appear in its
-`git status`.
-
-**Tech Stack:** PHP 7.4+, WordPress, Doctrine ORM, React 18, TypeScript, SCSS, Webpack, `@wordpress/env` (dev), Docker + Codeception (tests), Mailpit (SMTP catcher), pnpm, Action Scheduler
-
-## Directory Structure
-
-```text
-/ (repo root)
-├── mailpoet/                    # Free plugin (primary development area)
-│   ├── lib/                     # PHP backend (PSR-4, namespace: MailPoet\)
-│   ├── lib-3rd-party/           # Vendored third-party libraries (DO NOT EDIT)
-│   ├── assets/js/src/           # React/TypeScript frontend
-│   ├── assets/css/src/          # SCSS stylesheets
-│   ├── tests/                   # Unit, integration, acceptance tests
-│   ├── views/                   # Twig templates
-│   ├── generated/               # Auto-generated files (DO NOT EDIT)
-│   ├── vendor-prefixed/         # Prefixed third-party deps (DO NOT EDIT)
-│   ├── RoboFile.php             # Plugin-level task runner
-│   └── do                       # Plugin-level CLI script
-├── mailpoet-premium/            # Premium plugin (separate git repo — see its AGENTS.md)
-├── packages/js/                 # Shared JS packages (pnpm workspaces)
-│   ├── components/              # @mailpoet/components
-│   └── eslint-config/           # @mailpoet/eslint-config
-├── doc/                         # API documentation and usage examples
-├── scripts/                     # Dev helper scripts (setup, SMTP catcher, override generator)
-├── tools/                       # Build tooling (Webpack config) + experimental MCP server
-│   └── mcp-server/              # Dev-only MCP server exposing MailPoet to AI agents
-├── tests_env/                   # Test environment (Docker + Codeception + Selenium)
-├── templates/                   # Email templates
-├── .wp-env.json                 # wp-env dev environment config
-├── .wp-env.override.json.sample # Template for local wp-env overrides
-└── .wp-env/                     # wp-env helpers: mu-plugins/ (SMTP router + dev companion), scripts/
-```
-
-### Key PHP Namespaces (`mailpoet/lib/`)
-
-| Namespace      | Purpose                                                       |
-| -------------- | ------------------------------------------------------------- |
-| `API\JSON\`    | Internal JSON API endpoints (v1)                              |
-| `API\REST\`    | WordPress REST API endpoints                                  |
-| `API\MP\`      | Public developer API (v1)                                     |
-| `Automation\`  | Marketing automation engine (triggers, actions, workflows)    |
-| `Config\`      | Plugin lifecycle: `Initializer`, `Activator`, `Hooks`, `Menu` |
-| `Cron\`        | Background workers, Action Scheduler integration              |
-| `DI\`          | Dependency injection container configuration                  |
-| `Doctrine\`    | ORM layer, WPDB connection, entity management                 |
-| `EmailEditor\` | Block-based email editor integration                          |
-| `Entities\`    | Doctrine ORM entities (database table mappings)               |
-| `Form\`        | Subscription form handling and rendering                      |
-| `Mailer\`      | Email sending (SMTP, Amazon SES, SendGrid, MailPoet service)  |
-| `Newsletter\`  | Newsletter management, rendering, scheduling                  |
-| `Segments\`    | Subscriber segmentation and dynamic segments                  |
-| `Subscribers\` | Subscriber CRUD and management                                |
-| `WooCommerce\` | WooCommerce integration                                       |
-| `WP\`          | WordPress function wrappers for testability                   |
-
-### Key Frontend Modules (`mailpoet/assets/js/src/`)
-
-| Directory                            | Purpose                                                 |
-| ------------------------------------ | ------------------------------------------------------- |
-| `automation/`                        | Marketing automation UI (editor, listing, analytics)    |
-| `form-editor/`                       | Subscription form builder (Gutenberg-based)             |
-| `settings/`                          | Plugin settings pages                                   |
-| `newsletters/`                       | Newsletter management UI                                |
-| `common/`                            | Shared UI component library                             |
-| `newsletter-editor/`                 | Legacy newsletter editor (Backbone.js -- do not extend) |
-| `mailpoet-email-editor-integration/` | New block email editor integration                      |
-
-## Development Environment
-
-### Initial Setup
-
-```bash
-pnpm bootstrap                   # Install deps, download WC plugins, generate override, compile
-# Add secrets to .env files in mailpoet/ and mailpoet-premium/
-pnpm env:start                   # Start wp-env + Mailpit SMTP catcher
-```
-
-Open:
-
-- **WordPress**: http://localhost:8888 (admin: `admin` / `password`)
-- **phpMyAdmin**: http://localhost:8081
-- **Mailpit** (captures outgoing mail): http://localhost:8082
-
-Required tools: Docker Desktop, PHP (per `composer.json`), Node.js (per `.nvmrc`), pnpm (via Corepack), [GitHub CLI (`gh`)](https://cli.github.com/).
-
-**GitHub CLI (`gh`) is required** for downloading private WooCommerce test plugins (Subscriptions, AutomateWoo, Memberships). Authenticate with `gh auth login` — no personal access token needed. In CI, the `GH_TOKEN` env var is used instead.
-
-### Root-Level Commands
-
-From the repo root:
+MailPoet is a WordPress email marketing plugin (PHP 7.4+, Doctrine ORM, React 18 + TypeScript, pnpm monorepo). The free plugin lives in `mailpoet/`; shared JS packages in `packages/js/`; build tooling in `tools/`.
 
-```bash
-pnpm env:start                       # Start wp-env + Mailpit
-pnpm env:stop                        # Stop (state preserved)
-pnpm env:destroy                     # Stop + delete all wp-env data
-pnpm env:restart                     # Destroy + start (fresh DB)
-pnpm env:debug                       # Start with Xdebug enabled (port 9003)
-pnpm env:logs                        # Tail container logs
-pnpm shell                           # Bash into the wp-env cli container
-pnpm shell:test                      # Bash into the tests_env wordpress container
-pnpm wp <cmd>                        # wp-cli in the wp-env container
-pnpm bootstrap                       # Re-run setup (idempotent)
-```
+The premium plugin is a **separate git repository** cloned into `mailpoet-premium/` (gitignored here). It has its own `AGENTS.md`, branches, commits, and PRs. A change spanning both plugins needs a branch and PR in each repo, released together. Run `git` from the directory you mean to commit in.
 
-Tests route through `tests_env/` (a separate Codeception stack, untouched by wp-env):
+## Environment and commands
 
-```bash
-pnpm test:unit [--file=...]
-pnpm test:integration [--file=...]
-pnpm test:acceptance [--file=...]
-pnpm test:javascript
-pnpm test:integration:premium        # Premium variants
-pnpm test:acceptance:premium
-pnpm test:install-deps               # Fresh composer install before testing
-```
+- Use the root `pnpm` scripts (see `package.json`). `pnpm bootstrap` sets up the repo — `pnpm setup` is a pnpm built-in, not ours.
+- Dev site runs on wp-env: `pnpm env:start`, WordPress at http://localhost:8888 (`admin` / `password`), Mailpit at http://localhost:8082.
+- Migrations and templates need a live WordPress, so run them via `pnpm migrations:*` / `pnpm templates`, not `./do` on the host.
+- Run tests via `pnpm test:*`. Unit and JavaScript tests run on the host; integration and acceptance tests run in the separate `tests_env/` Docker stack, and their wrappers pass `--skip-deps`. Running `./do test:integration` or `./do test:acceptance` without `--skip-deps` can wipe `mailpoet/vendor-prefixed/`. See the `running-tests` skill.
+- QA: `pnpm qa`, `pnpm qa:phpstan`, `pnpm qa:fix`. For premium changes, also run QA from `mailpoet-premium/`.
+- Run `pnpm compile` after JS/CSS changes before testing in the browser.
 
-Migrations / templates / wp-cli shell into the wp-env container (need a live WP runtime):
+## Code rules
 
-```bash
-pnpm migrations:new <db|app>
-pnpm migrations:status
-pnpm templates
-```
+Paths below are relative to `mailpoet/` (PHP in `lib/`, frontend in `assets/js/src/`).
 
-### Plugin-Level Commands
+- PHP must stay compatible with PHP 7.4. Two-space indentation.
+- Call WordPress functions through `MailPoet\WP\Functions` (`$this->wp->…`), never directly, so code stays mockable.
+- Get services from the DI container (`lib/DI/`); don't instantiate them directly.
+- Sanitize and validate input, escape output. Never commit `.env` files, secrets, or API keys.
+- New frontend files are TypeScript; prefer named exports.
+- Avoid regular expressions when string/array functions will do; if a regex is necessary, document it.
+- Avoid `eslint-disable` / `phpcs:ignore`; when unavoidable, add a comment explaining why.
+- Never edit `vendor/`, `vendor-prefixed/`, `lib-3rd-party/`, `generated/`, or `assets/dist/` — they are generated.
+- Do not add features to the legacy Backbone newsletter editor (`assets/js/src/newsletter-editor/`); build on the block email editor.
+- Feature flags live in `FeaturesController` (toggle at `/wp-admin/admin.php?page=mailpoet-experimental`).
+- For queries over subscriber, sending, or stats tables, see the `sql-performance` skill.
 
-Use the `pnpm` scripts from the repo root by default. The same common scripts are also exposed inside `mailpoet/` and `mailpoet-premium/`. These wrappers call the plugin-level Robo tasks where appropriate.
+## Verify in the context the feature runs in
 
-**Build:**
+WordPress loads differently per request type (front end, wp-admin, REST, AJAX, cron, WP-CLI), and plugins skip work in some of them — WooCommerce 11.1+ does not register its blocks on cron or AJAX requests. Emails are rendered and sent from cron; checkout hooks run in front-end or Store API requests.
 
-```bash
-pnpm compile                         # Compile JS + CSS
-pnpm compile:js                      # Compile JavaScript only
-pnpm compile:css                     # Compile SCSS only
-```
+Verify through the real flow when you can, letting WP-Cron or Action Scheduler process the work through a web request. If you use WP-CLI to save time, match the real context (e.g. `wp --exec='define("DOING_CRON", true);' eval-file ...` for cron code) and report which context you tested. "Works in the editor preview" or "works in WP-CLI" is a partial check, not proof.
 
-**Quality Assurance (runs on host):**
+## Backward compatibility
 
-```bash
-pnpm qa                              # Run all PHP + frontend QA checks
-pnpm qa:php                          # PHP lint + CodeSniffer
-pnpm qa:phpstan                      # PHPStan static analysis
-pnpm qa:js                           # ESLint + TypeScript check
-pnpm qa:css                          # Stylelint for SCSS
-pnpm qa:prettier                     # Check Prettier formatting
-pnpm qa:fix                          # Auto-fix Prettier formatting
-```
+A change to an externally exposed surface must state its BC impact in the PR description. That surface is:
 
-For Robo-only helpers without a `pnpm` wrapper, run `./do` from the relevant plugin directory, for example `cd mailpoet && ./do qa:fix-file <path>`.
+- the public API `MailPoet\API\MP\v1\API` (`mailpoet/lib/API/MP/`) — not the internal JSON API in `mailpoet/lib/API/JSON/`;
+- `mailpoet_*` actions and filters — renaming, dropping, or changing or reordering their arguments is a break; retire them with `do_action_deprecated()` / `apply_filters_deprecated()`;
+- REST routes under `MailPoet\API\REST\`, including request/response shapes and auth expectations;
+- classes documented as extension points, and the `window.MailPoet` JS object.
 
-**Testing:** use the `pnpm test:*` root aliases, which route into `tests_env/` and default to `--skip-deps`.
+Internal `public` classes (e.g. `MailPoet\Services\Bridge`) are not third-party contracts, but Premium calls some of them, so keep such changes in lockstep with Premium.
 
-**Other:**
+- Prefer the additive path: a new optional method, an appended hook argument, a new symbol plus deprecation.
+- Never add or remove a required method on an interface outside code can implement.
+- Deprecate, don't rename or remove: keep the old symbol working next to the new one.
+- Don't implement or type-hint WooCommerce `Internal\` classes; if unavoidable, guard with `class_exists()` / `interface_exists()` / `method_exists()`. (A required method added to core's internal `FeedInterface` once fataled older Stripe Gateway versions.)
+- Guard reads of globals and `WC()` state that may not exist in cron, CLI, or REST requests.
+- Say whether site-state changes work on multisite. Derive paths and URLs (`plugins_url()`, `wp_upload_dir()`), never concatenate them.
+- If you cannot establish the impact, stop and flag it for review.
 
-```bash
-pnpm changelog:add --type=<type> --description="<description>"
-```
+## Dependencies
 
-Migrations and templates require a running WordPress and must be invoked via `pnpm migrations:*` / `pnpm templates` (routes through the wp-env container). Running `./do migrations:*` directly from `mailpoet/` fails — no WordPress on the host.
+- Ask before adding new Composer or npm dependencies — PHP packages may need prefixer configuration.
+- All pnpm `overrides` live in `pnpm-workspace.yaml`. Never add a `pnpm` field to the root `package.json`: pnpm then silently ignores the workspace overrides.
+- For `pnpm audit` fixes, prefer a lockfile bump (`pnpm -r update <pkg>`); add an override only when a parent's range excludes the patched version. Removing an override does not move a locked version that still satisfies its parents; pair the removal with the update command.
+- `tools/mcp-server` has its own lockfile and overrides. Run pnpm there with `--ignore-workspace`, or it operates on the root workspace.
 
-## Code Conventions
+## Git, changelog, PRs
 
-### PHP
-
-- Two spaces indentation
-- `CamelCase` for classes, `camelCase` for methods and variables/properties
-- Composition over inheritance
-- Guard clauses over nested conditionals
-- Use as few comments as possible — convey your intent through clear coding instead.
-- Import classes with `use` statements at the top of the file
-- MUST be compatible with PHP 7.4 and newer
-- Cover code with tests
-
-### JavaScript / TypeScript
-
-- Follow the [Airbnb JavaScript style guide](https://github.com/airbnb/javascript)
-- Prefer named exports over default exports
-- MUST default to TypeScript for new files
-- Formatting is handled by Prettier (`pnpm qa:fix`)
-
-### SCSS
-
-- `kebab-case` for file names
-- Component files prefixed with underscore (`_new-component.scss`)
-
-### Disabling Lint Rules
-
-- Avoid `eslint-disable`. When unavoidable, add a comment explaining why:
-  `/* eslint-disable no-new -- this class has a side-effect in the constructor and it's a library's. */`
-- For PHP, do the same with `phpcs:ignore`. Exception: `// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps` does not require an explanation.
-- Avoid regular expressions when built-in string/array methods can achieve the same result. If regex is necessary, document the pattern extensively.
-
-## Testing
-
-Tests use **Codeception** and run inside the `tests_env/` docker-compose stack (Codeception + Selenium + test MySQL + MailHog). This stack is separate from wp-env and deliberately unchanged by the wp-env migration.
-
-| Type        | File Pattern | Location             | Command                               |
-| ----------- | ------------ | -------------------- | ------------------------------------- |
-| Unit        | `*Test.php`  | `tests/unit/`        | `pnpm test:unit --file=<path>`        |
-| Integration | `*Test.php`  | `tests/integration/` | `pnpm test:integration --file=<path>` |
-| Acceptance  | `*Cest.php`  | `tests/acceptance/`  | `pnpm test:acceptance --file=<path>`  |
-| JavaScript  | `*.spec.ts`  | `tests/javascript/`  | `pnpm test:javascript`                |
-
-The `pnpm test:*` scripts default to `--skip-deps` (matches the standard dev workflow); only `pnpm test:unit` omits the flag. Use `pnpm test:install-deps` when deps actually need refreshing.
-
-**Running tests from the repo root:**
-
-```bash
-pnpm test:integration --file=tests/integration/WP/EmojiTest.php
-pnpm test:acceptance --file=tests/acceptance/Misc/MailpoetMenuCest.php
-```
-
-**Running premium tests** — use the premium aliases. Premium has no unit suite; put isolated logic tests in the free plugin.
-
-```bash
-pnpm test:integration:premium --file=tests/integration/Config/EnvTest.php
-pnpm test:acceptance:premium
-```
-
-Or shell in and run the plugin-level `./do` directly:
-
-```bash
-pnpm shell:test
-cd /wp-core/wp-content/plugins/mailpoet-premium
-./do test:integration --file=tests/integration/Config/EnvTest.php
-```
-
-**HPOS acceptance variants run only on `trunk` and `release`.** The HPOS-off and HPOS-sync acceptance jobs run after merge. If your change touches WooCommerce order code, run the affected `@group woo` Cests with `--disable-hpos` and again with `--enable-hpos-sync`, and say so in the PR's QA notes. Details in the `creating-pull-requests` skill.
-
-When writing tests:
-
-- Unit tests should be fast and isolated with no database or WordPress dependency
-- Integration tests can use the WordPress database and APIs
-- Acceptance tests use browser automation (Selenium/Codeception)
-- Place test `DataFactories` in `tests/DataFactories/` for reusable test data builders
-
-### Verify in the context the feature runs in
-
-WordPress loads differently per request type: front-end page, wp-admin, REST, AJAX,
-cron (WP-Cron / Action Scheduler) and WP-CLI. WooCommerce and other plugins also
-skip work in some of them (for example, WooCommerce 11.1+ does not register its
-blocks on cron or AJAX requests). A check that passes in WP-CLI or a custom script
-can hide a bug that only shows up in the real request.
-
-- Before calling a feature verified, find out which request type runs it in
-  production. Emails are rendered and sent from cron; checkout hooks run in
-  front-end or Store API requests.
-- Verify through the real flow when you can: trigger it the way a user or the
-  site would, and let WP-Cron or Action Scheduler process it through a web request.
-- If you use WP-CLI or a script to save time, make it match the real context
-  (e.g. `wp --exec='define("DOING_CRON", true);' eval-file ...` for cron code)
-  and say in your report which context you tested and which you did not.
-- Treat "works in the editor preview" or "works in WP-CLI" as a partial check,
-  not proof that the real flow works.
-
-## Architecture & Key Patterns
-
-### Doctrine ORM
-
-The plugin uses Doctrine ORM for database management:
-
-- **Entities** in `lib/Entities/` map to database tables (e.g., `SubscriberEntity`, `NewsletterEntity`)
-- **Repositories** follow the `*Repository` naming convention (e.g., `SubscribersRepository`)
-- **Migrations** in `lib/Migrations/` handle schema changes. Create new ones with `pnpm migrations:new <db|app>` (routes through the wp-env container since a WordPress runtime is required)
-- Entity metadata and proxies are cached in `generated/`
-
-### Dependency Injection
-
-PSR-11 container configured in `lib/DI/`:
-
-- `ContainerConfigurator` defines service wiring
-- Services are auto-wired based on constructor type hints
-- Access services via the container, never instantiate directly
-
-### WordPress Functions Wrapper
-
-**CRITICAL:** `lib/WP/Functions.php` wraps WordPress functions for testability. MUST use `$this->wp->functionName()` (or the injected `WPFunctions` service) instead of calling WordPress functions like `get_option()`, `add_action()`, etc. directly. This enables mocking in tests.
-
-### Vendor Prefixing
-
-Third-party PHP dependencies are prefixed with `MailPoetVendor\` namespace and stored in `vendor-prefixed/`. This prevents conflicts with other plugins that may include the same libraries. NEVER edit these files -- they are generated by the prefixer build process.
-
-### Action Scheduler
-
-Background job processing uses WooCommerce's Action Scheduler library. Cron workers live in `lib/Cron/Workers/`. The `lib/Cron/Daemon` manages scheduling.
-
-### Feature Flags
-
-New features can be gated behind feature flags:
-
-- Managed by `FeaturesController` class
-- Toggle flags at `/admin.php?page=mailpoet-experimental`
-- Add new flags in `FeaturesController`
-
-### Frontend Architecture
-
-- **Modern admin pages:** React 18 + TypeScript
-- **Subscription form builder:** Built on the Gutenberg block editor
-- **Legacy newsletter editor:** Backbone.js + Marionette (in `newsletter-editor/`). This is legacy code being replaced by the block-based email editor. Do not add new features here.
-- **Block email editor:** New editor integration using `@woocommerce/email-editor` (in `mailpoet-email-editor-integration/`)
-- **Webpack** bundles JS with multiple entry points. Run `pnpm compile:js` after changes.
-
-### Multi-API Layer
-
-- `lib/API/JSON/v1/` -- Internal JSON API used by the React admin UI
-- `lib/API/REST/` -- WordPress REST API endpoints
-- `lib/API/MP/v1/` -- Public API for third-party developers
-
-## Git Workflow & Commits
-
-- MUST NOT commit directly to `trunk`
-- Create short-lived feature branches
-- Include the Linear issue ID in commit messages
-- Run `pnpm qa` and `pnpm qa:fix` before pushing
-- `mailpoet-premium/` is a **separate git repository** checked out inside this working copy. A change spanning both plugins needs its own branch and PR in each repo, released together. Run `git` from the directory you mean to commit in.
-
-### Commit Message Format
-
-- Subject line: imperative mood, start with a verb, no trailing period, max 50 characters
-- Blank line between subject and body
-- Body lines max 72 characters
-- Explain what caused the problem and consequences when relevant
-- Explain how the changes achieve the goal only if not obvious
-
-```
-Add subscriber import validation for CSV files
-
-The previous implementation silently skipped malformed rows,
-causing confusion when subscriber counts didn't match.
-
-MAILPOET-1234
-```
-
-### Changelog
-
-User-facing changes MUST have a changelog entry. Use:
-
-```bash
-pnpm changelog:add --type=Fixed --description="Describe what was fixed"
-```
-
-Valid types: `Added`, `Improved`, `Fixed`, `Changed`, `Updated`, `Removed`.
-Do not end changelog descriptions with punctuation; release compilation adds semicolons between entries and a period after the final entry.
-Write descriptions so they start with a capital letter and read naturally after the generated type prefix. Avoid repeating the type verb, for example use `Generated WooCommerce coupon block support for regular newsletters and automation emails` instead of `Added generated WooCommerce coupon block support for regular newsletters and automation emails`.
-
-### Pull Requests
-
-- Create PRs as **drafts** following `.github/pull_request_template.md`
-- Wait for review from another developer
-- See `.claude/skills/creating-pull-requests/SKILL.md` for the full PR workflow
-
-## Common Pitfalls
-
-- **NEVER** modify WordPress core files shipped by wp-env. Its WordPress install is managed.
-- **NEVER** edit files in `vendor/`, `vendor-prefixed/`, `lib-3rd-party/`, or `generated/`. These are managed by Composer, the prefixer, and build tools respectively.
-- **NEVER** edit compiled assets in `assets/dist/`. Run `pnpm compile` to regenerate them.
-- **MUST** run `pnpm compile` (or `compile:js` / `compile:css`) after making JS/CSS/SCSS changes before testing in the browser.
-- **MUST** use `pnpm test:*` (which default to `--skip-deps`) during development. Running `./do test:integration` directly from `mailpoet/` without `--skip-deps` re-triggers the prefixer inside the container and can wipe `mailpoet/vendor-prefixed/` on PHP 8.4; recover with `pnpm bootstrap`.
-- `pnpm <task>` and `./do <task>` are related but not identical: pnpm scripts orchestrate the environment (route to the right container, pass defaults). `mailpoet/do` runs host-side Robo tasks directly.
-- `pnpm setup` is a pnpm built-in (configures pnpm itself). Use `pnpm bootstrap` to run our setup script.
-- The legacy Backbone.js newsletter editor (`newsletter-editor/`) is being replaced. Do not extend it with new features — build on the block email editor instead.
-- When adding PHP dependencies, be aware of vendor prefixing. New dependencies may need prefixer configuration.
-- Integration tests run in `tests_env/` (a separate compose stack). Shell in with `pnpm shell:test` to debug.
-
-## Dependency Management (pnpm overrides and audit)
-
-- All workspace pnpm `overrides` live in `pnpm-workspace.yaml`. **NEVER add a `pnpm` field to the root `package.json`**: pnpm silently prefers that field, and the entire workspace `overrides:` block stops applying. This happened once and the two lists drifted for months before being reconciled.
-- When fixing `pnpm audit` findings, prefer a plain lockfile bump (`pnpm -r update <pkg>` works for transitive dependencies) whenever every parent's declared range admits the patched version. Add an override only when the patched release falls outside some parent's range, and drop overrides that newer resolutions make unnecessary. Removing an override alone does not move a locked version that still satisfies its parents; pair the removal with the update command.
-- `tools/mcp-server` is not a workspace package and has its own standalone `pnpm-lock.yaml`; its overrides live in its own `package.json` `pnpm` field. Run pnpm commands there with `--ignore-workspace`; without it, pnpm silently walks up and operates on the root workspace instead (audit paths starting with `mailpoet>` are the tell-tale sign).
-
-## Boundaries
-
-### Always Do
-
-- Run QA checks (`pnpm qa`, `pnpm qa:fix`) before committing
-- Cover code with unit or integration tests
-- Use the `WP\Functions` wrapper instead of calling WordPress functions directly
-- Sanitize and validate inputs, escape outputs
-- Create changelog entries for user-facing changes
-- Ensure backwards compatibility
-- Use guard clauses
-- Consider query performance at scale -- prefer sargable, indexed queries and pagination over large subscriber/sending/stats tables; see the `sql-performance` skill
-
-### Never Do
-
-- Commit secrets, `.env` files, or API keys
-- Modify WordPress core files, `vendor/`, `vendor-prefixed/`, `lib-3rd-party/`, or `generated/` files
-- Use `extract()`, `eval()`, or `create_function()`
-- Hardcode URLs -- use `home_url()`, `plugin_dir_url()`, `plugin_dir_path()`
-- Commit directly to `trunk`
-
-### Ask First
-
-- Database schema changes or new migrations
-- Adding new Composer or npm dependencies
-- Changes to `.wp-env.json`, `tests_env/`, or CI configuration
-- Modifying the DI container configuration
-- Changes to the public API (`lib/API/MP/`)
-
-## Backward Compatibility
-
-Any change to a **public or externally exposed** class, interface, function, method, hook, or REST endpoint signature is **high-risk** and **must state its backward-compatibility impact in the PR description**. An internal-looking name or location is not by itself a guarantee that a symbol is safe to change: other plugins, themes, and custom site code implement and consume some of these contracts in practice. See the exposed-surface list for what counts and the **Scope** note for what does not; when a symbol is genuinely reachable and useful to outside code, err toward treating it as exposed.
-
-For MailPoet, the externally exposed surface is:
-
-- **Public developer API** — `MailPoet\API\MP\v1\API` under `lib/API/MP/`, reached via `\MailPoet\API\API::MP('v1')`. This is the documented contract third parties build on; its method names, parameters, and return shapes must stay stable. The internal JSON API in `lib/API/JSON/` serves the React admin only and is not this contract.
-- **Custom hooks** — the actions and filters MailPoet fires (the `mailpoet_` prefix, e.g. `mailpoet_link_clicked`), defined largely in `lib/Config/Hooks.php` and `lib/Config/HooksWooCommerce.php`. Renaming a hook, changing or reordering its arguments, or dropping it breaks whatever is hooked in; to retire one, fire it through `do_action_deprecated()` / `apply_filters_deprecated()` for a deprecation window.
-- **WordPress REST API** — the `MailPoet\API\REST\` routes, their request/response shapes, and their auth expectations.
-- **Public PHP documented for integrators** — beyond the `MP\v1` API above, any class or function MailPoet documents as an extension point. A symbol being `public` is not by itself enough to make it a third-party contract (see Scope below).
-- **Front-end globals** — the `window.MailPoet` JS object and any properties page scripts may read.
-
-**Scope — what is _not_ a third-party contract:** MailPoet's internal service and infrastructure classes are declared `public` so MailPoet's own code can call across package boundaries, but they are not an API third parties build on. The clearest example is the MailPoet Sending Service bridge — `MailPoet\Services\Bridge` and `MailPoet\Services\Bridge\API` (`lib/Services/Bridge/API.php`), the client for MailPoet's own backend (e.g. `getBouncesReport()`). An ordinary signature or return-type change to classes like these does **not** require a _third-party_ BC statement. One internal contract does remain: **MailPoet Premium** consumes some of these classes, so a change to a symbol Premium calls must be kept in lockstep with Premium in the same release — note that in the PR, but it is a free↔Premium coordination concern, not a public-API break. When unsure whether a symbol is a third-party contract, check the exposed-surface list above rather than assuming every `public` method is one.
-
-Rules:
-
-- **Never add or remove a required method on an interface that external code can implement** — existing implementers fatal on load. Prefer adding the method to the concrete class, introducing a new interface, or supplying a default implementation in an abstract base class. If an interface change is unavoidable, flag it explicitly.
-- **Deprecate, don't rename.** Never rename or remove an existing public symbol in place: mark it `@deprecated`, introduce the replacement alongside it, and keep both working through a deprecation window.
-- **Don't implement or type-hint WooCommerce core `Internal\` classes or interfaces** — core treats them as changeable in any release. If unavoidable, guard the dependency with `class_exists()` / `interface_exists()` / `method_exists()` checks so a core change doesn't cause a fatal error in this plugin.
-
-> Why: WooCommerce 10.9.0 was reverted on WP Cloud after woocommerce/woocommerce#64394 added a required method to core's internal `FeedInterface`, causing fatal errors in older WooCommerce Stripe Gateway versions that implemented it (fixed in woocommerce/woocommerce#65965). The same failure mode applies to any published WooCommerce extension.
-
-### The compatibility surface is wider than PHP signatures
-
-WordPress exposes more contracts than class and function signatures. A change to any of the following is equally high-risk and needs the same backward-compatibility impact statement in the PR.
-
-- **Global state.** Code runs in admin, REST, CLI, cron, webhook, and front-end contexts, and not all set the globals a front-end request does (`$post`, `$wp_query`, an initialized session or cart). A new read of a global — or of `WC()->…` state — in a path reachable outside a standard request fatals or silently misbehaves where it isn't set. Guard the exact dependency (`function_exists`/`class_exists` for symbols, `isset` for variables, `did_action` for lifecycle) and verify the component is initialized before dereferencing.
-- **Multisite.** Site-scoped vs network-scoped options (`get_option` vs `get_site_option`), per-site tables, capabilities, and upload paths all differ under multisite. A change that reads or writes site state must state whether it behaves correctly under multisite, or say it wasn't tested there.
-- **Install layout.** WordPress can run in a subdirectory, with relocated `wp-content`, and behind reverse proxies. Never build paths or URLs by concatenation from the domain root; derive them (`plugins_url()`, `plugin_dir_path()`, `wp_upload_dir()`, and mind `home_url()` vs `site_url()`).
-
-### Before changing any public or externally exposed surface (agent checklist)
-
-1. Identify the contract you are touching: signature, hook, global/scope expectation, site topology, or install layout.
-2. Assume unseen consumers — you cannot enumerate third-party code; if the surface is reachable from outside this plugin, someone may consume it.
-3. Prefer the additive path (new optional method, appended hook argument, new symbol + deprecation) over changing what exists.
-4. State the impact in the PR description: what changed, who could consume it, and why it is safe or what the deprecation path is.
-5. If you cannot establish the impact, stop and flag it for review.
+- Never commit to `trunk`. Create branches with the `starting-branch` skill.
+- Commit subject: imperative, max 50 characters, no trailing period. Body lines max 72 characters. Include the Linear issue ID.
+- User-facing changes need a changelog entry (`pnpm changelog:add`); see the `writing-changelog` skill.
+- Create PRs as drafts with the `creating-pull-requests` skill, following `.github/pull_request_template.md`. Never run `gh pr create` directly.
 
 ## Available Skills
 
-Skills are progressively-revealed instructions loaded on demand.
+Skills live in `.ai/skills/` (symlinked as `.claude/skills/`): `creating-pull-requests`, `starting-branch`, `mailpoet-dev-cycle`, `reviewing-code`, `writing-tests`, `running-tests`, `debugging-failed-tests`, `writing-changelog`, `mailpoet-beta-compat-test`, `sql-collation-safety`, `sql-performance`.
 
-### `.ai/skills/` (also exposed as `.claude/skills/`, a symlink)
-
-- **`creating-pull-requests`** -- MUST use when creating PRs. Enforces draft PR creation and template compliance. Never run `gh pr create` directly.
-- **`starting-branch`** -- MUST use when creating any new branch. Handles branch naming, Linear lookup, and branch creation. Never run `git switch -c` or `git checkout -b` directly.
-- `mailpoet-dev-cycle` -- Linting and code quality workflows. Contains `code-quality.md` (ESLint, Stylelint, Prettier) and `php-coding-standards.md` (PHP lint, PHPCS, PHPStan).
-- `reviewing-code` -- Reviewing pull requests or local code changes.
-- `writing-tests` -- Authoring tests: picking the type, naming, structure.
-- `running-tests` -- Invoking the test runner: single files, suites, premium variants, debug mode.
-- `debugging-failed-tests` -- Investigating a failing test (CI job URL or local output).
-- `writing-changelog` -- Adding a changelog entry for user-facing changes.
-- `mailpoet-beta-compat-test` -- Testing compatibility against a new WooCommerce or WordPress beta/RC.
-- `sql-collation-safety` -- Joins/comparisons of text columns across WP, WooCommerce, and MailPoet tables.
-- `sql-performance` -- Queries whose cost grows with subscribers, sent emails, or stats tables.
-
-## Experimental: MCP Server for AI Agents
-
-`tools/mcp-server/` hosts an experimental [MCP](https://modelcontextprotocol.io) server that exposes MailPoet local-dev tooling to AI agents (Claude Code, etc.). Not shipped with the plugin, not part of CI, entirely local-dev only.
-
-It gives an agent structured access to things that would otherwise require parsing noisy Robo / wp-cli / container output: environment status, feature flags, migrations, Action Scheduler, subscribers + segments, captured Mailpit emails, unit/integration test runs, QA (phpstan/phpcs/eslint/stylelint/prettier/tsc) with structured violations, and the WP debug log.
-
-Architecture: TS MCP server on the host ↔ PHP companion mu-plugin inside wp-env over loopback HTTP with a shared secret. The companion uses MailPoet's own DI container and Doctrine repositories, so results reflect real entity state. The mu-plugin no-ops unless `WP_DEBUG` is on and the secret file exists — it cannot accidentally run in production.
-
-Every tool call is appended to `.wp-env/mcp-usage.jsonl` (tool name, duration, input keys only — no values) so usage can be analysed later to decide what to expand.
-
-See `tools/mcp-server/README.md` for setup, tool list, configuration, and how to add new tools.
-
-## Additional Resources
-
-- Main README: `README.md`
-- Free plugin README: `mailpoet/README.md`
-- Premium plugin README: `mailpoet-premium/README.md`
-- Contributing guide: `CONTRIBUTING.md`
-- Cursor rules: `.cursor/rules/` (review when working on the project)
-- MCP server (experimental): `tools/mcp-server/README.md`
+`tools/mcp-server/` is an experimental, dev-only MCP server exposing local MailPoet tooling to agents; see its README.
