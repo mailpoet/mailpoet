@@ -114,8 +114,8 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0(lodash@4.18.1)
       '@woocommerce/email-editor':
-        specifier: 2.4.1
-        version: 2.4.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.0)(@types/react@18.3.28)(date-fns@3.6.0)(stylelint@16.6.1(typescript@5.9.3))
+        specifier: 2.5.0
+        version: 2.5.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.0)(@types/react@18.3.28)(date-fns@3.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.6.1(typescript@5.9.3))
       '@wordpress/a11y':
         specifier: ^4.43.0
         version: 4.44.0
@@ -4531,8 +4531,11 @@ packages:
     peerDependencies:
       lodash: ^4.17.0
 
-  '@woocommerce/email-editor@2.4.1':
-    resolution: {integrity: sha512-VHcA04WtIKebeLmUe4gZxPiNSoXolexSXB+2gGPCI4sce86litIzT51QAFnrAB5/C+PORW8reXx3nmuYM6xffw==}
+  '@woocommerce/email-editor@2.5.0':
+    resolution: {integrity: sha512-TN47hummzdOFY+tKVE0S58A3AXE3uBkwTog/7BeRUorO7aDLRkf569EPOUZn5xP+/v5hHa2F+jAA+WNlJ59EhA==}
+    peerDependencies:
+      react: ^18.3.0
+      react-dom: ^18.3.0
 
   '@woocommerce/navigation@8.2.0':
     resolution: {integrity: sha512-joAbrzdhrnWf91kEwuNO3hzT0IiUuh8SNOs0Qbth/heZaN+SixA5yJ98UqEHNa2Mitjm5BTC4M0Qk7X+I8uUvQ==}
@@ -17651,7 +17654,7 @@ snapshots:
       moment-timezone: 0.5.45
       qs: 6.16.0
 
-  '@woocommerce/email-editor@2.4.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.0)(@types/react@18.3.28)(date-fns@3.6.0)(stylelint@16.6.1(typescript@5.9.3))':
+  '@woocommerce/email-editor@2.5.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.0)(@types/react@18.3.28)(date-fns@3.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.6.1(typescript@5.9.3))':
     dependencies:
       '@wordpress/api-fetch': 7.44.0
       '@wordpress/base-styles': 6.20.0
@@ -17669,20 +17672,21 @@ snapshots:
       '@wordpress/element': 6.44.0
       '@wordpress/format-library': 5.44.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.0)(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.6.1(typescript@5.9.3))
       '@wordpress/global-styles-engine': 1.11.0(react@18.3.1)
-      '@wordpress/hooks': 4.44.0
+      '@wordpress/hooks': 4.56.0
       '@wordpress/html-entities': 4.44.0
-      '@wordpress/i18n': 6.17.0
+      '@wordpress/i18n': 6.29.0
       '@wordpress/icons': 12.2.0(react@18.3.1)
       '@wordpress/interface': 9.29.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react@18.3.28)(date-fns@3.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.6.1(typescript@5.9.3))
-      '@wordpress/is-shallow-equal': 5.44.0
+      '@wordpress/is-shallow-equal': 5.56.0
       '@wordpress/keyboard-shortcuts': 5.44.0(react@18.3.1)
-      '@wordpress/keycodes': 4.44.0
+      '@wordpress/keycodes': 4.56.0(@types/react@18.3.28)
       '@wordpress/notices': 5.44.0(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@wordpress/plugins': 7.44.0(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@wordpress/preferences': 4.44.0(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@wordpress/priority-queue': 3.44.0
-      '@wordpress/private-apis': 1.44.0
+      '@wordpress/priority-queue': 3.56.0
+      '@wordpress/private-apis': 1.56.0
       '@wordpress/rich-text': 7.44.0(react@18.3.1)
+      '@wordpress/ui': 0.11.0(@date-fns/tz@1.4.1)(@types/react@18.3.28)(date-fns@3.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.6.1(typescript@5.9.3))
       '@wordpress/url': 4.44.0
       clsx: 2.1.1
       deepmerge: 4.3.1
