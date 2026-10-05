@@ -74,10 +74,10 @@ class EmailTemplatesCest {
     $i->wantTo("Select template $template");
     $i->waitForElementClickable('.email-editor-start_from_scratch_button');
     $i->waitForText($template);
-    $i->click('[aria-label="Newsletter"]');
-    $i->waitForElement('.block-editor-block-patterns-list__item-title');
+    $i->click('//button[@role="tab" and normalize-space(.)="Newsletter"]');
+    $i->waitForElement('.email-editor-template-select__template-title');
     $i->waitForText($template, 5);
-    $i->click("//h4[@class='block-editor-block-patterns-list__item-title' and text()='$template']");
+    $i->click("//h4[@class='email-editor-template-select__template-title' and text()='$template']");
   }
 
   private function checkTextIsInEmail(\AcceptanceTester $i, string $text): void {

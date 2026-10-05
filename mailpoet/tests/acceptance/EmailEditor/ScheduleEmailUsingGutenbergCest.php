@@ -118,7 +118,7 @@ class ScheduleEmailUsingGutenbergCest {
     $i->wantTo('Close template selector');
     $i->waitForElementClickable('.email-editor-start_from_scratch_button');
     $i->waitForText('Newsletter - Newsletter');
-    $i->click('[aria-label="Newsletter"]');
+    $i->click('//button[@role="tab" and normalize-space(.)="Newsletter"]');
     $i->waitForElementVisible('.block-editor-block-preview__container');
     $i->click('[aria-label="Close"]');
   }
