@@ -1,8 +1,6 @@
 /* stylelint-disable selector-nested-pattern */
 @import '~@wordpress/base-styles/colors';
 @import '~@wordpress/base-styles/variables';
-@import '~@wordpress/base-styles/breakpoints';
-@import '~@wordpress/base-styles/mixins';
 
 .mailpoet-editor-feedback-button {
   bottom: 5px;
@@ -277,22 +275,5 @@
 
   .mailpoet-inline-notice {
     margin: 0;
-  }
-}
-
-// The template selector reuses Gutenberg's pattern explorer classes.
-// Gutenberg 23.9 dropped these rules, so we keep them here.
-.block-editor-block-patterns-explorer {
-  &__sidebar__categories-list__item {
-    display: block;
-    height: 48px;
-    text-align: start;
-    width: 100%;
-  }
-
-  &:not(.no-sidebar) > &__list {
-    @include break-medium() {
-      margin-inline-start: $sidebar-width;
-    }
   }
 }
