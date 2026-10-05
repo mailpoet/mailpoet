@@ -326,16 +326,10 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItKeepsSiteTitleInSubjectUnencodedInsideAngleBracketsWhenPreprocessingNewsletter() {
-    $previousBlogname = get_option('blogname');
-    $this->assertIsString($previousBlogname);
-    update_option('blogname', "O'Brien's shop");
+    $this->tester->setBlogname("O'Brien's shop");
     $this->newsletter->setSubject('Deal <<New from [site:title]>>');
     $this->newslettersRepository->persist($this->newsletter);
-    try {
-      $newsletter = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
-    } finally {
-      update_option('blogname', $previousBlogname);
-    }
+    $newsletter = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
 
     $sendingQueue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);

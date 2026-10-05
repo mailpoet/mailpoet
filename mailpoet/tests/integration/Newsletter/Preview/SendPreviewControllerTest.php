@@ -183,14 +183,8 @@ class SendPreviewControllerTest extends \MailPoetTest {
       $this->diContainer->get(WooCommerceDummyData::class),
       $this->diContainer->get(PersonalizationTagLinkResolver::class)
     );
-    $previousBlogname = get_option('blogname');
-    $this->assertIsString($previousBlogname);
-    update_option('blogname', "O'Brien's shop");
-    try {
-      $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
-    } finally {
-      update_option('blogname', $previousBlogname);
-    }
+    $this->tester->setBlogname("O'Brien's shop");
+    $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }
 
   public function testItThrowsWhenSendingFailed() {

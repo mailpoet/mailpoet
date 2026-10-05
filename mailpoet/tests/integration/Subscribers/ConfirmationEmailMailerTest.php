@@ -550,14 +550,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
   public function testItKeepsSiteTitleInSubjectUnencodedInsideAngleBrackets() {
     $sender = $this->diContainer->get(ConfirmationEmailMailer::class);
-    $previousBlogname = get_option('blogname');
-    $this->assertIsString($previousBlogname);
-    update_option('blogname', "O'Brien's shop");
-    try {
-      $mailBody = $sender->getMailBody(['subject' => 'Confirm <<News from [site:title]>>', 'body' => 'Body'], $this->subscriber, ['List']);
-    } finally {
-      update_option('blogname', $previousBlogname);
-    }
+    $this->tester->setBlogname("O'Brien's shop");
+    $mailBody = $sender->getMailBody(['subject' => 'Confirm <<News from [site:title]>>', 'body' => 'Body'], $this->subscriber, ['List']);
     verify($mailBody['subject'])->equals("Confirm <<News from O'Brien's shop>>");
   }
 
