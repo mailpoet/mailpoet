@@ -113,7 +113,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -135,7 +134,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -165,7 +163,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -190,7 +187,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -218,7 +214,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -248,7 +243,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $clicksRepository,
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -268,7 +262,7 @@ class ClicksTest extends \MailPoetTest {
     verify($userAgent->getUserAgent())->equals('User Agent');
   }
 
-  public function testItUpdateUserAgent(): void {
+  public function testItKeepsHumanUserAgentOnRepeatedClicks(): void {
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $data = $this->trackData;
     $data->userAgent = 'User Agent';
@@ -278,7 +272,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $clicksRepository,
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -303,7 +296,36 @@ class ClicksTest extends \MailPoetTest {
     $click = $trackedClicks[0];
     $userAgent = $click->getUserAgent();
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
-    verify($userAgent->getUserAgent())->equals('User Agent 2');
+    verify($userAgent->getUserAgent())->equals('User Agent');
+    $uaRepository = $this->diContainer->get(UserAgentsRepository::class);
+    verify($uaRepository->findAll())->arrayCount(1);
+  }
+
+  public function testItDoesNotStoreMachineUserAgentsOnRepeatedClicks(): void {
+    $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
+    $data = $this->trackData;
+    $data->userAgent = 'User Agent';
+    $clicks = Stub::construct($this->clicks, [
+      $this->diContainer->get(Cookies::class),
+      $this->diContainer->get(SubscriberCookie::class),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(Opens::class),
+      $clicksRepository,
+      $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
+      $this->diContainer->get(Request::class),
+      $this->diContainer->get(TrackingConsentController::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class),
+      $this->diContainer->get(GATracking::class),
+    ], [
+      'redirectToUrl' => null,
+    ], $this);
+    $clicks->track($data);
+    $data->userAgent = UserAgentEntity::MACHINE_USER_AGENTS[0];
+    $clicks->track($data);
+    $uaRepository = $this->diContainer->get(UserAgentsRepository::class);
+    verify($uaRepository->findBy(['userAgent' => UserAgentEntity::MACHINE_USER_AGENTS[0]]))->arrayCount(0);
   }
 
   public function testItDoesNotOverrideHumanUserAgentWithMachine(): void {
@@ -314,7 +336,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $clicksRepository,
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -360,7 +381,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $clicksRepository,
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -406,7 +426,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $clicksRepository,
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -437,7 +456,7 @@ class ClicksTest extends \MailPoetTest {
     verify($click->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
   }
 
-  public function testItOverridesUnknownUserAgentWithHuman(): void {
+  public function testItDoesNotOverrideUnknownUserAgentWithHuman(): void {
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $clicks = Stub::construct($this->clicks, [
       $this->diContainer->get(Cookies::class),
@@ -445,7 +464,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $clicksRepository,
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -465,18 +483,16 @@ class ClicksTest extends \MailPoetTest {
     $click = $trackedClicks[0];
     verify($click->getUserAgent())->null();
     verify($click->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
-    // Track Machine User Agent
-    $humanUserAgentName = 'User Agent';
-    $data->userAgent = $humanUserAgentName;
+    // Track Human User Agent
+    $data->userAgent = 'User Agent';
     $clicks->track($data);
     $trackedClicks = $clicksRepository->findAll();
     verify($trackedClicks)->arrayCount(1);
     $click = $trackedClicks[0];
-    $userAgent = $click->getUserAgent();
-    $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
-    verify($userAgent->getUserAgent())->equals($humanUserAgentName);
-    verify($userAgent->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    verify($click->getUserAgent())->null();
     verify($click->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    $uaRepository = $this->diContainer->get(UserAgentsRepository::class);
+    verify($uaRepository->findAll())->arrayCount(0);
   }
 
   public function testItRedirectsToUrlAfterTracking() {
@@ -486,7 +502,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -512,7 +527,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -549,7 +563,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -574,7 +587,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -624,7 +636,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -781,7 +792,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
@@ -904,7 +914,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $opens,
       $clicksRepository,
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $subscribersRepository,
       $this->diContainer->get(TrackingConfig::class),
@@ -954,7 +963,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $opens,
       $clicksRepository,
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $subscribersRepository,
       $this->diContainer->get(TrackingConfig::class),
@@ -1004,7 +1012,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $opens,
       $clicksRepository,
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $subscribersRepository,
       $this->diContainer->get(TrackingConfig::class),
@@ -1036,7 +1043,6 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $clicksRepository,
-      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class),
