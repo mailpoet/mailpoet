@@ -555,6 +555,18 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     verify($mailBody['subject'])->equals("Confirm <<News from O'Brien's shop>>");
   }
 
+  public function testItKeepsSiteTitleInCustomizerSubjectUnencodedInsideAngleBrackets() {
+    $newsletter = (new NewsletterFactory())
+      ->loadBodyFrom('newsletterThreeCols.json')
+      ->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)
+      ->withSubject('Confirm <<News from [site:title]>>')
+      ->create();
+    $sender = $this->diContainer->get(ConfirmationEmailMailer::class);
+    $this->tester->setBlogname("O'Brien's shop");
+    $mailBody = $sender->getMailBodyWithCustomizer($this->subscriber, ['List'], $newsletter);
+    verify($mailBody['subject'])->equals("Confirm <<News from O'Brien's shop>>");
+  }
+
   public function testGetMailBodyWithCustomizerReplacesActivationShortcode() {
     $subscriptionUrlFactoryMock = $this->createMock(SubscriptionUrlFactory::class);
     $subscriptionUrlFactoryMock->method('getConfirmationUrl')->willReturn('https://example.com');
