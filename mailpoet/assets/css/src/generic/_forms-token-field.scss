@@ -1,7 +1,7 @@
-// In @wordpress/components v32+, the className prop on FormTokenField is
-// applied to the __input-container (Flex), not the root. The suggestions
-// list is a sibling in the root .components-form-token-field div.
-// We style both the input container and ensure the root wraps correctly.
+// In @wordpress/components v32+, the className prop on FormTokenField lands on
+// __input-container, which holds the tokens/input wrapper and the suggestions
+// list. The grid centers that content inside the min-height so it lines up
+// with other inputs. The :has() rule styles the root.
 .components-form-token-field:has(.mailpoet-form-token-field) {
   max-width: 100%;
   position: relative;
@@ -9,10 +9,13 @@
 }
 
 .mailpoet-form-token-field {
+  align-content: center;
   background: $color-input-background;
   border: 1px solid $color-input-border !important;
   border-radius: $form-control-border-radius !important;
   box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   max-width: 100%;
   min-height: $form-control-height;
   min-width: 0;
