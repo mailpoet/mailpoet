@@ -78,6 +78,21 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     verify($daemon->run(['token' => ['abc']]))->equals('Invalid or missing token.');
   }
 
+  public function testItDoesNotRunWhenStoredTokenIsNull() {
+    $daemon = $this->make(
+      DaemonHttpRunner::class,
+      [
+        'abortWithError' => function($message) {
+          return $message;
+        },
+      ]
+    );
+    $daemon->settingsDaemonData = [
+      'token' => null,
+    ];
+    verify($daemon->run(['token' => '']))->equals('Invalid or missing token.');
+  }
+
   public function testItStoresErrorMessageAndContinuesExecutionWhenWorkersThrowException() {
     $data = [
       'token' => 123,

@@ -65,7 +65,7 @@ class DaemonHttpRunner {
         $error = __('Daemon does not exist.', 'mailpoet');
       } else {
         if (
-          !isset($requestData['token']) ||
+          !isset($requestData['token'], $this->settingsDaemonData['token']) ||
           !is_scalar($requestData['token']) ||
           !hash_equals((string)$this->settingsDaemonData['token'], (string)$requestData['token'])
         ) {
