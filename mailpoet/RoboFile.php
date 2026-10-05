@@ -766,11 +766,9 @@ class RoboFile extends \Robo\Tasks {
       return '^' . preg_quote(__DIR__ . DIRECTORY_SEPARATOR . $path);
     }, $ignorePaths);
 
-    $stringFilesToCheck = !empty($filesToCheck) ? implode(' ', $filesToCheck) : '.';
-
     return $this->taskExec($task)
       ->arg('--ignore=' . implode(',', $ignorePatterns))
-      ->rawArg($stringFilesToCheck)
+      ->args(!empty($filesToCheck) ? $filesToCheck : ['.'])
       ->run();
   }
 
