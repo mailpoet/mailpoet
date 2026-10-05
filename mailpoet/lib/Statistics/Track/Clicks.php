@@ -30,10 +30,11 @@ class Clicks {
    * Matches the start of a link whose destination is already fixed:
    * - "https://example.com/", "//example.com#", "whatsapp://send?": an optional URI scheme (RFC 3986),
    *   "//", a host, and the "/", "?" or "#" that ends it;
-   * - "mailto:info@", "tel:+1": a scheme other than http(s) followed by anything but "/", so the
+   * - "mailto:", "tel:", "sms:": schemes handed to an app, never to a web host;
+   * - "geo:0,0", "skype:echo": any other scheme except http(s) followed by anything but "/", so the
    *   link has no host part.
    */
-  private const FIXED_DESTINATION_PATTERN = '~^(?:(?:[a-z][a-z0-9+.-]*:)?//[^/?#\\\\]+[/?#]|(?!https?:)[a-z][a-z0-9+.-]*:[^/])~i';
+  private const FIXED_DESTINATION_PATTERN = '~^(?:(?:[a-z][a-z0-9+.-]*:)?//[^/?#\\\\]+[/?#]|(?:mailto|tel|sms):|(?!https?:)[a-z][a-z0-9+.-]*:[^/])~i';
 
   const REVENUE_TRACKING_COOKIE_NAME = 'mailpoet_revenue_tracking';
   const REVENUE_TRACKING_COOKIE_EXPIRY = 60 * 60 * 24 * 14;

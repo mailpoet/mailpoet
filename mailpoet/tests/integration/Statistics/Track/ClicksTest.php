@@ -897,7 +897,7 @@ class ClicksTest extends \MailPoetTest {
 
   public function testItRedirectsToHomeWhenShortcodesFollowTheSchemeDirectly() {
     $this->subscriber->setFirstName('//example.org/');
-    foreach (['ftp:[subscriber:firstname]', 'mailto:[subscriber:firstname]'] as $url) {
+    foreach (['ftp:[subscriber:firstname]', 'intent:[subscriber:firstname]'] as $url) {
       $link = $this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false);
       verify($link)->equals(home_url());
     }
@@ -930,6 +930,9 @@ class ClicksTest extends \MailPoetTest {
       'mailto:info@example.com?subject=[subscriber:firstname]' => 'mailto:info@example.com?subject=https://example.org/?x=',
       'whatsapp://send?text=[subscriber:firstname]' => 'whatsapp://send?text=https://example.org/?x=',
       'tel:+15550100;ext=[subscriber:firstname]' => 'tel:+15550100;ext=https://example.org/?x=',
+      'mailto:[subscriber:firstname]' => 'mailto:https://example.org/?x=',
+      'tel:[subscriber:firstname]' => 'tel:https://example.org/?x=',
+      'sms:[subscriber:firstname]' => 'sms:https://example.org/?x=',
       'sms:+15550100?body=[subscriber:firstname]' => 'sms:+15550100?body=https://example.org/?x=',
     ];
     foreach ($urls as $url => $expected) {
