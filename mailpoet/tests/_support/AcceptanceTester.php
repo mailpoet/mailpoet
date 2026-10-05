@@ -91,6 +91,11 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->amOnPage('/wp-login.php?action=logout');
     $i->click('log out');
     $i->waitForText('You are now logged out.');
+    // a WooCommerce session cookie restored from the login snapshot survives the logout and empties the guest cart
+    $wooSessionCookies = $i->grabCookiesWithPattern('/^wp_woocommerce_session_[a-z0-9]{32}$/') ?: [];
+    foreach ($wooSessionCookies as $cookie) {
+      $i->resetCookie($cookie->getName());
+    }
     $i->deleteSessionSnapshot('login');
   }
 
