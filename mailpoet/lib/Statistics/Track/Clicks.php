@@ -8,13 +8,11 @@ use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\GATracking;
 use MailPoet\Statistics\StatisticsClicksRepository;
-use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Util\Cookies;
@@ -47,9 +45,6 @@ class Clicks {
   /** @var StatisticsClicksRepository */
   private $statisticsClicksRepository;
 
-  /** @var UserAgentsRepository */
-  private $userAgentsRepository;
-
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
@@ -72,7 +67,6 @@ class Clicks {
     Shortcodes $shortcodes,
     Opens $opens,
     StatisticsClicksRepository $statisticsClicksRepository,
-    UserAgentsRepository $userAgentsRepository,
     LinkShortcodeCategory $linkShortcodeCategory,
     SubscribersRepository $subscribersRepository,
     TrackingConfig $trackingConfig,
@@ -87,7 +81,6 @@ class Clicks {
     $this->linkShortcodeCategory = $linkShortcodeCategory;
     $this->opens = $opens;
     $this->statisticsClicksRepository = $statisticsClicksRepository;
-    $this->userAgentsRepository = $userAgentsRepository;
     $this->subscribersRepository = $subscribersRepository;
     $this->trackingConfig = $trackingConfig;
     $this->request = $request;
@@ -122,22 +115,13 @@ class Clicks {
     // No tracking consent (CNIL/Garante): skip all recording (stats, cookies,
     // engagement) but keep the redirect below.
     if (!$wpUserPreview && $trackingAllowed && !$isTrackingOptOutLink) {
-      $userAgent = !empty($data->userAgent) ? $this->userAgentsRepository->findOrCreate($data->userAgent) : null;
       $statisticsClicks = $this->statisticsClicksRepository->createOrUpdateClickCount(
         $link,
         $subscriber,
         $newsletter,
         $queue,
-        $userAgent
+        !empty($data->userAgent) ? (string)$data->userAgent : null
       );
-      if (
-        $userAgent instanceof UserAgentEntity &&
-        ($userAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_HUMAN
-        || $statisticsClicks->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_MACHINE)
-      ) {
-        $statisticsClicks->setUserAgent($userAgent);
-        $statisticsClicks->setUserAgentType($userAgent->getUserAgentType());
-      }
       $this->statisticsClicksRepository->flush();
       $this->sendRevenueCookie($statisticsClicks);
 

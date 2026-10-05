@@ -2,4 +2,4 @@
 
 # Description
 
-User-agent handling for repeated email opens
+User-agent handling for repeated email opens and clicks
