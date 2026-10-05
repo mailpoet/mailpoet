@@ -313,8 +313,12 @@ h1.title.mailpoet-newsletter-listing-heading {
 }
 
 .mailpoet-listing-stats-too-early {
+  line-height: 18px;
   margin-top: 5px;
-  max-width: 150px;
+  max-width: 200px;
+  overflow-wrap: break-word;
+  white-space: normal;
+  width: max-content;
 }
 
 .mailpoet-listing-stats-percentages-opens {
@@ -327,6 +331,11 @@ h1.title.mailpoet-newsletter-listing-heading {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+// DataViews disables wrapping in table cells.
+.mailpoet-listing-stats-cell .mailpoet-tooltip {
+  white-space: normal;
 }
 
 // Rendered only when some recipients were not tracked.
