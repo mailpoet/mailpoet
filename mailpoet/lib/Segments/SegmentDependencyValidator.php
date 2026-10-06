@@ -90,6 +90,7 @@ class SegmentDependencyValidator {
    */
   public function getMissingPluginsByAllFilters(Collection $dynamicFilters): array {
     $missingPluginNames = [];
+    // Free evaluates combined filters itself, so a paid site keeps sending while Premium is not running.
     if (
       count($dynamicFilters) > 1
       && (!$this->wp->isPluginActive(self::MAILPOET_PREMIUM_PLUGIN['id'])
@@ -128,11 +129,27 @@ class SegmentDependencyValidator {
   private function getMissingPlugins(array $config): array {
     $missingPlugins = [];
     foreach ($config as $requiredPlugin) {
-      if (isset($requiredPlugin['id']) && !$this->wp->isPluginActive($requiredPlugin['id'])) {
+      if (!isset($requiredPlugin['id'])) {
+        continue;
+      }
+      $isAvailable = $requiredPlugin['id'] === self::MAILPOET_PREMIUM_PLUGIN['id']
+        ? $this->isPremiumPluginRunning()
+        : $this->wp->isPluginActive($requiredPlugin['id']);
+      if (!$isAvailable) {
         $missingPlugins[] = $requiredPlugin;
       }
     }
     return $missingPlugins;
+  }
+
+  /**
+   * Premium stays active in WordPress when it refuses to boot on a version mismatch,
+   * so only its initialized flag shows that its segment filters are registered.
+   */
+  public function isPremiumPluginRunning(): bool {
+    return $this->wp->isPluginActive(self::MAILPOET_PREMIUM_PLUGIN['id'])
+      && defined('MAILPOET_PREMIUM_INITIALIZED')
+      && MAILPOET_PREMIUM_INITIALIZED;
   }
 
   public function getCustomErrorMessage($missingPlugin) {
