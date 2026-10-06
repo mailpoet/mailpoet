@@ -22,9 +22,10 @@ class CouponBlockGeneratorTest extends \MailPoetUnitTest {
         verify($acceptedArgs)->equals(3);
         return true;
       },
-      'addAction' => function($hook, $callback) {
+      'addAction' => function($hook, $callback, $priority) {
         verify($hook)->equals('woocommerce_email_editor_render_start');
         verify($callback)->isArray();
+        verify($priority)->equals(20);
         return true;
       },
     ]);
