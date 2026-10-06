@@ -330,8 +330,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0
       select2:
-        specifier: ^4.1.0
-        version: 4.1.0
+        specifier: 4.1.0-rc.0
+        version: 4.1.0-rc.0
       setimmediate:
         specifier: ^1.0.5
         version: 1.0.5
@@ -10693,9 +10693,8 @@ packages:
   select-hose@2.0.0:
     resolution: {integrity: sha512-mEugaLK+YfkijB4fx0e6kImuJdCIt2LxCRcbEYPqRGCs4F2ogyfZU5IAZRdjCP8JPq2AtdNoC/Dux63d9Kiryg==}
 
-  select2@4.1.0:
-    resolution: {integrity: sha512-i9KalWOP4/LRRGc8+rj2krNm0ZqP14cV+j1TRCEBSsOhCPkKH8rYZ2MCRXcgvqIqN+llqGci0hj9aVkCMvL0+g==}
-    engines: {node: '>=24'}
+  select2@4.1.0-rc.0:
+    resolution: {integrity: sha512-Hr9TdhyHCZUtwznEH2CBf7967mEM0idtJ5nMtjvk3Up5tPukOLXbHUNmh10oRfeNIhj+3GD3niu+g6sVK+gK0A==}
 
   select@1.1.2:
     resolution: {integrity: sha512-OwpTSOfy6xSs1+pwcNrv0RBMOzI39Lp3qQKUTPVVPRjCdNa5JH/oPRiqsesIskK8TVgmRiHwO4KXlV2Li9dANA==}
@@ -26237,7 +26236,7 @@ snapshots:
 
   select-hose@2.0.0: {}
 
-  select2@4.1.0: {}
+  select2@4.1.0-rc.0: {}
 
   select@1.1.2: {}
 
