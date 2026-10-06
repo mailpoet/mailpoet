@@ -650,7 +650,7 @@ jQuery(($) => {
       return;
     }
     const recaptcha = $(element);
-    const form = $(recaptcha).closest('form') as JQuery<HTMLFormElement>;
+    const form = $(recaptcha).closest('form');
     const sitekey = recaptcha.attr('data-sitekey');
     let size = recaptcha.attr('data-size') as ReCaptchaV2.Size;
 
