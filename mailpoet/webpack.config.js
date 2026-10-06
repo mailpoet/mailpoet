@@ -274,14 +274,18 @@ const adminConfig = {
     }),
 
     new WebpackCopyPlugin({
+      // Mark copied files as minimized so webpack's default CSS minimizer
+      // ships them as their packages built them instead of re-minifying.
       patterns: [
         {
           from: 'node_modules/tinymce/skins/ui/oxide',
           to: 'skins/ui/oxide',
+          info: { minimized: true },
         },
         {
           from: 'node_modules/@woocommerce/email-editor/build-style',
           to: 'email-editor/style',
+          info: { minimized: true },
         },
       ],
     }),
@@ -308,22 +312,8 @@ const adminConfig = {
 };
 
 function requestToFormEditorExternal(request) {
-  if (request === 'react-dom/client') {
-    return 'ReactDOM';
-  }
   if (request.startsWith('@wordpress/') && request.split('/').length > 2) {
     return false;
-  }
-  // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
-  // packages, for that handling to kick in, we must not return anything from
-  // function.
-  /* eslint-disable-next-line consistent-return, no-useless-return */
-  return;
-}
-
-function requestToFormEditorHandle(request) {
-  if (request === 'react-dom/client') {
-    return 'react-dom';
   }
   // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
   // packages, for that handling to kick in, we must not return anything from
@@ -342,7 +332,6 @@ const formEditorConfig = {
     new DependencyExtractionWebpackPlugin({
       outputFormat: 'json',
       requestToExternal: requestToFormEditorExternal,
-      requestToHandle: requestToFormEditorHandle,
     }),
   ],
 };
@@ -654,25 +643,7 @@ const emailEditorIntegration = Object.assign({}, wpScriptConfig, {
     modules: ['node_modules', 'assets/js/src'],
   },
   plugins: [
-    // Filter out the default DependencyExtractionWebpackPlugin
-    ...wpScriptConfig.plugins.filter(
-      (plugin) =>
-        plugin.constructor.name !== 'DependencyExtractionWebpackPlugin',
-    ),
-    // Add our custom DependencyExtractionWebpackPlugin that forces bundling of
-    // @wordpress/global-styles-engine and @wordpress/ui (the latter is not
-    // registered as a `wp-ui` script in WordPress, so it must be bundled).
-    new DependencyExtractionWebpackPlugin({
-      requestToExternal: (request) => {
-        if (
-          request === '@wordpress/global-styles-engine' ||
-          request === '@wordpress/ui'
-        ) {
-          return false;
-        }
-        return;
-      },
-    }),
+    ...wpScriptConfig.plugins,
     // Substitute the `__i18n_text_domain__` identifier used by the
     // @woocommerce/email-editor package so its translation strings extract
     // and translate under the MailPoet text domain instead of `woocommerce`.
