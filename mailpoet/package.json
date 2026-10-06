@@ -162,7 +162,7 @@
     "@wordpress/babel-preset-default": "^8.43.0",
     "@wordpress/base-styles": "^6.19.0",
     "@wordpress/browserslist-config": "^6.43.0",
-    "@wordpress/dependency-extraction-webpack-plugin": "^6.43.0",
+    "@wordpress/dependency-extraction-webpack-plugin": "^6.56.0",
     "@wordpress/is-shallow-equal": "^5.43.0",
     "autoprefixer": "^10.6.1",
     "babel-loader": "^10.1.1",
