@@ -23,7 +23,12 @@ class SubscriberTag implements Filter {
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
-    $this->wp->applyFilters('mailpoet_dynamic_segments_filter_subscriber_tag_apply', $queryBuilder, $filter);
+    $hookName = 'mailpoet_dynamic_segments_filter_subscriber_tag_apply';
+    if (!$this->wp->hasFilter($hookName)) {
+      // Without Premium nothing adds the tag condition, and the filter would match everyone.
+      return $queryBuilder->andWhere('1 = 0');
+    }
+    $this->wp->applyFilters($hookName, $queryBuilder, $filter);
     return $queryBuilder;
   }
 
