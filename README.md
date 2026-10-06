@@ -220,7 +220,7 @@ Integration tests run in `tests_env/` (not wp-env), so they use a separate serve
 
 We use [Husky](https://github.com/typicode/husky) to run automated checks in pre-commit hooks.
 
-If you use [NVM](https://github.com/nvm-sh/nvm) for Node version management you may need to create or update `~/.huskyrc`:
+If you use [NVM](https://github.com/nvm-sh/nvm) for Node version management you may need to create or update `~/.config/husky/init.sh` (Husky 9 no longer reads `~/.huskyrc`):
 
 ```sh
 # Loads nvm.sh and sets the correct PATH before running the hooks:
