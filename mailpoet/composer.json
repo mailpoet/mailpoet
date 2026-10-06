@@ -5,7 +5,7 @@
     "automattic/jetpack-autoloader": "^5.0.8",
     "dragonmantank/cron-expression": "^3.3",
     "mixpanel/mixpanel-php": "2.*",
-    "woocommerce/action-scheduler": "3.9.2",
+    "woocommerce/action-scheduler": "3.9.3",
     "woocommerce/email-editor": "2.18.0"
   },
   "require-dev": {
@@ -22,7 +22,7 @@
     "guzzlehttp/guzzle": "^7.8",
     "phpunit/phpunit": "9.6.33",
     "totten/lurkerlite": "^1.3",
-    "vlucas/phpdotenv": "v5.6.0",
+    "vlucas/phpdotenv": "v5.7.0",
     "woocommerce/qit-cli": "^0.5.4",
     "wp-cli/wp-cli-bundle": "2.10.0",
     "symfony/process": "5.4.51"
