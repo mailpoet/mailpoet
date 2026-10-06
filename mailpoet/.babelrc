@@ -9,7 +9,7 @@
       "@babel/plugin-transform-runtime",
       {
         "sourceType": "unambiguous",
-        "corejs": 3
+        "corejs": false
       }
     ],
     "@babel/plugin-proposal-function-sent",

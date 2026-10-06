@@ -49,9 +49,9 @@ class DateTime extends Component<DateTimeProps, DateTimeState> {
       this.props.value !== prevProps.value ||
       this.props.defaultDateTime !== prevProps.defaultDateTime
     ) {
-      setImmediate(() => {
+      setTimeout(() => {
         this.setState(this.buildStateFromProps(this.props));
-      });
+      }, 0);
     }
   }
 

@@ -86,9 +86,6 @@ importers:
       '@babel/runtime':
         specifier: ^7.29.7
         version: 7.29.7
-      '@babel/runtime-corejs3':
-        specifier: ^7.29.7
-        version: 7.29.7
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@18.3.28)(react@18.3.1)
@@ -332,9 +329,6 @@ importers:
       select2:
         specifier: 4.1.0-rc.0
         version: 4.1.0-rc.0
-      setimmediate:
-        specifier: ^1.0.5
-        version: 1.0.5
       slugify:
         specifier: ^1.6.9
         version: 1.6.9
@@ -1879,10 +1873,6 @@ packages:
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': 7.29.6
-
-  '@babel/runtime-corejs3@7.29.7':
-    resolution: {integrity: sha512-ppj9ouYku+RX0ljtgZd+KMO5mkM2bCqg8H2PYAFWnLsHEIKIdRojqbJ2i3eVHrisuxy7nOFCmngTDdWtUCdXUQ==}
-    engines: {node: '>=6.9.0'}
 
   '@babel/runtime@7.26.10':
     resolution: {integrity: sha512-2WJMeRQPHKSPemqk/awGrAiuFfzBmOIPXKizAsVhWH9YJqLZ0H+HS4c8loHGgW6utJ3E/ejXQUsiGaQy2NZ9Fw==}
@@ -6231,9 +6221,6 @@ packages:
 
   core-js-pure@3.41.0:
     resolution: {integrity: sha512-71Gzp96T9YPk63aUvE5Q5qP+DryB4ZloUZPSOebGM88VNw8VNfvdA7z6kGA8iGOTEzAomsRidp4jXSmUIJsL+Q==}
-
-  core-js-pure@3.50.0:
-    resolution: {integrity: sha512-6GP3Pxz4IKyWjAfa747vIu/jilB5z29JWROLqH/b+pXVcpgh6tM06ZIBwSuglgVqzDYURhOK6oEzTrG0bCHitA==}
 
   core-js@3.50.0:
     resolution: {integrity: sha512-BRWgOLKkFeCgRudR6zrs8p9XJZcE14grzKMMssoYrk6krtuEZ7MTKPIY5RzOnqsEKIR9kst7wNzphttraT+Yqw==}
@@ -14486,10 +14473,6 @@ snapshots:
       pirates: 4.0.7
       source-map-support: 0.5.21
 
-  '@babel/runtime-corejs3@7.29.7':
-    dependencies:
-      core-js-pure: 3.50.0
-
   '@babel/runtime@7.26.10':
     dependencies:
       regenerator-runtime: 0.14.1
@@ -21035,8 +21018,6 @@ snapshots:
       browserslist: 4.28.9
 
   core-js-pure@3.41.0: {}
-
-  core-js-pure@3.50.0: {}
 
   core-js@3.50.0: {}
 
