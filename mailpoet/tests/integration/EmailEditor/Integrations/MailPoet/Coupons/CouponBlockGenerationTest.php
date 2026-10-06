@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\EmailEditor\Integrations\MailPoet\Coupons;
 
+use Automattic\WooCommerce\Blocks\BlockTypesController as WooCommerceBlockTypesController;
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerationFailureCollector;
@@ -29,14 +30,34 @@ class CouponBlockGenerationTest extends \MailPoetTest {
 
   private CouponBlockGenerator $generator;
 
+  /** @var \WP_Block_Type[] */
+  private $originalWooCommerceBlocks = [];
+
+  /** @var bool|null */
+  private $originalRegisterBlocksHasRun;
+
   public function _before() {
     parent::_before();
+    $this->originalWooCommerceBlocks = $this->getRegisteredWooCommerceBlocks();
+    $this->originalRegisterBlocksHasRun = $this->canSkipWooCommerceBlockRegistration()
+      ? (bool)$this->getRegisterBlocksHasRunProperty()->getValue()
+      : null;
     $this->generator = $this->diContainer->get(CouponBlockGenerator::class);
     $this->generator->init();
   }
 
   public function _after() {
     WPFunctions::get()->removeFilter('woocommerce_coupon_code_block_auto_generate', [$this->generator, 'generate'], 5);
+    $registry = \WP_Block_Type_Registry::get_instance();
+    foreach (array_keys($this->getRegisteredWooCommerceBlocks()) as $blockName) {
+      $registry->unregister($blockName);
+    }
+    foreach ($this->originalWooCommerceBlocks as $blockType) {
+      $registry->register($blockType);
+    }
+    if ($this->originalRegisterBlocksHasRun !== null) {
+      $this->getRegisterBlocksHasRunProperty()->setValue(null, $this->originalRegisterBlocksHasRun);
+    }
     foreach ($this->postIds as $postId) {
       wp_delete_post($postId, true);
     }
@@ -85,6 +106,63 @@ class CouponBlockGenerationTest extends \MailPoetTest {
     $body = $queue->getNewsletterRenderedBody();
     $this->assertIsArray($body);
     $this->assertSame(NewsletterEntity::STATUS_ACTIVE, $newsletter->getStatus());
+  }
+
+  public function testItGeneratesCouponWhenWooCommerceSkippedBlockRegistration(): void {
+    if (!$this->canSkipWooCommerceBlockRegistration()) {
+      $this->markTestSkipped('WooCommerce before 11.1 always registers its blocks.');
+    }
+    $this->simulateSkippedWooCommerceBlockRegistration();
+
+    $newsletter = $this->createBlockEmailNewsletter(
+      NewsletterEntity::TYPE_AUTOMATION,
+      $this->createCouponBlockContent(['source' => 'createNew', 'discountType' => 'percent', 'amount' => '15']),
+      1
+    );
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $task = $queue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+
+    (new NewsletterTask())->preProcessNewsletter($newsletter, $task);
+
+    $body = $queue->getNewsletterRenderedBody();
+    $this->assertIsArray($body);
+    $this->assertStringNotContainsString(CouponBlockGenerator::SAFE_PLACEHOLDER, $body['html']);
+    $this->assertCount(1, get_posts(['post_type' => 'shop_coupon', 'post_status' => 'any', 'numberposts' => -1]));
+  }
+
+  public function testItGeneratesCouponWhenCouponBlockIsRegisteredByLaterRenderStartCallback(): void {
+    // Newer WooCommerce registers its skipped blocks from its own render start callback at the
+    // default priority, which can be added after MailPoet's.
+    \WP_Block_Type_Registry::get_instance()->unregister('woocommerce/coupon-code');
+    $registerCouponBlock = function (): void {
+      if (!\WP_Block_Type_Registry::get_instance()->is_registered('woocommerce/coupon-code')) {
+        register_block_type('woocommerce/coupon-code');
+      }
+    };
+    add_action('woocommerce_email_editor_render_start', $registerCouponBlock);
+
+    $newsletter = $this->createBlockEmailNewsletter(
+      NewsletterEntity::TYPE_AUTOMATION,
+      $this->createCouponBlockContent(['source' => 'createNew', 'discountType' => 'percent', 'amount' => '15']),
+      1
+    );
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $task = $queue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+
+    try {
+      (new NewsletterTask())->preProcessNewsletter($newsletter, $task);
+    } finally {
+      remove_action('woocommerce_email_editor_render_start', $registerCouponBlock);
+    }
+
+    $body = $queue->getNewsletterRenderedBody();
+    $this->assertIsArray($body);
+    $this->assertStringNotContainsString(CouponBlockGenerator::SAFE_PLACEHOLDER, $body['html']);
+    $this->assertCount(1, get_posts(['post_type' => 'shop_coupon', 'post_status' => 'any', 'numberposts' => -1]));
   }
 
   public function testItGeneratesWooCommerceCouponWhenWooCommerceOmitsDefaultAttributes(): void {
@@ -271,6 +349,41 @@ class CouponBlockGenerationTest extends \MailPoetTest {
       '<!-- wp:woocommerce/coupon-code%1$s --><div class="wp-block-woocommerce-coupon-code"><strong>%2$s</strong></div><!-- /wp:woocommerce/coupon-code -->',
       $attrsJson,
       CouponBlockGenerator::SAFE_PLACEHOLDER
+    );
+  }
+
+  /**
+   * Recreates the state of a cron request on WooCommerce 11.1+: no WooCommerce
+   * block is registered and the block types controller has not run.
+   */
+  private function simulateSkippedWooCommerceBlockRegistration(): void {
+    $registry = \WP_Block_Type_Registry::get_instance();
+    foreach (array_keys($this->originalWooCommerceBlocks) as $blockName) {
+      $registry->unregister($blockName);
+    }
+    $this->getRegisterBlocksHasRunProperty()->setValue(null, false);
+  }
+
+  private function canSkipWooCommerceBlockRegistration(): bool {
+    return property_exists(WooCommerceBlockTypesController::class, 'register_blocks_has_run');
+  }
+
+  private function getRegisterBlocksHasRunProperty(): \ReflectionProperty {
+    $property = new \ReflectionProperty(WooCommerceBlockTypesController::class, 'register_blocks_has_run');
+    $property->setAccessible(true);
+    return $property;
+  }
+
+  /**
+   * @return \WP_Block_Type[]
+   */
+  private function getRegisteredWooCommerceBlocks(): array {
+    return array_filter(
+      \WP_Block_Type_Registry::get_instance()->get_all_registered(),
+      function (string $blockName): bool {
+        return strpos($blockName, 'woocommerce/') === 0;
+      },
+      ARRAY_FILTER_USE_KEY
     );
   }
 }
