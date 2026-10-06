@@ -13,6 +13,13 @@ import { defaultAttributes as dividerDefaultAttributes } from '../blocks/divider
 
 const generateId = () => `${Math.random().toString()}-${Date.now()}`;
 
+// BC fix: The core image block takes CSS lengths, but form templates and forms
+// saved before it switched from numbers store unitless pixel values
+const mapImageSize = (value) => {
+  const size = Number(value);
+  return size > 0 && String(size) === String(value) ? `${value}px` : value;
+};
+
 export const customFieldValuesToBlockValues = (values) =>
   values.map((value) => {
     const mappedValue = {
@@ -398,8 +405,8 @@ export const formBodyToBlocksFactory = (
                 linkTarget: item.params?.link_target,
                 id: item.params?.id,
                 sizeSlug: item.params?.size_slug,
-                width: item.params?.width,
-                height: item.params?.height,
+                width: mapImageSize(item.params?.width),
+                height: mapImageSize(item.params?.height),
               },
             };
           case 'first_name':
