@@ -177,7 +177,7 @@ class AutomationStatisticsStorage {
     } elseif ($after && $before === null) {
       $dateCondition = 'AND created_at >= %s';
       $dateParams = [$after->format('Y-m-d H:i:s')];
-    } elseif ($after === null && $before) {
+    } elseif ($before) {
       $dateCondition = 'AND created_at <= %s';
       $dateParams = [$before->format('Y-m-d H:i:s')];
     }
