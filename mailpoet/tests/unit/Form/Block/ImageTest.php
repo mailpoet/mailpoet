@@ -96,6 +96,20 @@ class ImageTest extends \MailPoetUnitTest {
     verify($captionContent->textContent)->equals('Caption');
   }
 
+  public function testItShouldRenderImageSizeSavedWithPixelUnit() {
+    $block = $this->block;
+    $block['params']['id'] = null;
+    $block['params']['width'] = '95px';
+    $block['params']['height'] = '90px';
+    $html = $this->image->render($block);
+    $img = $this->htmlParser->getElementByXpath($html, '//img');
+    verify($this->htmlParser->getAttribute($img, 'width')->value)->equals(95);
+    verify($this->htmlParser->getAttribute($img, 'height')->value)->equals(90);
+    $style = $this->htmlParser->getAttribute($img, 'style');
+    verify($style->value)->stringContainsString('width: 95px');
+    verify($style->value)->stringContainsString('height: 90px');
+  }
+
   public function testItShouldRenderImageBlockWithLink() {
     $this->wpMock->expects($this->never())->method('wpGetAttachmentImageSrcset');
     $block = $this->block;
