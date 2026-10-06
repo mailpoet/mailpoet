@@ -110,6 +110,18 @@ class ImageTest extends \MailPoetUnitTest {
     verify($style->value)->stringContainsString('height: 90px');
   }
 
+  public function testItShouldSkipAutoHeightOfImageResizedInEditor() {
+    $block = $this->block;
+    $block['params']['id'] = null;
+    $block['params']['width'] = '120px';
+    $block['params']['height'] = 'auto';
+    $html = $this->image->render($block);
+    $img = $this->htmlParser->getElementByXpath($html, '//img');
+    verify($this->htmlParser->getAttribute($img, 'width')->value)->equals(120);
+    verify($img->hasAttribute('height'))->false();
+    verify($this->htmlParser->getAttribute($img, 'style')->value)->equals('width: 120px');
+  }
+
   public function testItShouldRenderImageBlockWithLink() {
     $this->wpMock->expects($this->never())->method('wpGetAttachmentImageSrcset');
     $block = $this->block;
