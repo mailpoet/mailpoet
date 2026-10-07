@@ -196,6 +196,16 @@ class CustomFieldsRepositoryTest extends \MailPoetTest {
     $this->assertContains((int)$beta->getId(), $formCustomFieldIds);
   }
 
+  public function testGetDynamicSegmentNamesUsingCustomFieldIgnoresTrashedSegments(): void {
+    $alpha = (new CustomFieldFactory())->withName('Alpha')->create();
+    $beta = (new CustomFieldFactory())->withName('Beta')->create();
+    (new DynamicSegmentFactory())->withName('Alpha fans')->withCustomFieldFilter($alpha)->create();
+    (new DynamicSegmentFactory())->withName('Old alpha fans')->withCustomFieldFilter($alpha)->withDeleted()->create();
+
+    $this->assertSame(['Alpha fans'], $this->repository->getDynamicSegmentNamesUsingCustomField((int)$alpha->getId()));
+    $this->assertSame([], $this->repository->getDynamicSegmentNamesUsingCustomField((int)$beta->getId()));
+  }
+
   public function testEmptyTrashPermanentlyDeletesTrashedCustomFields(): void {
     $trashed = (new CustomFieldFactory())->withName('Trashed')->create();
     $active = (new CustomFieldFactory())->withName('Active')->create();
