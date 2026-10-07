@@ -706,6 +706,10 @@ class Functions {
     return wp_parse_url($url, $component);
   }
 
+  public function wpRegistrationUrl() {
+    return wp_registration_url();
+  }
+
   public function wpSpecialcharsDecode($string, $quoteStyle = ENT_NOQUOTES) {
     return wp_specialchars_decode($string, $quoteStyle);
   }

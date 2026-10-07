@@ -2,12 +2,16 @@
 
 namespace MailPoet\Test\Captcha;
 
+use Codeception\Stub;
+use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Captcha\CaptchaFormRenderer;
 use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Captcha\CaptchaUrlFactory;
 use MailPoet\Config\Populator;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
+use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 class CaptchaFormRendererTest extends \MailPoetTest {
   const SESSION_ID = 'abcd1234abcd1234abcd1234abcd1234';
@@ -17,10 +21,18 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $populator->up();
 
     parent::_before();
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set(CaptchaConstants::TYPE_SETTING_NAME, CaptchaConstants::TYPE_BUILTIN);
+    $settings->set(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, true);
   }
 
   /** @var string[] */
   private array $createdSessionIds = [];
+
+  /** @var mixed */
+  private $previousMyAccountPageId = false;
+
+  private int $createdPageId = 0;
 
   public function _after() {
     $session = $this->diContainer->get(CaptchaSession::class);
@@ -29,6 +41,19 @@ class CaptchaFormRendererTest extends \MailPoetTest {
       $session->reset($id);
     }
     unset($_GET['user_login'], $_GET['password']);
+    if ($this->createdPageId) {
+      wp_delete_post($this->createdPageId, true);
+      $this->createdPageId = 0;
+      if ($this->previousMyAccountPageId === null) {
+        delete_option('woocommerce_myaccount_page_id');
+      } else {
+        update_option('woocommerce_myaccount_page_id', $this->previousMyAccountPageId);
+      }
+      $this->previousMyAccountPageId = false;
+    }
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set('captcha', []);
+    $settings->set(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, false);
     parent::_after();
   }
 
@@ -214,7 +239,7 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $fieldName = 'field"name';
     $fieldValue = 'value"&test';
     $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WP_FORM, [
-      'referrer_form_url' => 'https://example.com/?param=value&other=test',
+      'referrer_form_url' => home_url('/?param=value&other=test'),
       'wp-submit' => 'Register',
       $fieldName => $fieldValue,
     ]);
@@ -224,7 +249,7 @@ class CaptchaFormRendererTest extends \MailPoetTest {
       'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
     ]);
 
-    $this->assertStringContainsString('action="https://example.com/?param=value&#038;other=test"', $result);
+    $this->assertStringContainsString('action="' . home_url('/') . '?param=value&#038;other=test"', $result);
     $this->assertStringContainsString('name="field&quot;name"', $result);
     $this->assertStringContainsString('value="value&quot;&amp;test"', $result);
   }
@@ -273,7 +298,7 @@ class CaptchaFormRendererTest extends \MailPoetTest {
 
   public function testItEscapesReferrerFormUrlProperly(): void {
     $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WP_FORM, [
-      'referrer_form_url' => 'https://example.com/register?param=value"onload=alert(1)&other=test',
+      'referrer_form_url' => home_url('/register?param=value"onload=alert(1)&other=test'),
       'wp-submit' => 'Register',
       'user_login' => 'testuser',
     ]);
@@ -283,11 +308,148 @@ class CaptchaFormRendererTest extends \MailPoetTest {
       'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
     ]);
 
-    $this->assertStringContainsString('action="https://example.com/register?param=valueonload=alert(1)&#038;other=test"', $result);
+    $this->assertStringContainsString('action="' . home_url('/register') . '?param=valueonload=alert(1)&#038;other=test"', $result);
     $this->assertStringNotContainsString('param=value"onload', $result);
-    $this->assertStringNotContainsString('action="https://example.com/register?param=value"onload', $result);
     $this->assertStringNotContainsString('name="referrer_form_url"', $result);
     $this->assertStringContainsString('name="user_login" value="testuser"', $result);
+  }
+
+  private function renderRegisterFormAction(string $referrer, string $url): string {
+    $submitKey = $referrer === CaptchaUrlFactory::REFERER_WC_FORM ? 'register' : 'wp-submit';
+    $sessionId = $this->seedRegisterStash($referrer, ['referrer_form_url' => $url, $submitKey => 'Register']);
+    $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => $referrer,
+    ]);
+    $this->assertIsString($result);
+    $this->assertSame(1, preg_match('/<form method="POST" action="([^"]*)"/', $result, $matches));
+    return $matches[1];
+  }
+
+  private function getWcFallbackUrl(): string {
+    if (!class_exists('WooCommerce') || !function_exists('wc_get_page_permalink')) {
+      $this->markTestSkipped('WooCommerce is not available.');
+    }
+    $this->previousMyAccountPageId = get_option('woocommerce_myaccount_page_id', null);
+    $pageId = wp_insert_post(['post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'Captcha test account', 'post_name' => 'captcha-test-account']);
+    $this->createdPageId = (int)$pageId;
+    update_option('woocommerce_myaccount_page_id', $pageId);
+    $permalink = wc_get_page_permalink('myaccount');
+    $this->assertStringContainsString('captcha-test-account', $permalink);
+    return $permalink;
+  }
+
+  public function testItUsesTheRegistrationUrlWhenTheReferrerUrlIsOffSite(): void {
+    $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WP_FORM, 'https://evil.example/register');
+    $this->assertSame(esc_url(wp_registration_url()), $action);
+  }
+
+  public function testItUsesTheRegistrationUrlWhenTheReferrerUrlIsProtocolRelative(): void {
+    $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WP_FORM, '//evil.example/x');
+    $this->assertSame(esc_url(wp_registration_url()), $action);
+  }
+
+  public function testItUsesTheRegistrationUrlWhenTheReferrerHostIsAllowedForRedirectsButIsNotTheSiteHost(): void {
+    $allowHost = function ($hosts) {
+      $hosts[] = 'allowed.example';
+      return $hosts;
+    };
+    add_filter('allowed_redirect_hosts', $allowHost);
+    try {
+      $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WP_FORM, 'https://allowed.example/register');
+    } finally {
+      remove_filter('allowed_redirect_hosts', $allowHost);
+    }
+    $this->assertSame(esc_url(wp_registration_url()), $action);
+  }
+
+  public function testItUsesTheMyAccountUrlWhenTheWooCommerceReferrerUrlIsOffSite(): void {
+    $expected = $this->getWcFallbackUrl();
+    $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WC_FORM, 'https://evil.example/my-account/');
+    $this->assertSame(esc_url($expected), $action);
+  }
+
+  public function testItUsesTheMyAccountUrlWhenTheWooCommerceReferrerUrlIsProtocolRelative(): void {
+    $expected = $this->getWcFallbackUrl();
+    $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WC_FORM, '//evil.example/my-account/');
+    $this->assertSame(esc_url($expected), $action);
+  }
+
+  public function testItKeepsAReferrerUrlOnTheSiteHost(): void {
+    $url = home_url('/custom-register/?a=1');
+    $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WP_FORM, $url);
+    $this->assertSame(esc_url($url), $action);
+  }
+
+  public function testItKeepsAReferrerUrlWhenTheSiteHostIsConfiguredWithDifferentLetterCase(): void {
+    $host = (string)wp_parse_url(home_url(), PHP_URL_HOST);
+    $mixedCaseHomeUrl = str_replace($host, ucfirst($host), home_url());
+    $mixedCaseHome = function () use ($mixedCaseHomeUrl) {
+      return $mixedCaseHomeUrl;
+    };
+    $url = home_url('/custom-register/');
+    add_filter('pre_option_home', $mixedCaseHome);
+    try {
+      $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WP_FORM, $url);
+    } finally {
+      remove_filter('pre_option_home', $mixedCaseHome);
+    }
+    $this->assertSame(esc_url($url), $action);
+  }
+
+  public function testItKeepsARootRelativeReferrerUrl(): void {
+    $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WC_FORM, '/my-account/');
+    $this->assertSame('/my-account/', $action);
+  }
+
+  public function testItDoesNotRenderTheRegisterFormWhenRegistrationCaptchaIsOff(): void {
+    $this->diContainer->get(SettingsController::class)->set(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, false);
+    foreach ([CaptchaUrlFactory::REFERER_WP_FORM, CaptchaUrlFactory::REFERER_WC_FORM] as $referrer) {
+      $submitKey = $referrer === CaptchaUrlFactory::REFERER_WC_FORM ? 'register' : 'wp-submit';
+      $sessionId = $this->seedRegisterStash($referrer, ['referrer_form_url' => '/my-account/', $submitKey => 'Register']);
+      $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+        'captcha_session_id' => $sessionId,
+        'referrer_form' => $referrer,
+      ]);
+      $this->assertFalse($result);
+    }
+  }
+
+  /**
+   * @param array<string, mixed> $wpOverrides
+   */
+  private function renderRegisterFormActionWithWpOverrides(array $wpOverrides, string $url): string {
+    $wp = Stub::make(WPFunctions::class, $wpOverrides);
+    $renderer = $this->createFreshRenderer();
+    $property = new \ReflectionProperty(CaptchaFormRenderer::class, 'wp');
+    $property->setAccessible(true);
+    $property->setValue($renderer, $wp);
+    $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WP_FORM, ['referrer_form_url' => $url, 'wp-submit' => 'Register']);
+    $result = $renderer->render(['captcha_session_id' => $sessionId, 'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM]);
+    $this->assertIsString($result);
+    $this->assertSame(1, preg_match('/<form method="POST" action="([^"]*)"/', $result, $matches));
+    return $matches[1];
+  }
+
+  public function testItUsesTheRegistrationUrlWhenTheValidatedReferrerUrlIsEmpty(): void {
+    $action = $this->renderRegisterFormActionWithWpOverrides(['wpValidateRedirect' => ''], '/custom-register/');
+    $this->assertSame(esc_url(wp_registration_url()), $action);
+  }
+
+  public function testItUsesTheRegistrationUrlWhenAHostlessReferrerUrlStartsWithTwoSlashes(): void {
+    $action = $this->renderRegisterFormActionWithWpOverrides(
+      ['wpValidateRedirect' => '//evil.example/x', 'wpParseUrl' => false],
+      '//evil.example/x'
+    );
+    $this->assertSame(esc_url(wp_registration_url()), $action);
+  }
+
+  public function testItUsesTheRegistrationUrlWhenAHostlessReferrerUrlDoesNotStartWithASlash(): void {
+    $action = $this->renderRegisterFormActionWithWpOverrides(
+      ['wpValidateRedirect' => 'evil.example/x', 'wpParseUrl' => false],
+      'evil.example/x'
+    );
+    $this->assertSame(esc_url(wp_registration_url()), $action);
   }
 
   public function testItValidatesReferrerFormTypes(): void {
