@@ -107,16 +107,6 @@ class AssetsController {
     $this->wp->wpEnqueueStyle('mailpoet_automation_analytics', $this->getCssUrl('mailpoet-automation-analytics.css'));
   }
 
-  public function setupAutomationPreviewEmbedDependencies(): void {
-    $this->enqueueJsEntrypoint('automation_preview_embed');
-    $this->wp->wpEnqueueStyle('mailpoet_automation_templates', $this->getCssUrl('mailpoet-automation-templates.css'));
-  }
-
-  public function setupAutomationFlowEmbedDependencies(): void {
-    $this->enqueueJsEntrypoint('automation_flow_embed');
-    $this->wp->wpEnqueueStyle('mailpoet_automation_analytics', $this->getCssUrl('mailpoet-automation-analytics.css'));
-  }
-
   private function enqueueJsEntrypoint(string $asset, array $dependencies = [], bool $withAdminDeps = true): void {
     if ($withAdminDeps) {
       $this->registerAdminDeps();
