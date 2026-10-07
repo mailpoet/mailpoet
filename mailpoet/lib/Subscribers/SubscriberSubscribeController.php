@@ -5,6 +5,7 @@ namespace MailPoet\Subscribers;
 use MailPoet\Captcha\BehavioralSignals;
 use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Captcha\CaptchaSession;
+use MailPoet\Captcha\CaptchaSessionLimitException;
 use MailPoet\Captcha\Validator\CaptchaValidator;
 use MailPoet\Captcha\Validator\RecaptchaValidator;
 use MailPoet\Captcha\Validator\TurnstileValidator;
@@ -313,20 +314,26 @@ class SubscriberSubscribeController {
     $type = $captchaSettings['type'] ?? null;
 
     if ($type === CaptchaConstants::TYPE_BUILTIN) {
-      // When serving the built-in CAPTCHA for the first time, generate a new session ID.
-      if (!isset($data['captcha_session_id'])) {
-        $data['captcha_session_id'] = $this->captchaSession->generateSessionId();
+      // Only sessions created by the server are accepted. Anything else starts a new one.
+      $sessionId = $data['captcha_session_id'] ?? null;
+      if (!is_string($sessionId) || !$this->captchaSession->exists($sessionId)) {
+        $sessionId = $this->captchaSession->generateSessionId();
+        $data['captcha_session_id'] = $sessionId;
+        unset($data['captcha']);
       }
-      $sessionId = $data['captcha_session_id'];
 
       if (!isset($data['captcha'])) {
         // Save form data to session
-        $this->captchaSession->setFormData($sessionId, array_merge($data, ['form_id' => $form->getId()]));
+        try {
+          $this->captchaSession->setFormData($sessionId, array_merge($data, ['form_id' => $form->getId()]));
+        } catch (CaptchaSessionLimitException $e) {
+          throw new UnexpectedValueException($this->getCaptchaSessionLimitMessage());
+        }
       } elseif ($this->captchaSession->getFormData($sessionId)) {
         // Restore form data from session, but keep the current request's captcha
         // and behavioral signals so the resubmit reflects accumulated interaction
         // rather than the (possibly bot-like) snapshot from the first submit.
-        $preserve = ['captcha' => $data['captcha']];
+        $preserve = ['captcha' => $data['captcha'], 'captcha_session_id' => $sessionId];
         if (isset($data[BehavioralSignals::FIELD_NAME])) {
           $preserve[BehavioralSignals::FIELD_NAME] = $data[BehavioralSignals::FIELD_NAME];
         }
@@ -341,6 +348,7 @@ class SubscriberSubscribeController {
     if (
       CaptchaConstants::isDisabled($type)
       && isset($data['captcha_session_id'], $data['captcha'])
+      && $this->captchaSession->isValidId($data['captcha_session_id'])
     ) {
       $stashed = $this->captchaSession->getFormData($data['captcha_session_id']);
       if (is_array($stashed)) {
@@ -414,8 +422,16 @@ class SubscriberSubscribeController {
     }
     $stash = array_merge($data, ['form_id' => $form->getId()]);
     unset($stash[BehavioralSignals::FIELD_NAME]);
-    $challenge = $this->builtInCaptchaValidator->getInlineCaptchaChallenge($stash);
+    try {
+      $challenge = $this->builtInCaptchaValidator->getInlineCaptchaChallenge($stash);
+    } catch (CaptchaSessionLimitException $e) {
+      throw new ValidationError($this->getCaptchaSessionLimitMessage());
+    }
     throw new ValidationError(__('Please fill in the CAPTCHA.', 'mailpoet'), $challenge);
+  }
+
+  private function getCaptchaSessionLimitMessage(): string {
+    return __('Too many CAPTCHA requests from your network. Please wait a few minutes and try again.', 'mailpoet');
   }
 
   private function getSegmentIds(FormEntity $form, array $segmentIds): array {

@@ -83,7 +83,7 @@ class CaptchaHooks {
     try {
       // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
       $captchaData = $_POST['data'] ?? [];
-      $this->captchaValidator->validate(is_array($captchaData) ? $captchaData : []);
+      $this->captchaValidator->validateExistingChallenge(is_array($captchaData) ? $captchaData : []);
     } catch (ValidationError $e) {
       $errors->add('captcha_failed', $e->getMessage());
     }

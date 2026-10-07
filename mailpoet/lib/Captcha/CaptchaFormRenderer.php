@@ -150,6 +150,9 @@ class CaptchaFormRenderer {
     $afterSubmitElement = null,
     $styles = null
   ) {
+    if (!$this->captchaSession->exists($sessionId)) {
+      return false;
+    }
     $this->captchaPhrase->createPhrase($sessionId);
 
     $fields = [
