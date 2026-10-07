@@ -200,6 +200,25 @@ class RendererTest extends \MailPoetUnitTest {
     verify(count($result))->equals(1);
   }
 
+  public function testItEscapesTheTypeOfAnUnsupportedBlock() {
+    $data = [
+      'blocks' => [
+        [
+          'blocks' => [
+            ['type' => 'x --><b>injected</b><!--'],
+          ],
+        ],
+      ],
+      'styles' => ['block' => []],
+    ];
+
+    $result = $this->renderer->render($this->newsletter, $data);
+    verify(is_array($result))->true();
+    $html = implode('', (array)$result);
+    verify($html)->stringContainsString('<!-- Skipped unsupported block type: x --&gt;&lt;b&gt;injected&lt;/b&gt;&lt;!-- -->');
+    verify($html)->stringNotContainsString('<b>injected</b>');
+  }
+
   public function testItKeepsNonTextBlockAlignmentStableInRtl() {
     $renderer = $this->createRendererWithRealNonTextBlocks();
     foreach ($this->nonTextBlocksWithMissingAlignment() as $blockType => $block) {
