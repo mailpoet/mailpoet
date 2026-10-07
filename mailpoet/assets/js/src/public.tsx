@@ -6,6 +6,7 @@ import Cookies from 'js-cookie';
 import Parsley from 'parsleyjs';
 import { Hooks } from 'wp-js-hooks';
 import { Response } from './ajax';
+import { applyCaptchaChallenge } from './form/captcha-session';
 
 const exitIntentEvent = 'mouseleave.mailpoet.form-exit-intent';
 const startingClassName = 'starting-to-show';
@@ -295,8 +296,11 @@ jQuery(($) => {
   ) {
     // Check if captcha already exists in form
     if (form.find('.mailpoet_captcha_container').length > 0) {
-      // Just update the existing captcha
-      void updateCaptchaInForm(form);
+      if (meta.captcha_session_id) {
+        applyCaptchaChallenge(form[0], meta);
+      } else {
+        void updateCaptchaInForm(form);
+      }
       return;
     }
 
@@ -362,7 +366,9 @@ jQuery(($) => {
     audioButton.appendTo(container);
 
     // Audio player
-    const audioPlayer = $('<audio>').addClass('mailpoet_captcha_player');
+    const audioPlayer = $('<audio>')
+      .addClass('mailpoet_captcha_player')
+      .attr('preload', 'none');
     $('<source>')
       .attr('src', meta.captcha_audio_url)
       .attr('type', 'audio/mpeg')
