@@ -80,12 +80,6 @@ const getEmailIdErrorMessage = (emailIdError: unknown): string =>
         'mailpoet',
       );
 
-const BLOCK_EMAIL_EDITOR_NAVIGATION_MESSAGE =
-  'mailpoet-navigate-to-email-editor';
-const BLOCK_EMAIL_EDITOR_NAVIGATION_ACK_MESSAGE =
-  'mailpoet-navigate-to-email-editor-ack';
-const BLOCK_EMAIL_EDITOR_FRAME_NAVIGATION_FALLBACK_DELAY = 1500;
-
 function EmailIdValidationMessage({
   message,
 }: {
@@ -99,59 +93,7 @@ function EmailIdValidationMessage({
 }
 
 const navigateToBlockEmailEditor = (postId: number): void => {
-  const editorUrl = MailPoet.getBlockEmailEditorUrl(postId);
-  if (!window.parent || window.parent === window) {
-    window.location.href = editorUrl;
-    return;
-  }
-
-  let fallbackTimeout: number | undefined;
-  let handleNavigationAcknowledgement: (event: MessageEvent) => void = () => {};
-  const clearFallback = () => {
-    if (fallbackTimeout !== undefined) {
-      window.clearTimeout(fallbackTimeout);
-    }
-    window.removeEventListener('message', handleNavigationAcknowledgement);
-  };
-  handleNavigationAcknowledgement = (event: MessageEvent) => {
-    const message = event.data as {
-      type?: string;
-      postId?: number | string;
-      success?: boolean;
-    };
-
-    if (
-      event.origin !== window.location.origin ||
-      message.type !== BLOCK_EMAIL_EDITOR_NAVIGATION_ACK_MESSAGE ||
-      Number(message.postId) !== postId
-    ) {
-      return;
-    }
-
-    clearFallback();
-    if (message.success === false) {
-      window.location.href = editorUrl;
-    }
-  };
-
-  window.addEventListener('message', handleNavigationAcknowledgement);
-  fallbackTimeout = window.setTimeout(() => {
-    clearFallback();
-    window.location.href = editorUrl;
-  }, BLOCK_EMAIL_EDITOR_FRAME_NAVIGATION_FALLBACK_DELAY);
-
-  try {
-    window.parent.postMessage(
-      {
-        type: BLOCK_EMAIL_EDITOR_NAVIGATION_MESSAGE,
-        postId,
-      },
-      window.location.origin,
-    );
-  } catch {
-    clearFallback();
-    window.location.href = editorUrl;
-  }
+  window.location.href = MailPoet.getBlockEmailEditorUrl(postId);
 };
 
 export function EditNewsletter(): JSX.Element {
