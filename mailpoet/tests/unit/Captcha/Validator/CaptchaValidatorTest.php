@@ -315,6 +315,7 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
       CaptchaPhrase::class,
       [
         'getPhrase' => $phrase . 'd',
+        'registerFailedAttempt' => 1,
         'createPhrase' => 'null',
       ],
       $this
@@ -554,6 +555,7 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
     $captchaPhrase = Stub::make(CaptchaPhrase::class, [
       'getPhrase' => 'abc',
       'createPhrase' => 'new',
+      'registerFailedAttempt' => 1,
       'consume' => Stub\Expected::never(),
     ], $this);
     $testee = $this->makeValidator($captchaPhrase);
@@ -581,5 +583,47 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
     $testee = $this->makeValidator($captchaPhrase, $session);
 
     verify($testee->validateExistingChallenge(['captcha' => 'abc', 'captcha_session_id' => self::SESSION_ID]))->true();
+  }
+
+  public function testTheLastAllowedWrongAnswerStartsANewChallenge() {
+    $resetIds = [];
+    $captchaPhrase = Stub::make(CaptchaPhrase::class, [
+      'getPhrase' => 'abc',
+      'registerFailedAttempt' => CaptchaPhrase::MAX_ATTEMPTS,
+      'createPhrase' => 'new',
+    ], $this);
+    $captchaSession = $this->makeSession([
+      'reset' => function ($sessionId) use (&$resetIds) {
+        $resetIds[] = $sessionId;
+      },
+    ]);
+    $testee = $this->makeValidator($captchaPhrase, $captchaSession);
+
+    $error = $this->getError(function () use ($testee) {
+      $testee->validate(['captcha' => 'xyz', 'captcha_session_id' => self::SESSION_ID]);
+    });
+
+    verify($error->getMessage())->equals('Too many incorrect attempts. Here’s a new CAPTCHA to try.');
+    verify($error->getMeta()['show_captcha'])->true();
+    verify($error->getMeta()['captcha_session_id'])->equals(self::NEW_SESSION_ID);
+    verify($error->getMeta())->arrayHasKey('redirect_url');
+    verify($resetIds)->equals([self::SESSION_ID]);
+  }
+
+  public function testWrongAnswersBelowTheLimitRefreshTheSameSession() {
+    $captchaPhrase = Stub::make(CaptchaPhrase::class, [
+      'getPhrase' => 'abc',
+      'registerFailedAttempt' => CaptchaPhrase::MAX_ATTEMPTS - 1,
+      'createPhrase' => Stub\Expected::once('new'),
+    ], $this);
+    $captchaSession = $this->makeSession(['reset' => Stub\Expected::never()]);
+    $testee = $this->makeValidator($captchaPhrase, $captchaSession);
+
+    $error = $this->getError(function () use ($testee) {
+      $testee->validate(['captcha' => 'xyz', 'captcha_session_id' => self::SESSION_ID]);
+    });
+
+    verify($error->getMeta()['refresh_captcha'])->true();
+    verify($error->getMeta())->arrayHasNotKey('captcha_session_id');
   }
 }

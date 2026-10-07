@@ -126,6 +126,13 @@ class CaptchaValidator {
     }
 
     if (!hash_equals(strtolower($answer), strtolower($captchaHash))) {
+      if ($this->captchaPhrase->registerFailedAttempt($sessionId) >= CaptchaPhrase::MAX_ATTEMPTS) {
+        $this->captchaSession->reset($sessionId);
+        throw new ValidationError(
+          __('Too many incorrect attempts. Here’s a new CAPTCHA to try.', 'mailpoet'),
+          $this->getInlineCaptchaChallenge($data)
+        );
+      }
       $this->captchaPhrase->createPhrase($sessionId);
       throw new ValidationError(
         __('The characters entered do not match with the previous CAPTCHA.', 'mailpoet'),
