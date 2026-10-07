@@ -4,6 +4,7 @@ namespace MailPoet\Test\API\JSON\v1;
 
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\CustomFields;
+use MailPoet\Config\AccessControl;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 
@@ -67,6 +68,11 @@ class CustomFieldsTest extends \MailPoetTest {
       $this->repository->createOrUpdate($customField);
     }
     $this->endpoint = $this->diContainer->get(CustomFields::class);
+  }
+
+  public function testItRequiresManageSubscribersPermissionToDelete() {
+    verify($this->endpoint->permissions['global'])->equals(AccessControl::PERMISSION_MANAGE_FORMS);
+    verify($this->endpoint->permissions['methods']['delete'])->equals(AccessControl::PERMISSION_MANAGE_SUBSCRIBERS);
   }
 
   public function testItCanGetAllCustomFields() {

@@ -22,6 +22,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'applyFilters' => function ($tag, $value) {
         return $value;
       },
+      'currentUserCan' => true,
     ]);
 
     $installer = $this->makeEmpty(Installer::class, [
@@ -46,6 +47,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'applyFilters' => function ($tag, $value) {
         return $value;
       },
+      'currentUserCan' => true,
     ]);
 
     $installer = $this->makeEmpty(Installer::class);
@@ -69,6 +71,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'applyFilters' => function ($tag, $value) {
         return $value;
       },
+      'currentUserCan' => true,
     ]);
 
     $installer = $this->makeEmpty(Installer::class, [
@@ -94,6 +97,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'applyFilters' => function ($tag, $value) {
         return $value;
       },
+      'currentUserCan' => true,
     ]);
 
     $installer = $this->makeEmpty(Installer::class);
@@ -117,6 +121,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'applyFilters' => function ($tag, $value) {
         return $value;
       },
+      'currentUserCan' => true,
     ]);
 
     $installer = $this->makeEmpty(Installer::class);
@@ -135,6 +140,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'applyFilters' => function ($tag, $value) {
         return $value;
       },
+      'currentUserCan' => true,
     ]);
     $installer = $this->makeEmpty(Installer::class);
 
@@ -157,6 +163,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'applyFilters' => function ($tag, $value) {
         return $value;
       },
+      'currentUserCan' => true,
     ]);
 
     $installer = $this->makeEmpty(Installer::class);
@@ -167,6 +174,54 @@ class PremiumTest extends \MailPoetUnitTest {
     verify($response->getData()['errors'][0])->same([
       'error' => 'bad_request',
       'message' => 'Error when activating MailPoet Premium plugin.',
+    ]);
+  }
+
+  public function testInstallationFailsWithoutInstallPluginsCapability() {
+    $servicesChecker = $this->makeEmpty(ServicesChecker::class, [
+      'isPremiumKeyValid' => Expected::never(),
+    ]);
+
+    $wp = $this->makeEmpty(WPFunctions::class, [
+      'currentUserCan' => function ($capability) {
+        return $capability !== 'install_plugins';
+      },
+      'installPlugin' => Expected::never(),
+    ]);
+
+    $installer = $this->makeEmpty(Installer::class);
+
+    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions($wp), $installer);
+    $response = $premium->installPlugin();
+    verify($response)->instanceOf(ErrorResponse::class);
+    verify($response->status)->equals(403);
+    verify($response->getData()['errors'][0])->same([
+      'error' => 'forbidden',
+      'message' => 'You do not have the required permissions.',
+    ]);
+  }
+
+  public function testActivationFailsWithoutActivatePluginsCapability() {
+    $servicesChecker = $this->makeEmpty(ServicesChecker::class, [
+      'isPremiumKeyValid' => Expected::never(),
+    ]);
+
+    $wp = $this->makeEmpty(WPFunctions::class, [
+      'currentUserCan' => function ($capability) {
+        return $capability !== 'activate_plugins';
+      },
+      'activatePlugin' => Expected::never(),
+    ]);
+
+    $installer = $this->makeEmpty(Installer::class);
+
+    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions($wp), $installer);
+    $response = $premium->activatePlugin();
+    verify($response)->instanceOf(ErrorResponse::class);
+    verify($response->status)->equals(403);
+    verify($response->getData()['errors'][0])->same([
+      'error' => 'forbidden',
+      'message' => 'You do not have the required permissions.',
     ]);
   }
 }

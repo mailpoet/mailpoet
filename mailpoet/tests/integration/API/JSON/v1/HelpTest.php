@@ -50,6 +50,28 @@ class HelpTest extends \MailPoetTest {
     verify($response->errors[0]['message'])->equals('Task not found.');
   }
 
+  public function testItDoesNotChangeTasksOtherThanSending(): void {
+    $scheduledTask = (new ScheduledTaskFactory())->create('log_cleanup', ScheduledTaskEntity::STATUS_SCHEDULED, new \DateTime());
+    /** @var ErrorResponse $response */
+    $response = $this->endpoint->cancelTask(['id' => $scheduledTask->getId()]);
+    verify($response)->instanceOf(ErrorResponse::class);
+    verify($response->status)->equals(404);
+    verify($response->errors[0]['message'])->equals('Task not found.');
+
+    $cancelledTask = (new ScheduledTaskFactory())->create('log_cleanup', ScheduledTaskEntity::STATUS_CANCELLED, Carbon::now()->addDay());
+    /** @var ErrorResponse $response */
+    $response = $this->endpoint->rescheduleTask(['id' => $cancelledTask->getId()]);
+    verify($response)->instanceOf(ErrorResponse::class);
+    verify($response->status)->equals(404);
+    verify($response->errors[0]['message'])->equals('Task not found.');
+
+    $this->entityManager->clear();
+    $scheduledTask = $this->scheduledTasksRepository->findOneById($scheduledTask->getId());
+    $cancelledTask = $this->scheduledTasksRepository->findOneById($cancelledTask->getId());
+    verify($scheduledTask instanceof ScheduledTaskEntity ? $scheduledTask->getStatus() : null)->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($cancelledTask instanceof ScheduledTaskEntity ? $cancelledTask->getStatus() : null)->equals(ScheduledTaskEntity::STATUS_CANCELLED);
+  }
+
   public function testItReturnsErrorWhenCancellingCompletedTask(): void {
     $task = (new ScheduledTaskFactory())->create('sending', ScheduledTaskEntity::STATUS_COMPLETED, new \DateTime());
     /** @var ErrorResponse $response */
