@@ -362,11 +362,6 @@ class Initializer {
       'setupEmailEditorIntegrations',
     ]);
 
-    $this->wpFunctions->addAction('woocommerce_init', [
-      $this,
-      'setupMarketingConfirmationEmail',
-    ]);
-
     WPFunctions::get()->addAction(AutomationHooks::INITIALIZE, [
       $this->automationMailPoetIntegration,
       'register',
@@ -676,14 +671,6 @@ class Initializer {
     if ($wcEnabled && $optInEnabled) {
       $this->wcTransactionalEmails->overrideStylesForWooEmails();
       $this->wcTransactionalEmails->useTemplateForWoocommerceEmails();
-    }
-  }
-
-  public function setupMarketingConfirmationEmail() {
-    $wcEnabled = $this->wcHelper->isWooCommerceActive();
-    if ($wcEnabled) {
-      $emails = new \MailPoet\WooCommerce\Emails();
-      $emails->init();
     }
   }
 
