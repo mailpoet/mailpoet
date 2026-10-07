@@ -15,6 +15,22 @@ describe('Latest Posts template blocks', () => {
     });
   });
 
+  it('keeps ancestors set by other extensions', () => {
+    const settings = limitToPostTemplate(
+      {
+        title: 'Post Title',
+        category: 'theme',
+        attributes: {},
+        ancestor: ['other/post-list'],
+      },
+      'core/post-title',
+    );
+    expect(settings.ancestor).to.deep.equal([
+      'other/post-list',
+      TEMPLATE_BLOCK_NAME,
+    ]);
+  });
+
   it('leaves other blocks untouched', () => {
     const settings = { title: 'Paragraph', category: 'text', attributes: {} };
     expect(limitToPostTemplate(settings, 'core/paragraph')).to.equal(settings);
