@@ -325,7 +325,7 @@ class SubscriberSubscribeController {
       if (!isset($data['captcha'])) {
         // Save form data to session
         try {
-          $this->captchaSession->setFormData($sessionId, array_merge($data, ['form_id' => $form->getId()]));
+          $this->captchaSession->setSubscriptionFormData($sessionId, array_merge($data, ['form_id' => $form->getId()]));
         } catch (CaptchaSessionLimitException $e) {
           throw new UnexpectedValueException($this->getCaptchaSessionLimitMessage());
         }

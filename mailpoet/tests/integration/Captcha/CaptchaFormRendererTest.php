@@ -402,6 +402,94 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $this->assertSame('/my-account/', $action);
   }
 
+  private function renderRegisterFormActionWithHome(string $home, string $url): string {
+    $homeFilter = function () use ($home) {
+      return $home;
+    };
+    add_filter('pre_option_home', $homeFilter);
+    try {
+      return $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WP_FORM, $url);
+    } finally {
+      remove_filter('pre_option_home', $homeFilter);
+    }
+  }
+
+  /**
+   * @dataProvider dataForReferrerUrlsOnAnotherOrigin
+   */
+  public function testItUsesTheRegistrationUrlWhenTheReferrerUrlDiffersInSchemeOrPort(string $home, string $url): void {
+    $action = $this->renderRegisterFormActionWithHome($home, $url);
+    $this->assertSame(esc_url(wp_registration_url()), $action);
+  }
+
+  public function dataForReferrerUrlsOnAnotherOrigin(): array {
+    return [
+      'http on an https site' => ['https://shop.example', 'http://shop.example/register/'],
+      'https on an http site' => ['http://shop.example', 'https://shop.example/register/'],
+      'http with the https port' => ['https://shop.example', 'http://shop.example:443/register/'],
+      'https with the http port' => ['http://shop.example', 'https://shop.example:80/register/'],
+      'other port' => ['https://shop.example', 'https://shop.example:8443/register/'],
+      'port on a site without one' => ['http://shop.example', 'http://shop.example:8080/register/'],
+      'no port on a site with one' => ['http://shop.example:8080', 'http://shop.example/register/'],
+      'other port on a site with one' => ['http://shop.example:8080', 'http://shop.example:9090/register/'],
+    ];
+  }
+
+  /**
+   * @dataProvider dataForReferrerUrlsOnTheSameOrigin
+   */
+  public function testItKeepsAReferrerUrlWithTheSameSchemeHostAndPort(string $home, string $url): void {
+    $action = $this->renderRegisterFormActionWithHome($home, $url);
+    $this->assertSame(esc_url($url), $action);
+  }
+
+  public function dataForReferrerUrlsOnTheSameOrigin(): array {
+    return [
+      'same origin' => ['https://shop.example', 'https://shop.example/register/'],
+      'same custom port' => ['https://shop.example:8443', 'https://shop.example:8443/register/'],
+      'explicit default https port' => ['https://shop.example', 'https://shop.example:443/register/'],
+      'implicit default https port' => ['https://shop.example:443', 'https://shop.example/register/'],
+      'explicit default http port' => ['http://shop.example', 'http://shop.example:80/register/'],
+      'implicit default http port' => ['http://shop.example:80', 'http://shop.example/register/'],
+    ];
+  }
+
+  public function testItShowsTheRegistrationUrlInTheUsedMessageWhenTheStoredActionUrlIsOffSite(): void {
+    $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WP_FORM, ['wp-submit' => 'Register']);
+    $session = $this->diContainer->get(CaptchaSession::class);
+    $session->setFormData($sessionId, [
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+      'action_url' => 'https://evil.example/register',
+      'rendered' => true,
+    ]);
+
+    $result = $this->createFreshRenderer()->render([
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+    ]);
+
+    $this->assertStringContainsString('This CAPTCHA page has already been used.', $result);
+    $this->assertStringContainsString('href="' . esc_url(wp_registration_url()) . '"', $result);
+    $this->assertStringNotContainsString('evil.example', $result);
+  }
+
+  public function testItKeepsAStoredActionUrlOnTheSiteInTheUsedMessage(): void {
+    $url = home_url('/custom-register/');
+    $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WP_FORM, ['wp-submit' => 'Register']);
+    $this->diContainer->get(CaptchaSession::class)->setFormData($sessionId, [
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+      'action_url' => $url,
+      'rendered' => true,
+    ]);
+
+    $result = $this->createFreshRenderer()->render([
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+    ]);
+
+    $this->assertStringContainsString('href="' . esc_url($url) . '"', $result);
+  }
+
   public function testItDoesNotRenderTheRegisterFormWhenRegistrationCaptchaIsOff(): void {
     $this->diContainer->get(SettingsController::class)->set(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, false);
     foreach ([CaptchaUrlFactory::REFERER_WP_FORM, CaptchaUrlFactory::REFERER_WC_FORM] as $referrer) {

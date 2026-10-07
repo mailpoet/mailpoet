@@ -182,7 +182,7 @@ class CaptchaValidator {
     $this->captchaPhrase->createPhrase($sessionId);
     if ($formData !== null) {
       unset($formData['captcha_session_id'], $formData['captcha']);
-      $this->captchaSession->setFormData($sessionId, $formData);
+      $this->captchaSession->setSubscriptionFormData($sessionId, $formData);
     }
     return $this->getInlineCaptchaData($sessionId);
   }
