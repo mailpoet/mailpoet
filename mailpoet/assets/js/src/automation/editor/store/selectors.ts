@@ -125,7 +125,3 @@ export function automationHasStep(state: EditorState, key: string): boolean {
   );
   return steps.length > 0;
 }
-
-export function isFullscreenForced(state: State): boolean {
-  return state.isFullscreenForced;
-}

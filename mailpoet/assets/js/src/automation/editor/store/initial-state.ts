@@ -18,5 +18,4 @@ export const getInitialState = (): State => ({
   },
   inserterPopover: undefined,
   errors: undefined,
-  isFullscreenForced: false,
 });
