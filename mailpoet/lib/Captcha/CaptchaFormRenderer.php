@@ -8,6 +8,7 @@ use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Util\Styles;
 use MailPoet\Util\Url as UrlHelper;
+use MailPoet\WooCommerce\Helper as WooHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CaptchaFormRenderer {
@@ -32,6 +33,12 @@ class CaptchaFormRenderer {
   /** @var Styles */
   private $styles;
 
+  /** @var CaptchaHooks */
+  private $captchaHooks;
+
+  /** @var WooHelper */
+  private $wooHelper;
+
   private $wp;
 
   /** @var array<string, string> */
@@ -45,6 +52,8 @@ class CaptchaFormRenderer {
     FormsRepository $formsRepository,
     FormRenderer $formRenderer,
     Styles $styles,
+    CaptchaHooks $captchaHooks,
+    WooHelper $wooHelper,
     WPFunctions $wp
   ) {
     $this->urlHelper = $urlHelper;
@@ -54,6 +63,8 @@ class CaptchaFormRenderer {
     $this->formRenderer = $formRenderer;
     $this->formsRepository = $formsRepository;
     $this->styles = $styles;
+    $this->captchaHooks = $captchaHooks;
+    $this->wooHelper = $wooHelper;
     $this->wp = $wp;
   }
 
@@ -69,7 +80,13 @@ class CaptchaFormRenderer {
     $ref = $data['referrer_form'] ?? null;
     if ($ref === CaptchaUrlFactory::REFERER_MP_FORM) {
       return $this->renderFormInSubscriptionForm($sessionId);
-    } elseif ($ref === CaptchaUrlFactory::REFERER_WP_FORM) {
+    }
+
+    if (!$this->captchaHooks->isEnabled()) {
+      return false;
+    }
+
+    if ($ref === CaptchaUrlFactory::REFERER_WP_FORM) {
       return $this->renderFormInWPRegisterForm($sessionId, $ref, 'wp-submit');
     } elseif ($ref === CaptchaUrlFactory::REFERER_WC_FORM) {
       return $this->renderFormInWPRegisterForm($sessionId, $ref, 'register');
@@ -139,7 +156,7 @@ class CaptchaFormRenderer {
       return $this->renderUsedMessage($stash);
     }
 
-    $actionUrl = $this->getRegisterFormActionUrl($stash);
+    $actionUrl = $this->getRegisterFormActionUrl($referrer, $stash['referrer_form_url'] ?? null);
 
     // The 'name' attr is required in this format for the refresh button to work
     $hiddenFields = '<input type="hidden" name="data[captcha_session_id]" value="' . $this->wp->escAttr($sessionId) . '" />';
@@ -179,11 +196,30 @@ class CaptchaFormRenderer {
   }
 
   /**
-   * The URL the register form is submitted to, taken from the stash.
+   * The URL the register form is submitted to. Only a URL on the site's own host is used.
+   *
+   * @param mixed $candidate
    */
-  private function getRegisterFormActionUrl(array $stash): string {
-    $candidate = $stash['referrer_form_url'] ?? null;
-    return is_string($candidate) && $candidate !== '' ? $candidate : $this->wp->homeUrl();
+  private function getRegisterFormActionUrl(string $referrer, $candidate): string {
+    $validated = is_string($candidate) ? (string)$this->wp->wpValidateRedirect($candidate, '') : '';
+    if ($validated !== '') {
+      $host = $this->wp->wpParseUrl($validated, PHP_URL_HOST);
+      if (!$host) {
+        if (strpos($validated, '/') === 0 && strpos($validated, '//') !== 0) {
+          return $validated;
+        }
+      } else {
+        $homeHost = $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST);
+        if (is_string($host) && is_string($homeHost) && strtolower($host) === strtolower($homeHost)) {
+          return $validated;
+        }
+      }
+    }
+
+    if ($referrer === CaptchaUrlFactory::REFERER_WP_FORM) {
+      return (string)$this->wp->wpRegistrationUrl();
+    }
+    return $this->wooHelper->wcGetPagePermalink('myaccount') ?: $this->wp->homeUrl();
   }
 
   private function renderForm(
