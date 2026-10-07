@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
+use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Renderer {
@@ -136,7 +137,7 @@ class Renderer {
       case Coupon::TYPE:
         return $this->coupon->render($block, $columnBaseWidth);
     }
-    return "<!-- Skipped unsupported block type: {$block['type']} -->";
+    return '<!-- Skipped unsupported block type: ' . EHelper::escapeHtmlText($block['type']) . ' -->';
   }
 
   public function processAutomatedLatestContent(NewsletterEntity $newsletter, $args, $columnBaseWidth, bool $isRtl = false) {

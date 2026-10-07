@@ -8,7 +8,7 @@ class Renderer {
   public function render($contentBlock, $columnsData) {
     if (!isset($contentBlock['blocks']) || !is_countable($contentBlock['blocks']) || !is_iterable($contentBlock['blocks'])) {
       if (isset($contentBlock['type'])) {
-        return "<!-- Skipped unsupported block type: {$contentBlock['type']} -->";
+        return '<!-- Skipped unsupported block type: ' . EHelper::escapeHtmlText($contentBlock['type']) . ' -->';
       }
       return "<!-- Skipped unsupported block -->";
     }
