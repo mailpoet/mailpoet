@@ -138,6 +138,14 @@ class CaptchaFormRenderer {
     $styles = $this->styles->renderFormMessageStyles($formModel, '#mailpoet_captcha_form');
     $styles = '<style>' . $styles . '</style>';
 
+    if ($this->captchaSession->exists($sessionId) && $this->captchaPhrase->getPhrase($sessionId) === null) {
+      try {
+        $this->captchaSession->registerNewSession();
+      } catch (CaptchaSessionLimitException $e) {
+        return '<p>' . $this->wp->escHtml($e->getMessage()) . '</p>';
+      }
+    }
+
     return $this->renderForm($sessionId, $hiddenFields, $actionUrl, $submitLabel, $afterSubmitElement, $styles);
   }
 
