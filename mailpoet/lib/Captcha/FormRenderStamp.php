@@ -22,8 +22,8 @@ class FormRenderStamp {
   }
 
   /**
-   * Seconds since the stamp was issued, or null when it is malformed, forged
-   * or issued in the future.
+   * Seconds since the stamp was issued, or null when it is malformed, has a changed
+   * signature or was issued in the future.
    *
    * @param mixed $stamp
    */

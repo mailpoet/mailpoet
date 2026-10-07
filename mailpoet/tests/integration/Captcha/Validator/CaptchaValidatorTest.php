@@ -94,9 +94,9 @@ class CaptchaValidatorTest extends \MailPoetTest {
       'email' => 'subscriber@example.com',
       'form_id' => 7,
       'referrer_form' => 'wp',
-      'referrer_form_url' => 'https://evil.example/register',
+      'referrer_form_url' => 'https://other-site.example/register',
       'rendered' => true,
-      'action_url' => 'https://evil.example/register',
+      'action_url' => 'https://other-site.example/register',
     ]);
     $stash = $this->session->getFormData($meta['captcha_session_id']);
     $this->assertSame(['email' => 'subscriber@example.com', 'form_id' => 7], $stash);

@@ -17,8 +17,8 @@ class BehavioralSignals {
   const DEFAULT_MIN_FIELD_FOCUS = 1;
 
   const MAX_TIME_MS = 86400000;
-  const MAX_COUNT = 100000;
-  const MAX_FOCUS = 50;
+  const MAX_COUNT = 10000000;
+  const MAX_FOCUS = 10000;
   const MIN_MS_PER_KEYDOWN = 20;
   const MIN_MS_PER_MOUSEMOVE = 2;
   const STAMP_SLACK_MS = 5000;
@@ -51,7 +51,7 @@ class BehavioralSignals {
     $mousemoveCount = $this->readCounter($signals, 'mm_count', self::MAX_COUNT);
     $keydownCount = $this->readCounter($signals, 'kd_count', self::MAX_COUNT);
     $scrollCount = $this->readCounter($signals, 'scroll_count', self::MAX_COUNT);
-    $isTouch = !empty($signals['touch']);
+    $isTouch = filter_var($signals['touch'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
     if ($timeMs === null || $fieldFocusCount === null || $mousemoveCount === null || $keydownCount === null || $scrollCount === null) {
       $result = false;
