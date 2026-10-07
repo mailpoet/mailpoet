@@ -86,6 +86,19 @@ class CaptchaValidatorTest extends \MailPoetTest {
     $this->assertFalse($this->session->exists(self::SESSION_ID));
   }
 
+  public function testItDropsRegisterOnlyKeysFromTheStashWhenStartingANewChallenge() {
+    $meta = $this->getValidationErrorMeta([
+      'email' => 'subscriber@example.com',
+      'form_id' => 7,
+      'referrer_form' => 'wp',
+      'referrer_form_url' => 'https://evil.example/register',
+      'rendered' => true,
+      'action_url' => 'https://evil.example/register',
+    ]);
+    $stash = $this->session->getFormData($meta['captcha_session_id']);
+    $this->assertSame(['email' => 'subscriber@example.com', 'form_id' => 7], $stash);
+  }
+
   public function testItKeepsTheStashWithoutStaleSessionDataWhenStartingANewChallenge() {
     $meta = $this->getValidationErrorMeta([
       'captcha_session_id' => self::SESSION_ID,

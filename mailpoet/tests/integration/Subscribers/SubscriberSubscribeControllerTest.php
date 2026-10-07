@@ -5,8 +5,10 @@ namespace MailPoet\Subscribers;
 use Codeception\Util\Fixtures;
 use DateTimeImmutable;
 use MailPoet\Captcha\CaptchaConstants;
+use MailPoet\Captcha\CaptchaFormRenderer;
 use MailPoet\Captcha\CaptchaPhrase;
 use MailPoet\Captcha\CaptchaSession;
+use MailPoet\Captcha\CaptchaUrlFactory;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -120,6 +122,41 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     verify($stash)->arrayHasNotKey('captcha');
     $this->assertNull($this->subscribersRepository->findOneBy(['email' => $email]));
     $captchaSession->reset($newId);
+  }
+
+  public function testBuiltInCaptchaStashDropsRegisterOnlyKeysAndIsNotShownAsARegisterPage(): void {
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
+    $this->settings->set(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, true);
+    $captchaSession = $this->diContainer->get(CaptchaSession::class);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $email = 'captcha' . rand(0, 100000) . '@example.com';
+
+    try {
+      $meta = $this->subscribeController->subscribe($this->getCaptchaSubmission($form, $segment, $email, [
+        'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+        'referrer_form_url' => 'https://evil.example/register',
+        'rendered' => true,
+        'action_url' => 'https://evil.example/register',
+      ]));
+
+      verify($meta['show_captcha'])->true();
+      $sessionId = $meta['captcha_session_id'];
+      $stash = $captchaSession->getFormData($sessionId);
+      verify($stash[$this->obfuscatedEmail])->equals($email);
+      verify($stash)->arrayHasNotKey('referrer_form');
+      verify($stash)->arrayHasNotKey('referrer_form_url');
+      verify($stash)->arrayHasNotKey('rendered');
+      verify($stash)->arrayHasNotKey('action_url');
+      $page = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+        'captcha_session_id' => $sessionId,
+        'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+      ]);
+      verify($page)->false();
+      $captchaSession->reset($sessionId);
+    } finally {
+      $this->settings->set(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, false);
+    }
   }
 
   public function dataForUnusableCaptchaSessionIds(): array {

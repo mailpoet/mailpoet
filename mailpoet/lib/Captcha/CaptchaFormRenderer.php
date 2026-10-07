@@ -153,7 +153,7 @@ class CaptchaFormRenderer {
     }
 
     if (!empty($stash['rendered'])) {
-      return $this->renderUsedMessage($stash);
+      return $this->renderUsedMessage($referrer, $stash);
     }
 
     $actionUrl = $this->getRegisterFormActionUrl($referrer, $stash['referrer_form_url'] ?? null);
@@ -187,32 +187,26 @@ class CaptchaFormRenderer {
     return $html;
   }
 
-  private function renderUsedMessage(array $stash): string {
-    $actionUrl = isset($stash['action_url']) && is_string($stash['action_url']) && $stash['action_url'] !== ''
-      ? $stash['action_url']
-      : $this->wp->homeUrl();
+  private function renderUsedMessage(string $referrer, array $stash): string {
+    $actionUrl = $this->getRegisterFormActionUrl($referrer, $stash['action_url'] ?? null);
     $message = __('This CAPTCHA page has already been used. Go back to the registration form to try again.', 'mailpoet');
     return '<p><a href="' . $this->wp->escUrl($actionUrl) . '">' . $this->wp->escHtml($message) . '</a></p>';
   }
 
   /**
-   * The URL the register form is submitted to. Only a URL on the site's own host is used.
+   * The URL the register form is submitted to. Only a URL with the site's own scheme, host and port is used.
    *
    * @param mixed $candidate
    */
   private function getRegisterFormActionUrl(string $referrer, $candidate): string {
     $validated = is_string($candidate) ? (string)$this->wp->wpValidateRedirect($candidate, '') : '';
     if ($validated !== '') {
-      $host = $this->wp->wpParseUrl($validated, PHP_URL_HOST);
-      if (!$host) {
+      if (!$this->wp->wpParseUrl($validated, PHP_URL_HOST)) {
         if (strpos($validated, '/') === 0 && strpos($validated, '//') !== 0) {
           return $validated;
         }
-      } else {
-        $homeHost = $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST);
-        if (is_string($host) && is_string($homeHost) && strtolower($host) === strtolower($homeHost)) {
-          return $validated;
-        }
+      } elseif ($this->getOrigin($validated) === $this->getOrigin($this->wp->homeUrl())) {
+        return $validated;
       }
     }
 
@@ -220,6 +214,19 @@ class CaptchaFormRenderer {
       return (string)$this->wp->wpRegistrationUrl();
     }
     return $this->wooHelper->wcGetPagePermalink('myaccount') ?: $this->wp->homeUrl();
+  }
+
+  /**
+   * Scheme, host and port in lower case, with the default port filled in.
+   */
+  private function getOrigin(string $url): ?string {
+    $parts = $this->wp->wpParseUrl($url);
+    if (!is_array($parts) || !isset($parts['scheme'], $parts['host'])) {
+      return null;
+    }
+    $scheme = strtolower((string)$parts['scheme']);
+    $port = isset($parts['port']) ? (int)$parts['port'] : ($scheme === 'https' ? 443 : 80);
+    return $scheme . '://' . strtolower((string)$parts['host']) . ':' . $port;
   }
 
   private function renderForm(

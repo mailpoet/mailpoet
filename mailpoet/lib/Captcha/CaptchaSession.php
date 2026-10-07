@@ -12,6 +12,9 @@ class CaptchaSession {
   const NEW_SESSION_LIMIT = 200;
   const NEW_SESSION_WINDOW = 600; // 10 minutes
 
+  /** Keys used only by the registration CAPTCHA page. */
+  const REGISTER_ONLY_KEYS = ['referrer_form', 'referrer_form_url', 'rendered', 'action_url'];
+
   const SESSION_HASH_KEY = 'hash';
   const SESSION_FORM_KEY = 'form';
 
@@ -68,6 +71,19 @@ class CaptchaSession {
     $this->registerNewSession($sessionId);
     $key = $this->getKey($sessionId, self::SESSION_FORM_KEY);
     $this->wp->setTransient($key, $data, self::EXPIRATION);
+  }
+
+  /**
+   * Stores the data of a subscription form. Keys of the registration CAPTCHA page are dropped,
+   * so the stash can never be shown as a registration page.
+   *
+   * @throws CaptchaSessionLimitException
+   */
+  public function setSubscriptionFormData(string $sessionId, array $data): void {
+    foreach (self::REGISTER_ONLY_KEYS as $key) {
+      unset($data[$key]);
+    }
+    $this->setFormData($sessionId, $data);
   }
 
   public function getFormData(string $sessionId) {
