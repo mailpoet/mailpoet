@@ -39,4 +39,53 @@ class CaptchaPhraseTest extends \MailPoetUnitTest {
     $phrase = $captchaPhrase->getPhrase($expectedSessionId);
     $this->assertSame($expectedPhrase, $phrase);
   }
+
+  public function testItStartsNewSessionsWithZeroAttempts(): void {
+    $session = $this->make(CaptchaSession::class, [
+      'getCaptchaHash' => false,
+      'setCaptchaHash' => Stub\Expected::once(function ($sessionId, $data) {
+        $this->assertSame(['phrase' => 'abc', 'attempts' => 0], $data);
+      }),
+    ]);
+    $captchaPhrase = new CaptchaPhrase($session, $this->make(PhraseBuilder::class, ['build' => 'abc']));
+    $captchaPhrase->createPhrase('123');
+  }
+
+  public function testItKeepsFailedAttemptsWhenThePhraseIsRefreshed(): void {
+    $session = $this->make(CaptchaSession::class, [
+      'getCaptchaHash' => ['phrase' => 'old', 'attempts' => 3],
+      'setCaptchaHash' => Stub\Expected::once(function ($sessionId, $data) {
+        $this->assertSame(['phrase' => 'new', 'attempts' => 3], $data);
+      }),
+    ]);
+    $captchaPhrase = new CaptchaPhrase($session, $this->make(PhraseBuilder::class, ['build' => 'new']));
+    $captchaPhrase->createPhrase('123');
+  }
+
+  public function testItReadsStoredValuesWithoutAttemptsAsZeroAttempts(): void {
+    $stored = null;
+    $session = $this->make(CaptchaSession::class, [
+      'getCaptchaHash' => ['phrase' => 'old'],
+      'setCaptchaHash' => function ($sessionId, $data) use (&$stored) {
+        $stored = $data;
+      },
+    ]);
+    $captchaPhrase = new CaptchaPhrase($session, $this->make(PhraseBuilder::class, ['build' => 'new']));
+    $captchaPhrase->createPhrase('123');
+    $this->assertSame(['phrase' => 'new', 'attempts' => 0], $stored);
+    $this->assertSame(1, $captchaPhrase->registerFailedAttempt('123'));
+  }
+
+  public function testItCountsFailedAttemptsAndKeepsThePhrase(): void {
+    $stored = null;
+    $session = $this->make(CaptchaSession::class, [
+      'getCaptchaHash' => ['phrase' => 'abc', 'attempts' => 4],
+      'setCaptchaHash' => function ($sessionId, $data) use (&$stored) {
+        $stored = $data;
+      },
+    ]);
+    $captchaPhrase = new CaptchaPhrase($session, $this->make(PhraseBuilder::class));
+    $this->assertSame(5, $captchaPhrase->registerFailedAttempt('123'));
+    $this->assertSame(['phrase' => 'abc', 'attempts' => 5], $stored);
+  }
 }

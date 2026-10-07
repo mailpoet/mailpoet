@@ -2,6 +2,7 @@
 
 namespace Mailpoet\Test\Captcha\Validator;
 
+use MailPoet\Captcha\CaptchaPhrase;
 use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Captcha\Validator\CaptchaValidator;
 use MailPoet\Captcha\Validator\ValidationError;
@@ -113,6 +114,54 @@ class CaptchaValidatorTest extends \MailPoetTest {
     $meta = $this->getValidationErrorMeta(['captcha' => 'xyz', 'captcha_session_id' => self::SESSION_ID]);
     $this->assertEquals('The characters entered do not match with the previous CAPTCHA.', $meta['error']);
     $this->assertTrue(array_key_exists('redirect_url', $meta));
+  }
+
+  public function testWrongAnswersAreCountedWithoutChangingTheSessionId() {
+    $this->session->setCaptchaHash(self::SESSION_ID, ['phrase' => 'abc']);
+    $data = ['captcha' => 'not-a-phrase', 'captcha_session_id' => self::SESSION_ID];
+
+    $this->getValidationErrorMeta($data);
+    $this->assertSame(1, $this->session->getCaptchaHash(self::SESSION_ID)['attempts']);
+    $this->getValidationErrorMeta($data);
+    $this->getValidationErrorMeta($data);
+    $this->assertSame(3, $this->session->getCaptchaHash(self::SESSION_ID)['attempts']);
+    $this->assertNotEquals('abc', $this->session->getCaptchaHash(self::SESSION_ID)['phrase']);
+  }
+
+  public function testTheTenthWrongAnswerReplacesTheSessionWithANewChallenge() {
+    $this->session->setCaptchaHash(self::SESSION_ID, ['phrase' => 'abc']);
+    $this->session->setFormData(self::SESSION_ID, ['email' => 'a@example.com']);
+    $data = ['captcha' => 'not-a-phrase', 'captcha_session_id' => self::SESSION_ID];
+
+    for ($i = 1; $i < CaptchaPhrase::MAX_ATTEMPTS; $i++) {
+      $meta = $this->getValidationErrorMeta($data);
+      $this->assertEquals('The characters entered do not match with the previous CAPTCHA.', $meta['error']);
+      $this->assertTrue($meta['refresh_captcha']);
+    }
+
+    $meta = $this->getValidationErrorMeta($data + ['email' => 'a@example.com']);
+    $this->assertEquals('Too many incorrect attempts. Here’s a new CAPTCHA to try.', $meta['error']);
+    $this->assertTrue($meta['show_captcha']);
+    $this->assertTrue(array_key_exists('redirect_url', $meta));
+    $this->assertNotEquals(self::SESSION_ID, $meta['captcha_session_id']);
+    $this->assertFalse($this->session->exists(self::SESSION_ID));
+    $this->assertSame(0, $this->session->getCaptchaHash($meta['captcha_session_id'])['attempts']);
+    $this->assertSame(['email' => 'a@example.com'], $this->session->getFormData($meta['captcha_session_id']));
+
+    $meta = $this->getValidationErrorMeta($data);
+    $this->assertEquals('Please fill in the CAPTCHA.', $meta['error']);
+    $this->assertNotEquals(self::SESSION_ID, $meta['captcha_session_id']);
+  }
+
+  public function testStoredPhrasesWithoutAnAttemptCountStartAtZero() {
+    $this->session->setCaptchaHash(self::SESSION_ID, ['phrase' => 'abc']);
+    $data = ['captcha' => 'not-a-phrase', 'captcha_session_id' => self::SESSION_ID];
+
+    for ($i = 1; $i < CaptchaPhrase::MAX_ATTEMPTS; $i++) {
+      $meta = $this->getValidationErrorMeta($data);
+      $this->assertEquals('The characters entered do not match with the previous CAPTCHA.', $meta['error']);
+    }
+    $this->assertTrue($this->session->exists(self::SESSION_ID));
   }
 
   public function testItStartsANewChallengeWhenThePhraseIsGone() {

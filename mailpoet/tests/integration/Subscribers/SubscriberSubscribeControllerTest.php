@@ -5,6 +5,7 @@ namespace MailPoet\Subscribers;
 use Codeception\Util\Fixtures;
 use DateTimeImmutable;
 use MailPoet\Captcha\CaptchaConstants;
+use MailPoet\Captcha\CaptchaPhrase;
 use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\FormEntity;
@@ -167,6 +168,45 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $phrase = $captchaSession->getCaptchaHash($newId)['phrase'] ?? null;
     $this->assertNotEmpty($phrase);
 
+    $result = $this->subscribeController->subscribe([
+      'form_id' => $form->getId(),
+      'captcha_session_id' => $newId,
+      'captcha' => $phrase,
+      'behavioral_signals' => $this->getHumanSignals(),
+    ]);
+
+    verify($result)->arrayHasNotKey('error');
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $email]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $captchaSession->reset($newId);
+  }
+
+  public function testBuiltInCaptchaSubscribesWithTheNewChallengeAfterTooManyWrongAnswers(): void {
+    $this->settings->set('signup_confirmation.enabled', false);
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
+    $captchaSession = $this->diContainer->get(CaptchaSession::class);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $email = 'captcha' . rand(0, 100000) . '@example.com';
+
+    $first = $this->subscribeController->subscribe($this->getCaptchaSubmission($form, $segment, $email, []));
+    $oldId = $first['captcha_session_id'];
+
+    $meta = $first;
+    for ($i = 0; $i < CaptchaPhrase::MAX_ATTEMPTS; $i++) {
+      $meta = $this->subscribeController->subscribe($this->getCaptchaSubmission($form, $segment, $email, [
+        'captcha_session_id' => $oldId,
+        'captcha' => 'not-a-phrase',
+      ]));
+    }
+    verify($meta['error'])->equals('Too many incorrect attempts. Here’s a new CAPTCHA to try.');
+    $newId = $meta['captcha_session_id'];
+    verify($newId)->notEquals($oldId);
+    verify($captchaSession->exists($oldId))->false();
+    verify($captchaSession->getFormData($newId))->notEmpty();
+
+    $phrase = $captchaSession->getCaptchaHash($newId)['phrase'] ?? null;
+    $this->assertNotEmpty($phrase);
     $result = $this->subscribeController->subscribe([
       'form_id' => $form->getId(),
       'captcha_session_id' => $newId,
