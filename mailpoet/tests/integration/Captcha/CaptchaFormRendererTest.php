@@ -19,9 +19,40 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     parent::_before();
   }
 
+  /** @var string[] */
+  private array $createdSessionIds = [];
+
   public function _after() {
-    $this->diContainer->get(CaptchaSession::class)->reset(self::SESSION_ID);
+    $session = $this->diContainer->get(CaptchaSession::class);
+    $session->reset(self::SESSION_ID);
+    foreach ($this->createdSessionIds as $id) {
+      $session->reset($id);
+    }
+    unset($_GET['user_login'], $_GET['password']);
     parent::_after();
+  }
+
+  /**
+   * Stores register form fields in a session with a fresh ID. The renderer caches
+   * its output per session ID within a request, so tests never share an ID.
+   */
+  private function seedRegisterStash(string $referrer, array $fields): string {
+    $session = $this->diContainer->get(CaptchaSession::class);
+    $id = $session->generateSessionId();
+    $this->createdSessionIds[] = $id;
+    $session->setFormData($id, array_merge(['referrer_form' => $referrer], $fields));
+    return $id;
+  }
+
+  /**
+   * A copy of the shared renderer with an empty per-request cache, as on a later request.
+   */
+  private function createFreshRenderer(): CaptchaFormRenderer {
+    $renderer = clone $this->diContainer->get(CaptchaFormRenderer::class);
+    $cache = new \ReflectionProperty(CaptchaFormRenderer::class, 'renderedForms');
+    $cache->setAccessible(true);
+    $cache->setValue($renderer, []);
+    return $renderer;
   }
 
   public function testItRendersInSubscriptionForm() {
@@ -83,41 +114,21 @@ class CaptchaFormRendererTest extends \MailPoetTest {
   }
 
   public function testItRendersInWPRegisterForm() {
-    $formRepository = $this->diContainer->get(FormsRepository::class);
-    $form = new FormEntity('captcha-render-test-form');
-
-    $form->setBody([
-      [
-        'id' => 'email',
-        'type' => 'text',
-      ],
-      [
-        'type' => 'submit',
-      ],
-    ]);
-
-    $form->setId(1);
-    $formRepository->persist($form);
-    $formRepository->flush();
-
-    $sessionId = self::SESSION_ID;
     $expectedLabel = 'Register';
     $expectedActionUrl = '/wp-login.php?action=register';
     $userLogin = 'example';
     $userEmail = 'example@domain.com';
-    $this->diContainer->get(CaptchaSession::class)->setFormData($sessionId, ['form_id' => $form->getId()]);
-    $data = [
-      'captcha_session_id' => $sessionId,
-      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+    $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WP_FORM, [
       'referrer_form_url' => $expectedActionUrl,
-      // WP form specific data
       'wp-submit' => $expectedLabel,
       'user_login' => $userLogin,
       'user_email' => $userEmail,
-    ];
+    ]);
 
-    $testee = $this->diContainer->get(CaptchaFormRenderer::class);
-    $result = $testee->render($data);
+    $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+    ]);
 
     // Action URL
     $this->assertStringContainsString('<form method="POST" action="' . $expectedActionUrl . '"', $result);
@@ -132,41 +143,21 @@ class CaptchaFormRendererTest extends \MailPoetTest {
   }
 
   public function testItRendersInWCRegisterForm() {
-    $formRepository = $this->diContainer->get(FormsRepository::class);
-    $form = new FormEntity('captcha-render-test-form');
-
-    $form->setBody([
-      [
-        'id' => 'email',
-        'type' => 'text',
-      ],
-      [
-        'type' => 'submit',
-      ],
-    ]);
-
-    $form->setId(1);
-    $formRepository->persist($form);
-    $formRepository->flush();
-
-    $sessionId = self::SESSION_ID;
     $expectedLabel = 'Register';
-    $expectedActionUrl = 'https://example.com/?page_id=11';
+    $expectedActionUrl = '/?page_id=11';
     $userLogin = 'example';
     $userEmail = 'example@domain.com';
-    $this->diContainer->get(CaptchaSession::class)->setFormData($sessionId, ['form_id' => $form->getId()]);
-    $data = [
-      'captcha_session_id' => $sessionId,
-      'referrer_form' => CaptchaUrlFactory::REFERER_WC_FORM,
+    $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WC_FORM, [
       'referrer_form_url' => $expectedActionUrl,
-      // WC form specific data
       'register' => $expectedLabel,
       'email' => $userLogin,
       'password' => $userEmail,
-    ];
+    ]);
 
-    $testee = $this->diContainer->get(CaptchaFormRenderer::class);
-    $result = $testee->render($data);
+    $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => CaptchaUrlFactory::REFERER_WC_FORM,
+    ]);
 
     // Action URL
     $this->assertStringContainsString('<form method="POST" action="' . $expectedActionUrl . '"', $result);
@@ -220,22 +211,18 @@ class CaptchaFormRendererTest extends \MailPoetTest {
   }
 
   public function testItEscapesHtmlAttributesInHiddenFields(): void {
-    $sessionId = self::SESSION_ID;
-    $this->diContainer->get(CaptchaSession::class)->setFormData($sessionId, ['stash' => 'seed']);
-    $actionUrl = 'https://example.com/?param=value&other=test';
     $fieldName = 'field"name';
     $fieldValue = 'value"&test';
-
-    $data = [
-      'captcha_session_id' => $sessionId,
-      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
-      'referrer_form_url' => $actionUrl,
+    $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WP_FORM, [
+      'referrer_form_url' => 'https://example.com/?param=value&other=test',
       'wp-submit' => 'Register',
       $fieldName => $fieldValue,
-    ];
+    ]);
 
-    $testee = $this->diContainer->get(CaptchaFormRenderer::class);
-    $result = $testee->render($data);
+    $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+    ]);
 
     $this->assertStringContainsString('action="https://example.com/?param=value&#038;other=test"', $result);
     $this->assertStringContainsString('name="field&quot;name"', $result);
@@ -285,21 +272,16 @@ class CaptchaFormRendererTest extends \MailPoetTest {
   }
 
   public function testItEscapesReferrerFormUrlProperly(): void {
-    $sessionId = self::SESSION_ID;
-    $this->diContainer->get(CaptchaSession::class)->setFormData($sessionId, ['stash' => 'seed']);
-
-    $maliciousUrl = 'https://example.com/register?param=value"onload=alert(1)&other=test';
-
-    $data = [
-      'captcha_session_id' => $sessionId,
-      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
-      'referrer_form_url' => $maliciousUrl,
+    $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WP_FORM, [
+      'referrer_form_url' => 'https://example.com/register?param=value"onload=alert(1)&other=test',
       'wp-submit' => 'Register',
       'user_login' => 'testuser',
-    ];
+    ]);
 
-    $testee = $this->diContainer->get(CaptchaFormRenderer::class);
-    $result = $testee->render($data);
+    $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+    ]);
 
     $this->assertStringContainsString('action="https://example.com/register?param=valueonload=alert(1)&#038;other=test"', $result);
     $this->assertStringNotContainsString('param=value"onload', $result);
@@ -309,41 +291,137 @@ class CaptchaFormRendererTest extends \MailPoetTest {
   }
 
   public function testItValidatesReferrerFormTypes(): void {
-    $sessionId = self::SESSION_ID;
-    $this->diContainer->get(CaptchaSession::class)->setFormData($sessionId, ['stash' => 'seed']);
-
-    // Test with invalid referrer_form - should return false
-    $invalidData = [
-      'captcha_session_id' => $sessionId,
-      'referrer_form' => 'invalid_type',
-      'referrer_form_url' => 'https://example.com',
-    ];
-
     $testee = $this->diContainer->get(CaptchaFormRenderer::class);
-    $result = $testee->render($invalidData);
 
-    // Should return false for invalid referrer_form
-    $this->assertFalse($result);
+    $invalidId = $this->seedRegisterStash('invalid_type', ['referrer_form_url' => 'https://example.com']);
+    $this->assertFalse($testee->render([
+      'captcha_session_id' => $invalidId,
+      'referrer_form' => 'invalid_type',
+    ]));
 
-    // Test with valid referrer_form types
     $validTypes = [
       CaptchaUrlFactory::REFERER_WP_FORM,
       CaptchaUrlFactory::REFERER_WC_FORM,
     ];
-
     foreach ($validTypes as $validType) {
       $submitKey = ($validType === CaptchaUrlFactory::REFERER_WC_FORM) ? 'register' : 'wp-submit';
-      $validData = [
-        'captcha_session_id' => $sessionId,
-        'referrer_form' => $validType,
+      $sessionId = $this->seedRegisterStash($validType, [
         'referrer_form_url' => 'https://example.com',
         $submitKey => 'Register',
-      ];
+      ]);
 
-      $result = $testee->render($validData);
+      $result = $testee->render(['captcha_session_id' => $sessionId, 'referrer_form' => $validType]);
       $this->assertIsString($result);
       $this->assertStringContainsString('<form', $result);
     }
+  }
+
+  public function testItIgnoresRequestValuesWhenRenderingTheRegisterForm(): void {
+    $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WP_FORM, [
+      'referrer_form_url' => '/wp-login.php?action=register',
+      'wp-submit' => 'Register',
+      'user_login' => 'stashed_login',
+    ]);
+    $_GET['user_login'] = 'query_login';
+
+    $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+      'user_email' => 'data_email@example.com',
+      'referrer_form_url' => 'https://elsewhere.example/',
+    ]);
+
+    $this->assertStringContainsString('name="user_login" value="stashed_login"', $result);
+    $this->assertStringNotContainsString('query_login', $result);
+    $this->assertStringNotContainsString('data_email@example.com', $result);
+    $this->assertStringNotContainsString('elsewhere.example', $result);
+  }
+
+  public function testItDoesNotRenderStashedFieldsForAnotherReferrer(): void {
+    $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WP_FORM, [
+      'referrer_form_url' => '/wp-login.php?action=register',
+      'wp-submit' => 'Register',
+      'user_login' => 'stashed_login',
+    ]);
+
+    $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => CaptchaUrlFactory::REFERER_WC_FORM,
+    ]);
+
+    $this->assertFalse($result);
+  }
+
+  public function testItDoesNotRenderRegisterFormForMissingStash(): void {
+    $session = $this->diContainer->get(CaptchaSession::class);
+    $sessionId = $session->generateSessionId();
+    $this->createdSessionIds[] = $sessionId;
+    $session->setFormData($sessionId, ['form_id' => 1]);
+
+    $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+    ]);
+
+    $this->assertFalse($result);
+  }
+
+  public function testItReturnsTheSameRegisterFormWhenRenderedTwiceInOneRequest(): void {
+    $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WP_FORM, [
+      'referrer_form_url' => '/wp-login.php?action=register',
+      'wp-submit' => 'Register',
+      'user_login' => 'stashed_login',
+    ]);
+    $testee = $this->diContainer->get(CaptchaFormRenderer::class);
+    $data = ['captcha_session_id' => $sessionId, 'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM];
+
+    $first = $testee->render($data);
+    $second = $testee->render($data);
+
+    $this->assertStringContainsString('name="user_login" value="stashed_login"', $first);
+    $this->assertSame($first, $second);
+  }
+
+  public function testItKeepsOnlyTheSessionDataAfterRenderingTheRegisterForm(): void {
+    $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WC_FORM, [
+      'referrer_form_url' => '/my-account/',
+      'register' => 'Register',
+      'email' => 'jane@example.com',
+      'password' => 'secret-value',
+    ]);
+    $session = $this->diContainer->get(CaptchaSession::class);
+
+    $this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => CaptchaUrlFactory::REFERER_WC_FORM,
+    ]);
+
+    $this->assertSame(
+      ['referrer_form' => CaptchaUrlFactory::REFERER_WC_FORM, 'action_url' => '/my-account/', 'rendered' => true],
+      $session->getFormData($sessionId)
+    );
+    // The image, audio and refresh requests still find the session and its phrase.
+    $this->assertTrue($session->exists($sessionId));
+    $this->assertNotFalse($session->getCaptchaHash($sessionId));
+  }
+
+  public function testItShowsALinkBackToTheRegisterFormWhenTheFieldsWereAlreadyRendered(): void {
+    $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WP_FORM, [
+      'referrer_form_url' => '/wp-login.php?action=register',
+      'wp-submit' => 'Register',
+      'user_login' => 'stashed_login',
+      'user_email' => 'jane@example.com',
+    ]);
+    $data = ['captcha_session_id' => $sessionId, 'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM];
+    $this->createFreshRenderer()->render($data);
+
+    $result = $this->createFreshRenderer()->render($data);
+
+    $this->assertStringContainsString('This CAPTCHA page has already been used. Go back to the registration form to try again.', $result);
+    $this->assertStringContainsString('href="/wp-login.php?action=register"', $result);
+    $this->assertStringNotContainsString('stashed_login', $result);
+    $this->assertStringNotContainsString('jane@example.com', $result);
+    $this->assertStringNotContainsString('<form', $result);
   }
 
   public function testItDoesNotRenderOrCreateStateForUnknownSession(): void {

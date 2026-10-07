@@ -34,6 +34,9 @@ class CaptchaFormRenderer {
 
   private $wp;
 
+  /** @var array<string, string> */
+  private $renderedForms = [];
+
   public function __construct(
     UrlHelper $urlHelper,
     CaptchaSession $captchaSession,
@@ -67,9 +70,9 @@ class CaptchaFormRenderer {
     if ($ref === CaptchaUrlFactory::REFERER_MP_FORM) {
       return $this->renderFormInSubscriptionForm($sessionId);
     } elseif ($ref === CaptchaUrlFactory::REFERER_WP_FORM) {
-      return $this->renderFormInWPRegisterForm($data, 'wp-submit');
+      return $this->renderFormInWPRegisterForm($sessionId, $ref, 'wp-submit');
     } elseif ($ref === CaptchaUrlFactory::REFERER_WC_FORM) {
-      return $this->renderFormInWPRegisterForm($data, 'register');
+      return $this->renderFormInWPRegisterForm($sessionId, $ref, 'register');
     }
 
     return false;
@@ -121,25 +124,66 @@ class CaptchaFormRenderer {
     return $this->renderForm($sessionId, $hiddenFields, $actionUrl, $submitLabel, $afterSubmitElement, $styles);
   }
 
-  private function renderFormInWPRegisterForm(array $data, string $submitLabelKey) {
-    $sessionId = $data['captcha_session_id'];
+  private function renderFormInWPRegisterForm(string $sessionId, string $referrer, string $submitLabelKey) {
+    if (isset($this->renderedForms[$sessionId])) {
+      return $this->renderedForms[$sessionId];
+    }
 
-    unset($data['captcha_session_id']);
+    // The form fields come only from the server-side stash. Request data is never rendered.
+    $stash = $this->captchaSession->getFormData($sessionId);
+    if (!is_array($stash) || ($stash['referrer_form'] ?? null) !== $referrer) {
+      return false;
+    }
+
+    if (!empty($stash['rendered'])) {
+      return $this->renderUsedMessage($stash);
+    }
+
+    $actionUrl = $this->getRegisterFormActionUrl($stash);
+
     // The 'name' attr is required in this format for the refresh button to work
     $hiddenFields = '<input type="hidden" name="data[captcha_session_id]" value="' . $this->wp->escAttr($sessionId) . '" />';
 
-    $actionUrl = $data['referrer_form_url'];
-    unset($data['referrer_form_url']);
+    $submitLabel = isset($stash[$submitLabelKey]) && is_scalar($stash[$submitLabelKey])
+      ? (string)$stash[$submitLabelKey]
+      : __('Register', 'mailpoet');
 
-    unset($data['referrer_form']);
-    foreach ($data as $key => $value) {
-      if (!is_scalar($value)) continue;
+    $excluded = ['captcha_session_id', 'referrer_form', 'referrer_form_url', 'rendered', 'action_url'];
+    foreach ($stash as $key => $value) {
+      if (!is_scalar($value) || in_array($key, $excluded, true)) continue;
       $hiddenFields .= '<input type="hidden" name="' . $this->wp->escAttr($key) . '" value="' . $this->wp->escAttr($value) . '" />';
     }
 
-    $submitLabel = $data[$submitLabelKey] ?? esc_attr_e('Register'); // phpcs:ignore WordPress.WP.I18n.MissingArgDomain
+    $html = $this->renderForm($sessionId, $hiddenFields, $actionUrl, $submitLabel);
+    if ($html === false) {
+      return false;
+    }
 
-    return $this->renderForm($sessionId, $hiddenFields, $actionUrl, $submitLabel);
+    // The fields are shown once. Replacing the stash drops them (including any password)
+    // and keeps the session alive for the image, audio and refresh requests.
+    $this->captchaSession->setFormData($sessionId, [
+      'referrer_form' => $referrer,
+      'action_url' => $actionUrl,
+      'rendered' => true,
+    ]);
+    $this->renderedForms[$sessionId] = $html;
+    return $html;
+  }
+
+  private function renderUsedMessage(array $stash): string {
+    $actionUrl = isset($stash['action_url']) && is_string($stash['action_url']) && $stash['action_url'] !== ''
+      ? $stash['action_url']
+      : $this->wp->homeUrl();
+    $message = __('This CAPTCHA page has already been used. Go back to the registration form to try again.', 'mailpoet');
+    return '<p><a href="' . $this->wp->escUrl($actionUrl) . '">' . $this->wp->escHtml($message) . '</a></p>';
+  }
+
+  /**
+   * The URL the register form is submitted to, taken from the stash.
+   */
+  private function getRegisterFormActionUrl(array $stash): string {
+    $candidate = $stash['referrer_form_url'] ?? null;
+    return is_string($candidate) && $candidate !== '' ? $candidate : $this->wp->homeUrl();
   }
 
   private function renderForm(
