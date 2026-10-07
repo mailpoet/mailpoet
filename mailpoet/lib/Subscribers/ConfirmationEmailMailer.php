@@ -7,7 +7,6 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MailerLog;
@@ -25,9 +24,6 @@ class ConfirmationEmailMailer {
 
   const MAX_CONFIRMATION_EMAILS = 3;
   const ADMIN_CONFIRMATION_RESEND_INTERVAL_DAYS = 7;
-  protected const WC_CONFIRMATION_UNAVAILABLE = 'unavailable';
-  protected const WC_CONFIRMATION_SENT = 'sent';
-  protected const WC_CONFIRMATION_FAILED = 'failed';
 
   /** @var MailerFactory */
   private $mailerFactory;
@@ -53,9 +49,6 @@ class ConfirmationEmailMailer {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
-  /** @var LoggerFactory */
-  private $loggerFactory;
-
   /** @var array Cache for confirmation emails sent within a request */
   private $sentEmails = [];
 
@@ -76,7 +69,6 @@ class ConfirmationEmailMailer {
     $this->subscribersRepository = $subscribersRepository;
     $this->confirmationEmailCustomizer = $confirmationEmailCustomizer;
     $this->newslettersRepository = $newslettersRepository;
-    $this->loggerFactory = LoggerFactory::getInstance();
   }
 
   /**
@@ -97,51 +89,6 @@ class ConfirmationEmailMailer {
 
   public function clearSentEmailsCache(): void {
     $this->sentEmails = [];
-  }
-
-  /**
-   * Send confirmation email using WooCommerce email system.
-   *
-   * @return string
-   */
-  protected function sendWCConfirmationEmail(SubscriberEntity $subscriber, ?int $confirmationPageId = null): string {
-    try {
-      if (!function_exists('WC')) {
-        return self::WC_CONFIRMATION_UNAVAILABLE;
-      }
-
-      $wc = WC();
-      if (!$wc || !method_exists($wc, 'mailer')) {
-        return self::WC_CONFIRMATION_UNAVAILABLE;
-      }
-
-      $mailer = $wc->mailer();
-      $emails = $mailer->get_emails();
-
-      if (!isset($emails['mailpoet_marketing_confirmation'])) {
-        return self::WC_CONFIRMATION_UNAVAILABLE;
-      }
-
-      /** @var \MailPoet\WooCommerce\Emails\MarketingConfirmation $email */
-      $email = $emails['mailpoet_marketing_confirmation'];
-
-      $subscriber_email = $subscriber->getEmail();
-      $activation_link = $this->subscriptionUrlFactory->getConfirmationUrl($subscriber, $confirmationPageId);
-      $subscriber_firstname = $subscriber->getFirstName() ?: '';
-
-      if (!$email->trigger($subscriber_email, $activation_link, $subscriber_firstname)) {
-        return self::WC_CONFIRMATION_FAILED;
-      }
-
-      return self::WC_CONFIRMATION_SENT;
-
-    } catch (\Exception $e) {
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_SENDING)->error(
-        'MailPoet WC Marketing Confirmation Email Error: ' . $e->getMessage(),
-        ['error' => $e, 'subscriber_id' => $subscriber->getId()]
-      );
-      return self::WC_CONFIRMATION_FAILED;
-    }
   }
 
   public function buildEmailData(string $subject, string $html, string $text): array {
@@ -349,15 +296,6 @@ class ConfirmationEmailMailer {
     $unauthorizedSenderEmail = isset($authorizationEmailsValidation['invalid_sender_address']);
     if (Bridge::isMPSendingServiceEnabled() && $unauthorizedSenderEmail) {
       return false;
-    }
-
-    // Try to send using WooCommerce email first. Only available in Garden environment.
-    // Skip WC path when a per-list confirmation email is set, since WC doesn't support custom templates.
-    if ($confirmationEmailId === null) {
-      $wcConfirmationEmailResult = $this->sendWCConfirmationEmail($subscriber, $confirmationPageId);
-      if ($wcConfirmationEmailResult === self::WC_CONFIRMATION_SENT) {
-        return true;
-      }
     }
 
     $segments = $subscriber->getSegments()->toArray();

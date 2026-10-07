@@ -490,64 +490,6 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     verify($this->subscriber->getConfirmationsCount())->equals(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
   }
 
-  public function testAvailableWooCommerceFailedPublicSendFallsBackToDefaultMailer(): void {
-    $this->subscriber->setConfirmationsCount(1);
-    $this->subscribersRepository->flush();
-
-    $mailer = Stub::makeEmpty(Mailer::class, [
-      'send' => Stub\Expected::once(function() {
-        return ['response' => true];
-      }),
-    ], $this);
-    $mailerFactory = $this->createMock(MailerFactory::class);
-    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
-    $sender = new class(
-      $mailerFactory,
-      $this->diContainer->get(SettingsController::class),
-      $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(SubscriptionUrlFactory::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class),
-      $this->diContainer->get(NewslettersRepository::class)
-    ) extends ConfirmationEmailMailer {
-      protected function sendWCConfirmationEmail(SubscriberEntity $subscriber, ?int $confirmationPageId = null): string {
-        return self::WC_CONFIRMATION_FAILED;
-      }
-    };
-
-    verify($sender->sendConfirmationEmail($this->subscriber, null, null, true))->true();
-    $this->subscribersRepository->refresh($this->subscriber);
-    verify($this->subscriber->getConfirmationsCount())->equals(2);
-    verify($this->subscriber->getLastConfirmationEmailSentAt())->notNull();
-  }
-
-  public function testAvailableWooCommercePublicSendRecordsSuccessWithoutFallback(): void {
-    $this->subscriber->setConfirmationsCount(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS - 1);
-    $this->subscribersRepository->flush();
-
-    $mailer = Stub::makeEmpty(Mailer::class, [
-      'send' => Stub\Expected::never(),
-    ], $this);
-    $mailerFactory = $this->createMock(MailerFactory::class);
-    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
-    $sender = new class(
-      $mailerFactory,
-      $this->diContainer->get(SettingsController::class),
-      $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(SubscriptionUrlFactory::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class),
-      $this->diContainer->get(NewslettersRepository::class)
-    ) extends ConfirmationEmailMailer {
-      protected function sendWCConfirmationEmail(SubscriberEntity $subscriber, ?int $confirmationPageId = null): string {
-        return self::WC_CONFIRMATION_SENT;
-      }
-    };
-
-    verify($sender->sendConfirmationEmail($this->subscriber, null, null, true))->true();
-    $this->subscribersRepository->refresh($this->subscriber);
-    verify($this->subscriber->getConfirmationsCount())->equals(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
-    verify($this->subscriber->getLastConfirmationEmailSentAt())->notNull();
-  }
-
   public function testItKeepsSiteTitleInSubjectUnencodedInsideAngleBrackets() {
     $sender = $this->diContainer->get(ConfirmationEmailMailer::class);
     $this->tester->setBlogname("O'Brien's shop");
