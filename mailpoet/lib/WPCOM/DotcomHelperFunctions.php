@@ -60,48 +60,6 @@ class DotcomHelperFunctions {
     return function_exists('wc_calypso_bridge_is_ecommerce_plan') && wc_calypso_bridge_is_ecommerce_plan();
   }
 
-  public function isGarden(): bool {
-    return defined('IS_COMMERCE_GARDEN') && IS_COMMERCE_GARDEN;
-  }
-
-  protected function getWpcloudConfig(string $key): ?string {
-    if (!function_exists('garden_get_wpcloud_config')) {
-      return null;
-    }
-    $value = \garden_get_wpcloud_config($key);
-    return is_string($value) && $value !== '' ? $value : null;
-  }
-
-  protected function getSiteMetaValue(string $meta_key): ?string {
-    if (function_exists('get_site_meta')) {
-      $blog_id = \get_current_blog_id();
-      $value = \get_site_meta($blog_id, $meta_key, true);
-      if (is_string($value) && $value !== '') {
-        return $value;
-      }
-    }
-
-    if ($this->isGarden()) {
-      return $this->getWpcloudConfig($meta_key);
-    }
-
-    return null;
-  }
-
-  public function gardenName(): ?string {
-    if (!$this->isGarden()) {
-      return null;
-    }
-    return $this->getSiteMetaValue('garden_name');
-  }
-
-  public function gardenPartner(): ?string {
-    if (!$this->isGarden()) {
-      return null;
-    }
-    return $this->getSiteMetaValue('garden_partner');
-  }
-
   /**
    * Returns the plan name for the current site if hosted on WordPress.com.
    * Empty otherwise.
@@ -119,17 +77,6 @@ class DotcomHelperFunctions {
       return 'ecommerce_wpcom';
     } elseif ($this->isEcommerce()) {
       return 'ecommerce';
-    }
-
-    // Garden plan detection via WP Cloud persistent data
-    if ($this->isGarden()) {
-      $planInfo = $this->getWpcloudConfig('plan_info');
-      if ($planInfo !== null) {
-        $decoded = json_decode($planInfo, true);
-        if (is_array($decoded) && isset($decoded['plan_type']) && is_string($decoded['plan_type']) && $decoded['plan_type'] !== '') {
-          return $decoded['plan_type'];
-        }
-      }
     }
 
     return '';
