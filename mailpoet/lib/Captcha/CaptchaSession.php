@@ -54,21 +54,20 @@ class CaptchaSession {
     $this->deleteCaptchaHash($sessionId);
   }
 
-  public function deleteCaptchaHash(string $sessionId): void {
+  /**
+   * Returns true only when this call removed the hash, so concurrent requests cannot both claim it.
+   */
+  public function deleteCaptchaHash(string $sessionId): bool {
     if (!$this->isValidId($sessionId)) {
-      return;
+      return false;
     }
-    $this->wp->deleteTransient($this->getKey($sessionId, self::SESSION_HASH_KEY));
+    return (bool)$this->wp->deleteTransient($this->getKey($sessionId, self::SESSION_HASH_KEY));
   }
 
-  /**
-   * @throws CaptchaSessionLimitException
-   */
   public function setFormData(string $sessionId, array $data): void {
     if (!$this->isValidId($sessionId)) {
       return;
     }
-    $this->registerNewSession($sessionId);
     $key = $this->getKey($sessionId, self::SESSION_FORM_KEY);
     $this->wp->setTransient($key, $data, self::EXPIRATION);
   }
@@ -76,8 +75,6 @@ class CaptchaSession {
   /**
    * Stores the data of a subscription form. Keys of the registration CAPTCHA page are dropped,
    * so the stash can never be shown as a registration page.
-   *
-   * @throws CaptchaSessionLimitException
    */
   public function setSubscriptionFormData(string $sessionId, array $data): void {
     foreach (self::REGISTER_ONLY_KEYS as $key) {
@@ -96,13 +93,11 @@ class CaptchaSession {
 
   /**
    * @param mixed $hash
-   * @throws CaptchaSessionLimitException
    */
   public function setCaptchaHash(string $sessionId, $hash): void {
     if (!$this->isValidId($sessionId)) {
       return;
     }
-    $this->registerNewSession($sessionId);
     $key = $this->getKey($sessionId, self::SESSION_HASH_KEY);
     $this->wp->setTransient($key, $hash, self::EXPIRATION);
   }
@@ -116,15 +111,14 @@ class CaptchaSession {
   }
 
   /**
-   * Counts each new session against its source (an IPv6 address counts by its /64 network).
-   * The read-modify-write is not atomic, so the limit is best-effort.
+   * Counts a new session against its source: an IPv6 address counts by its /64 network, an IPv4-mapped
+   * IPv6 address by its IPv4 address. Each source has a fixed window that starts with its first session.
+   * Call it where a challenge is served or a stash is created for a visitor. The read-modify-write is
+   * not atomic, so the limit is best-effort.
    *
    * @throws CaptchaSessionLimitException
    */
-  private function registerNewSession(string $sessionId): void {
-    if ($this->exists($sessionId)) {
-      return;
-    }
+  public function registerNewSession(): void {
     $ip = Helpers::getIP();
     if (empty($ip)) {
       return;
@@ -133,19 +127,31 @@ class CaptchaSession {
     $packed = inet_pton($ip);
     if ($packed === false) {
       $source = $ip;
+    } elseif (strlen($packed) === 16) {
+      $isIpv4Mapped = substr($packed, 0, 12) === str_repeat("\0", 10) . "\xff\xff";
+      $source = $isIpv4Mapped ? substr($packed, 12) : substr($packed, 0, 8);
     } else {
-      $source = strlen($packed) === 16 ? substr($packed, 0, 8) : $packed;
+      $source = $packed;
     }
     $key = 'MAILPOET_captcha_sessions_' . md5($source);
 
     $limit = $this->wp->applyFilters('mailpoet_captcha_session_limit', self::NEW_SESSION_LIMIT);
     $limit = is_numeric($limit) ? (int)$limit : self::NEW_SESSION_LIMIT;
-    $count = $this->wp->getTransient($key);
-    $count = is_numeric($count) ? (int)$count : 0;
-    if ($count >= $limit) {
-      throw new CaptchaSessionLimitException('Too many CAPTCHA sessions.');
+    $now = time();
+    $window = $this->wp->getTransient($key);
+    $isOpen = is_array($window)
+      && isset($window['count'], $window['expires'])
+      && is_int($window['count'])
+      && is_int($window['expires'])
+      && $window['expires'] > $now;
+    if (!$isOpen) {
+      $window = ['count' => 0, 'expires' => $now + self::NEW_SESSION_WINDOW];
     }
-    $this->wp->setTransient($key, $count + 1, self::NEW_SESSION_WINDOW);
+    if ($window['count'] >= $limit) {
+      throw new CaptchaSessionLimitException();
+    }
+    $window['count']++;
+    $this->wp->setTransient($key, $window, max(1, $window['expires'] - $now));
   }
 
   private function getKey(string $sessionId, string $type): string {

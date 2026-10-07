@@ -5,7 +5,6 @@ namespace MailPoet\Subscribers;
 use MailPoet\Captcha\BehavioralSignals;
 use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Captcha\CaptchaSession;
-use MailPoet\Captcha\CaptchaSessionLimitException;
 use MailPoet\Captcha\Validator\CaptchaValidator;
 use MailPoet\Captcha\Validator\RecaptchaValidator;
 use MailPoet\Captcha\Validator\TurnstileValidator;
@@ -324,11 +323,7 @@ class SubscriberSubscribeController {
 
       if (!isset($data['captcha'])) {
         // Save form data to session
-        try {
-          $this->captchaSession->setSubscriptionFormData($sessionId, array_merge($data, ['form_id' => $form->getId()]));
-        } catch (CaptchaSessionLimitException $e) {
-          throw new UnexpectedValueException($this->getCaptchaSessionLimitMessage());
-        }
+        $this->captchaSession->setSubscriptionFormData($sessionId, array_merge($data, ['form_id' => $form->getId()]));
       } elseif ($this->captchaSession->getFormData($sessionId)) {
         // Restore form data from session, but keep the current request's captcha
         // and behavioral signals so the resubmit reflects accumulated interaction
@@ -445,16 +440,10 @@ class SubscriberSubscribeController {
     }
     $stash = array_merge($data, ['form_id' => $form->getId()]);
     unset($stash[BehavioralSignals::FIELD_NAME]);
-    try {
-      $challenge = $this->builtInCaptchaValidator->getInlineCaptchaChallenge($stash);
-    } catch (CaptchaSessionLimitException $e) {
-      throw new ValidationError($this->getCaptchaSessionLimitMessage());
-    }
-    throw new ValidationError(__('Please fill in the CAPTCHA.', 'mailpoet'), $challenge);
-  }
-
-  private function getCaptchaSessionLimitMessage(): string {
-    return __('Too many CAPTCHA requests from your network. Please wait a few minutes and try again.', 'mailpoet');
+    throw new ValidationError(
+      __('Please fill in the CAPTCHA.', 'mailpoet'),
+      $this->builtInCaptchaValidator->getInlineCaptchaChallenge($stash)
+    );
   }
 
   private function getSegmentIds(FormEntity $form, array $segmentIds): array {

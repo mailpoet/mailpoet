@@ -75,16 +75,15 @@ class CaptchaValidator {
         }
         throw new ValidationError(__('CAPTCHA verification failed. Please try again.', 'mailpoet'));
       }
-      $this->captchaPhrase->consume($sessionId);
+      $isClaimed = $this->captchaPhrase->consume($sessionId);
       $this->captchaSession->reset($sessionId);
+      if (!$isClaimed) {
+        throw new ValidationError(__('CAPTCHA verification failed. Please try again.', 'mailpoet'));
+      }
       return true;
     }
 
-    try {
-      return $this->validateChallengeWithNewChallenges($data, $hasValidId ? $sessionId : null);
-    } catch (CaptchaSessionLimitException $e) {
-      throw new ValidationError(__('Too many CAPTCHA requests from your network. Please wait a few minutes and try again.', 'mailpoet'));
-    }
+    return $this->validateChallengeWithNewChallenges($data, $hasValidId ? $sessionId : null);
   }
 
   /**
@@ -112,6 +111,10 @@ class CaptchaValidator {
     if (empty($answer) || !is_string($answer)) {
       if (!$this->captchaSession->exists($sessionId)) {
         throw $this->newChallengeError($data);
+      }
+      if ($this->captchaPhrase->getPhrase($sessionId) === null) {
+        // First challenge for a session stashed by the form submission
+        $this->captchaSession->registerNewSession();
       }
       $this->captchaPhrase->createPhrase($sessionId);
       throw new ValidationError(
@@ -144,7 +147,9 @@ class CaptchaValidator {
       );
     }
 
-    $this->captchaPhrase->consume($sessionId);
+    if (!$this->captchaPhrase->consume($sessionId)) {
+      throw $this->newChallengeError($data);
+    }
     return true;
   }
 
@@ -176,8 +181,10 @@ class CaptchaValidator {
    * restore the original submission on resubmit.
    *
    * @param array<string, mixed>|null $formData Form data to stash, or null to skip stashing.
+   * @throws CaptchaSessionLimitException
    */
   public function getInlineCaptchaChallenge(?array $formData = null): array {
+    $this->captchaSession->registerNewSession();
     $sessionId = $this->captchaSession->generateSessionId();
     $this->captchaPhrase->createPhrase($sessionId);
     if ($formData !== null) {

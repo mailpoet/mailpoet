@@ -21,7 +21,6 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Test\DataFactories\Tag;
-use MailPoet\UnexpectedValueException;
 
 class SubscriberSubscribeControllerTest extends \MailPoetTest {
   /** @var SettingsController */
@@ -510,13 +509,30 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $first = $this->subscribeController->subscribe($submission);
     verify($first['show_captcha'])->true();
 
-    try {
-      $this->subscribeController->subscribe($submission);
-      $this->fail('Expected the session limit to be reached.');
-    } catch (UnexpectedValueException $e) {
-      verify($e->getMessage())->equals('Too many CAPTCHA requests from your network. Please wait a few minutes and try again.');
-    }
+    $second = $this->subscribeController->subscribe($submission);
+
+    verify($second['error'])->equals('Too many CAPTCHA requests from your network. Please wait a few minutes and try again.');
+    verify($second)->arrayHasNotKey('show_captcha');
     $captchaSession->reset($first['captcha_session_id']);
+  }
+
+  public function testASubscriptionThatNeedsNoChallengeConsumesNoSessionBudget(): void {
+    $this->settings->set('signup_confirmation.enabled', false);
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
+    $this->allowSubmissionsWithoutCaptchaHistory();
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+
+    $this->limitCaptchaSessions(1);
+    $email = 'budget' . rand(0, 100000) . '@example.com';
+    $result = $this->subscribeController->subscribe($this->getCaptchaSubmission($form, $segment, $email, []));
+
+    verify($result)->arrayHasNotKey('error');
+    $this->assertInstanceOf(SubscriberEntity::class, $this->subscribersRepository->findOneBy(['email' => $email]));
+
+    global $wpdb;
+    $budgetRows = (int)$wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_MAILPOET\\_captcha\\_sessions\\_%'");
+    verify($budgetRows)->equals(0);
   }
 
   public function testItReportsTheSourceLimitWhenSignalsNeedANewChallenge(): void {

@@ -45,8 +45,11 @@ class CaptchaPhrase {
     return $storage['attempts'];
   }
 
-  public function consume(string $sessionId): void {
-    $this->session->deleteCaptchaHash($sessionId);
+  /**
+   * Returns true only when this call removed the phrase, so an answer is accepted at most once.
+   */
+  public function consume(string $sessionId): bool {
+    return $this->session->deleteCaptchaHash($sessionId);
   }
 
   private function getAttempts(string $sessionId): int {
