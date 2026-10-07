@@ -12,13 +12,16 @@ class CaptchaRenderer {
 
   private CaptchaPhrase $phrase;
   private CaptchaSession $session;
+  private CaptchaAudioBuilder $audioBuilder;
 
   public function __construct(
     CaptchaPhrase $phrase,
-    CaptchaSession $session
+    CaptchaSession $session,
+    CaptchaAudioBuilder $audioBuilder
   ) {
     $this->phrase = $phrase;
     $this->session = $session;
+    $this->audioBuilder = $audioBuilder;
   }
 
   public function isSupported(): bool {
@@ -26,26 +29,16 @@ class CaptchaRenderer {
   }
 
   public function renderAudio(string $sessionId): void {
-    $audioPath = Env::$assetsPath . '/audio/';
     $phrase = $this->phrase->getPhrase($sessionId);
     if (!$phrase) {
       return;
     }
 
-    $files = [];
-    foreach (str_split($phrase) as $character) {
-      $file = $audioPath . strtolower($character) . '.mp3';
-      if (!file_exists($file)) {
-        throw new \RuntimeException("File not found.");
-      }
-      $files[] = $file;
-    }
+    $audio = $this->audioBuilder->build($phrase, Env::$assetsPath . '/audio');
 
     Headers::setNoCacheHeaders();
-    header('Content-Type: audio/mpeg');
-    foreach ($files as $file) {
-      readfile($file);
-    }
+    header('Content-Type: audio/wav');
+    echo $audio; // phpcs:ignore WordPress.Security.EscapeOutput -- binary WAV data
   }
 
   public function renderImage(string $sessionId): void {

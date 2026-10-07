@@ -6,7 +6,7 @@ const formMarkup = `
     <input type="hidden" name="data[captcha_session_id]" value="old-session" />
     <img class="mailpoet_captcha" src="https://example.com/old.png" />
     <audio class="mailpoet_captcha_player">
-      <source src="https://example.com/old.mp3" type="audio/mpeg" />
+      <source src="https://example.com/old.wav" type="audio/wav" />
     </audio>
     <input type="text" name="data[captcha]" value="typed answer" />
   </form>
@@ -15,7 +15,7 @@ const formMarkup = `
 const meta = {
   captcha_session_id: 'new-session',
   captcha_image_url: 'https://example.com/new.png',
-  captcha_audio_url: 'https://example.com/new.mp3',
+  captcha_audio_url: 'https://example.com/new.wav',
 };
 
 describe('applyCaptchaChallenge', () => {
@@ -54,7 +54,7 @@ describe('applyCaptchaChallenge', () => {
   it('points the audio source at the new challenge', () => {
     expect(
       form.querySelector('.mailpoet_captcha_player source').getAttribute('src'),
-    ).to.equal('https://example.com/new.mp3');
+    ).to.equal('https://example.com/new.wav');
   });
 
   it('reloads the audio element', () => {
