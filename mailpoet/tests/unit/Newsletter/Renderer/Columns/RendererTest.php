@@ -41,6 +41,16 @@ class RendererTest extends \MailPoetUnitTest {
     verify($result)->equals('<!-- Skipped unsupported block type: container -->');
   }
 
+  public function testItEscapesTheBlockTypeInTheSkippedMessage() {
+    $contentBlock = [
+      'type' => 'x --><b>injected</b><!--',
+      'styles' => ['block' => []],
+    ];
+
+    $result = $this->renderer->render($contentBlock, []);
+    verify($result)->equals('<!-- Skipped unsupported block type: x --&gt;&lt;b&gt;injected&lt;/b&gt;&lt;!-- -->');
+  }
+
   public function testItRendersOneColumn() {
     $contentBlock = [
       'blocks' => [1], // Single block

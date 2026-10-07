@@ -210,6 +210,42 @@ class MetaInformationManagerTest extends \MailPoetTest {
     verify($content)->stringContainsString('Guest Author<br />Politics');
   }
 
+  public function testItEscapesTheLabelsSetInTheBlock() {
+    $this->args['authorPrecededBy'] = '<b>By</b>';
+    $this->args['categoriesPrecededBy'] = '<i>In</i>';
+
+    $content = $this->appendMetaInformation();
+
+    verify($content)->stringContainsString('&lt;b&gt;By&lt;/b&gt; Original Author');
+    verify($content)->stringContainsString('&lt;i&gt;In&lt;/i&gt; ' . $this->categoryName);
+    verify($content)->stringNotContainsString('<b>By</b>');
+    verify($content)->stringNotContainsString('<i>In</i>');
+  }
+
+  public function testItKeepsMarkupReturnedByAFilter() {
+    $this->addFilter(self::AUTHOR_FILTER, function () {
+      return '<strong>Guest Author</strong>';
+    });
+
+    $content = $this->appendMetaInformation();
+
+    verify($content)->stringContainsString('<strong>Guest Author</strong>');
+  }
+
+  public function testItDoesNotDoubleEncodeEntitiesStoredByWordPress() {
+    $categoryId = $this->createCategory('News & Events ' . uniqid());
+    $term = get_term($categoryId);
+    $this->assertInstanceOf(\WP_Term::class, $term);
+    verify($term->name)->stringContainsString('&amp;');
+    wp_set_post_terms($this->postId, [$categoryId], 'category');
+
+    $content = $this->appendMetaInformation();
+    wp_delete_term($categoryId, 'category');
+
+    verify($content)->stringContainsString('News &amp; Events');
+    verify($content)->stringNotContainsString('&amp;amp;');
+  }
+
   public function _after() {
     require_once ABSPATH . 'wp-admin/includes/user.php';
     foreach ($this->registeredFilters as [$name, $callback]) {
