@@ -6,6 +6,8 @@ use MailPoet\Captcha\CaptchaRenderer;
 use MailPoet\Captcha\CaptchaSession;
 
 class CaptchaRendererTest extends \MailPoetTest {
+  const SESSION_ID = 'abcd1234abcd1234abcd1234abcd1234';
+
   private CaptchaRenderer $testee;
   private CaptchaSession $session;
 
@@ -14,15 +16,20 @@ class CaptchaRendererTest extends \MailPoetTest {
     $this->session = $this->diContainer->get(CaptchaSession::class);
   }
 
+  public function _after() {
+    $this->session->reset(self::SESSION_ID);
+    parent::_after();
+  }
+
   public function testItRendersImage(): void {
-    $sessionId = '123';
+    $sessionId = self::SESSION_ID;
     $this->session->setCaptchaHash($sessionId, ['phrase' => 'a']);
     $this->testee->renderImage($sessionId);
     $this->assertStringContainsString('JPEG', $this->getActualOutputForAssertion());
   }
 
   public function testItRendersAudio(): void {
-    $sessionId = '123';
+    $sessionId = self::SESSION_ID;
     $this->session->setCaptchaHash($sessionId, ['phrase' => 'a']);
     $this->testee->renderAudio($sessionId);
     $this->assertSame(
@@ -32,9 +39,22 @@ class CaptchaRendererTest extends \MailPoetTest {
   }
 
   public function testItRefreshesPhrase(): void {
-    $sessionId = '123';
+    $sessionId = self::SESSION_ID;
     $this->session->setCaptchaHash($sessionId, ['phrase' => 'abc']);
     $this->testee->refreshPhrase($sessionId);
     $this->assertNotEquals('abc', $this->session->getCaptchaHash($sessionId)['phrase']);
+  }
+
+  public function testItDoesNotRefreshPhraseOfUnknownSession(): void {
+    verify($this->testee->refreshPhrase(self::SESSION_ID))->equals('');
+    verify($this->session->exists(self::SESSION_ID))->false();
+    verify($this->session->getCaptchaHash(self::SESSION_ID))->false();
+  }
+
+  public function testItRendersNothingForUnknownSession(): void {
+    $this->testee->renderImage(self::SESSION_ID);
+    $this->testee->renderAudio(self::SESSION_ID);
+    verify($this->getActualOutputForAssertion())->equals('');
+    verify($this->session->exists(self::SESSION_ID))->false();
   }
 }

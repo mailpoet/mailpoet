@@ -11,11 +11,14 @@ class CaptchaRenderer {
   const DEFAULT_HEIGHT = 60;
 
   private CaptchaPhrase $phrase;
+  private CaptchaSession $session;
 
   public function __construct(
-    CaptchaPhrase $phrase
+    CaptchaPhrase $phrase,
+    CaptchaSession $session
   ) {
     $this->phrase = $phrase;
+    $this->session = $session;
   }
 
   public function isSupported(): bool {
@@ -24,7 +27,10 @@ class CaptchaRenderer {
 
   public function renderAudio(string $sessionId): void {
     $audioPath = Env::$assetsPath . '/audio/';
-    $phrase = $this->getPhrase($sessionId);
+    $phrase = $this->phrase->getPhrase($sessionId);
+    if (!$phrase) {
+      return;
+    }
 
     $files = [];
     foreach (str_split($phrase) as $character) {
@@ -57,7 +63,11 @@ class CaptchaRenderer {
     $captchaDirectory = dirname((string)$reflector->getFileName());
     $font = $captchaDirectory . '/Font/captcha' . $fontNumber . '.ttf';
 
-    $phrase = $this->getPhrase($sessionId);
+    $phrase = $this->phrase->getPhrase($sessionId);
+    if (!$phrase) {
+      return;
+    }
+
     $builder = CaptchaBuilder::create($phrase)
       ->setBackgroundColor(255, 255, 255)
       ->setTextColor(1, 1, 1)
@@ -70,14 +80,9 @@ class CaptchaRenderer {
   }
 
   public function refreshPhrase(string $sessionId): string {
-    return $this->phrase->createPhrase($sessionId);
-  }
-
-  private function getPhrase(string $sessionId): string {
-    $phrase = $this->phrase->getPhrase($sessionId);
-    if (!$phrase) {
-      throw new \RuntimeException("No CAPTCHA phrase was generated.");
+    if (!$this->session->exists($sessionId)) {
+      return '';
     }
-    return $phrase;
+    return $this->phrase->createPhrase($sessionId);
   }
 }

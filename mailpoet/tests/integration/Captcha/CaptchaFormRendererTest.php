@@ -10,11 +10,18 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
 
 class CaptchaFormRendererTest extends \MailPoetTest {
+  const SESSION_ID = 'abcd1234abcd1234abcd1234abcd1234';
+
   public function _before() {
     $populator = $this->diContainer->get(Populator::class);
     $populator->up();
 
     parent::_before();
+  }
+
+  public function _after() {
+    $this->diContainer->get(CaptchaSession::class)->reset(self::SESSION_ID);
+    parent::_after();
   }
 
   public function testItRendersInSubscriptionForm() {
@@ -47,7 +54,7 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $formRepository->persist($form);
     $formRepository->flush();
 
-    $sessionId = '123';
+    $sessionId = self::SESSION_ID;
     $captchaSession = $this->diContainer->get(CaptchaSession::class);
     $captchaSession->setFormData($sessionId, ['form_id' => $form->getId()]);
 
@@ -93,11 +100,12 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $formRepository->persist($form);
     $formRepository->flush();
 
-    $sessionId = '123';
+    $sessionId = self::SESSION_ID;
     $expectedLabel = 'Register';
     $expectedActionUrl = '/wp-login.php?action=register';
     $userLogin = 'example';
     $userEmail = 'example@domain.com';
+    $this->diContainer->get(CaptchaSession::class)->setFormData($sessionId, ['form_id' => $form->getId()]);
     $data = [
       'captcha_session_id' => $sessionId,
       'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
@@ -141,11 +149,12 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $formRepository->persist($form);
     $formRepository->flush();
 
-    $sessionId = '123';
+    $sessionId = self::SESSION_ID;
     $expectedLabel = 'Register';
     $expectedActionUrl = 'https://example.com/?page_id=11';
     $userLogin = 'example';
     $userEmail = 'example@domain.com';
+    $this->diContainer->get(CaptchaSession::class)->setFormData($sessionId, ['form_id' => $form->getId()]);
     $data = [
       'captcha_session_id' => $sessionId,
       'referrer_form' => CaptchaUrlFactory::REFERER_WC_FORM,
@@ -196,7 +205,7 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $formRepository->persist($form);
     $formRepository->flush();
 
-    $sessionId = '123';
+    $sessionId = self::SESSION_ID;
     $captchaSession = $this->diContainer->get(CaptchaSession::class);
     $captchaSession->setFormData($sessionId, ['form_id' => $form->getId()]);
 
@@ -211,7 +220,8 @@ class CaptchaFormRendererTest extends \MailPoetTest {
   }
 
   public function testItEscapesHtmlAttributesInHiddenFields(): void {
-    $sessionId = 'test"&session';
+    $sessionId = self::SESSION_ID;
+    $this->diContainer->get(CaptchaSession::class)->setFormData($sessionId, ['stash' => 'seed']);
     $actionUrl = 'https://example.com/?param=value&other=test';
     $fieldName = 'field"name';
     $fieldValue = 'value"&test';
@@ -227,7 +237,6 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $testee = $this->diContainer->get(CaptchaFormRenderer::class);
     $result = $testee->render($data);
 
-    $this->assertStringContainsString('value="test&quot;&amp;session"', $result);
     $this->assertStringContainsString('action="https://example.com/?param=value&#038;other=test"', $result);
     $this->assertStringContainsString('name="field&quot;name"', $result);
     $this->assertStringContainsString('value="value&quot;&amp;test"', $result);
@@ -259,7 +268,7 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $formRepository->persist($form);
     $formRepository->flush();
 
-    $sessionId = '123';
+    $sessionId = self::SESSION_ID;
     $captchaSession = $this->diContainer->get(CaptchaSession::class);
     $captchaSession->setFormData($sessionId, ['form_id' => $form->getId()]);
 
@@ -276,7 +285,8 @@ class CaptchaFormRendererTest extends \MailPoetTest {
   }
 
   public function testItEscapesReferrerFormUrlProperly(): void {
-    $sessionId = 'test-session';
+    $sessionId = self::SESSION_ID;
+    $this->diContainer->get(CaptchaSession::class)->setFormData($sessionId, ['stash' => 'seed']);
 
     $maliciousUrl = 'https://example.com/register?param=value"onload=alert(1)&other=test';
 
@@ -299,7 +309,8 @@ class CaptchaFormRendererTest extends \MailPoetTest {
   }
 
   public function testItValidatesReferrerFormTypes(): void {
-    $sessionId = 'test-session';
+    $sessionId = self::SESSION_ID;
+    $this->diContainer->get(CaptchaSession::class)->setFormData($sessionId, ['stash' => 'seed']);
 
     // Test with invalid referrer_form - should return false
     $invalidData = [
@@ -333,5 +344,56 @@ class CaptchaFormRendererTest extends \MailPoetTest {
       $this->assertIsString($result);
       $this->assertStringContainsString('<form', $result);
     }
+  }
+
+  public function testItDoesNotRenderOrCreateStateForUnknownSession(): void {
+    $testee = $this->diContainer->get(CaptchaFormRenderer::class);
+    $referrers = [
+      CaptchaUrlFactory::REFERER_WP_FORM,
+      CaptchaUrlFactory::REFERER_WC_FORM,
+    ];
+    foreach ($referrers as $referrer) {
+      $result = $testee->render([
+        'captcha_session_id' => self::SESSION_ID,
+        'referrer_form' => $referrer,
+        'referrer_form_url' => 'https://example.com',
+        'wp-submit' => 'Register',
+        'register' => 'Register',
+      ]);
+      $this->assertFalse($result);
+      $this->assertFalse(get_transient('MAILPOET_' . self::SESSION_ID . '_hash'));
+    }
+  }
+
+  public function testItDoesNotRenderSubscriptionFormForUnknownSession(): void {
+    $formRepository = $this->diContainer->get(FormsRepository::class);
+    $form = new FormEntity('captcha-render-test-form');
+    $form->setBody([['id' => 'email', 'type' => 'text'], ['type' => 'submit', 'params' => ['label' => 'Subscribe']]]);
+    $formRepository->persist($form);
+    $formRepository->flush();
+
+    $_GET['mailpoet_error'] = (string)$form->getId();
+    try {
+      $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+        'captcha_session_id' => self::SESSION_ID,
+        'referrer_form' => CaptchaUrlFactory::REFERER_MP_FORM,
+      ]);
+    } finally {
+      unset($_GET['mailpoet_error']);
+    }
+    $this->assertFalse($result);
+    $this->assertFalse(get_transient('MAILPOET_' . self::SESSION_ID . '_hash'));
+  }
+
+  public function testItDoesNotRenderForMalformedSessionId(): void {
+    $testee = $this->diContainer->get(CaptchaFormRenderer::class);
+    $result = $testee->render([
+      'captcha_session_id' => 'test-session',
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+      'referrer_form_url' => 'https://example.com',
+      'wp-submit' => 'Register',
+    ]);
+    $this->assertFalse($result);
+    $this->assertFalse(get_transient('MAILPOET_test-session_hash'));
   }
 }
