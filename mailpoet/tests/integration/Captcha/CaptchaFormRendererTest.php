@@ -34,7 +34,16 @@ class CaptchaFormRendererTest extends \MailPoetTest {
 
   private int $createdPageId = 0;
 
+  /** @var callable[] */
+  private array $limitFilters = [];
+
   public function _after() {
+    foreach ($this->limitFilters as $filter) {
+      remove_filter('mailpoet_captcha_session_limit', $filter);
+    }
+    $this->limitFilters = [];
+    $this->deleteBudgetTransients();
+    unset($_SERVER['REMOTE_ADDR']);
     $session = $this->diContainer->get(CaptchaSession::class);
     $session->reset(self::SESSION_ID);
     foreach ($this->createdSessionIds as $id) {
@@ -723,5 +732,87 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     ]);
     $this->assertFalse($result);
     $this->assertFalse(get_transient('MAILPOET_test-session_hash'));
+  }
+
+  public function testItShowsTheLimitMessageAndCreatesNoPhraseWhenTheSubscriptionPageIsOverTheSessionLimit(): void {
+    $this->prepareSubscriptionSession(0);
+
+    $result = $this->renderSubscriptionPage();
+
+    $this->assertStringContainsString('Too many CAPTCHA requests from your network.', $result);
+    $this->assertStringNotContainsString('<form', $result);
+    $this->assertFalse(get_transient('MAILPOET_' . self::SESSION_ID . '_hash'));
+  }
+
+  public function testItRendersTheSubscriptionPageWithoutCountingWhenThePhraseAlreadyExists(): void {
+    $this->prepareSubscriptionSession(0);
+    $this->diContainer->get(CaptchaSession::class)->setCaptchaHash(self::SESSION_ID, ['phrase' => 'abc']);
+
+    $result = $this->renderSubscriptionPage();
+
+    $this->assertStringContainsString('name="data[captcha_session_id]"', $result);
+    $this->assertSame(0, $this->countBudgetTransients());
+  }
+
+  public function testItCountsOneSessionWhenTheSubscriptionPageCreatesTheFirstPhrase(): void {
+    $this->prepareSubscriptionSession(5);
+
+    $result = $this->renderSubscriptionPage();
+
+    $this->assertStringContainsString('name="data[captcha_session_id]"', $result);
+    $hash = $this->diContainer->get(CaptchaSession::class)->getCaptchaHash(self::SESSION_ID);
+    $this->assertIsArray($hash);
+    $this->assertIsString($hash['phrase']);
+    $this->assertSame(1, $this->getBudgetWindow()['count']);
+
+    $this->renderSubscriptionPage();
+    $this->assertSame(1, $this->getBudgetWindow()['count']);
+  }
+
+  private function prepareSubscriptionSession(int $limit): void {
+    $_SERVER['REMOTE_ADDR'] = '203.0.113.10';
+    $this->deleteBudgetTransients();
+    $filter = function () use ($limit) {
+      return $limit;
+    };
+    add_filter('mailpoet_captcha_session_limit', $filter);
+    $this->limitFilters[] = $filter;
+
+    $formRepository = $this->diContainer->get(FormsRepository::class);
+    $form = new FormEntity('captcha-session-limit-test-form');
+    $form->setBody([['id' => 'email', 'type' => 'text'], ['type' => 'submit', 'params' => ['label' => 'Subscribe']]]);
+    $formRepository->persist($form);
+    $formRepository->flush();
+    $this->diContainer->get(CaptchaSession::class)->setFormData(self::SESSION_ID, ['form_id' => $form->getId()]);
+  }
+
+  private function renderSubscriptionPage(): string {
+    $result = $this->createFreshRenderer()->render([
+      'captcha_session_id' => self::SESSION_ID,
+      'referrer_form' => CaptchaUrlFactory::REFERER_MP_FORM,
+    ]);
+    $this->assertIsString($result);
+    return $result;
+  }
+
+  private function getBudgetWindow(): array {
+    $window = get_transient('MAILPOET_captcha_sessions_' . md5((string)inet_pton('203.0.113.10')));
+    $this->assertIsArray($window);
+    return $window;
+  }
+
+  private function countBudgetTransients(): int {
+    global $wpdb;
+    return (int)$wpdb->get_var(
+      "SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_MAILPOET\\_captcha\\_sessions\\_%'"
+    );
+  }
+
+  private function deleteBudgetTransients(): void {
+    global $wpdb;
+    $wpdb->query(
+      "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_MAILPOET\\_captcha\\_sessions\\_%' OR option_name LIKE '\\_transient\\_timeout\\_MAILPOET\\_captcha\\_sessions\\_%'"
+    );
+    wp_cache_flush();
   }
 }
