@@ -7,7 +7,7 @@ use MailPoet\Config\Renderer;
 /**
  * WorkerTest and AutomatedEmailsTest both mock the Renderer, so nothing else
  * actually renders these templates — a Twig error in one of them would ship
- * unnoticed. This renders all six for real, with and without untracked
+ * unnoticed. This renders all four for real, with and without untracked
  * recipients, so both branches of the not-tracked line are exercised.
  */
 class StatsNotificationTemplatesTest extends \MailPoetTest {
@@ -20,7 +20,7 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
   }
 
   public function testItRendersTheCampaignDigestWithACoverageLine() {
-    foreach (['emails/statsNotification.html', 'emails/statsNotificationGarden.html', 'emails/statsNotification.txt'] as $template) {
+    foreach (['emails/statsNotification.html', 'emails/statsNotification.txt'] as $template) {
       $output = $this->renderer->render($template, $this->campaignContext(37, 463));
       verify($output)->stringContainsString('37');
       verify($output)->stringContainsString('not tracked');
@@ -32,7 +32,7 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
   }
 
   public function testItRendersTheCampaignDigestWithoutACoverageLineWhenNothingIsUntracked() {
-    foreach (['emails/statsNotification.html', 'emails/statsNotificationGarden.html', 'emails/statsNotification.txt'] as $template) {
+    foreach (['emails/statsNotification.html', 'emails/statsNotification.txt'] as $template) {
       $output = $this->renderer->render($template, $this->campaignContext(0, 500));
       verify($output)->stringNotContainsString('not tracked');
     }
@@ -41,7 +41,6 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
   public function testItRendersTheAutomatedDigestWithACoverageLine() {
     $templates = [
       'emails/statsNotificationAutomatedEmails.html',
-      'emails/statsNotificationAutomatedEmailsGarden.html',
       'emails/statsNotificationAutomatedEmails.txt',
     ];
     foreach ($templates as $template) {
@@ -56,7 +55,6 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
   public function testItRendersTheAutomatedDigestWithoutACoverageLineWhenNothingIsUntracked() {
     $templates = [
       'emails/statsNotificationAutomatedEmails.html',
-      'emails/statsNotificationAutomatedEmailsGarden.html',
       'emails/statsNotificationAutomatedEmails.txt',
     ];
     foreach ($templates as $template) {
@@ -66,7 +64,7 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
   }
 
   public function testItSaysNothingCouldBeMeasuredWhenNoCampaignRecipientIsTracked() {
-    foreach (['emails/statsNotification.html', 'emails/statsNotificationGarden.html', 'emails/statsNotification.txt'] as $template) {
+    foreach (['emails/statsNotification.html', 'emails/statsNotification.txt'] as $template) {
       $output = $this->renderer->render($template, $this->campaignContext(5, 0));
       verify($output)->stringContainsString('None of your 5 recipients are tracked');
       verify($output)->stringNotContainsString('the other 0');
@@ -77,7 +75,6 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
   public function testItSaysNothingCouldBeMeasuredWhenNoAutomationRecipientIsTracked() {
     $templates = [
       'emails/statsNotificationAutomatedEmails.html',
-      'emails/statsNotificationAutomatedEmailsGarden.html',
       'emails/statsNotificationAutomatedEmails.txt',
     ];
     foreach ($templates as $template) {
@@ -91,10 +88,8 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
   public function testItUsesTheSingularWhenOneRecipientIsNotTracked() {
     $templates = [
       'emails/statsNotification.html' => fn(int $notTracked, int $trackedSent) => $this->campaignContext($notTracked, $trackedSent),
-      'emails/statsNotificationGarden.html' => fn(int $notTracked, int $trackedSent) => $this->campaignContext($notTracked, $trackedSent),
       'emails/statsNotification.txt' => fn(int $notTracked, int $trackedSent) => $this->campaignContext($notTracked, $trackedSent),
       'emails/statsNotificationAutomatedEmails.html' => fn(int $notTracked, int $trackedSent) => $this->automatedContext($notTracked, $trackedSent),
-      'emails/statsNotificationAutomatedEmailsGarden.html' => fn(int $notTracked, int $trackedSent) => $this->automatedContext($notTracked, $trackedSent),
       'emails/statsNotificationAutomatedEmails.txt' => fn(int $notTracked, int $trackedSent) => $this->automatedContext($notTracked, $trackedSent),
     ];
     foreach ($templates as $template => $context) {
@@ -117,16 +112,12 @@ class StatsNotificationTemplatesTest extends \MailPoetTest {
       'hasValidApiKey' => true,
       'subscribersLimit' => 1000,
       'upgradeNowLink' => 'https://example.com/upgrade',
-      'blogName' => 'Test blog',
-      'recipientFirstName' => 'Admin',
     ]);
   }
 
   private function automatedContext(int $notTracked, int $trackedSent): array {
     return [
       'linkSettings' => 'https://example.com/settings',
-      'blogName' => 'Test blog',
-      'recipientFirstName' => 'Admin',
       'newsletters' => [
         array_merge($this->statBlock($notTracked, $trackedSent), [
           'linkStats' => 'https://example.com/stats',

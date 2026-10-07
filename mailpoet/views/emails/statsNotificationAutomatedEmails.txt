@@ -1,38 +1,6 @@
 <% extends 'emails/statsNotificationLayout.txt' %>
 
 <% block content %>
-<% if is_garden() %>
-<%= blogName %>
-
-<%= __('Your monthly automation stats') %>
-
-<% if recipientFirstName %><%= __('Hi %s,')|replace({'%s': recipientFirstName}) %>
-
-<% endif %>
-<%= __('Here\'s a summary of how your active automations performed this month.') %>
-
-<% for newsletter in newsletters %>
-------------------------------------------
-<%= newsletter.subject %>
-
-<%= __('Clicked') %>: <%= stats_number_format_i18n(newsletter.clicked) %>% (<%= clicked_stats_text_garden(newsletter.clicked) %>)
-<%= __('Opened') %>: <%= stats_number_format_i18n(newsletter.opened) %>%
-<%= __('Machine-opened') %>: <%= stats_number_format_i18n(newsletter.machineOpened) %>%
-<%= __('Unsubscribed') %>: <%= stats_number_format_i18n(newsletter.unsubscribed) %>%
-<%= __('Bounced') %>: <%= stats_number_format_i18n(newsletter.bounced) %>%
-<% if newsletter.notTracked > 0 %>
-<% if newsletter.trackedSent > 0 %>
-  <%= _n('%1$s of your recipients is not tracked, so open and click rates are based on the other %2$s.', '%1$s of your recipients are not tracked, so open and click rates are based on the other %2$s.', newsletter.notTracked)|replace({'%1$s': newsletter.notTracked, '%2$s': newsletter.trackedSent}) %>
-<% else %>
-  <%= _n('Your %1$s recipient is not tracked, so open and click rates cannot be measured.', 'None of your %1$s recipients are tracked, so open and click rates cannot be measured.', newsletter.notTracked)|replace({'%1$s': newsletter.notTracked}) %>
-<% endif %>
-<% endif %>
-
-<%= __('View automation report') %>
-  <%= newsletter.linkStats|raw %>
-<% endfor %>
-------------------------------------------
-<% else %>
 <%= __('Your monthly stats are in!') %>
 
 <% for newsletter in newsletters %>
@@ -54,5 +22,4 @@
     <%= newsletter.linkStats|raw %>
 <% endfor %>
 ------------------------------------------
-<% endif %>
 <% endblock %>
