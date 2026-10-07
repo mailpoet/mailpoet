@@ -8,7 +8,6 @@ use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\PatternsController;
 use MailPoet\EmailEditor\Integrations\MailPoet\Templates\TemplatesController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoet\WPCOM\DotcomHelperFunctions;
 
 class EmailEditor {
   const MAILPOET_EMAIL_POST_TYPE = 'mailpoet_email';
@@ -29,8 +28,6 @@ class EmailEditor {
 
   private TemplatesController $templatesController;
 
-  private DotcomHelperFunctions $dotcomHelperFunctions;
-
   private NewslettersRepository $newslettersRepository;
 
   private bool $editorAlreadyRendered = false;
@@ -43,7 +40,6 @@ class EmailEditor {
     PatternsController $patternsController,
     TemplatesController $templatesController,
     Cli $cli,
-    DotcomHelperFunctions $dotcomHelperFunctions,
     PersonalizationTagManager $personalizationTagManager,
     NewslettersRepository $newslettersRepository
   ) {
@@ -53,7 +49,6 @@ class EmailEditor {
     $this->patternsController = $patternsController;
     $this->templatesController = $templatesController;
     $this->cli = $cli;
-    $this->dotcomHelperFunctions = $dotcomHelperFunctions;
     $this->emailEditorPreviewEmail = $emailEditorPreviewEmail;
     $this->personalizationTagManager = $personalizationTagManager;
     $this->newslettersRepository = $newslettersRepository;
@@ -69,10 +64,7 @@ class EmailEditor {
     $this->wp->addFilter('woocommerce_email_editor_send_preview_email_personalizer_context', [$this, 'extendPreviewPersonalizerContext'], 10, 1);
     $this->wp->addFilter('rest_pre_insert_mailpoet_email', [$this, 'preserveAutomationEmailStatus'], 10, 2);
     $this->patternsController->registerPatterns();
-    // Skip classic templates in Garden environment.
-    if (!$this->dotcomHelperFunctions->isGarden()) {
-      $this->templatesController->initialize();
-    }
+    $this->templatesController->initialize();
     $this->extendEmailPostApi();
     $this->registerApiRoutes();
     $this->personalizationTagManager->initialize();
