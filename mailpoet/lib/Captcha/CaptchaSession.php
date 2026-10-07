@@ -47,9 +47,15 @@ class CaptchaSession {
       return;
     }
     $formKey = $this->getKey($sessionId, self::SESSION_FORM_KEY);
-    $hashKey = $this->getKey($sessionId, self::SESSION_HASH_KEY);
     $this->wp->deleteTransient($formKey);
-    $this->wp->deleteTransient($hashKey);
+    $this->deleteCaptchaHash($sessionId);
+  }
+
+  public function deleteCaptchaHash(string $sessionId): void {
+    if (!$this->isValidId($sessionId)) {
+      return;
+    }
+    $this->wp->deleteTransient($this->getKey($sessionId, self::SESSION_HASH_KEY));
   }
 
   /**
