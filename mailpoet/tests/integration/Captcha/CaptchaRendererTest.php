@@ -39,17 +39,30 @@ class CaptchaRendererTest extends \MailPoetTest {
     verify(in_array('Content-Type: audio/wav', xdebug_get_headers(), true))->true();
   }
 
-  public function testItRendersDifferentAudioOnEveryRequest(): void {
+  public function testItRendersTheSameAudioForTheSamePhrase(): void {
     $sessionId = self::SESSION_ID;
     $this->session->setCaptchaHash($sessionId, ['phrase' => 'a7k2m']);
-    ob_start();
-    $this->testee->renderAudio($sessionId);
-    $first = (string)ob_get_clean();
-    ob_start();
-    $this->testee->renderAudio($sessionId);
-    $second = (string)ob_get_clean();
+    $first = $this->renderAudio($sessionId);
+    $second = $this->renderAudio($sessionId);
     verify($first)->notEmpty();
+    verify($first)->equals($second);
+  }
+
+  public function testItRendersDifferentAudioAfterPhraseRefresh(): void {
+    $sessionId = self::SESSION_ID;
+    $this->session->setCaptchaHash($sessionId, ['phrase' => 'a7k2m']);
+    $first = $this->renderAudio($sessionId);
+    $this->testee->refreshPhrase($sessionId);
+    $second = $this->renderAudio($sessionId);
+    verify($first)->notEmpty();
+    verify($second)->notEmpty();
     verify($first)->notEquals($second);
+  }
+
+  private function renderAudio(string $sessionId): string {
+    ob_start();
+    $this->testee->renderAudio($sessionId);
+    return (string)ob_get_clean();
   }
 
   public function testItRefreshesPhrase(): void {

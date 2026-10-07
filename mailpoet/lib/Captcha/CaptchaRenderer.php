@@ -34,7 +34,7 @@ class CaptchaRenderer {
       return;
     }
 
-    $audio = $this->audioBuilder->build($phrase, Env::$assetsPath . '/audio');
+    $audio = $this->audioBuilder->build($phrase, Env::$assetsPath . '/audio', $sessionId);
 
     Headers::setNoCacheHeaders();
     header('Content-Type: audio/wav');

@@ -2,6 +2,8 @@
 
 namespace MailPoet\Captcha;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class CaptchaAudioBuilderTest extends \MailPoetUnitTest {
   const CLIP_SAMPLES = 400;
 
@@ -17,6 +19,8 @@ class CaptchaAudioBuilderTest extends \MailPoetUnitTest {
     }
     // "a" has an extra LIST chunk before the data chunk, "b" has none
     file_put_contents($this->clipDir . '/a.wav', $this->makeWav($ramp, true));
+    // "d" has the same audio as "a", so only the seed can tell their phrases apart
+    file_put_contents($this->clipDir . '/d.wav', $this->makeWav($ramp, true));
     file_put_contents($this->clipDir . '/b.wav', $this->makeWav(array_reverse($ramp), false));
     file_put_contents($this->clipDir . '/c.wav', $this->makeWav(array_map(function (int $i): int {
       return $i % 2 ? 32767 : -32768;
@@ -32,7 +36,7 @@ class CaptchaAudioBuilderTest extends \MailPoetUnitTest {
   }
 
   public function testItBuildsValidWavHeader(): void {
-    $wav = (new CaptchaAudioBuilder($this->sequence(3)))->build('ab', $this->clipDir);
+    $wav = $this->builder($this->sequence(3))->build('ab', $this->clipDir, 'session');
 
     $this->assertSame('RIFF', substr($wav, 0, 4));
     $this->assertSame('WAVE', substr($wav, 8, 4));
@@ -51,20 +55,68 @@ class CaptchaAudioBuilderTest extends \MailPoetUnitTest {
   }
 
   public function testItBuildsTheSameAudioForTheSameRandomValues(): void {
-    $first = (new CaptchaAudioBuilder($this->sequence(7)))->build('ab', $this->clipDir);
-    $second = (new CaptchaAudioBuilder($this->sequence(7)))->build('ab', $this->clipDir);
+    $first = $this->builder($this->sequence(7))->build('ab', $this->clipDir, 'session');
+    $second = $this->builder($this->sequence(7))->build('ab', $this->clipDir, 'session');
     $this->assertSame($first, $second);
   }
 
   public function testItBuildsDifferentAudioForDifferentRandomValues(): void {
-    $first = (new CaptchaAudioBuilder($this->sequence(7)))->build('ab', $this->clipDir);
-    $second = (new CaptchaAudioBuilder($this->sequence(11)))->build('ab', $this->clipDir);
+    $first = $this->builder($this->sequence(7))->build('ab', $this->clipDir, 'session');
+    $second = $this->builder($this->sequence(11))->build('ab', $this->clipDir, 'session');
     $this->assertNotSame($first, $second);
   }
 
-  public function testItBuildsDifferentAudioOnEveryCallWithDefaultRandomness(): void {
-    $builder = new CaptchaAudioBuilder();
-    $this->assertNotSame($builder->build('ab', $this->clipDir), $builder->build('ab', $this->clipDir));
+  public function testItBuildsTheSameAudioForTheSamePhraseAndSession(): void {
+    $builder = $this->builder();
+    $first = $builder->build('ab', $this->clipDir, 'session');
+    $this->assertSame($first, $builder->build('ab', $this->clipDir, 'session'));
+    $this->assertSame($first, $this->builder()->build('ab', $this->clipDir, 'session'));
+  }
+
+  public function testItBuildsDifferentAudioForDifferentSessions(): void {
+    $builder = $this->builder();
+    $this->assertNotSame(
+      $builder->build('ab', $this->clipDir, 'session-one'),
+      $builder->build('ab', $this->clipDir, 'session-two')
+    );
+  }
+
+  public function testItBuildsDifferentAudioForDifferentPhrases(): void {
+    $builder = $this->builder();
+    $this->assertNotSame(
+      $builder->build('a', $this->clipDir, 'session'),
+      $builder->build('d', $this->clipDir, 'session')
+    );
+  }
+
+  public function testItBuildsDifferentAudioForDifferentSalts(): void {
+    $this->assertNotSame(
+      $this->builder(null, 'salt-one')->build('ab', $this->clipDir, 'session'),
+      $this->builder(null, 'salt-two')->build('ab', $this->clipDir, 'session')
+    );
+  }
+
+  public function testItKeepsSeededRandomValuesInRange(): void {
+    $builder = $this->builder();
+    $method = new \ReflectionMethod($builder, 'rand');
+    $method->setAccessible(true);
+    $this->callBuild($builder);
+    // Every range the builder uses, including the widest noise amplitude.
+    foreach ([[-7, 9], [200, 600], [80, 350], [85, 115], [60, 100], [2, 6], [-1966, 1966], [-655, 655], [5, 5]] as [$min, $max]) {
+      $values = [];
+      for ($i = 0; $i < 4000; $i++) {
+        $values[] = $this->intOrFail($method->invoke($builder, $min, $max));
+      }
+      $this->assertGreaterThanOrEqual($min, min($values));
+      $this->assertLessThanOrEqual($max, max($values));
+    }
+    $values = [];
+    for ($i = 0; $i < 2000; $i++) {
+      $values[] = $this->intOrFail($method->invoke($builder, -7, 9));
+    }
+    $unique = array_unique($values);
+    sort($unique);
+    $this->assertSame(range(-7, 9), $unique);
   }
 
   public function testItPadsHeadTailAndSilenceAroundEveryClip(): void {
@@ -72,8 +124,8 @@ class CaptchaAudioBuilderTest extends \MailPoetUnitTest {
     $pinned = function (int $min, int $max): int {
       return $min === 85 ? 100 : $min;
     };
-    $one = (new CaptchaAudioBuilder($pinned))->build('a', $this->clipDir);
-    $two = (new CaptchaAudioBuilder($pinned))->build('ab', $this->clipDir);
+    $one = ($this->builder($pinned))->build('a', $this->clipDir, 'session');
+    $two = ($this->builder($pinned))->build('ab', $this->clipDir, 'session');
 
     $headAndTail = (200 + 200) * 8;
     $perCharacter = 80 * 8 + self::CLIP_SAMPLES;
@@ -88,8 +140,8 @@ class CaptchaAudioBuilderTest extends \MailPoetUnitTest {
     $fast = function (int $min, int $max): int {
       return $min === 85 ? 115 : $min;
     };
-    $slowWav = (new CaptchaAudioBuilder($slow))->build('a', $this->clipDir);
-    $fastWav = (new CaptchaAudioBuilder($fast))->build('a', $this->clipDir);
+    $slowWav = ($this->builder($slow))->build('a', $this->clipDir, 'session');
+    $fastWav = ($this->builder($fast))->build('a', $this->clipDir, 'session');
     $padding = (200 + 200) * 8 + 80 * 8;
     $this->assertSame(($padding + (int)floor(self::CLIP_SAMPLES / 1.15)) * 2, strlen($fastWav) - 44);
     $this->assertSame(($padding + (int)floor(self::CLIP_SAMPLES / 0.85)) * 2, strlen($slowWav) - 44);
@@ -100,7 +152,7 @@ class CaptchaAudioBuilderTest extends \MailPoetUnitTest {
     $high = function (int $min, int $max): int {
       return $min === 85 ? 100 : $max;
     };
-    $wav = (new CaptchaAudioBuilder($high))->build('c', $this->clipDir);
+    $wav = ($this->builder($high))->build('c', $this->clipDir, 'session');
     $samples = $this->samplesOf($wav);
     $this->assertContains(32767, $samples);
 
@@ -108,19 +160,37 @@ class CaptchaAudioBuilderTest extends \MailPoetUnitTest {
     $low = function (int $min, int $max): int {
       return $min === 85 ? 100 : ($min < 0 ? $min : $max);
     };
-    $samples = $this->samplesOf((new CaptchaAudioBuilder($low))->build('c', $this->clipDir));
+    $samples = $this->samplesOf(($this->builder($low))->build('c', $this->clipDir, 'session'));
     $this->assertContains(-32768, $samples);
   }
 
   public function testItThrowsForCharacterWithoutClip(): void {
     $this->expectException(\RuntimeException::class);
-    (new CaptchaAudioBuilder($this->sequence(3)))->build('a!', $this->clipDir);
+    $this->builder($this->sequence(3))->build('a!', $this->clipDir, 'session');
   }
 
   public function testItLowercasesCharactersToFindClips(): void {
-    $lower = (new CaptchaAudioBuilder($this->sequence(5)))->build('ab', $this->clipDir);
-    $upper = (new CaptchaAudioBuilder($this->sequence(5)))->build('AB', $this->clipDir);
+    $lower = $this->builder($this->sequence(5))->build('ab', $this->clipDir, 'session');
+    $upper = $this->builder($this->sequence(5))->build('AB', $this->clipDir, 'session');
     $this->assertSame($lower, $upper);
+  }
+
+  /** @param mixed $value */
+  private function intOrFail($value): int {
+    if (!is_int($value)) {
+      throw new \RuntimeException('Expected an integer.');
+    }
+    return $value;
+  }
+
+  private function callBuild(CaptchaAudioBuilder $builder): void {
+    $builder->build('a', $this->clipDir, 'session');
+  }
+
+  private function builder(?callable $random = null, string $salt = 'test-salt'): CaptchaAudioBuilder {
+    $wp = $this->createMock(WPFunctions::class);
+    $wp->method('wpSalt')->willReturn($salt);
+    return new CaptchaAudioBuilder($wp, $random);
   }
 
   /** @return int[] */

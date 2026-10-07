@@ -2,37 +2,57 @@
 
 namespace MailPoet\Captcha;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class CaptchaAudioBuilder {
   const SAMPLE_RATE = 8000;
+  const CHUNK_SIZE = 4096;
 
-  /** @var callable */
+  private WPFunctions $wp;
+
+  /** @var callable|null */
   private $random;
 
+  private string $seedKey = '';
+
+  private int $counter = 0;
+
+  /** @var int[] */
+  private array $draws = [];
+
   public function __construct(
+    WPFunctions $wp,
     ?callable $random = null
   ) {
-    $this->random = $random ?? 'random_int';
+    $this->wp = $wp;
+    $this->random = $random;
   }
 
-  public function build(string $phrase, string $clipDir): string {
-    $samples = $this->silence($this->rand(200, 600));
+  /**
+   * The same phrase in the same session always produces the same audio.
+   */
+  public function build(string $phrase, string $clipDir, string $sessionId): string {
+    $this->seed($sessionId . '|' . $phrase);
+
+    $samples = [];
+    $this->appendSilence($samples, $this->rand(200, 600));
     foreach (str_split(strtolower($phrase)) as $character) {
-      $samples = array_merge(
+      $this->appendSilence($samples, $this->rand(80, 350));
+      $this->appendClip(
         $samples,
-        $this->silence($this->rand(80, 350)),
-        $this->applyGain(
-          $this->resample($this->readClip($clipDir, $character), $this->rand(85, 115) / 100),
-          $this->rand(60, 100) / 100
-        )
+        $this->readClip($clipDir, $character),
+        $this->rand(85, 115) / 100,
+        $this->rand(60, 100) / 100
       );
     }
-    $samples = array_merge($samples, $this->silence($this->rand(200, 600)));
+    $this->appendSilence($samples, $this->rand(200, 600));
 
     $noiseAmplitude = (int)round($this->rand(2, 6) / 100 * 32767);
     $pcm = '';
-    foreach (array_chunk($samples, 4096) as $chunk) {
+    foreach (array_chunk($samples, self::CHUNK_SIZE) as $chunk) {
       foreach ($chunk as $i => $sample) {
-        $chunk[$i] = max(-32768, min(32767, $sample + $this->rand(-$noiseAmplitude, $noiseAmplitude))) & 0xFFFF;
+        $value = $sample + $this->rand(-$noiseAmplitude, $noiseAmplitude);
+        $chunk[$i] = ($value > 32767 ? 32767 : ($value < -32768 ? -32768 : $value)) & 0xFFFF;
       }
       $pcm .= pack('v*', ...$chunk);
     }
@@ -40,13 +60,47 @@ class CaptchaAudioBuilder {
     return $this->wavHeader(strlen($pcm)) . $pcm;
   }
 
-  private function rand(int $min, int $max): int {
-    return (int)($this->random)($min, $max);
+  private function seed(string $input): void {
+    $this->seedKey = hash_hmac('sha256', $input, (string)$this->wp->wpSalt('nonce'));
+    $this->counter = 0;
+    $this->draws = [];
   }
 
-  /** @return int[] */
-  private function silence(int $milliseconds): array {
-    return array_pad([], (int)($milliseconds * self::SAMPLE_RATE / 1000), 0);
+  /**
+   * Refills the pool with 16-bit values taken from a SHA-256 stream, so results do not depend on integer size.
+   */
+  private function refillDraws(): void {
+    $bytes = '';
+    for ($i = 0; $i < 16; $i++) {
+      $bytes .= hash('sha256', $this->seedKey . '|' . $this->counter++, true);
+    }
+    $this->draws = unpack('n*', $bytes) ?: [0];
+  }
+
+  /**
+   * Ranges are at most 65536 values wide. Rejection sampling avoids modulo bias.
+   */
+  private function rand(int $min, int $max): int {
+    if ($this->random !== null) {
+      return (int)($this->random)($min, $max);
+    }
+    $span = $max - $min + 1;
+    $limit = 65536 - 65536 % $span;
+    do {
+      if (!$this->draws) {
+        $this->refillDraws();
+      }
+      $draw = (int)array_pop($this->draws);
+    } while ($draw >= $limit);
+    return $min + $draw % $span;
+  }
+
+  /** @param int[] $samples */
+  private function appendSilence(array &$samples, int $milliseconds): void {
+    $count = (int)($milliseconds * self::SAMPLE_RATE / 1000);
+    for ($i = 0; $i < $count; $i++) {
+      $samples[] = 0;
+    }
   }
 
   /** @return int[] */
@@ -77,32 +131,22 @@ class CaptchaAudioBuilder {
   }
 
   /**
+   * Appends the clip resampled to the given speed and scaled by the gain.
+   *
    * @param int[] $samples
-   * @return int[]
+   * @param int[] $clip
    */
-  private function resample(array $samples, float $speed): array {
-    $count = count($samples);
-    $result = [];
+  private function appendClip(array &$samples, array $clip, float $speed, float $gain): void {
+    $count = count($clip);
     $newCount = (int)floor($count / $speed);
     for ($i = 0; $i < $newCount; $i++) {
       $position = $i * $speed;
       $index = (int)floor($position);
       $fraction = $position - $index;
-      $next = $samples[min($index + 1, $count - 1)];
-      $result[] = (int)round($samples[$index] + ($next - $samples[$index]) * $fraction);
+      $next = $clip[min($index + 1, $count - 1)];
+      $resampled = (int)round($clip[$index] + ($next - $clip[$index]) * $fraction);
+      $samples[] = (int)round($resampled * $gain);
     }
-    return $result;
-  }
-
-  /**
-   * @param int[] $samples
-   * @return int[]
-   */
-  private function applyGain(array $samples, float $gain): array {
-    foreach ($samples as $i => $sample) {
-      $samples[$i] = (int)round($sample * $gain);
-    }
-    return $samples;
   }
 
   private function wavHeader(int $dataSize): string {
