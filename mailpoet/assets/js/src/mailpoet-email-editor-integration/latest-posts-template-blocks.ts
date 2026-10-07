@@ -27,7 +27,10 @@ export const limitToPostTemplate = (
   if (!TEMPLATE_CORE_BLOCKS.includes(name)) {
     return settings;
   }
-  return { ...settings, ancestor: [TEMPLATE_BLOCK_NAME] };
+  return {
+    ...settings,
+    ancestor: [...(settings.ancestor ?? []), TEMPLATE_BLOCK_NAME],
+  };
 };
 
 export const registerLatestPostsTemplateBlocks = (): void => {
