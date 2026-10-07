@@ -218,11 +218,6 @@ class Functions extends AbstractExtension {
         ['is_safe' => ['all']]
       ),
       new TwigFunction(
-        'is_garden',
-        [$this, 'isGarden'],
-        ['is_safe' => ['all']]
-      ),
-      new TwigFunction(
         'pending_approval_message',
         [$this, 'pendingApprovalMessage'],
         ['is_safe' => ['html']]
@@ -396,10 +391,6 @@ class Functions extends AbstractExtension {
 
   public function isDotcom(): bool {
     return $this->getDotcomHelperFunctions()->isDotcom();
-  }
-
-  public function isGarden(): bool {
-    return $this->getDotcomHelperFunctions()->isGarden();
   }
 
   public function pendingApprovalMessage(): string {
