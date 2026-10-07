@@ -18,7 +18,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\WP\DateTime as WpDateTime;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoet\WPCOM\DotcomHelperFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class AutomatedEmails extends SimpleWorker {
@@ -48,9 +47,6 @@ class AutomatedEmails extends SimpleWorker {
   /** @var WpDateTime */
   private $wpDateTime;
 
-  /** @var DotcomHelperFunctions */
-  private $dotcomHelperFunctions;
-
   /** @var AutomationStorage */
   private $automationStorage;
 
@@ -62,7 +58,6 @@ class AutomatedEmails extends SimpleWorker {
     NewsletterStatisticsRepository $newsletterStatisticsRepository,
     MetaInfo $mailerMetaInfo,
     TrackingConfig $trackingConfig,
-    DotcomHelperFunctions $dotcomHelperFunctions,
     AutomationStorage $automationStorage
   ) {
     parent::__construct();
@@ -73,7 +68,6 @@ class AutomatedEmails extends SimpleWorker {
     $this->repository = $repository;
     $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
     $this->trackingConfig = $trackingConfig;
-    $this->dotcomHelperFunctions = $dotcomHelperFunctions;
     $this->automationStorage = $automationStorage;
     $this->wpDateTime = new WpDateTime();
   }
@@ -103,7 +97,7 @@ class AutomatedEmails extends SimpleWorker {
         $extraParams = [
           'meta' => $this->mailerMetaInfo->getStatsNotificationMetaInfo(),
         ];
-        $this->mailerFactory->getDefaultMailer()->send($this->constructNewsletter($newsletters, $settings), $settings['address'], $extraParams);
+        $this->mailerFactory->getDefaultMailer()->send($this->constructNewsletter($newsletters), $settings['address'], $extraParams);
       }
     } catch (\Exception $e) {
       if (WP_DEBUG) {
@@ -116,13 +110,9 @@ class AutomatedEmails extends SimpleWorker {
   /**
    * @param array<int, array{newsletter: NewsletterEntity, statistics: NewsletterStatistics}> $newsletters
    */
-  private function constructNewsletter(array $newsletters, array $settings): array {
-    $context = $this->prepareContext($newsletters, $settings);
-    if ($this->dotcomHelperFunctions->isGarden()) {
-      $subject = __('Your monthly automation stats are in!', 'mailpoet');
-    } else {
-      $subject = __('Your monthly stats are in!', 'mailpoet');
-    }
+  private function constructNewsletter(array $newsletters): array {
+    $context = $this->prepareContext($newsletters);
+    $subject = __('Your monthly stats are in!', 'mailpoet');
     return [
       'subject' => $subject,
       'body' => [
@@ -180,14 +170,12 @@ class AutomatedEmails extends SimpleWorker {
    * @param array<int, array{newsletter: NewsletterEntity, statistics: NewsletterStatistics}> $newsletters
    * @return array
    */
-  private function prepareContext(array $newsletters, array $settings = []): array {
+  private function prepareContext(array $newsletters): array {
     $context = [
       'linkSettings' => WPFunctions::get()->applyFilters(
         'mailpoet_stats_notification_link_settings',
         WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-settings#basics')
       ),
-      'blogName' => WPFunctions::get()->getBloginfo('name'),
-      'recipientFirstName' => $this->getRecipientFirstName($settings['address'] ?? ''),
       'newsletters' => [],
     ];
     foreach ($newsletters as $row) {
@@ -219,22 +207,6 @@ class AutomatedEmails extends SimpleWorker {
       ];
     }
     return $context;
-  }
-
-  private function getRecipientFirstName(string $email): string {
-    if (empty($email)) {
-      return '';
-    }
-    $user = WPFunctions::get()->getUserBy('email', $email);
-    if (!$user) {
-      return '';
-    }
-    $firstName = $user->first_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    if (!empty($firstName)) {
-      return $firstName;
-    }
-    $displayName = $user->display_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    return !empty($displayName) ? $displayName : '';
   }
 
   public function getNextRunDate() {

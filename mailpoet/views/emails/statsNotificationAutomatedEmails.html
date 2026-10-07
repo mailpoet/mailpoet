@@ -1,9 +1,6 @@
 <% extends 'emails/statsNotificationLayout.html' %>
 
 <% block content %>
-<% if is_garden() %>
-  <%- include 'emails/statsNotificationAutomatedEmailsGarden.html' -%>
-<% else %>
 <tr>
   <td class="mailpoet_content" align="center" style="border-collapse:collapse">
     <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;border-collapse:collapse">
@@ -15,13 +12,11 @@
             <tr>
               <td class="mailpoet_spacer" height="36" valign="top" style="border-collapse:collapse"></td>
             </tr>
-            <% if not is_garden() %>
             <tr>
               <td class="mailpoet_image mailpoet_padded_vertical mailpoet_padded_side" align="center" valign="top" style="border-collapse:collapse;padding-bottom:20px;padding-left:20px;padding-right:20px">
                 <img src="<%= cdn_url('logo-orange-400x122.png') %>" width="80" alt="new_logo_orange" style="height:auto;max-width:100%;-ms-interpolation-mode:bicubic;border:0;display:block;outline:none;text-align:center" />
               </td>
             </tr>
-            <% endif %>
             <tr>
               <td class="mailpoet_spacer" height="26" valign="top" style="border-collapse:collapse"></td>
             </tr>
@@ -303,5 +298,4 @@
 <tr>
   <td class="mailpoet_spacer" height="55" valign="top" style="border-collapse:collapse"></td>
 </tr>
-<% endif %>
 <% endblock %>
