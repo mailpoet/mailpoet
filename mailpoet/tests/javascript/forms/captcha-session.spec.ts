@@ -48,17 +48,67 @@ describe('applyCaptchaChallenge', () => {
   it('points the image at the new challenge', () => {
     expect(
       form.querySelector('img.mailpoet_captcha').getAttribute('src'),
-    ).to.equal('https://example.com/new.png');
+    ).to.match(/^https:\/\/example\.com\/new\.png\?cachebust=\d+$/);
   });
 
   it('points the audio source at the new challenge', () => {
     expect(
       form.querySelector('.mailpoet_captcha_player source').getAttribute('src'),
-    ).to.equal('https://example.com/new.wav');
+    ).to.match(/^https:\/\/example\.com\/new\.wav\?cachebust=\d+$/);
   });
 
   it('reloads the audio element', () => {
     expect(loadCalls).to.equal(1);
+  });
+
+  describe('when the same challenge is applied twice', () => {
+    const metaWithQuery = {
+      captcha_session_id: 'same-session',
+      captcha_image_url: 'https://example.com/captcha.php?data=abc&type=image',
+      captcha_audio_url: 'https://example.com/captcha.php?data=abc&type=audio',
+    };
+    const imageSrc = () =>
+      form.querySelector('img.mailpoet_captcha').getAttribute('src');
+    const audioSrc = () =>
+      form.querySelector('.mailpoet_captcha_player source').getAttribute('src');
+
+    it('changes the image src and keeps the original parameters', () => {
+      applyCaptchaChallenge(form, metaWithQuery);
+      const first = imageSrc();
+      applyCaptchaChallenge(form, metaWithQuery);
+      const second = imageSrc();
+      expect(second).to.not.equal(first);
+      [first, second].forEach((src) => {
+        const url = new URL(src);
+        expect(url.searchParams.get('data')).to.equal('abc');
+        expect(url.searchParams.get('type')).to.equal('image');
+        expect(url.searchParams.get('cachebust')).to.not.equal(null);
+      });
+    });
+
+    it('changes the audio src and keeps the original parameters', () => {
+      applyCaptchaChallenge(form, metaWithQuery);
+      const first = audioSrc();
+      applyCaptchaChallenge(form, metaWithQuery);
+      const second = audioSrc();
+      expect(second).to.not.equal(first);
+      [first, second].forEach((src) => {
+        const url = new URL(src);
+        expect(url.searchParams.get('data')).to.equal('abc');
+        expect(url.searchParams.get('type')).to.equal('audio');
+        expect(url.searchParams.get('cachebust')).to.not.equal(null);
+      });
+    });
+
+    it('adds a query string when the URL has none', () => {
+      applyCaptchaChallenge(form, meta);
+      expect(imageSrc()).to.match(
+        /^https:\/\/example\.com\/new\.png\?cachebust=\d+$/,
+      );
+      expect(audioSrc()).to.match(
+        /^https:\/\/example\.com\/new\.wav\?cachebust=\d+$/,
+      );
+    });
   });
 
   it('clears the typed answer', () => {

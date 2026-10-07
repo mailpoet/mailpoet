@@ -4,6 +4,18 @@ export interface CaptchaChallenge {
   captcha_audio_url: string;
 }
 
+let lastCachebust = 0;
+
+// Strictly increasing, so two calls in the same millisecond still differ.
+function nextCachebust(): number {
+  lastCachebust = Math.max(Date.now(), lastCachebust + 1);
+  return lastCachebust;
+}
+
+function withCachebust(url: string, cachebust: number): string {
+  return `${url}${url.includes('?') ? '&' : '?'}cachebust=${cachebust}`;
+}
+
 /**
  * Points the CAPTCHA fields of a form at a challenge sent by the server.
  */
@@ -11,6 +23,7 @@ export function applyCaptchaChallenge(
   form: HTMLFormElement,
   meta: CaptchaChallenge,
 ): void {
+  const cachebust = nextCachebust();
   const sessionInput = form.querySelector<HTMLInputElement>(
     'input[name="data[captcha_session_id]"]',
   );
@@ -20,7 +33,7 @@ export function applyCaptchaChallenge(
 
   const image = form.querySelector<HTMLImageElement>('img.mailpoet_captcha');
   if (image) {
-    image.setAttribute('src', meta.captcha_image_url);
+    image.setAttribute('src', withCachebust(meta.captcha_image_url, cachebust));
   }
 
   const audio = form.querySelector<HTMLAudioElement>(
@@ -28,7 +41,10 @@ export function applyCaptchaChallenge(
   );
   const audioSource = audio && audio.querySelector('source');
   if (audio && audioSource) {
-    audioSource.setAttribute('src', meta.captcha_audio_url);
+    audioSource.setAttribute(
+      'src',
+      withCachebust(meta.captcha_audio_url, cachebust),
+    );
     audio.load();
   }
 
