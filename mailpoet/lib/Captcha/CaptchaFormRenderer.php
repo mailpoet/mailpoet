@@ -274,7 +274,7 @@ class CaptchaFormRenderer {
     $width = CaptchaRenderer::DEFAULT_WIDTH;
     $height = CaptchaRenderer::DEFAULT_HEIGHT;
     $captchaUrl = $this->captchaUrlFactory->getCaptchaImageUrl($sessionId);
-    $mp3CaptchaUrl = $this->captchaUrlFactory->getCaptchaAudioUrl($sessionId);
+    $audioCaptchaUrl = $this->captchaUrlFactory->getCaptchaAudioUrl($sessionId);
     $reloadIcon = Env::$assetsUrl . '/img/icons/image-rotate.svg';
     $playIcon = Env::$assetsUrl . '/img/icons/controls-volumeon.svg';
 
@@ -284,8 +284,8 @@ class CaptchaFormRenderer {
     $formHtml .= '</p>';
     $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_update" title="' . esc_attr(__('Reload CAPTCHA', 'mailpoet')) . '"><img src="' . $this->wp->escUrl($reloadIcon) . '" alt="" /></button>';
     $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_audio" title="' . esc_attr(__('Play CAPTCHA', 'mailpoet')) . '"><img src="' . $this->wp->escUrl($playIcon) . '" alt="" /></button>';
-    $formHtml .= '<audio class="mailpoet_captcha_player">';
-    $formHtml .= '<source src="' . $this->wp->escUrl($mp3CaptchaUrl) . '" type="audio/mpeg">';
+    $formHtml .= '<audio class="mailpoet_captcha_player" preload="none">';
+    $formHtml .= '<source src="' . $this->wp->escUrl($audioCaptchaUrl) . '" type="audio/wav">';
     $formHtml .= '</audio>';
 
     $formHtml .= $this->formRenderer->renderBlocks($form, [], null, $honeypot = false);

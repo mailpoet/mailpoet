@@ -371,7 +371,7 @@ jQuery(($) => {
       .attr('preload', 'none');
     $('<source>')
       .attr('src', meta.captcha_audio_url)
-      .attr('type', 'audio/mpeg')
+      .attr('type', 'audio/wav')
       .appendTo(audioPlayer);
     audioPlayer.appendTo(container);
 
