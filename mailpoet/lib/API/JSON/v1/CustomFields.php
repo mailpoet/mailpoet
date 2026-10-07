@@ -14,6 +14,9 @@ use MailPoet\Form\ApiDataSanitizer;
 class CustomFields extends APIEndpoint {
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_FORMS,
+    'methods' => [
+      'delete' => AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
+    ],
   ];
 
   /** @var CustomFieldsRepository */
