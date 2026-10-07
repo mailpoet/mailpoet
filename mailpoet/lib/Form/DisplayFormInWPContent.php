@@ -3,6 +3,7 @@
 namespace MailPoet\Form;
 
 use MailPoet\API\JSON\API;
+use MailPoet\Captcha\FormRenderStamp;
 use MailPoet\Config\Renderer as TemplateRenderer;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -67,6 +68,9 @@ class DisplayFormInWPContent {
 
   private $placementPostId = null;
 
+  /** @var FormRenderStamp */
+  private $formRenderStamp;
+
   public function __construct(
     WPFunctions $wp,
     FormsRepository $formsRepository,
@@ -75,7 +79,8 @@ class DisplayFormInWPContent {
     TemplateRenderer $templateRenderer,
     SubscriberSubscribeController $subscriberSubscribeController,
     SubscribersRepository $subscribersRepository,
-    WCHelper $woocommerceHelper
+    WCHelper $woocommerceHelper,
+    FormRenderStamp $formRenderStamp
   ) {
     $this->wp = $wp;
     $this->formsRepository = $formsRepository;
@@ -85,6 +90,7 @@ class DisplayFormInWPContent {
     $this->subscriberSubscribeController = $subscriberSubscribeController;
     $this->subscribersRepository = $subscribersRepository;
     $this->woocommerceHelper = $woocommerceHelper;
+    $this->formRenderStamp = $formRenderStamp;
   }
 
   private function getFormMarkup(array $displayTypes): string {
@@ -307,6 +313,7 @@ class DisplayFormInWPContent {
 
     // generate security token
     $templateData['token'] = $this->wp->wpCreateNonce('mailpoet_token');
+    $templateData['form_stamp'] = $this->formRenderStamp->issue();
 
     // add API version
     $templateData['api_version'] = API::CURRENT_VERSION;

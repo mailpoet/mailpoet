@@ -4,12 +4,14 @@ namespace MailPoet\Test\API\JSON\v1;
 
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Forms;
+use MailPoet\Captcha\FormRenderStamp;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\TagEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\PreviewPage;
+use MailPoet\Router\Endpoints\FormPreview;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Tags\TagRepository;
 use MailPoet\Test\DataFactories\Tag;
@@ -85,6 +87,17 @@ class FormsTest extends \MailPoetTest {
     verify($storedData['body'])->notEmpty();
     verify($storedData['styles'])->notEmpty();
     verify($storedData['settings'])->notEmpty();
+  }
+
+  public function testPreviewPageRendersFormWithValidRenderStamp() {
+    $formId = (int)$this->form1->getId();
+    $endpoint = $this->diContainer->get(FormPreview::class);
+    $endpoint->view(['id' => $formId, 'form_type' => FormEntity::DISPLAY_TYPE_BELOW_POST, 'editor_url' => 'https://example.com/editor']);
+    $page = $endpoint->renderContent();
+    $matches = [];
+    verify(preg_match('/name="data\[form_stamp\]" value="([^"]+)"/', $page, $matches))->equals(1);
+    $stamp = $this->diContainer->get(FormRenderStamp::class);
+    verify($stamp->elapsedSeconds($matches[1] ?? null))->notNull();
   }
 
   public function testPreviewStoresSanitizedFormContent() {

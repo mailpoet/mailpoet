@@ -746,6 +746,10 @@ class Functions {
     return wp_safe_redirect($location, $status);
   }
 
+  public function wpSalt($scheme = 'auth') {
+    return wp_salt($scheme);
+  }
+
   public function wpValidateRedirect($location, $fallbackUrl = '') {
     return wp_validate_redirect($location, $fallbackUrl);
   }

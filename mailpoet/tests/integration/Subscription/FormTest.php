@@ -58,6 +58,7 @@ class FormTest extends \MailPoetTest {
       'data' => [
         'form_id' => $this->form->getId(),
         $obfuscatedEmail => $this->testEmail,
+        'form_stamp' => $this->getRenderStamp(),
         // Human-like signals so the disabled-CAPTCHA baseline doesn't
         // escalate this submission to an inline CAPTCHA challenge.
         'behavioral_signals' => [
@@ -83,6 +84,11 @@ class FormTest extends \MailPoetTest {
     );
     $this->settings->set('signup_confirmation.enabled', false);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+  }
+
+  private function getRenderStamp(): string {
+    $timestamp = time() - 10;
+    return $timestamp . '.' . hash_hmac('sha256', (string)$timestamp, wp_salt('nonce'));
   }
 
   public function testItSubscribesAndRedirectsBackWithSuccessResponse() {
