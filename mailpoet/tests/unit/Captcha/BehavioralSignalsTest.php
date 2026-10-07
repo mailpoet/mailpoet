@@ -23,7 +23,7 @@ class BehavioralSignalsTest extends \MailPoetUnitTest {
       FormRenderStamp::class,
       [
         'elapsedSeconds' => function ($stamp) {
-          $elapsed = ['old' => 10, 'fresh' => 1];
+          $elapsed = ['old' => 10, 'fresh' => 1, 'long' => 1800];
           return is_string($stamp) ? ($elapsed[$stamp] ?? null) : null;
         },
       ],
@@ -207,7 +207,7 @@ class BehavioralSignalsTest extends \MailPoetUnitTest {
 
   public function testReturnsFalseWhenStampIsNotValid() {
     $testee = $this->makeTestee();
-    $data = $this->payload(['time_ms' => 3000, 'mm_count' => 25, 'focus_count' => 1], 'tampered');
+    $data = $this->payload(['time_ms' => 3000, 'mm_count' => 25, 'focus_count' => 1], 'changed');
     verify($testee->looksHuman($data))->false();
   }
 
@@ -232,7 +232,7 @@ class BehavioralSignalsTest extends \MailPoetUnitTest {
     $testee = $this->makeTestee();
     $signals = ['time_ms' => 3000, 'mm_count' => 25, 'focus_count' => 1];
     verify($testee->looksHuman($this->payload($signals, null), false))->true();
-    verify($testee->looksHuman($this->payload($signals, 'tampered'), false))->true();
+    verify($testee->looksHuman($this->payload($signals, 'changed'), false))->true();
     verify($testee->looksHuman($this->payload(array_merge($signals, ['time_ms' => 900000]), 'fresh'), false))->true();
   }
 
@@ -280,12 +280,85 @@ class BehavioralSignalsTest extends \MailPoetUnitTest {
     verify($testee->looksHuman($this->payload($signals)))->false();
   }
 
-  public function testReturnsFalseWhenFocusCountIsAbovePlausibleMaximum() {
+  public function testLongVisitWithManyMouseMovesPasses() {
     $testee = $this->makeTestee();
-    $signals = ['time_ms' => 3000, 'mm_count' => 25, 'focus_count' => 50];
+    $signals = ['time_ms' => 1800000, 'mm_count' => 150000, 'kd_count' => 40, 'focus_count' => 1, 'touch' => false];
+    verify($testee->looksHuman($this->payload($signals, 'long')))->true();
+  }
+
+  public function testManyFieldFocusesPass() {
+    $testee = $this->makeTestee();
+    $signals = ['time_ms' => 3000, 'mm_count' => 25, 'focus_count' => 5000];
     verify($testee->looksHuman($this->payload($signals)))->true();
-    $signals['focus_count'] = 51;
+  }
+
+  public function testCountersAreCappedAtTenMillion() {
+    $testee = $this->makeTestee();
+    $day = 86400000;
+    $signals = ['time_ms' => $day, 'mm_count' => 10000000, 'kd_count' => 0, 'scroll_count' => 10000000, 'focus_count' => 1];
+    verify($testee->looksHuman($this->payload($signals, null), false))->true();
+    foreach (['mm_count', 'scroll_count'] as $key) {
+      $signals[$key] = 10000001;
+      verify($testee->looksHuman($this->payload($signals, null), false))->false($key);
+      $signals[$key] = 10000000;
+    }
+  }
+
+  public function testFocusCountIsCappedAtTenThousand() {
+    $testee = $this->makeTestee();
+    $signals = ['time_ms' => 3000, 'mm_count' => 25, 'focus_count' => 10000];
+    verify($testee->looksHuman($this->payload($signals)))->true();
+    $signals['focus_count'] = 10001;
     verify($testee->looksHuman($this->payload($signals)))->false();
+  }
+
+  public function testTimeIsCappedAtTwentyFourHours() {
+    $testee = $this->makeTestee();
+    $signals = ['time_ms' => 86400000, 'mm_count' => 25, 'focus_count' => 1];
+    verify($testee->looksHuman($this->payload($signals, null), false))->true();
+    $signals['time_ms'] = 86400001;
+    verify($testee->looksHuman($this->payload($signals, null), false))->false();
+  }
+
+  /**
+   * @dataProvider dataForDesktopTouchValues
+   * @param mixed $touch
+   */
+  public function testTouchFlagFalseyValuesUseDesktopRules($touch) {
+    $testee = $this->makeTestee();
+    $signals = ['time_ms' => 9000, 'mm_count' => 3, 'kd_count' => 0, 'scroll_count' => 0, 'focus_count' => 1, 'touch' => $touch];
+    verify($testee->looksHuman($this->payload($signals)))->true();
+  }
+
+  /**
+   * @dataProvider dataForTouchValues
+   * @param mixed $touch
+   */
+  public function testTouchFlagTruthyValuesUseTouchRules($touch) {
+    $testee = $this->makeTestee();
+    $signals = ['time_ms' => 9000, 'mm_count' => 3, 'kd_count' => 0, 'scroll_count' => 0, 'focus_count' => 1, 'touch' => $touch];
+    verify($testee->looksHuman($this->payload($signals)))->false();
+    $signals['scroll_count'] = 1;
+    verify($testee->looksHuman($this->payload($signals)))->true();
+  }
+
+  public function dataForDesktopTouchValues(): array {
+    return [
+      'string false' => ['false'],
+      'string 0' => ['0'],
+      'bool false' => [false],
+      'int 0' => [0],
+      'empty string' => [''],
+    ];
+  }
+
+  public function dataForTouchValues(): array {
+    return [
+      'bool true' => [true],
+      'string true' => ['true'],
+      'string 1' => ['1'],
+      'int 1' => [1],
+    ];
   }
 
   public function testScrollingIsNotRateLimited() {

@@ -340,12 +340,12 @@ class CaptchaFormRendererTest extends \MailPoetTest {
   }
 
   public function testItUsesTheRegistrationUrlWhenTheReferrerUrlIsOffSite(): void {
-    $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WP_FORM, 'https://evil.example/register');
+    $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WP_FORM, 'https://other-site.example/register');
     $this->assertSame(esc_url(wp_registration_url()), $action);
   }
 
   public function testItUsesTheRegistrationUrlWhenTheReferrerUrlIsProtocolRelative(): void {
-    $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WP_FORM, '//evil.example/x');
+    $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WP_FORM, '//other-site.example/x');
     $this->assertSame(esc_url(wp_registration_url()), $action);
   }
 
@@ -365,13 +365,13 @@ class CaptchaFormRendererTest extends \MailPoetTest {
 
   public function testItUsesTheMyAccountUrlWhenTheWooCommerceReferrerUrlIsOffSite(): void {
     $expected = $this->getWcFallbackUrl();
-    $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WC_FORM, 'https://evil.example/my-account/');
+    $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WC_FORM, 'https://other-site.example/my-account/');
     $this->assertSame(esc_url($expected), $action);
   }
 
   public function testItUsesTheMyAccountUrlWhenTheWooCommerceReferrerUrlIsProtocolRelative(): void {
     $expected = $this->getWcFallbackUrl();
-    $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WC_FORM, '//evil.example/my-account/');
+    $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WC_FORM, '//other-site.example/my-account/');
     $this->assertSame(esc_url($expected), $action);
   }
 
@@ -459,7 +459,7 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $session = $this->diContainer->get(CaptchaSession::class);
     $session->setFormData($sessionId, [
       'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
-      'action_url' => 'https://evil.example/register',
+      'action_url' => 'https://other-site.example/register',
       'rendered' => true,
     ]);
 
@@ -470,7 +470,7 @@ class CaptchaFormRendererTest extends \MailPoetTest {
 
     $this->assertStringContainsString('This CAPTCHA page has already been used.', $result);
     $this->assertStringContainsString('href="' . esc_url(wp_registration_url()) . '"', $result);
-    $this->assertStringNotContainsString('evil.example', $result);
+    $this->assertStringNotContainsString('other-site.example', $result);
   }
 
   public function testItKeepsAStoredActionUrlOnTheSiteInTheUsedMessage(): void {
@@ -526,16 +526,16 @@ class CaptchaFormRendererTest extends \MailPoetTest {
 
   public function testItUsesTheRegistrationUrlWhenAHostlessReferrerUrlStartsWithTwoSlashes(): void {
     $action = $this->renderRegisterFormActionWithWpOverrides(
-      ['wpValidateRedirect' => '//evil.example/x', 'wpParseUrl' => false],
-      '//evil.example/x'
+      ['wpValidateRedirect' => '//other-site.example/x', 'wpParseUrl' => false],
+      '//other-site.example/x'
     );
     $this->assertSame(esc_url(wp_registration_url()), $action);
   }
 
   public function testItUsesTheRegistrationUrlWhenAHostlessReferrerUrlDoesNotStartWithASlash(): void {
     $action = $this->renderRegisterFormActionWithWpOverrides(
-      ['wpValidateRedirect' => 'evil.example/x', 'wpParseUrl' => false],
-      'evil.example/x'
+      ['wpValidateRedirect' => 'other-site.example/x', 'wpParseUrl' => false],
+      'other-site.example/x'
     );
     $this->assertSame(esc_url(wp_registration_url()), $action);
   }

@@ -134,9 +134,9 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     try {
       $meta = $this->subscribeController->subscribe($this->getCaptchaSubmission($form, $segment, $email, [
         'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
-        'referrer_form_url' => 'https://evil.example/register',
+        'referrer_form_url' => 'https://other-site.example/register',
         'rendered' => true,
-        'action_url' => 'https://evil.example/register',
+        'action_url' => 'https://other-site.example/register',
       ]));
 
       verify($meta['show_captcha'])->true();
@@ -328,13 +328,13 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     verify($second['captcha_session_id'])->notEquals($sessionId);
     verify($captchaSession->getCaptchaHash($sessionId))->false();
 
-    $replay = $this->subscribeController->subscribe($solved);
-    verify($replay['error'])->equals('Please fill in the CAPTCHA.');
-    verify($replay['captcha_session_id'])->notEquals($sessionId);
+    $third = $this->subscribeController->subscribe($solved);
+    verify($third['error'])->equals('Please fill in the CAPTCHA.');
+    verify($third['captcha_session_id'])->notEquals($sessionId);
     $this->assertNull($this->subscribersRepository->findOneBy(['email' => $email]));
     $captchaSession->reset($sessionId);
     $captchaSession->reset($second['captcha_session_id']);
-    $captchaSession->reset($replay['captcha_session_id']);
+    $captchaSession->reset($third['captcha_session_id']);
   }
 
   /**

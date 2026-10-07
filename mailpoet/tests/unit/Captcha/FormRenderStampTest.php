@@ -37,8 +37,8 @@ class FormRenderStampTest extends \MailPoetUnitTest {
   public function testRejectsStampWithChangedSignature() {
     $testee = $this->makeTestee();
     $stamp = $this->makeStamp(time() - 30);
-    $tampered = substr($stamp, 0, -1) . (substr($stamp, -1) === '0' ? '1' : '0');
-    verify($testee->elapsedSeconds($tampered))->null();
+    $changed = substr($stamp, 0, -1) . (substr($stamp, -1) === '0' ? '1' : '0');
+    verify($testee->elapsedSeconds($changed))->null();
   }
 
   public function testRejectsStampSignedWithAnotherSalt() {
