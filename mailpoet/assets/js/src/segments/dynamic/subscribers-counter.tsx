@@ -65,6 +65,9 @@ function SubscribersCounter(): JSX.Element {
         finished.loading = false;
         finished.count = undefined;
         finished.errors = errors;
+        finished.rejectionMessages = errorResponse.errors
+          .filter((error) => error.error === 'bad_request')
+          .map((error) => error.message);
         void updateSubscriberCount(finished);
       },
     );
@@ -78,6 +81,7 @@ function SubscribersCounter(): JSX.Element {
         loading: true,
         count: undefined,
         errors: undefined,
+        rejectionMessages: undefined,
       });
       const debouncedLoad = debouncedLoadRef.current;
       debouncedLoad(segment);
@@ -88,6 +92,16 @@ function SubscribersCounter(): JSX.Element {
       });
     }
   }, [segment, serializedSegment, updateSubscriberCount]);
+
+  if (subscribersCount.rejectionMessages?.length) {
+    return (
+      <div className="mailpoet-form-field">
+        <span className="mailpoet-form-error-message">
+          {subscribersCount.rejectionMessages.join(' ')}
+        </span>
+      </div>
+    );
+  }
 
   if (subscribersCount.errors) {
     return (
