@@ -483,7 +483,6 @@ export function EditNewsletter(): JSX.Element {
     let newUrl = MailPoet.getNewsletterEditorUrl(currentEmailId, 'automation');
 
     const currentEmailWpPostId = Number(selectedStep?.args?.email_wp_post_id);
-    let postIdForNextAdmin = currentEmailWpPostId;
 
     if (currentEmailWpPostId && !Number.isNaN(currentEmailWpPostId)) {
       newUrl = MailPoet.getBlockEmailEditorUrl(currentEmailWpPostId);
@@ -502,10 +501,8 @@ export function EditNewsletter(): JSX.Element {
 
       if (newEmailWpPostId) {
         newUrl = MailPoet.getBlockEmailEditorUrl(newEmailWpPostId);
-        postIdForNextAdmin = newEmailWpPostId;
       } else if (newEmailId) {
         newUrl = MailPoet.getNewsletterEditorUrl(newEmailId, 'automation');
-        postIdForNextAdmin = undefined;
       } else {
         // If duplication failed, don't redirect and let user see the error
         setIsHandlingDuplicatedStep(false);
@@ -513,11 +510,6 @@ export function EditNewsletter(): JSX.Element {
       }
 
       setIsHandlingDuplicatedStep(false);
-    }
-
-    if (postIdForNextAdmin && !Number.isNaN(postIdForNextAdmin)) {
-      navigateToBlockEmailEditor(postIdForNextAdmin);
-      return;
     }
 
     window.location.href = newUrl;
