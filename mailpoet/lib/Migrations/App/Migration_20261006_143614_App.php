@@ -4,7 +4,6 @@ namespace MailPoet\Migrations\App;
 
 use MailPoet\Form\FormsRepository;
 use MailPoet\Migrator\AppMigration;
-use MailPoet\Util\CdnAssetUrl;
 
 /**
  * Forms created from a template store the template image URLs in their body.
@@ -13,7 +12,8 @@ use MailPoet\Util\CdnAssetUrl;
  * forms; this rewrites the URLs already saved in existing forms the same way.
  */
 class Migration_20261006_143614_App extends AppMigration {
-  private const FORM_TEMPLATES_CDN_URL = CdnAssetUrl::CDN_URL . 'assets/form-templates/';
+  // The URL saved in existing forms, kept literal so a later change of CdnAssetUrl::CDN_URL doesn't affect it
+  private const FORM_TEMPLATES_CDN_URL = 'https://ps.w.org/mailpoet/assets/form-templates/';
 
   public function run(): void {
     $formsRepository = $this->container->get(FormsRepository::class);
