@@ -1,7 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import ReactStringReplace from 'react-string-replace';
-import { getIsGarden } from 'common/functions';
 import { Edit } from './edit';
 import { State, StepType } from '../../../../editor/store';
 import { Step } from '../../../../editor/components/automation/types';
@@ -9,8 +8,6 @@ import { isTransactional } from './helper/is-transactional';
 import { SendMailIcon } from './icons/send-mail';
 import { TransactionalIcon } from './icons/transactional';
 import { MarketingIcon } from './icons/marketing';
-
-const isGarden = getIsGarden();
 
 const keywords = [
   // translators: noun, used as a search keyword for "Send email" automation action
@@ -43,28 +40,23 @@ export const step: StepType = {
       </span>
     );
     if (isTransactional(data)) {
-      const transactionalText = isGarden
-        ? __(
-            "This is a transactional email. This type of email doesn't require marketing consent.",
-            'mailpoet',
-          )
-        : ReactStringReplace(
-            __(
-              "This is a transactional email. This type of email doesn't require marketing consent. Read more about [link]transactional emails[/link].",
-              'mailpoet',
-            ),
-            /\[link\](.*?)\[\/link\]/g,
-            (match, i) => (
-              <a
-                key={i}
-                rel="noreferrer"
-                href="https://kb.mailpoet.com/article/397-how-to-set-up-an-automation"
-                target="_blank"
-              >
-                {match}
-              </a>
-            ),
-          );
+      const transactionalText = ReactStringReplace(
+        __(
+          "This is a transactional email. This type of email doesn't require marketing consent. Read more about [link]transactional emails[/link].",
+          'mailpoet',
+        ),
+        /\[link\](.*?)\[\/link\]/g,
+        (match, i) => (
+          <a
+            key={i}
+            rel="noreferrer"
+            href="https://kb.mailpoet.com/article/397-how-to-set-up-an-automation"
+            target="_blank"
+          >
+            {match}
+          </a>
+        ),
+      );
       return (
         <span className="mailpoet-sendmail-description">
           {text}
@@ -75,28 +67,23 @@ export const step: StepType = {
         </span>
       );
     }
-    const marketingText = isGarden
-      ? __(
-          'This is a marketing email. This type of email does require marketing consent.',
-          'mailpoet',
-        )
-      : ReactStringReplace(
-          __(
-            'This is a marketing email. This type of email does require marketing consent. Read more about [link]marketing emails[/link].',
-            'mailpoet',
-          ),
-          /\[link\](.*?)\[\/link\]/g,
-          (match, i) => (
-            <a
-              key={i}
-              rel="noreferrer"
-              href="https://kb.mailpoet.com/article/397-how-to-set-up-an-automation"
-              target="_blank"
-            >
-              {match}
-            </a>
-          ),
-        );
+    const marketingText = ReactStringReplace(
+      __(
+        'This is a marketing email. This type of email does require marketing consent. Read more about [link]marketing emails[/link].',
+        'mailpoet',
+      ),
+      /\[link\](.*?)\[\/link\]/g,
+      (match, i) => (
+        <a
+          key={i}
+          rel="noreferrer"
+          href="https://kb.mailpoet.com/article/397-how-to-set-up-an-automation"
+          target="_blank"
+        >
+          {match}
+        </a>
+      ),
+    );
     return (
       <span className="mailpoet-sendmail-description">
         {text}

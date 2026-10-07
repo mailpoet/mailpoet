@@ -1,16 +1,6 @@
 import { __ } from '@wordpress/i18n';
-import { getIsGarden } from 'common/functions';
-
-const isGarden = getIsGarden();
 
 export function ShortcodeHelpText(): JSX.Element {
-  if (isGarden) {
-    return (
-      <span className="mailpoet-shortcode-selector">
-        {__('You can use shortcodes.', 'mailpoet')}
-      </span>
-    );
-  }
   return (
     <span className="mailpoet-shortcode-selector">
       <a

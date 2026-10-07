@@ -1,4 +1,3 @@
-import { getIsGarden } from 'common/functions';
 import { registerStepType } from '../../editor/store';
 import { step as SendEmailStep } from './steps/send-email';
 import { step as SomeoneSubscribesTrigger } from './steps/someone-subscribes';
@@ -30,8 +29,6 @@ import {
 // Insert new imports here
 
 export const initialize = (): void => {
-  const isGarden = getIsGarden();
-
   registerStepType(SendEmailStep);
   registerStepType(SendLatestNewsletterStep);
   registerSendLatestNewsletterHooks();
@@ -42,14 +39,12 @@ export const initialize = (): void => {
   registerSomeoneUnsubscribesHooks();
   registerStepType(CustomTriggerStep);
 
-  if (!isGarden) {
-    registerStepType(CustomActionStep);
-    registerStepType(AddTagsAction);
-    registerStepType(RemoveTagsAction);
-    registerStepType(AddToListStep);
-    registerStepType(RemoveFromListStep);
-    registerStepType(UpdateSubscriberStep);
-  }
+  registerStepType(CustomActionStep);
+  registerStepType(AddTagsAction);
+  registerStepType(RemoveTagsAction);
+  registerStepType(AddToListStep);
+  registerStepType(RemoveFromListStep);
+  registerStepType(UpdateSubscriberStep);
 
   registerStepType(UnsubscribeStep);
   registerStepType(NotificationEmail);
