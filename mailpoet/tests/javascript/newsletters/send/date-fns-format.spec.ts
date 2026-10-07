@@ -30,4 +30,14 @@ describe('momentToDateFnsFormat', () => {
   it('escapes literal single quotes', () => {
     expect(formatWithWpFormat("j 'F' Y")).to.equal("8 'October' 2026");
   });
+
+  it('formats the English ordinal suffix', () => {
+    expect(formatWithWpFormat('F jS, Y')).to.equal('October 8th, 2026');
+    expect(formatWithWpFormat('F \\t\\h\\e jS')).to.equal('October the 8th');
+  });
+
+  it('drops the ordinal suffix when date-fns cannot format it', () => {
+    expect(formatWithWpFormat('dS F')).to.equal('08 October');
+    expect(formatWithWpFormat('S F')).to.equal(' October');
+  });
 });
