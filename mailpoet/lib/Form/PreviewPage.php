@@ -2,6 +2,7 @@
 
 namespace MailPoet\Form;
 
+use MailPoet\Captcha\FormRenderStamp;
 use MailPoet\Config\Renderer as TemplateRenderer;
 use MailPoet\Entities\FormEntity;
 use MailPoet\WP\Functions as WPFunctions;
@@ -25,18 +26,23 @@ class PreviewPage {
   /** @var AssetsController */
   private $assetsController;
 
+  /** @var FormRenderStamp */
+  private $formRenderStamp;
+
   public function __construct(
     WPFunctions $wp,
     Renderer $formRenderer,
     TemplateRenderer $templateRenderer,
     FormsRepository $formRepository,
-    AssetsController $assetsController
+    AssetsController $assetsController,
+    FormRenderStamp $formRenderStamp
   ) {
     $this->wp = $wp;
     $this->formRenderer = $formRenderer;
     $this->templateRenderer = $templateRenderer;
     $this->formRepository = $formRepository;
     $this->assetsController = $assetsController;
+    $this->formRenderStamp = $formRenderStamp;
   }
 
   public function renderPage(int $formId, string $formType, string $editorUrl): string {
@@ -98,6 +104,7 @@ class PreviewPage {
       'triggerMode' => $settings['form_placement'][$formDisplayType]['trigger_mode'] ?? 'auto',
       'clickTriggerSelector' => $settings['form_placement'][$formDisplayType]['click_trigger_selector'] ?? '',
       'fontFamily' => $settings['font_family'] ?? '',
+      'form_stamp' => $this->formRenderStamp->issue(),
     ];
     $formPosition = $settings['form_placement'][$formDisplayType]['position'] ?? '';
     if (!$formPosition && $formDisplayType === FormEntity::DISPLAY_TYPE_FIXED_BAR) {

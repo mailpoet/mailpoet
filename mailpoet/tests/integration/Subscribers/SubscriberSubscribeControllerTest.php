@@ -69,6 +69,9 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
   /** @var callable|null */
   private $captchaLimitFilter = null;
 
+  /** @var callable|null */
+  private $recipientLimitFilter = null;
+
   public function _after() {
     foreach ($this->createdPostIds as $postId) {
       wp_delete_post($postId, true);
@@ -83,6 +86,10 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
       global $wpdb;
       $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '%MAILPOET\\_captcha\\_sessions\\_%'");
       wp_cache_flush();
+    }
+    if ($this->recipientLimitFilter) {
+      remove_filter('mailpoet_subscription_captcha_recipient_limit', $this->recipientLimitFilter);
+      $this->recipientLimitFilter = null;
     }
     add_filter('mailpoet_behavioral_signals_looks_human', '__return_true');
     parent::_after();
@@ -292,6 +299,167 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $captchaSession->reset($sessionId);
     $captchaSession->reset($second['captcha_session_id']);
     $captchaSession->reset($replay['captcha_session_id']);
+  }
+
+  /**
+   * @dataProvider dataForCaptchaTypesUsingSessions
+   */
+  public function testHumanCountersWithoutRenderStampAreAskedForCaptcha(?string $captchaType): void {
+    $this->settings->set('captcha', ['type' => $captchaType]);
+    $this->useProductionSignalCheck();
+    $this->allowSubmissionsWithoutCaptchaHistory();
+    $captchaSession = $this->diContainer->get(CaptchaSession::class);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $email = 'captcha' . rand(0, 100000) . '@example.com';
+
+    foreach ([null, $this->makeStamp(1), $this->makeStamp(30) . 'x', 'not-a-stamp'] as $stamp) {
+      $submission = $this->getCaptchaSubmission($form, $segment, $email, []);
+      if ($stamp !== null) {
+        $submission['form_stamp'] = $stamp;
+      }
+      $meta = $this->subscribeController->subscribe($submission);
+      verify($meta['show_captcha'])->true();
+      $captchaSession->reset($meta['captcha_session_id']);
+    }
+    $this->assertNull($this->subscribersRepository->findOneBy(['email' => $email]));
+  }
+
+  /**
+   * @dataProvider dataForCaptchaTypesUsingSessions
+   */
+  public function testHumanCountersWithRenderStampSkipTheCaptcha(?string $captchaType): void {
+    $this->settings->set('signup_confirmation.enabled', false);
+    $this->settings->set('captcha', ['type' => $captchaType]);
+    $this->useProductionSignalCheck();
+    $this->allowSubmissionsWithoutCaptchaHistory();
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $email = 'captcha' . rand(0, 100000) . '@example.com';
+
+    $submission = $this->getCaptchaSubmission($form, $segment, $email, ['form_stamp' => $this->makeStamp(10)]);
+    $result = $this->subscribeController->subscribe($submission);
+
+    verify($result)->arrayHasNotKey('error');
+    $this->assertInstanceOf(SubscriberEntity::class, $this->subscribersRepository->findOneBy(['email' => $email]));
+  }
+
+  /**
+   * @dataProvider dataForCaptchaTypesUsingSessions
+   */
+  public function testSubmissionWithoutRenderStampCompletesAfterOneSolvedChallenge(?string $captchaType): void {
+    $this->settings->set('signup_confirmation.enabled', false);
+    $this->settings->set('captcha', ['type' => $captchaType]);
+    $this->useProductionSignalCheck();
+    $this->allowSubmissionsWithoutCaptchaHistory();
+    $captchaSession = $this->diContainer->get(CaptchaSession::class);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $email = 'captcha' . rand(0, 100000) . '@example.com';
+
+    $first = $this->subscribeController->subscribe($this->getCaptchaSubmission($form, $segment, $email, []));
+    verify($first['show_captcha'])->true();
+    $sessionId = $first['captcha_session_id'];
+    $phrase = $captchaSession->getCaptchaHash($sessionId)['phrase'];
+
+    $second = $this->subscribeController->subscribe([
+      'form_id' => $form->getId(),
+      'captcha_session_id' => $sessionId,
+      'captcha' => $phrase,
+      'behavioral_signals' => $this->getHumanSignals(),
+    ]);
+
+    verify($second)->arrayHasNotKey('error');
+    $this->assertInstanceOf(SubscriberEntity::class, $this->subscribersRepository->findOneBy(['email' => $email]));
+    $captchaSession->reset($sessionId);
+  }
+
+  /**
+   * @dataProvider dataForCaptchaTypesUsingSessions
+   */
+  public function testSolvedChallengeStillNeedsPlausibleSignals(?string $captchaType): void {
+    $this->settings->set('signup_confirmation.enabled', false);
+    $this->settings->set('captcha', ['type' => $captchaType]);
+    $this->useProductionSignalCheck();
+    $this->allowSubmissionsWithoutCaptchaHistory();
+    $captchaSession = $this->diContainer->get(CaptchaSession::class);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $email = 'captcha' . rand(0, 100000) . '@example.com';
+
+    $first = $this->subscribeController->subscribe($this->getCaptchaSubmission($form, $segment, $email, []));
+    $firstId = $first['captcha_session_id'];
+    $firstPhrase = $captchaSession->getCaptchaHash($firstId)['phrase'];
+
+    $tooFast = array_merge($this->getHumanSignals(), ['kd_count' => 5000]);
+    $second = $this->subscribeController->subscribe([
+      'form_id' => $form->getId(),
+      'captcha_session_id' => $firstId,
+      'captcha' => $firstPhrase,
+      'behavioral_signals' => $tooFast,
+    ]);
+    verify($second['show_captcha'])->true();
+    verify($second['captcha_session_id'])->notEquals($firstId);
+    verify($this->subscribersRepository->findOneBy(['email' => $email]))->null();
+    $secondId = $second['captcha_session_id'];
+    $secondPhrase = $captchaSession->getCaptchaHash($secondId)['phrase'];
+
+    $third = $this->subscribeController->subscribe([
+      'form_id' => $form->getId(),
+      'captcha_session_id' => $secondId,
+      'captcha' => $secondPhrase,
+      'behavioral_signals' => $this->getHumanSignals(),
+    ]);
+
+    verify($third)->arrayHasNotKey('error');
+    $this->assertInstanceOf(SubscriberEntity::class, $this->subscribersRepository->findOneBy(['email' => $email]));
+    $captchaSession->reset($firstId);
+    $captchaSession->reset($secondId);
+  }
+
+  public function testAnAnswerWithoutAKnownSessionDoesNotSkipTheRenderStampCheck(): void {
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
+    $this->useProductionSignalCheck();
+    $this->allowSubmissionsWithoutCaptchaHistory();
+    $captchaSession = $this->diContainer->get(CaptchaSession::class);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $email = 'captcha' . rand(0, 100000) . '@example.com';
+
+    foreach ([str_repeat('d', 32), 'malformed'] as $sessionId) {
+      $meta = $this->subscribeController->subscribe($this->getCaptchaSubmission($form, $segment, $email, [
+        'captcha_session_id' => $sessionId,
+        'captcha' => 'abc',
+      ]));
+      verify($meta['show_captcha'])->true();
+      $captchaSession->reset($meta['captcha_session_id']);
+    }
+    $this->assertNull($this->subscribersRepository->findOneBy(['email' => $email]));
+  }
+
+  public function testBuiltInCaptchaVerifiesAnAnswerEvenWhenNoCaptchaIsRequired(): void {
+    $this->settings->set('signup_confirmation.enabled', false);
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
+    $this->useProductionSignalCheck();
+    $this->allowSubmissionsWithoutCaptchaHistory();
+    $captchaSession = $this->diContainer->get(CaptchaSession::class);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $email = 'captcha' . rand(0, 100000) . '@example.com';
+
+    $first = $this->subscribeController->subscribe($this->getCaptchaSubmission($form, $segment, $email, []));
+    $sessionId = $first['captcha_session_id'];
+
+    $meta = $this->subscribeController->subscribe([
+      'form_id' => $form->getId(),
+      'captcha_session_id' => $sessionId,
+      'captcha' => 'wrong-answer',
+      'behavioral_signals' => $this->getHumanSignals(),
+    ]);
+
+    verify($meta['error'])->equals('The characters entered do not match with the previous CAPTCHA.');
+    $this->assertNull($this->subscribersRepository->findOneBy(['email' => $email]));
+    $captchaSession->reset($sessionId);
   }
 
   public function testBuiltInCaptchaRejectsNewSessionsOverTheSourceLimit(): void {
@@ -655,6 +823,24 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
       $this->obfuscatedSegments => [$segment->getId()],
       'form_id' => $form->getId(),
     ]);
+  }
+
+  private function useProductionSignalCheck(): void {
+    // The test environment treats every submission as human. Use the production check.
+    remove_filter('mailpoet_behavioral_signals_looks_human', '__return_true');
+  }
+
+  private function allowSubmissionsWithoutCaptchaHistory(): void {
+    $filter = function () {
+      return 1000;
+    };
+    add_filter('mailpoet_subscription_captcha_recipient_limit', $filter);
+    $this->recipientLimitFilter = $filter;
+  }
+
+  private function makeStamp(int $ageInSeconds): string {
+    $timestamp = time() - $ageInSeconds;
+    return $timestamp . '.' . hash_hmac('sha256', (string)$timestamp, wp_salt('nonce'));
   }
 
   private function limitCaptchaSessions(int $limit): void {
