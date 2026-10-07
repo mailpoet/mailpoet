@@ -7,8 +7,10 @@ use MailPoet\API\JSON\v1\CustomFields;
 use MailPoet\Config\AccessControl;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
+use MailPoet\Test\DataFactories\DynamicSegment as DynamicSegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class CustomFieldsTest extends \MailPoetTest {
@@ -119,6 +121,19 @@ class CustomFieldsTest extends \MailPoetTest {
     $values = $this->entityManager->getRepository(SubscriberCustomFieldEntity::class)->findBy(['customField' => $customField->getId()]);
     verify($values)->empty();
     verify($this->repository->findOneById($customField->getId()))->null();
+  }
+
+  public function testItDoesNotDeleteACustomFieldUsedInASegment() {
+    $customField = (new CustomFieldFactory())->withName('Segment field')->create();
+    (new DynamicSegmentFactory())->withName('Segment using the field')->withCustomFieldFilter($customField)->create();
+
+    $response = $this->endpoint->delete(['id' => $customField->getId()]);
+    verify($response->status)->equals(APIResponse::STATUS_CONFLICT);
+    verify($response->errors[0]['message'])->stringContainsString('Segment using the field');
+
+    $this->entityManager->clear();
+    verify($this->repository->findOneById($customField->getId()))->notNull();
+    verify($this->entityManager->getRepository(DynamicSegmentFilterEntity::class)->findAll())->arrayCount(1);
   }
 
   public function testItDoesNotSaveATrashedCustomField() {

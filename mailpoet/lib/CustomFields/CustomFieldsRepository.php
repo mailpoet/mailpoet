@@ -500,16 +500,34 @@ class CustomFieldsRepository extends Repository {
   }
 
   /**
+   * @return string[] Names of dynamic segments (not in the trash) that filter by the custom field.
+   */
+  public function getDynamicSegmentNamesUsingCustomField(int $customFieldId): array {
+    $segments = $this->getDynamicSegmentsByCustomFieldIds([$customFieldId])[$customFieldId];
+    return array_values(array_map(function (SegmentEntity $segment): string {
+      return $segment->getName();
+    }, $segments));
+  }
+
+  /**
    * @param int[] $customFieldIds
    * @return array<int, int>
    */
   private function getDynamicSegmentCountsByCustomFieldIds(array $customFieldIds): array {
+    return array_map('count', $this->getDynamicSegmentsByCustomFieldIds($customFieldIds));
+  }
+
+  /**
+   * @param int[] $customFieldIds
+   * @return array<int, array<int, SegmentEntity>> Segments keyed by custom field ID, then by segment ID.
+   */
+  private function getDynamicSegmentsByCustomFieldIds(array $customFieldIds): array {
     if (!$customFieldIds) {
       return [];
     }
 
     $customFieldIdsLookup = array_flip($customFieldIds);
-    $segmentIdsByCustomFieldId = array_fill_keys($customFieldIds, []);
+    $segmentsByCustomFieldId = array_fill_keys($customFieldIds, []);
     /** @var DynamicSegmentFilterEntity[] $filters */
     $filters = $this->entityManager->createQueryBuilder()
       ->select('dsf')
@@ -534,13 +552,8 @@ class CustomFieldsRepository extends Repository {
       if (!$segment instanceof SegmentEntity) {
         continue;
       }
-      $segmentIdsByCustomFieldId[$customFieldId][(int)$segment->getId()] = true;
+      $segmentsByCustomFieldId[$customFieldId][(int)$segment->getId()] = $segment;
     }
-
-    $counts = [];
-    foreach ($segmentIdsByCustomFieldId as $customFieldId => $segmentIds) {
-      $counts[$customFieldId] = count($segmentIds);
-    }
-    return $counts;
+    return $segmentsByCustomFieldId;
   }
 }

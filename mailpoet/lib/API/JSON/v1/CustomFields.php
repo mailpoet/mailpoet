@@ -51,6 +51,15 @@ class CustomFields extends APIEndpoint {
       return $this->notFound();
     }
 
+    $segmentNames = $this->customFieldsRepository->getDynamicSegmentNamesUsingCustomField((int)$customField->getId());
+    if ($segmentNames) {
+      return $this->conflict(sprintf(
+        // translators: %s is a comma-separated list of segment names.
+        __('This custom field is used in these segments: %s. Remove it from the segments first.', 'mailpoet'),
+        implode(', ', $segmentNames)
+      ));
+    }
+
     $response = $this->customFieldsResponseBuilder->build($customField);
     $this->customFieldsRepository->deletePermanently((int)$customField->getId());
     return $this->successResponse($response);

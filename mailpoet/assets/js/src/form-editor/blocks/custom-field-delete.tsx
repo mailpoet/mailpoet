@@ -54,7 +54,7 @@ function CustomFieldDelete({
         >
           <p>
             {__(
-              'This permanently deletes the custom field and the values stored for all subscribers. It will also be removed from all forms and dynamic segments. This cannot be undone.',
+              'This permanently deletes the custom field and the values stored for all subscribers. It will also be removed from all forms. This cannot be undone.',
               'mailpoet',
             )}
           </p>
