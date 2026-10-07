@@ -42,6 +42,7 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
         'exists' => true,
         'generateSessionId' => self::NEW_SESSION_ID,
         'setFormData' => null,
+        'registerNewSession' => null,
         'reset' => null,
       ], $overrides),
       $this
@@ -87,7 +88,7 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
       CaptchaPhrase::class,
       [
         'getPhrase' => $phrase,
-        'consume' => null,
+        'consume' => true,
       ],
       $this
     );
@@ -452,6 +453,7 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
 
   public function testExistingSessionWithEmptyAnswerKeepsItsId() {
     $captchaPhrase = Stub::make(CaptchaPhrase::class, [
+      'getPhrase' => 'old',
       'createPhrase' => Stub\Expected::once(function ($sessionId) {
         verify($sessionId)->equals(self::SESSION_ID);
         return 'new';
@@ -466,19 +468,95 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
     verify($error->getMeta()['captcha_session_id'])->equals(self::SESSION_ID);
   }
 
-  public function testNewSessionLimitReturnsAReadableError() {
+  public function testServingAChallengeForAStashedSessionCountsAgainstTheBudgetOnce() {
+    $registered = 0;
+    $state = new \stdClass();
+    $state->hasPhrase = false;
     $captchaPhrase = Stub::make(CaptchaPhrase::class, [
-      'createPhrase' => function () {
-        throw new CaptchaSessionLimitException();
+      'getPhrase' => function () use ($state) {
+        return $state->hasPhrase ? 'abc' : null;
+      },
+      'createPhrase' => function () use ($state) {
+        $state->hasPhrase = true;
+        return 'new';
       },
     ], $this);
-    $testee = $this->makeValidator($captchaPhrase, $this->makeSession(['exists' => false]));
+    $session = $this->makeSession([
+      'registerNewSession' => function () use (&$registered) {
+        $registered++;
+      },
+    ]);
+    $testee = $this->makeValidator($captchaPhrase, $session);
+
+    for ($i = 0; $i < 3; $i++) {
+      $error = $this->getError(function () use ($testee) {
+        $testee->validate(['captcha_session_id' => self::SESSION_ID, 'captcha' => '']);
+      });
+      verify($error->getMeta()['captcha_session_id'])->equals(self::SESSION_ID);
+    }
+    verify($registered)->equals(1);
+  }
+
+  public function testNewSessionLimitReturnsAReadableError() {
+    $captchaPhrase = Stub::make(CaptchaPhrase::class, [
+      'getPhrase' => null,
+      'createPhrase' => Stub\Expected::never(),
+    ], $this);
+    $session = $this->makeSession([
+      'registerNewSession' => function () {
+        throw new CaptchaSessionLimitException();
+      },
+    ]);
+    $testee = $this->makeValidator($captchaPhrase, $session);
 
     $error = $this->getError(function () use ($testee) {
       $testee->validate(['captcha_session_id' => self::SESSION_ID, 'captcha' => '']);
     });
     verify($error->getMessage())->equals('Too many CAPTCHA requests from your network. Please wait a few minutes and try again.');
     verify($error->getMeta())->arrayHasNotKey('show_captcha');
+  }
+
+  public function testNewChallengesCountAgainstTheBudgetBeforeAnythingIsStored() {
+    $captchaPhrase = Stub::make(CaptchaPhrase::class, ['createPhrase' => Stub\Expected::never()], $this);
+    $session = $this->makeSession([
+      'registerNewSession' => function () {
+        throw new CaptchaSessionLimitException();
+      },
+      'setSubscriptionFormData' => Stub\Expected::never(),
+    ]);
+    $testee = $this->makeValidator($captchaPhrase, $session);
+
+    $error = $this->getError(function () use ($testee) {
+      $testee->getInlineCaptchaChallenge(['email' => 'a@example.com']);
+    });
+    verify($error->getMessage())->equals('Too many CAPTCHA requests from your network. Please wait a few minutes and try again.');
+  }
+
+  public function testAnAnswerIsRejectedWhenAnotherRequestAlreadyClaimedIt() {
+    $captchaPhrase = Stub::make(CaptchaPhrase::class, [
+      'getPhrase' => 'abc',
+      'consume' => false,
+      'createPhrase' => 'new',
+    ], $this);
+    $testee = $this->makeValidator($captchaPhrase);
+
+    $error = $this->getError(function () use ($testee) {
+      $testee->validate(['captcha' => 'abc', 'captcha_session_id' => self::SESSION_ID]);
+    });
+    verify($error->getMeta())->arrayHasKey('show_captcha');
+  }
+
+  public function testAnAnswerOnTheRegistrationPathIsRejectedWhenAnotherRequestAlreadyClaimedIt() {
+    $captchaPhrase = Stub::make(CaptchaPhrase::class, [
+      'getPhrase' => 'abc',
+      'consume' => false,
+    ], $this);
+    $testee = $this->makeValidator($captchaPhrase);
+
+    $error = $this->getError(function () use ($testee) {
+      $testee->validateExistingChallenge(['captcha' => 'abc', 'captcha_session_id' => self::SESSION_ID]);
+    });
+    verify($error->getMessage())->equals('CAPTCHA verification failed. Please try again.');
   }
 
   /**
@@ -518,7 +596,7 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
   }
 
   public function testExistingChallengeAcceptsTheCorrectAnswer() {
-    $captchaPhrase = Stub::make(CaptchaPhrase::class, ['getPhrase' => 'abc', 'consume' => null], $this);
+    $captchaPhrase = Stub::make(CaptchaPhrase::class, ['getPhrase' => 'abc', 'consume' => true], $this);
     $testee = $this->makeValidator($captchaPhrase);
     verify($testee->validateExistingChallenge(['captcha' => 'ABC', 'captcha_session_id' => self::SESSION_ID]))->true();
   }
@@ -543,6 +621,7 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
       'getPhrase' => 'abc',
       'consume' => Stub\Expected::once(function ($sessionId) {
         verify($sessionId)->equals(self::SESSION_ID);
+        return true;
       }),
     ], $this);
     $session = $this->makeSession(['reset' => Stub\Expected::never()]);
@@ -573,7 +652,9 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
   public function testAcceptedAnswerOnTheRegistrationPathIsConsumedAndTheSessionIsReset() {
     $captchaPhrase = Stub::make(CaptchaPhrase::class, [
       'getPhrase' => 'abc',
-      'consume' => Stub\Expected::once(),
+      'consume' => Stub\Expected::once(function () {
+        return true;
+      }),
     ], $this);
     $session = $this->makeSession([
       'reset' => Stub\Expected::once(function ($sessionId) {

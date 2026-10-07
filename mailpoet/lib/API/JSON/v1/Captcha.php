@@ -50,14 +50,13 @@ class Captcha extends APIEndpoint {
       return $this->badRequest();
     }
 
-    $sessionId = $this->captchaSession->generateSessionId();
     try {
-      $this->captchaSession->setFormData($sessionId, $stash);
+      $this->captchaSession->registerNewSession();
     } catch (CaptchaSessionLimitException $e) {
-      return $this->badRequest([
-        APIError::BAD_REQUEST => __('Too many CAPTCHA requests from your network. Please wait a few minutes and try again.', 'mailpoet'),
-      ]);
+      return $this->badRequest([APIError::BAD_REQUEST => $e->getMessage()]);
     }
+    $sessionId = $this->captchaSession->generateSessionId();
+    $this->captchaSession->setFormData($sessionId, $stash);
 
     $captchaUrl = $this->urlFactory->getCaptchaUrl([
       'captcha_session_id' => $sessionId,

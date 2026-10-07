@@ -88,4 +88,14 @@ class CaptchaPhraseTest extends \MailPoetUnitTest {
     $this->assertSame(5, $captchaPhrase->registerFailedAttempt('123'));
     $this->assertSame(['phrase' => 'abc', 'attempts' => 5], $stored);
   }
+
+  public function testItReportsWhetherTheAnswerWasClaimedByThisCall(): void {
+    foreach ([true, false] as $deleted) {
+      $session = $this->make(CaptchaSession::class, [
+        'deleteCaptchaHash' => $deleted,
+      ]);
+      $captchaPhrase = new CaptchaPhrase($session, $this->make(PhraseBuilder::class));
+      $this->assertSame($deleted, $captchaPhrase->consume('123'));
+    }
+  }
 }

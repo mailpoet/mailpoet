@@ -4,10 +4,13 @@ namespace Mailpoet\Test\Captcha\Validator;
 
 use MailPoet\Captcha\CaptchaPhrase;
 use MailPoet\Captcha\CaptchaSession;
+use MailPoet\Captcha\CaptchaUrlFactory;
 use MailPoet\Captcha\Validator\CaptchaValidator;
 use MailPoet\Captcha\Validator\ValidationError;
 use MailPoet\Config\Populator;
 use MailPoet\Entities\SubscriberIPEntity;
+use MailPoet\Subscribers\SubscriberIPsRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -295,6 +298,72 @@ class CaptchaValidatorTest extends \MailPoetTest {
       $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '%MAILPOET\\_captcha\\_sessions\\_%'");
       wp_cache_flush();
     }
+  }
+
+  public function testAnAnswerThatAnotherRequestClaimedFirstIsRejected() {
+    $testee = $this->makeValidatorWithConcurrentClaim();
+    $this->session->setCaptchaHash(self::SESSION_ID, ['phrase' => 'abc']);
+
+    $meta = $this->getValidationErrorMetaFrom($testee, ['captcha' => 'abc', 'captcha_session_id' => self::SESSION_ID]);
+
+    $this->assertTrue($meta['show_captcha']);
+  }
+
+  public function testAnAnswerThatAnotherRequestClaimedFirstIsRejectedOnTheRegistrationPath() {
+    $testee = $this->makeValidatorWithConcurrentClaim();
+    $this->session->setCaptchaHash(self::SESSION_ID, ['phrase' => 'abc']);
+
+    $meta = $this->getValidationErrorMetaFrom($testee, ['captcha' => 'abc', 'captcha_session_id' => self::SESSION_ID], true);
+
+    $this->assertEquals('CAPTCHA verification failed. Please try again.', $meta['error']);
+  }
+
+  /**
+   * A validator whose phrase lookup reports the stored phrase and then lets a parallel request take it.
+   */
+  private function makeValidatorWithConcurrentClaim(): CaptchaValidator {
+    $session = $this->session;
+    $phrase = new class($session) extends CaptchaPhrase {
+      private CaptchaSession $captchaSession;
+
+      public function __construct(
+        CaptchaSession $captchaSession
+      ) {
+        parent::__construct($captchaSession);
+        $this->captchaSession = $captchaSession;
+      }
+
+      public function getPhrase(string $sessionId): ?string {
+        $stored = parent::getPhrase($sessionId);
+        $this->captchaSession->deleteCaptchaHash($sessionId);
+        return $stored;
+      }
+    };
+    return new CaptchaValidator(
+      $this->diContainer->get(CaptchaUrlFactory::class),
+      $phrase,
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(SubscriberIPsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $session
+    );
+  }
+
+  private function getValidationErrorMetaFrom(CaptchaValidator $testee, array $data, bool $existingChallenge = false): array {
+    try {
+      if ($existingChallenge) {
+        $testee->validateExistingChallenge($data);
+      } else {
+        $testee->validate($data);
+      }
+    } catch (ValidationError $error) {
+      $meta = $error->getMeta();
+      if (isset($meta['captcha_session_id']) && is_string($meta['captcha_session_id'])) {
+        $this->createdSessionIds[] = $meta['captcha_session_id'];
+      }
+      return $meta;
+    }
+    $this->fail('Expected a ValidationError.');
   }
 
   public function testItRequiresCaptchaForFirstSubscription() {
