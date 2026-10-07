@@ -75,6 +75,8 @@ class CaptchaValidator {
         }
         throw new ValidationError(__('CAPTCHA verification failed. Please try again.', 'mailpoet'));
       }
+      $this->captchaPhrase->consume($sessionId);
+      $this->captchaSession->reset($sessionId);
       return true;
     }
 
@@ -135,6 +137,7 @@ class CaptchaValidator {
       );
     }
 
+    $this->captchaPhrase->consume($sessionId);
     return true;
   }
 

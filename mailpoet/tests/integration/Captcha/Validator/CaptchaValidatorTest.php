@@ -138,6 +138,39 @@ class CaptchaValidatorTest extends \MailPoetTest {
     $this->assertTrue($this->testee->validate(['captcha' => 'abc', 'captcha_session_id' => self::SESSION_ID]));
   }
 
+  public function testAnAcceptedAnswerWorksOnlyOnce() {
+    $this->session->setCaptchaHash(self::SESSION_ID, ['phrase' => 'abc']);
+    $data = ['captcha' => 'abc', 'captcha_session_id' => self::SESSION_ID];
+
+    $this->assertTrue($this->testee->validateChallenge($data));
+    $this->assertFalse($this->session->getCaptchaHash(self::SESSION_ID));
+
+    $meta = $this->getValidationErrorMeta($data);
+    $this->assertEquals('Please fill in the CAPTCHA.', $meta['error']);
+    $this->assertNotEquals(self::SESSION_ID, $meta['captcha_session_id']);
+  }
+
+  public function testAnAcceptedAnswerKeepsTheFormStashOfTheSession() {
+    $this->session->setCaptchaHash(self::SESSION_ID, ['phrase' => 'abc']);
+    $this->session->setFormData(self::SESSION_ID, ['email' => 'a@example.com']);
+
+    $this->assertTrue($this->testee->validateChallenge(['captcha' => 'abc', 'captcha_session_id' => self::SESSION_ID]));
+
+    $this->assertEquals(['email' => 'a@example.com'], $this->session->getFormData(self::SESSION_ID));
+  }
+
+  public function testAnAcceptedExistingChallengeAnswerWorksOnlyOnceAndDropsTheStash() {
+    $this->session->setCaptchaHash(self::SESSION_ID, ['phrase' => 'abc']);
+    $this->session->setFormData(self::SESSION_ID, ['user_email' => 'a@example.com']);
+    $data = ['captcha' => 'abc', 'captcha_session_id' => self::SESSION_ID];
+
+    $this->assertTrue($this->testee->validateExistingChallenge($data));
+    $this->assertFalse($this->session->exists(self::SESSION_ID));
+
+    $meta = $this->getValidationErrorMeta($data, true);
+    $this->assertEquals('CAPTCHA verification failed. Please try again.', $meta['error']);
+  }
+
   public function testExistingChallengeNeverStartsANewSession() {
     $failures = [
       [],

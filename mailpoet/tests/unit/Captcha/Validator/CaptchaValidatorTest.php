@@ -87,6 +87,7 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
       CaptchaPhrase::class,
       [
         'getPhrase' => $phrase,
+        'consume' => null,
       ],
       $this
     );
@@ -516,7 +517,7 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
   }
 
   public function testExistingChallengeAcceptsTheCorrectAnswer() {
-    $captchaPhrase = Stub::make(CaptchaPhrase::class, ['getPhrase' => 'abc'], $this);
+    $captchaPhrase = Stub::make(CaptchaPhrase::class, ['getPhrase' => 'abc', 'consume' => null], $this);
     $testee = $this->makeValidator($captchaPhrase);
     verify($testee->validateExistingChallenge(['captcha' => 'ABC', 'captcha_session_id' => self::SESSION_ID]))->true();
   }
@@ -534,5 +535,51 @@ class CaptchaValidatorTest extends \MailPoetUnitTest {
     $testee = $this->makeValidator($captchaPhrase, $session, $wp);
 
     verify($testee->validateExistingChallenge([]))->true();
+  }
+
+  public function testAcceptedAnswerIsConsumedOnce() {
+    $captchaPhrase = Stub::make(CaptchaPhrase::class, [
+      'getPhrase' => 'abc',
+      'consume' => Stub\Expected::once(function ($sessionId) {
+        verify($sessionId)->equals(self::SESSION_ID);
+      }),
+    ], $this);
+    $session = $this->makeSession(['reset' => Stub\Expected::never()]);
+    $testee = $this->makeValidator($captchaPhrase, $session);
+
+    verify($testee->validate(['captcha' => 'ABC', 'captcha_session_id' => self::SESSION_ID]))->true();
+  }
+
+  public function testRejectedAnswersAreNotConsumed() {
+    $captchaPhrase = Stub::make(CaptchaPhrase::class, [
+      'getPhrase' => 'abc',
+      'createPhrase' => 'new',
+      'consume' => Stub\Expected::never(),
+    ], $this);
+    $testee = $this->makeValidator($captchaPhrase);
+
+    foreach (['xyz', ''] as $answer) {
+      $this->getError(function () use ($testee, $answer) {
+        $testee->validate(['captcha' => $answer, 'captcha_session_id' => self::SESSION_ID]);
+      });
+      $this->getError(function () use ($testee, $answer) {
+        $testee->validateExistingChallenge(['captcha' => $answer, 'captcha_session_id' => self::SESSION_ID]);
+      });
+    }
+  }
+
+  public function testAcceptedAnswerOnTheRegistrationPathIsConsumedAndTheSessionIsReset() {
+    $captchaPhrase = Stub::make(CaptchaPhrase::class, [
+      'getPhrase' => 'abc',
+      'consume' => Stub\Expected::once(),
+    ], $this);
+    $session = $this->makeSession([
+      'reset' => Stub\Expected::once(function ($sessionId) {
+        verify($sessionId)->equals(self::SESSION_ID);
+      }),
+    ]);
+    $testee = $this->makeValidator($captchaPhrase, $session);
+
+    verify($testee->validateExistingChallenge(['captcha' => 'abc', 'captcha_session_id' => self::SESSION_ID]))->true();
   }
 }

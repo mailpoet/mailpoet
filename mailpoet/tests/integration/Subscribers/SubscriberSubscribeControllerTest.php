@@ -217,6 +217,43 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $captchaSession->reset($second['captcha_session_id']);
   }
 
+  public function testASolvedChallengeCannotBeReusedAfterSignalsAskedForAnotherOne(): void {
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_DISABLED]);
+    // The test environment treats every submission as human. Use the production check.
+    remove_filter('mailpoet_behavioral_signals_looks_human', '__return_true');
+    $captchaSession = $this->diContainer->get(CaptchaSession::class);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $email = 'captcha' . rand(0, 100000) . '@example.com';
+
+    $implausibleSignals = array_merge($this->getHumanSignals(), ['time_ms' => 100]);
+    $submission = $this->getCaptchaSubmission($form, $segment, $email, []);
+    $submission['behavioral_signals'] = $implausibleSignals;
+    $first = $this->subscribeController->subscribe($submission);
+    verify($first['show_captcha'])->true();
+    $sessionId = $first['captcha_session_id'];
+    $phrase = $captchaSession->getCaptchaHash($sessionId)['phrase'];
+
+    $solved = [
+      'form_id' => $form->getId(),
+      'captcha_session_id' => $sessionId,
+      'captcha' => $phrase,
+      'behavioral_signals' => $implausibleSignals,
+    ];
+    $second = $this->subscribeController->subscribe($solved);
+    verify($second['show_captcha'])->true();
+    verify($second['captcha_session_id'])->notEquals($sessionId);
+    verify($captchaSession->getCaptchaHash($sessionId))->false();
+
+    $replay = $this->subscribeController->subscribe($solved);
+    verify($replay['error'])->equals('Please fill in the CAPTCHA.');
+    verify($replay['captcha_session_id'])->notEquals($sessionId);
+    $this->assertNull($this->subscribersRepository->findOneBy(['email' => $email]));
+    $captchaSession->reset($sessionId);
+    $captchaSession->reset($second['captcha_session_id']);
+    $captchaSession->reset($replay['captcha_session_id']);
+  }
+
   public function testBuiltInCaptchaRejectsNewSessionsOverTheSourceLimit(): void {
     $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
     $captchaSession = $this->diContainer->get(CaptchaSession::class);

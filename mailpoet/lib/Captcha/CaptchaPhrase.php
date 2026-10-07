@@ -26,4 +26,8 @@ class CaptchaPhrase {
     $storage = $this->session->getCaptchaHash($sessionId);
     return (isset($storage['phrase']) && is_string($storage['phrase'])) ? $storage['phrase'] : null;
   }
+
+  public function consume(string $sessionId): void {
+    $this->session->deleteCaptchaHash($sessionId);
+  }
 }
