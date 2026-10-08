@@ -113,7 +113,7 @@ class CaptchaValidator {
         throw $this->newChallengeError($data);
       }
       if ($this->captchaPhrase->getPhrase($sessionId) === null) {
-        // First challenge for a session stashed by the form submission
+        // The phrase is gone (e.g. consumed by an answer followed by a new challenge request)
         $this->captchaSession->registerNewSession();
       }
       $this->captchaPhrase->createPhrase($sessionId);

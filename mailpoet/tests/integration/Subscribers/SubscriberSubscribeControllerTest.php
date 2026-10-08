@@ -117,7 +117,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     verify($captchaSession->isValidId($newId))->true();
     verify($captchaSession->exists($suppliedId))->false();
     $stash = $captchaSession->getFormData($newId);
-    verify($stash[$this->obfuscatedEmail])->equals($email);
+    verify($stash['email'])->equals($email);
     verify($stash)->arrayHasNotKey('captcha');
     $this->assertNull($this->subscribersRepository->findOneBy(['email' => $email]));
     $captchaSession->reset($newId);
@@ -142,7 +142,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
       verify($meta['show_captcha'])->true();
       $sessionId = $meta['captcha_session_id'];
       $stash = $captchaSession->getFormData($sessionId);
-      verify($stash[$this->obfuscatedEmail])->equals($email);
+      verify($stash['email'])->equals($email);
       verify($stash)->arrayHasNotKey('referrer_form');
       verify($stash)->arrayHasNotKey('referrer_form_url');
       verify($stash)->arrayHasNotKey('rendered');
@@ -535,6 +535,39 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     verify($budgetRows)->equals(0);
   }
 
+  public function testASubscriptionThatNeedsNoChallengeLeavesNoFormStash(): void {
+    $this->settings->set('signup_confirmation.enabled', false);
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
+    $this->allowSubmissionsWithoutCaptchaHistory();
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $stashesBefore = $this->countFormStashes();
+
+    $email = 'nostash' . rand(0, 100000) . '@example.com';
+    $result = $this->subscribeController->subscribe($this->getCaptchaSubmission($form, $segment, $email, []));
+
+    verify($result)->arrayHasNotKey('error');
+    $this->assertInstanceOf(SubscriberEntity::class, $this->subscribersRepository->findOneBy(['email' => $email]));
+    verify($this->countFormStashes())->equals($stashesBefore);
+  }
+
+  public function testASubmissionOverTheSourceLimitLeavesNoFormStash(): void {
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
+    $captchaSession = $this->diContainer->get(CaptchaSession::class);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $submission = $this->getCaptchaSubmission($form, $segment, 'limit@example.com', []);
+    $this->limitCaptchaSessions(1);
+    $first = $this->subscribeController->subscribe($submission);
+    $stashesAfterFirst = $this->countFormStashes();
+
+    $second = $this->subscribeController->subscribe($submission);
+
+    verify($second['error'])->equals('Too many CAPTCHA requests from your network. Please wait a few minutes and try again.');
+    verify($this->countFormStashes())->equals($stashesAfterFirst);
+    $captchaSession->reset($first['captcha_session_id']);
+  }
+
   public function testItReportsTheSourceLimitWhenSignalsNeedANewChallenge(): void {
     $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
     remove_filter('mailpoet_behavioral_signals_looks_human', '__return_true');
@@ -894,6 +927,12 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
   private function makeStamp(int $ageInSeconds): string {
     $timestamp = time() - $ageInSeconds;
     return $timestamp . '.' . hash_hmac('sha256', (string)$timestamp, wp_salt('nonce'));
+  }
+
+  private function countFormStashes(): int {
+    global $wpdb;
+    wp_cache_flush();
+    return (int)$wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_MAILPOET\\_%\\_form'");
   }
 
   private function limitCaptchaSessions(int $limit): void {
