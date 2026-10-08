@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@modelcontextprotocol/sdk": "^1.31.0",
     "fast-xml-parser": "^5.7.0",
     "zod": "^3.23.8"
   },
