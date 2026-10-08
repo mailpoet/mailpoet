@@ -77,14 +77,24 @@ class CaptchaHooksTest extends \MailPoetTest {
     verify($errors->get_error_codes())->equals(['captcha_failed']);
   }
 
+  public function testWordPressRegistrationFilterAcceptsAnAnswerOnlyOnce(): void {
+    $this->assertRegistrationFilterAcceptsAnAnswerOnlyOnce('registration_errors');
+  }
+
   /**
-   * @dataProvider dataForRegistrationFilters
-   * @param non-empty-string $filter
+   * @group woo
    */
-  public function testRegistrationFiltersAcceptAnAnswerOnlyOnce(string $filter): void {
-    if ($filter === 'woocommerce_process_registration_errors' && !class_exists(\WC_Order::class)) {
+  public function testWooCommerceRegistrationFilterAcceptsAnAnswerOnlyOnce(): void {
+    if (!class_exists(\WC_Order::class)) {
       $this->markTestSkipped('WooCommerce is not active.');
     }
+    $this->assertRegistrationFilterAcceptsAnAnswerOnlyOnce('woocommerce_process_registration_errors');
+  }
+
+  /**
+   * @param non-empty-string $filter
+   */
+  private function assertRegistrationFilterAcceptsAnAnswerOnlyOnce(string $filter): void {
     $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
     $this->settings->set(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, true);
     $this->configHooks->setupCaptchaOnRegisterForm();
@@ -100,13 +110,6 @@ class CaptchaHooksTest extends \MailPoetTest {
 
     $errors = apply_filters($filter, new \WP_Error(), 'user', 'password', 'a@example.com');
     verify($errors->get_error_codes())->equals(['captcha_failed']);
-  }
-
-  public function dataForRegistrationFilters(): array {
-    return [
-      'WordPress registration' => ['registration_errors'],
-      'WooCommerce registration' => ['woocommerce_process_registration_errors'],
-    ];
   }
 
   public function testItSkipsTheCheckForExemptUsers(): void {
