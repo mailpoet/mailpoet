@@ -2,8 +2,10 @@
 
 namespace MailPoet\Test\Captcha;
 
+use Codeception\Stub;
 use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Captcha\CaptchaSessionLimitException;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CaptchaSessionTest extends \MailPoetTest {
@@ -235,6 +237,90 @@ class CaptchaSessionTest extends \MailPoetTest {
     set_transient($key, 5, CaptchaSession::NEW_SESSION_WINDOW);
     $this->captchaSession->registerNewSession();
     verify($this->getBudgetWindow($key)['count'])->equals(1);
+  }
+
+  public function testItLogsOnceWhenASourceReachesTheLimit() {
+    $this->setLimit(2);
+    $records = [];
+    $session = $this->createSessionWithLogCapture($records);
+    $session->registerNewSession();
+    $session->registerNewSession();
+    verify($records)->empty();
+
+    for ($i = 0; $i < 3; $i++) {
+      try {
+        $session->registerNewSession();
+        $this->fail('Expected the session limit to be reached.');
+      } catch (CaptchaSessionLimitException $e) {
+        // expected
+      }
+    }
+
+    verify($records)->arrayCount(1);
+    verify($records[0]['topic'])->equals('captcha');
+    $this->assertStringContainsString('mailpoet_captcha_session_limit', $records[0]['message']);
+    $this->assertStringNotContainsString('203.0.113.10', $records[0]['message']);
+    verify($records[0]['context'])->empty();
+  }
+
+  public function testItLogsAgainInTheNextWindow() {
+    $this->setLimit(1);
+    $records = [];
+    $session = $this->createSessionWithLogCapture($records);
+    $key = $this->getBudgetKey('203.0.113.10');
+    $session->registerNewSession();
+    for ($i = 0; $i < 2; $i++) {
+      try {
+        $session->registerNewSession();
+      } catch (CaptchaSessionLimitException $e) {
+        // expected
+      }
+    }
+    verify($records)->arrayCount(1);
+
+    set_transient($key, ['count' => 1, 'expires' => time() - 1, 'limit_logged' => true], CaptchaSession::NEW_SESSION_WINDOW);
+    $session->registerNewSession();
+    try {
+      $session->registerNewSession();
+      $this->fail('Expected the session limit to be reached.');
+    } catch (CaptchaSessionLimitException $e) {
+      // expected
+    }
+    verify($records)->arrayCount(2);
+  }
+
+  public function testItLogsOncePerSource() {
+    $this->setLimit(0);
+    $records = [];
+    $session = $this->createSessionWithLogCapture($records);
+    foreach (['203.0.113.10', '203.0.113.11'] as $ip) {
+      $_SERVER['REMOTE_ADDR'] = $ip;
+      for ($i = 0; $i < 2; $i++) {
+        try {
+          $session->registerNewSession();
+        } catch (CaptchaSessionLimitException $e) {
+          // expected
+        }
+      }
+    }
+    verify($records)->arrayCount(2);
+  }
+
+  /**
+   * @param array<int, array{topic: string, message: string, context: array}> $records
+   */
+  private function createSessionWithLogCapture(array &$records): CaptchaSession {
+    $factory = Stub::make(LoggerFactory::class, [
+      'getLogger' => function ($topic) use (&$records) {
+        return Stub::make(\MailPoetVendor\Monolog\Logger::class, [
+          'error' => function ($message, array $context = []) use (&$records, $topic) {
+            $records[] = ['topic' => $topic, 'message' => (string)$message, 'context' => $context];
+            return true;
+          },
+        ]);
+      },
+    ]);
+    return new CaptchaSession($this->wp, $factory);
   }
 
   private function setLimit(int $limit): void {
