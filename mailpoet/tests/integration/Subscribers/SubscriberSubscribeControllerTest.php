@@ -151,7 +151,11 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
         'captcha_session_id' => $sessionId,
         'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
       ]);
-      verify($page)->false();
+      $this->assertIsString($page);
+      $this->assertStringContainsString('This CAPTCHA page has expired.', $page);
+      $this->assertStringNotContainsString('<form', $page);
+      $this->assertStringNotContainsString($email, $page);
+      $this->assertStringNotContainsString('other-site.example', $page);
       $captchaSession->reset($sessionId);
     } finally {
       $this->settings->set(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, false);
