@@ -349,7 +349,12 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $form = $this->createForm($segment);
     $email = 'captcha' . rand(0, 100000) . '@example.com';
 
-    foreach ([null, $this->makeStamp(1), $this->makeStamp(30) . 'x', 'not-a-stamp'] as $stamp) {
+    foreach ([null, 'fresh', $this->makeStamp(30) . 'x', 'not-a-stamp'] as $stamp) {
+      // Build the fresh stamp right before its request. Built up front, it could
+      // pass the minimum form time while the earlier requests run.
+      if ($stamp === 'fresh') {
+        $stamp = $this->makeStamp(0);
+      }
       $submission = $this->getCaptchaSubmission($form, $segment, $email, []);
       if ($stamp !== null) {
         $submission['form_stamp'] = $stamp;
