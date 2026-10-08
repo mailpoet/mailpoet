@@ -157,11 +157,11 @@ class CaptchaFormRenderer {
     // The form fields come only from the server-side stash. Request data is never rendered.
     $stash = $this->captchaSession->getFormData($sessionId);
     if (!is_array($stash) || ($stash['referrer_form'] ?? null) !== $referrer) {
-      return false;
+      return $this->renderBackLink($referrer, __('This CAPTCHA page has expired. Go back to the registration form to try again.', 'mailpoet'), null);
     }
 
     if (!empty($stash['rendered'])) {
-      return $this->renderUsedMessage($referrer, $stash);
+      return $this->renderBackLink($referrer, __('This CAPTCHA page has already been used. Go back to the registration form to try again.', 'mailpoet'), $stash['action_url'] ?? null);
     }
 
     $actionUrl = $this->getRegisterFormActionUrl($referrer, $stash['referrer_form_url'] ?? null);
@@ -195,9 +195,11 @@ class CaptchaFormRenderer {
     return $html;
   }
 
-  private function renderUsedMessage(string $referrer, array $stash): string {
-    $actionUrl = $this->getRegisterFormActionUrl($referrer, $stash['action_url'] ?? null);
-    $message = __('This CAPTCHA page has already been used. Go back to the registration form to try again.', 'mailpoet');
+  /**
+   * @param mixed $candidateUrl
+   */
+  private function renderBackLink(string $referrer, string $message, $candidateUrl): string {
+    $actionUrl = $this->getRegisterFormActionUrl($referrer, $candidateUrl);
     return '<p><a href="' . $this->wp->escUrl($actionUrl) . '">' . $this->wp->escHtml($message) . '</a></p>';
   }
 

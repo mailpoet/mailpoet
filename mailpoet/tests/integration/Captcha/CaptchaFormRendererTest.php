@@ -602,9 +602,11 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $this->assertStringNotContainsString('elsewhere.example', $result);
   }
 
-  public function testItDoesNotRenderStashedFieldsForAnotherReferrer(): void {
+  public function testItShowsTheExpiredMessageForAnotherReferrerStash(): void {
+    $expected = $this->getWcFallbackUrl();
     $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WP_FORM, [
-      'referrer_form_url' => '/wp-login.php?action=register',
+      'referrer_form_url' => home_url('/custom-register/'),
+      'action_url' => home_url('/custom-register/'),
       'wp-submit' => 'Register',
       'user_login' => 'stashed_login',
     ]);
@@ -612,12 +614,48 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
       'captcha_session_id' => $sessionId,
       'referrer_form' => CaptchaUrlFactory::REFERER_WC_FORM,
+      'referrer_form_url' => 'https://elsewhere.example/',
     ]);
 
-    $this->assertFalse($result);
+    $this->assertIsString($result);
+    $this->assertStringContainsString('This CAPTCHA page has expired.', $result);
+    $this->assertStringContainsString('href="' . esc_url($expected) . '"', $result);
+    $this->assertStringNotContainsString('custom-register', $result);
+    $this->assertStringNotContainsString('elsewhere.example', $result);
+    $this->assertStringNotContainsString('stashed_login', $result);
   }
 
-  public function testItDoesNotRenderRegisterFormForMissingStash(): void {
+  public function testItShowsTheExpiredMessageWithTheRegistrationUrlForAnUnknownSession(): void {
+    $session = $this->diContainer->get(CaptchaSession::class);
+    $sessionId = $session->generateSessionId();
+
+    $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+      'referrer_form_url' => 'https://elsewhere.example/',
+    ]);
+
+    $this->assertIsString($result);
+    $this->assertStringContainsString('This CAPTCHA page has expired. Go back to the registration form to try again.', $result);
+    $this->assertStringContainsString('href="' . esc_url(wp_registration_url()) . '"', $result);
+    $this->assertStringNotContainsString('elsewhere.example', $result);
+  }
+
+  public function testItShowsTheExpiredMessageWithTheMyAccountUrlForAnUnknownWooCommerceSession(): void {
+    $expected = $this->getWcFallbackUrl();
+    $session = $this->diContainer->get(CaptchaSession::class);
+
+    $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'captcha_session_id' => $session->generateSessionId(),
+      'referrer_form' => CaptchaUrlFactory::REFERER_WC_FORM,
+    ]);
+
+    $this->assertIsString($result);
+    $this->assertStringContainsString('This CAPTCHA page has expired.', $result);
+    $this->assertStringContainsString('href="' . esc_url($expected) . '"', $result);
+  }
+
+  public function testItShowsTheExpiredMessageWhenTheSessionHoldsSubscriptionFormData(): void {
     $session = $this->diContainer->get(CaptchaSession::class);
     $sessionId = $session->generateSessionId();
     $this->createdSessionIds[] = $sessionId;
@@ -628,7 +666,20 @@ class CaptchaFormRendererTest extends \MailPoetTest {
       'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
     ]);
 
-    $this->assertFalse($result);
+    $this->assertIsString($result);
+    $this->assertStringContainsString('This CAPTCHA page has expired.', $result);
+    $this->assertStringContainsString('href="' . esc_url(wp_registration_url()) . '"', $result);
+  }
+
+  public function testItDoesNotShowTheExpiredMessageWhenRegistrationCaptchaIsOff(): void {
+    $this->diContainer->get(SettingsController::class)->set(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, false);
+    $session = $this->diContainer->get(CaptchaSession::class);
+    foreach ([CaptchaUrlFactory::REFERER_WP_FORM, CaptchaUrlFactory::REFERER_WC_FORM] as $referrer) {
+      $this->assertFalse($this->diContainer->get(CaptchaFormRenderer::class)->render([
+        'captcha_session_id' => $session->generateSessionId(),
+        'referrer_form' => $referrer,
+      ]));
+    }
   }
 
   public function testItReturnsTheSameRegisterFormWhenRenderedTwiceInOneRequest(): void {
@@ -703,8 +754,11 @@ class CaptchaFormRendererTest extends \MailPoetTest {
         'wp-submit' => 'Register',
         'register' => 'Register',
       ]);
-      $this->assertFalse($result);
+      $this->assertIsString($result);
+      $this->assertStringContainsString('This CAPTCHA page has expired.', $result);
+      $this->assertStringNotContainsString('<form', $result);
       $this->assertFalse(get_transient('MAILPOET_' . self::SESSION_ID . '_hash'));
+      $this->assertFalse(get_transient('MAILPOET_' . self::SESSION_ID . '_form'));
     }
   }
 
@@ -736,7 +790,9 @@ class CaptchaFormRendererTest extends \MailPoetTest {
       'referrer_form_url' => 'https://example.com',
       'wp-submit' => 'Register',
     ]);
-    $this->assertFalse($result);
+    $this->assertIsString($result);
+    $this->assertStringContainsString('This CAPTCHA page has expired.', $result);
+    $this->assertStringNotContainsString('<form', $result);
     $this->assertFalse(get_transient('MAILPOET_test-session_hash'));
   }
 
