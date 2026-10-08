@@ -3,7 +3,6 @@
 namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
-use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Captcha\CaptchaHooks;
 use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Captcha\CaptchaSessionLimitException;
@@ -39,7 +38,7 @@ class Captcha extends APIEndpoint {
     $referrer = $data['referrer_form'] ?? null;
     $isRegisterForm = in_array($referrer, [CaptchaUrlFactory::REFERER_WP_FORM, CaptchaUrlFactory::REFERER_WC_FORM], true);
     if (!$isRegisterForm || !$this->captchaHooks->isEnabled()) {
-      return $this->badRequest();
+      return $this->redirectResponse($this->urlFactory->getRegistrationUrl(is_string($referrer) ? $referrer : ''));
     }
 
     // The form fields stay on the server and are shown once on the CAPTCHA page.
@@ -47,13 +46,13 @@ class Captcha extends APIEndpoint {
     $stash = array_filter($data, 'is_scalar');
     unset($stash['captcha_session_id'], $stash['rendered'], $stash['action_url']);
     if (strlen(serialize($stash)) > self::MAX_STASH_SIZE) {
-      return $this->badRequest();
+      return $this->redirectToCaptchaPageWithError($referrer, CaptchaUrlFactory::ERROR_INVALID);
     }
 
     try {
       $this->captchaSession->registerNewSession();
     } catch (CaptchaSessionLimitException $e) {
-      return $this->badRequest([APIError::BAD_REQUEST => $e->getMessage()]);
+      return $this->redirectToCaptchaPageWithError($referrer, CaptchaUrlFactory::ERROR_LIMIT);
     }
     $sessionId = $this->captchaSession->generateSessionId();
     $this->captchaSession->setFormData($sessionId, $stash);
@@ -64,6 +63,15 @@ class Captcha extends APIEndpoint {
     ]);
     $this->allowCaptchaPageHost($captchaUrl);
 
+    return $this->redirectResponse($captchaUrl);
+  }
+
+  private function redirectToCaptchaPageWithError(string $referrer, string $error) {
+    $captchaUrl = $this->urlFactory->getCaptchaUrl([
+      'referrer_form' => $referrer,
+      'error' => $error,
+    ]);
+    $this->allowCaptchaPageHost($captchaUrl);
     return $this->redirectResponse($captchaUrl);
   }
 
