@@ -372,12 +372,18 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $this->assertSame(esc_url(wp_registration_url()), $action);
   }
 
+  /**
+   * @group woo
+   */
   public function testItUsesTheMyAccountUrlWhenTheWooCommerceReferrerUrlIsOffSite(): void {
     $expected = $this->getWcFallbackUrl();
     $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WC_FORM, 'https://other-site.example/my-account/');
     $this->assertSame(esc_url($expected), $action);
   }
 
+  /**
+   * @group woo
+   */
   public function testItUsesTheMyAccountUrlWhenTheWooCommerceReferrerUrlIsProtocolRelative(): void {
     $expected = $this->getWcFallbackUrl();
     $action = $this->renderRegisterFormAction(CaptchaUrlFactory::REFERER_WC_FORM, '//other-site.example/my-account/');
