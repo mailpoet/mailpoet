@@ -2,6 +2,7 @@
 
 namespace MailPoet\Captcha;
 
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
@@ -20,10 +21,14 @@ class CaptchaSession {
 
   private WPFunctions $wp;
 
+  private LoggerFactory $loggerFactory;
+
   public function __construct(
-    WPFunctions $wp
+    WPFunctions $wp,
+    ?LoggerFactory $loggerFactory = null
   ) {
     $this->wp = $wp;
+    $this->loggerFactory = $loggerFactory ?? LoggerFactory::getInstance();
   }
 
   public function generateSessionId(): string {
@@ -148,6 +153,13 @@ class CaptchaSession {
       $window = ['count' => 0, 'expires' => $now + self::NEW_SESSION_WINDOW];
     }
     if ($window['count'] >= $limit) {
+      if (empty($window['limit_logged'])) {
+        $window['limit_logged'] = true;
+        $this->wp->setTransient($key, $window, max(1, $window['expires'] - $now));
+        $this->loggerFactory->getLogger(LoggerFactory::TOPIC_CAPTCHA)->error(
+          'The CAPTCHA session limit was reached for a source. Sites behind a proxy can raise it with the mailpoet_captcha_session_limit filter.'
+        );
+      }
       throw new CaptchaSessionLimitException();
     }
     $window['count']++;
