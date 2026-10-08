@@ -313,16 +313,16 @@ class SubscriberSubscribeController {
     $type = $captchaSettings['type'] ?? null;
 
     if ($type === CaptchaConstants::TYPE_BUILTIN) {
-      // Only sessions created by the server are accepted. Anything else starts a new one.
+      // Only sessions created by the server are accepted. Anything else is dropped, and the
+      // session (with its form stash) is created only once a challenge is shown.
       $sessionId = $data['captcha_session_id'] ?? null;
       if (!is_string($sessionId) || !$this->captchaSession->exists($sessionId)) {
-        $sessionId = $this->captchaSession->generateSessionId();
-        $data['captcha_session_id'] = $sessionId;
-        unset($data['captcha']);
+        unset($data['captcha_session_id'], $data['captcha']);
+        return $data;
       }
 
       if (!isset($data['captcha'])) {
-        // Save form data to session
+        // Save form data to the session
         $this->captchaSession->setSubscriptionFormData($sessionId, array_merge($data, ['form_id' => $form->getId()]));
       } elseif ($this->captchaSession->getFormData($sessionId)) {
         // Restore form data from session, but keep the current request's captcha
