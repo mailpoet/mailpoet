@@ -36,7 +36,9 @@ class CaptchaRendererTest extends \MailPoetTest {
     verify(substr($audio, 0, 4))->equals('RIFF');
     verify(substr($audio, 8, 4))->equals('WAVE');
     verify(strlen($audio))->greaterThan(44);
-    verify(in_array('Content-Type: audio/wav', xdebug_get_headers(), true))->true();
+    if (function_exists('xdebug_get_headers')) {
+      verify(in_array('Content-Type: audio/wav', xdebug_get_headers(), true))->true();
+    }
   }
 
   public function testItRendersTheSameAudioForTheSamePhrase(): void {
