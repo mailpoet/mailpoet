@@ -11,6 +11,7 @@ use MailPoet\Captcha\CaptchaUrlFactory;
 use MailPoet\Config\Populator;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WooCommerce\Helper as WooHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CaptchaTest extends \MailPoetTest {
@@ -98,21 +99,40 @@ class CaptchaTest extends \MailPoetTest {
     verify(is_array($stash) && !array_key_exists('nested', $stash))->true();
   }
 
-  public function testItRejectsTheRequestWhenRegisterFormCaptchaIsOff(): void {
+  public function testItRedirectsToTheRegistrationUrlWhenRegisterFormCaptchaIsOff(): void {
     $this->settings->set(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, false);
 
     $response = $this->createCaptchaEndpoint()->render($this->getRegisterFormData());
 
-    verify($response->status)->equals(Response::STATUS_BAD_REQUEST);
+    verify($response->status)->equals(Response::REDIRECT);
+    verify($response->location)->equals(wp_registration_url());
+    $this->assertNoFormValues($response->location);
   }
 
-  public function testItRejectsAnUnknownReferrer(): void {
+  public function testItRedirectsToTheRegistrationUrlForAnUnknownReferrer(): void {
     $data = $this->getRegisterFormData();
     $data['referrer_form'] = CaptchaUrlFactory::REFERER_MP_FORM;
-    verify($this->createCaptchaEndpoint()->render($data)->status)->equals(Response::STATUS_BAD_REQUEST);
+    $response = $this->createCaptchaEndpoint()->render($data);
+    verify($response->status)->equals(Response::REDIRECT);
+    verify($response->location)->equals(wp_registration_url());
+    $this->assertNoFormValues($response->location);
 
     unset($data['referrer_form']);
-    verify($this->createCaptchaEndpoint()->render($data)->status)->equals(Response::STATUS_BAD_REQUEST);
+    $response = $this->createCaptchaEndpoint()->render($data);
+    verify($response->status)->equals(Response::REDIRECT);
+    verify($response->location)->equals(wp_registration_url());
+  }
+
+  public function testItRedirectsToTheMyAccountUrlWhenTheWooCommerceCaptchaIsOff(): void {
+    $this->settings->set(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, false);
+    $data = $this->getRegisterFormData();
+    $data['referrer_form'] = CaptchaUrlFactory::REFERER_WC_FORM;
+
+    $response = $this->createCaptchaEndpoint()->render($data);
+
+    $expected = $this->diContainer->get(WooHelper::class)->wcGetPagePermalink('myaccount') ?: home_url();
+    verify($response->status)->equals(Response::REDIRECT);
+    verify($response->location)->equals($expected);
   }
 
   public function testItAcceptsTheWooCommerceReferrer(): void {
@@ -125,13 +145,13 @@ class CaptchaTest extends \MailPoetTest {
     verify($this->decodeLocationData($response->location)['referrer_form'])->equals(CaptchaUrlFactory::REFERER_WC_FORM);
   }
 
-  public function testItRejectsAnOversizedForm(): void {
+  public function testItRedirectsToTheCaptchaPageWithAnErrorForAnOversizedForm(): void {
     $data = $this->getRegisterFormData();
     $data['user_login'] = str_repeat('a', 9000);
 
     $response = $this->createCaptchaEndpoint()->render($data);
 
-    verify($response->status)->equals(Response::STATUS_BAD_REQUEST);
+    $this->assertErrorRedirect($response, CaptchaUrlFactory::REFERER_WP_FORM, CaptchaUrlFactory::ERROR_INVALID);
   }
 
   public function testItAcceptsAFormJustUnderTheSizeCap(): void {
@@ -143,7 +163,7 @@ class CaptchaTest extends \MailPoetTest {
     verify($response->status)->equals(Response::REDIRECT);
   }
 
-  public function testItReportsAnErrorWhenTheSessionBudgetIsUsedUp(): void {
+  public function testItRedirectsToTheCaptchaPageWithAnErrorWhenTheSessionBudgetIsUsedUp(): void {
     $wp = $this->diContainer->get(WPFunctions::class);
     $noBudget = function () {
       return 0;
@@ -151,13 +171,30 @@ class CaptchaTest extends \MailPoetTest {
     $wp->addFilter('mailpoet_captcha_session_limit', $noBudget);
     $_SERVER['REMOTE_ADDR'] = '203.0.113.7';
     try {
+      $wcData = $this->getRegisterFormData();
+      $wcData['referrer_form'] = CaptchaUrlFactory::REFERER_WC_FORM;
       $response = $this->createCaptchaEndpoint()->render($this->getRegisterFormData());
+      $wcResponse = $this->createCaptchaEndpoint()->render($wcData);
     } finally {
       $wp->removeFilter('mailpoet_captcha_session_limit', $noBudget);
       unset($_SERVER['REMOTE_ADDR']);
     }
 
-    verify($response->status)->equals(Response::STATUS_BAD_REQUEST);
+    $this->assertErrorRedirect($response, CaptchaUrlFactory::REFERER_WP_FORM, CaptchaUrlFactory::ERROR_LIMIT);
+    $this->assertErrorRedirect($wcResponse, CaptchaUrlFactory::REFERER_WC_FORM, CaptchaUrlFactory::ERROR_LIMIT);
+  }
+
+  private function assertErrorRedirect($response, string $referrer, string $code): void {
+    verify($response->status)->equals(Response::REDIRECT);
+    verify($response->location)->stringContainsString('mailpoet_router&endpoint=captcha&action=render&data=');
+    verify($this->decodeLocationData($response->location))->equals(['referrer_form' => $referrer, 'error' => $code]);
+    $this->assertNoFormValues($response->location);
+  }
+
+  private function assertNoFormValues(string $location): void {
+    verify($location)->stringNotContainsString('jane@example.com');
+    verify($location)->stringNotContainsString('jane_doe');
+    verify($location)->stringNotContainsString('captcha_session_id');
   }
 
   private function getRegisterFormData(): array {

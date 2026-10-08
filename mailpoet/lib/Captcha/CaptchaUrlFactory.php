@@ -6,22 +6,36 @@ use MailPoet\Router\Endpoints\Captcha as CaptchaEndpoint;
 use MailPoet\Router\Router;
 use MailPoet\Settings\MailPoetPageResolver;
 use MailPoet\Settings\Pages;
+use MailPoet\WooCommerce\Helper as WooHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CaptchaUrlFactory {
   private WPFunctions $wp;
   private MailPoetPageResolver $pageResolver;
+  private WooHelper $wooHelper;
 
   const REFERER_MP_FORM = 'mp_form';
   const REFERER_WP_FORM = 'wp_register_form';
   const REFERER_WC_FORM = 'wc_register_form';
 
+  const ERROR_LIMIT = 'limit';
+  const ERROR_INVALID = 'invalid';
+
   public function __construct(
     WPFunctions $wp,
-    MailPoetPageResolver $pageResolver
+    MailPoetPageResolver $pageResolver,
+    WooHelper $wooHelper
   ) {
     $this->wp = $wp;
     $this->pageResolver = $pageResolver;
+    $this->wooHelper = $wooHelper;
+  }
+
+  public function getRegistrationUrl(string $referrer): string {
+    if ($referrer === self::REFERER_WC_FORM) {
+      return $this->wooHelper->wcGetPagePermalink('myaccount') ?: $this->wp->homeUrl();
+    }
+    return (string)$this->wp->wpRegistrationUrl();
   }
 
   public function getCaptchaUrl(array $data) {

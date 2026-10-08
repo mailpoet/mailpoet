@@ -8,7 +8,6 @@ use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Util\Styles;
 use MailPoet\Util\Url as UrlHelper;
-use MailPoet\WooCommerce\Helper as WooHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CaptchaFormRenderer {
@@ -36,9 +35,6 @@ class CaptchaFormRenderer {
   /** @var CaptchaHooks */
   private $captchaHooks;
 
-  /** @var WooHelper */
-  private $wooHelper;
-
   private $wp;
 
   /** @var array<string, string> */
@@ -53,7 +49,6 @@ class CaptchaFormRenderer {
     FormRenderer $formRenderer,
     Styles $styles,
     CaptchaHooks $captchaHooks,
-    WooHelper $wooHelper,
     WPFunctions $wp
   ) {
     $this->urlHelper = $urlHelper;
@@ -64,7 +59,6 @@ class CaptchaFormRenderer {
     $this->formsRepository = $formsRepository;
     $this->styles = $styles;
     $this->captchaHooks = $captchaHooks;
-    $this->wooHelper = $wooHelper;
     $this->wp = $wp;
   }
 
@@ -73,11 +67,11 @@ class CaptchaFormRenderer {
       ? $data['captcha_session_id']
       : null;
 
+    $ref = $data['referrer_form'] ?? null;
     if (!$sessionId) {
-      return false;
+      return $this->renderRegisterError($data, $ref);
     }
 
-    $ref = $data['referrer_form'] ?? null;
     if ($ref === CaptchaUrlFactory::REFERER_MP_FORM) {
       return $this->renderFormInSubscriptionForm($sessionId);
     }
@@ -93,6 +87,23 @@ class CaptchaFormRenderer {
     }
 
     return false;
+  }
+
+  /**
+   * Only the referrer type and a known error code choose what is shown. No other request value is rendered.
+   *
+   * @param mixed $referrer
+   */
+  private function renderRegisterError(array $data, $referrer) {
+    $isRegisterForm = in_array($referrer, [CaptchaUrlFactory::REFERER_WP_FORM, CaptchaUrlFactory::REFERER_WC_FORM], true);
+    if (!$isRegisterForm || !isset($data['error']) || !$this->captchaHooks->isEnabled()) {
+      return false;
+    }
+
+    $message = $data['error'] === CaptchaUrlFactory::ERROR_LIMIT
+      ? (new CaptchaSessionLimitException())->getMessage()
+      : __('Please go back to the registration form and try again.', 'mailpoet');
+    return $this->renderBackLink($referrer, $message, null);
   }
 
   private function renderFormInSubscriptionForm($sessionId) {
@@ -220,10 +231,7 @@ class CaptchaFormRenderer {
       }
     }
 
-    if ($referrer === CaptchaUrlFactory::REFERER_WP_FORM) {
-      return (string)$this->wp->wpRegistrationUrl();
-    }
-    return $this->wooHelper->wcGetPagePermalink('myaccount') ?: $this->wp->homeUrl();
+    return $this->captchaUrlFactory->getRegistrationUrl($referrer);
   }
 
   /**

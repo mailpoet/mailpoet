@@ -740,6 +740,91 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $this->assertStringNotContainsString('<form', $result);
   }
 
+  public function testItShowsTheLimitMessageWithTheRegistrationUrlOnTheErrorPage(): void {
+    $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+      'error' => CaptchaUrlFactory::ERROR_LIMIT,
+    ]);
+
+    $this->assertIsString($result);
+    $this->assertStringContainsString('Too many CAPTCHA requests from your network.', $result);
+    $this->assertStringContainsString('href="' . esc_url(wp_registration_url()) . '"', $result);
+    $this->assertStringNotContainsString('<form', $result);
+  }
+
+  public function testItShowsTheLimitMessageWithTheMyAccountUrlOnTheErrorPage(): void {
+    $expected = $this->getWcFallbackUrl();
+
+    $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'referrer_form' => CaptchaUrlFactory::REFERER_WC_FORM,
+      'error' => CaptchaUrlFactory::ERROR_LIMIT,
+    ]);
+
+    $this->assertIsString($result);
+    $this->assertStringContainsString('Too many CAPTCHA requests from your network.', $result);
+    $this->assertStringContainsString('href="' . esc_url($expected) . '"', $result);
+  }
+
+  public function testItShowsTheGeneralMessageForTheInvalidAndUnknownErrorCodes(): void {
+    foreach ([CaptchaUrlFactory::ERROR_INVALID, 'something-else', ['limit']] as $code) {
+      $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+        'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+        'error' => $code,
+        'referrer_form_url' => 'https://elsewhere.example/',
+      ]);
+
+      $this->assertIsString($result);
+      $this->assertStringContainsString('Please go back to the registration form and try again.', $result);
+      $this->assertStringNotContainsString('Too many CAPTCHA', $result);
+      $this->assertStringNotContainsString('elsewhere.example', $result);
+      $this->assertStringContainsString('href="' . esc_url(wp_registration_url()) . '"', $result);
+    }
+  }
+
+  public function testItNeverShowsARequestSuppliedErrorMessage(): void {
+    $result = $this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+      'error' => 'Your account was locked, call 555-0100',
+      'message' => 'Injected message',
+    ]);
+
+    $this->assertIsString($result);
+    $this->assertStringNotContainsString('555-0100', $result);
+    $this->assertStringNotContainsString('Injected message', $result);
+  }
+
+  public function testItDoesNotShowTheErrorPageForOtherReferrersOrWhenRegistrationCaptchaIsOff(): void {
+    $this->assertFalse($this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'referrer_form' => CaptchaUrlFactory::REFERER_MP_FORM,
+      'error' => CaptchaUrlFactory::ERROR_LIMIT,
+    ]));
+
+    $this->diContainer->get(SettingsController::class)->set(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, false);
+    $this->assertFalse($this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+      'error' => CaptchaUrlFactory::ERROR_LIMIT,
+    ]));
+  }
+
+  public function testTheErrorPageCreatesNoSessionOrTransient(): void {
+    $_SERVER['REMOTE_ADDR'] = '203.0.113.10';
+    $this->deleteBudgetTransients();
+    $before = $this->countCaptchaTransients();
+
+    $this->diContainer->get(CaptchaFormRenderer::class)->render([
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+      'error' => CaptchaUrlFactory::ERROR_LIMIT,
+    ]);
+
+    $this->assertSame($before, $this->countCaptchaTransients());
+    $this->assertSame(0, $this->countBudgetTransients());
+  }
+
+  private function countCaptchaTransients(): int {
+    global $wpdb;
+    return (int)$wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_MAILPOET\\_%'");
+  }
+
   public function testItDoesNotRenderOrCreateStateForUnknownSession(): void {
     $testee = $this->diContainer->get(CaptchaFormRenderer::class);
     $referrers = [
