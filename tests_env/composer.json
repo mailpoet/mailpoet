@@ -1,5 +1,6 @@
 {
   "minimum-stability": "dev",
+  "prefer-stable": true,
   "require-dev": {
     "codeception/codeception": "4.2.2",
     "codeception/module-asserts": "^1.3",
