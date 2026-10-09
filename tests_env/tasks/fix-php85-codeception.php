@@ -9,7 +9,8 @@ set_error_handler(function ($severity, $message, $file, $line) {
 // - the backtick operator and the (boolean) cast are deprecated at compile time
 // - ${var} string interpolation and "default;" in a switch are deprecated at compile time
 // - ReflectionProperty/ReflectionMethod::setAccessible() is deprecated (no-op since PHP 8.1)
-// Every patch fails loudly when its target is missing, so a vendor update can't silently drop it.
+// - the $http_response_header variable is deprecated at compile time
+// Every patch fails loudly when its target is missing, so a vendor update can’t silently drop it.
 
 function fixPhp85Fail(string $file, string $message): void {
   fwrite(STDERR, "fix-php85-codeception: $file: $message\n");
@@ -45,14 +46,33 @@ $replacements = [
     'find' => "\tdefault;\n\tcase 'drop':",
     'replace' => "\tdefault:\n\tcase 'drop':",
   ],
+  [
+    'file' => __DIR__ . '/../vendor/codeception/codeception/src/Codeception/Coverage/Subscriber/LocalServer.php',
+    'find' => "false, \$context);\n\n        \$okHeaders = array_filter(\n            \$http_response_header,",
+    // get_defined_vars() avoids naming the deprecated variable, which PHP 8.5 flags at compile time
+    'replace' => "false, \$context);\n        \$responseHeaders = function_exists('http_get_last_response_headers')\n            ? http_get_last_response_headers()\n            : get_defined_vars()['http_response_header'];\n\n        \$okHeaders = array_filter(\n            \$responseHeaders,",
+  ],
+  [
+    'file' => __DIR__ . '/../vendor/codeception/codeception/src/Codeception/Coverage/Subscriber/LocalServer.php',
+    'find' => '. $http_response_header[0]',
+    'replace' => '. $responseHeaders[0]',
+  ],
+  [
+    'file' => __DIR__ . '/../vendor/codeception/codeception/src/Codeception/Coverage/Subscriber/LocalServer.php',
+    'find' => 'getRemoteError($http_response_header)',
+    'replace' => 'getRemoteError($responseHeaders)',
+  ],
 ];
 
 foreach ($replacements as $replacement) {
   $file = $replacement['file'];
   $data = fixPhp85Read($file);
+  if (strpos($data, $replacement['replace']) !== false) {
+    continue;
+  }
   if (strpos($data, $replacement['find']) !== false) {
     file_put_contents($file, str_replace($replacement['find'], $replacement['replace'], $data));
-  } elseif (strpos($data, $replacement['replace']) === false) {
+  } else {
     fixPhp85Fail($file, 'snippet to patch not found: ' . $replacement['find']);
   }
 }
