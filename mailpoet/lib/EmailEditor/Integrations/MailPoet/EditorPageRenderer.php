@@ -197,7 +197,7 @@ class EditorPageRenderer {
       ]
     );
 
-    $installedAtDiff = (new \DateTime($this->mailpoetSettings->get('installed_at')))->diff(new \DateTime());
+    $installedAtDiff = (new \DateTime((string)$this->mailpoetSettings->get('installed_at')))->diff(new \DateTime());
     // Survey should be displayed only if there are 2 and more emails and the user hasn't seen it yet
     $displaySurvey = ($this->newslettersRepository->getCountOfEmailsWithWPPost() > 1) && !$this->userFlagsController->get(UserFlagsController::EMAIL_EDITOR_SURVEY);
 
