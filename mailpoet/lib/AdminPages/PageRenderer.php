@@ -138,7 +138,7 @@ class PageRenderer {
     $wpSegment = $this->segmentRepository->getWPUsersSegment();
     $wpSegmentState = ($wpSegment instanceof SegmentEntity) && $wpSegment->getDeletedAt() === null ?
       SegmentEntity::SEGMENT_ENABLED : SegmentEntity::SEGMENT_DISABLED;
-    $installedAtDiff = (new \DateTime($this->settings->get('installed_at')))->diff(new \DateTime());
+    $installedAtDiff = (new \DateTime((string)$this->settings->get('installed_at')))->diff(new \DateTime());
     $subscriberCount = $this->subscribersFeature->getSubscribersCount();
     $subscribersCacheCreatedAt = Carbon::now();
     if ($this->subscribersFeature->isSubscribersCountEnoughForCache($subscriberCount)) {
