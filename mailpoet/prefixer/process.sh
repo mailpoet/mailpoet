@@ -3,9 +3,9 @@
 BASEDIR=$(dirname "$0")
 COMPOSER_BIN=$BASEDIR/../tools/vendor/composer.phar
 VENDOR_PREFIXED_DIR=$BASEDIR/../vendor-prefixed
-DRY_RUN_CHECK=$($COMPOSER_BIN install --working-dir=$BASEDIR --dry-run 2>&1 | grep 'Nothing to install or update')
+DRY_RUN_CHECK=$($COMPOSER_BIN install --working-dir=$BASEDIR --dry-run 2>&1 | grep 'Nothing to install')
 
-if [[ $DRY_RUN_CHECK != "Nothing to install or update" ]]; then
+if [[ -z $DRY_RUN_CHECK ]]; then
     rm -rf $BASEDIR/build
 fi
 
