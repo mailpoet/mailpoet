@@ -152,7 +152,7 @@ Useful when:
 
 ### The `--skip-deps` footgun
 
-When invoking `./do test:*` inside the container, **always pass `--skip-deps`**. Without it the prefixer runs again on PHP 8.4 and can wipe `mailpoet/vendor-prefixed/`. Recovery: `pnpm bootstrap`.
+When invoking `./do test:*` inside the container, **always pass `--skip-deps`**. Without it the prefixer runs again on PHP 8.4+ and can wipe `mailpoet/vendor-prefixed/`. Recovery: `pnpm bootstrap`.
 
 This is why the host-side `pnpm test:integration` / `pnpm test:acceptance` (and their `:premium` variants) pass `--skip-deps` automatically. `pnpm test:unit` and `pnpm test:javascript` don't need it — they don't run in Docker. Use `pnpm test:install-deps` only when you actually want to refresh the container's deps (e.g. after a `composer.json` bump).
 
@@ -162,7 +162,7 @@ This is why the host-side `pnpm test:integration` / `pnpm test:acceptance` (and 
 | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | "Cannot connect to the Docker daemon" on a Docker suite | Docker Desktop / OrbStack isn't running. Start it, then re-run.                                                                                                                           |
 | First integration/acceptance run takes minutes to start | First-time container build/pull. Tail the test stack from the repo root: `docker compose -f tests_env/docker/docker-compose.yml logs -f` (not `pnpm env:logs` — that's the wp-env stack). |
-| `vendor-prefixed/` disappeared after a test run         | Ran `./do test:*` without `--skip-deps` on PHP 8.4. Recover with `pnpm bootstrap`.                                                                                                        |
+| `vendor-prefixed/` disappeared after a test run         | Ran `./do test:*` without `--skip-deps` on PHP 8.4+. Recover with `pnpm bootstrap`.                                                                                                       |
 | Acceptance run starts but every test fails at login     | Test WordPress site is in a broken state. `cd mailpoet && ./do reset:test-docker` drops the test volumes (keeps images) and rebuilds.                                                     |
 | Docker is genuinely confused (zombies, weird state)     | `cd mailpoet && ./do delete:docker` does the harder reset: stops containers, drops volumes, **removes images** (next run will re-pull/build, ~1–2min). Does not touch the wp-env stack.   |
 | JS test errors with `X is not a function` for real code | `assets/dist/` is stale. Run `pnpm compile:js` and re-run.                                                                                                                                |
