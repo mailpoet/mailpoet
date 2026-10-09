@@ -42,6 +42,13 @@ class WP {
    */
   private $syncCreatedSubscriber = [];
 
+  /**
+   * Subscriber ids unlinked in this request, keyed by the deleted WP user id.
+   *
+   * @var array<int, int>
+   */
+  private $unlinkedSubscriberIds = [];
+
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
@@ -167,7 +174,7 @@ class WP {
       return;
     }
 
-    $this->entityManager->wrapInTransaction(function() use ($subscriber, $wpUser): void {
+    $this->entityManager->wrapInTransaction(function() use ($subscriber): void {
       $wpSegment = $this->segmentsRepository->getWPUsersSegment();
 
       // Remove only the WP-Users segment membership; other list subscriptions stay intact.
@@ -186,8 +193,9 @@ class WP {
       // they had no list of their own to remain on — trash them instead of leaving a floating row.
       // Skip when the subscriber was already trashed (e.g. manually by an admin) so we keep
       // the original deleted_at and status as audit information.
+      // WC customers are left to WooCommerce::synchronizeDeletedWpUser(), which owns that rule.
       $hasOtherActiveSegments = $this->hasOtherActiveSegments($subscriber);
-      $isWooCustomer = $this->wooHelper->isWooCommerceActive() && in_array('customer', $wpUser->roles, true); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $isWooCustomer = $this->wooHelper->isWooCommerceActive() && $subscriber->getIsWoocommerceUser();
       if (!$hasOtherActiveSegments && !$isWooCustomer && $subscriber->getDeletedAt() === null) {
         $subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
         $subscriber->setDeletedAt(Carbon::now()->millisecond(0));
@@ -196,7 +204,12 @@ class WP {
       $this->subscribersRepository->persist($subscriber);
       $this->subscribersRepository->flush();
     });
+    $this->unlinkedSubscriberIds[(int)$wpUser->ID] = (int)$subscriber->getId(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $this->segmentsCountRecalculator->recalculateForSubscribers([(int)$subscriber->getId()]);
+  }
+
+  public function getSubscriberIdUnlinkedFromWpUser(int $wpUserId): ?int {
+    return $this->unlinkedSubscriberIds[$wpUserId] ?? null;
   }
 
   private function hasOtherActiveSegments(SubscriberEntity $subscriber): bool {
