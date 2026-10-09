@@ -4,7 +4,7 @@ export const customFieldDeleteStart = (state) => {
   );
   return {
     ...state,
-    ...notices,
+    notices,
     isCustomFieldDeleting: true,
   };
 };
@@ -21,7 +21,7 @@ export const customFieldDeleteFailed = (state, action) => {
   });
   return {
     ...state,
-    isCustomFieldSaving: false,
+    isCustomFieldDeleting: false,
     notices,
   };
 };
