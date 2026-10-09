@@ -39,7 +39,16 @@ class CleanupExtension extends Extension {
 
   public function backupDatabase(SuiteEvent $event) {
     exec($this->createMysqlDumpCommand());
-    $sql = file_get_contents(self::DB_BACKUP_PATH);
+    $dump = file_get_contents(self::DB_BACKUP_PATH);
+    if (!is_string($dump)) {
+      throw new \RuntimeException('Failed to read DB backup: ' . self::DB_BACKUP_PATH);
+    }
+
+    // MariaDB 11.8 mysqldump adds MariaDB-only conditional comments; MySQL runs them as an empty
+    // statement, which multi_query() rejects with a syntax error and leaves the restore half-applied.
+    $sql = implode("\n", array_filter(explode("\n", $dump), function ($line) {
+      return strpos($line, '/*M!') !== 0;
+    }));
 
     // wrap dump with SQL preserving user session ($I->login() reuses session snapshot for performance)
     $sql = "
@@ -167,7 +176,7 @@ class CleanupExtension extends Extension {
 
   private function createMysqlDumpCommand() {
     return sprintf(
-      'mysqldump --host=%s --user=%s --password=%s %s > %s',
+      'mysqldump --skip-ssl --skip-no-autocommit --host=%s --user=%s --password=%s %s > %s',
       escapeshellarg(self::DB_HOST),
       escapeshellarg(self::DB_USERNAME),
       escapeshellarg(self::DB_PASSWORD),
