@@ -60,6 +60,13 @@ function SubscribersCounter(): JSX.Element {
       },
       (errorResponse) => {
         isRequestInFlight.current = false;
+        if (deferredRequestRef.current) {
+          load(deferredRequestRef.current);
+          return;
+        }
+        if (requestId !== latestRequestIdRef.current) {
+          return;
+        }
         const finished = {} as SubscriberCount;
         const errors = errorResponse.errors.map((error) => error.message);
         finished.loading = false;
