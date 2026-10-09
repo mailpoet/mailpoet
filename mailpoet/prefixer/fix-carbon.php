@@ -57,6 +57,17 @@ $replacements = [
       '#[\ReturnTypeWillChange]' . PHP_EOL . 'public static function createFromTimestamp($timestamp, $tz = null)',
     ],
   ],
+  [
+    // setAccessible() is deprecated in PHP 8.5 and has no effect since PHP 8.1
+    // The spaces in the brackets prevent re-wrapping when the script runs repeatedly
+    'file' => '../vendor-prefixed/nesbot/carbon/src/Carbon/Traits/Mixin.php',
+    'find' => [
+      '$method->setAccessible(\true);',
+    ],
+    'replace' => [
+      'if (PHP_VERSION_ID < 80100) { $method->setAccessible( \true ); }',
+    ],
+  ],
 ];
 
 foreach ($replacements as $singleFile) {
