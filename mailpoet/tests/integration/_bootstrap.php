@@ -23,7 +23,15 @@ if ((bool)getenv('MULTISITE') === true) {
 } else {
   $wpLoadFile = getenv('WP_ROOT') . '/wp-load.php';
 }
+// Loading plugins can print PHP deprecations (e.g. compile-time ones from third-party plugins on new PHP versions).
+// Sending them to stderr keeps them visible without flushing output, which would make header() calls in tests no-ops.
+ob_start();
 require_once($wpLoadFile);
+$wpLoadOutput = (string)ob_get_clean();
+if ($wpLoadOutput !== '') {
+  fwrite(STDERR, $wpLoadOutput);
+}
+unset($wpLoadOutput);
 
 /**
  * Setting env from .evn file
