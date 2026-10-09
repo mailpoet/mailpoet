@@ -16,7 +16,7 @@ class Url {
 
   public function getCurrentUrl() {
     $homeUrl = parse_url($this->wp->homeUrl());
-    $queryArgs = $this->wp->addQueryArg(null, null);
+    $queryArgs = $this->wp->addQueryArg([]);
 
     // Remove $this->wp->homeUrl() path from add_query_arg
     if (
