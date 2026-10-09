@@ -47,6 +47,17 @@ $replacements = [
     /**",
     ],
   ],
+  // PHP 8.5: "Using null as an array offset". Fixed upstream in php-cli-tools 0.12.6:
+  // https://github.com/wp-cli/php-cli-tools/pull/188
+  [
+    'file' => __DIR__ . '/../vendor/wp-cli/php-cli-tools/lib/cli/Colors.php',
+    'find' => [
+      'if (isset(self::$_colors[$type][$code])) {',
+    ],
+    'replace' => [
+      'if (isset($code) && isset(self::$_colors[$type][$code])) {',
+    ],
+  ],
 ];
 
 // Apply replacements
