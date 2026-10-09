@@ -230,7 +230,9 @@ PHP;
   private function fixImplicitlyNullableParameters(string $content): string {
     $reflection = new ReflectionClass($this->fixer);
     $method = $reflection->getMethod('fixImplicitlyNullableParameters');
-    $method->setAccessible(true);
+    if (PHP_VERSION_ID < 80100) {
+      $method->setAccessible(true);
+    }
     $value = $method->invoke($this->fixer, $content);
     return is_string($value) ? $value : '';
   }

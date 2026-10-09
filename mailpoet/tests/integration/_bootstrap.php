@@ -145,7 +145,9 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
   public function invokeMethod(&$object, $methodName, array $parameters = []) {
     $reflection = new \ReflectionClass(get_class($object));
     $method = $reflection->getMethod($methodName);
-    $method->setAccessible(true);
+    if (PHP_VERSION_ID < 80100) {
+      $method->setAccessible(true);
+    }
 
     return $method->invokeArgs($object, $parameters);
   }

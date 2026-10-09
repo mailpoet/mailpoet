@@ -370,7 +370,9 @@ class CouponBlockGenerationTest extends \MailPoetTest {
 
   private function getRegisterBlocksHasRunProperty(): \ReflectionProperty {
     $property = new \ReflectionProperty(WooCommerceBlockTypesController::class, 'register_blocks_has_run');
-    $property->setAccessible(true);
+    if (PHP_VERSION_ID < 80100) {
+      $property->setAccessible(true);
+    }
     return $property;
   }
 

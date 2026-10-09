@@ -99,7 +99,9 @@ class CaptchaAudioBuilderTest extends \MailPoetUnitTest {
   public function testItKeepsSeededRandomValuesInRange(): void {
     $builder = $this->builder();
     $method = new \ReflectionMethod($builder, 'rand');
-    $method->setAccessible(true);
+    if (PHP_VERSION_ID < 80100) {
+      $method->setAccessible(true);
+    }
     $this->callBuild($builder);
     // Every range the builder uses, including the widest noise amplitude.
     foreach ([[-7, 9], [200, 600], [80, 350], [85, 115], [60, 100], [2, 6], [-1966, 1966], [-655, 655], [5, 5]] as [$min, $max]) {
