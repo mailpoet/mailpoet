@@ -757,6 +757,41 @@ class RendererTest extends \MailPoetTest {
     $this->assertStringContainsString('https://example.com?e=1&f=2', $template['html']);
   }
 
+  public function testItRendersAnchorsWithoutHrefWithoutDeprecations() {
+    $body = [
+      'content' => [
+        'type' => 'container',
+        'blocks' => [[
+          'type' => 'container',
+          'styles' => ['block' => []],
+          'blocks' => [[
+            'type' => 'container',
+            'styles' => ['block' => []],
+            'blocks' => [[
+              'type' => 'text',
+              'text' => '<p><a name="anchor">Anchor</a></p>',
+            ]],
+          ]],
+        ]],
+      ],
+    ];
+    $this->newsletter->setBody($body);
+
+    $deprecations = [];
+    set_error_handler(function (int $errno, string $errstr) use (&$deprecations) {
+      $deprecations[] = $errstr;
+      return true;
+    }, E_DEPRECATED);
+    try {
+      $template = $this->renderer->render($this->newsletter);
+    } finally {
+      restore_error_handler();
+    }
+
+    $this->assertSame([], $deprecations);
+    $this->assertStringContainsString('name="anchor"', $template['html']);
+  }
+
   // Test case for MAILPOET-3660
   public function testItRendersPostContentWhenMultipleQuotesInPostTitle() {
     $postTitle = 'This \"is \'a\" test';

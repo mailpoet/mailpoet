@@ -281,6 +281,9 @@ class Renderer {
       $image->src = str_replace(' ', '%20', $image->src);
     }
     foreach ($templateDom->query('a') as $anchor) {
+      if ($anchor->href === null) {
+        continue;
+      }
       // Fix for a TinyMCE bug in smart paste which encodes & as &amp; which is then additionally encoded to &amp;amp;
       // when saving the text block content in the editor
       $href = str_replace('&amp;amp;', '&amp;', $anchor->href);
