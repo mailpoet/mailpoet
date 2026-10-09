@@ -602,6 +602,9 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $this->assertStringNotContainsString('elsewhere.example', $result);
   }
 
+  /**
+   * @group woo
+   */
   public function testItShowsTheExpiredMessageForAnotherReferrerStash(): void {
     $expected = $this->getWcFallbackUrl();
     $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WP_FORM, [
@@ -641,6 +644,9 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $this->assertStringNotContainsString('elsewhere.example', $result);
   }
 
+  /**
+   * @group woo
+   */
   public function testItShowsTheExpiredMessageWithTheMyAccountUrlForAnUnknownWooCommerceSession(): void {
     $expected = $this->getWcFallbackUrl();
     $session = $this->diContainer->get(CaptchaSession::class);
@@ -752,6 +758,9 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $this->assertStringNotContainsString('<form', $result);
   }
 
+  /**
+   * @group woo
+   */
   public function testItShowsTheLimitMessageWithTheMyAccountUrlOnTheErrorPage(): void {
     $expected = $this->getWcFallbackUrl();
 
