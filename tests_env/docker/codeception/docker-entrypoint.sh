@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# Hides only deprecations raised before WordPress loads (the WP-CLI phar bundles react/promise v2).
+# Remove once the image ships a WP-CLI release with PHP 8.5 fixes.
+WP_CLI_BIN="$(type -P wp)"
 wp() {
-  command wp --allow-root "$@"
+  command php -d error_reporting="E_ALL & ~E_DEPRECATED" "$WP_CLI_BIN" --allow-root "$@"
 }
 
 # wait for WordPress container to be ready (otherwise tests may
