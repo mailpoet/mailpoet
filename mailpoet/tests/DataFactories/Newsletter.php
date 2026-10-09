@@ -363,7 +363,7 @@ class Newsletter {
 
   public function withDefaultSegments() {
     $defaultSegment = (new Segment())->withType(SegmentEntity::TYPE_DEFAULT)->create();
-    $this->segments[$defaultSegment->getId()] = $defaultSegment;
+    $this->segments[spl_object_id($defaultSegment)] = $defaultSegment;
     return $this;
   }
 
@@ -373,7 +373,7 @@ class Newsletter {
    */
   public function withSegments(array $segments) {
     foreach ($segments as $segment) {
-      $this->segments[$segment->getId()] = $segment;
+      $this->segments[spl_object_id($segment)] = $segment;
     }
     return $this;
   }
