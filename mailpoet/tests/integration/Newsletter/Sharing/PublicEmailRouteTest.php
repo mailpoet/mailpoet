@@ -124,7 +124,9 @@ class PublicEmailRouteTest extends \MailPoetTest {
   private function invokeGetIdentifier(): string {
     $route = $this->diContainer->get(PublicEmailRoute::class);
     $method = new ReflectionMethod($route, 'getIdentifier');
-    $method->setAccessible(true);
+    if (PHP_VERSION_ID < 80100) {
+      $method->setAccessible(true);
+    }
     $result = $method->invoke($route);
     return is_string($result) ? $result : '';
   }

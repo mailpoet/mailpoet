@@ -84,7 +84,9 @@ class CaptchaFormRendererTest extends \MailPoetTest {
   private function createFreshRenderer(): CaptchaFormRenderer {
     $renderer = clone $this->diContainer->get(CaptchaFormRenderer::class);
     $cache = new \ReflectionProperty(CaptchaFormRenderer::class, 'renderedForms');
-    $cache->setAccessible(true);
+    if (PHP_VERSION_ID < 80100) {
+      $cache->setAccessible(true);
+    }
     $cache->setValue($renderer, []);
     return $renderer;
   }
@@ -525,7 +527,9 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $wp = Stub::make(WPFunctions::class, $wpOverrides);
     $renderer = $this->createFreshRenderer();
     $property = new \ReflectionProperty(CaptchaFormRenderer::class, 'wp');
-    $property->setAccessible(true);
+    if (PHP_VERSION_ID < 80100) {
+      $property->setAccessible(true);
+    }
     $property->setValue($renderer, $wp);
     $sessionId = $this->seedRegisterStash(CaptchaUrlFactory::REFERER_WP_FORM, ['referrer_form_url' => $url, 'wp-submit' => 'Register']);
     $result = $renderer->render(['captcha_session_id' => $sessionId, 'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM]);

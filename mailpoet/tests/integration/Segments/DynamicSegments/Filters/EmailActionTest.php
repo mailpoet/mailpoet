@@ -703,7 +703,9 @@ class EmailActionTest extends \MailPoetTest {
 
   private function resetColumnCheck(FilterHelper $filterHelper): void {
     $property = new \ReflectionProperty(FilterHelper::class, 'hasSentWithTrackingColumn');
-    $property->setAccessible(true);
+    if (PHP_VERSION_ID < 80100) {
+      $property->setAccessible(true);
+    }
     $property->setValue($filterHelper, null);
   }
 
