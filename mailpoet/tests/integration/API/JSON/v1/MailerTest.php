@@ -56,4 +56,24 @@ class MailerTest extends \MailPoetTest {
     $mailerEndpoint = new Mailer($authorizedEmailsController, $settings, $this->diContainer->get(MailerFactory::class), new MetaInfo, $senderDomainController);
     $mailerEndpoint->resumeSending();
   }
+
+  public function testRefreshEndpointFetchesAuthorizedEmailsIgnoringCache() {
+    $authorizedEmailsController = $this->makeEmpty(AuthorizedEmailsController::class, [
+      'getAuthorizedEmailAddressesIgnoringCache' => Expected::once(['a@b.com']),
+      'getAuthorizedEmailAddresses' => Expected::never(),
+    ]);
+    $mailerEndpoint = new Mailer($authorizedEmailsController, SettingsController::getInstance(), $this->diContainer->get(MailerFactory::class), new MetaInfo, $this->diContainer->get(AuthorizedSenderDomainController::class));
+    $response = $mailerEndpoint->getAuthorizedEmailAddresses();
+    verify($response->data)->equals(['a@b.com']);
+  }
+
+  public function testVerifiedSenderDomainsEndpointFetchesIgnoringCache() {
+    $senderDomainController = $this->makeEmpty(AuthorizedSenderDomainController::class, [
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once(['b.com']),
+      'getVerifiedSenderDomains' => Expected::never(),
+    ]);
+    $mailerEndpoint = new Mailer($this->makeEmpty(AuthorizedEmailsController::class), SettingsController::getInstance(), $this->diContainer->get(MailerFactory::class), new MetaInfo, $senderDomainController);
+    $response = $mailerEndpoint->getVerifiedSenderDomains();
+    verify($response->data)->equals(['b.com']);
+  }
 }
