@@ -45,7 +45,9 @@ class EscapeHelper {
    */
   public static function escapeHtmlLinkAttr($string) {
     $string = self::escapeHtmlAttr($string);
-    if (preg_match('/\s*(javascript:|data:text|data:application)/ui', $string) === 1) {
+    // Browsers remove tabs and line breaks anywhere in a URL, so do the same before looking for the scheme.
+    $schemeCheck = str_replace(["\t", "\n", "\r"], '', $string);
+    if (preg_match('/(javascript:|vbscript:|data:text|data:application)/ui', $schemeCheck) === 1) {
       return '';
     }
     return $string;
