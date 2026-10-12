@@ -111,8 +111,10 @@ class NewsletterHtmlSanitizer {
     if ($allowed) {
       return (bool)$allowed;
     }
+    // Removes rgb() colors that contain only numbers, percentages, spaces, commas, dots and slashes,
+    // e.g. rgb(0, 0, 0) or rgb(0 0 0 / 50%). Anything else inside rgb() is left for the check below.
     $cssString = preg_replace(
-      '/\b(?:rgb)(\((?:[^()]|(?1))*\))/',
+      '/\brgb\([\d.%\s,\/]*\)/',
       '',
       $cssString
     );
