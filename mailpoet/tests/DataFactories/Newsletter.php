@@ -363,7 +363,7 @@ class Newsletter {
 
   public function withDefaultSegments() {
     $defaultSegment = (new Segment())->withType(SegmentEntity::TYPE_DEFAULT)->create();
-    $this->segments[$this->getSegmentKey($defaultSegment)] = $defaultSegment;
+    $this->segments[] = $defaultSegment;
     return $this;
   }
 
@@ -373,7 +373,7 @@ class Newsletter {
    */
   public function withSegments(array $segments) {
     foreach ($segments as $segment) {
-      $this->segments[$this->getSegmentKey($segment)] = $segment;
+      $this->segments[] = $segment;
     }
     return $this;
   }
@@ -452,7 +452,11 @@ class Newsletter {
 
     $this->newsletterOptionFactory->createMultipleOptions($newsletter, $this->options);
 
+    $segments = [];
     foreach ($this->segments as $segment) {
+      $segments[$this->getSegmentKey($segment)] = $segment;
+    }
+    foreach ($segments as $segment) {
       $newsletterSegment = new NewsletterSegmentEntity($newsletter, $segment);
       $newsletter->getNewsletterSegments()->add($newsletterSegment);
       $entityManager->persist($newsletterSegment);
