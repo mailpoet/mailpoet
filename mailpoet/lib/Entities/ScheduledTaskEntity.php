@@ -25,6 +25,8 @@ class ScheduledTaskEntity {
   const STATUS_INVALID = 'invalid';
   const STATUS_CLI = 'cli'; // A task claimed and run by a WP-CLI process; hidden from the web daemon, which only queries known statuses (null, scheduled).
   const VIRTUAL_STATUS_RUNNING = 'running'; // For historical reasons this is stored as null in DB
+  const META_PAUSE_REASON = 'pause_reason';
+  const PAUSE_REASON_SENDER_DOMAIN = 'sender_domain';
   const PRIORITY_HIGH = 1;
   const PRIORITY_MEDIUM = 5;
   const PRIORITY_LOW = 10;
@@ -135,6 +137,9 @@ class ScheduledTaskEntity {
     if ($status === self::VIRTUAL_STATUS_RUNNING) {
       $status = null;
     }
+    if ($status !== self::STATUS_PAUSED) {
+      $this->setPauseReason(null); // The reason only describes the current pause
+    }
     $this->status = $status;
   }
 
@@ -206,6 +211,24 @@ class ScheduledTaskEntity {
    */
   public function setMeta($meta) {
     $this->meta = $meta;
+  }
+
+  public function getPauseReason(): ?string {
+    $reason = ($this->getMeta() ?? [])[self::META_PAUSE_REASON] ?? null;
+    return is_string($reason) ? $reason : null;
+  }
+
+  public function setPauseReason(?string $reason): void {
+    if ($reason !== null) {
+      $this->setMeta(array_merge($this->getMeta() ?? [], [self::META_PAUSE_REASON => $reason]));
+      return;
+    }
+    $meta = $this->getMeta();
+    if ($meta === null) {
+      return;
+    }
+    unset($meta[self::META_PAUSE_REASON]);
+    $this->setMeta($meta ?: null);
   }
 
   /**

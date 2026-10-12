@@ -238,13 +238,18 @@ class SendingQueue {
       return;
     }
 
-    // Pause task if sender domain requirements are not met
-    if (!$this->authorizedEmailsController->isSenderAddressValid($newsletter, 'sending')) {
+    // Pause task if sender domain requirements are not met.
+    // The fresh check runs only when the cached one fails, so stale cached data can't pause the task.
+    if (
+      !$this->authorizedEmailsController->isSenderAddressValid($newsletter, 'sending')
+      && !$this->authorizedEmailsController->isSenderAddressValid($newsletter, 'resume')
+    ) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
         'pause task in sending queue due to sender domain requirements',
         ['task_id' => $task->getId()]
       );
       $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+      $task->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
       $this->scheduledTasksRepository->flush();
       return;
     }
