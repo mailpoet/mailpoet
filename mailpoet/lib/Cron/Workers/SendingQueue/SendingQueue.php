@@ -11,6 +11,7 @@ use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsSche
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\InvalidStateException;
@@ -226,7 +227,7 @@ class SendingQueue {
     // configure mailer
     $this->mailerTask->configureMailer($newsletter);
     $processingMethod = $this->mailerTask->getProcessingMethod();
-    $this->throttlingHandler->setUseTemplatedSending($this->shouldUseTemplatedSending($newsletter, $processingMethod));
+    $this->throttlingHandler->setUseTemplatedSending($this->shouldUseTemplatedSending($newsletter, $queue, $processingMethod));
     // get newsletter segments
     $newsletterSegmentsIds = $newsletter->getSegmentIds();
     $segmentIdsToCheck = $newsletterSegmentsIds;
@@ -439,9 +440,10 @@ class SendingQueue {
     return $this->throttlingHandler->getBatchSize();
   }
 
-  private function shouldUseTemplatedSending(NewsletterEntity $newsletter, ?string $processingMethod): bool {
+  private function shouldUseTemplatedSending(NewsletterEntity $newsletter, SendingQueueEntity $queue, ?string $processingMethod): bool {
     return $processingMethod === 'bulk'
       && $this->featuresController->isSupported(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING)
+      && empty(($queue->getMeta() ?? [])[SendingQueueEntity::META_TEMPLATED_SENDING_DISABLED])
       && !(
         $newsletter->getWpPostId() !== null
         && $this->newsletterTask->hasDeprecatedAutomationPersonalizationFilters()
@@ -467,7 +469,7 @@ class SendingQueue {
       return;
     }
 
-    $useTemplatedBatch = $this->shouldUseTemplatedSending($newsletter, $processingMethod);
+    $useTemplatedBatch = $this->shouldUseTemplatedSending($newsletter, $sendingQueueEntity, $processingMethod);
     /** @var TemplateBatch|null $templateBatch */
     $templateBatch = null;
     $placeholderNamespace = $useTemplatedBatch ? PlaceholderCollector::generateNamespace() : null;
@@ -489,18 +491,21 @@ class SendingQueue {
           $templateBatch = new TemplateBatch($templatedNewsletter['newsletter']);
         } elseif ($templateBatch->getTemplate() !== $templatedNewsletter['newsletter']) {
           // Every subscriber of a batch must produce the same template; the difference comes from
-          // the email content, so retrying on the next cron run would fail again. Pause instead.
+          // the email content, so retrying the templated way would fail again. The queue switches
+          // to standard sending instead. This run stops here because its batches were sized for
+          // templated sending; the next run picks the queue up with the standard batch size.
           $differingParts = $this->getDifferingTemplateParts($templateBatch->getTemplate(), $templatedNewsletter['newsletter']);
-          $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
-          $this->scheduledTasksRepository->flush();
-          $this->loggerFactory->getLogger(LoggerFactory::TOPIC_SENDING)->error('Templated sending paused: a subscriber produced a different email template than the first subscriber of the batch', [
+          $this->sendingQueuesRepository->disableTemplatedSending($sendingQueueEntity);
+          $this->throttlingHandler->setUseTemplatedSending(false);
+          $this->loggerFactory->getLogger(LoggerFactory::TOPIC_SENDING)->warning('Templated sending disabled for this email: a subscriber produced a different email template than the first subscriber of the batch; the email continues in the standard way on the next run', [
             'task_id' => $task->getId(),
             'newsletter_id' => $newsletter->getId(),
             'subscriber_id' => $subscriber->getId(),
             'differing_parts' => $differingParts,
           ]);
           throw new InvalidStateException(sprintf(
-            'Templated sending paused: subscriber %d produced a different email template (%s) than the first subscriber of the batch, so one shared template cannot be sent to all of them.',
+            'Templated sending disabled for newsletter %d: subscriber %d produced a different email template (%s) than the first subscriber of the batch. Nothing was sent in this run; the next run sends the email in the standard way.',
+            (int)$newsletter->getId(),
             (int)$subscriber->getId(),
             implode(', ', $differingParts)
           ));

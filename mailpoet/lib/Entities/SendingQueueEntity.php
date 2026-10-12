@@ -15,6 +15,9 @@ use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="sending_queues")
  */
 class SendingQueueEntity {
+  /** Meta flag set once a templated batch could not be shared by all of its subscribers; see Cron\Workers\SendingQueue\SendingQueue. */
+  public const META_TEMPLATED_SENDING_DISABLED = 'templatedSendingDisabled';
+
   const STATUS_COMPLETED = 'completed';
   const STATUS_SCHEDULED = 'scheduled';
   const STATUS_PAUSED = 'paused';
