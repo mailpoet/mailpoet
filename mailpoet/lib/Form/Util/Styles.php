@@ -187,7 +187,7 @@ class Styles {
 
   private function renderMessagesStyles(array $formSettings, string $selector): string {
     $styles = "$selector .mailpoet_message {margin: 0; padding: 0 20px;}";
-    if (isset($formSettings['success_validation_color']) && $formSettings['success_validation_color']) {
+    if (isset($formSettings['success_validation_color']) && $this->isColorValue($formSettings['success_validation_color'])) {
       $success = $formSettings['success_validation_color'];
       $styles .= "
         $selector .mailpoet_validate_success {color: $success}
@@ -196,7 +196,7 @@ class Styles {
         $selector textarea.parsley-success {color: $success}
       ";
     }
-    if (isset($formSettings['error_validation_color']) && $formSettings['error_validation_color']) {
+    if (isset($formSettings['error_validation_color']) && $this->isColorValue($formSettings['error_validation_color'])) {
       $error = $formSettings['error_validation_color'];
       $styles .= "
         $selector .mailpoet_validate_error {color: $error}
@@ -209,6 +209,17 @@ class Styles {
       ";
     }
     return $styles;
+  }
+
+  /**
+   * Accepts hex, named, rgb()/hsl() and var() colors; rejects anything that could end the declaration.
+   */
+  private function isColorValue($color): bool {
+    if (!is_string($color) || !$color) {
+      return false;
+    }
+    $allowedCharacters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#(),./%_- ';
+    return strspn($color, $allowedCharacters) === strlen($color);
   }
 
   private function getFormTypeSpecificStyles(string $selector, string $displayType): string {

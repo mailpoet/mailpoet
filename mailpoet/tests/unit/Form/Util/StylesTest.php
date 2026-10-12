@@ -166,6 +166,30 @@ class StylesTest extends \MailPoetUnitTest {
     verify($styles)->stringContainsString('#prefix .mailpoet_validate_success {color: xxx}');
   }
 
+  public function testItSkipsMessageColorsThatAreNotColorValues() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = [
+      'success_validation_color' => 'green;} body {display:none',
+      'error_validation_color' => 'red}<x>',
+    ];
+    $styles = $this->styles->renderFormMessageStyles($this->createForm($form), '#prefix');
+    verify($styles)->stringNotContainsString('<');
+    verify($styles)->stringNotContainsString('display');
+    verify($styles)->stringNotContainsString('mailpoet_validate_success');
+    verify($styles)->stringNotContainsString('mailpoet_validate_error');
+  }
+
+  public function testItRendersMessageColorsInCommonColorFormats() {
+    $colors = ['#00d084', 'rgb(0, 208, 132)', 'rgba(0, 208, 132, 0.5)', 'hsl(155, 100%, 41%)', 'var(--wp--preset--color--vivid-red)', 'red', 'rgb(0 208 132 / 50%)', 'var(--brand_color)'];
+    foreach ($colors as $color) {
+      $form = Fixtures::get('simple_form_body');
+      $form['settings'] = ['success_validation_color' => $color, 'error_validation_color' => $color];
+      $styles = $this->styles->renderFormMessageStyles($this->createForm($form), '#prefix');
+      verify($styles)->stringContainsString("#prefix .mailpoet_validate_success {color: $color}");
+      verify($styles)->stringContainsString("#prefix .mailpoet_validate_error {color: $color}");
+    }
+  }
+
   public function testItRendersWidthCssForBellowPost() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['backgroundColor' => 'red'];
