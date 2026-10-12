@@ -233,6 +233,25 @@ class ApiDataSanitizerTest extends \MailPoetTest {
     verify($result['blockDefaults']['divider']['styles']['block']['padding'])->equals('');
   }
 
+  public function testItRemovesGlobalStyleValuesThatCouldEndTheRule() {
+    $body = [
+      'content' => ['blocks' => []],
+      'globalStyles' => [
+        'text' => ['fontColor' => '#000000}body{display:none}x{', 'fontFamily' => 'Arial', 'fontSize' => '16px'],
+        'wrapper' => ['backgroundColor' => '#ffffff'],
+        'body' => ['backgroundColor' => '<style>'],
+      ],
+    ];
+
+    $globalStyles = $this->sanitizer->sanitizeBody($body)['globalStyles'];
+
+    verify($globalStyles)->equals([
+      'text' => ['fontFamily' => 'Arial', 'fontSize' => '16px'],
+      'wrapper' => ['backgroundColor' => '#ffffff'],
+      'body' => [],
+    ]);
+  }
+
   private function bodyWithBlocks(array $blocks): array {
     return ['content' => ['blocks' => $blocks]];
   }

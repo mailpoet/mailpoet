@@ -35,7 +35,28 @@ class ApiDataSanitizer {
         $body[$key] = $this->sanitizeBlockStyles($body[$key]);
       }
     }
+    if (isset($body['globalStyles']) && is_array($body['globalStyles'])) {
+      $body['globalStyles'] = $this->sanitizeGlobalStyles($body['globalStyles']);
+    }
     return $body;
+  }
+
+  /**
+   * Global styles end up in a <style> element in the editor and the email. Invalid values are removed,
+   * so the editor falls back to its defaults; the email renderer skips them too.
+   */
+  private function sanitizeGlobalStyles(array $globalStyles): array {
+    foreach ($globalStyles as $group => $styles) {
+      if (!is_array($styles)) {
+        continue;
+      }
+      foreach ($styles as $property => $value) {
+        if (!StylesHelper::isValidCssValue($value)) {
+          unset($globalStyles[$group][$property]);
+        }
+      }
+    }
+    return $globalStyles;
   }
 
   /**
