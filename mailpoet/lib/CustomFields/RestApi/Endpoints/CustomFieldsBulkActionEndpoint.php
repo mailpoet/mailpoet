@@ -42,20 +42,21 @@ class CustomFieldsBulkActionEndpoint extends CustomFieldsEndpoint {
     }
 
     $ids = $this->getIds($request, $action);
-    $count = 0;
+    $result = ['count' => 0, 'kept' => []];
     if ($action === self::ACTION_TRASH) {
-      $count = $this->customFieldsRepository->bulkTrash($ids);
+      $result['count'] = $this->customFieldsRepository->bulkTrash($ids);
     } elseif ($action === self::ACTION_RESTORE) {
-      $count = $this->customFieldsRepository->bulkRestore($ids);
+      $result['count'] = $this->customFieldsRepository->bulkRestore($ids);
     } elseif ($action === self::ACTION_DELETE) {
-      $count = $this->customFieldsRepository->bulkDelete($ids);
+      $result = $this->customFieldsRepository->bulkDelete($ids);
     } elseif ($action === self::ACTION_EMPTY_TRASH) {
-      $count = $this->customFieldsRepository->emptyTrash();
+      $result = $this->customFieldsRepository->emptyTrash();
     }
 
     return new Response([
       'action' => $action,
-      'count' => $count,
+      'count' => $result['count'],
+      'kept' => $result['kept'],
     ]);
   }
 

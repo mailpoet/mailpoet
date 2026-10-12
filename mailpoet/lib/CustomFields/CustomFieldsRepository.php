@@ -141,22 +141,24 @@ class CustomFieldsRepository extends Repository {
 
   /**
    * Permanently deletes trashed custom fields and removes references from
-   * subscriber values, forms, and dynamic segments.
+   * subscriber values and forms. Custom fields used in dynamic segments are kept.
    *
    * @param array<int|null> $ids
-   * @return int Number of custom fields deleted.
+   * @return array{count: int, kept: array<int, array{id: int, name: string, segments: array<int, array{id: int, name: string, trashed: bool}>}>}
    */
-  public function bulkDelete(array $ids): int {
+  public function bulkDelete(array $ids): array {
     $ids = $this->normalizeIds($ids);
     if (!$ids) {
-      return 0;
+      return ['count' => 0, 'kept' => []];
     }
-    $ids = $this->findTrashedIds($ids);
-    return $this->deleteByIds($ids);
+    return $this->deleteUnusedByIds($this->findTrashedIds($ids));
   }
 
-  public function emptyTrash(): int {
-    return $this->deleteByIds($this->findTrashedIds());
+  /**
+   * @return array{count: int, kept: array<int, array{id: int, name: string, segments: array<int, array{id: int, name: string, trashed: bool}>}>}
+   */
+  public function emptyTrash(): array {
+    return $this->deleteUnusedByIds($this->findTrashedIds());
   }
 
   /**
@@ -165,6 +167,35 @@ class CustomFieldsRepository extends Repository {
    */
   public function deletePermanently(int $id): int {
     return $this->deleteByIds([$id]);
+  }
+
+  /**
+   * @param int[] $ids
+   * @return array{count: int, kept: array<int, array{id: int, name: string, segments: array<int, array{id: int, name: string, trashed: bool}>}>}
+   */
+  private function deleteUnusedByIds(array $ids): array {
+    $segmentsById = array_filter($this->getDynamicSegmentsByCustomFieldIds($ids));
+    $kept = [];
+    if ($segmentsById) {
+      foreach ($this->findBy(['id' => array_keys($segmentsById)], ['id' => 'ASC']) as $customField) {
+        $id = (int)$customField->getId();
+        $kept[] = [
+          'id' => $id,
+          'name' => $customField->getName(),
+          'segments' => array_values(array_map(function (SegmentEntity $segment): array {
+            return [
+              'id' => (int)$segment->getId(),
+              'name' => $segment->getName(),
+              'trashed' => $segment->getDeletedAt() !== null,
+            ];
+          }, $segmentsById[$id])),
+        ];
+      }
+    }
+    return [
+      'count' => $this->deleteByIds(array_values(array_diff($ids, array_keys($segmentsById)))),
+      'kept' => $kept,
+    ];
   }
 
   /**
@@ -500,12 +531,16 @@ class CustomFieldsRepository extends Repository {
   }
 
   /**
-   * @return string[] Names of dynamic segments (not in the trash) that filter by the custom field.
+   * @return string[] Names of dynamic segments that filter by the custom field.
    */
   public function getDynamicSegmentNamesUsingCustomField(int $customFieldId): array {
     $segments = $this->getDynamicSegmentsByCustomFieldIds([$customFieldId])[$customFieldId];
     return array_values(array_map(function (SegmentEntity $segment): string {
-      return $segment->getName();
+      if (!$segment->getDeletedAt()) {
+        return $segment->getName();
+      }
+      // translators: %s is the name of a segment.
+      return sprintf(__('%s (in the trash)', 'mailpoet'), $segment->getName());
     }, $segments));
   }
 
@@ -518,6 +553,8 @@ class CustomFieldsRepository extends Repository {
   }
 
   /**
+   * Segments in the trash are included, so restoring them keeps their filters.
+   *
    * @param int[] $customFieldIds
    * @return array<int, array<int, SegmentEntity>> Segments keyed by custom field ID, then by segment ID.
    */
@@ -533,9 +570,9 @@ class CustomFieldsRepository extends Repository {
       ->select('dsf')
       ->from(DynamicSegmentFilterEntity::class, 'dsf')
       ->join('dsf.segment', 's')
-      ->where('s.deletedAt IS NULL')
-      ->andWhere('dsf.filterData.action = :action')
+      ->where('dsf.filterData.action = :action')
       ->setParameter('action', MailPoetCustomFields::TYPE)
+      ->orderBy('s.id', 'ASC')
       ->getQuery()
       ->getResult();
 
