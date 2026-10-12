@@ -52,6 +52,35 @@ class ScheduledTasksRepository extends Repository {
   }
 
   /**
+   * @return ScheduledTaskEntity[]
+   */
+  public function findPausedForSenderDomain(): array {
+    // Task meta is a LONGTEXT column written by JsonType (unescaped slashes and unicode), so the
+    // stored text contains exactly this fragment of the encoder output.
+    $marker = '%' . trim((string)json_encode(
+      [ScheduledTaskEntity::META_PAUSE_REASON => ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN],
+      JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+    ), '{}') . '%';
+
+    return $this->doctrineRepository->createQueryBuilder('t')
+      ->select('t')
+      ->join('t.sendingQueue', 'q')
+      ->join('q.newsletter', 'n')
+      ->addSelect('q', 'n')
+      ->where('t.status = :paused')
+      ->andWhere('t.deletedAt IS NULL')
+      ->andWhere('n.deletedAt IS NULL')
+      ->andWhere('n.type IN (:campaignTypes)')
+      ->andWhere('t.meta LIKE :marker')
+      ->setParameter('paused', ScheduledTaskEntity::STATUS_PAUSED)
+      ->setParameter('campaignTypes', NewsletterEntity::CAMPAIGN_TYPES)
+      ->setParameter('marker', $marker)
+      ->orderBy('t.updatedAt', 'DESC')
+      ->getQuery()
+      ->getResult();
+  }
+
+  /**
    * @param NewsletterEntity $newsletter
    */
   public function findOneByNewsletter(NewsletterEntity $newsletter): ?ScheduledTaskEntity {
