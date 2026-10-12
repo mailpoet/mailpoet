@@ -26,6 +26,17 @@ class NewsletterHtmlSanitizerTest extends \MailPoetTest {
     verify($this->sanitizer->sanitize('<span style="color:rgb(0,0,0)">Does not sanitize RGB</span>'))->equals('<span style="color:rgb(0,0,0)">Does not sanitize RGB</span>');
   }
 
+  public function testItKeepsRgbColorsInStyles() {
+    verify($this->sanitizer->sanitize('<span style="color:rgb(10, 20, 30)">x</span>'))->equals('<span style="color:rgb(10, 20, 30)">x</span>');
+    verify($this->sanitizer->sanitize('<span style="color:rgb(0 208 132 / 50%)">x</span>'))->equals('<span style="color:rgb(0 208 132 / 50%)">x</span>');
+  }
+
+  public function testItRemovesStylesWithOtherContentInsideRgb() {
+    verify($this->sanitizer->sanitize('<span style="color:rgb(expression(1))">x</span>'))->equals('<span>x</span>');
+    verify($this->sanitizer->sanitize('<span style="color:rgb(0 /* x */ 0 0)">x</span>'))->equals('<span>x</span>');
+    verify($this->sanitizer->sanitize('<span style="color:rgb(\\30 , 0, 0)">x</span>'))->equals('<span>x</span>');
+  }
+
   public function testItRemovesUnwantedHtml() {
     verify($this->sanitizer->sanitize('<script>'))->equals('');
     verify($this->sanitizer->sanitize('<span>Hello<img src="http://nonsense" onerror="alert(1)"/></span>'))->equals('<span>Hello</span>');
