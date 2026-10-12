@@ -23,7 +23,8 @@ class Styles {
       $rules = sprintf('{ %s }', implode(' ', $rules));
       $formattedStyles[] = sprintf('%s %s', $selectors, $rules);
     }
-    return implode(PHP_EOL, $formattedStyles);
+    // The parser decodes CSS escapes, so encode "<" again; "\3c " is the same character in CSS.
+    return str_replace('<', '\3c ', implode(PHP_EOL, $formattedStyles));
   }
 
   public function renderFormSettingsStyles(FormEntity $form, string $selector, string $displayType): string {
