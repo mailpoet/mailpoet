@@ -2,6 +2,7 @@
 
 namespace MailPoet\Form;
 
+use MailPoet\Form\Util\Styles;
 use MailPoet\WP\Functions as WPFunctions;
 
 class BlockStylesRenderer {
@@ -104,6 +105,7 @@ class BlockStylesRenderer {
       isset($block['params']['label_within'])
       && $block['params']['label_within']
       && isset($block['styles']['font_color'])
+      && Styles::isColorValue($block['styles']['font_color'])
     ) {
       return '<style>'
         . $selector . '::placeholder{'

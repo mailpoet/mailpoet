@@ -113,6 +113,20 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
     ], 'input'))->notEquals('');
   }
 
+  public function testItSkipsPlaceholderStylesWithInvalidColor() {
+    verify($this->renderer->renderPlaceholderStyles([
+      'params' => ['label_within' => '1'],
+      'styles' => ['font_color' => '#000}body{outline:5px solid red}x{'],
+    ], 'input'))->equals('');
+  }
+
+  public function testItRendersPlaceholderColor() {
+    verify($this->renderer->renderPlaceholderStyles([
+      'params' => ['label_within' => '1'],
+      'styles' => ['font_color' => '#1e1e1e'],
+    ], 'input'))->equals('<style>input::placeholder{color:#1e1e1e;opacity: 1;}</style>');
+  }
+
   public function testItShouldRenderFontFamily() {
     $styles = [];
     $settings = [
