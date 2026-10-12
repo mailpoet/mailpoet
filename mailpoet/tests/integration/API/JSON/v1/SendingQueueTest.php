@@ -175,12 +175,13 @@ class SendingQueueTest extends \MailPoetTest {
     verify($reloaded->getPauseReason())->null();
   }
 
-  public function testResumeChecksSenderBeforeLookingForQueue(): void {
+  public function testResumeWithoutQueueReportsNotSentYetWithoutCheckingSender(): void {
     $newsletter = (new NewsletterFactory())->withSubject('No queue')->withDefaultBody()->create();
     $calls = [];
     $result = $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $newsletter->getId()]);
-    verify($result->status)->equals(APIResponse::STATUS_FORBIDDEN);
-    verify($result->errors[0]['error'])->equals(APIError::FORBIDDEN);
+    verify($result->errors[0]['error'])->equals(APIError::UNKNOWN);
+    verify($result->errors[0]['message'])->equals('This newsletter has not been sent yet.');
+    verify($calls)->empty();
   }
 
   public function testResumePassesMarkerToValidation(): void {
@@ -289,14 +290,48 @@ class SendingQueueTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $calls = [];
-    $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $history->getId()]);
+    $result = $this->getResumeApi($calls, true, true)->resume(['newsletter_id' => $history->getId()]);
 
+    verify($result->status)->equals(200);
+    verify($calls)->arrayCount(1);
     verify($calls[0]['sender'])->equals('old@example.com');
     $this->entityManager->clear();
     $reloaded = $this->entityManager->find(NewsletterEntity::class, $history->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $reloaded);
     verify($reloaded->getSenderAddress())->equals('old@example.com');
     verify($reloaded->getSenderName())->equals('Old');
+  }
+
+  public function testResumeSyncsParentSenderToUnmarkedNotificationHistoryWithInvalidSender(): void {
+    $parent = (new NewsletterFactory())->withPostNotificationsType()->withSenderAddress('old@example.com')->withSenderName('Old')->create();
+    $history = (new NewsletterFactory())->withPostNotificationHistoryType()->withParent($parent)
+      ->withSenderAddress('old@example.com')->withSenderName('Old')
+      ->withSendingQueue(['status' => ScheduledTaskEntity::STATUS_PAUSED])->create();
+    $parent->setSenderAddress('new@example.com');
+    $parent->setSenderName('New');
+    $this->entityManager->flush();
+
+    $calls = [];
+    $api = $this->getResumeApi($calls, false, true, [
+      'authorizedEmailsController' => Stub::make(AuthorizedEmailsController::class, [
+        'isSenderAddressValid' => function(NewsletterEntity $newsletter, string $context = 'activation', bool $requireVerifiedDomain = false) use (&$calls): bool {
+          $calls[] = ['requireVerifiedDomain' => $requireVerifiedDomain, 'sender' => $newsletter->getSenderAddress()];
+          return $newsletter->getSenderAddress() === 'new@example.com';
+        },
+      ]),
+    ]);
+    $result = $api->resume(['newsletter_id' => $history->getId()]);
+
+    verify($result->status)->equals(200);
+    verify($calls)->arrayCount(2);
+    verify($calls[0]['sender'])->equals('old@example.com');
+    verify($calls[1]['sender'])->equals('new@example.com');
+    verify($calls[1]['requireVerifiedDomain'])->false();
+    $this->entityManager->clear();
+    $reloaded = $this->entityManager->find(NewsletterEntity::class, $history->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $reloaded);
+    verify($reloaded->getSenderAddress())->equals('new@example.com');
+    verify($reloaded->getSenderName())->equals('New');
   }
 
   private function createPausedCampaign(string $sender, bool $marked = true): ScheduledTaskEntity {

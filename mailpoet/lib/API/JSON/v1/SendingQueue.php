@@ -292,22 +292,30 @@ class SendingQueue extends APIEndpoint {
 
     if ($newsletter instanceof NewsletterEntity) {
       $queue = $newsletter->getLastUpdatedQueue();
-
-      $isPausedForSenderDomain = $queue instanceof SendingQueueEntity && $this->isPausedForSenderDomain($queue);
-      if ($isPausedForSenderDomain) {
-        $this->syncSenderFromParent($newsletter);
-      }
-      if (!$this->authorizedEmailsController->isSenderAddressValid($newsletter, 'resume', $isPausedForSenderDomain)) {
-        return $this->errorResponse([
-          APIError::FORBIDDEN => $this->getSenderDomainNotReadyMessage($newsletter),
-        ], [], Response::STATUS_FORBIDDEN);
-      }
-
       if (!$queue instanceof SendingQueueEntity) {
         return $this->errorResponse([
           APIError::UNKNOWN => __('This newsletter has not been sent yet.', 'mailpoet'),
         ]);
       } else {
+        $isPausedForSenderDomain = $this->isPausedForSenderDomain($queue);
+        // Post notification copies can't be edited, so an unmarked copy with a bad sender takes the parent's sender too.
+        $isSenderValid = null;
+        if (!$isPausedForSenderDomain && $this->hasParentSender($newsletter)) {
+          $isSenderValid = $this->authorizedEmailsController->isSenderAddressValid($newsletter, 'resume', false);
+        }
+        if ($isPausedForSenderDomain || $isSenderValid === false) {
+          $this->syncSenderFromParent($newsletter);
+          $isSenderValid = null;
+        }
+        if ($isSenderValid === null) {
+          $isSenderValid = $this->authorizedEmailsController->isSenderAddressValid($newsletter, 'resume', $isPausedForSenderDomain);
+        }
+        if (!$isSenderValid) {
+          return $this->errorResponse([
+            APIError::FORBIDDEN => $this->getSenderDomainNotReadyMessage($newsletter),
+          ], [], Response::STATUS_FORBIDDEN);
+        }
+
         if ($this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)) {
           $this->timeZoneCampaignScheduler->resumeCampaign($queue);
         } else {
@@ -355,9 +363,13 @@ class SendingQueue extends APIEndpoint {
   /**
    * Notification history emails are copies made at schedule time, so they keep the parent's old sender.
    */
+  private function hasParentSender(NewsletterEntity $newsletter): bool {
+    return $newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY && $newsletter->getParent() instanceof NewsletterEntity;
+  }
+
   private function syncSenderFromParent(NewsletterEntity $newsletter): void {
     $parent = $newsletter->getParent();
-    if ($newsletter->getType() !== NewsletterEntity::TYPE_NOTIFICATION_HISTORY || !$parent instanceof NewsletterEntity) {
+    if (!$parent instanceof NewsletterEntity || !$this->hasParentSender($newsletter)) {
       return;
     }
     $newsletter->setSenderAddress($parent->getSenderAddress());
