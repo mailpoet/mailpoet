@@ -208,6 +208,27 @@ class ApiDataSanitizerTest extends \MailPoetTest {
     verify($styles)->equals(['backgroundColor' => '', 'borderColor' => '', 'fontColor' => '#ffffff']);
   }
 
+  public function testItRemovesStylePropertiesWithInvalidNames() {
+    $body = $this->bodyWithBlocks([
+      [
+        'type' => 'button',
+        'styles' => [
+          'block' => [
+            'background-color:red;display' => 'none',
+            'fontColor' => '#ffffff',
+            'border-radius' => '5px',
+          ],
+        ],
+      ],
+    ]);
+    $body['globalStyles'] = ['text' => ['color:red;display' => 'none', 'fontSize' => '16px']];
+
+    $result = $this->sanitizer->sanitizeBody($body);
+
+    verify($result['content']['blocks'][0]['styles']['block'])->equals(['fontColor' => '#ffffff', 'border-radius' => '5px']);
+    verify($result['globalStyles']['text'])->equals(['fontSize' => '16px']);
+  }
+
   public function testItEmptiesInvalidStyleValuesInNestedBlocksAndBlockDefaults() {
     $body = $this->bodyWithBlocks([
       [
