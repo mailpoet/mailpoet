@@ -31,6 +31,12 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     parent::_before();
     $this->settings = SettingsController::getInstance();
     $this->newsletterFactory = new NewsletterFactory();
+    delete_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY);
+  }
+
+  public function _after() {
+    parent::_after();
+    delete_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY);
   }
 
   public function testItResetsAuthorisedEmailsErrorIfMssIsNotActive() {
@@ -567,7 +573,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     ];
     $response = ['status' => true];
     $bridgeMock = $this->make(Bridge::class, [
-      'getAuthorizedEmailAddresses' => Expected::once($array),
+      'getAuthorizedEmailAddresses' => Expected::exactly(2, $array),
       'createAuthorizedEmailAddress' => Expected::once($response),
     ]);
     $mocks = [
@@ -643,13 +649,13 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     ];
 
     $controller = $this->getControllerWithCustomMocks($mocks);
-    $result = $controller->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAILS_TYPE_ALL);
+    $result = $controller->getAuthorizedEmailAddressesIgnoringCache(self::AUTHORIZED_EMAILS_TYPE_ALL);
     verify($result)->equals($apiData);
   }
 
   public function testItReturnsCachedDataIfAPIIsDownForGetAllAuthorizedEmailAddresses() {
     $bridgeMock = $this->make(Bridge::class, [
-      'getAuthorizedEmailAddresses' => Expected::once([]),
+      'getAuthorizedEmailAddresses' => Expected::once(null),
     ]);
 
     $cacheData = [
@@ -669,8 +675,94 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     ];
 
     $controller = $this->getControllerWithCustomMocks($mocks);
-    $result = $controller->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAILS_TYPE_ALL);
+    $result = $controller->getAuthorizedEmailAddressesIgnoringCache(self::AUTHORIZED_EMAILS_TYPE_ALL);
     verify($result)->equals($cacheData);
+  }
+
+  public function testItReadsAuthorizedEmailsFromCacheFirst() {
+    $cached = ['authorized' => ['a@b.com'], 'pending' => [], 'main' => 'a@b.com'];
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::never()]);
+    $wpMock = $this->make(WPFunctions::class, ['getTransient' => $cached, 'setTransient' => Expected::never()]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock, 'WPFunctions' => $wpMock]);
+    verify($controller->getAuthorizedEmailAddresses())->equals(['a@b.com']);
+    verify($controller->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAILS_TYPE_ALL))->equals($cached);
+  }
+
+  public function testItCallsBridgeAndCachesWhenCacheIsEmpty() {
+    $data = ['authorized' => ['a@b.com'], 'pending' => []];
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once($data)]);
+    $wpMock = $this->make(WPFunctions::class, [
+      'getTransient' => false,
+      'setTransient' => Expected::once(true),
+    ]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock, 'WPFunctions' => $wpMock]);
+    verify($controller->getAuthorizedEmailAddresses())->equals(['a@b.com']);
+  }
+
+  public function testIgnoringCacheUpdatesTheCache() {
+    $new = ['authorized' => ['new@b.com'], 'pending' => []];
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once($new)]);
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY, ['authorized' => ['old@b.com'], 'pending' => []]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock]);
+    verify($controller->getAuthorizedEmailAddressesIgnoringCache())->equals(['new@b.com']);
+    verify(get_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY))->equals($new);
+  }
+
+  public function testIgnoringCacheFallsBackToCacheWhenBridgeFails() {
+    $cached = ['authorized' => ['old@b.com'], 'pending' => []];
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(null)]);
+    $wpMock = $this->make(WPFunctions::class, ['getTransient' => $cached, 'setTransient' => Expected::never()]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock, 'WPFunctions' => $wpMock]);
+    verify($controller->getAuthorizedEmailAddressesIgnoringCache())->equals(['old@b.com']);
+  }
+
+  public function testItReturnsEmptyWhenBridgeFailsAndNoCache() {
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(null)]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock]);
+    verify($controller->getAuthorizedEmailAddressesIgnoringCache())->equals([]);
+  }
+
+  public function testItCachesValidEmptyResponse() {
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => Expected::once([]),
+    ]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock]);
+    verify($controller->getAuthorizedEmailAddresses())->equals([]);
+    verify($controller->getAuthorizedEmailAddresses())->equals([]);
+  }
+
+  public function testClearCacheRemovesTheTransient() {
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY, ['authorized' => ['a@b.com']]);
+    $this->getControllerWithCustomMocks()->clearCache();
+    verify(get_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY))->false();
+  }
+
+  public function testCheckKeepsPreviousErrorWhenThereAreNoAuthorizedEmails() {
+    $this->setMailPoetSendingMethod();
+    $previous = ['invalid_sender_address' => 'old@email.com'];
+    $this->settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, $previous);
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, ['shouldSkipAuthorization' => false]);
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => Expected::once(['authorized' => [], 'pending' => []]),
+    ]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock, 'AuthorizedSenderDomainController' => $senderDomainMock]);
+    verify($controller->checkAuthorizedEmailAddresses())->null();
+    verify($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->equals($previous);
+  }
+
+  public function testCreateRefreshesTheCache() {
+    $before = ['authorized' => [], 'pending' => []];
+    $after = ['authorized' => [], 'pending' => ['new@email.com']];
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => Expected::exactly(2, function () use ($before, $after) {
+        static $calls = 0;
+        return ++$calls === 1 ? $before : $after;
+      }),
+      'createAuthorizedEmailAddress' => Expected::once(['status' => true]),
+    ]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock]);
+    $controller->createAuthorizedEmailAddress('new@email.com');
+    verify(get_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY))->equals($after);
   }
 
   private function setMailPoetSendingMethod() {

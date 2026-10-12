@@ -562,7 +562,7 @@ class ServicesTest extends \MailPoetTest {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', 'authorized@email.com');
     $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
-      'getAuthorizedEmailAddresses' => ['authorized@email.com'],
+      'getAuthorizedEmailAddressesIgnoringCache' => ['authorized@email.com'],
     ]);
 
     $congratulatoryEmailController = $this->make(CongratulatoryMssEmailController::class, [
@@ -590,7 +590,7 @@ class ServicesTest extends \MailPoetTest {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', 'unauthorized@email.com');
     $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
-      'getAuthorizedEmailAddresses' => [],
+      'getAuthorizedEmailAddressesIgnoringCache' => [],
     ]);
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['authorizedEmailsController' => $authorizedEmailsController]);
@@ -602,7 +602,7 @@ class ServicesTest extends \MailPoetTest {
   public function testCongratulatoryEmailRespondsWithDifferentErrorWhenNoEmailAuthorizedButDomainIsVerified() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
-      'getAuthorizedEmailAddresses' => [],
+      'getAuthorizedEmailAddressesIgnoringCache' => [],
     ]);
 
     $verifiedDomains = ['email.com'];
@@ -625,7 +625,7 @@ class ServicesTest extends \MailPoetTest {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', null);
     $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
-      'getAuthorizedEmailAddresses' => ['authorized@email.com'],
+      'getAuthorizedEmailAddressesIgnoringCache' => ['authorized@email.com'],
     ]);
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['authorizedEmailsController' => $authorizedEmailsController]);
@@ -638,7 +638,7 @@ class ServicesTest extends \MailPoetTest {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', 'unauthorized@email.com');
     $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
-      'getAuthorizedEmailAddresses' => ['authorized@email.com'],
+      'getAuthorizedEmailAddressesIgnoringCache' => ['authorized@email.com'],
     ]);
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['authorizedEmailsController' => $authorizedEmailsController]);
@@ -651,7 +651,7 @@ class ServicesTest extends \MailPoetTest {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', 'unauthorized@email.com');
     $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
-      'getAuthorizedEmailAddresses' => ['authorized@email.com'],
+      'getAuthorizedEmailAddressesIgnoringCache' => ['authorized@email.com'],
     ]);
 
     $congratulatoryEmailController = $this->make(CongratulatoryMssEmailController::class, [
@@ -678,7 +678,7 @@ class ServicesTest extends \MailPoetTest {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', 'authorized@email.com');
     $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
-      'getAuthorizedEmailAddresses' => ['authorized@email.com'],
+      'getAuthorizedEmailAddressesIgnoringCache' => ['authorized@email.com'],
     ]);
 
     $congratulatoryEmailController = $this->make(CongratulatoryMssEmailController::class, [

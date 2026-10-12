@@ -68,7 +68,7 @@ class AuthorizedEmailsController {
       return;
     }
 
-    $authorizedEmails = $this->getAuthorizedEmailAddresses() ?: [];
+    $authorizedEmails = $this->getAuthorizedEmailAddressesIgnoringCache();
     $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache();
     $isAuthorized = $this->validateAuthorizedEmail($authorizedEmails, $address);
 
@@ -92,23 +92,45 @@ class AuthorizedEmailsController {
   }
 
   public function getAuthorizedEmailAddresses(string $type = 'authorized'): array {
-    $data = $this->bridge->getAuthorizedEmailAddresses();
-    if (empty($data)) {
-      // API is potentially down, fallback to cache
-      $data = $this->wp->getTransient(self::AUTHORIZED_EMAILS_KEY);
-    } else {
-      $this->wp->setTransient(self::AUTHORIZED_EMAILS_KEY, $data, WEEK_IN_SECONDS);
+    return $this->pickType($this->getAllEmailData(true), $type);
+  }
+
+  public function getAuthorizedEmailAddressesIgnoringCache(string $type = 'authorized'): array {
+    return $this->pickType($this->getAllEmailData(false), $type);
+  }
+
+  public function clearCache(): void {
+    $this->wp->deleteTransient(self::AUTHORIZED_EMAILS_KEY);
+  }
+
+  private function getAllEmailData(bool $useCache): array {
+    if ($useCache) {
+      $cached = $this->wp->getTransient(self::AUTHORIZED_EMAILS_KEY);
+      if (is_array($cached)) {
+        return $cached;
+      }
     }
 
-    if ($data && $type === self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL) {
+    $data = $this->bridge->getAuthorizedEmailAddresses();
+    if (is_array($data)) {
+      $this->wp->setTransient(self::AUTHORIZED_EMAILS_KEY, $data, WEEK_IN_SECONDS);
       return $data;
     }
 
+    // API is potentially down, fallback to cache
+    $cached = $this->wp->getTransient(self::AUTHORIZED_EMAILS_KEY);
+    return is_array($cached) ? $cached : [];
+  }
+
+  private function pickType(array $data, string $type): array {
+    if ($type === self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL) {
+      return $data;
+    }
     return $data[$type] ?? [];
   }
 
   public function createAuthorizedEmailAddress(string $email): array {
-    $allEmails = $this->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL);
+    $allEmails = $this->getAuthorizedEmailAddressesIgnoringCache(self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL);
 
     $authorizedEmails = isset($allEmails[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_AUTHORIZED]) ? $allEmails[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_AUTHORIZED] : [];
     $isAuthorized = $this->validateAuthorizedEmail($authorizedEmails, $email);
@@ -129,11 +151,12 @@ class AuthorizedEmailsController {
       throw new \InvalidArgumentException($response['message']);
     }
 
+    $this->getAuthorizedEmailAddressesIgnoringCache();
     return $response;
   }
 
   public function isEmailAddressAuthorized(string $email): bool {
-    $authorizedEmails = $this->getAuthorizedEmailAddresses() ?: [];
+    $authorizedEmails = $this->getAuthorizedEmailAddressesIgnoringCache();
     return $this->validateAuthorizedEmail($authorizedEmails, $email);
   }
 
@@ -151,7 +174,7 @@ class AuthorizedEmailsController {
       return null;
     }
 
-    $authorizedEmails = $this->getAuthorizedEmailAddresses();
+    $authorizedEmails = $this->getAuthorizedEmailAddressesIgnoringCache();
     // Keep previous check result for an invalid response from API
     if (!$authorizedEmails) {
       return null;

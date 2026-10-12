@@ -311,7 +311,7 @@ class Services extends APIEndpoint {
     $emailDomain = Helpers::extractEmailDomain($fromEmail);
 
     if (!$this->isItemInArray($emailDomain, $verifiedDomains)) {
-      $authorizedEmails = $this->authorizedEmailsController->getAuthorizedEmailAddresses();
+      $authorizedEmails = $this->authorizedEmailsController->getAuthorizedEmailAddressesIgnoringCache();
 
       if (!$authorizedEmails) {
         return $this->createBadRequest(__('No FROM email addresses are authorized.', 'mailpoet'));
