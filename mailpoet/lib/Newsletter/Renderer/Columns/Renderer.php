@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter\Renderer\Columns;
 
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
+use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Renderer {
   public function render($contentBlock, $columnsData) {
@@ -117,14 +118,16 @@ class Renderer {
       $backgroundColor = isset($styles['backgroundColor']) && $styles['backgroundColor'] !== 'transparent' ? $styles['backgroundColor'] : '#ffffff';
       $repeat = $image['display'] === 'tile' ? 'repeat' : 'no-repeat';
       $size = $image['display'] === 'scale' ? 'cover' : 'contain';
+      // Encoded for HTML here, because the style attribute escaping below keeps existing entities
+      $src = EHelper::escapeHtmlAttr(StylesHelper::escapeCssUrl((string)$image['src']));
       $style = sprintf(
         'background: %s url(%s) %s center/%s;background-color: %s;background-image: url(%s);background-repeat: %s;background-position: center;background-size: %s;',
         $backgroundColor,
-        $image['src'],
+        $src,
         $repeat,
         $size,
         $backgroundColor,
-        $image['src'],
+        $src,
         $repeat,
         $size
       );

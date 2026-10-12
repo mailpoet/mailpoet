@@ -105,11 +105,32 @@ class StylesHelper {
 
   /**
    * Rejects characters that can break out of the declaration or the <style> element,
+   * "&", because entities are decoded in style attributes,
    * and "@", because an at-rule without a block stalls the CSS inliner.
    * @param mixed $value
    */
   public static function isValidCssValue($value): bool {
-    return is_scalar($value) && strpbrk((string)$value, '<>{};@') === false;
+    return is_scalar($value) && strpbrk((string)$value, '<>{};@&') === false;
+  }
+
+  /**
+   * Percent-encodes characters that would end an unquoted CSS url() or its declaration early.
+   * The encoded URL points to the same resource.
+   */
+  public static function escapeCssUrl(string $url): string {
+    return strtr($url, [
+      '(' => '%28',
+      ')' => '%29',
+      ';' => '%3B',
+      "'" => '%27',
+      '"' => '%22',
+      '\\' => '%5C',
+      ' ' => '%20',
+      "\t" => '%09',
+      "\n" => '%0A',
+      "\r" => '%0D',
+      "\f" => '%0C',
+    ]);
   }
 
   /**

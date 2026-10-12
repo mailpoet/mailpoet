@@ -164,6 +164,75 @@ class ApiDataSanitizerTest extends \MailPoetTest {
     verify($result['blockDefaults']['button']['text'])->equals('Read <b>more</b>');
   }
 
+  public function testItEmptiesBlockStyleValuesThatCouldEndTheDeclaration() {
+    $body = $this->bodyWithBlocks([
+      [
+        'type' => 'button',
+        'styles' => [
+          'block' => [
+            'backgroundColor' => '#252525;position:fixed',
+            'fontColor' => '#ffffff',
+            'fontFamily' => "Arial, 'Helvetica Neue', sans-serif",
+            'width' => '180px',
+          ],
+        ],
+      ],
+    ]);
+
+    $styles = $this->sanitizer->sanitizeBody($body)['content']['blocks'][0]['styles']['block'];
+
+    verify($styles)->equals([
+      'backgroundColor' => '',
+      'fontColor' => '#ffffff',
+      'fontFamily' => "Arial, 'Helvetica Neue', sans-serif",
+      'width' => '180px',
+    ]);
+  }
+
+  public function testItEmptiesBlockStyleValuesWithEntitiesOrNonScalarValues() {
+    $body = $this->bodyWithBlocks([
+      [
+        'type' => 'button',
+        'styles' => [
+          'block' => [
+            'backgroundColor' => 'red&#59;position:fixed',
+            'borderColor' => ['red;position:fixed'],
+            'fontColor' => '#ffffff',
+          ],
+        ],
+      ],
+    ]);
+
+    $styles = $this->sanitizer->sanitizeBody($body)['content']['blocks'][0]['styles']['block'];
+
+    verify($styles)->equals(['backgroundColor' => '', 'borderColor' => '', 'fontColor' => '#ffffff']);
+  }
+
+  public function testItEmptiesInvalidStyleValuesInNestedBlocksAndBlockDefaults() {
+    $body = $this->bodyWithBlocks([
+      [
+        'type' => 'container',
+        'styles' => ['block' => ['backgroundColor' => '#fff}body{display:none']],
+        'blocks' => [
+          [
+            'type' => 'automatedLatestContentLayout',
+            'readMoreButton' => ['styles' => ['block' => ['fontColor' => '<b>', 'fontSize' => '14px']]],
+            'divider' => ['styles' => ['block' => ['borderColor' => '@import x', 'borderWidth' => '1px']]],
+          ],
+        ],
+      ],
+    ]);
+    $body['blockDefaults'] = ['divider' => ['styles' => ['block' => ['padding' => '13px;color:red']]]];
+
+    $result = $this->sanitizer->sanitizeBody($body);
+
+    $container = $result['content']['blocks'][0];
+    verify($container['styles']['block']['backgroundColor'])->equals('');
+    verify($container['blocks'][0]['readMoreButton']['styles']['block'])->equals(['fontColor' => '', 'fontSize' => '14px']);
+    verify($container['blocks'][0]['divider']['styles']['block'])->equals(['borderColor' => '', 'borderWidth' => '1px']);
+    verify($result['blockDefaults']['divider']['styles']['block']['padding'])->equals('');
+  }
+
   private function bodyWithBlocks(array $blocks): array {
     return ['content' => ['blocks' => $blocks]];
   }
