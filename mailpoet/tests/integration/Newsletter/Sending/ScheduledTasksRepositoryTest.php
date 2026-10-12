@@ -4,7 +4,9 @@ namespace MailPoet\Newsletter\Sending;
 
 use MailPoet\Cron\Workers\Bounce;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue;
 use MailPoetVendor\Carbon\Carbon;
@@ -282,5 +284,40 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->expectExceptionMessage('Only cancelled tasks can be rescheduled');
     $this->expectExceptionCode(400);
     $this->repository->rescheduleTask($running);
+  }
+
+  public function testItFindsTasksPausedForSenderDomain(): void {
+    $standard = $this->createPausedTask((new NewsletterFactory())->withSubject('Standard')->create(), true);
+    $reengagement = $this->createPausedTask((new NewsletterFactory())->withReengagementType()->create(), true);
+    $withExtraMeta = $this->createPausedTask((new NewsletterFactory())->withSubject('Extra')->create(), true, ['other' => 'value/with/slashes']);
+
+    $this->createPausedTask((new NewsletterFactory())->withSubject('No reason')->create(), false);
+    $noStatus = $this->createPausedTask((new NewsletterFactory())->withSubject('No status')->create(), true);
+    $noStatus->setStatus(null);
+    $noStatus->setMeta([ScheduledTaskEntity::META_PAUSE_REASON => ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN]);
+    $this->entityManager->flush();
+    $this->createPausedTask((new NewsletterFactory())->withSubject('Trashed')->withDeleted()->create(), true);
+    $deletedTask = $this->createPausedTask((new NewsletterFactory())->withSubject('Deleted task')->create(), true);
+    $deletedTask->setDeletedAt(Carbon::now());
+    $this->entityManager->flush();
+    $this->createPausedTask((new NewsletterFactory())->withWelcomeTypeForSegment()->create(), true);
+
+    $ids = array_map(fn(ScheduledTaskEntity $task) => $task->getId(), $this->repository->findPausedForSenderDomain());
+    sort($ids);
+    $expected = [$standard->getId(), $reengagement->getId(), $withExtraMeta->getId()];
+    sort($expected);
+    $this->assertSame($expected, $ids);
+  }
+
+  private function createPausedTask(NewsletterEntity $newsletter, bool $withReason, array $extraMeta = []): ScheduledTaskEntity {
+    $task = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_PAUSED);
+    $this->sendingQueueFactory->create($task, $newsletter);
+    $meta = $extraMeta;
+    if ($withReason) {
+      $meta[ScheduledTaskEntity::META_PAUSE_REASON] = ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN;
+    }
+    $task->setMeta($meta ?: null);
+    $this->entityManager->flush();
+    return $task;
   }
 }
