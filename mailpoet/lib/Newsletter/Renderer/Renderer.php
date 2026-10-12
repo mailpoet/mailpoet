@@ -278,6 +278,9 @@ class Renderer {
   private function postProcessTemplate(DomNode $templateDom) {
     // replace spaces in image tag URLs
     foreach ($templateDom->query('img') as $image) {
+      if ($image->src === null) {
+        continue;
+      }
       $image->src = str_replace(' ', '%20', $image->src);
     }
     foreach ($templateDom->query('a') as $anchor) {

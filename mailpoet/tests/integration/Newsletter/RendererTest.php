@@ -757,7 +757,7 @@ class RendererTest extends \MailPoetTest {
     $this->assertStringContainsString('https://example.com?e=1&f=2', $template['html']);
   }
 
-  public function testItRendersAnchorsWithoutHrefWithoutDeprecations() {
+  public function testItRendersAnchorsAndImagesWithoutUrlsWithoutDeprecations() {
     $body = [
       'content' => [
         'type' => 'container',
@@ -769,7 +769,7 @@ class RendererTest extends \MailPoetTest {
             'styles' => ['block' => []],
             'blocks' => [[
               'type' => 'text',
-              'text' => '<p><a name="anchor">Anchor</a></p>',
+              'text' => '<p><a name="anchor">Anchor</a><img alt="no-src"></p>',
             ]],
           ]],
         ]],
@@ -790,6 +790,8 @@ class RendererTest extends \MailPoetTest {
 
     $this->assertSame([], $deprecations);
     $this->assertStringContainsString('name="anchor"', $template['html']);
+    $this->assertStringContainsString('alt="no-src"', $template['html']);
+    $this->assertStringNotContainsString('src=""', $template['html']);
   }
 
   // Test case for MAILPOET-3660
