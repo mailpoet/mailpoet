@@ -24,6 +24,7 @@ class AuthorizedSenderDomainController {
   const INSTALLED_AFTER_NEW_RESTRICTIONS_OPTION = 'installed_after_new_domain_restrictions';
 
   const SENDER_DOMAINS_KEY = 'mailpoet_sender_domains';
+  const SENDER_DOMAINS_RELOAD_FAILED_KEY = 'mailpoet_sender_domains_reload_failed';
 
   /** @var Bridge */
   private $bridge;
@@ -34,11 +35,11 @@ class AuthorizedSenderDomainController {
   /** @var SettingsController  */
   private $settingsController;
 
-  /** @var null|array Cached response for with authorized domains */
-  private $currentRecords = null;
-
   /** @var null|array */
   private $currentRawData = null;
+
+  /** @var bool */
+  private $reloadFailed = false;
 
   /** @var Subscribers */
   private $subscribers;
@@ -61,12 +62,12 @@ class AuthorizedSenderDomainController {
   }
 
   /**
-   * Get record of Bridge::getAuthorizedSenderDomains
+   * Get DNS records of the sender domains, keyed by lowercase domain name
    */
   public function getDomainRecords(string $domain = ''): array {
     $records = $this->getAllRecords();
     if ($domain) {
-      return $records[$domain] ?? [];
+      return $records[strtolower($domain)] ?? [];
     }
     return $records;
   }
@@ -102,11 +103,10 @@ class AuthorizedSenderDomainController {
    * returns an Array of DNS response or array of error
    */
   public function createAuthorizedSenderDomain(string $domain): array {
-    $allDomains = $this->getAllSenderDomains();
+    $domain = strtolower($domain);
+    $this->reloadCache(true);
 
-    $alreadyExist = in_array($domain, $allDomains);
-
-    if ($alreadyExist) {
+    if (!$this->reloadFailed && in_array($domain, $this->getAllSenderDomains(), true)) {
       // sender domain already created. skip making new request
       throw new \InvalidArgumentException(self::AUTHORIZED_SENDER_DOMAIN_ERROR_ALREADY_CREATED);
     }
@@ -117,9 +117,10 @@ class AuthorizedSenderDomainController {
       throw new \InvalidArgumentException($response['message']);
     }
 
-    // Reset cached value since a new domain was added
-    $this->currentRecords = null;
-    $this->reloadCache();
+    $this->reloadCache(true);
+    if ($this->reloadFailed) {
+      $this->clearCache();
+    }
 
     return $response;
   }
@@ -138,22 +139,19 @@ class AuthorizedSenderDomainController {
    * * or [error: string, status: bool] for other errors
    */
   public function verifyAuthorizedSenderDomain(string $domain): array {
-    $records = $this->bridge->getAuthorizedSenderDomains();
+    $domain = strtolower($domain);
+    $this->reloadCache(true);
 
-    $allDomains = $this->returnAllDomains($records);
-    $alreadyExist = in_array($domain, $allDomains);
+    if (!$this->reloadFailed) {
+      if (!in_array($domain, $this->getAllSenderDomains(), true)) {
+        // can't verify a domain that does not exist
+        throw new \InvalidArgumentException(self::AUTHORIZED_SENDER_DOMAIN_ERROR_NOT_CREATED);
+      }
 
-    if (!$alreadyExist) {
-      // can't verify a domain that does not exist
-      throw new \InvalidArgumentException(self::AUTHORIZED_SENDER_DOMAIN_ERROR_NOT_CREATED);
-    }
-
-    $verifiedDomains = $this->getFullyVerifiedSenderDomains(true);
-    $alreadyVerified = in_array($domain, $verifiedDomains);
-
-    if ($alreadyVerified) {
-      // no need to reverify an already verified domain
-      throw new \InvalidArgumentException(self::AUTHORIZED_SENDER_DOMAIN_ERROR_ALREADY_VERIFIED);
+      if (in_array($domain, $this->getFullyVerifiedSenderDomains(true), true)) {
+        // no need to reverify an already verified domain
+        throw new \InvalidArgumentException(self::AUTHORIZED_SENDER_DOMAIN_ERROR_ALREADY_VERIFIED);
+      }
     }
 
     $response = $this->bridge->verifyAuthorizedSenderDomain($domain);
@@ -163,8 +161,7 @@ class AuthorizedSenderDomainController {
       throw new \InvalidArgumentException($response['message']);
     }
 
-    $this->currentRecords = null;
-    $this->reloadCache();
+    $this->reloadCache(true);
 
     return $response;
   }
@@ -226,21 +223,41 @@ class AuthorizedSenderDomainController {
   }
 
   /**
-   * Little helper function to return All Domains. alias to `array_keys`
-   *
-   * The domain is the key returned from the Bridge::getAuthorizedSenderDomains
+   * The domain is the lowercase key of the records derived from the cached rows
    */
   private function returnAllDomains(array $records): array {
-    $domains = array_keys($records);
-    return $domains;
+    return array_map('strval', array_keys($records));
   }
 
-  private function reloadCache() {
-    $currentRawData = $this->bridge->getRawSenderDomainData();
-    if (!$currentRawData) return; // Do not modify cache if there is no data from the API
+  private function reloadCache(bool $force = false): void {
+    if (!$force && $this->wp->getTransient(self::SENDER_DOMAINS_RELOAD_FAILED_KEY)) {
+      $this->reloadFailed = true;
+      return;
+    }
 
+    $currentRawData = $this->bridge->getRawSenderDomainData();
+    if ($currentRawData === null) {
+      // Keep existing cache and avoid hitting the Bridge again for a while
+      $this->reloadFailed = true;
+      $this->wp->setTransient(self::SENDER_DOMAINS_RELOAD_FAILED_KEY, 1, 5 * 60);
+      return;
+    }
+
+    $this->reloadFailed = false;
+    $this->wp->deleteTransient(self::SENDER_DOMAINS_RELOAD_FAILED_KEY);
     $this->currentRawData = $currentRawData;
     $this->wp->setTransient(self::SENDER_DOMAINS_KEY, $this->currentRawData, 60 * 60 * 24 * 7);
+  }
+
+  public function clearCache(): void {
+    $this->currentRawData = null;
+    $this->reloadFailed = false;
+    $this->wp->deleteTransient(self::SENDER_DOMAINS_KEY);
+    $this->wp->deleteTransient(self::SENDER_DOMAINS_RELOAD_FAILED_KEY);
+  }
+
+  public function isLastReloadFailed(): bool {
+    return $this->reloadFailed;
   }
 
   public function isCacheAvailable(): bool {
@@ -252,7 +269,7 @@ class AuthorizedSenderDomainController {
       $currentData = $this->wp->getTransient(self::SENDER_DOMAINS_KEY);
       if (is_array($currentData)) {
         $this->currentRawData = $currentData;
-      } else {
+      } elseif (!$this->reloadFailed) {
         $this->reloadCache();
       }
     }
@@ -260,10 +277,13 @@ class AuthorizedSenderDomainController {
   }
 
   private function getAllRecords(): array {
-    if ($this->currentRecords === null) {
-      $this->currentRecords = $this->bridge->getAuthorizedSenderDomains();
+    $records = [];
+    foreach ($this->getAllRawData() as $row) {
+      if (isset($row['domain'])) {
+        $records[strtolower($row['domain'])] = $row['dns'] ?? [];
+      }
     }
-    return $this->currentRecords;
+    return $records;
   }
 
   public function isNewUser(): bool {
