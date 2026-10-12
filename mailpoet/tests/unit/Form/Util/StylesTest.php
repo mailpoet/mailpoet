@@ -30,6 +30,13 @@ class StylesTest extends \MailPoetUnitTest {
     verify($extractedAndPrefixedStyles)->equals($expectedResult);
   }
 
+  public function testItKeepsEscapedLessThanSignEscapedInPrefixedStyles() {
+    $stylesheet = '#x { background: url("\3c x\3e"); } .a > .b { margin: 0; }';
+    $prefixedStyles = $this->styles->prefixStyles($stylesheet, 'mailpoet');
+    verify($prefixedStyles)->stringNotContainsString('<');
+    verify($prefixedStyles)->stringContainsString('mailpoet .a > .b { margin: 0; }');
+  }
+
   public function testItShouldNotRenderStylesForFormWithoutSettings() {
     $form = Fixtures::get('simple_form_body');
     $styles = $this->styles->renderFormSettingsStyles($this->createForm($form), '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
