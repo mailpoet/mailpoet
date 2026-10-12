@@ -660,7 +660,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($this->sendingThrottlingHandler->getBatchSize())->equals(SendingThrottlingHandler::TEMPLATED_INITIAL_BATCH_SIZE);
   }
 
-  public function testItPausesTaskWhenTemplatedBatchTemplatesDiverge(): void {
+  public function testItFallsBackToStandardSendingWhenTemplatedBatchTemplatesDiverge(): void {
     $this->enableMssTemplatedSending();
 
     $subscriber2 = $this->createSubscriber('jane@doe.com', 'Jane', 'Doe', [$this->segment]);
@@ -674,14 +674,21 @@ class SendingQueueTest extends \MailPoetTest {
         MailerTask::class,
         [$this->diContainer->get(MailerFactory::class)],
         [
-          'sendBulk' => Expected::never(),
+          // Only the second, standard run sends: one rendered email per subscriber.
+          'sendBulk' => Expected::once(function($newsletters, $subscribers) {
+            verify($newsletters)->isArray();
+            verify($newsletters)->arrayCount(2);
+            verify($subscribers)->arrayCount(2);
+            return $this->mailerTaskDummyResponse;
+          }),
           'prepareSubscriberForSending' => function($subscriber) {
             return $subscriber->getEmail();
           },
         ]
       )
     );
-    // Each subscriber produces a different template, which must abort the batch.
+    $renderedNewsletter = ['id' => $this->newsletter->getId(), 'subject' => 'Subject', 'body' => ['html' => '', 'text' => '']];
+    // Each subscriber produces a different template, which must abort the templated batch.
     $sendingQueueWorker->newsletterTask = $this->make(NewsletterTask::class, [
       'prepareNewsletterForTemplatedSending' => function($newsletter, $subscriber) {
         return [
@@ -689,6 +696,8 @@ class SendingQueueTest extends \MailPoetTest {
           'substitutions' => ['subject' => [], 'html' => [], 'text' => []],
         ];
       },
+      'prepareNewsletterForSending' => $renderedNewsletter,
+      'isSentWithTracking' => false,
     ]);
 
     try {
@@ -698,9 +707,17 @@ class SendingQueueTest extends \MailPoetTest {
       verify($exception->getMessage())->stringContainsString('produced a different email template (subject)');
     }
 
-    // The task must be paused so the mismatch is not retried by every cron run.
+    // The queue is not paused; it only loses templated sending.
     $this->entityManager->refresh($this->scheduledTask);
-    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+    $this->entityManager->refresh($this->sendingQueue);
+    verify($this->scheduledTask->getStatus())->notEquals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($this->sendingQueue->getMeta()[SendingQueueEntity::META_TEMPLATED_SENDING_DISABLED] ?? null)->true();
+    verify($this->sendingQueue->getCountProcessed())->equals(0);
+
+    // The next run sends the same subscribers in the standard way.
+    $sendingQueueWorker->processQueue($this->scheduledTask, $this->newsletter, [$this->subscriber, $subscriber2], 1000000000000000000, 'bulk');
+    $this->entityManager->refresh($this->sendingQueue);
+    verify($this->sendingQueue->getCountProcessed())->equals(2);
   }
 
   public function testItCanProcessAutomationSubscribersInTemplatedBulkWithoutDeprecatedFilters(): void {

@@ -289,6 +289,13 @@ class SendingQueuesRepository extends Repository {
     $this->flush();
   }
 
+  public function disableTemplatedSending(SendingQueueEntity $queue): void {
+    $meta = $queue->getMeta() ?? [];
+    $meta[SendingQueueEntity::META_TEMPLATED_SENDING_DISABLED] = true;
+    $queue->setMeta($meta);
+    $this->flush();
+  }
+
   public function saveFilterSegmentMeta(SendingQueueEntity $queue, SegmentEntity $filterSegmentEntity): void {
     $meta = $queue->getMeta() ?? [];
     $meta['filterSegment'] = [
