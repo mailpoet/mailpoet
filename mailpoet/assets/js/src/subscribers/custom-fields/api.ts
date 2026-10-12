@@ -102,17 +102,28 @@ export type CustomFieldBulkAction =
   | 'delete'
   | 'empty_trash';
 
+export type KeptCustomField = {
+  id: number;
+  name: string;
+  segments: { id: number; name: string; trashed: boolean }[];
+};
+
+export type BulkActionResult = {
+  count: number;
+  kept: KeptCustomField[];
+};
+
 export async function bulkAction(
   action: CustomFieldBulkAction,
   ids: number[] = [],
-): Promise<number> {
+): Promise<BulkActionResult> {
   ensureInitialized();
-  const response = await apiFetch<ApiEnvelope<{ count: number }>>({
+  const response = await apiFetch<ApiEnvelope<BulkActionResult>>({
     path: '/mailpoet/v1/custom-fields/bulk-action',
     method: 'POST',
     data: action === 'empty_trash' ? { action } : { action, ids },
   });
-  return response.data.count;
+  return { count: response.data.count, kept: response.data.kept ?? [] };
 }
 
 export function getSubscribersListingUrl(): string {

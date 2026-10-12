@@ -136,6 +136,18 @@ class CustomFieldsTest extends \MailPoetTest {
     verify($this->entityManager->getRepository(DynamicSegmentFilterEntity::class)->findAll())->arrayCount(1);
   }
 
+  public function testItDoesNotDeleteACustomFieldUsedInATrashedSegment() {
+    $customField = (new CustomFieldFactory())->withName('Segment field')->create();
+    (new DynamicSegmentFactory())->withName('Trashed segment')->withCustomFieldFilter($customField)->withDeleted()->create();
+
+    $response = $this->endpoint->delete(['id' => $customField->getId()]);
+    verify($response->status)->equals(APIResponse::STATUS_CONFLICT);
+
+    $this->entityManager->clear();
+    verify($this->repository->findOneById($customField->getId()))->notNull();
+    verify($this->entityManager->getRepository(DynamicSegmentFilterEntity::class)->findAll())->arrayCount(1);
+  }
+
   public function testItDoesNotSaveATrashedCustomField() {
     $customField = $this->repository->findOneBy(['name' => 'CF: text']);
     $this->assertInstanceOf(CustomFieldEntity::class, $customField);

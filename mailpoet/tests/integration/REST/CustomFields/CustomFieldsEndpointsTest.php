@@ -5,6 +5,7 @@ namespace MailPoet\Test\REST\CustomFields;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\REST\Test;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
+use MailPoet\Test\DataFactories\DynamicSegment as DynamicSegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 require_once __DIR__ . '/../Test.php';
@@ -414,6 +415,7 @@ class CustomFieldsEndpointsTest extends Test {
     ]);
     $this->assertSame('trash', $trash['data']['action']);
     $this->assertSame(2, $trash['data']['count']);
+    $this->assertSame([], $trash['data']['kept']);
     $trashedA = $this->repository->findOneById($a->getId());
     $trashedB = $this->repository->findOneById($b->getId());
     $this->assertNotNull($trashedA);
@@ -435,6 +437,7 @@ class CustomFieldsEndpointsTest extends Test {
     ]);
     $this->assertSame('delete', $delete['data']['action']);
     $this->assertSame(1, $delete['data']['count']);
+    $this->assertSame([], $delete['data']['kept']);
 
     $this->assertNull($this->repository->findOneById($a->getId()));
     $this->assertNotNull($this->repository->findOneById($b->getId()));
@@ -456,6 +459,55 @@ class CustomFieldsEndpointsTest extends Test {
     $this->assertNull($this->repository->findOneById($a->getId()));
     $this->assertNull($this->repository->findOneById($b->getId()));
     $this->assertNotNull($this->repository->findOneById($c->getId()));
+  }
+
+  public function testBulkDeleteKeepsCustomFieldsUsedInDynamicSegments(): void {
+    $used = (new CustomFieldFactory())->withName('Used')->create();
+    $unused = (new CustomFieldFactory())->withName('Unused')->create();
+    $activeSegment = (new DynamicSegmentFactory())->withName('Active segment')->withCustomFieldFilter($used)->create();
+    $trashedSegment = (new DynamicSegmentFactory())->withName('Trashed segment')->withCustomFieldFilter($used)->withDeleted()->create();
+    $ids = [(int)$used->getId(), (int)$unused->getId()];
+    $this->repository->bulkTrash($ids);
+
+    $data = $this->post(self::BASE_PATH . '/bulk-action', [
+      'json' => ['action' => 'delete', 'ids' => $ids],
+    ]);
+
+    $this->assertSame(1, $data['data']['count']);
+    $this->assertSame([
+      [
+        'id' => (int)$used->getId(),
+        'name' => 'Used',
+        'segments' => [
+          ['id' => (int)$activeSegment->getId(), 'name' => 'Active segment', 'trashed' => false],
+          ['id' => (int)$trashedSegment->getId(), 'name' => 'Trashed segment', 'trashed' => true],
+        ],
+      ],
+    ], $data['data']['kept']);
+    $this->assertNotNull($this->repository->findOneById($used->getId()));
+    $this->assertNull($this->repository->findOneById($unused->getId()));
+  }
+
+  public function testEmptyTrashKeepsCustomFieldsUsedInDynamicSegments(): void {
+    $used = (new CustomFieldFactory())->withName('Used')->create();
+    $unused = (new CustomFieldFactory())->withName('Unused')->create();
+    $segment = (new DynamicSegmentFactory())->withName('Active segment')->withCustomFieldFilter($used)->create();
+    $this->repository->bulkTrash([(int)$used->getId(), (int)$unused->getId()]);
+
+    $data = $this->post(self::BASE_PATH . '/bulk-action', [
+      'json' => ['action' => 'empty_trash'],
+    ]);
+
+    $this->assertSame(1, $data['data']['count']);
+    $this->assertSame([
+      [
+        'id' => (int)$used->getId(),
+        'name' => 'Used',
+        'segments' => [['id' => (int)$segment->getId(), 'name' => 'Active segment', 'trashed' => false]],
+      ],
+    ], $data['data']['kept']);
+    $this->assertNotNull($this->repository->findOneById($used->getId()));
+    $this->assertNull($this->repository->findOneById($unused->getId()));
   }
 
   public function testBulkActionRejectsInvalidPayload(): void {
