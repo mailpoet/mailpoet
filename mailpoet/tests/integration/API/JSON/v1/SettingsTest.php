@@ -479,8 +479,8 @@ class SettingsTest extends \MailPoetTest {
     $this->endpoint = new Settings(
       $this->settings,
       $this->make(Bridge::class, ['onSettingsSave' => Expected::once()]),
-      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => Expected::once()]),
-      $this->diContainer->get(AuthorizedSenderDomainController::class),
+      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => Expected::once(), 'clearCache' => Expected::once()]),
+      $this->make(AuthorizedSenderDomainController::class, ['clearCache' => Expected::once()]),
       $this->make(TransactionalEmails::class),
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(NewslettersRepository::class),
@@ -501,6 +501,53 @@ class SettingsTest extends \MailPoetTest {
     verify($this->settings->get('mta.method'))->equals('MailPoet');
     verify($this->settings->get('signup_confirmation.enabled'))->equals(1);
     verify($this->settings->get('premium.premium_key'))->equals($newKey);
+  }
+
+  public function testItClearsSenderCachesWhenApiKeyChanges() {
+    $this->settings->set('mta', ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => 'old-key']);
+    $endpoint = $this->createEndpointWithCacheExpectations(Expected::once(), Expected::once());
+    $endpoint->set(['mta' => ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => 'new-key']]);
+    verify($this->settings->get('mta.mailpoet_api_key'))->same('new-key');
+  }
+
+  public function testItKeepsSenderCachesWhenApiKeyIsUnchanged() {
+    $this->settings->set('mta', ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => 'same-key']);
+    $endpoint = $this->createEndpointWithCacheExpectations(Expected::never(), Expected::never());
+    $endpoint->set(['mta' => ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => 'same-key']]);
+  }
+
+  public function testItKeepsSenderCachesWhenSavedSettingsOmitApiKey() {
+    $this->settings->set('mta', ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => 'same-key']);
+    $endpoint = $this->createEndpointWithCacheExpectations(Expected::never(), Expected::never());
+    $endpoint->set(['some.setting.key' => false]);
+    verify($this->settings->get('mta.mailpoet_api_key'))->same('same-key');
+  }
+
+  public function testItClearsSenderCachesWhenApiKeyChangesWhilePendingApproval() {
+    $this->settings->set('mta', ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => 'old-key']);
+    $endpoint = $this->createEndpointWithCacheExpectations(Expected::once(), Expected::once(), true);
+    $endpoint->set(['mta' => ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => 'new-key']]);
+  }
+
+  private function createEndpointWithCacheExpectations($senderDomainClearCache, $emailsClearCache, bool $pendingApproval = false): Settings {
+    return new Settings(
+      $this->settings,
+      new Bridge,
+      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => null, 'clearCache' => $emailsClearCache]),
+      $this->make(AuthorizedSenderDomainController::class, ['clearCache' => $senderDomainClearCache]),
+      $this->make(TransactionalEmails::class),
+      $this->diContainer->get(EntityManager::class),
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(ScheduledTasksRepository::class),
+      $this->diContainer->get(FormMessageController::class),
+      $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => $pendingApproval]),
+      $this->diContainer->get(SegmentsRepository::class),
+      $this->make(SettingsChangeHandler::class, ['updateApiKeyState' => null]),
+      $this->diContainer->get(SubscribersCountsController::class),
+      $this->diContainer->get(TrackingConfig::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+    );
   }
 
   private function createNewsletter(string $type, string $status = NewsletterEntity::STATUS_DRAFT, $parent = null): NewsletterEntity {

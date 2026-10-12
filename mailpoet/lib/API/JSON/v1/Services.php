@@ -114,7 +114,12 @@ class Services extends APIEndpoint {
 
     try {
       $result = $this->bridge->checkMSSKey($key);
+      $previousKey = $this->settings->get(Bridge::API_KEY_SETTING_NAME);
       $this->bridge->storeMSSKeyAndState($key, $result);
+      if ($this->settings->get(Bridge::API_KEY_SETTING_NAME) !== $previousKey) {
+        $this->senderDomainController->clearCache();
+        $this->authorizedEmailsController->clearCache();
+      }
     } catch (\Exception $e) {
       return $this->errorResponse(
         [

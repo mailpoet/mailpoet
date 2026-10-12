@@ -148,6 +148,11 @@ class Settings extends APIEndpoint {
 
       $this->onSettingsChange($oldSettings, $this->settings->getAll());
 
+      if (($oldSettings['mta']['mailpoet_api_key'] ?? null) !== $this->settings->get('mta.mailpoet_api_key')) {
+        $this->senderDomainController->clearCache();
+        $this->authorizedEmailsController->clearCache();
+      }
+
       // when pending approval, leave this to cron / Key Activation tab logic
       if (!$this->servicesChecker->isMailPoetAPIKeyPendingApproval()) {
         $this->settingsChangeHandler->updateApiKeyState($settings);
