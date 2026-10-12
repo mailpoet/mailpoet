@@ -512,6 +512,34 @@ class NewsletterTest extends \MailPoetTest {
     $this->assertSame('Read Templated shortcode title', $reconstructed['body']['text']);
   }
 
+  public function testItEncodesShortcodeValuesInsideAttributesInTemplatedBatch(): void {
+    $postId = WPFunctions::get()->wpInsertPost([
+      'post_title' => 'Spring sale" data-extra="yes',
+      'post_status' => 'publish',
+    ]);
+
+    // The same shortcode lands once inside an attribute and once as text. The rendered path
+    // encodes only the attribute occurrence, so the templated path needs two placeholders.
+    $this->sendingQueueEntity->setNewsletterRenderedSubject('News: [newsletter:post_title]');
+    $this->sendingQueueEntity->setNewsletterRenderedBody([
+      'html' => '<p data-post-id="' . $postId . '"><img alt="[newsletter:post_title]" />Read [newsletter:post_title]</p>',
+      'text' => 'Read [newsletter:post_title]',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $fullNewsletter = $this->newsletterTask->prepareNewsletterForSending($this->newsletter, $this->subscriber, $this->sendingQueueEntity);
+    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending($this->newsletter, $this->subscriber, $this->sendingQueueEntity);
+
+    $template = $templatedNewsletter['newsletter'];
+    $substitutions = $templatedNewsletter['substitutions'];
+    $this->assertCount(2, $substitutions['html']);
+    $reconstructedHtml = strtr($template['body']['html'], $substitutions['html']);
+    $this->assertSame($fullNewsletter['body']['html'], $reconstructedHtml);
+    $this->assertStringContainsString('<img alt="Spring sale&quot; data-extra=&quot;yes" />Read Spring sale" data-extra="yes</p>', $reconstructedHtml);
+    $this->assertSame($fullNewsletter['subject'], strtr($template['subject'], $substitutions['subject']));
+    $this->assertSame($fullNewsletter['body']['text'], strtr($template['body']['text'], $substitutions['text']));
+  }
+
   public function testItDeduplicatesRepeatedTrackedLinksIntoSingleHtmlPlaceholder(): void {
     $this->newsletterTask->trackingEnabled = true;
     $repeatedLink = Links::DATA_TAG_CLICK . '-abcdef123456';

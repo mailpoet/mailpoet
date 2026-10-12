@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter\Sending\Placeholders;
 
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\Html2Text;
+use MailPoet\Newsletter\Shortcodes\Shortcodes;
 
 /**
  * Issues `{{mailpoet_mss_<namespace>_<n>}}` placeholders for the per-recipient parts of an email
@@ -21,6 +22,7 @@ class PlaceholderCollector {
   private const CONTEXT_SUBJECT_TEXT_FROM_HTML = 'subject_text_from_html';
   private const CONTEXT_HTML = 'html';
   private const CONTEXT_HTML_PLAIN_TEXT = 'html_plain_text';
+  private const CONTEXT_HTML_ATTRIBUTE = 'html_attribute';
   private const CONTEXT_HTML_URL = 'html_url';
   private const CONTEXT_HTML_URL_COMPONENT = 'html_url_component';
   private const CONTEXT_TEXT = 'text';
@@ -100,6 +102,14 @@ class PlaceholderCollector {
   public function addHtmlPlainText(string $value, string $token): string {
     $value = (string)preg_replace('~</(title)~i', '&lt;/$1', $value);
     return $this->addToPart(self::PART_HTML, self::CONTEXT_HTML_PLAIN_TEXT, $value, $token);
+  }
+
+  /**
+   * A value that lands inside a start tag of the HTML body, such as an image alt or a link title,
+   * encoded the way Shortcodes::replace() encodes shortcode values at such positions.
+   */
+  public function addHtmlAttribute(string $value, string $token): string {
+    return $this->addToPart(self::PART_HTML, self::CONTEXT_HTML_ATTRIBUTE, Shortcodes::encodeForAttribute($value), $token);
   }
 
   /**
