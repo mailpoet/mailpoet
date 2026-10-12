@@ -2,9 +2,12 @@
 
 namespace MailPoet\Test\API\JSON\v1;
 
+use Codeception\Stub\Expected;
 use Codeception\Util\Stub;
+use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\SendingQueue as SendingQueueAPI;
+use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\DaemonHttpRunner;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
@@ -12,10 +15,13 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
+use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption;
@@ -23,7 +29,10 @@ use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\Util\License\Features\CapabilitiesManager;
+use MailPoet\Util\License\Features\Data\Capability;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SendingQueueTest extends \MailPoetTest {
   /** @var NewsletterEntity */
@@ -102,6 +111,222 @@ class SendingQueueTest extends \MailPoetTest {
     verify($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
     $res = $sendingQueue->resume(['newsletter_id' => $this->newsletter->getId()]);
     verify($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
+  }
+
+  public function testResumeIsRefusedWhenSenderDomainIsNotReady(): void {
+    $task = $this->createPausedCampaign('sender@brand.com');
+    $calls = [];
+    $api = $this->getResumeApi($calls, false, true);
+
+    $result = $api->resume(['newsletter_id' => $this->newsletter->getId()]);
+
+    verify($result->status)->equals(APIResponse::STATUS_FORBIDDEN);
+    verify($result->errors[0]['error'])->equals(APIError::FORBIDDEN);
+    $message = $result->errors[0]['message'];
+    verify($message)->equals('This email can’t be resumed yet. Your site has more than 200 subscribers, so campaigns must be sent from an authenticated domain. Authenticate brand.com or change the From address, then click Resume again.');
+    verify($message)->stringNotContainsString('&#');
+    verify($message)->stringNotContainsString('&amp;');
+    verify($calls[0]['context'])->equals('resume');
+    $this->entityManager->clear();
+    $reloaded = $this->entityManager->find(ScheduledTaskEntity::class, $task->getId());
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $reloaded);
+    verify($reloaded->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($reloaded->getPauseReason())->equals(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
+  }
+
+  public function testResumeRefusalMessageForFreeMailSender(): void {
+    $this->createPausedCampaign('sender@gmail.com');
+    $calls = [];
+    $result = $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $this->newsletter->getId()]);
+    verify($result->errors[0]['message'])->equals('This email can’t be resumed yet. Your site has more than 200 subscribers, so campaigns can’t be sent from a shared address like gmail.com. Change the From address to one on your own domain, then click Resume again.');
+  }
+
+  public function testResumeRefusalMessageForGenericSender(): void {
+    $this->createPausedCampaign('');
+    $calls = [];
+    $result = $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $this->newsletter->getId()]);
+    verify($result->errors[0]['message'])->equals('This email can’t be resumed yet. Your site has more than 200 subscribers, so campaigns must be sent from an authenticated domain. Change the From address, then click Resume again.');
+  }
+
+  public function testResumeRefusalMessageOmitsSubscriberClauseForSmallSender(): void {
+    $this->createPausedCampaign('sender@brand.com');
+    $calls = [];
+    $result = $this->getResumeApi($calls, false, false)->resume(['newsletter_id' => $this->newsletter->getId()]);
+    verify($result->errors[0]['message'])->equals('This email can’t be resumed yet. Campaigns must be sent from an authenticated domain. Authenticate brand.com or change the From address, then click Resume again.');
+  }
+
+  public function testResumeRefusalMessageIsPlainText(): void {
+    $this->createPausedCampaign("sender@o'brien&co.com");
+    $calls = [];
+    $result = $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $this->newsletter->getId()]);
+    verify($result->errors[0]['message'])->stringContainsString("Authenticate o'brien&co.com or");
+  }
+
+  public function testResumeSucceedsWhenSenderIsValid(): void {
+    $task = $this->createPausedCampaign('sender@brand.com');
+    $calls = [];
+    $result = $this->getResumeApi($calls, true, true)->resume(['newsletter_id' => $this->newsletter->getId()]);
+
+    verify($result->status)->equals(200);
+    $this->entityManager->clear();
+    $reloaded = $this->entityManager->find(ScheduledTaskEntity::class, $task->getId());
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $reloaded);
+    verify($reloaded->getStatus())->null();
+    verify($reloaded->getPauseReason())->null();
+  }
+
+  public function testResumeChecksSenderBeforeLookingForQueue(): void {
+    $newsletter = (new NewsletterFactory())->withSubject('No queue')->withDefaultBody()->create();
+    $calls = [];
+    $result = $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $newsletter->getId()]);
+    verify($result->status)->equals(APIResponse::STATUS_FORBIDDEN);
+    verify($result->errors[0]['error'])->equals(APIError::FORBIDDEN);
+  }
+
+  public function testResumePassesMarkerToValidation(): void {
+    $this->createPausedCampaign('sender@brand.com', true);
+    $calls = [];
+    $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $this->newsletter->getId()]);
+    verify($calls[0]['requireVerifiedDomain'])->true();
+
+    $other = (new NewsletterFactory())->withSubject('Unmarked')->withDefaultBody()->withSenderAddress('sender@brand.com')
+      ->withSendingQueue(['status' => ScheduledTaskEntity::STATUS_PAUSED])->create();
+    $calls = [];
+    $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $other->getId()]);
+    verify($calls[0]['requireVerifiedDomain'])->false();
+  }
+
+  public function testResumeFindsMarkerOnAnyTimeZoneSibling(): void {
+    $segment = (new SegmentFactory())->create();
+    (new SubscriberFactory())->withSegments([$segment])->withTimeZone('America/New_York')->create();
+    (new SubscriberFactory())->withSegments([$segment])->withTimeZone('Europe/Bratislava')->create();
+    $newsletter = (new NewsletterFactory())->withDefaultBody()->withSenderAddress('sender@brand.com')->withSegments([$segment])->create();
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_IS_SCHEDULED => '1',
+      NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE => TimeZoneCampaignScheduler::SCHEDULE_MODE_SUBSCRIBER_TIMEZONE,
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_DATE => (new \DateTimeImmutable('+3 days', new \DateTimeZone('UTC')))->format('Y-m-d'),
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_TIME => '12:00:00',
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_AT => (new \DateTimeImmutable('+3 days', new \DateTimeZone('UTC')))->format('Y-m-d H:i:s'),
+    ]);
+    $scheduler = $this->getServiceWithOverrides(TimeZoneCampaignScheduler::class, [
+      'capabilitiesManager' => Stub::makeEmpty(CapabilitiesManager::class, [
+        'getCapability' => new Capability('sendByTimezone', Capability::TYPE_BOOLEAN, false),
+      ]),
+      'featuresController' => Stub::make(FeaturesController::class, ['isSupported' => true]),
+      'wp' => Stub::make(WPFunctions::class, ['wpTimezone' => new \DateTimeZone('Europe/Bratislava')]),
+    ]);
+    $scheduler->schedule($newsletter);
+    $queues = $this->diContainer->get(SendingQueuesRepository::class)->findBy(['newsletter' => $newsletter]);
+    $this->assertGreaterThan(1, count($queues));
+    $this->entityManager->refresh($newsletter);
+    $scheduler->pauseCampaign($queues[0]);
+
+    $last = $newsletter->getLastUpdatedQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $last);
+    $marked = false;
+    foreach ($queues as $queue) {
+      if ($queue->getId() === $last->getId()) {
+        continue;
+      }
+      $task = $queue->getTask();
+      $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+      $task->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
+      $marked = true;
+      break;
+    }
+    $this->assertTrue($marked);
+    $this->entityManager->flush();
+    $lastTask = $last->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $lastTask);
+    verify($lastTask->getPauseReason())->null();
+
+    $calls = [];
+    $api = $this->getResumeApi($calls, false, true, [
+      'timeZoneCampaignScheduler' => Stub::make(TimeZoneCampaignScheduler::class, [
+        'isTimeZoneQueue' => true,
+        'getCampaignQueues' => $queues,
+        'resumeCampaign' => Expected::never(),
+      ]),
+    ]);
+    $result = $api->resume(['newsletter_id' => $newsletter->getId()]);
+
+    verify($result->status)->equals(APIResponse::STATUS_FORBIDDEN);
+    verify($calls[0]['requireVerifiedDomain'])->true();
+  }
+
+  public function testResumeSyncsParentSenderToMarkedNotificationHistory(): void {
+    $parent = (new NewsletterFactory())->withPostNotificationsType()->withSenderAddress('old@example.com')->withSenderName('Old')->create();
+    $history = (new NewsletterFactory())->withPostNotificationHistoryType()->withParent($parent)
+      ->withSenderAddress('old@example.com')->withSenderName('Old')
+      ->withSendingQueue(['status' => ScheduledTaskEntity::STATUS_PAUSED])->create();
+    $queue = $history->getLastUpdatedQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $task = $queue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    $task->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
+    $parent->setSenderAddress('new@example.com');
+    $parent->setSenderName('New');
+    $this->entityManager->flush();
+
+    $calls = [];
+    $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $history->getId()]);
+
+    verify($calls[0]['sender'])->equals('new@example.com');
+    $this->entityManager->clear();
+    $reloaded = $this->entityManager->find(NewsletterEntity::class, $history->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $reloaded);
+    verify($reloaded->getSenderAddress())->equals('new@example.com');
+    verify($reloaded->getSenderName())->equals('New');
+  }
+
+  public function testResumeDoesNotSyncParentSenderToUnmarkedNotificationHistory(): void {
+    $parent = (new NewsletterFactory())->withPostNotificationsType()->withSenderAddress('old@example.com')->withSenderName('Old')->create();
+    $history = (new NewsletterFactory())->withPostNotificationHistoryType()->withParent($parent)
+      ->withSenderAddress('old@example.com')->withSenderName('Old')
+      ->withSendingQueue(['status' => ScheduledTaskEntity::STATUS_PAUSED])->create();
+    $parent->setSenderAddress('new@example.com');
+    $parent->setSenderName('New');
+    $this->entityManager->flush();
+
+    $calls = [];
+    $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $history->getId()]);
+
+    verify($calls[0]['sender'])->equals('old@example.com');
+    $this->entityManager->clear();
+    $reloaded = $this->entityManager->find(NewsletterEntity::class, $history->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $reloaded);
+    verify($reloaded->getSenderAddress())->equals('old@example.com');
+    verify($reloaded->getSenderName())->equals('Old');
+  }
+
+  private function createPausedCampaign(string $sender, bool $marked = true): ScheduledTaskEntity {
+    $this->newsletter->setSenderAddress($sender);
+    $task = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_PAUSED, new \DateTime());
+    if ($marked) {
+      $task->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
+    }
+    $queue = (new SendingQueueFactory())->create($task, $this->newsletter);
+    $queue->setCountTotal(1);
+    $this->entityManager->flush();
+    $this->entityManager->refresh($this->newsletter);
+    return $task;
+  }
+
+  private function getResumeApi(array &$calls, bool $valid, bool $isBigSender, array $overrides = []): SendingQueueAPI {
+    return $this->getServiceWithOverrides(SendingQueueAPI::class, array_merge([
+      'authorizedEmailsController' => Stub::make(AuthorizedEmailsController::class, [
+        'isSenderAddressValid' => function(NewsletterEntity $newsletter, string $context = 'activation', bool $requireVerifiedDomain = false) use (&$calls, $valid): bool {
+          $calls[] = [
+            'context' => $context,
+            'requireVerifiedDomain' => $requireVerifiedDomain,
+            'sender' => $newsletter->getSenderAddress(),
+          ];
+          return $valid;
+        },
+      ]),
+      'senderDomainController' => Stub::make(AuthorizedSenderDomainController::class, ['isBigSender' => $isBigSender]),
+      'actionSchedulerDaemonTriggerAction' => Stub::makeEmpty(DaemonTrigger::class),
+    ], $overrides));
   }
 
   public function testItReschedulesScheduledSendingQueueTask() {

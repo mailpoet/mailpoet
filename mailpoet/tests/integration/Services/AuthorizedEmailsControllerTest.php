@@ -430,8 +430,8 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
    * @param string $senderAddress
    * @param array<string, mixed> $overrides
    */
-  private function isSenderAddressValidWithMock(string $context, string $senderAddress, array $overrides): bool {
-    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+  private function isSenderAddressValidWithMock(string $context, string $senderAddress, array $overrides, bool $requireVerifiedDomain = false, string $mtaMethod = Mailer::METHOD_MAILPOET): bool {
+    $this->settings->set('mta.method', $mtaMethod);
     $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, $overrides);
     $newsletter = new NewsletterEntity();
     $newsletter->setSubject('Subject');
@@ -439,7 +439,57 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
     $newsletter->setSenderAddress($senderAddress);
     $controller = $this->getControllerWithCustomMocks(['AuthorizedSenderDomainController' => $senderDomainMock]);
-    return $controller->isSenderAddressValid($newsletter, $context);
+    return $controller->isSenderAddressValid($newsletter, $context, $requireVerifiedDomain);
+  }
+
+  public function testForcedResumeRejectsUnverifiedDomainForSmallSender() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@unauthorized.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => false,
+      'shouldSkipAuthorization' => false,
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once(['email.com']),
+      'isLastReloadFailed' => false,
+    ], true);
+    verify($result)->false();
+  }
+
+  public function testForcedResumeAcceptsVerifiedDomain() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@email.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => false,
+      'shouldSkipAuthorization' => false,
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once(['email.com']),
+      'isLastReloadFailed' => false,
+    ], true);
+    verify($result)->true();
+  }
+
+  public function testForcedResumeIsValidWhenSendingMethodIsNotMailPoet() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@unauthorized.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => false,
+      'shouldSkipAuthorization' => false,
+      'getVerifiedSenderDomainsIgnoringCache' => ['email.com'],
+      'isLastReloadFailed' => false,
+    ], true, Mailer::METHOD_AMAZONSES);
+    verify($result)->true();
+  }
+
+  public function testForcedResumeIsValidWhenAuthorizationIsSkipped() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@unauthorized.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => false,
+      'shouldSkipAuthorization' => true,
+      'getVerifiedSenderDomainsIgnoringCache' => ['email.com'],
+      'isLastReloadFailed' => false,
+    ], true);
+    verify($result)->true();
+  }
+
+  public function testForcedResumeIsValidWhenReloadFailed() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@unauthorized.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => false,
+      'shouldSkipAuthorization' => false,
+      'getVerifiedSenderDomainsIgnoringCache' => [],
+      'isLastReloadFailed' => true,
+    ], true);
+    verify($result)->true();
   }
 
   public function testSenderAddressIsValidForResumeIfAuthorizedSender() {

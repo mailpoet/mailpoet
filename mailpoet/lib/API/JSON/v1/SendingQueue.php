@@ -22,7 +22,11 @@ use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\FreeDomains;
+use MailPoet\Util\Helpers;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -67,6 +71,15 @@ class SendingQueue extends APIEndpoint {
   /** @var TimeZoneCampaignScheduler */
   private $timeZoneCampaignScheduler;
 
+  /** @var AuthorizedEmailsController */
+  private $authorizedEmailsController;
+
+  /** @var FreeDomains */
+  private $freeDomains;
+
+  /** @var AuthorizedSenderDomainController */
+  private $senderDomainController;
+
   public function __construct(
     SubscribersFeature $subscribersFeature,
     NewslettersRepository $newsletterRepository,
@@ -79,7 +92,10 @@ class SendingQueue extends APIEndpoint {
     NewsletterValidator $newsletterValidator,
     SendingQueuesResponseBuilder $sendingQueuesResponseBuilder,
     CronHelper $cronHelper,
-    TimeZoneCampaignScheduler $timeZoneCampaignScheduler
+    TimeZoneCampaignScheduler $timeZoneCampaignScheduler,
+    AuthorizedEmailsController $authorizedEmailsController,
+    FreeDomains $freeDomains,
+    AuthorizedSenderDomainController $senderDomainController
   ) {
     $this->subscribersFeature = $subscribersFeature;
     $this->subscribersFinder = $subscribersFinder;
@@ -93,6 +109,9 @@ class SendingQueue extends APIEndpoint {
     $this->sendingQueuesResponseBuilder = $sendingQueuesResponseBuilder;
     $this->cronHelper = $cronHelper;
     $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
+    $this->authorizedEmailsController = $authorizedEmailsController;
+    $this->freeDomains = $freeDomains;
+    $this->senderDomainController = $senderDomainController;
   }
 
   public function add($data = []) {
@@ -274,6 +293,16 @@ class SendingQueue extends APIEndpoint {
     if ($newsletter instanceof NewsletterEntity) {
       $queue = $newsletter->getLastUpdatedQueue();
 
+      $isPausedForSenderDomain = $queue instanceof SendingQueueEntity && $this->isPausedForSenderDomain($queue);
+      if ($isPausedForSenderDomain) {
+        $this->syncSenderFromParent($newsletter);
+      }
+      if (!$this->authorizedEmailsController->isSenderAddressValid($newsletter, 'resume', $isPausedForSenderDomain)) {
+        return $this->errorResponse([
+          APIError::FORBIDDEN => $this->getSenderDomainNotReadyMessage($newsletter),
+        ], [], Response::STATUS_FORBIDDEN);
+      }
+
       if (!$queue instanceof SendingQueueEntity) {
         return $this->errorResponse([
           APIError::UNKNOWN => __('This newsletter has not been sent yet.', 'mailpoet'),
@@ -308,6 +337,61 @@ class SendingQueue extends APIEndpoint {
       ]);
     }
     return $this->successResponse();
+  }
+
+  private function isPausedForSenderDomain(SendingQueueEntity $queue): bool {
+    $queues = $this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)
+      ? $this->timeZoneCampaignScheduler->getCampaignQueues($queue)
+      : [$queue];
+    foreach ($queues as $campaignQueue) {
+      $task = $campaignQueue->getTask();
+      if ($task instanceof ScheduledTaskEntity && $task->getPauseReason() === ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Notification history emails are copies made at schedule time, so they keep the parent's old sender.
+   */
+  private function syncSenderFromParent(NewsletterEntity $newsletter): void {
+    $parent = $newsletter->getParent();
+    if ($newsletter->getType() !== NewsletterEntity::TYPE_NOTIFICATION_HISTORY || !$parent instanceof NewsletterEntity) {
+      return;
+    }
+    $newsletter->setSenderAddress($parent->getSenderAddress());
+    $newsletter->setSenderName($parent->getSenderName());
+    $this->newsletterRepository->flush();
+  }
+
+  /**
+   * Plain text: the client escapes API errors when rendering them.
+   */
+  private function getSenderDomainNotReadyMessage(NewsletterEntity $newsletter): string {
+    $sender = (string)$newsletter->getSenderAddress();
+    $domain = Helpers::extractEmailDomain($sender);
+    $limit = AuthorizedSenderDomainController::UPPER_LIMIT;
+    $isBigSender = $this->senderDomainController->isBigSender();
+
+    if ($domain === '') {
+      return $isBigSender
+        // translators: %d is the number of subscribers.
+        ? sprintf(__('This email can’t be resumed yet. Your site has more than %d subscribers, so campaigns must be sent from an authenticated domain. Change the From address, then click Resume again.', 'mailpoet'), $limit)
+        : __('This email can’t be resumed yet. Campaigns must be sent from an authenticated domain. Change the From address, then click Resume again.', 'mailpoet');
+    }
+    if ($this->freeDomains->isEmailOnFreeDomain($sender)) {
+      return $isBigSender
+        // translators: %1$d is the number of subscribers, %2$s is a domain such as gmail.com.
+        ? sprintf(__('This email can’t be resumed yet. Your site has more than %1$d subscribers, so campaigns can’t be sent from a shared address like %2$s. Change the From address to one on your own domain, then click Resume again.', 'mailpoet'), $limit, $domain)
+        // translators: %s is a domain such as gmail.com.
+        : sprintf(__('This email can’t be resumed yet. Campaigns can’t be sent from a shared address like %s. Change the From address to one on your own domain, then click Resume again.', 'mailpoet'), $domain);
+    }
+    return $isBigSender
+      // translators: %1$d is the number of subscribers, %2$s is a domain such as example.com.
+      ? sprintf(__('This email can’t be resumed yet. Your site has more than %1$d subscribers, so campaigns must be sent from an authenticated domain. Authenticate %2$s or change the From address, then click Resume again.', 'mailpoet'), $limit, $domain)
+      // translators: %s is a domain such as example.com.
+      : sprintf(__('This email can’t be resumed yet. Campaigns must be sent from an authenticated domain. Authenticate %s or change the From address, then click Resume again.', 'mailpoet'), $domain);
   }
 
   /**
