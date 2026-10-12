@@ -90,8 +90,12 @@ class AuthorizedSenderDomainController {
     return $this->getFullyOrPartiallyVerifiedSenderDomains(true);
   }
 
-  public function getVerifiedSenderDomainsIgnoringCache(): array {
-    $this->reloadCache();
+  /**
+   * Fetches fresh data from the Bridge. Background work passes $respectBackoff
+   * to skip the Bridge for a few minutes after a failed reload.
+   */
+  public function getVerifiedSenderDomainsIgnoringCache(bool $respectBackoff = false): array {
+    $this->reloadCache(!$respectBackoff);
     return $this->getFullyOrPartiallyVerifiedSenderDomains(true);
   }
 
@@ -162,6 +166,9 @@ class AuthorizedSenderDomainController {
     }
 
     $this->reloadCache(true);
+    if ($this->reloadFailed) {
+      $this->clearCache();
+    }
 
     return $response;
   }

@@ -1542,7 +1542,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     $this->entityManager->refresh($this->scheduledTask);
     $this->entityManager->refresh($this->newsletter);
-    verify($contexts)->same(['sending', 'resume']);
+    verify($contexts)->same(['sending', 'recheck']);
     verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
     verify($this->scheduledTask->getPauseReason())->same(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
     verify($this->newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
@@ -1555,7 +1555,7 @@ class SendingQueueTest extends \MailPoetTest {
       [
         'isSenderAddressValid' => function ($newsletter, $context = 'activation') use (&$contexts) {
           $contexts[] = $context;
-          return $context === 'resume';
+          return $context === 'recheck';
         },
       ]
     );
@@ -1571,7 +1571,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker->process();
 
     $this->entityManager->refresh($this->scheduledTask);
-    verify($contexts)->same(['sending', 'resume']);
+    verify($contexts)->same(['sending', 'recheck']);
     verify($this->scheduledTask->getStatus())->notEquals(ScheduledTaskEntity::STATUS_PAUSED);
     verify($this->scheduledTask->getPauseReason())->null();
   }

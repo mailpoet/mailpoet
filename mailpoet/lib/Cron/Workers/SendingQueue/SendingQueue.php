@@ -242,7 +242,7 @@ class SendingQueue {
     // The fresh check runs only when the cached one fails, so stale cached data can't pause the task.
     if (
       !$this->authorizedEmailsController->isSenderAddressValid($newsletter, 'sending')
-      && !$this->authorizedEmailsController->isSenderAddressValid($newsletter, 'resume')
+      && !$this->authorizedEmailsController->isSenderAddressValid($newsletter, 'recheck')
     ) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
         'pause task in sending queue due to sender domain requirements',
