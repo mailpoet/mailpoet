@@ -22,6 +22,7 @@ class AuthorizedEmailsController {
   const AUTHORIZED_EMAIL_ERROR_PENDING_CONFIRMATION = 'Email address is pending confirmation';
 
   const AUTHORIZED_EMAILS_KEY = 'mailpoet_authorized_email_addresses';
+  const AUTHORIZED_EMAILS_RELOAD_FAILED_KEY = 'mailpoet_authorized_email_addresses_reload_failed';
 
   /** @var Bridge */
   private $bridge;
@@ -101,6 +102,7 @@ class AuthorizedEmailsController {
 
   public function clearCache(): void {
     $this->wp->deleteTransient(self::AUTHORIZED_EMAILS_KEY);
+    $this->wp->deleteTransient(self::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY);
   }
 
   private function getAllEmailData(bool $useCache): array {
@@ -109,14 +111,19 @@ class AuthorizedEmailsController {
       if (is_array($cached)) {
         return $cached;
       }
+      if ($this->wp->getTransient(self::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY)) {
+        return [];
+      }
     }
 
     $data = $this->bridge->getAuthorizedEmailAddresses();
     if (is_array($data)) {
+      $this->wp->deleteTransient(self::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY);
       $this->wp->setTransient(self::AUTHORIZED_EMAILS_KEY, $data, WEEK_IN_SECONDS);
       return $data;
     }
 
+    $this->wp->setTransient(self::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY, 1, 5 * 60);
     // API is potentially down, fallback to cache
     $cached = $this->wp->getTransient(self::AUTHORIZED_EMAILS_KEY);
     return is_array($cached) ? $cached : [];
@@ -216,7 +223,8 @@ class AuthorizedEmailsController {
    * Contexts:
    * - 'activation': new campaign, fresh domain data, no allowance when the Bridge returns nothing.
    * - 'sending': existing campaign, cached domain data; allowed when the list is empty and there is no cache.
-   * - 'resume': existing campaign, fresh domain data; allowed when the reload failed.
+   * - 'resume': existing campaign, fresh domain data requested by a user action (always asks the Bridge); allowed when the reload failed.
+   * - 'recheck': like 'resume' for background work; skips the Bridge for a few minutes after a failed reload.
    * When the Bridge has no data the Sending Service decides.
    *
    * $requireVerifiedDomain only affects the 'resume' context. It skips the subscriber count requirement,
@@ -242,12 +250,12 @@ class AuthorizedEmailsController {
 
     $verifiedDomains = $context === 'sending'
       ? $this->senderDomainController->getVerifiedSenderDomains()
-      : $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache();
+      : $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache($context === 'recheck');
 
     if ($context === 'sending' && empty($verifiedDomains) && !$this->senderDomainController->isCacheAvailable()) {
       return true;
     }
-    if ($context === 'resume' && $this->senderDomainController->isLastReloadFailed()) {
+    if (in_array($context, ['resume', 'recheck'], true) && $this->senderDomainController->isLastReloadFailed()) {
       return true;
     }
 

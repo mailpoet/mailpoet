@@ -482,9 +482,22 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     ]);
     $controller = $this->getController($bridgeMock);
 
-    verify($controller->getVerifiedSenderDomainsIgnoringCache())->same([]);
+    verify($controller->getVerifiedSenderDomainsIgnoringCache(true))->same([]);
     verify($controller->getAllSenderDomains())->same([]);
     verify($controller->isLastReloadFailed())->true();
+  }
+
+  public function testUserActionsIgnoreReloadFailureBackoff(): void {
+    set_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY, 1, 300);
+    $this->wp = new WPFunctions();
+    $bridgeMock = $this->make(Bridge::class, [
+      'getRawSenderDomainData' => Expected::once([['domain' => 'mailpoet.com', 'domain_status' => 'verified', 'dns' => []]]),
+    ]);
+    $controller = $this->getController($bridgeMock);
+
+    verify($controller->getVerifiedSenderDomainsIgnoringCache())->same(['mailpoet.com']);
+    verify($controller->isLastReloadFailed())->false();
+    verify(get_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY))->false();
   }
 
   public function testForcedActionsIgnoreReloadFailureBackoff(): void {
@@ -560,6 +573,24 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     ]);
     $response = $this->getController($bridgeMock)->verifyAuthorizedSenderDomain('new.com');
     verify($response['status'])->same(API::RESPONSE_STATUS_OK);
+  }
+
+  public function testVerifyDropsStaleListWhenReloadAfterVerifyFails(): void {
+    $this->wp = new WPFunctions();
+    $stale = [['domain' => 'new.com', 'domain_status' => 'unverified', 'dns' => []]];
+    $calls = 0;
+    $bridgeMock = $this->make(Bridge::class, [
+      'getRawSenderDomainData' => function () use (&$calls, $stale) {
+        return ++$calls === 1 ? $stale : null;
+      },
+      'verifyAuthorizedSenderDomain' => Expected::once(['status' => API::RESPONSE_STATUS_OK, 'dns' => []]),
+    ]);
+    $controller = $this->getController($bridgeMock);
+
+    $controller->verifyAuthorizedSenderDomain('new.com');
+
+    verify($calls)->same(2);
+    verify(get_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY))->false();
   }
 
   public function testClearCacheDeletesTransientsAndRefetches(): void {
