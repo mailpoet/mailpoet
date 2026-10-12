@@ -115,6 +115,13 @@ class StylesHelperTest extends \MailPoetUnitTest {
     verify($css)->equals('.mailpoet-wrapper a{' . PHP_EOL . 'color:#000000;' . PHP_EOL . '}' . PHP_EOL);
   }
 
+  public function testItRendersHeadingAndParagraphStylesWithoutFontSize(): void {
+    $headingCss = StylesHelper::setStyle(['fontColor' => '#111111'], '.mailpoet_content h1');
+    $paragraphCss = StylesHelper::setStyle(['fontColor' => '#000000'], '.mailpoet_paragraph');
+    verify($headingCss)->stringContainsString('color:#111111;');
+    verify($paragraphCss)->stringContainsString('color:#000000;');
+  }
+
   public function testItSkipsDeclarationsWithInvalidPropertyNames(): void {
     $css = StylesHelper::setStyle([
       'fontColor' => '#000000',

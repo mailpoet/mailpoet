@@ -198,7 +198,7 @@ class StylesHelper {
 
   public static function applyHeadingMargin(array $style, string $selector): array {
     if (!preg_match('/h[1-4]/i', $selector)) return $style;
-    $fontSize = (int)$style['fontSize'];
+    $fontSize = (int)($style['fontSize'] ?? 0);
     $style['margin'] = sprintf('0 0 %spx 0', self::$headingMarginMultiplier * $fontSize);
     return $style;
   }
@@ -206,7 +206,7 @@ class StylesHelper {
   public static function applyLineHeight(array $style, string $selector): array {
     if (!preg_match('/mailpoet_paragraph|h[1-4]/i', $selector)) return $style;
     $lineHeight = isset($style['lineHeight']) ? (float)$style['lineHeight'] : self::$defaultLineHeight;
-    $fontSize = (int)$style['fontSize'];
+    $fontSize = (int)($style['fontSize'] ?? 0);
     $msoLineHeight = round($lineHeight * $fontSize);
     if ($msoLineHeight % 2 === 1) {
       $msoLineHeight++;
