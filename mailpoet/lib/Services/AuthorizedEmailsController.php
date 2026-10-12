@@ -218,15 +218,23 @@ class AuthorizedEmailsController {
    * - 'sending': existing campaign, cached domain data; allowed when the list is empty and there is no cache.
    * - 'resume': existing campaign, fresh domain data; allowed when the reload failed.
    * When the Bridge has no data the Sending Service decides.
+   *
+   * $requireVerifiedDomain only affects the 'resume' context. It skips the subscriber count requirement,
+   * because the Sending Service may have paused the campaign using its own subscriber count.
    */
-  public function isSenderAddressValid(NewsletterEntity $newsletter, string $context = 'activation'): bool {
+  public function isSenderAddressValid(NewsletterEntity $newsletter, string $context = 'activation', bool $requireVerifiedDomain = false): bool {
     if (!in_array($newsletter->getType(), NewsletterEntity::CAMPAIGN_TYPES)) {
       return true;
     }
 
-    $isAuthorizedDomainRequired = $context === 'activation'
-      ? $this->senderDomainController->isAuthorizedDomainRequiredForNewCampaigns()
-      : $this->senderDomainController->isAuthorizedDomainRequiredForExistingCampaigns();
+    if ($context === 'activation') {
+      $isAuthorizedDomainRequired = $this->senderDomainController->isAuthorizedDomainRequiredForNewCampaigns();
+    } elseif ($context === 'resume' && $requireVerifiedDomain) {
+      $isAuthorizedDomainRequired = !$this->senderDomainController->shouldSkipAuthorization()
+        && $this->settings->get('mta.method') === Mailer::METHOD_MAILPOET;
+    } else {
+      $isAuthorizedDomainRequired = $this->senderDomainController->isAuthorizedDomainRequiredForExistingCampaigns();
+    }
 
     if (!$isAuthorizedDomainRequired) {
       return true;
