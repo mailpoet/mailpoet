@@ -3,6 +3,7 @@
 namespace MailPoet\Form\Util;
 
 use MailPoet\Entities\FormEntity;
+use MailPoet\Newsletter\Renderer\StylesHelper;
 use MailPoetVendor\Sabberworm\CSS\OutputFormat;
 use MailPoetVendor\Sabberworm\CSS\Parser as CSSParser;
 use MailPoetVendor\Sabberworm\CSS\Property\Declaration;
@@ -36,11 +37,16 @@ class Styles {
     // Wrapper styles
     $styles = [];
 
-    if (isset($formSettings['border_size']) && isset($formSettings['border_color'])) {
+    if (
+      isset($formSettings['border_size'])
+      && is_numeric($formSettings['border_size'])
+      && isset($formSettings['border_color'])
+      && self::isColorValue($formSettings['border_color'])
+    ) {
       $styles[] = 'border: ' . $formSettings['border_size'] . 'px solid ' . $formSettings['border_color'];
     }
 
-    if (isset($formSettings['border_radius'])) {
+    if (isset($formSettings['border_radius']) && is_numeric($formSettings['border_radius'])) {
       $styles[] = 'border-radius: ' . $formSettings['border_radius'] . 'px';
     }
 
@@ -58,15 +64,16 @@ class Styles {
         $backgroundRepeat = 'repeat';
         $backgroundSize = 'auto';
       }
-      $backgrounds[] = "url(" . trim($formSettings['background_image_url']) . ") $backgroundPosition / $backgroundSize $backgroundRepeat";
+      $backgroundImageUrl = StylesHelper::escapeCssUrl(trim($formSettings['background_image_url']));
+      $backgrounds[] = "url($backgroundImageUrl) $backgroundPosition / $backgroundSize $backgroundRepeat";
     }
 
-    if (!empty($formSettings['gradient'])) {
+    if (!empty($formSettings['gradient']) && self::isColorValue($formSettings['gradient'])) {
       $backgrounds[] = trim($formSettings['gradient']);
       $mobileBackgrounds[] = trim($formSettings['gradient']);
     }
 
-    if (!empty($formSettings['backgroundColor'])) {
+    if (!empty($formSettings['backgroundColor']) && self::isColorValue($formSettings['backgroundColor'])) {
       $backgrounds[] = trim($formSettings['backgroundColor']);
       $mobileBackgrounds[] = trim($formSettings['backgroundColor']);
     }
@@ -75,11 +82,11 @@ class Styles {
       $styles[] = 'background: ' . join(', ', $backgrounds);
     }
 
-    if (isset($formSettings['fontColor'])) {
+    if (isset($formSettings['fontColor']) && self::isColorValue($formSettings['fontColor'])) {
       $styles[] = 'color: ' . trim($formSettings['fontColor']);
     }
 
-    if (isset($formSettings['alignment'])) {
+    if (isset($formSettings['alignment']) && in_array($formSettings['alignment'], ['left', 'center', 'right'], true)) {
       $styles[] = 'text-align: ' . $formSettings['alignment'];
     }
     $formWrapperStyles = $selector . '{' . join(';', $styles) . ';}';
@@ -89,7 +96,7 @@ class Styles {
 
     // Form element styles
     $formStyles = [];
-    if (isset($formSettings['form_padding'])) {
+    if (isset($formSettings['form_padding']) && is_numeric($formSettings['form_padding'])) {
       if (
         in_array(
           $displayType,
@@ -176,8 +183,11 @@ class Styles {
     return $widthSelector . '{' . join(';', $styles) . ';}';
   }
 
-  private function getWidthValue(array $width) {
-    return $width['value'] . ($width['unit'] === 'percent' ? '%' : 'px');
+  private function getWidthValue(array $width): ?string {
+    if (!isset($width['value']) || !is_numeric($width['value'])) {
+      return null;
+    }
+    return $width['value'] . (($width['unit'] ?? null) === 'percent' ? '%' : 'px');
   }
 
   public function renderFormMessageStyles(FormEntity $form, string $selector): string {
@@ -190,7 +200,7 @@ class Styles {
 
   private function renderMessagesStyles(array $formSettings, string $selector): string {
     $styles = "$selector .mailpoet_message {margin: 0; padding: 0 20px;}";
-    if (isset($formSettings['success_validation_color']) && $this->isColorValue($formSettings['success_validation_color'])) {
+    if (isset($formSettings['success_validation_color']) && self::isColorValue($formSettings['success_validation_color'])) {
       $success = $formSettings['success_validation_color'];
       $styles .= "
         $selector .mailpoet_validate_success {color: $success}
@@ -199,7 +209,7 @@ class Styles {
         $selector textarea.parsley-success {color: $success}
       ";
     }
-    if (isset($formSettings['error_validation_color']) && $this->isColorValue($formSettings['error_validation_color'])) {
+    if (isset($formSettings['error_validation_color']) && self::isColorValue($formSettings['error_validation_color'])) {
       $error = $formSettings['error_validation_color'];
       $styles .= "
         $selector .mailpoet_validate_error {color: $error}
@@ -217,7 +227,7 @@ class Styles {
   /**
    * Accepts hex, named, rgb()/hsl() and var() colors; rejects anything that could end the declaration.
    */
-  private function isColorValue($color): bool {
+  public static function isColorValue($color): bool {
     if (!is_string($color) || !$color) {
       return false;
     }
