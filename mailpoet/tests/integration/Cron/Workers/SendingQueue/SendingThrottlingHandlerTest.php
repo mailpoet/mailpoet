@@ -163,6 +163,31 @@ class SendingThrottlingHandlerTest extends \MailPoetTest {
     verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE);
   }
 
+  public function testItDoesNotGrowTheTemplatedBatchSizeAfterASlowRequest(): void {
+    $this->throttlingHandler->setUseTemplatedSending(true);
+    for ($i = 1; $i < SendingThrottlingHandler::SUCCESS_THRESHOLD_TO_INCREASE; $i++) {
+      $this->throttlingHandler->processSuccess(1.5);
+    }
+    // The slow request resets the count, so the next fast one does not reach the threshold.
+    $this->throttlingHandler->processSuccess(SendingThrottlingHandler::TEMPLATED_SLOW_REQUEST_SECONDS);
+    $this->throttlingHandler->processSuccess(1.5);
+    verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::TEMPLATED_INITIAL_BATCH_SIZE);
+    verify($this->settings->get(SendingThrottlingHandler::TEMPLATED_SETTINGS_KEY)['success_count'])->equals(1);
+
+    for ($i = 1; $i < SendingThrottlingHandler::SUCCESS_THRESHOLD_TO_INCREASE; $i++) {
+      $this->throttlingHandler->processSuccess(1.5);
+    }
+    verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::TEMPLATED_INITIAL_BATCH_SIZE * 2);
+  }
+
+  public function testItIgnoresTheRequestDurationForStandardSending(): void {
+    $this->throttlingHandler->throttleBatchSize();
+    for ($i = 1; $i <= SendingThrottlingHandler::SUCCESS_THRESHOLD_TO_INCREASE; $i++) {
+      $this->throttlingHandler->processSuccess(SendingThrottlingHandler::TEMPLATED_SLOW_REQUEST_SECONDS * 2);
+    }
+    verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE);
+  }
+
   public function testItKeepsTemplatedAndStandardThrottlingStateSeparate(): void {
     // A templated send throttles its batch size down.
     $this->throttlingHandler->setUseTemplatedSending(true);

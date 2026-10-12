@@ -18,6 +18,10 @@ class SendingThrottlingHandler {
   public const SETTINGS_KEY = 'mta_throttling';
   public const TEMPLATED_SETTINGS_KEY = 'mta_throttling_templated';
   public const SUCCESS_THRESHOLD_TO_INCREASE = 10;
+  // A templated request that takes this long or longer does not count toward growing the batch:
+  // a bigger batch would take longer still and could reach the request timeout, and a timeout
+  // after the service already accepted the batch means the same recipients are sent again.
+  public const TEMPLATED_SLOW_REQUEST_SECONDS = API::TEMPLATE_BATCH_REQUEST_TIMEOUT / 2;
 
   /** @var Logger */
   private $logger;
@@ -83,7 +87,10 @@ class SendingThrottlingHandler {
     return $batchSize;
   }
 
-  public function processSuccess(): void {
+  /**
+   * @param float|null $sendDurationSeconds How long the request that just succeeded took, when known
+   */
+  public function processSuccess(?float $sendDurationSeconds = null): void {
     $throttlingSettings = $this->loadSettings() ?? [];
     if (!isset($throttlingSettings['batch_size'])) {
       // Rendered sending only stores a batch size while throttled; templated sending always
@@ -92,6 +99,12 @@ class SendingThrottlingHandler {
         return;
       }
       $throttlingSettings['batch_size'] = self::TEMPLATED_INITIAL_BATCH_SIZE;
+    }
+    if ($this->useTemplatedSending && $sendDurationSeconds !== null && $sendDurationSeconds >= self::TEMPLATED_SLOW_REQUEST_SECONDS) {
+      unset($throttlingSettings['success_count']);
+      $this->logger->info(sprintf('MailPoet throttling: templated request took %.1f s, keeping batch_size at: %d', $sendDurationSeconds, $throttlingSettings['batch_size']));
+      $this->saveSettings($throttlingSettings);
+      return;
     }
     $throttlingSettings['success_count'] = isset($throttlingSettings['success_count']) ? ++$throttlingSettings['success_count'] : 1;
     $this->logger->info("MailPoet throttling: increase success_count to: {$throttlingSettings['success_count']}");
