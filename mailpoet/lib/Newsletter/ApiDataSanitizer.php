@@ -2,6 +2,8 @@
 
 namespace MailPoet\Newsletter;
 
+use MailPoet\Newsletter\Renderer\StylesHelper;
+
 class ApiDataSanitizer {
   /** @var NewsletterHtmlSanitizer */
   private $htmlSanitizer;
@@ -28,7 +30,40 @@ class ApiDataSanitizer {
     if (isset($body['blockDefaults']) && is_array($body['blockDefaults'])) {
       $body['blockDefaults'] = $this->sanitizeBlockDefaults($body['blockDefaults']);
     }
+    foreach (['content', 'blockDefaults'] as $key) {
+      if (isset($body[$key]) && is_array($body[$key])) {
+        $body[$key] = $this->sanitizeBlockStyles($body[$key]);
+      }
+    }
     return $body;
+  }
+
+  /**
+   * Walks blocks and their nested parts (e.g. a posts block's read more button) and empties
+   * style values that could end the CSS declaration. Renderers read the keys directly, so they stay.
+   */
+  private function sanitizeBlockStyles(array $data): array {
+    foreach ($data as $key => $value) {
+      if (!is_array($value)) {
+        continue;
+      }
+      $data[$key] = $key === 'styles' ? $this->sanitizeBlockStyleGroups($value) : $this->sanitizeBlockStyles($value);
+    }
+    return $data;
+  }
+
+  private function sanitizeBlockStyleGroups(array $groups): array {
+    foreach ($groups as $group => $styles) {
+      if (!is_array($styles)) {
+        continue;
+      }
+      foreach ($styles as $property => $value) {
+        if (!StylesHelper::isValidCssValue($value)) {
+          $groups[$group][$property] = '';
+        }
+      }
+    }
+    return $groups;
   }
 
   private function sanitizeBlockDefaults(array $blockDefaults): array {

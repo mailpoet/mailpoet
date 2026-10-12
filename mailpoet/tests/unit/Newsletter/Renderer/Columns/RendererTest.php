@@ -306,6 +306,44 @@ class RendererTest extends \MailPoetUnitTest {
     verify($template['content_start'])->stringContainsString('background-image: url(test.jpg)');
   }
 
+  public function testItKeepsBackgroundImageUrlInsideUrlFunction() {
+    $image = [
+      'src' => "https://example.com/bg.png);background-color:#ff00ff;x:url('a\" b\\",
+      'display' => 'scale',
+    ];
+
+    $template = $this->renderer->getOneColumnTemplate(['backgroundColor' => '#ffffff'], $image);
+
+    verify($template['content_start'])->stringContainsString(
+      'background-image: url(https://example.com/bg.png%29%3Bbackground-color:#ff00ff%3Bx:url%28%27a%22%20b%5C);'
+    );
+    verify($template['content_start'])->stringNotContainsString('bg.png)');
+  }
+
+  public function testItKeepsEntitiesInBackgroundImageUrlAsText() {
+    $image = [
+      'src' => 'https://example.com/bg.png&#41;&#59;color:red',
+      'display' => 'scale',
+    ];
+
+    $template = $this->renderer->getOneColumnTemplate(['backgroundColor' => '#ffffff'], $image);
+
+    verify($template['content_start'])->stringContainsString('background-image: url(https://example.com/bg.png&amp;#41%3B&amp;#59%3Bcolor:red);');
+  }
+
+  public function testItKeepsRegularBackgroundImageUrlUnchanged() {
+    $image = [
+      'src' => 'https://example.com/wp-content/uploads/logo@2x.png?ver=1',
+      'display' => 'scale',
+    ];
+
+    $template = $this->renderer->getOneColumnTemplate(['backgroundColor' => '#ffffff'], $image);
+
+    verify($template['content_start'])->stringContainsString(
+      'background-image: url(https://example.com/wp-content/uploads/logo@2x.png?ver=1);'
+    );
+  }
+
   public function testGetMultipleColumnsContentStart() {
     $width = 330;
     $alignment = 'left';
