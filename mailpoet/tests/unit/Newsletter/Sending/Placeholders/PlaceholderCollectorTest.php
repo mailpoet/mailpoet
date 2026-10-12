@@ -27,6 +27,20 @@ class PlaceholderCollectorTest extends \MailPoetUnitTest {
     ]);
   }
 
+  public function testItEncodesAttributeValuesApartFromMarkupValues(): void {
+    $collector = new PlaceholderCollector('ns');
+    $token = '[newsletter:post_title]';
+    $value = 'Spring sale" data-extra="yes';
+    $inText = $collector->addHtml($value, $token);
+    $inAttribute = $collector->addHtmlAttribute($value, $token);
+
+    verify($inAttribute)->notEquals($inText);
+    verify($collector->getValues()['html'])->equals([
+      $inText => $value,
+      $inAttribute => 'Spring sale&quot; data-extra=&quot;yes',
+    ]);
+  }
+
   public function testItKeepsSeparatePlaceholdersForTheSameTokenInDifferentEscapingContexts(): void {
     $collector = new PlaceholderCollector('ns');
     $token = '[woocommerce/order-review-url]';
