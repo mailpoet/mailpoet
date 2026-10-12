@@ -588,6 +588,7 @@ class SendingQueue {
     $preparedSubscriber, $statistics, $timer, $extraParams = []
   ) {
     // send newsletter
+    $sendStart = microtime(true);
     $sendResult = $this->mailerTask->send(
       $preparedNewsletter,
       $preparedSubscriber,
@@ -599,7 +600,8 @@ class SendingQueue {
       [$preparedSubscriber],
       [$preparedSubscriberId],
       [$statistics],
-      $timer
+      $timer,
+      microtime(true) - $sendStart
     );
   }
 
@@ -611,6 +613,7 @@ class SendingQueue {
     $preparedSubscribers, $statistics, $timer, $extraParams = []
   ) {
     // send newsletters
+    $sendStart = microtime(true);
     $sendResult = $this->mailerTask->sendBulk(
       $preparedNewsletters,
       $preparedSubscribers,
@@ -622,7 +625,8 @@ class SendingQueue {
       $preparedSubscribers,
       $preparedSubscribersIds,
       $statistics,
-      $timer
+      $timer,
+      microtime(true) - $sendStart
     );
   }
 
@@ -672,7 +676,8 @@ class SendingQueue {
     array $preparedSubscribers,
     array $preparedSubscribersIds,
     array $statistics,
-    $timer
+    $timer,
+    float $sendDurationSeconds
   ) {
     // log error message and schedule retry/pause sending
     if ($sendResult['response'] === false) {
@@ -722,7 +727,7 @@ class SendingQueue {
       }
     }
 
-    $this->throttlingHandler->processSuccess();
+    $this->throttlingHandler->processSuccess($sendDurationSeconds);
   }
 
   public function enforceSendingAndExecutionLimits($timer) {
