@@ -363,7 +363,7 @@ class Newsletter {
 
   public function withDefaultSegments() {
     $defaultSegment = (new Segment())->withType(SegmentEntity::TYPE_DEFAULT)->create();
-    $this->segments[spl_object_id($defaultSegment)] = $defaultSegment;
+    $this->segments[$this->getSegmentKey($defaultSegment)] = $defaultSegment;
     return $this;
   }
 
@@ -373,9 +373,14 @@ class Newsletter {
    */
   public function withSegments(array $segments) {
     foreach ($segments as $segment) {
-      $this->segments[spl_object_id($segment)] = $segment;
+      $this->segments[$this->getSegmentKey($segment)] = $segment;
     }
     return $this;
+  }
+
+  private function getSegmentKey(SegmentEntity $segment): string {
+    // Saved segments are deduplicated by ID; unsaved ones have no ID yet
+    return $segment->getId() !== null ? 'id-' . $segment->getId() : 'object-' . spl_object_id($segment);
   }
 
   public function withSendingQueue(array $options = []) {
