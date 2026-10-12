@@ -51,7 +51,7 @@ class ApiDataSanitizer {
         continue;
       }
       foreach ($styles as $property => $value) {
-        if (!StylesHelper::isValidCssValue($value)) {
+        if (!$this->isValidStyleProperty($property) || !StylesHelper::isValidCssValue($value)) {
           unset($globalStyles[$group][$property]);
         }
       }
@@ -79,12 +79,24 @@ class ApiDataSanitizer {
         continue;
       }
       foreach ($styles as $property => $value) {
-        if (!StylesHelper::isValidCssValue($value)) {
+        if (!$this->isValidStyleProperty($property)) {
+          unset($groups[$group][$property]);
+        } elseif (!StylesHelper::isValidCssValue($value)) {
           $groups[$group][$property] = '';
         }
       }
     }
     return $groups;
+  }
+
+  /**
+   * Style keys are camelCase or hyphenated CSS property names, e.g. backgroundColor or border-radius.
+   * @param int|string $property
+   */
+  private function isValidStyleProperty($property): bool {
+    return is_string($property)
+      && $property !== ''
+      && strspn($property, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-') === strlen($property);
   }
 
   private function sanitizeBlockDefaults(array $blockDefaults): array {
