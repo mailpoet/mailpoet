@@ -349,7 +349,9 @@ class TimeZoneCampaignSchedulerTest extends \MailPoetTest {
       $task = $queue->getTask();
       $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
       verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+      $task->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
     }
+    $this->entityManager->flush();
 
     $scheduler->resumeCampaign($queues[0]);
 
@@ -357,6 +359,7 @@ class TimeZoneCampaignSchedulerTest extends \MailPoetTest {
       $task = $queue->getTask();
       $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
       verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+      verify($task->getPauseReason())->null();
     }
   }
 

@@ -212,6 +212,13 @@ class AuthorizedEmailsController {
     }
   }
 
+  /**
+   * Contexts:
+   * - 'activation': new campaign, fresh domain data, no allowance when the Bridge returns nothing.
+   * - 'sending': existing campaign, cached domain data; allowed when the list is empty and there is no cache.
+   * - 'resume': existing campaign, fresh domain data; allowed when the reload failed.
+   * When the Bridge has no data the Sending Service decides.
+   */
   public function isSenderAddressValid(NewsletterEntity $newsletter, string $context = 'activation'): bool {
     if (!in_array($newsletter->getType(), NewsletterEntity::CAMPAIGN_TYPES)) {
       return true;
@@ -225,12 +232,14 @@ class AuthorizedEmailsController {
       return true;
     }
 
-    $verifiedDomains = $context === 'activation'
-      ? $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache()
-      : $this->senderDomainController->getVerifiedSenderDomains();
+    $verifiedDomains = $context === 'sending'
+      ? $this->senderDomainController->getVerifiedSenderDomains()
+      : $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache();
 
-    // The shop is not returning data, so we allow sending and let the Sending Service block the campaign if needed.
     if ($context === 'sending' && empty($verifiedDomains) && !$this->senderDomainController->isCacheAvailable()) {
+      return true;
+    }
+    if ($context === 'resume' && $this->senderDomainController->isLastReloadFailed()) {
       return true;
     }
 

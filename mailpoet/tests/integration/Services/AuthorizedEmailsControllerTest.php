@@ -9,11 +9,13 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -32,11 +34,17 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $this->settings = SettingsController::getInstance();
     $this->newsletterFactory = new NewsletterFactory();
     delete_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
+    delete_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY);
   }
 
   public function _after() {
     parent::_after();
     delete_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
+    delete_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY);
   }
 
   public function testItResetsAuthorisedEmailsErrorIfMssIsNotActive() {
@@ -416,6 +424,144 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     ];
     $controller = $this->getControllerWithCustomMocks($mocks);
     verify($controller->isSenderAddressValid($newsletter, 'sending'))->true();
+  }
+
+  /**
+   * @param string $senderAddress
+   * @param array<string, mixed> $overrides
+   */
+  private function isSenderAddressValidWithMock(string $context, string $senderAddress, array $overrides): bool {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, $overrides);
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+    $newsletter->setSenderAddress($senderAddress);
+    $controller = $this->getControllerWithCustomMocks(['AuthorizedSenderDomainController' => $senderDomainMock]);
+    return $controller->isSenderAddressValid($newsletter, $context);
+  }
+
+  public function testSenderAddressIsValidForResumeIfAuthorizedSender() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@email.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'isAuthorizedDomainRequiredForNewCampaigns' => Expected::never(),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once(['email.com']),
+      'getVerifiedSenderDomains' => Expected::never(),
+      'isLastReloadFailed' => false,
+    ]);
+    verify($result)->true();
+  }
+
+  public function testSenderAddressIsNotValidForResumeIfUnauthorizedSender() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@unauthorized.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'isAuthorizedDomainRequiredForNewCampaigns' => Expected::never(),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once(['email.com']),
+      'getVerifiedSenderDomains' => Expected::never(),
+      'isLastReloadFailed' => false,
+    ]);
+    verify($result)->false();
+  }
+
+  public function testSenderAddressIsNotValidForResumeIfThereAreNoDomainsAndReloadSucceeded() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@email.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once([]),
+      'isLastReloadFailed' => false,
+    ]);
+    verify($result)->false();
+  }
+
+  public function testSenderAddressIsValidForResumeIfReloadFailed() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@email.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once([]),
+      'isLastReloadFailed' => true,
+    ]);
+    verify($result)->true();
+  }
+
+  public function testSenderAddressIsValidForResumeIfRestrictionsDoNotApply() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@unauthorized.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(false),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::never(),
+    ]);
+    verify($result)->true();
+  }
+
+  public function testSenderAddressForSendingUsesCachedDomains() {
+    $result = $this->isSenderAddressValidWithMock('sending', 'contact@email.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'getVerifiedSenderDomains' => Expected::once(['email.com']),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::never(),
+    ]);
+    verify($result)->true();
+  }
+
+  public function testSenderAddressIsNotValidForSendingIfCachedDomainListIsEmpty() {
+    $result = $this->isSenderAddressValidWithMock('sending', 'contact@email.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'getVerifiedSenderDomains' => Expected::once([]),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::never(),
+      'isCacheAvailable' => Expected::once(true),
+    ]);
+    verify($result)->false();
+  }
+
+  public function testSenderAddressRequirementBoundaryForExistingCampaigns() {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+    $this->settings->set(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME, null);
+    set_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY, [['domain' => 'email.com', 'domain_status' => 'verified']]);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+    $newsletter->setSenderAddress('contact@unauthorized.com');
+
+    set_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY, AuthorizedSenderDomainController::UPPER_LIMIT);
+    $senderDomainController = new AuthorizedSenderDomainController(
+      $this->diContainer->get(Bridge::class),
+      $this->diContainer->get(NewsletterStatisticsRepository::class),
+      $this->settings,
+      $this->diContainer->get(Subscribers::class),
+      $this->diContainer->get(WPFunctions::class)
+    );
+    $controller = $this->getControllerWithCustomMocks(['AuthorizedSenderDomainController' => $senderDomainController]);
+    verify($controller->isSenderAddressValid($newsletter, 'sending'))->true();
+
+    set_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY, AuthorizedSenderDomainController::UPPER_LIMIT + 1);
+    verify($controller->isSenderAddressValid($newsletter, 'sending'))->false();
+
+    delete_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY);
+  }
+
+  public function testSenderAddressIsValidForSendingIfThereIsNoCacheAndShopReturnsNothing() {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
+    set_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY, AuthorizedSenderDomainController::UPPER_LIMIT + 1);
+    $bridge = $this->make(Bridge::class, ['getRawSenderDomainData' => null]);
+    $senderDomainController = new AuthorizedSenderDomainController(
+      $bridge,
+      $this->diContainer->get(NewsletterStatisticsRepository::class),
+      $this->settings,
+      $this->diContainer->get(Subscribers::class),
+      $this->diContainer->get(WPFunctions::class)
+    );
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+    $newsletter->setSenderAddress('contact@unauthorized.com');
+
+    $controller = $this->getControllerWithCustomMocks(['AuthorizedSenderDomainController' => $senderDomainController]);
+    verify($controller->isSenderAddressValid($newsletter, 'sending'))->true();
+
+    delete_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
   }
 
   public function testSenderAddressIsValidForActivationIfNotACampaign() {

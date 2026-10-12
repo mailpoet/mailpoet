@@ -296,6 +296,67 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     verify($queue->getNewsletterRenderedBody())->notNull();
   }
 
+  public function testPauseWithReasonStoresReason() {
+    $task = $this->createTask();
+    $queue = $this->createQueue($task);
+    $queue->setCountTotal(2);
+    $queue->setCountProcessed(0);
+    $this->entityManager->flush();
+
+    $this->repository->pause($queue, ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
+
+    $this->entityManager->refresh($task);
+    verify($task->getStatus())->same(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($task->getPauseReason())->same(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
+  }
+
+  public function testPauseWithoutReasonStoresNoReason() {
+    $task = $this->createTask();
+    $queue = $this->createQueue($task);
+    $queue->setCountTotal(2);
+    $queue->setCountProcessed(0);
+    $this->entityManager->flush();
+
+    $this->repository->pause($queue);
+
+    $this->entityManager->refresh($task);
+    verify($task->getStatus())->same(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($task->getPauseReason())->null();
+  }
+
+  public function testPauseDoesNothingWhenAllRecipientsAreProcessed() {
+    $task = $this->createTask();
+    $queue = $this->createQueue($task);
+    $queue->setCountTotal(2);
+    $queue->setCountProcessed(2);
+    $this->entityManager->flush();
+
+    $this->repository->pause($queue, ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
+
+    $this->entityManager->refresh($task);
+    verify($task->getStatus())->null();
+    verify($task->getPauseReason())->null();
+  }
+
+  public function testResumeClearsPauseReason() {
+    $task = $this->createTask();
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setSubject('Subject');
+    $this->entityManager->persist($newsletter);
+    $queue = $this->createQueue($task, $newsletter);
+    $queue->setCountTotal(2);
+    $queue->setCountProcessed(0);
+    $this->entityManager->flush();
+    $this->repository->pause($queue, ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
+
+    $this->repository->resume($queue);
+
+    $this->entityManager->refresh($task);
+    verify($task->getStatus())->null();
+    verify($task->getPauseReason())->null();
+  }
+
   private function createTask(): ScheduledTaskEntity {
     $task = new ScheduledTaskEntity();
     $this->entityManager->persist($task);

@@ -179,6 +179,7 @@ class ScheduledTasksRepository extends Repository {
    * Atomically claims a scheduled/paused row for a CLI run by flipping it to STATUS_CLI in a single
    * guarded UPDATE. Returns false when no row was changed (another process already claimed or ran it),
    * so concurrent CLI runs never both process the same task.
+   * A claim of a sending task must also clear its pause_reason (sending tasks can't be claimed today).
    */
   public function claimAsCli(ScheduledTaskEntity $task): bool {
     $updated = (int)$this->entityManager->createQuery(

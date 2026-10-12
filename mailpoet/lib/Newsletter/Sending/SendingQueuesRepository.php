@@ -224,11 +224,12 @@ class SendingQueuesRepository extends Repository {
       ->getQuery();
   }
 
-  public function pause(SendingQueueEntity $queue): void {
+  public function pause(SendingQueueEntity $queue, ?string $reason = null): void {
     if ($queue->getCountProcessed() !== $queue->getCountTotal()) {
       $task = $queue->getTask();
       if ($task instanceof ScheduledTaskEntity) {
         $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+        $task->setPauseReason($reason);
         $this->flush();
       }
     }

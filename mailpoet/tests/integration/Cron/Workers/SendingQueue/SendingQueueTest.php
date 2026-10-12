@@ -28,6 +28,7 @@ use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MailerLog;
@@ -37,12 +38,15 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Services\AuthorizedSenderDomainController;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsNewslettersRepository;
@@ -55,6 +59,7 @@ use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -1519,9 +1524,15 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItPausesSendingTaskWhenSenderAddressDoesNotMeetRequirements() {
+    $contexts = [];
     $authorizedEmailControllerMock = $this->make(
       AuthorizedEmailsController::class,
-      ['isSenderAddressValid' => false]
+      [
+        'isSenderAddressValid' => function ($newsletter, $context = 'activation') use (&$contexts) {
+          $contexts[] = $context;
+          return false;
+        },
+      ]
     );
     $this->newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
     $this->entityManager->flush();
@@ -1531,8 +1542,117 @@ class SendingQueueTest extends \MailPoetTest {
 
     $this->entityManager->refresh($this->scheduledTask);
     $this->entityManager->refresh($this->newsletter);
+    verify($contexts)->same(['sending', 'resume']);
     verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($this->scheduledTask->getPauseReason())->same(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
     verify($this->newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+  }
+
+  public function testItDoesNotPauseSendingTaskWhenFreshSenderCheckPasses() {
+    $contexts = [];
+    $authorizedEmailControllerMock = $this->make(
+      AuthorizedEmailsController::class,
+      [
+        'isSenderAddressValid' => function ($newsletter, $context = 'activation') use (&$contexts) {
+          $contexts[] = $context;
+          return $context === 'resume';
+        },
+      ]
+    );
+    $this->newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $this->entityManager->flush();
+
+    $mailerMock = $this->construct(
+      MailerTask::class,
+      [$this->diContainer->get(MailerFactory::class)],
+      ['send' => Expected::once($this->mailerTaskDummyResponse)]
+    );
+    $sendingQueueWorker = $this->getSendingQueueWorker($mailerMock, $authorizedEmailControllerMock);
+    $sendingQueueWorker->process();
+
+    $this->entityManager->refresh($this->scheduledTask);
+    verify($contexts)->same(['sending', 'resume']);
+    verify($this->scheduledTask->getStatus())->notEquals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($this->scheduledTask->getPauseReason())->null();
+  }
+
+  public function testItDoesNotRequestFreshSenderCheckWhenCachedCheckPasses() {
+    $contexts = [];
+    $authorizedEmailControllerMock = $this->make(
+      AuthorizedEmailsController::class,
+      [
+        'isSenderAddressValid' => function ($newsletter, $context = 'activation') use (&$contexts) {
+          $contexts[] = $context;
+          return true;
+        },
+      ]
+    );
+    $this->newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $this->entityManager->flush();
+
+    $mailerMock = $this->construct(
+      MailerTask::class,
+      [$this->diContainer->get(MailerFactory::class)],
+      ['send' => Expected::once($this->mailerTaskDummyResponse)]
+    );
+    $sendingQueueWorker = $this->getSendingQueueWorker($mailerMock, $authorizedEmailControllerMock);
+    $sendingQueueWorker->process();
+
+    verify($contexts)->same(['sending']);
+  }
+
+  public function testItBacksOffFromTheShopWhenSenderDomainsCannotBeLoaded() {
+    $this->settings->set('mta', ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => 'key']);
+    $this->settings->set(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME, null);
+    set_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY, AuthorizedSenderDomainController::UPPER_LIMIT + 1);
+    set_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY, []);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
+
+    $bridgeCalls = 0;
+    $bridge = $this->make(Bridge::class, [
+      'getRawSenderDomainData' => function () use (&$bridgeCalls) {
+        $bridgeCalls++;
+        return null;
+      },
+    ]);
+    $senderDomainController = new AuthorizedSenderDomainController(
+      $bridge,
+      $this->diContainer->get(NewsletterStatisticsRepository::class),
+      $this->settings,
+      $this->diContainer->get(Subscribers::class),
+      $this->wp
+    );
+    $authorizedEmailsController = new AuthorizedEmailsController(
+      $this->settings,
+      $bridge,
+      $this->newslettersRepository,
+      $senderDomainController,
+      $this->wp
+    );
+    $this->newsletter->setSenderAddress('contact@unverified.com');
+    $this->newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $this->entityManager->flush();
+
+    $mailerMock = $this->construct(
+      MailerTask::class,
+      [$this->diContainer->get(MailerFactory::class)],
+      ['send' => $this->mailerTaskDummyResponse, 'sendBulk' => $this->mailerTaskDummyResponse]
+    );
+    $this->getSendingQueueWorker($mailerMock, $authorizedEmailsController)->process();
+
+    $this->entityManager->refresh($this->scheduledTask);
+    $this->scheduledTask->setStatus(null);
+    $this->newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $this->entityManager->flush();
+    $this->getSendingQueueWorker($mailerMock, $authorizedEmailsController)->process();
+
+    $this->entityManager->refresh($this->scheduledTask);
+    delete_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
+    verify($bridgeCalls)->same(1);
+    verify($this->scheduledTask->getStatus())->notEquals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($this->scheduledTask->getPauseReason())->null();
   }
 
   public function testItGeneratesPartOfAnMD5CampaignIdStoredAsSendingQueueMeta() {
