@@ -114,6 +114,34 @@ class PersonalizationTagLinkResolverTest extends \MailPoetTest {
     );
   }
 
+  public function testItResolvesTokensEmbeddedInAUrl(): void {
+    $this->registry->register($this->createTag(function (array $context): string {
+      return 'https://example.com/for/' . $context['recipient_email'];
+    }));
+    $context = ['recipient_email' => 'recipient@example.com'];
+
+    $this->assertSame(
+      'https://example.com/?email=recipient@example.com&go=https://example.com/for/recipient@example.com',
+      $this->resolver->resolveEmbeddedTokens('https://example.com/?email=[mailpoet/subscriber-email]&go=[acme/test-url]', $context)
+    );
+    // URL-encoded token, as the renderer writes it; unregistered tokens and shortcodes stay as they are
+    $this->assertSame(
+      'https://example.com/?a=recipient@example.com&b=[acme/not-registered]&c=[subscriber:email]',
+      $this->resolver->resolveEmbeddedTokens('https://example.com/?a=%5Bmailpoet/subscriber-email%5D&b=[acme/not-registered]&c=[subscriber:email]', $context)
+    );
+    // percent-encoding elsewhere in the URL survives when the token itself is not encoded
+    $this->assertSame(
+      'https://example.com/?q=a%20b&email=recipient@example.com',
+      $this->resolver->resolveEmbeddedTokens('https://example.com/?q=a%20b&email=[mailpoet/subscriber-email]', $context)
+    );
+    // the scheme the editor forces in front of a leading tag is dropped with it
+    $this->assertSame(
+      'https://example.com/for/recipient@example.com?utm=1',
+      $this->resolver->resolveEmbeddedTokens('http://[acme/test-url]?utm=1', $context)
+    );
+    $this->assertSame('https://example.com/plain', $this->resolver->resolveEmbeddedTokens('https://example.com/plain', $context));
+  }
+
   public function testItResolvesMailPoetLinkTags(): void {
     $url = $this->resolver->resolve('[mailpoet/subscription-unsubscribe-url]', $this->newsletter, $this->subscriber, $this->queue);
 
