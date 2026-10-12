@@ -642,6 +642,30 @@ class NewsletterTest extends \MailPoetTest {
     }
   }
 
+  public function testItResolvesTagsEmbeddedInLinksForSubscriberWithoutConsentInTemplatedBatch(): void {
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+    [$newsletter, , $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink(
+      'https://example.com/profile?email=[mailpoet/subscriber-email]',
+      'Profile'
+    );
+
+    $templated = $this->newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $this->subscriber, $sendingQueue);
+    $rendered = $this->newsletterTask->prepareNewsletterForSending($newsletter, $this->subscriber, $sendingQueue);
+
+    $reconstructedHtml = strtr($templated['newsletter']['body']['html'], $templated['substitutions']['html']);
+    $this->assertStringContainsString('https://example.com/profile?email=' . $this->subscriber->getEmail(), $reconstructedHtml);
+    $this->assertStringNotContainsString('[mailpoet/subscriber-email]', $reconstructedHtml);
+    $this->assertSame($rendered['body']['html'], $reconstructedHtml);
+    // The rendered path still ships the literal tag in the text body's markdown link, because the
+    // Personalizer resolves embedded tags only in hrefs. The templated path resolves the URL itself.
+    $reconstructedText = strtr($templated['newsletter']['body']['text'], $templated['substitutions']['text']);
+    $this->assertSame('[Profile](https://example.com/profile?email=' . $this->subscriber->getEmail() . ')', $reconstructedText);
+  }
+
   public function testItKeepsTemplateIdenticalWhenATagLinkResolvesForOnlySomeSubscribersInTemplatedBatch(): void {
     $newsletterTask = Stub::copy($this->newsletterTask, ['trackingEnabled' => false]);
     [$newsletter, , $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink('[acme/maybe-url]', 'Go');

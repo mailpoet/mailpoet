@@ -194,9 +194,9 @@ class Newsletter {
   /**
    * The destination a recipient we may not track gets for one stored link; see untrackLinks().
    *
-   * A personalization tag embedded in a stored URL (https://example.com/?ref=[acme/url]) stays
-   * literal here, as it does in the click redirect for tracked recipients. The rendered path
-   * happens to resolve it because the Personalizer runs over the restored content afterwards.
+   * A personalization tag embedded in a stored URL (https://example.com/?ref=[acme/url]) is resolved
+   * here too. On the rendered path the Personalizer does that while it runs over the restored
+   * content; on the templated path the URL leaves as a substitution value, so it has to be complete.
    *
    * @param string $shortcodeLookupSource Content that shortcodes such as [newsletter:post_title] look their value up in
    * @param array<string, mixed>|null $personalizationContext
@@ -213,7 +213,11 @@ class Newsletter {
       return $this->resolveTokenUrl($url, $newsletter, $personalizationContext);
     }
     $url = $this->resolveLinkShortcodes($url, $newsletter, $subscriber, $queue);
-    return (string)ShortcodesTask::process($url, $shortcodeLookupSource, $newsletter, $subscriber, $queue);
+    $url = (string)ShortcodesTask::process($url, $shortcodeLookupSource, $newsletter, $subscriber, $queue);
+    if ($personalizationContext === null) {
+      return $url;
+    }
+    return $this->personalizationTagLinkResolver->resolveEmbeddedTokens($url, $personalizationContext);
   }
 
   /**
