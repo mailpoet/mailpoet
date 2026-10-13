@@ -279,9 +279,10 @@ const adminConfig = {
         {
           from: 'node_modules/tinymce/skins/ui/oxide',
           to: 'skins/ui/oxide',
-          // TinyMCE loads only the unminified .css files (the bundle is not
-          // named tinymce.min.js), so skip the .min.css and .js variants.
-          globOptions: { ignore: ['**/*.min.css', '**/*.js'] },
+          // TinyMCE switches to the .min.css files when any part of the page
+          // script URL contains ".min" (e.g. a domain like mindvalley.com),
+          // so both CSS variants ship. The .js files are never loaded.
+          globOptions: { ignore: ['**/*.js'] },
           info: { minimized: true },
         },
         {
