@@ -69,6 +69,12 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
     verify($label)->stringContainsString('style="font-size: 1.2em;');
   }
 
+  public function testItSkipsLabelFontSizeThatIsNotValid(): void {
+    $label = $this->rendererHelper->renderLabel($this->block, ['fontSize' => '1em;x-size:1']);
+    verify($label)->stringNotContainsString('x-size');
+    verify($label)->stringNotContainsString('font-size');
+  }
+
   public function testItShouldRenderLabelForConfiguredInputId(): void {
     $block = $this->block;
     $block['params']['input_id'] = 'custom_input_id';

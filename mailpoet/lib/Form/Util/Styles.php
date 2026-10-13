@@ -235,6 +235,14 @@ class Styles {
     return strspn($color, $allowedCharacters) === strlen($color);
   }
 
+  /**
+   * Accepts a number (rendered in px) or a value with a unit or preset, e.g. 1.5rem or var(--wp--preset--font-size--large).
+   * @param mixed $fontSize
+   */
+  public static function isFontSizeValue($fontSize): bool {
+    return is_numeric($fontSize) || self::isColorValue($fontSize);
+  }
+
   private function getFormTypeSpecificStyles(string $selector, string $displayType): string {
     $styles = [];
     if ($displayType === FormEntity::DISPLAY_TYPE_SLIDE_IN) {
