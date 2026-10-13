@@ -52,9 +52,7 @@ class CaptchaRenderer {
     $fontNumbers = array_merge(range(0, 3), [5]); // skip font #4
     $fontNumber = $fontNumbers[mt_rand(0, count($fontNumbers) - 1)];
 
-    $reflector = new \ReflectionClass(CaptchaBuilder::class);
-    $captchaDirectory = dirname((string)$reflector->getFileName());
-    $font = $captchaDirectory . '/Font/captcha' . $fontNumber . '.ttf';
+    $font = Env::$assetsPath . '/fonts/captcha/captcha' . $fontNumber . '.ttf';
 
     $phrase = $this->phrase->getPhrase($sessionId);
     if (!$phrase) {

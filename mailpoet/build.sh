@@ -144,7 +144,8 @@ rm -rf $plugin_name/vendor-prefixed/monolog/monolog/src/Monolog/Test
 echo '[BUILD] Removing risky and demo files from vendor libraries'
 rm -f $plugin_name/vendor-prefixed/cerdic/css-tidy/css_optimiser.php
 rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/demo
-rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/src/Gregwar/Captcha/Font/captcha4.ttf # big font
+# MailPoet ships its own subset fonts in assets/fonts/captcha
+rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/src/Gregwar/Captcha/Font
 rm -rf $plugin_name/vendor-prefixed/cerdic/css-tidy/bin
 rm -f $plugin_name/vendor-prefixed/egulias/email-validator/psalm*.xml
 rm -rf $plugin_name/vendor-prefixed/symfony/validator/Command # console command, its console parent class is removed
