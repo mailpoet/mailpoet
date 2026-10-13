@@ -11,6 +11,7 @@ tests/plugins
 /views/cache/**
 temp
 mailpoet.zip
+mailpoet.zip.job
 tests/javascript-newsletter-editor/testBundles
 assets/dist
 .vagrant
