@@ -539,11 +539,6 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($this->codeceptCommand('run unit -g failed'));
   }
 
-  public function testFailedIntegration() {
-    $this->_exec($this->codeceptCommand('build'));
-    return $this->_exec($this->codeceptCommand('run integration -g failed'));
-  }
-
   public function containerDump() {
     if (!defined('ABSPATH')) {
       define('ABSPATH', getenv('WP_ROOT') . '/');

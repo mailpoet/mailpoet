@@ -80,7 +80,7 @@ Real WP + DB, Docker-backed. The default integration run loads WooCommerce; two 
 
 Pick `test:woo-integration` when iterating on WC integration code; pick `test:base-integration` when you suspect WC is contaminating an otherwise WC-independent test. Otherwise stick to the default.
 
-Multisite: `pnpm test:integration --multisite`. Re-run failed: `cd mailpoet && ./do test:failed-integration`.
+Multisite: `pnpm test:integration --multisite`. Re-run failed: `pnpm test:integration --group=failed` (runs in Docker like any integration run).
 
 ### Acceptance — `pnpm test:acceptance`
 
