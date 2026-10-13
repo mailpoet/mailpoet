@@ -82,29 +82,38 @@ class AssetsController {
   }
 
   public function setupDynamicSegmentsDependencies(): void {
-    $this->wp->wpEnqueueStyle('mailpoet_templates', $this->getCssUrl('mailpoet-templates.css'));
+    $this->enqueueWooCommerceComponentsStyle();
+    $this->wp->wpEnqueueStyle('mailpoet_templates', $this->getCssUrl('mailpoet-templates.css'), ['mailpoet_woocommerce_components']);
     $this->wp->wpEnqueueStyle('mailpoet_dynamic_segments', $this->getCssUrl('mailpoet-dynamic-segments.css'));
   }
 
   public function setupAutomationListingDependencies(): void {
     $this->enqueueJsEntrypoint('automation');
     $this->setupDataViewsDependencies();
-    $this->wp->wpEnqueueStyle('mailpoet_automation', $this->getCssUrl('mailpoet-automation.css'));
+    $this->enqueueWooCommerceComponentsStyle();
+    $this->wp->wpEnqueueStyle('mailpoet_automation', $this->getCssUrl('mailpoet-automation.css'), ['mailpoet_woocommerce_components']);
   }
 
   public function setupAutomationTemplatesDependencies(): void {
     $this->enqueueJsEntrypoint('automation_templates');
-    $this->wp->wpEnqueueStyle('mailpoet_automation_templates', $this->getCssUrl('mailpoet-automation-templates.css'));
+    $this->enqueueWooCommerceComponentsStyle();
+    $this->wp->wpEnqueueStyle('mailpoet_automation_templates', $this->getCssUrl('mailpoet-automation-templates.css'), ['mailpoet_woocommerce_components']);
   }
 
   public function setupAutomationEditorDependencies(): void {
     $this->enqueueJsEntrypoint('automation_editor', ['wp-date']);
-    $this->wp->wpEnqueueStyle('mailpoet_automation_editor', $this->getCssUrl('mailpoet-automation-editor.css'));
+    $this->enqueueWooCommerceComponentsStyle();
+    $this->wp->wpEnqueueStyle('mailpoet_automation_editor', $this->getCssUrl('mailpoet-automation-editor.css'), ['mailpoet_woocommerce_components']);
   }
 
   public function setupAutomationAnalyticsDependencies(): void {
     $this->enqueueJsEntrypoint('automation_analytics');
-    $this->wp->wpEnqueueStyle('mailpoet_automation_analytics', $this->getCssUrl('mailpoet-automation-analytics.css'));
+    $this->enqueueWooCommerceComponentsStyle();
+    $this->wp->wpEnqueueStyle('mailpoet_automation_analytics', $this->getCssUrl('mailpoet-automation-analytics.css'), ['mailpoet_woocommerce_components']);
+  }
+
+  private function enqueueWooCommerceComponentsStyle(): void {
+    $this->wp->wpEnqueueStyle('mailpoet_woocommerce_components', $this->getCssUrl('mailpoet-woocommerce-components.css'));
   }
 
   private function enqueueJsEntrypoint(string $asset, array $dependencies = [], bool $withAdminDeps = true): void {
