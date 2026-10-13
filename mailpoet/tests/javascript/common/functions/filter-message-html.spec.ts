@@ -39,10 +39,10 @@ describe('filterMessageHtml', () => {
   it('keeps simple formatting tags', () => {
     expect(
       filterMessageHtml(
-        '<p>One <strong>two</strong> <b>three</b> <em>four</em> <i>five</i> <code>six</code><br>seven</p>',
+        '<p>One <strong>two</strong> <b>three</b> <em>four</em> <i>five</i> <code>six</code><br>seven <del>eight</del><ins>nine</ins></p>',
       ),
     ).to.equal(
-      '<p>One <strong>two</strong> <b>three</b> <em>four</em> <i>five</i> <code>six</code><br>seven</p>',
+      '<p>One <strong>two</strong> <b>three</b> <em>four</em> <i>five</i> <code>six</code><br>seven <del>eight</del><ins>nine</ins></p>',
     );
   });
 
