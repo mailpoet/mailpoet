@@ -29,6 +29,9 @@ class OrderAttributionRevenueReaderTest extends \MailPoetTest {
   /** @var StatisticsClickEntity */
   private $click;
 
+  /** @var int[] */
+  private $orderIds = [];
+
   public function _before() {
     parent::_before();
     remove_filter('mailpoet_woo_backed_revenue_reporting', '__return_false');
@@ -105,7 +108,11 @@ class OrderAttributionRevenueReaderTest extends \MailPoetTest {
     $page = $this->reader->getNewsletterOrderRowsPage($ids, $this->from(), $this->to(), ['status' => ['wc-cancelled']]) ?? [];
     verify(array_column($page, 'order_id'))->equals([$cancelled->get_id()]);
     verify($this->reader->countNewsletterOrderRows($ids, $this->from(), $this->to(), ['status' => ['wc-cancelled'], 'search' => 'Mona']))->equals(1);
-    verify($this->reader->countNewsletterOrderRows($ids, $this->from(), $this->to(), ['emails' => [0]]))->equals(2);
+
+    $otherNewsletter = (new Newsletter())->withSubject('No orders')->withSendingQueue()->create();
+    $bothNewsletters = array_merge($ids, [(int)$otherNewsletter->getId()]);
+    verify($this->reader->countNewsletterOrderRows($bothNewsletters, $this->from(), $this->to(), ['emails' => $ids]))->equals(2);
+    verify($this->reader->countNewsletterOrderRows($bothNewsletters, $this->from(), $this->to(), ['emails' => [(int)$otherNewsletter->getId()]]))->equals(0);
   }
 
   public function testItIncludesLegacyRowsWithoutAResolvedSource(): void {
@@ -114,6 +121,7 @@ class OrderAttributionRevenueReaderTest extends \MailPoetTest {
     $order->set_total('15');
     $order->set_status('completed');
     $order->save();
+    $this->orderIds[] = $order->get_id();
     (new StatisticsWooCommercePurchases($this->click, ['id' => $order->get_id(), 'currency' => 'USD', 'total' => 15]))
       ->withCreatedAt(new DateTimeImmutable('2022-01-02 10:00:00'))
       ->create();
@@ -125,13 +133,14 @@ class OrderAttributionRevenueReaderTest extends \MailPoetTest {
   }
 
   public function _after() {
-    parent::_after();
-    delete_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION);
-    foreach ((array)wc_get_orders(['limit' => -1]) as $order) {
+    foreach ($this->orderIds as $orderId) {
+      $order = wc_get_order($orderId);
       if ($order instanceof WC_Order) {
         $order->delete(true);
       }
     }
+    delete_option(OrderAttributionWriter::WRITES_STARTED_AT_OPTION);
+    parent::_after();
   }
 
   private function createAttributedOrder(DateTimeImmutable $createdAt, float $total, string $status = 'completed'): WC_Order {
@@ -140,6 +149,7 @@ class OrderAttributionRevenueReaderTest extends \MailPoetTest {
     $order->set_total((string)$total);
     $order->set_status($status);
     $order->save();
+    $this->orderIds[] = $order->get_id();
     (new StatisticsWooCommercePurchases($this->click, ['id' => $order->get_id(), 'currency' => 'USD', 'total' => $total]))
       ->withCreatedAt($createdAt)
       ->create();
