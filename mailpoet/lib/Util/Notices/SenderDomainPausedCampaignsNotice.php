@@ -121,7 +121,7 @@ class SenderDomainPausedCampaignsNotice {
       $this->wp->escHtml(__('Authenticate domain', 'mailpoet'))
     );
 
-    return '<p>' . $this->formatText($text, $newsletters, $domain) . '<br>' . $button . '</p>';
+    return '<p>' . $this->formatText($text, $newsletters, $domain) . '</p><p>' . $button . '</p>';
   }
 
   /**
