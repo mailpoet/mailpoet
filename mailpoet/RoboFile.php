@@ -683,6 +683,8 @@ class RoboFile extends \Robo\Tasks {
       'vendor-prefixed/psr/log/Psr/Log/Test',
       'vendor-prefixed/sabberworm/php-css-parser/tests',
       'vendor-prefixed/swiftmailer/swiftmailer/tests',
+      'vendor-prefixed/symfony/polyfill-intl-grapheme',
+      'vendor-prefixed/symfony/string',
       'vendor-prefixed/symfony/service-contracts/Test',
       'vendor-prefixed/symfony/translation/Test',
       'vendor-prefixed/symfony/translation-contracts/Test',
