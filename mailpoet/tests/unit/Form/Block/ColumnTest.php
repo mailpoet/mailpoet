@@ -114,4 +114,17 @@ class ColumnTest extends \MailPoetUnitTest {
     $style = $this->htmlParser->getAttribute($columns, 'style');
     verify($style->textContent)->stringContainsString('background:linear-gradient(red, yellow);');
   }
+
+  public function testItSkipsStyleValuesThatAreNotValid() {
+    $block = $this->block;
+    $block['params'] = [
+      'text_color' => 'red;x-color:1',
+      'background_color' => 'red;x-bg:1',
+      'gradient' => 'red;x-gradient:1',
+      'padding' => ['top' => '1px;x-padding:1', 'right' => '0', 'bottom' => '0', 'left' => '0'],
+      'width' => '10;x-width:1',
+    ];
+    $html = $this->columns->render($block, 'content');
+    verify($html)->stringNotContainsString('x-');
+  }
 }

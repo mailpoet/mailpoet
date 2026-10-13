@@ -50,10 +50,10 @@ class BlockStylesRenderer {
     } elseif (isset($formSettings['font_family']) && Styles::isColorValue($formSettings['font_family'])) {
       $rules[] = "font-family:'{$formSettings['font_family']}';" ;
     }
-    if (isset($styles['font_size']) && Styles::isFontSizeValue($styles['font_size'])) {
+    if (isset($styles['font_size']) && Styles::isSizeValue($styles['font_size'])) {
       $rules[] = "font-size:" . $styles['font_size'] . (is_numeric($styles['font_size']) ? "px;" : ";");
     }
-    if (isset($formSettings['fontSize']) && !isset($styles['font_size']) && Styles::isFontSizeValue($formSettings['fontSize'])) {
+    if (isset($formSettings['fontSize']) && !isset($styles['font_size']) && Styles::isSizeValue($formSettings['fontSize'])) {
       $rules[] = "font-size:" . $formSettings['fontSize'] . (is_numeric($formSettings['fontSize']) ? "px;" : ";");
     }
     if (isset($formSettings['fontSize']) || isset($styles['font_size'])) {

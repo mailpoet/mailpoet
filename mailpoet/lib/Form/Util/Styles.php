@@ -236,11 +236,11 @@ class Styles {
   }
 
   /**
-   * Accepts a number (rendered in px) or a value with a unit or preset, e.g. 1.5rem or var(--wp--preset--font-size--large).
-   * @param mixed $fontSize
+   * Accepts a number or a value with a unit or preset, e.g. 1.5rem, 10px 0 or var(--wp--preset--font-size--large).
+   * @param mixed $size
    */
-  public static function isFontSizeValue($fontSize): bool {
-    return is_numeric($fontSize) || self::isColorValue($fontSize);
+  public static function isSizeValue($size): bool {
+    return is_numeric($size) || self::isColorValue($size);
   }
 
   private function getFormTypeSpecificStyles(string $selector, string $displayType): string {

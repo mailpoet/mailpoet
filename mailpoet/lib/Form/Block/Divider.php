@@ -2,6 +2,7 @@
 
 namespace MailPoet\Form\Block;
 
+use MailPoet\Form\Util\Styles;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Divider {
@@ -32,7 +33,8 @@ class Divider {
       $classes[] = $block['params']['class_name'];
     }
     $classAttr = $this->wp->escAttr(join(' ', $classes));
-    $height = $this->wp->escAttr($block['params']['height'] ?? self::DEFAULT_ATTRIBUTES['height']);
+    $height = $block['params']['height'] ?? self::DEFAULT_ATTRIBUTES['height'];
+    $height = $this->wp->escAttr(is_numeric($height) ? $height : self::DEFAULT_ATTRIBUTES['height']);
     return "<div class='{$classAttr}' style='height: {$height}px;'>"
     . $this->renderDivider($block)
     . '</div>';
@@ -43,9 +45,13 @@ class Divider {
       return '';
     }
     $width = $block['params']['divider_width'] ?? self::DEFAULT_ATTRIBUTES['dividerWidth'];
+    $width = is_numeric($width) ? $width : self::DEFAULT_ATTRIBUTES['dividerWidth'];
     $style = $block['params']['style'] ?? self::DEFAULT_ATTRIBUTES['style'];
+    $style = in_array($style, ['solid', 'dashed', 'dotted'], true) ? $style : self::DEFAULT_ATTRIBUTES['style'];
     $dividerHeight = $block['params']['divider_height'] ?? self::DEFAULT_ATTRIBUTES['dividerHeight'];
+    $dividerHeight = is_numeric($dividerHeight) ? $dividerHeight : self::DEFAULT_ATTRIBUTES['dividerHeight'];
     $color = $block['params']['color'] ?? self::DEFAULT_ATTRIBUTES['color'];
+    $color = Styles::isColorValue($color) ? $color : self::DEFAULT_ATTRIBUTES['color'];
 
     $dividerStyles = [
       "border-top-style: $style",

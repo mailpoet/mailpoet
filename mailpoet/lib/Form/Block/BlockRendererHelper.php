@@ -189,7 +189,7 @@ class BlockRendererHelper {
 
   public function renderFontStyle(array $formSettings, array $styles = []) {
     $rules = [];
-    if (isset($formSettings['fontSize']) && Styles::isFontSizeValue($formSettings['fontSize'])) {
+    if (isset($formSettings['fontSize']) && Styles::isSizeValue($formSettings['fontSize'])) {
       $rules[] = 'font-size: ' . $formSettings['fontSize'] . (is_numeric($formSettings['fontSize']) ? "px;" : ";");
       $rules[] = 'line-height: 1.2;';
     }
