@@ -13,36 +13,56 @@ function splitUrl(src: string): [string, string] {
 }
 
 function hasPathEnding(src: string, file: string): boolean {
-  const path = splitUrl(src)[0];
-  return path.slice(-(file.length + 1)) === `/${file}`;
+  return splitUrl(src)[0].endsWith(`/${file}`);
 }
 
-function findScript(doc: Document, file: string): HTMLScriptElement | null {
+const OWN_PATH = '/assets/dist/js/public.js';
+
+function findScript(
+  doc: Document,
+  matches: (path: string) => boolean,
+): HTMLScriptElement | null {
   const scripts = doc.getElementsByTagName('script');
   for (let i = scripts.length - 1; i >= 0; i -= 1) {
-    if (hasPathEnding(scripts[i].getAttribute('src') || '', file)) {
+    if (matches(splitUrl(scripts[i].getAttribute('src') || '')[0])) {
       return scripts[i];
     }
   }
   return null;
 }
 
+function findPublicScript(doc: Document): HTMLScriptElement | null {
+  return (
+    findScript(doc, (path) => path.endsWith(OWN_PATH)) ||
+    findScript(doc, (path) => hasPathEnding(path, FILE))
+  );
+}
+
 export function loadPublicBundle(
   doc: Document,
   current: HTMLScriptElement | null = doc.currentScript as HTMLScriptElement | null,
 ): void {
-  if (findScript(doc, MIN_FILE)) {
-    return;
-  }
-  const self = current || findScript(doc, FILE);
+  const currentSrc = current && current.getAttribute('src');
+  const self =
+    current && currentSrc && hasPathEnding(currentSrc, FILE)
+      ? current
+      : findPublicScript(doc);
   const src = self && self.getAttribute('src');
   if (!self || !src) {
     return;
   }
   const [path, rest] = splitUrl(src);
+  const minPath = `${path.slice(0, -FILE.length)}${MIN_FILE}`;
+  if (findScript(doc, (candidate) => candidate === minPath)) {
+    return;
+  }
   const script = doc.createElement('script');
   script.async = false;
-  script.src = `${path.slice(0, -FILE.length)}${MIN_FILE}${rest}`;
+  script.src = `${minPath}${rest}`;
+  const nonce = self.nonce || self.getAttribute('nonce');
+  if (nonce) {
+    script.setAttribute('nonce', nonce);
+  }
   if (self.parentNode) {
     self.parentNode.insertBefore(script, self.nextSibling);
   } else {
