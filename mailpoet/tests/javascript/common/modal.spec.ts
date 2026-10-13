@@ -415,4 +415,19 @@ describe('MailPoetModal', function modalSuite() {
       'page-button',
     );
   });
+
+  it('shows the title text without turning names into elements', () => {
+    openPopup({ title: 'Template <img src="x.png">' });
+
+    const title = document.querySelector('#mailpoet_popup_title h2');
+    expect(title.querySelector('img')).to.equal(null);
+    expect(title.textContent).to.equal('Template ');
+  });
+
+  it('keeps simple formatting in the title', () => {
+    openPopup({ title: 'Delete <strong>list</strong>' });
+
+    const title = document.querySelector('#mailpoet_popup_title h2');
+    expect(title.querySelector('strong').textContent).to.equal('list');
+  });
 });
