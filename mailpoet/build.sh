@@ -59,6 +59,11 @@ echo '[BUILD] Fetching prefixed production libraries'
 # Should be removed before `dump-autoload` to not include the annotations classes on the autoloader.
 rm -rf vendor-prefixed/doctrine/annotations
 
+# Remove orphans of symfony/console (already removed by the prefixer); nothing else uses them.
+# Should be removed before `dump-autoload` to not include these classes in the autoloader.
+rm -rf vendor-prefixed/symfony/string
+rm -rf vendor-prefixed/symfony/polyfill-intl-grapheme
+
 # Remove DI Container files used for container dump (no need since generated metadata are packed)
 # Should be removed before `dump-autoload` to not include these classes in the autoloader.
 echo '[BUILD] Removing DI Container development dependencies'
