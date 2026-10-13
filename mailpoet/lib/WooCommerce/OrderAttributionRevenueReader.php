@@ -171,7 +171,7 @@ class OrderAttributionRevenueReader {
     \DateTimeImmutable $to,
     array $options = []
   ): ?int {
-    $sources = $this->getNewsletterOrderRowsSources($newsletterIds, $from, $to);
+    $sources = $this->getNewsletterOrderRowsSources($newsletterIds, $from, $to, true);
     if ($sources === null) {
       return null;
     }
@@ -189,11 +189,12 @@ class OrderAttributionRevenueReader {
   /**
    * The SELECT for each place order rows can come from. Joined with UNION ALL
    * by the callers. Null means the Woo-backed read model is off.
+   * $countOnly skips the refund math, which a COUNT never reads.
    *
    * @param int[] $newsletterIds
    * @return string[]|null
    */
-  private function getNewsletterOrderRowsSources(array $newsletterIds, \DateTimeImmutable $from, \DateTimeImmutable $to): ?array {
+  private function getNewsletterOrderRowsSources(array $newsletterIds, \DateTimeImmutable $from, \DateTimeImmutable $to, bool $countOnly = false): ?array {
     $boundary = $this->getReadBoundary();
     if ($boundary === null) {
       return null;
@@ -209,7 +210,7 @@ class OrderAttributionRevenueReader {
 
     return array_values(array_filter([
       $this->getLegacyNewsletterOrderRowsSql($newsletterIds, $from, $beforeBoundaryTo, false, $this->isBoundaryUpperLimit($to, $boundary)),
-      $this->getWooNewsletterOrderRowsSql($newsletterIds, $afterBoundaryFrom, $to),
+      $this->getWooNewsletterOrderRowsSql($newsletterIds, $afterBoundaryFrom, $to, $countOnly),
       $this->getLegacyNewsletterOrderRowsSql($newsletterIds, $afterBoundaryFrom, $to, true, false),
     ]));
   }
@@ -596,7 +597,8 @@ class OrderAttributionRevenueReader {
   private function getWooNewsletterOrderRowsSql(
     array $newsletterIds,
     \DateTimeInterface $from,
-    ?\DateTimeInterface $to
+    ?\DateTimeInterface $to,
+    bool $countOnly = false
   ): ?string {
     if ($this->isEmptyDateRange($from, $to, false) || !$newsletterIds) {
       return null;
@@ -618,9 +620,13 @@ class OrderAttributionRevenueReader {
     $newsletterPlaceholders = implode(',', array_fill(0, count($newsletterIds), '%d'));
 
     // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Dynamic fragments are trusted identifiers/placeholders; values are prepared below.
-    if ($this->wooHelper->isWooCommerceCustomOrdersTableEnabled()) {
-      $statusColumn = 'woo_order.status';
-      $orderTotalJoin = '';
+    $hpos = $this->wooHelper->isWooCommerceCustomOrdersTableEnabled();
+    $statusColumn = $hpos ? 'woo_order.status' : 'woo_order.post_status';
+    $orderTotalJoin = '';
+    $totalSql = '0';
+    if ($countOnly) {
+      // The total is never read, so skip the refund subquery per order.
+    } elseif ($hpos) {
       // Refund rows store a negative total_amount, so adding them subtracts.
       $totalSql = $wpdb->prepare(
         '(woo_order.total_amount + COALESCE((SELECT SUM(refund.total_amount) FROM %i refund WHERE refund.type = %s AND refund.parent_order_id = woo_order.id), 0))',
@@ -628,7 +634,6 @@ class OrderAttributionRevenueReader {
         'shop_order_refund'
       );
     } else {
-      $statusColumn = 'woo_order.post_status';
       $orderTotalJoin = $wpdb->prepare(
         'LEFT JOIN %i order_total ON order_total.post_id = woo_order.ID AND order_total.meta_key = %s',
         $wpdb->postmeta,
