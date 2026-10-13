@@ -55,7 +55,7 @@ class CustomFields extends APIEndpoint {
     if ($segmentNames) {
       return $this->conflict(sprintf(
         // translators: %s is a comma-separated list of segment names.
-        __('This custom field is used in these segments: %s. Remove it from the segments first.', 'mailpoet'),
+        __('This custom field is used in these segments: %s. Remove it from these segments or delete the segments permanently first.', 'mailpoet'),
         implode(', ', $segmentNames)
       ));
     }
