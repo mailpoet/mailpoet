@@ -76,8 +76,6 @@
       "php ./tasks/FixPhp84Deprecations.php"
     ],
     "pre-autoload-dump": [
-      "php ./tasks/fix-codeception-stub.php",
-      "php ./tasks/fix-requests.php",
       "php ./tasks/fix-php82-robo.php"
     ],
     "patch-production-libraries": [
