@@ -9,7 +9,6 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
-use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -24,9 +23,6 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
   /** @var ScheduledTasksRepository&\PHPUnit\Framework\MockObject\MockObject */
   private $tasksRepository;
 
-  /** @var AuthorizedSenderDomainController&\PHPUnit\Framework\MockObject\MockObject */
-  private $senderDomainController;
-
   private bool $canManageEmails = true;
 
   public function _before() {
@@ -34,8 +30,6 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
     $this->settings = $this->diContainer->get(SettingsController::class);
     $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
     $this->tasksRepository = $this->createMock(ScheduledTasksRepository::class);
-    $this->senderDomainController = $this->createMock(AuthorizedSenderDomainController::class);
-    $this->senderDomainController->method('isBigSender')->willReturn(true);
     $this->canManageEmails = true;
   }
 
@@ -74,10 +68,9 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
 
     $this->assertInstanceOf(Notice::class, $notice);
     $message = $notice->getMessage();
-    verify($message)->stringContainsString('1 campaign is paused: “<a href="');
-    verify($message)->stringContainsString('#/send/7">Spring sale</a>”');
-    verify($message)->stringContainsString('Your site has more than 200 subscribers, so campaigns must be sent from an authenticated domain.');
-    verify($message)->stringContainsString('Authenticate example.com or change the From address, then resume it.');
+    verify($message)->stringContainsString('“<a href="');
+    verify($message)->stringContainsString('#/send/7">Spring sale</a>” has been paused. To make sure your campaigns reach your subscribers, authenticate example.com or switch to another authenticated sender domain, then resume it.');
+    verify($message)->stringNotContainsString('200 subscribers');
     verify($message)->stringContainsString('class="button button-primary mailpoet-js-button-authorize-email-and-sender-domain" data-email="hello@example.com" data-type="domain">Authenticate domain</a>');
     verify($message)->stringNotContainsString('is-dismissible');
     $html = $this->render($notice);
@@ -101,8 +94,7 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
     $message = $notice->getMessage();
     verify(substr_count($message, 'mailpoet-js-button-authorize-email-and-sender-domain'))->equals(1);
     verify($message)->stringContainsString('data-email="sender1@example.com"');
-    verify($message)->stringContainsString('5 campaigns are paused:');
-    verify($message)->stringContainsString('then resume them.');
+    verify($message)->stringContainsString('and 2 more</a> have been paused. To make sure your campaigns reach your subscribers, authenticate example.com or switch to another authenticated sender domain, then resume them.');
     verify($message)->stringContainsString('“<a href="');
     verify($message)->stringContainsString('>Campaign 3</a>”');
     verify($message)->stringNotContainsString('Campaign 4');
@@ -119,7 +111,7 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
 
     $this->assertInstanceOf(Notice::class, $notice);
     $message = $notice->getMessage();
-    verify($message)->stringContainsString('1 campaign is paused:');
+    verify($message)->stringContainsString('</a>” has been paused.');
     verify(substr_count($message, 'Timezone campaign'))->equals(1);
   }
 
@@ -132,7 +124,7 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
 
     $this->assertInstanceOf(Notice::class, $notice);
     $message = $notice->getMessage();
-    verify($message)->stringContainsString('campaigns can’t be sent from a shared address like gmail.com. Change the From address to one on your own domain, then resume it.');
+    verify($message)->stringContainsString('</a>” has been paused. To make sure your campaigns reach your subscribers, send it from an address on your own authenticated domain instead of gmail.com, then resume it.');
     verify($message)->stringNotContainsString('mailpoet-js-button-authorize-email-and-sender-domain');
   }
 
@@ -145,9 +137,35 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
 
     $this->assertInstanceOf(Notice::class, $notice);
     $message = $notice->getMessage();
-    verify($message)->stringContainsString('campaigns must be sent from an authenticated domain. Change the From address, then resume it.');
+    verify($message)->stringContainsString('</a>” has been paused. To make sure your campaigns reach your subscribers, send it from an authenticated sender domain, then resume it.');
     verify($message)->stringNotContainsString('mailpoet-js-button-authorize-email-and-sender-domain');
-    verify($message)->stringNotContainsString('Authenticate');
+    verify($message)->stringNotContainsString('authenticate ');
+  }
+
+  public function testItRendersPluralFreeMailGroup() {
+    $this->tasksRepository->method('findPausedForSenderDomain')->willReturn([
+      $this->makeTask(1, 'One', 'me@gmail.com'),
+      $this->makeTask(2, 'Two', 'me@gmail.com'),
+    ]);
+
+    $notice = $this->createNotice()->init(true);
+
+    $this->assertInstanceOf(Notice::class, $notice);
+    $message = $notice->getMessage();
+    verify($message)->stringContainsString('>Two</a>” have been paused. To make sure your campaigns reach your subscribers, send them from an address on your own authenticated domain instead of gmail.com, then resume them.');
+    verify($message)->stringNotContainsString('200 subscribers');
+  }
+
+  public function testItRendersPluralGenericGroup() {
+    $this->tasksRepository->method('findPausedForSenderDomain')->willReturn([
+      $this->makeTask(1, 'One', ''),
+      $this->makeTask(2, 'Two', ''),
+    ]);
+
+    $notice = $this->createNotice()->init(true);
+
+    $this->assertInstanceOf(Notice::class, $notice);
+    verify($notice->getMessage())->stringContainsString('>Two</a>” have been paused. To make sure your campaigns reach your subscribers, send them from an authenticated sender domain, then resume them.');
   }
 
   public function testItRendersOneNoticeWithOneParagraphPerGroupInOrder() {
@@ -177,23 +195,6 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
 
     $this->assertInstanceOf(Notice::class, $notice);
     verify($notice->getMessage())->stringContainsString('#/notification/history/4">Digest</a>');
-  }
-
-  public function testItMentionsSubscriberCountOnlyForBigSenders() {
-    $this->tasksRepository->method('findPausedForSenderDomain')->willReturn([
-      $this->makeTask(1, 'Campaign', 'me@example.com'),
-    ]);
-    $notice = $this->createNotice()->init(true);
-    $this->assertInstanceOf(Notice::class, $notice);
-    verify($notice->getMessage())->stringContainsString('more than 200 subscribers');
-
-    $this->senderDomainController = $this->createMock(AuthorizedSenderDomainController::class);
-    $this->senderDomainController->method('isBigSender')->willReturn(false);
-    $notice = $this->createNotice()->init(true);
-    $this->assertInstanceOf(Notice::class, $notice);
-    $message = $notice->getMessage();
-    verify($message)->stringNotContainsString('subscribers');
-    verify($message)->stringContainsString('Campaigns must be sent from an authenticated domain.');
   }
 
   public function testItEscapesCampaignNames() {
@@ -232,8 +233,7 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
       $this->wpWithCapability(),
       $this->diContainer->get(ScheduledTasksRepository::class),
       new FreeDomains(),
-      $this->settings,
-      $this->senderDomainController
+      $this->settings
     );
 
     $result = $notice->init(true);
@@ -269,8 +269,7 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
       $this->wpWithCapability(),
       $this->tasksRepository,
       new FreeDomains(),
-      $this->settings,
-      $this->senderDomainController
+      $this->settings
     );
   }
 

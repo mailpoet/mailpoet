@@ -21,7 +21,6 @@ use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Services\AuthorizedEmailsController;
-use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption;
@@ -116,14 +115,14 @@ class SendingQueueTest extends \MailPoetTest {
   public function testResumeIsRefusedWhenSenderDomainIsNotReady(): void {
     $task = $this->createPausedCampaign('sender@brand.com');
     $calls = [];
-    $api = $this->getResumeApi($calls, false, true);
+    $api = $this->getResumeApi($calls, false);
 
     $result = $api->resume(['newsletter_id' => $this->newsletter->getId()]);
 
     verify($result->status)->equals(APIResponse::STATUS_FORBIDDEN);
     verify($result->errors[0]['error'])->equals(APIError::FORBIDDEN);
     $message = $result->errors[0]['message'];
-    verify($message)->equals('This email can’t be resumed yet. Your site has more than 200 subscribers, so campaigns must be sent from an authenticated domain. Authenticate brand.com or change the From address, then click Resume again.');
+    verify($message)->equals('This email can’t be resumed yet. To make sure your campaigns reach your subscribers, authenticate brand.com or switch to another authenticated sender domain, then click Resume again.');
     verify($message)->stringNotContainsString('&#');
     verify($message)->stringNotContainsString('&amp;');
     verify($calls[0]['context'])->equals('resume');
@@ -137,35 +136,28 @@ class SendingQueueTest extends \MailPoetTest {
   public function testResumeRefusalMessageForFreeMailSender(): void {
     $this->createPausedCampaign('sender@gmail.com');
     $calls = [];
-    $result = $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $this->newsletter->getId()]);
-    verify($result->errors[0]['message'])->equals('This email can’t be resumed yet. Your site has more than 200 subscribers, so campaigns can’t be sent from a shared address like gmail.com. Change the From address to one on your own domain, then click Resume again.');
+    $result = $this->getResumeApi($calls, false)->resume(['newsletter_id' => $this->newsletter->getId()]);
+    verify($result->errors[0]['message'])->equals('This email can’t be resumed yet. To make sure your campaigns reach your subscribers, send it from an address on your own authenticated domain instead of gmail.com, then click Resume again.');
   }
 
   public function testResumeRefusalMessageForGenericSender(): void {
     $this->createPausedCampaign('');
     $calls = [];
-    $result = $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $this->newsletter->getId()]);
-    verify($result->errors[0]['message'])->equals('This email can’t be resumed yet. Your site has more than 200 subscribers, so campaigns must be sent from an authenticated domain. Change the From address, then click Resume again.');
-  }
-
-  public function testResumeRefusalMessageOmitsSubscriberClauseForSmallSender(): void {
-    $this->createPausedCampaign('sender@brand.com');
-    $calls = [];
-    $result = $this->getResumeApi($calls, false, false)->resume(['newsletter_id' => $this->newsletter->getId()]);
-    verify($result->errors[0]['message'])->equals('This email can’t be resumed yet. Campaigns must be sent from an authenticated domain. Authenticate brand.com or change the From address, then click Resume again.');
+    $result = $this->getResumeApi($calls, false)->resume(['newsletter_id' => $this->newsletter->getId()]);
+    verify($result->errors[0]['message'])->equals('This email can’t be resumed yet. To make sure your campaigns reach your subscribers, send it from an authenticated sender domain, then click Resume again.');
   }
 
   public function testResumeRefusalMessageIsPlainText(): void {
     $this->createPausedCampaign("sender@o'brien&co.com");
     $calls = [];
-    $result = $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $this->newsletter->getId()]);
-    verify($result->errors[0]['message'])->stringContainsString("Authenticate o'brien&co.com or");
+    $result = $this->getResumeApi($calls, false)->resume(['newsletter_id' => $this->newsletter->getId()]);
+    verify($result->errors[0]['message'])->stringContainsString("authenticate o'brien&co.com or");
   }
 
   public function testResumeSucceedsWhenSenderIsValid(): void {
     $task = $this->createPausedCampaign('sender@brand.com');
     $calls = [];
-    $result = $this->getResumeApi($calls, true, true)->resume(['newsletter_id' => $this->newsletter->getId()]);
+    $result = $this->getResumeApi($calls, true)->resume(['newsletter_id' => $this->newsletter->getId()]);
 
     verify($result->status)->equals(200);
     $this->entityManager->clear();
@@ -178,7 +170,7 @@ class SendingQueueTest extends \MailPoetTest {
   public function testResumeWithoutQueueReportsNotSentYetWithoutCheckingSender(): void {
     $newsletter = (new NewsletterFactory())->withSubject('No queue')->withDefaultBody()->create();
     $calls = [];
-    $result = $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $newsletter->getId()]);
+    $result = $this->getResumeApi($calls, false)->resume(['newsletter_id' => $newsletter->getId()]);
     verify($result->errors[0]['error'])->equals(APIError::UNKNOWN);
     verify($result->errors[0]['message'])->equals('This newsletter has not been sent yet.');
     verify($calls)->empty();
@@ -187,13 +179,13 @@ class SendingQueueTest extends \MailPoetTest {
   public function testResumePassesMarkerToValidation(): void {
     $this->createPausedCampaign('sender@brand.com', true);
     $calls = [];
-    $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $this->newsletter->getId()]);
+    $this->getResumeApi($calls, false)->resume(['newsletter_id' => $this->newsletter->getId()]);
     verify($calls[0]['requireVerifiedDomain'])->true();
 
     $other = (new NewsletterFactory())->withSubject('Unmarked')->withDefaultBody()->withSenderAddress('sender@brand.com')
       ->withSendingQueue(['status' => ScheduledTaskEntity::STATUS_PAUSED])->create();
     $calls = [];
-    $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $other->getId()]);
+    $this->getResumeApi($calls, false)->resume(['newsletter_id' => $other->getId()]);
     verify($calls[0]['requireVerifiedDomain'])->false();
   }
 
@@ -242,7 +234,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($lastTask->getPauseReason())->null();
 
     $calls = [];
-    $api = $this->getResumeApi($calls, false, true, [
+    $api = $this->getResumeApi($calls, false, [
       'timeZoneCampaignScheduler' => Stub::make(TimeZoneCampaignScheduler::class, [
         'isTimeZoneQueue' => true,
         'getCampaignQueues' => $queues,
@@ -270,7 +262,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $calls = [];
-    $this->getResumeApi($calls, false, true)->resume(['newsletter_id' => $history->getId()]);
+    $this->getResumeApi($calls, false)->resume(['newsletter_id' => $history->getId()]);
 
     verify($calls[0]['sender'])->equals('new@example.com');
     $this->entityManager->clear();
@@ -290,7 +282,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $calls = [];
-    $result = $this->getResumeApi($calls, true, true)->resume(['newsletter_id' => $history->getId()]);
+    $result = $this->getResumeApi($calls, true)->resume(['newsletter_id' => $history->getId()]);
 
     verify($result->status)->equals(200);
     verify($calls)->arrayCount(1);
@@ -312,7 +304,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $calls = [];
-    $api = $this->getResumeApi($calls, false, true, [
+    $api = $this->getResumeApi($calls, false, [
       'authorizedEmailsController' => Stub::make(AuthorizedEmailsController::class, [
         'isSenderAddressValid' => function(NewsletterEntity $newsletter, string $context = 'activation', bool $requireVerifiedDomain = false) use (&$calls): bool {
           $calls[] = ['requireVerifiedDomain' => $requireVerifiedDomain, 'sender' => $newsletter->getSenderAddress()];
@@ -347,7 +339,7 @@ class SendingQueueTest extends \MailPoetTest {
     return $task;
   }
 
-  private function getResumeApi(array &$calls, bool $valid, bool $isBigSender, array $overrides = []): SendingQueueAPI {
+  private function getResumeApi(array &$calls, bool $valid, array $overrides = []): SendingQueueAPI {
     return $this->getServiceWithOverrides(SendingQueueAPI::class, array_merge([
       'authorizedEmailsController' => Stub::make(AuthorizedEmailsController::class, [
         'isSenderAddressValid' => function(NewsletterEntity $newsletter, string $context = 'activation', bool $requireVerifiedDomain = false) use (&$calls, $valid): bool {
@@ -359,7 +351,6 @@ class SendingQueueTest extends \MailPoetTest {
           return $valid;
         },
       ]),
-      'senderDomainController' => Stub::make(AuthorizedSenderDomainController::class, ['isBigSender' => $isBigSender]),
       'actionSchedulerDaemonTriggerAction' => Stub::makeEmpty(DaemonTrigger::class),
     ], $overrides));
   }
