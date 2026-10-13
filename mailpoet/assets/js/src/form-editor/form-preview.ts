@@ -1,5 +1,5 @@
 import jQuery from 'jquery';
-import { camelCase } from 'lodash';
+import camelCase from 'lodash/camelCase';
 
 jQuery(($) => {
   $(() => {
