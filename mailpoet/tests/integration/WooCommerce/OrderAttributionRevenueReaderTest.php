@@ -104,6 +104,7 @@ class OrderAttributionRevenueReaderTest extends \MailPoetTest {
 
     $page = $this->reader->getNewsletterOrderRowsPage($ids, $this->from(), $this->to(), ['status' => ['wc-cancelled']]) ?? [];
     verify(array_column($page, 'order_id'))->equals([$cancelled->get_id()]);
+    verify($this->reader->countNewsletterOrderRows($ids, $this->from(), $this->to(), ['status' => ['wc-cancelled'], 'search' => 'Mona']))->equals(1);
     verify($this->reader->countNewsletterOrderRows($ids, $this->from(), $this->to(), ['emails' => [0]]))->equals(2);
   }
 
