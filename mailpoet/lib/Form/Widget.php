@@ -306,7 +306,7 @@ class Widget extends \WP_Widget {
         */
         $output = $this->wp->applyFilters('mailpoet_form_widget_post_process', $output, $filter_context_data);
       } catch (\Exception $e) {
-        $output = $e->getMessage();
+        $output = $this->wp->escHtml($e->getMessage());
       }
     }
 
