@@ -70,13 +70,14 @@ class ManageTest extends \MailPoetTest {
     ]);
     $_POST['action'] = 'mailpoet_subscription_update';
     $_POST['token'] = 'token';
-    $_POST['data'] = [
+    $data = [
       'first_name' => 'John',
       'last_name' => 'John',
       'email' => 'john.doe@example.com',
       'status' => SubscriberEntity::STATUS_SUBSCRIBED,
       'segments' => [$this->segmentB->getId()],
     ];
+    $_POST['data'] = $data;
 
     $manage->onSave();
 
@@ -91,7 +92,8 @@ class ManageTest extends \MailPoetTest {
     ]);
 
     // Test it can resubscribe
-    $_POST['data']['segments'] = [$this->segmentA->getId()];
+    $data['segments'] = [$this->segmentA->getId()];
+    $_POST['data'] = $data;
     $manage->onSave();
 
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());

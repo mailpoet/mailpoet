@@ -66,7 +66,7 @@ class TablePrefixMetadataFactory extends ClassMetadataFactory {
     }
 
     foreach ($classMetadata->getAssociationMappings() as $fieldName => $mapping) {
-      if ($mapping['type'] === ClassMetadataInfo::MANY_TO_MANY && $mapping['isOwningSide']) {
+      if ($mapping['type'] === ClassMetadataInfo::MANY_TO_MANY && $mapping['isOwningSide'] && isset($mapping['joinTable'])) {
         /** @var string $mappedTableName */
         $mappedTableName = $mapping['joinTable']['name'];
         $classMetadata->associationMappings[$fieldName]['joinTable']['name'] = $this->createPrefixedName($mappedTableName);
