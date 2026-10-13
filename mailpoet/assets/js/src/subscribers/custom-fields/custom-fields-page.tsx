@@ -111,7 +111,7 @@ function keptCustomFieldsMessage(kept: KeptCustomField[]): string {
       sprintf(
         /* translators: %1$s is the custom field name, %2$s is a comma-separated list of segment names */
         __(
-          '"%1$s" was not deleted because it is used in these segments: %2$s. Remove it from the segments first.',
+          '"%1$s" was not deleted because it is used in these segments: %2$s. Remove it from these segments or delete the segments permanently first.',
           'mailpoet',
         ),
         customField.name,
