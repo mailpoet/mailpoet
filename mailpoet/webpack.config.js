@@ -570,7 +570,6 @@ const emailEditorBlocks = Object.assign({}, wpScriptConfig, {
       '/assets/js/src/mailpoet-custom-email-editor-blocks/powered-by-mailpoet/block.tsx',
     'latest-posts-block':
       '/assets/js/src/mailpoet-custom-email-editor-blocks/latest-posts/index.tsx',
-    mailpoet: '/assets/js/src/mailpoet.ts',
   },
   output: {
     filename: '[name].js',
