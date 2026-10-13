@@ -47,7 +47,8 @@ class EscapeHelper {
     $string = self::escapeHtmlAttr($string);
     // Browsers remove tabs and line breaks anywhere in a URL, so do the same before looking for the scheme.
     $schemeCheck = str_replace(["\t", "\n", "\r"], '', $string);
-    if (preg_match('/(javascript:|vbscript:|data:text|data:application)/ui', $schemeCheck) === 1) {
+    // The scheme starts the URL, after optional leading control characters and spaces (\x00-\x20)
+    if (preg_match('/^[\x00-\x20]*(javascript:|vbscript:|data:text|data:application)/ui', $schemeCheck) === 1) {
       return '';
     }
     return $string;
