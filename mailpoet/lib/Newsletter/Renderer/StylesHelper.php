@@ -132,6 +132,44 @@ class StylesHelper {
   }
 
   /**
+   * Empties block style values that isValidCssValue() rejects and removes keys that isValidStyleKey() rejects.
+   * Walks nested parts too (e.g. a posts block's read more button). Renderers read the value keys directly, so they stay.
+   */
+  public static function sanitizeBlockStyles(array $data): array {
+    foreach ($data as $key => $value) {
+      if (!is_array($value)) {
+        continue;
+      }
+      $data[$key] = $key === 'styles' ? self::sanitizeBlockStyleGroups($value) : self::sanitizeBlockStyles($value);
+    }
+    return $data;
+  }
+
+  private static function sanitizeBlockStyleGroups(array $groups): array {
+    foreach ($groups as $group => $styles) {
+      if (!is_array($styles)) {
+        continue;
+      }
+      foreach ($styles as $property => $value) {
+        if (!self::isValidStyleKey($property)) {
+          unset($groups[$group][$property]);
+        } elseif (!self::isValidCssValue($value)) {
+          $groups[$group][$property] = '';
+        }
+      }
+    }
+    return $groups;
+  }
+
+  /**
+   * Accepts camelCase or hyphenated style keys, e.g. backgroundColor or border-radius.
+   * @param mixed $key
+   */
+  public static function isValidStyleKey($key): bool {
+    return is_string($key) && self::isValidCssPropertyName(strtolower($key));
+  }
+
+  /**
    * @param mixed $property
    */
   private static function isValidCssPropertyName($property): bool {

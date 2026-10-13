@@ -177,6 +177,9 @@ class Renderer {
       $renderedBody = "";
       try {
         $content = $this->preprocessor->process($newsletter, $content, $preview, $sendingQueue);
+        if (is_array($content)) {
+          $content = StylesHelper::sanitizeBlockStyles($content);
+        }
         $renderedBody = $this->bodyRenderer->renderBody($newsletter, $content, $isRtl);
       } catch (NewsletterProcessingException $e) {
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_COUPONS)->error(

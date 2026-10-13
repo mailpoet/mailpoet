@@ -122,6 +122,45 @@ class StylesHelperTest extends \MailPoetUnitTest {
     verify($paragraphCss)->stringContainsString('color:#000000;');
   }
 
+  public function testItSanitizesBlockStylesInNestedBlocks(): void {
+    $content = [
+      'type' => 'container',
+      'styles' => ['block' => ['backgroundColor' => '#fff}x{', 'padding' => '10px']],
+      'blocks' => [
+        [
+          'type' => 'automatedLatestContentLayout',
+          'readMoreButton' => [
+            'styles' => [
+              'block' => [
+                'fontColor' => ['#000'],
+                'fontSize' => '14px',
+                'background-color:red;display' => 'none',
+                'border-radius' => '5px',
+              ],
+            ],
+          ],
+        ],
+      ],
+    ];
+
+    $result = StylesHelper::sanitizeBlockStyles($content);
+
+    verify($result['styles']['block'])->equals(['backgroundColor' => '', 'padding' => '10px']);
+    verify($result['blocks'][0]['readMoreButton']['styles']['block'])->equals([
+      'fontColor' => '',
+      'fontSize' => '14px',
+      'border-radius' => '5px',
+    ]);
+  }
+
+  public function testItAcceptsCamelCaseAndHyphenatedStyleKeys(): void {
+    verify(StylesHelper::isValidStyleKey('backgroundColor'))->true();
+    verify(StylesHelper::isValidStyleKey('border-radius'))->true();
+    verify(StylesHelper::isValidStyleKey('color:red;display'))->false();
+    verify(StylesHelper::isValidStyleKey(''))->false();
+    verify(StylesHelper::isValidStyleKey(0))->false();
+  }
+
   public function testItSkipsDeclarationsWithInvalidPropertyNames(): void {
     $css = StylesHelper::setStyle([
       'fontColor' => '#000000',
