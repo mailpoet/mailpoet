@@ -96,9 +96,10 @@ $ pnpm test:unit [--file=...] [--debug]
   # runs the PHP unit tests.
   # if --file specified then only tests on that file are executed.
   # if --debug then tests are executed in debugging mode.
-$ pnpm test:integration [--file=...] [--multisite] [--debug]
+$ pnpm test:integration [--file=...] [--group=...] [--multisite] [--debug]
   # runs the PHP integration tests.
   # if --file specified then only tests on that file are executed.
+  # if --group specified then only tests in that group are executed (--group=failed reruns the last failures).
   # if --multisite then tests are executed in a multisite wordpress setup.
   # if --debug then tests are executed in debugging mode.
 $ pnpm test:javascript            # run the JS tests.
@@ -123,7 +124,6 @@ Robo-only helpers with no `pnpm` wrapper yet:
 ```bash
 $ ./do update              # update PHP and JS dependencies
 $ ./do test:failed-unit           # run the last failing unit test.
-$ ./do test:failed-integration    # run the last failing integration test.
 $ ./do test:acceptance-multisite [--file=...] [--skip-deps]
   # same as test:acceptance but runs into a multisite wordpress setup.
 $ ./do download:woo-commerce-zip [<tag>]
