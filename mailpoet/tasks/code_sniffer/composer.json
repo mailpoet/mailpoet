@@ -1,5 +1,6 @@
 {
   "minimum-stability": "dev",
+  "prefer-stable": true,
   "require-dev": {
     "automattic/vipwpcs": "^3.0",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
