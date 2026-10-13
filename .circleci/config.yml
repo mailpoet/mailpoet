@@ -863,6 +863,8 @@ jobs:
           command: ./build.sh
       - store_artifacts:
           path: /home/circleci/mailpoet/mailpoet/mailpoet.zip
+      - store_artifacts:
+          path: /home/circleci/mailpoet/mailpoet/lang/mailpoet.pot
       - persist_to_workspace:
           root: /home/circleci/mailpoet
           paths:

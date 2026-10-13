@@ -78,7 +78,8 @@ rm -rf vendor-prefixed/symfony/dependency-injection/Extension
 
 # Copy release folders.
 echo '[BUILD] Copying release folders'
-cp -Rf lang $plugin_name
+# The .pot is published as a CI artifact; keep an empty folder for the Domain Path header.
+mkdir $plugin_name/lang
 cp -RfL assets $plugin_name
 cp -Rf generated $plugin_name
 cp -Rf lib $plugin_name

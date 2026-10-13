@@ -8,6 +8,9 @@ use MailPoetVendor\Twig\Loader\FilesystemLoader as TwigFileSystem;
 class RoboFile extends \Robo\Tasks {
   const ZIP_BUILD_PATH = __DIR__ . '/mailpoet.zip';
 
+  /** @var int|null */
+  private $releaseZipJobNumber;
+
   public function __construct() {
 
     // disable xdebug to avoid slowing down command execution
@@ -292,30 +295,17 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function translationsGetPotFileFromBuild() {
-    $potFilePathInsideZip = 'mailpoet/lang/mailpoet.pot';
-    $potFilePath = 'lang/mailpoet.pot';
-
-    if (!is_file(self::ZIP_BUILD_PATH)) {
-      throw new \Exception('mailpoet.zip file is missing. You must first download it using `./do release:download-zip`.');
+    if ($this->releaseZipJobNumber === null) {
+      throw new \Exception('The build to take mailpoet.pot from is unknown. Run it together with `./do release:download-zip` in the same command, e.g. via `./do release:publish`.');
     }
 
+    $potFilePath = __DIR__ . '/lang/mailpoet.pot';
     if (!file_exists(__DIR__ . '/lang')) {
       $this->taskExec('mkdir -p ' . __DIR__ . '/lang')->run();
     }
 
-    $zip = new ZipArchive();
-
-    if ($zip->open(self::ZIP_BUILD_PATH) === true) {
-      $potFileContent = $zip->getFromName($potFilePathInsideZip);
-      if ($potFileContent) {
-        file_put_contents($potFilePath, $potFileContent);
-        $this->say('mailpoet.pot extracted from the zip file to ' . $potFilePath);
-      } else {
-        throw new \Exception('Unable to find mailpoet.pot inside the zip file.');
-      }
-    } else {
-      throw new \Exception('Unable to open the zip file.');
-    }
+    $this->createCircleCiController()->downloadPotFile($this->releaseZipJobNumber, $potFilePath);
+    $this->say('mailpoet.pot of build ' . $this->releaseZipJobNumber . ' downloaded to ' . $potFilePath);
   }
 
   public function translationsPush() {
@@ -1288,6 +1278,8 @@ class RoboFile extends \Robo\Tasks {
   public function releaseDownloadZip() {
     $circleciController = $this->createCircleCiController();
     $path = $circleciController->downloadLatestBuild(self::ZIP_BUILD_PATH);
+    // The .pot must come from the same build as this ZIP.
+    $this->releaseZipJobNumber = $circleciController->getDownloadedJobNumber();
     $this->say('Release ZIP downloaded to: ' . $path);
     $this->say(sprintf('Release ZIP file size: %.2F MB', filesize($path) / pow(1024, 2)));
   }

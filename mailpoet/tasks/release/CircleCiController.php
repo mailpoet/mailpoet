@@ -14,6 +14,7 @@ class CircleCiController {
 
   const FREE_ZIP_FILENAME = 'mailpoet.zip';
   const PREMIUM_ZIP_FILENAME = 'mailpoet-premium.zip';
+  const POT_FILENAME = 'mailpoet.pot';
 
   const TERMINAL_WORKFLOW_STATUSES = ['success', 'failed', 'error', 'canceled', 'unauthorized'];
   const RERUNNABLE_WORKFLOW_STATUSES = ['running', 'failed', 'failing', 'canceled'];
@@ -37,6 +38,9 @@ class CircleCiController {
   /** @var GitHubController */
   private $githubController;
 
+  /** @var int|null */
+  private $downloadedJobNumber;
+
   public function __construct(
     $username,
     $token,
@@ -58,19 +62,31 @@ class CircleCiController {
     $this->githubController = $githubController;
   }
 
+  /**
+   * Downloads the release ZIP of the latest build to $targetPath.
+   * The number of the job it came from is available via getDownloadedJobNumber().
+   */
   public function downloadLatestBuild($targetPath) {
     $job = $this->getLatestZipBuildJob();
     $this->checkZipBuildJobStatus($job);
 
-    $releaseZipUrl = $this->getReleaseZipUrl($job['job_number']);
-
-    $this->httpClient->get($releaseZipUrl, [
-      'sink' => $targetPath,
-      'query' => [
-        'circle-token' => $this->token, // artifact download requires token as query param
-      ],
-    ]);
+    $this->downloadArtifact((int)$job['job_number'], $this->zipFilename, $targetPath);
+    $this->downloadedJobNumber = (int)$job['job_number'];
     return $targetPath;
+  }
+
+  public function getDownloadedJobNumber(): ?int {
+    return $this->downloadedJobNumber;
+  }
+
+  public function downloadPotFile(int $jobNumber, string $targetPath): void {
+    $this->downloadArtifact($jobNumber, self::POT_FILENAME, $targetPath);
+    if (!is_file($targetPath) || filesize($targetPath) === 0) {
+      if (file_exists($targetPath)) {
+        unlink($targetPath);
+      }
+      throw new \Exception("Downloaded '" . self::POT_FILENAME . "' from build $jobNumber is missing or empty.");
+    }
   }
 
   /**
@@ -159,17 +175,26 @@ class CircleCiController {
     }
   }
 
-  private function getReleaseZipUrl($buildNumber) {
+  private function downloadArtifact(int $buildNumber, string $filename, string $targetPath): void {
+    $this->httpClient->get($this->getArtifactUrl($buildNumber, $filename), [
+      'sink' => $targetPath,
+      'query' => [
+        'circle-token' => $this->token, // artifact download requires token as query param
+      ],
+    ]);
+  }
+
+  private function getArtifactUrl(int $buildNumber, string $filename): string {
     $response = $this->httpClient->get("$buildNumber/artifacts");
     $artifacts = json_decode($response->getBody()->getContents(), true);
 
-    $pattern = preg_quote($this->zipFilename, '~');
+    $pattern = '~(^|/)' . preg_quote($filename, '~') . '$~';
     foreach ($artifacts['items'] as $artifact) {
-      if (preg_match("~/$pattern$~", $artifact['path'])) {
+      if (preg_match($pattern, $artifact['path'])) {
         return $artifact['url'];
       }
     }
-    throw new \Exception('No ZIP file found in build artifacts');
+    throw new \Exception("No artifact '$filename' found in build $buildNumber");
   }
 
   /**
