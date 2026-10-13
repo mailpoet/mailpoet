@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "845fb6e6f0d69d91193e61b2800ca488",
+    "content-hash": "a7abde134c7d09cc82053a89f1e96806",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -1341,34 +1341,45 @@
         },
         {
             "name": "pelago/emogrifier",
-            "version": "v7.2.0",
+            "version": "v8.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/MyIntervals/emogrifier.git",
-                "reference": "727bdf7255b51798307f17dec52ff8a91f1c7de3"
+                "reference": "e7e7c5985775c91019475ff84dd66e14bfbf31a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/MyIntervals/emogrifier/zipball/727bdf7255b51798307f17dec52ff8a91f1c7de3",
-                "reference": "727bdf7255b51798307f17dec52ff8a91f1c7de3",
+                "url": "https://api.github.com/repos/MyIntervals/emogrifier/zipball/e7e7c5985775c91019475ff84dd66e14bfbf31a7",
+                "reference": "e7e7c5985775c91019475ff84dd66e14bfbf31a7",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-libxml": "*",
-                "php": "~7.3.0 || ~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0",
-                "sabberworm/php-css-parser": "^8.4.0",
-                "symfony/css-selector": "^4.4.23 || ^5.4.0 || ^6.0.0 || ^7.0.0"
+                "php": "^7.3.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0 || ~8.6.0",
+                "sabberworm/php-css-parser": "^9.5.0",
+                "symfony/css-selector": "^5.4.35 || ~6.3.12 || ^6.4.3 || ^7.0.3 || ^8.0.0"
             },
             "require-dev": {
-                "php-parallel-lint/php-parallel-lint": "1.3.2",
-                "phpunit/phpunit": "9.6.11",
-                "rawr/cross-data-providers": "2.4.0"
+                "php-parallel-lint/php-parallel-lint": "1.4.0",
+                "phpmd/phpmd": "2.15.0",
+                "phpstan/extension-installer": "1.4.3",
+                "phpstan/phpstan": "1.12.33 || 2.3.1",
+                "phpstan/phpstan-deprecation-rules": "1.2.1 || 2.0.5",
+                "phpstan/phpstan-phpunit": "1.4.2 || 2.1.1",
+                "phpstan/phpstan-strict-rules": "1.6.2 || 2.1.0",
+                "phpunit/phpunit": "9.6.37",
+                "rawr/phpunit-data-provider": "3.3.1",
+                "rector/rector": "1.2.10 || 2.7.0",
+                "rector/type-perfect": "1.0.0 || 2.2.0",
+                "squizlabs/php_codesniffer": "4.0.4",
+                "thecodingmachine/phpstan-safe-rule": "1.2.0 || 1.4.7",
+                "thecodingmachine/safe": "^1.3 || ^2.5 || ^3.4"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "8.0.x-dev"
+                    "dev-main": "8.4.x-dev"
                 }
             },
             "autoload": {
@@ -1395,7 +1406,7 @@
                 },
                 {
                     "name": "Jake Hotson",
-                    "email": "jake@qzdesign.co.uk"
+                    "email": "jake.github@qzdesign.co.uk"
                 },
                 {
                     "name": "Cameron Brooks"
@@ -1415,7 +1426,7 @@
                 "issues": "https://github.com/MyIntervals/emogrifier/issues",
                 "source": "https://github.com/MyIntervals/emogrifier"
             },
-            "time": "2023-12-06T02:00:20+00:00"
+            "time": "2026-10-11T12:29:58+00:00"
         },
         {
             "name": "psr/cache",
@@ -1614,24 +1625,33 @@
         },
         {
             "name": "sabberworm/php-css-parser",
-            "version": "v8.5.1",
+            "version": "v9.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/MyIntervals/PHP-CSS-Parser.git",
-                "reference": "4a3d572b0f8b28bb6fd016ae8bbfc445facef152"
+                "reference": "f284e63b6e891e0c28631e54ba06c3ed102a9ef3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/MyIntervals/PHP-CSS-Parser/zipball/4a3d572b0f8b28bb6fd016ae8bbfc445facef152",
-                "reference": "4a3d572b0f8b28bb6fd016ae8bbfc445facef152",
+                "url": "https://api.github.com/repos/MyIntervals/PHP-CSS-Parser/zipball/f284e63b6e891e0c28631e54ba06c3ed102a9ef3",
+                "reference": "f284e63b6e891e0c28631e54ba06c3ed102a9ef3",
                 "shasum": ""
             },
             "require": {
                 "ext-iconv": "*",
-                "php": ">=5.6.20"
+                "php": "^7.2.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0 || ~8.6.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^5.7.27"
+                "php-parallel-lint/php-parallel-lint": "1.4.0",
+                "phpstan/extension-installer": "1.4.3",
+                "phpstan/phpstan": "1.12.33 || 2.2.9",
+                "phpstan/phpstan-phpunit": "1.4.2 || 2.0.18",
+                "phpstan/phpstan-strict-rules": "1.6.2 || 2.0.12",
+                "phpunit/phpunit": "8.5.54",
+                "rawr/phpunit-data-provider": "3.3.1",
+                "rector/rector": "1.2.10 || 2.6.2",
+                "rector/type-perfect": "1.0.0 || 2.1.4",
+                "squizlabs/php_codesniffer": "4.0.4"
             },
             "suggest": {
                 "ext-mbstring": "for parsing UTF-8 CSS"
@@ -1639,10 +1659,14 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "9.0.x-dev"
+                    "dev-main": "9.6.x-dev"
                 }
             },
             "autoload": {
+                "files": [
+                    "src/Rule/Rule.php",
+                    "src/RuleSet/RuleContainer.php"
+                ],
                 "psr-4": {
                     "Sabberworm\\CSS\\": "src/"
                 }
@@ -1673,9 +1697,9 @@
             ],
             "support": {
                 "issues": "https://github.com/MyIntervals/PHP-CSS-Parser/issues",
-                "source": "https://github.com/MyIntervals/PHP-CSS-Parser/tree/v8.5.1"
+                "source": "https://github.com/MyIntervals/PHP-CSS-Parser/tree/v9.5.0"
             },
-            "time": "2024-02-15T16:41:13+00:00"
+            "time": "2026-09-20T15:02:00+00:00"
         },
         {
             "name": "symfony/console",
@@ -1778,16 +1802,16 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v5.4.35",
+            "version": "v5.4.45",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/css-selector.git",
-                "reference": "9e615d367e2bed41f633abb383948c96a2dbbfae"
+                "reference": "4f7f3c35fba88146b56d0025d20ace3f3901f097"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/css-selector/zipball/9e615d367e2bed41f633abb383948c96a2dbbfae",
-                "reference": "9e615d367e2bed41f633abb383948c96a2dbbfae",
+                "url": "https://api.github.com/repos/symfony/css-selector/zipball/4f7f3c35fba88146b56d0025d20ace3f3901f097",
+                "reference": "4f7f3c35fba88146b56d0025d20ace3f3901f097",
                 "shasum": ""
             },
             "require": {
@@ -1824,7 +1848,7 @@
             "description": "Converts CSS selectors to XPath expressions",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/css-selector/tree/v5.4.35"
+                "source": "https://github.com/symfony/css-selector/tree/v5.4.45"
             },
             "funding": [
                 {
@@ -1840,7 +1864,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-01-23T13:51:25+00:00"
+            "time": "2024-09-25T14:11:13+00:00"
         },
         {
             "name": "symfony/dependency-injection",
@@ -3470,7 +3494,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {},
-    "prefer-stable": true,
+    "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.4"

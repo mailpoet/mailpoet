@@ -37,6 +37,15 @@ class StylesTest extends \MailPoetUnitTest {
     verify($prefixedStyles)->stringContainsString('mailpoet .a > .b { margin: 0; }');
   }
 
+  public function testItPrefixesSelectorsThatContainCommas() {
+    $stylesheet = '.a:not(.b, .c) { color: red; } input[placeholder="x, y"] { margin: 0; }';
+    $prefixedStyles = $this->styles->prefixStyles($stylesheet, 'mailpoet');
+    verify($prefixedStyles)->equals(
+      'mailpoet .a:not(.b, .c) { color: red; }' . PHP_EOL
+      . 'mailpoet input[placeholder="x, y"] { margin: 0; }'
+    );
+  }
+
   public function testItShouldNotRenderStylesForFormWithoutSettings() {
     $form = Fixtures::get('simple_form_body');
     $styles = $this->styles->renderFormSettingsStyles($this->createForm($form), '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
