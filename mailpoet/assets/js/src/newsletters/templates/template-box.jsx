@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import { __ } from '@wordpress/i18n';
+import { escapeHTML } from '@wordpress/escape-html';
 import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 
@@ -55,7 +56,7 @@ class TemplateBox extends Component {
 
   onPreview() {
     MailPoet.Modal.popup({
-      title: this.props.name,
+      title: escapeHTML(this.props.name),
       template:
         '<img class="mailpoet-template-preview-image" src="{{ thumbnail }}" />',
       data: this.props,
