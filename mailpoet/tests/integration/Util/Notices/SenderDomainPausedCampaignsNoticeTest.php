@@ -93,6 +93,8 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
     $this->assertInstanceOf(Notice::class, $notice);
     $message = $notice->getMessage();
     verify(substr_count($message, 'mailpoet-js-button-authorize-email-and-sender-domain'))->equals(1);
+    verify($message)->stringContainsString('</p><p><a href="#" class="button button-primary mailpoet-js-button-authorize-email-and-sender-domain"');
+    verify($message)->stringNotContainsString('<br>');
     verify($message)->stringContainsString('data-email="sender1@example.com"');
     verify($message)->stringContainsString('and 2 more</a> have been paused. To make sure your campaigns reach your subscribers, authenticate example.com or switch to another authenticated sender domain, then resume them.');
     verify($message)->stringContainsString('“<a href="');
@@ -179,7 +181,7 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
 
     $this->assertInstanceOf(Notice::class, $notice);
     $message = $notice->getMessage();
-    verify(substr_count($message, '<p>'))->equals(3);
+    verify(substr_count($message, '<p>'))->equals(4);
     $branded = strpos($message, 'Branded');
     $free = strpos($message, 'Free');
     $generic = strpos($message, 'Generic');
