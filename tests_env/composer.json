@@ -9,7 +9,7 @@
     "codeception/module-webdriver": "^1.4",
     "codeception/verify": "^2.1",
     "lucatume/wp-browser": "3.2.1",
-    "phpunit/phpunit": "9.6.33",
+    "phpunit/phpunit": "9.6.38",
     "vlucas/phpdotenv": "v5.7.0"
   },
   "config": {
