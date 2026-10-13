@@ -69,4 +69,41 @@ describe('loadPublicBundle', () => {
     loadPublicBundle(doc, null);
     expect(scripts()).to.deep.equal(['https://example.com/other.js']);
   });
+
+  it('does nothing when currentScript is a renamed optimizer file', () => {
+    const [current] = setup([
+      'https://example.com/wp-content/cache/autoptimize_single_abc.js',
+    ]);
+    loadPublicBundle(doc, current);
+    expect(scripts()).to.have.length(1);
+  });
+
+  it('still loads when another plugin ships a public.min.js', () => {
+    const [, current] = setup([
+      'https://example.com/wp-content/plugins/foo/js/public.min.js',
+      `${base}/public.js?mp_ver=1`,
+    ]);
+    loadPublicBundle(doc, current);
+    expect(scripts()).to.include(`${base}/public.min.js?mp_ver=1`);
+  });
+
+  it('prefers the MailPoet path over another public.js', () => {
+    setup([
+      `${base}/public.js?mp_ver=1`,
+      'https://example.com/wp-content/plugins/foo/js/public.js',
+    ]);
+    loadPublicBundle(doc, null);
+    expect(scripts()).to.include(`${base}/public.min.js?mp_ver=1`);
+    expect(scripts()).to.not.include(
+      'https://example.com/wp-content/plugins/foo/js/public.min.js',
+    );
+  });
+
+  it('copies the nonce to the inserted script', () => {
+    const [current] = setup([`${base}/public.js`]);
+    current.setAttribute('nonce', 'abc123');
+    loadPublicBundle(doc, current);
+    const added = current.nextElementSibling as HTMLScriptElement;
+    expect(added.nonce || added.getAttribute('nonce')).to.equal('abc123');
+  });
 });
