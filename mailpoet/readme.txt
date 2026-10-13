@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 7.0
 Tested up to: 7.1
-Stable tag: 5.41.0
+Stable tag: 5.42.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,25 +227,22 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.41.0 - 2026-10-05 =
-* Improved: Google Analytics tracking parameters are now added to personalization tag links in block editor emails;
-* Improved: Validation of newsletter style settings;
-* Improved: Handling of shortcodes in image alt text and link titles;
-* Improved: Cron daemon request token generation;
-* Improved: User-agent handling for repeated email opens and clicks;
-* Improved: Automation templates now let you choose the email editor before the email is created;
-* Improved: Handling of formatting in form previews and the checkout opt-in message;
-* Improved: Reliability of subscriber links in emails;
-* Improved: Cron requests now respect the https_local_ssl_verify filter;
-* Improved: Email editor save notice is now translated, has no link to view the post, and uses the same wording when saving from the email or its template;
-* Fixed: Inactive and trashed forms accepting new subscriptions;
-* Fixed: Premium update being hidden while the newest free release is still on hold on WordPress.org;
-* Fixed: Registration failing with CAPTCHA enabled when the MailPoet page was deleted, trashed, or unpublished;
-* Fixed: Vertical alignment of text in Tags fields;
-* Fixed: Cut-off “Nice job! Check back in…” badge text in the Newsletters listing;
-* Fixed: Font sizes in the email editor’s Styles sidebar now use pixels, so the chosen sizes show correctly in email clients;
-* Fixed: Missing gap between the Color option and the warning in the email editor’s Background panel;
-* Fixed: Button placed after a Media & Text block painting its background across that block in sent emails;
-* Removed: Content section from the Email tab of the email editor sidebar.
+= 5.42.0 - 2026-10-13 =
+* Updated: Bundled third-party libraries to their latest compatible versions;
+* Improved: Consistency of user role permissions across MailPoet admin pages;
+* Improved: Custom field deletion in the form editor, with an option to remove the field from the current form only and a cleanup of its subscriber values and forms when deleting permanently;
+* Improved: Validation of MailChimp API keys during subscriber import;
+* Improved: Built-in CAPTCHA now accepts each answer only once and varies its audio on every play;
+* Improved: Handling of escaped characters in form custom CSS and of form validation message colors;
+* Changed: Tracked links whose address is set by subscriber data or personalization tags now lead only to the site's own domain;
+* Fixed: Sender domains are now added to your account only when you click Add domain, instead of as soon as the Manage Sender Domain dialog opens;
+* Fixed: Generated coupon codes in automation emails sent in the background showing the XXXX-XXXXXX-XXXX placeholder instead of a real code on WooCommerce 11.1 and newer;
+* Fixed: Images not loading in some form templates and in forms created from them;
+* Fixed: Form editor showing some images at full size instead of their set size;
+* Fixed: Tag segments matching every subscriber, and segments losing conditions on save, when MailPoet Premium is a different version from MailPoet;
+* Fixed: Images resized in the form editor not showing in the published form;
+* Fixed: Garbled date in the schedule field when the site date format contains escaped words or an ordinal suffix;
+* Fixed: Post blocks for the Latest Posts block showing in the email editor inserter outside the Post Template;
+* Fixed: PHP 8.5 deprecation notices on MailPoet admin pages and when sending newsletters.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

@@ -1,5 +1,23 @@
 == Changelog ==
 
+= 5.42.0 - 2026-10-13 =
+* Updated: Bundled third-party libraries to their latest compatible versions;
+* Improved: Consistency of user role permissions across MailPoet admin pages;
+* Improved: Custom field deletion in the form editor, with an option to remove the field from the current form only and a cleanup of its subscriber values and forms when deleting permanently;
+* Improved: Validation of MailChimp API keys during subscriber import;
+* Improved: Built-in CAPTCHA now accepts each answer only once and varies its audio on every play;
+* Improved: Handling of escaped characters in form custom CSS and of form validation message colors;
+* Changed: Tracked links whose address is set by subscriber data or personalization tags now lead only to the site's own domain;
+* Fixed: Sender domains are now added to your account only when you click Add domain, instead of as soon as the Manage Sender Domain dialog opens;
+* Fixed: Generated coupon codes in automation emails sent in the background showing the XXXX-XXXXXX-XXXX placeholder instead of a real code on WooCommerce 11.1 and newer;
+* Fixed: Images not loading in some form templates and in forms created from them;
+* Fixed: Form editor showing some images at full size instead of their set size;
+* Fixed: Tag segments matching every subscriber, and segments losing conditions on save, when MailPoet Premium is a different version from MailPoet;
+* Fixed: Images resized in the form editor not showing in the published form;
+* Fixed: Garbled date in the schedule field when the site date format contains escaped words or an ordinal suffix;
+* Fixed: Post blocks for the Latest Posts block showing in the email editor inserter outside the Post Template;
+* Fixed: PHP 8.5 deprecation notices on MailPoet admin pages and when sending newsletters.
+
 = 5.41.0 - 2026-10-05 =
 * Improved: Google Analytics tracking parameters are now added to personalization tag links in block editor emails;
 * Improved: Validation of newsletter style settings;
