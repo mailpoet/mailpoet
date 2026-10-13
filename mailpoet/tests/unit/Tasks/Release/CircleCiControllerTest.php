@@ -179,6 +179,97 @@ class CircleCiControllerTest extends \MailPoetUnitTest {
     verify(file_exists($target))->false();
   }
 
+  public function testItDownloadsZipWhenLintJobSucceeded() {
+    $history = new \ArrayObject();
+    $controller = $this->makeZipController([
+      ['name' => 'build_release_zip', 'status' => 'success', 'job_number' => 55],
+      ['name' => 'lint_release_zip_php74', 'status' => 'success', 'job_number' => 56],
+    ], $history);
+    $target = $this->tempFile();
+
+    $controller->downloadLatestBuild($target);
+
+    verify(file_get_contents($target))->equals('zip');
+    verify($controller->getDownloadedJobNumber())->equals(55);
+  }
+
+  /** @dataProvider lintJobProvider */
+  public function testItRefusesZipWhenLintJobIsNotSuccessful(array $lintJobs, string $expectedMessage) {
+    $controller = $this->makeZipController(array_merge(
+      [['name' => 'build_release_zip', 'status' => 'success', 'job_number' => 55]],
+      $lintJobs
+    ), new \ArrayObject());
+    $target = $this->tempFile();
+
+    try {
+      $controller->downloadLatestBuild($target);
+      $this->fail('Expected an exception.');
+    } catch (\Exception $e) {
+      verify($e->getMessage())->stringContainsString($expectedMessage);
+    }
+    verify(file_exists($target))->false();
+    verify($controller->getDownloadedJobNumber())->null();
+  }
+
+  public function lintJobProvider(): array {
+    return [
+      'failed' => [[['name' => 'lint_release_zip_php74', 'status' => 'failed']], "'lint_release_zip_php74' has status 'failed'"],
+      'running' => [[['name' => 'lint_release_zip_php74', 'status' => 'running']], "has status 'running'"],
+      'missing' => [[], "has status 'missing'"],
+    ];
+  }
+
+  /** @dataProvider httpErrorProvider */
+  public function testItLeavesNoFileWhenDownloadFails(int $status) {
+    $controller = $this->makeController([
+      $this->jsonResponse(['items' => [['path' => 'mailpoet.pot', 'url' => 'https://artifacts.test/pot']]]),
+      new Response($status, [], 'error body'),
+    ], new \ArrayObject());
+    $target = $this->tempFile();
+
+    try {
+      $controller->downloadPotFile(1, $target);
+      $this->fail('Expected an exception.');
+    } catch (\GuzzleHttp\Exception\RequestException $e) {
+      verify($e->getCode())->equals($status);
+    }
+    verify(glob($target . '*'))->empty();
+  }
+
+  public function httpErrorProvider(): array {
+    return ['forbidden' => [403], 'server error' => [500]];
+  }
+
+  public function testItKeepsExistingFileWhenDownloadFails() {
+    $controller = $this->makeController([
+      $this->jsonResponse(['items' => [['path' => 'mailpoet.pot', 'url' => 'https://artifacts.test/pot']]]),
+      new Response(500, [], 'error body'),
+    ], new \ArrayObject());
+    $target = $this->tempFile();
+    file_put_contents($target, 'old');
+
+    try {
+      $controller->downloadPotFile(1, $target);
+      $this->fail('Expected an exception.');
+    } catch (\GuzzleHttp\Exception\RequestException $e) {
+      verify(file_get_contents($target))->equals('old');
+    }
+    verify(glob($target . '*'))->equals([$target]);
+  }
+
+  /**
+   * @param array<int, array<string, mixed>> $jobs
+   */
+  private function makeZipController(array $jobs, \ArrayObject $history): CircleCiController {
+    return $this->makeController([
+      $this->jsonResponse(['items' => [['id' => 'p1', 'vcs' => ['revision' => 'abc']]]]),
+      $this->jsonResponse(['items' => [['id' => 'w1']]]),
+      $this->jsonResponse(['items' => $jobs]),
+      $this->jsonResponse(['items' => [['path' => 'mailpoet.zip', 'url' => 'https://artifacts.test/zip']]]),
+      new Response(200, [], 'zip'),
+    ], $history, 600, CircleCiController::PROJECT_MAILPOET);
+  }
+
   private function tempFile(): string {
     $path = sys_get_temp_dir() . '/mailpoet-pot-test-' . uniqid('', true) . '.pot';
     $this->tempFiles[] = $path;
@@ -202,13 +293,13 @@ class CircleCiControllerTest extends \MailPoetUnitTest {
    * @param Response[] $responses
    * @param \ArrayObject $history Guzzle history container, populated as requests are sent.
    */
-  private function makeController(array $responses, \ArrayObject $history, int $timeout = 600): CircleCiController {
+  private function makeController(array $responses, \ArrayObject $history, int $timeout = 600, string $project = CircleCiController::PROJECT_PREMIUM): CircleCiController {
     $stack = HandlerStack::create(new MockHandler($responses));
     $stack->push(Middleware::history($history));
     $client = new Client(['handler' => $stack]);
-    $github = $this->makeEmpty(GitHubController::class);
+    $github = $this->makeEmpty(GitHubController::class, ['getLatestCommitRevisionOnBranch' => 'abc']);
 
-    return new class('mailpoet', 'token', CircleCiController::PROJECT_PREMIUM, $github, $client, $timeout) extends CircleCiController {
+    return new class('mailpoet', 'token', $project, $github, $client, $timeout) extends CircleCiController {
       /** @var int */
       private $testTimeout;
 

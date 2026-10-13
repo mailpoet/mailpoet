@@ -10,6 +10,7 @@ class CircleCiController {
 
   const RELEASE_BRANCH = 'release';
   const RELEASE_ZIP_JOB_NAME = 'build_release_zip';
+  const LINT_ZIP_JOB_NAME = 'lint_release_zip_php74';
   const JOB_STATUS_SUCCESS = 'success';
 
   const FREE_ZIP_FILENAME = 'mailpoet.zip';
@@ -32,6 +33,9 @@ class CircleCiController {
   /** @var string */
   private $zipFilename;
 
+  /** @var string */
+  private $project;
+
   /** @var Client */
   private $httpClient;
 
@@ -50,6 +54,7 @@ class CircleCiController {
   ) {
     $this->username = $username;
     $this->token = $token;
+    $this->project = $project;
     $circleCiProject = $this->getCircleCiProject($project);
     $this->zipFilename = $project === self::PROJECT_MAILPOET ? self::FREE_ZIP_FILENAME : self::PREMIUM_ZIP_FILENAME;
     $this->httpClient = $httpClient ?? new Client([
@@ -67,8 +72,15 @@ class CircleCiController {
    * The number of the job it came from is available via getDownloadedJobNumber().
    */
   public function downloadLatestBuild($targetPath) {
-    $job = $this->getLatestZipBuildJob();
+    $jobs = $this->getLatestWorkflowJobs();
+    $job = $this->findJob($jobs, self::RELEASE_ZIP_JOB_NAME);
+    if ($job === null) {
+      throw new \Exception('No release ZIP build found');
+    }
     $this->checkZipBuildJobStatus($job);
+    if ($this->project === self::PROJECT_MAILPOET) {
+      $this->checkLintJobStatus($this->findJob($jobs, self::LINT_ZIP_JOB_NAME));
+    }
 
     $this->downloadArtifact((int)$job['job_number'], $this->zipFilename, $targetPath);
     $this->downloadedJobNumber = (int)$job['job_number'];
@@ -80,13 +92,7 @@ class CircleCiController {
   }
 
   public function downloadPotFile(int $jobNumber, string $targetPath): void {
-    $this->downloadArtifact($jobNumber, self::POT_FILENAME, $targetPath);
-    if (!is_file($targetPath) || filesize($targetPath) === 0) {
-      if (file_exists($targetPath)) {
-        unlink($targetPath);
-      }
-      throw new \Exception("Downloaded '" . self::POT_FILENAME . "' from build $jobNumber is missing or empty.");
-    }
+    $this->downloadArtifact($jobNumber, self::POT_FILENAME, $targetPath, true);
   }
 
   /**
@@ -131,7 +137,7 @@ class CircleCiController {
     return true;
   }
 
-  private function getLatestZipBuildJob(): array {
+  private function getLatestWorkflowJobs(): array {
     $latestPipeline = $this->getLatestPipeline();
     $latestPipelineId = $latestPipeline['id'] ?? null;
     $latestPipelineRevision = $latestPipeline['vcs']['revision'] ?? null;
@@ -160,12 +166,25 @@ class CircleCiController {
     $responseJob = $this->httpClient->get('https://circleci.com/api/v2/workflow/' . urlencode($latestWorkFlowId) . '/job');
     $jobs = json_decode($responseJob->getBody()->getContents(), true);
 
-    foreach ($jobs['items'] as $job) {
-      if ($job['name'] === self::RELEASE_ZIP_JOB_NAME) {
+    return $jobs['items'] ?? [];
+  }
+
+  private function findJob(array $jobs, string $name): ?array {
+    foreach ($jobs as $job) {
+      if ($job['name'] === $name) {
         return $job;
       }
     }
-    throw new \Exception('No release ZIP build found');
+    return null;
+  }
+
+  private function checkLintJobStatus(?array $job): void {
+    $name = self::LINT_ZIP_JOB_NAME;
+    $status = $job['status'] ?? 'missing';
+    if ($status !== self::JOB_STATUS_SUCCESS) {
+      $expectedStatus = self::JOB_STATUS_SUCCESS;
+      throw new \Exception("Job '$name' has status '$status', '$expectedStatus' expected. The release ZIP was not verified on PHP 7.4.");
+    }
   }
 
   private function checkZipBuildJobStatus(array $job) {
@@ -175,22 +194,41 @@ class CircleCiController {
     }
   }
 
-  private function downloadArtifact(int $buildNumber, string $filename, string $targetPath): void {
-    $this->httpClient->get($this->getArtifactUrl($buildNumber, $filename), [
-      'sink' => $targetPath,
-      'query' => [
-        'circle-token' => $this->token, // artifact download requires token as query param
-      ],
-    ]);
+  /**
+   * Downloads to a temporary file next to the target and moves it into place only on success,
+   * so a failed request never leaves a partial or error-body file at $targetPath.
+   */
+  private function downloadArtifact(int $buildNumber, string $filename, string $targetPath, bool $requireContent = false): void {
+    $url = $this->getArtifactUrl($buildNumber, $filename);
+    $tempPath = $targetPath . '.' . uniqid('', true) . '.tmp';
+    try {
+      $this->httpClient->get($url, [
+        'sink' => $tempPath,
+        'query' => [
+          'circle-token' => $this->token, // artifact download requires token as query param
+        ],
+      ]);
+      if ($requireContent && (!is_file($tempPath) || filesize($tempPath) === 0)) {
+        throw new \Exception("Downloaded '$filename' from build $buildNumber is missing or empty.");
+      }
+      if (!rename($tempPath, $targetPath)) {
+        throw new \Exception("Couldn't move downloaded '$filename' to $targetPath.");
+      }
+    } finally {
+      if (file_exists($tempPath)) {
+        unlink($tempPath);
+      }
+    }
   }
 
   private function getArtifactUrl(int $buildNumber, string $filename): string {
     $response = $this->httpClient->get("$buildNumber/artifacts");
     $artifacts = json_decode($response->getBody()->getContents(), true);
 
-    $pattern = '~(^|/)' . preg_quote($filename, '~') . '$~';
+    $suffix = '/' . $filename;
     foreach ($artifacts['items'] as $artifact) {
-      if (preg_match($pattern, $artifact['path'])) {
+      $path = $artifact['path'];
+      if ($path === $filename || substr($path, -strlen($suffix)) === $suffix) {
         return $artifact['url'];
       }
     }

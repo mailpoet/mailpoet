@@ -7,6 +7,7 @@ use MailPoetVendor\Twig\Loader\FilesystemLoader as TwigFileSystem;
 
 class RoboFile extends \Robo\Tasks {
   const ZIP_BUILD_PATH = __DIR__ . '/mailpoet.zip';
+  const ZIP_BUILD_JOB_PATH = __DIR__ . '/mailpoet.zip.job';
 
   /** @var int|null */
   private $releaseZipJobNumber;
@@ -295,8 +296,12 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function translationsGetPotFileFromBuild() {
-    if ($this->releaseZipJobNumber === null) {
-      throw new \Exception('The build to take mailpoet.pot from is unknown. Run it together with `./do release:download-zip` in the same command, e.g. via `./do release:publish`.');
+    $jobNumber = $this->releaseZipJobNumber;
+    if ($jobNumber === null && is_file(self::ZIP_BUILD_JOB_PATH)) {
+      $jobNumber = (int)trim((string)file_get_contents(self::ZIP_BUILD_JOB_PATH)) ?: null;
+    }
+    if ($jobNumber === null) {
+      throw new \Exception('The build to take mailpoet.pot from is unknown. Run `./do release:download-zip` first.');
     }
 
     $potFilePath = __DIR__ . '/lang/mailpoet.pot';
@@ -304,8 +309,8 @@ class RoboFile extends \Robo\Tasks {
       $this->taskExec('mkdir -p ' . __DIR__ . '/lang')->run();
     }
 
-    $this->createCircleCiController()->downloadPotFile($this->releaseZipJobNumber, $potFilePath);
-    $this->say('mailpoet.pot of build ' . $this->releaseZipJobNumber . ' downloaded to ' . $potFilePath);
+    $this->createCircleCiController()->downloadPotFile($jobNumber, $potFilePath);
+    $this->say('mailpoet.pot of build ' . $jobNumber . ' downloaded to ' . $potFilePath);
   }
 
   public function translationsPush() {
@@ -1280,13 +1285,14 @@ class RoboFile extends \Robo\Tasks {
     $path = $circleciController->downloadLatestBuild(self::ZIP_BUILD_PATH);
     // The .pot must come from the same build as this ZIP.
     $this->releaseZipJobNumber = $circleciController->getDownloadedJobNumber();
+    file_put_contents(self::ZIP_BUILD_JOB_PATH, (string)$this->releaseZipJobNumber);
     $this->say('Release ZIP downloaded to: ' . $path);
     $this->say(sprintf('Release ZIP file size: %.2F MB', filesize($path) / pow(1024, 2)));
   }
 
   public function releaseDeleteDownloadedZip() {
     $this->say('Delete downloaded ZIP: ' . self::ZIP_BUILD_PATH);
-    $this->taskExec('rm -f ' . self::ZIP_BUILD_PATH)->run();
+    $this->taskExec('rm -f ' . self::ZIP_BUILD_PATH . ' ' . self::ZIP_BUILD_JOB_PATH)->run();
     $this->say('ZIP file was deleted');
   }
 
