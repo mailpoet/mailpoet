@@ -15,6 +15,7 @@ parameters:
     - ../../tests/_support/_generated/IntegrationTesterActions.php
     - ../../tests/_support/_generated/UnitTesterActions.php
     - ../../tasks/Php84DeprecationsFix.php
+    - ../../tasks/StripWhitespaces.php
   scanDirectories:
     - ../../tests/_support
     - ../../tests/acceptance
