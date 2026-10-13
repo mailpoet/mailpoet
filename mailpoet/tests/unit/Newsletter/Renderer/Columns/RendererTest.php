@@ -344,6 +344,20 @@ class RendererTest extends \MailPoetUnitTest {
     );
   }
 
+  public function testItTreatsEmptyBackgroundColorAsMissing() {
+    $contentBlock = [
+      'blocks' => [1],
+      'styles' => ['block' => ['backgroundColor' => '']],
+    ];
+
+    $result = $this->renderer->render($contentBlock, ['<div>Empty background</div>']);
+    verify($result)->stringNotContainsString('background-color');
+    verify($result)->stringNotContainsString('bgcolor=');
+
+    $template = $this->renderer->getOneColumnTemplate(['backgroundColor' => ''], ['src' => 'bg.jpg', 'display' => 'scale']);
+    verify($template['content_start'])->stringContainsString('background-color: #ffffff;');
+  }
+
   public function testGetMultipleColumnsContentStart() {
     $width = 330;
     $alignment = 'left';

@@ -115,7 +115,7 @@ class Renderer {
 
   private function getBackgroundCss($styles, $image) {
     if ($image !== null && $image['src'] !== null) {
-      $backgroundColor = isset($styles['backgroundColor']) && $styles['backgroundColor'] !== 'transparent' ? $styles['backgroundColor'] : '#ffffff';
+      $backgroundColor = !empty($styles['backgroundColor']) && $styles['backgroundColor'] !== 'transparent' ? $styles['backgroundColor'] : '#ffffff';
       $repeat = $image['display'] === 'tile' ? 'repeat' : 'no-repeat';
       $size = $image['display'] === 'scale' ? 'cover' : 'contain';
       // Encoded for HTML here, because the style attribute escaping below keeps existing entities
@@ -133,7 +133,7 @@ class Renderer {
       );
       return EHelper::escapeHtmlStyleAttr($style);
     } else {
-      if (!isset($styles['backgroundColor'])) return false;
+      if (empty($styles['backgroundColor'])) return false;
       $backgroundColor = $styles['backgroundColor'];
       return ($backgroundColor !== 'transparent') ?
         EHelper::escapeHtmlStyleAttr(sprintf('background-color:%s!important;', $backgroundColor)) :
@@ -144,7 +144,7 @@ class Renderer {
   private function getBgColorAttribute($styles, $image) {
     if (
       ($image === null || $image['src'] === null)
-      && isset($styles['backgroundColor'])
+      && !empty($styles['backgroundColor'])
       && $styles['backgroundColor'] !== 'transparent'
     ) {
       return 'bgcolor="' . EHelper::escapeHtmlAttr($styles['backgroundColor']) . '"';
