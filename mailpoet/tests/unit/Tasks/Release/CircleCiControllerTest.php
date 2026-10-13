@@ -11,6 +11,9 @@ use MailPoetTasks\Release\CircleCiController;
 use MailPoetTasks\Release\GitHubController;
 
 class CircleCiControllerTest extends \MailPoetUnitTest {
+  /** @var string[] */
+  private $tempFiles = [];
+
   public function testItCancelsPollsAndRerunsRunningWorkflow() {
     $history = new \ArrayObject();
     $controller = $this->makeController([
@@ -113,6 +116,82 @@ class CircleCiControllerTest extends \MailPoetUnitTest {
     $this->expectException(\Exception::class);
     $this->expectExceptionMessageMatches('/terminal state/');
     $controller->rerunLatestWorkflow(CircleCiController::PROJECT_PREMIUM);
+  }
+
+  public function testItDownloadsPotFileFromGivenJob() {
+    $history = new \ArrayObject();
+    $controller = $this->makeController([
+      $this->jsonResponse(['items' => [
+        ['path' => 'home/circleci/mailpoet/mailpoet/mailpoet.zip', 'url' => 'https://artifacts.test/zip'],
+        ['path' => 'home/circleci/mailpoet/mailpoet/lang/mailpoet.pot', 'url' => 'https://artifacts.test/pot'],
+      ]]),
+      new Response(200, [], 'msgid "Hello"'),
+    ], $history);
+    $target = $this->tempFile();
+
+    $controller->downloadPotFile(1234, $target);
+
+    verify($this->requestLines($history))->equals([
+      'GET 1234/artifacts',
+      'GET /pot',
+    ]);
+    verify(file_get_contents($target))->equals('msgid "Hello"');
+  }
+
+  public function testItMatchesBarePotArtifactPath() {
+    $history = new \ArrayObject();
+    $controller = $this->makeController([
+      $this->jsonResponse(['items' => [['path' => 'mailpoet.pot', 'url' => 'https://artifacts.test/bare']]]),
+      new Response(200, [], 'content'),
+    ], $history);
+
+    $controller->downloadPotFile(1, $this->tempFile());
+
+    verify($this->requestLines($history)[1])->equals('GET /bare');
+  }
+
+  public function testItDoesNotMatchSimilarlyNamedArtifacts() {
+    $controller = $this->makeController([
+      $this->jsonResponse(['items' => [
+        ['path' => 'home/circleci/lang/mailpoet.pot.bak', 'url' => 'https://artifacts.test/bak'],
+        ['path' => 'home/circleci/lang/foo-mailpoet.pot', 'url' => 'https://artifacts.test/foo'],
+      ]]),
+    ], new \ArrayObject());
+
+    $this->expectException(\Exception::class);
+    $this->expectExceptionMessage("No artifact 'mailpoet.pot' found in build 7");
+    $controller->downloadPotFile(7, $this->tempFile());
+  }
+
+  public function testItThrowsAndLeavesNoFileWhenPotFileIsEmpty() {
+    $controller = $this->makeController([
+      $this->jsonResponse(['items' => [['path' => 'mailpoet.pot', 'url' => 'https://artifacts.test/pot']]]),
+      new Response(200, [], ''),
+    ], new \ArrayObject());
+    $target = $this->tempFile();
+
+    try {
+      $controller->downloadPotFile(1, $target);
+      $this->fail('Expected an exception for an empty .pot file.');
+    } catch (\Exception $e) {
+      verify($e->getMessage())->stringContainsString('empty');
+    }
+    verify(file_exists($target))->false();
+  }
+
+  private function tempFile(): string {
+    $path = sys_get_temp_dir() . '/mailpoet-pot-test-' . uniqid('', true) . '.pot';
+    $this->tempFiles[] = $path;
+    return $path;
+  }
+
+  public function _after() {
+    foreach ($this->tempFiles as $file) {
+      if (file_exists($file)) {
+        unlink($file);
+      }
+    }
+    $this->tempFiles = [];
   }
 
   private function jsonResponse(array $data): Response {
