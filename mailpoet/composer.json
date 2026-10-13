@@ -65,21 +65,18 @@
       "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install",
       "./tools/vendor/composer.phar --working-dir=tasks/phpstan install",
       "./tools/vendor/composer.phar --working-dir=../tests_env install",
-      "php ./tasks/fix-php82-deprecations.php",
       "php ./tasks/FixPhp84Deprecations.php"
     ],
     "post-install-cmd": [
       "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install",
       "./tools/vendor/composer.phar --working-dir=tasks/phpstan install",
       "./tools/vendor/composer.phar --working-dir=../tests_env install",
-      "php ./tasks/fix-php82-deprecations.php",
       "php ./tasks/FixPhp84Deprecations.php"
     ],
     "pre-autoload-dump": [
       "php ./tasks/fix-php82-robo.php"
     ],
     "patch-production-libraries": [
-      "php ./tasks/fix-php82-deprecations.php",
       "php ./tasks/FixPhp84Deprecations.php"
     ]
   },
