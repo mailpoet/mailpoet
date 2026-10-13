@@ -104,7 +104,7 @@ class CaptchaAudioBuilderTest extends \MailPoetUnitTest {
     }
     $this->callBuild($builder);
     // Every range the builder uses, including the widest noise amplitude.
-    foreach ([[-7, 9], [200, 600], [80, 350], [85, 115], [60, 100], [2, 6], [-1966, 1966], [-655, 655], [5, 5]] as [$min, $max]) {
+    foreach ([[-7, 9], [300, 700], [250, 500], [85, 115], [60, 100], [2, 6], [-1966, 1966], [-655, 655], [5, 5]] as [$min, $max]) {
       $values = [];
       for ($i = 0; $i < 4000; $i++) {
         $values[] = $this->intOrFail($method->invoke($builder, $min, $max));
@@ -129,8 +129,8 @@ class CaptchaAudioBuilderTest extends \MailPoetUnitTest {
     $one = ($this->builder($pinned))->build('a', $this->clipDir, 'session');
     $two = ($this->builder($pinned))->build('ab', $this->clipDir, 'session');
 
-    $headAndTail = (200 + 200) * 8;
-    $perCharacter = 80 * 8 + self::CLIP_SAMPLES;
+    $headAndTail = (300 + 300) * 8;
+    $perCharacter = 250 * 8 + self::CLIP_SAMPLES;
     $this->assertSame(($headAndTail + $perCharacter) * 2, strlen($one) - 44);
     $this->assertSame(($headAndTail + 2 * $perCharacter) * 2, strlen($two) - 44);
   }
@@ -144,7 +144,7 @@ class CaptchaAudioBuilderTest extends \MailPoetUnitTest {
     };
     $slowWav = ($this->builder($slow))->build('a', $this->clipDir, 'session');
     $fastWav = ($this->builder($fast))->build('a', $this->clipDir, 'session');
-    $padding = (200 + 200) * 8 + 80 * 8;
+    $padding = (300 + 300) * 8 + 250 * 8;
     $this->assertSame(($padding + (int)floor(self::CLIP_SAMPLES / 1.15)) * 2, strlen($fastWav) - 44);
     $this->assertSame(($padding + (int)floor(self::CLIP_SAMPLES / 0.85)) * 2, strlen($slowWav) - 44);
   }
@@ -164,6 +164,80 @@ class CaptchaAudioBuilderTest extends \MailPoetUnitTest {
     };
     $samples = $this->samplesOf(($this->builder($low))->build('c', $this->clipDir, 'session'));
     $this->assertContains(-32768, $samples);
+  }
+
+  public function testItDecodesEightBitClipsToTheSixteenBitRange(): void {
+    $ramp = [];
+    for ($i = 0; $i < self::CLIP_SAMPLES; $i++) {
+      $ramp[] = (($i * 3) % 256 - 128) * 256;
+    }
+    file_put_contents($this->clipDir . '/e.wav', $this->makeWav($ramp, false, 8));
+    file_put_contents($this->clipDir . '/f.wav', $this->makeWav($ramp, false, 16));
+
+    $eightBit = $this->builder($this->sequence(5))->build('e', $this->clipDir, 'session');
+    $sixteenBit = $this->builder($this->sequence(5))->build('f', $this->clipDir, 'session');
+    $this->assertSame($sixteenBit, $eightBit);
+  }
+
+  /** @dataProvider unsupportedFormats */
+  public function testItRejectsUnsupportedClipFormats(array $overrides): void {
+    file_put_contents($this->clipDir . '/e.wav', $this->makeWav([1, 2, 3], false, 16, $overrides));
+    $this->expectException(\RuntimeException::class);
+    $this->builder($this->sequence(3))->build('e', $this->clipDir, 'session');
+  }
+
+  /** @return array<string, array{array<string, int>}> */
+  public function unsupportedFormats(): array {
+    return [
+      'not PCM' => [['format' => 3]],
+      'stereo' => [['channels' => 2]],
+      'wrong sample rate' => [['sampleRate' => 44100]],
+      '24 bits' => [['bits' => 24]],
+      '4 bits' => [['bits' => 4]],
+    ];
+  }
+
+  public function testItRejectsClipWithoutFormatChunk(): void {
+    $data = pack('v*', 1, 2, 3);
+    $body = 'WAVE' . 'data' . pack('V', strlen($data)) . $data;
+    file_put_contents($this->clipDir . '/e.wav', 'RIFF' . pack('V', strlen($body)) . $body);
+    $this->expectException(\RuntimeException::class);
+    $this->builder($this->sequence(3))->build('e', $this->clipDir, 'session');
+  }
+
+  public function testItTrimsOnlyOneByteOfOddSixteenBitData(): void {
+    $ramp = array_fill(0, self::CLIP_SAMPLES, 1000);
+    file_put_contents($this->clipDir . '/e.wav', $this->makeWav($ramp, false, 16, [], "\x07"));
+    $wav = $this->builder($this->pinnedToMinimum())->build('e', $this->clipDir, 'session');
+    $this->assertSame((600 * 8 + 250 * 8 + self::CLIP_SAMPLES) * 2, strlen($wav) - 44);
+  }
+
+  public function testItKeepsEveryByteOfOddEightBitData(): void {
+    $ramp = array_fill(0, self::CLIP_SAMPLES + 1, 1024);
+    file_put_contents($this->clipDir . '/e.wav', $this->makeWav($ramp, false, 8));
+    $wav = $this->builder($this->pinnedToMinimum())->build('e', $this->clipDir, 'session');
+    $this->assertSame((600 * 8 + 250 * 8 + self::CLIP_SAMPLES + 1) * 2, strlen($wav) - 44);
+  }
+
+  public function testItStaysUnderTheDurationBoundForTheLongestPhraseAndClip(): void {
+    $audioDir = dirname(__DIR__, 3) . '/assets/audio';
+    $longest = '';
+    $longestSize = 0;
+    foreach (glob($audioDir . '/*.wav') ?: [] as $file) {
+      if (filesize($file) > $longestSize) {
+        $longestSize = (int)filesize($file);
+        $longest = basename($file, '.wav');
+      }
+    }
+    // Slowest speed, widest gaps and padding, five characters (the length Gregwar's PhraseBuilder uses).
+    $worst = function (int $min, int $max): int {
+      return $min === 85 ? 85 : $max;
+    };
+    $wav = $this->builder($worst)->build(str_repeat($longest, 5), $audioDir, 'session');
+
+    // The longest real clip is about 12.7k samples (1.6 s). Worst case: 2 * 700 ms padding
+    // + 5 * (500 ms gap + clip / 0.85) is about 13.2 s, i.e. 105.7k samples. The bound adds a small margin.
+    $this->assertLessThanOrEqual(106500, (strlen($wav) - 44) / 2);
   }
 
   public function testItThrowsForCharacterWithoutClip(): void {
@@ -211,6 +285,12 @@ class CaptchaAudioBuilderTest extends \MailPoetUnitTest {
     return $result;
   }
 
+  private function pinnedToMinimum(): callable {
+    return function (int $min, int $max): int {
+      return $min === 85 ? 100 : $min;
+    };
+  }
+
   private function sequence(int $step): callable {
     $counter = 0;
     return function (int $min, int $max) use (&$counter, $step): int {
@@ -219,13 +299,27 @@ class CaptchaAudioBuilderTest extends \MailPoetUnitTest {
     };
   }
 
-  /** @param int[] $samples */
-  private function makeWav(array $samples, bool $withListChunk): string {
-    $data = pack('v*', ...array_map(function (int $sample): int {
-      return $sample & 0xFFFF;
-    }, $samples));
+  /**
+   * @param int[] $samples 16-bit values; 8-bit clips keep the top byte
+   * @param array<string, int> $fmt overrides for format, channels, sampleRate, bits
+   */
+  private function makeWav(array $samples, bool $withListChunk, int $bits = 16, array $fmt = [], string $trailing = ''): string {
+    $bits = $fmt['bits'] ?? $bits;
+    if ($bits === 8) {
+      $data = pack('C*', ...array_map(function (int $sample): int {
+        return ($sample >> 8) + 128;
+      }, $samples));
+    } else {
+      $data = pack('v*', ...array_map(function (int $sample): int {
+        return $sample & 0xFFFF;
+      }, $samples));
+    }
+    $data .= $trailing;
+    $channels = $fmt['channels'] ?? 1;
+    $rate = $fmt['sampleRate'] ?? 8000;
+    $blockAlign = $channels * intdiv($bits, 8);
     $list = $withListChunk ? 'LIST' . pack('V', 6) . 'INFOab' : '';
-    $body = 'WAVE' . 'fmt ' . pack('VvvVVvv', 16, 1, 1, 8000, 16000, 2, 16) . $list . 'data' . pack('V', strlen($data)) . $data;
+    $body = 'WAVE' . 'fmt ' . pack('VvvVVvv', 16, $fmt['format'] ?? 1, $channels, $rate, $rate * $blockAlign, $blockAlign, $bits) . $list . 'data' . pack('V', strlen($data)) . $data;
     return 'RIFF' . pack('V', strlen($body)) . $body;
   }
 }

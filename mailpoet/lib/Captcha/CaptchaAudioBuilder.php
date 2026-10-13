@@ -35,9 +35,9 @@ class CaptchaAudioBuilder {
     $this->seed($sessionId . '|' . $phrase);
 
     $samples = [];
-    $this->appendSilence($samples, $this->rand(200, 600));
+    $this->appendSilence($samples, $this->rand(300, 700));
     foreach (str_split(strtolower($phrase)) as $character) {
-      $this->appendSilence($samples, $this->rand(80, 350));
+      $this->appendSilence($samples, $this->rand(250, 500));
       $this->appendClip(
         $samples,
         $this->readClip($clipDir, $character),
@@ -45,7 +45,7 @@ class CaptchaAudioBuilder {
         $this->rand(60, 100) / 100
       );
     }
-    $this->appendSilence($samples, $this->rand(200, 600));
+    $this->appendSilence($samples, $this->rand(300, 700));
 
     $noiseAmplitude = (int)round($this->rand(2, 6) / 100 * 32767);
     $pcm = '';
@@ -114,20 +114,48 @@ class CaptchaAudioBuilder {
     // Walk the RIFF chunks to the data chunk, as the header length varies.
     $offset = 12;
     $length = strlen($contents);
+    $bits = 0;
     while ($offset + 8 <= $length) {
       $chunk = unpack('a4id/Vsize', $contents, $offset);
       if ($chunk === false) {
         break;
       }
+      if ($chunk['id'] === 'fmt ') {
+        $bits = $this->readBitsPerSample($contents, $offset + 8);
+      }
       if ($chunk['id'] === 'data') {
+        if ($bits === 0) {
+          throw new \RuntimeException('Unsupported audio format.');
+        }
         $pcm = (string)substr($contents, $offset + 8, $chunk['size']);
+        if ($bits === 8) {
+          return array_map(function (int $value): int {
+            return ($value - 128) << 8;
+          }, $pcm === '' ? [] : array_values(unpack('C*', $pcm) ?: []));
+        }
         $pcm = substr($pcm, 0, strlen($pcm) - strlen($pcm) % 2);
-        $values = $pcm === '' ? [] : array_values(unpack('s*', $pcm) ?: []);
-        return $values;
+        return $pcm === '' ? [] : array_values(unpack('s*', $pcm) ?: []);
       }
       $offset += 8 + $chunk['size'] + ($chunk['size'] % 2);
     }
     throw new \RuntimeException('Invalid audio file.');
+  }
+
+  /**
+   * Returns the bits per sample of a mono 8 kHz PCM clip with 8 or 16 bits per sample.
+   */
+  private function readBitsPerSample(string $contents, int $offset): int {
+    $fmt = unpack('vformat/vchannels/VsampleRate/VbyteRate/vblockAlign/vbits', $contents, $offset);
+    if (
+      $fmt === false
+      || $fmt['format'] !== 1
+      || $fmt['channels'] !== 1
+      || $fmt['sampleRate'] !== self::SAMPLE_RATE
+      || !in_array($fmt['bits'], [8, 16], true)
+    ) {
+      throw new \RuntimeException('Unsupported audio format.');
+    }
+    return $fmt['bits'];
   }
 
   /**
