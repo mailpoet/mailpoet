@@ -21,7 +21,7 @@ class BlockStylesRenderer {
       $rules[] = 'width:100%;';
       $rules[] = 'box-sizing:border-box;'; // to avoid a larger width increased by padding
     }
-    if (isset($styles['background_color']) && empty($styles['gradient'])) {
+    if (isset($styles['background_color']) && empty($styles['gradient']) && Styles::isColorValue($styles['background_color'])) {
       $rules[] = "background-color:{$styles['background_color']};";
     }
     if (isset($styles['border_size']) || isset($styles['border_radius']) || isset($styles['border_color'])) {
@@ -33,33 +33,34 @@ class BlockStylesRenderer {
     if (isset($styles['border_size'])) {
       $rules[] = "border-width:" . intval($styles['border_size']) . "px;";
     }
-    if (isset($styles['border_color'])) {
+    if (isset($styles['border_color']) && Styles::isColorValue($styles['border_color'])) {
       $rules[] = "border-color:{$styles['border_color']};";
     }
-    if (isset($styles['padding'])) {
+    if (isset($styles['padding']) && is_numeric($styles['padding'])) {
       $rules[] = "padding:{$styles['padding']}px;";
-    } elseif (isset($formSettings['input_padding'])) {
+    } elseif (isset($formSettings['input_padding']) && is_numeric($formSettings['input_padding'])) {
       $rules[] = "padding:{$formSettings['input_padding']}px;";
     }
     if (isset($formSettings['alignment'])) {
       $rules[] = $this->convertAlignmentToMargin($formSettings['alignment']);
     }
-    if (isset($styles['font_family'])) {
+    // Font names use the same characters as color values (letters, digits, spaces and hyphens)
+    if (isset($styles['font_family']) && Styles::isColorValue($styles['font_family'])) {
       $rules[] = "font-family:'{$styles['font_family']}';" ;
-    } elseif (isset($formSettings['font_family'])) {
+    } elseif (isset($formSettings['font_family']) && Styles::isColorValue($formSettings['font_family'])) {
       $rules[] = "font-family:'{$formSettings['font_family']}';" ;
     }
-    if (isset($styles['font_size'])) {
+    if (isset($styles['font_size']) && Styles::isFontSizeValue($styles['font_size'])) {
       $rules[] = "font-size:" . $styles['font_size'] . (is_numeric($styles['font_size']) ? "px;" : ";");
     }
-    if (isset($formSettings['fontSize']) && !isset($styles['font_size'])) {
+    if (isset($formSettings['fontSize']) && !isset($styles['font_size']) && Styles::isFontSizeValue($formSettings['fontSize'])) {
       $rules[] = "font-size:" . $formSettings['fontSize'] . (is_numeric($formSettings['fontSize']) ? "px;" : ";");
     }
     if (isset($formSettings['fontSize']) || isset($styles['font_size'])) {
       $rules[] = "line-height:1.5;";
       $rules[] = "height:auto;";
     }
-    if (isset($styles['font_color'])) {
+    if (isset($styles['font_color']) && Styles::isColorValue($styles['font_color'])) {
       $rules[] = "color:{$styles['font_color']};";
     }
     return implode('', $rules);
@@ -70,7 +71,7 @@ class BlockStylesRenderer {
     if (!isset($styles['border_color'])) {
       $rules[] = "border-color:transparent;";
     }
-    if (!empty($styles['gradient'])) {
+    if (!empty($styles['gradient']) && Styles::isColorValue($styles['gradient'])) {
       $rules[] = "background: {$styles['gradient']};";
     }
     if (isset($styles['bold']) && $styles['bold'] === '1') {
@@ -81,7 +82,7 @@ class BlockStylesRenderer {
 
   public function renderForSelect(array $styles, array $formSettings = []): string {
     $rules = [];
-    if (isset($formSettings['input_padding'])) {
+    if (isset($formSettings['input_padding']) && is_numeric($formSettings['input_padding'])) {
       $rules[] = "padding:{$formSettings['input_padding']}px;";
     }
     if (isset($formSettings['alignment'])) {
