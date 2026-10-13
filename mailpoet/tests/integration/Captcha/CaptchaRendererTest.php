@@ -4,6 +4,7 @@ namespace MailPoet\Test\Captcha;
 
 use MailPoet\Captcha\CaptchaRenderer;
 use MailPoet\Captcha\CaptchaSession;
+use MailPoet\Config\Env;
 
 class CaptchaRendererTest extends \MailPoetTest {
   const SESSION_ID = 'abcd1234abcd1234abcd1234abcd1234';
@@ -26,6 +27,26 @@ class CaptchaRendererTest extends \MailPoetTest {
     $this->session->setCaptchaHash($sessionId, ['phrase' => 'a']);
     $this->testee->renderImage($sessionId);
     $this->assertStringContainsString('JPEG', $this->getActualOutputForAssertion());
+  }
+
+  public function testItRendersJpegImageData(): void {
+    $this->session->setCaptchaHash(self::SESSION_ID, ['phrase' => 'a']);
+    $this->testee->renderImage(self::SESSION_ID);
+    verify(substr($this->getActualOutputForAssertion(), 0, 2))->equals("\xFF\xD8");
+  }
+
+  /**
+   * @dataProvider bundledFontProvider
+   */
+  public function testItBundlesUsableCaptchaFonts(int $fontNumber): void {
+    $font = Env::$assetsPath . '/fonts/captcha/captcha' . $fontNumber . '.ttf';
+    verify(file_exists($font))->true();
+    verify(is_array(imagettfbbox(20, 0, $font, 'Ab3')))->true();
+    verify(file_exists(Env::$assetsPath . '/fonts/captcha/captcha' . $fontNumber . '_license.txt'))->true();
+  }
+
+  public function bundledFontProvider(): array {
+    return [[0], [1], [2], [3], [5]];
   }
 
   public function testItRendersAudio(): void {
