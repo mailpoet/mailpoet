@@ -49,5 +49,7 @@ class EscapeHelperTest extends \MailPoetUnitTest {
     verify(EHelper::escapeHtmlLinkAttr('#top'))->equals('#top');
     verify(EHelper::escapeHtmlLinkAttr('data:image/png;base64,AAAA'))->equals('data:image/png;base64,AAAA');
     verify(EHelper::escapeHtmlLinkAttr('https://example.com/?topic=data: text'))->equals('https://example.com/?topic=data: text');
+    verify(EHelper::escapeHtmlLinkAttr('https://example.com/?next=vbscript:'))->equals('https://example.com/?next=vbscript:');
+    verify(EHelper::escapeHtmlLinkAttr('https://example.com/?next=javascript:'))->equals('https://example.com/?next=javascript:');
   }
 }
