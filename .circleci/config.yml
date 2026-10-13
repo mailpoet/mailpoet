@@ -870,6 +870,14 @@ jobs:
           paths:
             - mailpoet/release_zip_build_number.txt
             - mailpoet/mailpoet.zip
+  lint_release_zip_php74:
+    executor: wpcli_php_oldest
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - run:
+          name: 'Lint the release zip on PHP 7.4'
+          command: ../.circleci/lint-release-zip.sh /home/circleci/mailpoet/mailpoet.zip ../.circleci/php74-lint-exclude.txt
   qit_security_scan:
     executor: wpcli_php_latest
     steps:
@@ -1186,6 +1194,10 @@ workflows:
             - qa_php_oldest
             - security_analysis
             - qa_php_max_wporg
+      - lint_release_zip_php74:
+          <<: *slack-fail-post-step
+          requires:
+            - build_release_zip
       - qit_security_scan:
           <<: *slack-fail-post-step
           requires:
@@ -1373,6 +1385,10 @@ workflows:
           <<: *slack-fail-post-step
           requires:
             - build
+      - lint_release_zip_php74:
+          <<: *slack-fail-post-step
+          requires:
+            - build_release_zip
       - qit_security_scan:
           <<: *slack-fail-post-step
           requires:
