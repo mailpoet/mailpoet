@@ -229,7 +229,7 @@ class CaptchaAudioBuilderTest extends \MailPoetUnitTest {
         $longest = basename($file, '.wav');
       }
     }
-    // Slowest speed, widest gaps and padding, five characters (the length Gregwar's PhraseBuilder uses).
+    // Slowest speed, widest gaps and padding, five characters (the length Gregwar’s PhraseBuilder uses).
     $worst = function (int $min, int $max): int {
       return $min === 85 ? 85 : $max;
     };

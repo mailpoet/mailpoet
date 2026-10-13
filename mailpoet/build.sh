@@ -90,7 +90,7 @@ cp -Rf views $plugin_name
 rm -Rf $plugin_name/assets/css/src
 rm -Rf $plugin_name/assets/js/src
 
-# mailpoet.php loads the Jetpack autoloader; Composer's own autoloader files are never loaded.
+# mailpoet.php loads the Jetpack autoloader; Composer’s own autoloader files are never loaded.
 for file in autoload_static autoload_classmap autoload_real autoload_psr4 autoload_namespaces autoload_files platform_check ClassLoader InstalledVersions; do
 	rm -f $plugin_name/vendor/composer/$file.php
 done
