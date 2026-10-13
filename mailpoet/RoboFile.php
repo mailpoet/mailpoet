@@ -688,11 +688,14 @@ class RoboFile extends \Robo\Tasks {
       'vendor-prefixed/psr/log/Psr/Log/Test',
       'vendor-prefixed/sabberworm/php-css-parser/tests',
       'vendor-prefixed/swiftmailer/swiftmailer/tests',
-      'vendor-prefixed/symfony/service-contracts/Tests',
-      'vendor-prefixed/symfony/translation/Tests',
-      'vendor-prefixed/symfony/translation-contracts/Tests',
+      'vendor-prefixed/symfony/service-contracts/Test',
+      'vendor-prefixed/symfony/translation/Test',
+      'vendor-prefixed/symfony/translation-contracts/Test',
+      'vendor-prefixed/monolog/monolog/src/Monolog/Test',
+      'vendor-prefixed/symfony/validator/Command',
       'vendor-prefixed/cerdic/css-tidy/css_optimiser.php',
       'vendor-prefixed/gregwar/captcha/demo',
+      'vendor-prefixed/nesbot/carbon/sponsors.php',
     ]);
 
     return $this

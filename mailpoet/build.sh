@@ -121,9 +121,11 @@ rm -rf $plugin_name/vendor/phpmailer/phpmailer/test
 rm -rf $plugin_name/vendor-prefixed/psr/log/Psr/Log/Test
 rm -rf $plugin_name/vendor-prefixed/sabberworm/php-css-parser/tests
 rm -rf $plugin_name/vendor-prefixed/swiftmailer/swiftmailer/tests
-rm -rf $plugin_name/vendor-prefixed/symfony/service-contracts/Tests
-rm -rf $plugin_name/vendor-prefixed/symfony/translation/Tests
-rm -rf $plugin_name/vendor-prefixed/symfony/translation-contracts/Tests
+rm -rf $plugin_name/vendor-prefixed/symfony/service-contracts/Test
+rm -rf $plugin_name/vendor-prefixed/symfony/translation/Test
+rm -rf $plugin_name/vendor-prefixed/symfony/translation-contracts/Test
+rm -rf $plugin_name/vendor/mixpanel/mixpanel-php/test
+rm -rf $plugin_name/vendor-prefixed/monolog/monolog/src/Monolog/Test
 
 # Remove risky files from 3rd party extensions
 echo '[BUILD] Removing risky and demo files from vendor libraries'
@@ -132,6 +134,13 @@ rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/demo
 rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/src/Gregwar/Captcha/Font/captcha4.ttf # big font
 rm -rf $plugin_name/vendor-prefixed/cerdic/css-tidy/bin
 rm -f $plugin_name/vendor-prefixed/egulias/email-validator/psalm*.xml
+rm -rf $plugin_name/vendor-prefixed/symfony/validator/Command # console command, its console parent class is removed
+rm -rf $plugin_name/vendor-prefixed/symfony/validator/Mapping/Loader/schema # XSD read only by XmlFileLoader, which is not used
+rm -f $plugin_name/vendor-prefixed/nesbot/carbon/sponsors.php
+
+# Remove legacy CJK conversion tables of the iconv polyfill.
+# The polyfill runs only without ext-iconv and a missing table makes Iconv::getData() return false.
+rm -f $plugin_name/vendor-prefixed/symfony/polyfill-iconv/Resources/charset/from.{big5,cp932,cp936,cp949,cp950}.php
 
 # Copy release files.
 echo '[BUILD] Copying release files'
