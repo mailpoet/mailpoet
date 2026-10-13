@@ -182,6 +182,7 @@ find $plugin_name -type d -print0 | while read -d $'\0' dir; do
 done
 
 # Strip whitespaces and comments from PHP files in vendor and vendor prefixed folders
+# Needs PHP >= 8 (token-based stripper); the CI build image runs PHP 8.3
 echo '[BUILD] Strip whitespaces and comments from PHP files in vendor folder'
 php "$(dirname "$0")"/tasks/strip-whitespaces.php $plugin_name/vendor
 php "$(dirname "$0")"/tasks/strip-whitespaces.php $plugin_name/vendor-prefixed
