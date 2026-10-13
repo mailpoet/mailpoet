@@ -170,4 +170,40 @@ class ParagraphTest extends \MailPoetUnitTest {
     ]);
     verify($html)->stringContainsString('<p class="mailpoet_form_paragraph mailpoet-has-background-color');
   }
+
+  public function testItSkipsStyleValuesThatAreNotValid() {
+    $html = $this->paragraph->render([
+      'type' => 'paragraph',
+      'params' => [
+        'align' => 'left;x-align:1',
+        'text_color' => 'red;x-color:1',
+        'font_size' => '12px;x-size:1',
+        'line_height' => '1.5;x-line:1',
+        'background_color' => 'red;x-bg:1',
+        'gradient' => 'red;x-gradient:1',
+        'padding' => ['top' => '1px;x-padding:1', 'right' => '0', 'bottom' => '0', 'left' => '0'],
+      ],
+    ]);
+    verify($html)->stringNotContainsString('x-');
+  }
+
+  public function testItRendersValidStyleValues() {
+    $html = $this->paragraph->render([
+      'type' => 'paragraph',
+      'params' => [
+        'align' => 'center',
+        'text_color' => 'var(--wp--preset--color--black)',
+        'font_size' => '1.5rem',
+        'line_height' => '1.2',
+        'background_color' => '#f0f0f0',
+        'padding' => ['top' => '10px', 'right' => '0', 'bottom' => '1em', 'left' => '0'],
+      ],
+    ]);
+    verify($html)->stringContainsString('text-align: center');
+    verify($html)->stringContainsString('color: var(--wp--preset--color--black)');
+    verify($html)->stringContainsString('font-size: 1.5rem');
+    verify($html)->stringContainsString('line-height: 1.2');
+    verify($html)->stringContainsString('background-color: #f0f0f0');
+    verify($html)->stringContainsString('padding:10px 0 1em 0;');
+  }
 }

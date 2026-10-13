@@ -2,6 +2,7 @@
 
 namespace MailPoet\Form\Block;
 
+use MailPoet\Form\Util\Styles;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Column {
@@ -23,6 +24,7 @@ class Column {
     if (
       !empty($params['width']) &&
       (strlen($params['width']) > 0 && ctype_digit(substr($params['width'], 0, 1)))
+      && Styles::isSizeValue($params['width'])
     ) {
       $widthValue = $params['width'] . (is_numeric($params['width']) ? '%' : '');
       $styles[] = "flex-basis:{$widthValue}";
@@ -32,15 +34,18 @@ class Column {
       $right = is_scalar($params['padding']['right'] ?? null) ? (string)$params['padding']['right'] : '0';
       $bottom = is_scalar($params['padding']['bottom'] ?? null) ? (string)$params['padding']['bottom'] : '0';
       $left = is_scalar($params['padding']['left'] ?? null) ? (string)$params['padding']['left'] : '0';
-      $styles[] = "padding:{$top} {$right} {$bottom} {$left};";
+      $padding = "{$top} {$right} {$bottom} {$left}";
+      if (Styles::isSizeValue($padding)) {
+        $styles[] = "padding:{$padding};";
+      }
     }
-    if (!empty($params['text_color'])) {
+    if (!empty($params['text_color']) && Styles::isColorValue($params['text_color'])) {
       $styles[] = "color:{$params['text_color']};";
     }
-    if (!empty($params['background_color'])) {
+    if (!empty($params['background_color']) && Styles::isColorValue($params['background_color'])) {
       $styles[] = "background-color:{$params['background_color']};";
     }
-    if (!empty($params['gradient'])) {
+    if (!empty($params['gradient']) && Styles::isColorValue($params['gradient'])) {
       $styles[] = "background:{$params['gradient']};";
     }
     if (!count($styles)) {
