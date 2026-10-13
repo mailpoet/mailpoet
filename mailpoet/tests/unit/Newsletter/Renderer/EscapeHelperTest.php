@@ -31,10 +31,10 @@ class EscapeHelperTest extends \MailPoetUnitTest {
   }
 
   public function testItRemovesLinkWithScriptSchemeSplitByTabsOrLineBreaks() {
-    verify(EHelper::escapeHtmlLinkAttr("java\tscript:alert(1)"))->equals('');
-    verify(EHelper::escapeHtmlLinkAttr("javascript\n:alert(1)"))->equals('');
-    verify(EHelper::escapeHtmlLinkAttr("JaVa\r\nScRiPt:alert(1)"))->equals('');
-    verify(EHelper::escapeHtmlLinkAttr("\x01javascript:alert(1)"))->equals('');
+    verify(EHelper::escapeHtmlLinkAttr("java\tscript:void(0)"))->equals('');
+    verify(EHelper::escapeHtmlLinkAttr("javascript\n:void(0)"))->equals('');
+    verify(EHelper::escapeHtmlLinkAttr("JaVa\r\nScRiPt:void(0)"))->equals('');
+    verify(EHelper::escapeHtmlLinkAttr("\x01javascript:void(0)"))->equals('');
     verify(EHelper::escapeHtmlLinkAttr("da\tta:text/html,x"))->equals('');
   }
 

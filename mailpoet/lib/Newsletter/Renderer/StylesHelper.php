@@ -104,9 +104,7 @@ class StylesHelper {
   }
 
   /**
-   * Rejects characters that can break out of the declaration or the <style> element,
-   * "&", because entities are decoded in style attributes,
-   * and "@", because an at-rule without a block stalls the CSS inliner.
+   * Accepts scalar values without <, >, {, }, ;, @ or &.
    * @param mixed $value
    */
   public static function isValidCssValue($value): bool {
