@@ -90,6 +90,7 @@ class StripWhitespacesTest extends \MailPoetUnitTest {
   }
 
   public function testStripDirectoryTouchesOnlyPhpFiles() {
+    $this->skipOnOldPhp();
     $dir = sys_get_temp_dir() . '/strip_ws_' . uniqid();
     mkdir($dir . '/sub', 0777, true);
     $code = "<?php\n// c\n\$a = 1;\n";
@@ -116,9 +117,13 @@ class StripWhitespacesTest extends \MailPoetUnitTest {
   }
 
   private function strip(string $code): string {
+    $this->skipOnOldPhp();
+    return (new StripWhitespaces())->strip($code);
+  }
+
+  private function skipOnOldPhp(): void {
     if (PHP_VERSION_ID < 80000) {
       $this->markTestSkipped('Needs PHP 8.');
     }
-    return (new StripWhitespaces())->strip($code);
   }
 }
