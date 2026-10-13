@@ -42,6 +42,8 @@ function ConfirmAlert({
     // Used by restoreFocus() on Cancel/Escape when the opener isn't
     // focusable (e.g. Safari mouse clicks land on document.body).
     returnFocus,
+    // The template below is already rendered HTML, so it is shown as it is.
+    renderer: 'html',
     template: ReactDOMServer.renderToString(
       <>
         <p>{message}</p>

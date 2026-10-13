@@ -430,4 +430,12 @@ describe('MailPoetModal', function modalSuite() {
     const title = document.querySelector('#mailpoet_popup_title h2');
     expect(title.querySelector('strong').textContent).to.equal('list');
   });
+
+  it('shows an html template without evaluating braces in it', () => {
+    openPopup({ renderer: 'html', template: '<p>Sale {{#if}} {{name}}</p>' });
+
+    expect(document.querySelector('.mailpoet_popup_body').textContent).to.equal(
+      'Sale {{#if}} {{name}}',
+    );
+  });
 });
