@@ -392,11 +392,11 @@ function SegmentListComponent(): JSX.Element {
             segment.type === 'woocommerce_users'
               ? MailPoet.I18n.t('listSynchronizationWasScheduled').replace(
                   '%1$s',
-                  segment.name,
+                  escapeHTML(segment.name),
                 )
               : MailPoet.I18n.t('listSynchronized').replace(
                   '%1$s',
-                  segment.name,
+                  escapeHTML(segment.name),
                 );
           MailPoet.Modal.loading(false);
           MailPoet.Notice.success(message);
