@@ -646,6 +646,17 @@ const emailEditorIntegration = Object.assign({}, wpScriptConfig, {
   resolve: {
     ...wpScriptConfig.resolve,
     modules: ['node_modules', 'assets/js/src'],
+    alias: {
+      ...(wpScriptConfig.resolve.alias || {}),
+      // `require()` resolves the package to its CommonJS build, which bundles
+      // a second copy of its dependencies next to the ES module imports. The
+      // exports map blocks deep imports, so point at the file; `$` keeps the
+      // match exact.
+      '@woocommerce/email-editor$': path.resolve(
+        __dirname,
+        'node_modules/@woocommerce/email-editor/build-module/index.js',
+      ),
+    },
   },
   plugins: [
     ...wpScriptConfig.plugins,
