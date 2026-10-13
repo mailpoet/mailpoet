@@ -3,23 +3,26 @@
 namespace MailPoet\Form\Util;
 
 use MailPoet\Entities\FormEntity;
+use MailPoetVendor\Sabberworm\CSS\OutputFormat;
 use MailPoetVendor\Sabberworm\CSS\Parser as CSSParser;
+use MailPoetVendor\Sabberworm\CSS\Property\Declaration;
+use MailPoetVendor\Sabberworm\CSS\Property\Selector;
 
 class Styles {
   public function prefixStyles($stylesheet, $prefix = '') {
     if (!$stylesheet) return;
     $styles = new CSSParser($stylesheet);
     $styles = $styles->parse();
+    $outputFormat = OutputFormat::create();
     $formattedStyles = [];
     foreach ($styles->getAllDeclarationBlocks() as $styleDeclaration) {
-      $selectors = array_map(function($selector) use ($prefix) {
-        $stringSelector = is_string($selector) ? $selector : $selector->__toString();
-        return sprintf('%s %s', $prefix, $stringSelector);
+      $selectors = array_map(function(Selector $selector) use ($prefix, $outputFormat) {
+        return sprintf('%s %s', $prefix, $selector->render($outputFormat));
       }, $styleDeclaration->getSelectors());
       $selectors = implode(', ', $selectors);
-      $rules = array_map(function($rule) {
-        return $rule->__toString();
-      }, $styleDeclaration->getRules());
+      $rules = array_map(function(Declaration $rule) use ($outputFormat) {
+        return $rule->render($outputFormat);
+      }, $styleDeclaration->getDeclarations());
       $rules = sprintf('{ %s }', implode(' ', $rules));
       $formattedStyles[] = sprintf('%s %s', $selectors, $rules);
     }
