@@ -247,7 +247,7 @@ class Renderer {
    */
   private function injectContentIntoTemplate($template, $content) {
     return preg_replace_callback('/{{\w+}}/', function($matches) use (&$content) {
-      return array_shift($content);
+      return array_shift($content) ?? '';
     }, $template);
   }
 
