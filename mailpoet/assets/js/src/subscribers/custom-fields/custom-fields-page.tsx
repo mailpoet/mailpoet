@@ -121,9 +121,9 @@ function keptCustomFieldsMessage(kept: KeptCustomField[]): string {
               ? sprintf(
                   /* translators: %s is the name of a segment */
                   __('%s (in the trash)', 'mailpoet'),
-                  segment.name,
+                  `"${segment.name}"`,
                 )
-              : segment.name,
+              : `"${segment.name}"`,
           )
           .join(', '),
       ),

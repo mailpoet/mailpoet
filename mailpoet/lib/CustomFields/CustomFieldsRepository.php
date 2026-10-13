@@ -531,16 +531,17 @@ class CustomFieldsRepository extends Repository {
   }
 
   /**
-   * @return string[] Names of dynamic segments that filter by the custom field.
+   * @return string[] Quoted names of dynamic segments that filter by the custom field, for messages.
    */
   public function getDynamicSegmentNamesUsingCustomField(int $customFieldId): array {
     $segments = $this->getDynamicSegmentsByCustomFieldIds([$customFieldId])[$customFieldId];
     return array_values(array_map(function (SegmentEntity $segment): string {
+      $name = '"' . $segment->getName() . '"';
       if (!$segment->getDeletedAt()) {
-        return $segment->getName();
+        return $name;
       }
       // translators: %s is the name of a segment.
-      return sprintf(__('%s (in the trash)', 'mailpoet'), $segment->getName());
+      return sprintf(__('%s (in the trash)', 'mailpoet'), $name);
     }, $segments));
   }
 

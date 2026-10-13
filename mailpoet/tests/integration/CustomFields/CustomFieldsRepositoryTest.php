@@ -234,7 +234,7 @@ class CustomFieldsRepositoryTest extends \MailPoetTest {
     (new DynamicSegmentFactory())->withName('Alpha fans')->withCustomFieldFilter($alpha)->create();
     (new DynamicSegmentFactory())->withName('Old alpha fans')->withCustomFieldFilter($alpha)->withDeleted()->create();
 
-    $this->assertSame(['Alpha fans', 'Old alpha fans (in the trash)'], $this->repository->getDynamicSegmentNamesUsingCustomField((int)$alpha->getId()));
+    $this->assertSame(['"Alpha fans"', '"Old alpha fans" (in the trash)'], $this->repository->getDynamicSegmentNamesUsingCustomField((int)$alpha->getId()));
     $this->assertSame([], $this->repository->getDynamicSegmentNamesUsingCustomField((int)$beta->getId()));
   }
 
