@@ -58,4 +58,16 @@ class SocialTest extends \MailPoetUnitTest {
       </tr>';
     verify($output)->equals($expectedResult);
   }
+
+  public function testItRendersIconSizeAsPixels() {
+    $block = $this->block;
+    $block['icons'] = [$block['icons'][0]];
+    $block['icons'][0]['width'] = '32px;x-width:1';
+    $block['icons'][0]['height'] = '24';
+
+    $output = (new Social)->render($block);
+
+    verify($output)->stringContainsString('style="width:32px;height:24px;-ms-interpolation-mode:bicubic;');
+    verify($output)->stringNotContainsString('x-width');
+  }
 }
