@@ -6,7 +6,6 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
-use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\FreeDomains;
 use MailPoet\Util\Helpers;
@@ -24,20 +23,16 @@ class SenderDomainPausedCampaignsNotice {
 
   private SettingsController $settings;
 
-  private AuthorizedSenderDomainController $senderDomainController;
-
   public function __construct(
     WPFunctions $wp,
     ScheduledTasksRepository $scheduledTasksRepository,
     FreeDomains $freeDomains,
-    SettingsController $settings,
-    AuthorizedSenderDomainController $senderDomainController
+    SettingsController $settings
   ) {
     $this->wp = $wp;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->freeDomains = $freeDomains;
     $this->settings = $settings;
-    $this->senderDomainController = $senderDomainController;
   }
 
   public function init(bool $shouldDisplay): ?Notice {
@@ -112,25 +107,13 @@ class SenderDomainPausedCampaignsNotice {
    * @param NewsletterEntity[] $newsletters
    */
   private function renderBrandedGroup(string $domain, string $senderAddress, array $newsletters): string {
-    $isBigSender = $this->senderDomainController->isBigSender();
-    $count = count($newsletters);
-    if ($isBigSender) {
-      // translators: %1$d is the number of paused campaigns, %2$s is the list of campaign names, %3$s is a domain name, %4$d is a number of subscribers
-      $text = _n(
-        '%1$d campaign is paused: %2$s. Your site has more than %4$d subscribers, so campaigns must be sent from an authenticated domain. Authenticate %3$s or change the From address, then resume it.',
-        '%1$d campaigns are paused: %2$s. Your site has more than %4$d subscribers, so campaigns must be sent from an authenticated domain. Authenticate %3$s or change the From address, then resume them.',
-        $count,
-        'mailpoet'
-      );
-    } else {
-      // translators: %1$d is the number of paused campaigns, %2$s is the list of campaign names, %3$s is a domain name
-      $text = _n(
-        '%1$d campaign is paused: %2$s. Campaigns must be sent from an authenticated domain. Authenticate %3$s or change the From address, then resume it.',
-        '%1$d campaigns are paused: %2$s. Campaigns must be sent from an authenticated domain. Authenticate %3$s or change the From address, then resume them.',
-        $count,
-        'mailpoet'
-      );
-    }
+    // translators: %1$s is the list of campaign names, %2$s is a domain name
+    $text = _n(
+      '%1$s has been paused. To make sure your campaigns reach your subscribers, authenticate %2$s or switch to another authenticated sender domain, then resume it.',
+      '%1$s have been paused. To make sure your campaigns reach your subscribers, authenticate %2$s or switch to another authenticated sender domain, then resume them.',
+      count($newsletters),
+      'mailpoet'
+    );
 
     $button = sprintf(
       '<a href="#" class="button button-primary mailpoet-js-button-authorize-email-and-sender-domain" data-email="%s" data-type="domain">%s</a>',
@@ -145,25 +128,13 @@ class SenderDomainPausedCampaignsNotice {
    * @param NewsletterEntity[] $newsletters
    */
   private function renderFreeMailGroup(string $domain, array $newsletters): string {
-    $isBigSender = $this->senderDomainController->isBigSender();
-    $count = count($newsletters);
-    if ($isBigSender) {
-      // translators: %1$d is the number of paused campaigns, %2$s is the list of campaign names, %3$s is a shared domain name such as gmail.com, %4$d is a number of subscribers
-      $text = _n(
-        '%1$d campaign is paused: %2$s. Your site has more than %4$d subscribers, so campaigns can’t be sent from a shared address like %3$s. Change the From address to one on your own domain, then resume it.',
-        '%1$d campaigns are paused: %2$s. Your site has more than %4$d subscribers, so campaigns can’t be sent from a shared address like %3$s. Change the From address to one on your own domain, then resume them.',
-        $count,
-        'mailpoet'
-      );
-    } else {
-      // translators: %1$d is the number of paused campaigns, %2$s is the list of campaign names, %3$s is a shared domain name such as gmail.com
-      $text = _n(
-        '%1$d campaign is paused: %2$s. Campaigns can’t be sent from a shared address like %3$s. Change the From address to one on your own domain, then resume it.',
-        '%1$d campaigns are paused: %2$s. Campaigns can’t be sent from a shared address like %3$s. Change the From address to one on your own domain, then resume them.',
-        $count,
-        'mailpoet'
-      );
-    }
+    // translators: %1$s is the list of campaign names, %2$s is a shared domain name such as gmail.com
+    $text = _n(
+      '%1$s has been paused. To make sure your campaigns reach your subscribers, send it from an address on your own authenticated domain instead of %2$s, then resume it.',
+      '%1$s have been paused. To make sure your campaigns reach your subscribers, send them from an address on your own authenticated domain instead of %2$s, then resume them.',
+      count($newsletters),
+      'mailpoet'
+    );
     return '<p>' . $this->formatText($text, $newsletters, $domain) . '</p>';
   }
 
@@ -171,25 +142,13 @@ class SenderDomainPausedCampaignsNotice {
    * @param NewsletterEntity[] $newsletters
    */
   private function renderGenericGroup(array $newsletters): string {
-    $isBigSender = $this->senderDomainController->isBigSender();
-    $count = count($newsletters);
-    if ($isBigSender) {
-      // translators: %1$d is the number of paused campaigns, %2$s is the list of campaign names, %4$d is a number of subscribers
-      $text = _n(
-        '%1$d campaign is paused: %2$s. Your site has more than %4$d subscribers, so campaigns must be sent from an authenticated domain. Change the From address, then resume it.',
-        '%1$d campaigns are paused: %2$s. Your site has more than %4$d subscribers, so campaigns must be sent from an authenticated domain. Change the From address, then resume them.',
-        $count,
-        'mailpoet'
-      );
-    } else {
-      // translators: %1$d is the number of paused campaigns, %2$s is the list of campaign names
-      $text = _n(
-        '%1$d campaign is paused: %2$s. Campaigns must be sent from an authenticated domain. Change the From address, then resume it.',
-        '%1$d campaigns are paused: %2$s. Campaigns must be sent from an authenticated domain. Change the From address, then resume them.',
-        $count,
-        'mailpoet'
-      );
-    }
+    // translators: %s is the list of campaign names
+    $text = _n(
+      '%s has been paused. To make sure your campaigns reach your subscribers, send it from an authenticated sender domain, then resume it.',
+      '%s have been paused. To make sure your campaigns reach your subscribers, send them from an authenticated sender domain, then resume them.',
+      count($newsletters),
+      'mailpoet'
+    );
     return '<p>' . $this->formatText($text, $newsletters, '') . '</p>';
   }
 
@@ -199,10 +158,8 @@ class SenderDomainPausedCampaignsNotice {
   private function formatText(string $text, array $newsletters, string $domain): string {
     return sprintf(
       $text,
-      count($newsletters),
       $this->renderCampaignList($newsletters),
-      $this->wp->escHtml($domain),
-      AuthorizedSenderDomainController::UPPER_LIMIT
+      $this->wp->escHtml($domain)
     );
   }
 

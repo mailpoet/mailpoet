@@ -23,7 +23,6 @@ use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Services\AuthorizedEmailsController;
-use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\FreeDomains;
 use MailPoet\Util\Helpers;
@@ -77,9 +76,6 @@ class SendingQueue extends APIEndpoint {
   /** @var FreeDomains */
   private $freeDomains;
 
-  /** @var AuthorizedSenderDomainController */
-  private $senderDomainController;
-
   public function __construct(
     SubscribersFeature $subscribersFeature,
     NewslettersRepository $newsletterRepository,
@@ -94,8 +90,7 @@ class SendingQueue extends APIEndpoint {
     CronHelper $cronHelper,
     TimeZoneCampaignScheduler $timeZoneCampaignScheduler,
     AuthorizedEmailsController $authorizedEmailsController,
-    FreeDomains $freeDomains,
-    AuthorizedSenderDomainController $senderDomainController
+    FreeDomains $freeDomains
   ) {
     $this->subscribersFeature = $subscribersFeature;
     $this->subscribersFinder = $subscribersFinder;
@@ -111,7 +106,6 @@ class SendingQueue extends APIEndpoint {
     $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->freeDomains = $freeDomains;
-    $this->senderDomainController = $senderDomainController;
   }
 
   public function add($data = []) {
@@ -383,27 +377,16 @@ class SendingQueue extends APIEndpoint {
   private function getSenderDomainNotReadyMessage(NewsletterEntity $newsletter): string {
     $sender = (string)$newsletter->getSenderAddress();
     $domain = Helpers::extractEmailDomain($sender);
-    $limit = AuthorizedSenderDomainController::UPPER_LIMIT;
-    $isBigSender = $this->senderDomainController->isBigSender();
 
     if ($domain === '') {
-      return $isBigSender
-        // translators: %d is the number of subscribers.
-        ? sprintf(__('This email can’t be resumed yet. Your site has more than %d subscribers, so campaigns must be sent from an authenticated domain. Change the From address, then click Resume again.', 'mailpoet'), $limit)
-        : __('This email can’t be resumed yet. Campaigns must be sent from an authenticated domain. Change the From address, then click Resume again.', 'mailpoet');
+      return __('This email can’t be resumed yet. To make sure your campaigns reach your subscribers, send it from an authenticated sender domain, then click Resume again.', 'mailpoet');
     }
     if ($this->freeDomains->isEmailOnFreeDomain($sender)) {
-      return $isBigSender
-        // translators: %1$d is the number of subscribers, %2$s is a domain such as gmail.com.
-        ? sprintf(__('This email can’t be resumed yet. Your site has more than %1$d subscribers, so campaigns can’t be sent from a shared address like %2$s. Change the From address to one on your own domain, then click Resume again.', 'mailpoet'), $limit, $domain)
-        // translators: %s is a domain such as gmail.com.
-        : sprintf(__('This email can’t be resumed yet. Campaigns can’t be sent from a shared address like %s. Change the From address to one on your own domain, then click Resume again.', 'mailpoet'), $domain);
+      // translators: %s is a domain such as gmail.com.
+      return sprintf(__('This email can’t be resumed yet. To make sure your campaigns reach your subscribers, send it from an address on your own authenticated domain instead of %s, then click Resume again.', 'mailpoet'), $domain);
     }
-    return $isBigSender
-      // translators: %1$d is the number of subscribers, %2$s is a domain such as example.com.
-      ? sprintf(__('This email can’t be resumed yet. Your site has more than %1$d subscribers, so campaigns must be sent from an authenticated domain. Authenticate %2$s or change the From address, then click Resume again.', 'mailpoet'), $limit, $domain)
-      // translators: %s is a domain such as example.com.
-      : sprintf(__('This email can’t be resumed yet. Campaigns must be sent from an authenticated domain. Authenticate %s or change the From address, then click Resume again.', 'mailpoet'), $domain);
+    // translators: %s is a domain such as example.com.
+    return sprintf(__('This email can’t be resumed yet. To make sure your campaigns reach your subscribers, authenticate %s or switch to another authenticated sender domain, then click Resume again.', 'mailpoet'), $domain);
   }
 
   /**
