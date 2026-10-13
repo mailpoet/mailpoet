@@ -266,7 +266,7 @@ const adminConfig = {
     new webpack.IgnorePlugin({
       resourceRegExp: /^@wordpress\/vips\/worker$/,
     }),
-    // Nothing switches moment's locale, so skip its ~200 KB of bundled locales.
+    // Nothing switches moment’s locale, so skip its ~200 KB of bundled locales.
     new webpack.IgnorePlugin({
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/,
