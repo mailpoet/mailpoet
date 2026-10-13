@@ -160,9 +160,10 @@ class CustomFieldsRepositoryTest extends \MailPoetTest {
   }
 
   public function testBulkDeleteKeepsCustomFieldsUsedInDynamicSegments(): void {
-    $alpha = (new CustomFieldFactory())->withName('Alpha')->create();
-    $beta = (new CustomFieldFactory())->withName('Beta')->create();
-    $gamma = (new CustomFieldFactory())->withName('Gamma')->create();
+    $subscriber = (new SubscriberFactory())->withEmail('subscriber@example.com')->create();
+    $alpha = (new CustomFieldFactory())->withName('Alpha')->withSubscriber($subscriber->getId(), 'value')->create();
+    $beta = (new CustomFieldFactory())->withName('Beta')->withSubscriber($subscriber->getId(), 'value')->create();
+    $gamma = (new CustomFieldFactory())->withName('Gamma')->withSubscriber($subscriber->getId(), 'value')->create();
     $alphaFans = (new DynamicSegmentFactory())->withName('Alpha fans')->withCustomFieldFilter($alpha)->create();
     $oldBetaFans = (new DynamicSegmentFactory())->withName('Old beta fans')->withCustomFieldFilter($beta)->withDeleted()->create();
     $ids = [(int)$alpha->getId(), (int)$beta->getId(), (int)$gamma->getId()];
@@ -189,6 +190,8 @@ class CustomFieldsRepositoryTest extends \MailPoetTest {
     $this->assertNotNull($this->repository->findOneById($beta->getId()));
     $this->assertNull($this->repository->findOneById($gamma->getId()));
     $this->assertSame(2, $this->countDynamicSegmentFilters([(int)$alpha->getId(), (int)$beta->getId()]));
+    $this->assertSame(2, $this->countSubscriberCustomFieldValues([(int)$alpha->getId(), (int)$beta->getId()]));
+    $this->assertSame(0, $this->countSubscriberCustomFieldValues([(int)$gamma->getId()]));
   }
 
   public function testDeletePermanentlyRemovesActiveCustomFieldAndUsageReferences(): void {
