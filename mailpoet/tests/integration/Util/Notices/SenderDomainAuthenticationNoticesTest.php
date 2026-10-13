@@ -31,6 +31,17 @@ class SenderDomainAuthenticationNoticesTest extends \MailPoetTest {
     $this->authorizedSenderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
     $this->lowerLimit = AuthorizedSenderDomainController::LOWER_LIMIT;
     $this->upperLimit = AuthorizedSenderDomainController::UPPER_LIMIT;
+    $this->deleteSenderDomainTransients();
+  }
+
+  public function _after() {
+    $this->deleteSenderDomainTransients();
+    parent::_after();
+  }
+
+  private function deleteSenderDomainTransients(): void {
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
   }
 
   public function testItCanGetDefaultFromAddress(): void {
@@ -148,8 +159,6 @@ class SenderDomainAuthenticationNoticesTest extends \MailPoetTest {
     $bridgeCalls = 0;
     $wp = new WPFunctions();
     $this->settings->set(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME, 'MANUAL');
-    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY);
-    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
     $bridgeMock = $this->make(Bridge::class, [
       'isMailpoetSendingServiceEnabled' => true,
       'getRawSenderDomainData' => function () use (&$bridgeCalls) {
@@ -175,8 +184,6 @@ class SenderDomainAuthenticationNoticesTest extends \MailPoetTest {
     $notice->init(true);
     $notice->init(true);
     $this->assertTrue($controller->isCacheAvailable());
-    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY);
-    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
     $this->assertSame(1, $bridgeCalls);
   }
 }
