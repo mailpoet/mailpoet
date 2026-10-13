@@ -352,8 +352,9 @@ const publicConfig = {
     // by the legacy form editor hardcode dist/js/public.js on third-party
     // sites. Such snippets can no longer be generated since MailPoet 3.45.0
     // (Feb 2020), when the legacy form editor was removed, but old copies
-    // may still be live. Nothing in the plugin itself loads this file.
-    public: 'webpack-public-index.jsx',
+    // may still be live. This file is now a small loader that pulls in
+    // public.min.js for those snippets. Nothing in the plugin loads it.
+    public: 'public-loader.ts',
   },
   plugins: [
     ...baseConfig.plugins,
