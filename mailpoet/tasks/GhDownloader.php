@@ -140,7 +140,6 @@ class GhDownloader {
       ]);
       $response = curl_exec($ch);
       $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-      curl_close($ch);
 
       if ($httpCode >= 200 && $httpCode < 300 && $response !== false) {
         return json_decode($response, true);
@@ -173,7 +172,6 @@ class GhDownloader {
       ]);
       curl_exec($ch);
       $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-      curl_close($ch);
       fclose($fp);
 
       if ($httpCode >= 200 && $httpCode < 300) {
