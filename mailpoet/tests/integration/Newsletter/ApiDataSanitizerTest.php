@@ -254,6 +254,26 @@ class ApiDataSanitizerTest extends \MailPoetTest {
     verify($result['blockDefaults']['divider']['styles']['block']['padding'])->equals('');
   }
 
+  public function testItKeepsContainerBackgroundImageUrlInsideUrlFunction() {
+    $body = $this->bodyWithBlocks([
+      [
+        'type' => 'container',
+        'image' => ['src' => "https://example.com/bg.png);x-src:url('a b')", 'display' => 'scale'],
+        'blocks' => [
+          [
+            'type' => 'container',
+            'image' => ['src' => 'https://example.com/uploads/bg@2x.png?ver=1&size=large', 'display' => 'tile'],
+          ],
+        ],
+      ],
+    ]);
+
+    $container = $this->sanitizer->sanitizeBody($body)['content']['blocks'][0];
+
+    verify($container['image']['src'])->equals('https://example.com/bg.png%29%3Bx-src:url%28%27a%20b%27%29');
+    verify($container['blocks'][0]['image']['src'])->equals('https://example.com/uploads/bg@2x.png?ver=1&size=large');
+  }
+
   public function testItRemovesGlobalStyleValuesThatCouldEndTheRule() {
     $body = [
       'content' => ['blocks' => []],

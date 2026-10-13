@@ -84,6 +84,15 @@ class ApiDataSanitizer {
   }
 
   private function sanitizeBlock(array $block): array {
+    if (
+      ($block['type'] ?? null) === 'container'
+      && isset($block['image'])
+      && is_array($block['image'])
+      && is_string($block['image']['src'] ?? null)
+    ) {
+      // The editor puts the background image URL into url() in a <style> element
+      $block['image']['src'] = StylesHelper::escapeCssUrl($block['image']['src']);
+    }
     return $this->sanitizeBlockProperties($block, $block['type'] ?? null);
   }
 
