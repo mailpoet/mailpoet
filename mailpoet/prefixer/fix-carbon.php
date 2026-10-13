@@ -49,15 +49,6 @@ $replacements = [
     ],
   ],
   [
-    'file' => '../vendor-prefixed/nesbot/carbon/src/Carbon/Traits/Timestamp.php',
-    'find' => [
-      'public static function createFromTimestamp($timestamp, $tz = null)',
-    ],
-    'replace' => [
-      '#[\ReturnTypeWillChange]' . PHP_EOL . 'public static function createFromTimestamp($timestamp, $tz = null)',
-    ],
-  ],
-  [
     // setAccessible() is deprecated in PHP 8.5 and has no effect since PHP 8.1
     // The spaces in the brackets prevent re-wrapping when the script runs repeatedly
     'file' => '../vendor-prefixed/nesbot/carbon/src/Carbon/Traits/Mixin.php',
