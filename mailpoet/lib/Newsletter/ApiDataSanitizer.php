@@ -32,7 +32,7 @@ class ApiDataSanitizer {
     }
     foreach (['content', 'blockDefaults'] as $key) {
       if (isset($body[$key]) && is_array($body[$key])) {
-        $body[$key] = $this->sanitizeBlockStyles($body[$key]);
+        $body[$key] = StylesHelper::sanitizeBlockStyles($body[$key]);
       }
     }
     if (isset($body['globalStyles']) && is_array($body['globalStyles'])) {
@@ -51,52 +51,12 @@ class ApiDataSanitizer {
         continue;
       }
       foreach ($styles as $property => $value) {
-        if (!$this->isValidStyleProperty($property) || !StylesHelper::isValidCssValue($value)) {
+        if (!StylesHelper::isValidStyleKey($property) || !StylesHelper::isValidCssValue($value)) {
           unset($globalStyles[$group][$property]);
         }
       }
     }
     return $globalStyles;
-  }
-
-  /**
-   * Walks blocks and their nested parts (e.g. a posts block's read more button) and empties
-   * style values that could end the CSS declaration. Renderers read the keys directly, so they stay.
-   */
-  private function sanitizeBlockStyles(array $data): array {
-    foreach ($data as $key => $value) {
-      if (!is_array($value)) {
-        continue;
-      }
-      $data[$key] = $key === 'styles' ? $this->sanitizeBlockStyleGroups($value) : $this->sanitizeBlockStyles($value);
-    }
-    return $data;
-  }
-
-  private function sanitizeBlockStyleGroups(array $groups): array {
-    foreach ($groups as $group => $styles) {
-      if (!is_array($styles)) {
-        continue;
-      }
-      foreach ($styles as $property => $value) {
-        if (!$this->isValidStyleProperty($property)) {
-          unset($groups[$group][$property]);
-        } elseif (!StylesHelper::isValidCssValue($value)) {
-          $groups[$group][$property] = '';
-        }
-      }
-    }
-    return $groups;
-  }
-
-  /**
-   * Style keys are camelCase or hyphenated CSS property names, e.g. backgroundColor or border-radius.
-   * @param int|string $property
-   */
-  private function isValidStyleProperty($property): bool {
-    return is_string($property)
-      && $property !== ''
-      && strspn($property, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-') === strlen($property);
   }
 
   private function sanitizeBlockDefaults(array $blockDefaults): array {

@@ -620,6 +620,61 @@ class RendererTest extends \MailPoetTest {
     verify($subject)->equals($this->newsletter->getSubject());
   }
 
+  public function testItRendersOnlyValidStoredBlockStyles(): void {
+    $body = $this->newsletter->getBody();
+    $this->assertIsArray($body);
+    $button = [
+      'type' => 'button',
+      'text' => 'Button',
+      'url' => 'https://example.com',
+      'styles' => [
+        'block' => [
+          'backgroundColor' => '#252525;x-button:1',
+          'borderColor' => '#363636',
+          'borderWidth' => '1px',
+          'borderRadius' => '5px',
+          'borderStyle' => 'solid',
+          'width' => '180px',
+          'lineHeight' => '40px',
+          'fontColor' => ['#ffffff;x-array:1'],
+          'fontFamily' => 'Arial',
+          'fontSize' => '14px',
+          'fontWeight' => 'bold',
+          'textAlign' => 'center',
+          'background-color:red;x-key' => '1',
+        ],
+      ],
+    ];
+    $body['content'] = [
+      'type' => 'container',
+      'orientation' => 'vertical',
+      'blocks' => [
+        [
+          'type' => 'container',
+          'orientation' => 'horizontal',
+          'styles' => ['block' => ['backgroundColor' => '#123456;x-container:1']],
+          'blocks' => [
+            [
+              'type' => 'container',
+              'orientation' => 'vertical',
+              'styles' => ['block' => ['backgroundColor' => 'transparent']],
+              'blocks' => [$button],
+            ],
+          ],
+        ],
+      ],
+    ];
+    $this->newsletter->setBody($body);
+
+    $html = $this->renderer->render($this->newsletter)['html'];
+
+    verify($html)->stringContainsString('mailpoet_table_button');
+    verify($html)->stringNotContainsString('x-button');
+    verify($html)->stringNotContainsString('x-array');
+    verify($html)->stringNotContainsString('x-key');
+    verify($html)->stringNotContainsString('x-container');
+  }
+
   public function testItRendersOnlyValidGlobalStyles(): void {
     $body = $this->newsletter->getBody();
     $this->assertIsArray($body);
