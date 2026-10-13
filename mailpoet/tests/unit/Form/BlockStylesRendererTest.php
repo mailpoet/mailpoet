@@ -144,7 +144,7 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
     ];
 
     verify($this->renderer->renderForButton($styles, $settings))->stringNotContainsString('x-');
-    verify($this->renderer->renderForTextInput([], $settings))->stringNotContainsString('x-');
+    verify($this->renderer->renderForTextInput(['background_color' => 'red;x-bg:1'], $settings))->stringNotContainsString('x-');
     verify($this->renderer->renderForSelect([], $settings))->stringNotContainsString('x-');
   }
 
