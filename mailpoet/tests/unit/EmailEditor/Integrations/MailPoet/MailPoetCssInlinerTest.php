@@ -22,4 +22,10 @@ class MailPoetCssInlinerTest extends \MailPoetUnitTest {
     $this->expectException(\LogicException::class);
     (new MailPoetCssInliner())->inline_css('p { color: red; }');
   }
+
+  public function testItRequiresHtmlBeforeRendering(): void {
+    $this->expectException(\LogicException::class);
+    $this->expectExceptionMessage('You must call from_html before calling render');
+    (new MailPoetCssInliner())->render();
+  }
 }

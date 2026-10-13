@@ -28,7 +28,7 @@ class MailPoetCssInliner implements Css_Inliner {
 
   public function render(): string {
     if (!isset($this->inliner)) {
-      throw new \LogicException('You must call from_html before calling inline_css');
+      throw new \LogicException('You must call from_html before calling render');
     }
     return $this->inliner->render();
   }
