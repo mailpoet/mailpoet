@@ -10,6 +10,6 @@ if [[ -z $DRY_RUN_CHECK ]]; then
 fi
 
 mkdir -p $VENDOR_PREFIXED_DIR
-if [[ ! -e $BASEDIR/build || -z $(ls -A $VENDOR_PREFIXED_DIR) ]]; then
+if [[ ! -e $BASEDIR/build || -z $(ls -A $VENDOR_PREFIXED_DIR) || ! -e $BASEDIR/build/.complete ]]; then
     $COMPOSER_BIN install --working-dir=$BASEDIR
 fi
