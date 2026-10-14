@@ -21,6 +21,7 @@ class ApiSourcePluginResolver {
    * Meant for API signups; outside of the signup request (e.g. cron) the stack holds no plugin.
    */
   public function resolve(): ?string {
+    // phpcs:disable QITStandard.PHP.DebugCode.DebugFunctionFound
     // Some hosts list debug_backtrace in disable_functions
     if (!function_exists('debug_backtrace')) {
       return null;
@@ -29,6 +30,7 @@ class ApiSourcePluginResolver {
       debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, self::TRACE_LIMIT), // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace -- the call stack is the only source of the calling plugin.
       'file'
     );
+    // phpcs:enable QITStandard.PHP.DebugCode.DebugFunctionFound
     return $this->resolveFromFiles($files);
   }
 
