@@ -229,7 +229,7 @@ class SubscriberEntity {
   private $source = 'unknown';
 
   /**
-   * @ORM\Column(type="string", nullable=true)
+   * @ORM\Column(type="string", length=191, nullable=true)
    * @var string|null
    */
   private $sourcePlugin;

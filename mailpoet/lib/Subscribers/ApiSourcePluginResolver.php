@@ -79,11 +79,13 @@ class ApiSourcePluginResolver {
       return null;
     }
     $basename = $this->wp->pluginBasename($file);
-    // plugin_basename() returns the path unchanged when the file is not inside a plugin directory
-    if (!is_string($basename) || $basename === '' || $this->normalizePath($basename) === $file) {
+    // plugin_basename() returns the path unchanged when the file is not inside a plugin directory.
+    // It also trims slashes, so compare without the leading one
+    $basename = ltrim($this->normalizePath((string)$basename), '/');
+    if ($basename === '' || $basename === ltrim($file, '/')) {
       return null;
     }
-    return $this->getSlugFromRelativePath(ltrim($this->normalizePath($basename), '/'));
+    return $this->getSlugFromRelativePath($basename);
   }
 
   private function getSlugFromRelativePath(string $relativePath): ?string {

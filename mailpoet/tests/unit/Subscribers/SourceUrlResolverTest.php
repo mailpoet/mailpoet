@@ -56,6 +56,12 @@ class SourceUrlResolverTest extends \MailPoetUnitTest {
     verify($resolver->resolve())->null();
   }
 
+  public function testItRejectsRelativeReferers(): void {
+    $resolver = $this->createResolver(true, '/signup/', false);
+    unset($_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']);
+    verify($resolver->resolve())->null();
+  }
+
   public function testItTruncatesLongUrls(): void {
     $_SERVER['HTTP_HOST'] = 'example.com';
     $_SERVER['REQUEST_URI'] = '/' . str_repeat('a', 3000);
@@ -73,7 +79,8 @@ class SourceUrlResolverTest extends \MailPoetUnitTest {
     $wp->method('wpUnslash')->willReturnArgument(0);
     $wp->method('escUrlRaw')->willReturnCallback(function (string $url, ?array $protocols = null): string {
       $scheme = parse_url($url, PHP_URL_SCHEME);
-      return in_array($scheme, $protocols ?? ['http', 'https'], true) ? $url : '';
+      // Like esc_url_raw(), relative URLs pass through
+      return $scheme === null || in_array($scheme, $protocols ?? ['http', 'https'], true) ? $url : '';
     });
     return new SourceUrlResolver($wp);
   }
