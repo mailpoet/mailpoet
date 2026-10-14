@@ -58,6 +58,10 @@ class SourceUrlResolver {
   private function sanitize(string $url): ?string {
     $withoutQuery = explode('#', explode('?', $url)[0])[0];
     $sanitized = $this->wp->escUrlRaw($withoutQuery, ['http', 'https']);
-    return $sanitized !== '' ? substr($sanitized, 0, self::MAX_LENGTH) : null;
+    // escUrlRaw() with a protocol allowlist still lets relative URLs through
+    if (!in_array(parse_url($sanitized, PHP_URL_SCHEME), ['http', 'https'], true)) {
+      return null;
+    }
+    return substr($sanitized, 0, self::MAX_LENGTH);
   }
 }

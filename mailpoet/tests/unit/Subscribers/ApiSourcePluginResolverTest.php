@@ -31,4 +31,21 @@ class ApiSourcePluginResolverTest extends \MailPoetUnitTest {
       '/var/www/html/wp-content/mu-plugins/loader.php',
     ]))->null();
   }
+
+  public function testItIgnoresFilesOutsidePluginDirectoriesWhenUsingPluginBasename(): void {
+    $wp = $this->createMock(WPFunctions::class);
+    // Like plugin_basename(), trims the leading slash of paths outside the plugin directories
+    $wp->method('pluginBasename')->willReturnCallback(function (string $file): string {
+      return trim($file, '/');
+    });
+    $resolver = new ApiSourcePluginResolver($wp, '/var/www/html/wp-content/plugins');
+    verify($resolver->resolveFromFiles(['/var/www/html/wp-includes/plugin.php']))->null();
+  }
+
+  public function testItResolvesSymlinkedPluginUsingPluginBasename(): void {
+    $wp = $this->createMock(WPFunctions::class);
+    $wp->method('pluginBasename')->willReturn('my-plugin/my-plugin.php');
+    $resolver = new ApiSourcePluginResolver($wp, '/var/www/html/wp-content/plugins');
+    verify($resolver->resolveFromFiles(['/home/dev/my-plugin/my-plugin.php']))->equals('my-plugin');
+  }
 }
