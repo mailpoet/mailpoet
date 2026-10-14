@@ -26,7 +26,7 @@ Development tasks are exposed as `pnpm` scripts at the repo root (`pnpm env:star
 - Javascript code should follow the [Airbnb style guide](https://github.com/airbnb/javascript).
 - Prefer named export before default export in JS and TS files
 - Default to TypeScript for new files.
-- Code formatting is handled automatically by Prettier. Run `pnpm qa:fix` to format your code.
+- Code formatting is handled automatically by Prettier. Run `pnpm format` to format your code.
 
 ## Disabling linting rules
 
@@ -41,7 +41,7 @@ Development tasks are exposed as `pnpm` scripts at the repo root (`pnpm env:star
 - Open a short-living feature branch.
 - Use good commit messages as explained here https://chris.beams.io/posts/git-commit. Include Linear issue ID in the commit message.
 - Use `pnpm qa` to check your code style before pushing.
-- Run `pnpm qa:fix` to format your code with Prettier.
+- Run `pnpm format` to format your code with Prettier.
 - Create a pull request when finished.
 - Wait for review from another developer.
 
