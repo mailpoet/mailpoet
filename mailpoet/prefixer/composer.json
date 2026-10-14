@@ -40,7 +40,7 @@
       "php fix-monolog.php",
       "php fix-symfony-di.php",
       "php fix-symfony-polyfill.php",
-      "php fix-attributes.php"
+      "touch build/.complete"
     ]
   },
   "config": {
