@@ -41,7 +41,7 @@ The development environment is built on [`@wordpress/env`](https://www.npmjs.com
 
 - **Docker Desktop** (wp-env and `tests_env/` both use Docker).
 - **PHP** as per `composer.json` requirements (used for host-side QA and the prefixer).
-- **Node.js** as specified by `.nvmrc`. For automatic management use [nvm](https://github.com/nvm-sh/nvm), [FNM](https://github.com/Schniz/fnm), or [Volta](https://github.com/volta-cli/volta).
+- **Node.js** as specified by `.nvmrc` (24.15 or newer within Node 24, see `engines` in `package.json`). For automatic management use [nvm](https://github.com/nvm-sh/nvm), [FNM](https://github.com/Schniz/fnm), or [Volta](https://github.com/volta-cli/volta).
 - **pnpm** as specified in `package.json`. For automatic setup enable [Corepack](https://nodejs.org/docs/latest-v17.x/api/corepack.html) using `corepack enable`.
 - **[GitHub CLI (`gh`)](https://cli.github.com/)** for downloading private WooCommerce test plugins. Run `gh auth login` to authenticate — no personal access token needed. External contributors without access can skip the download step; the bootstrap script treats those failures as non-fatal.
 
