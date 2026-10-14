@@ -776,6 +776,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => $this->diContainer->get(SettingsController::class),
         'requiredCustomFieldsValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate' => true]),
+        'apiSourcePluginResolver' => new ApiSourcePluginResolver(),
         'subscribeToLists' => Expected::once(function ($subscriberId, $segmentsIds, $options) {
           verify($options)->arrayHasKey('send_confirmation_email');
           verify($options['send_confirmation_email'])->equals(1);

@@ -449,10 +449,6 @@ class Functions {
     return is_ssl();
   }
 
-  public function wpDoingAjax(): bool {
-    return wp_doing_ajax();
-  }
-
   public function isMultisite() {
     return is_multisite();
   }
