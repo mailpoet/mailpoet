@@ -22,12 +22,11 @@ replaceInFile($vendor . 'polyfill-intl-normalizer/bootstrap.php', ['function nor
 replaceInFile($vendor . 'polyfill-iconv/Iconv.php', ['\\Normalizer::'], '\\MailPoetVendor\\Normalizer::');
 
 // Make the polyfill compatible with PHP 7.4
-// int|false|null must be replaced before int|false
-replaceInFile(
-  $vendor . 'polyfill-intl-grapheme/bootstrap80.php',
-  [') : string|false', ') : int|false|null', ') : int|false', '): string|false', '): int|false|null', '): int|false'],
-  ')'
-);
+// php-scoper 0.17 prints ") : type", 0.18 prints "): type". int|false|null must be replaced before int|false.
+$grapheme = $vendor . 'polyfill-intl-grapheme/bootstrap80.php';
+foreach (['string|false', 'int|false|null', 'int|false', 'array|false'] as $returnType) {
+  replaceInFile($grapheme, [") : $returnType", "): $returnType"], ')');
+}
 
 // Scoper (prefixer) was adding MailPoetVendor\\\mb_str_pad when it wasn't required
 foreach (['bootstrap.php', 'bootstrap80.php'] as $mbstringFile) {
