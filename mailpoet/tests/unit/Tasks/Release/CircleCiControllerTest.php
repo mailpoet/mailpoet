@@ -170,12 +170,14 @@ class CircleCiControllerTest extends \MailPoetUnitTest {
     ], new \ArrayObject());
     $target = $this->tempFile();
 
+    $caught = null;
     try {
       $controller->downloadPotFile(1, $target);
-      $this->fail('Expected an exception for an empty .pot file.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->stringContainsString('empty');
+      $caught = $e;
     }
+    $this->assertInstanceOf(\Exception::class, $caught);
+    verify($caught->getMessage())->stringContainsString('empty');
     verify(file_exists($target))->false();
   }
 
@@ -201,12 +203,14 @@ class CircleCiControllerTest extends \MailPoetUnitTest {
     ), new \ArrayObject());
     $target = $this->tempFile();
 
+    $caught = null;
     try {
       $controller->downloadLatestBuild($target);
-      $this->fail('Expected an exception.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->stringContainsString($expectedMessage);
+      $caught = $e;
     }
+    $this->assertInstanceOf(\Exception::class, $caught);
+    verify($caught->getMessage())->stringContainsString($expectedMessage);
     verify(file_exists($target))->false();
     verify($controller->getDownloadedJobNumber())->null();
   }
