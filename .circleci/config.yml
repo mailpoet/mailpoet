@@ -132,7 +132,12 @@ jobs:
           command: pnpm config set store-dir ~/.pnpm-store
       - run:
           name: 'Compute checksum for prefixer'
-          command: find prefixer -type f -not -path 'prefixer/build/*' -not -path 'prefixer/vendor/*' | sort | xargs cat | sha512sum > prefixer-checksum
+          command: |
+            # The PHP version selects the php-scoper version, so it is part of the cache key
+            {
+              php -r 'echo PHP_MAJOR_VERSION, ".", PHP_MINOR_VERSION, PHP_EOL;'
+              find prefixer -type f -not -path 'prefixer/build/*' -not -path 'prefixer/vendor/*' | sort | xargs cat
+            } | sha512sum > prefixer-checksum
       - restore_cache:
           key: tools-{{ checksum "tools/install.php" }}
       - restore_cache:
