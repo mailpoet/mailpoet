@@ -29,8 +29,9 @@ class ApiSourcePluginResolver {
    */
   public function resolve(): ?string {
     // phpcs:disable QITStandard.PHP.DebugCode.DebugFunctionFound
-    // Some hosts list debug_backtrace in disable_functions
-    if (!function_exists('debug_backtrace')) {
+    // Some hosts list debug_backtrace in disable_functions; is_callable() detects that at runtime.
+    // @phpstan-ignore-next-line function.alreadyNarrowedType
+    if (!function_exists('debug_backtrace') || !is_callable('debug_backtrace')) {
       return null;
     }
     $files = array_column(
