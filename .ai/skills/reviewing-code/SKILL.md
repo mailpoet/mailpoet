@@ -1,6 +1,6 @@
 ---
 name: reviewing-code
-description: Use when reviewing pull requests or local code changes. Use when asked to review a PR, review code, test changes, verify implementation quality, or do a code review.
+description: Use when reviewing pull requests or local code changes. Use when asked to review a PR, review code, test changes, verify implementation quality, or do a code review. Triggers on "review this PR", "review my changes", "do a code review".
 ---
 
 # Reviewing Code
@@ -24,30 +24,31 @@ This skill handles two review modes:
 
 ### PR Review Mode
 
-1. **Read the PR** using `gh pr view <number> --json title,body,state,baseRefName,headRefName,files,reviews,statusCheckRollup,labels`
-2. **Get the full diff** using `gh pr diff <number>`
-3. **Check CI status** using `gh pr checks <number>`
-4. **Read linked PRs** -- if the PR description contains links to other PRs (in the "Linked PRs" section), fetch and read those too with `gh pr view`
-5. **Read the changed files in full** -- for each significantly changed file, read the complete file (not just the diff) to understand context
+1. **Fetch the latest commits** -- `git fetch origin`, then review `git diff origin/trunk...origin/<branch>`. Never review stale code.
+2. **Read the PR** using `gh pr view <number> --json title,body,state,baseRefName,headRefName,files,reviews,statusCheckRollup,labels`
+3. **Get the full diff** using `gh pr diff <number>`
+4. **Check CI status** using `gh pr checks <number>`
+5. **Read linked PRs** -- if the Description section links other PRs (for example the matching premium PR), fetch and read those too with `gh pr view`
+6. **Read the changed files in full** -- for each significantly changed file, read the complete file (not just the diff) to understand context
 
 ### Local Review Mode
 
 1. **Check branch state** using `git status`, `git branch --show-current`
-2. **Get the diff** using `git diff trunk...HEAD` for committed changes and `git diff` / `git diff --cached` for uncommitted changes
+2. **Get the diff** -- run `git fetch origin`, then `git diff origin/trunk...HEAD` for committed changes and `git diff` / `git diff --cached` for uncommitted changes
 3. **Read the changed files in full** for context
 4. **Ask the user** what they intended to implement (if not already clear)
 
 ### Both Modes
 
-5. **Find the Linear ticket** -- look for a Linear ticket ID in:
+1. **Find the Linear ticket** -- look for a Linear ticket ID in:
 
    - PR description (PR mode)
-   - Commit messages (`git log trunk..HEAD --oneline`)
+   - Commit messages (`git log origin/trunk..HEAD --oneline`)
    - Branch name
 
-   If found, fetch the Linear ticket using the Linear MCP tool (`get_issue`). **Always load the ticket's comments and attachments.** Verify the changes actually address the ticket requirements. If no Linear ticket is found, skip this step but note it in the output.
+   If found, fetch the Linear ticket using the Linear MCP tool (`get_issue`). **Always load the ticket’s comments and attachments.** Verify the changes actually address the ticket requirements. If no Linear ticket is found, skip this step but note it in the output.
 
-6. **Identify the change type** -- classify what the diff primarily touches:
+2. **Identify the change type** -- classify what the diff primarily touches:
 
    - PHP backend changes
    - React/TypeScript frontend changes
@@ -61,52 +62,9 @@ This skill handles two review modes:
 
 Launch multiple sub-agents in parallel using the Agent tool. Each agent receives the full diff and relevant context, but has a specific review focus. Determine the exact count of sub-agents based on the complexity and scope of changes.
 
-**IMPORTANT:** Tailor each agent's prompt based on the change type identified in Step 2. For PHP-heavy changes, emphasize PHP patterns, Doctrine, WordPress conventions. For frontend changes, emphasize React patterns, TypeScript, accessibility. For mixed changes, cover both.
+**IMPORTANT:** Tailor each agent’s prompt based on the change type identified in Step 2. For PHP-heavy changes, emphasize PHP patterns, Doctrine, WordPress conventions. For frontend changes, emphasize React patterns, TypeScript, accessibility. For mixed changes, cover both.
 
-### Important rules
-
-- Only report issues you are CERTAIN about after reading the actual code. If you are unsure, say so explicitly rather than presenting speculation as fact.
-- Do NOT flag standard WordPress/WooCommerce patterns as issues (e.g. $wpdb->posts interpolation, get_posts() with posts_per_page => -1 for bounded queries).
-- Focus on real bugs, logic errors, security vulnerabilities, and missing edge cases — not stylistic preferences.
-- If you find no real issues, say "No issues found" — do not invent problems to fill the review.
-- Keep it concise. No filler praise or emoji headers.
-- Categorize findings as: Bug, Security, Performance, or Suggestion.
-
-### What should be verified
-
-- Scope & Completeness - Do the changes fully address the Linear ticket requirements? List any gaps.
-- Are there user-facing changes missing a changelog entry? (Check for files in `mailpoet/changelog/` on the branch.)
-- Are there missing test files for the changes? (Compare changed source files to test directories.)
-- Do the changes follow existing patterns in the codebase?
-- **PHP:** Is DI used correctly? Are WordPress functions called via `WP\Functions`? Are entities/repositories following Doctrine patterns?
-- **Frontend:** Are components well-structured? Is state management appropriate? Are named exports used?
-- **Other file types:** Are they written properly, named according the correct standards?
-- Is the code well-organized -- right files, right namespaces, right directories?
-- Are there any design concerns?
-- Scalability: will any new or changed query stay fast at scale (large subscriber, sending, and statistics tables)? Watch for non-sargable `LIKE '%term%'`, JOINs added to listing/count queries, N+1 loops, unbounded scans, and missing indexes -- see the `sql-performance` skill.
-- Security & Safety - is the code safe to be shipped? Are all user inputs sanitized and validated properly? Are all security standards used?
-- Backward Compatibility - if the code is changed what happens to the users who already used the previous versions?
-- Is the code using only supported PHP versions?
-- API changes: Do changes to the public API break existing integrations?
-- Are any WordPress hooks (actions/filters) added, removed, or changed in signature?
-- WooCommerce compatibility: If WooCommerce integration code changed, is it guarded with existence checks?
-- Test Coverage: Is there a regression test that reproduces the original bug and verifies the fix?
-- Is there sufficient test coverage for the new behavior? Are happy paths, error paths, and edge cases covered?
-- Are the right test types used? Unit tests vs Integration tests vs Acceptance tests
-- Are there tests that test implementation details rather than behavior?
-- Do the test properly check the code or blindly verify the mocks?
-- Did all the checks in the GitHub Pull Request passed?
-
-### Devil's Advocate – always spin up this sub-agent
-
-- What are the missing pieces? What is the implementation missing? What is the plan overlooking?
-- What edge cases are not handled?
-- What happens when this code fails? Are errors handled gracefully?
-- What assumptions does this code make that might not always hold?
-- Could this cause performance issues at scale (large subscriber lists, many newsletters, high-traffic sites)?
-- What would a hostile reviewer point out?
-- Are there any "it works but..." concerns -- code that is technically correct but fragile, hard to maintain, or surprising?
-- If tests were added, are they actually testing the right things? Are there missing test cases?
+Give each sub-agent the rules and checklists in [review-checklist.md](review-checklist.md), and check the change against `AGENTS.md`: Code rules, Backward compatibility and Boundaries. Always add the Devil’s Advocate sub-agent described there.
 
 ## Step 4: Manual Testing
 
@@ -122,9 +80,9 @@ If user-facing changes exist, proceed with testing.
 
 ### Get Testing Steps
 
-- **PR mode:** Extract testing steps from the "QA notes" section of the PR description.
+- **PR mode:** Extract testing steps from the “Testing instructions” section of the PR description.
 - **Local mode:** Create testing steps based on the changes. Describe what to test and expected outcomes.
-- If the PR's QA notes say `_N/A_` but there are clearly user-facing changes, flag this as a concern.
+- If the PR’s Testing instructions say `_N/A_` but there are clearly user-facing changes, flag this as a concern.
 
 ### Execute Browser Testing
 
@@ -165,3 +123,7 @@ Ask the user what they want to do with the findings:
 | Skipping linked PRs                     | Linked PRs need to be reviewed together                                             |
 | Not reading PR CI status                | CI failures are important context for the review                                    |
 | Missing regression test for bug fix     | Bug fixes without a test that reproduces the bug are incomplete -- always flag      |
+
+## Premium
+
+A premium PR lives in the premium repo; run `gh` from `mailpoet-premium/`. Its translation calls use the `mailpoet-premium` text domain. If it depends on a free-plugin change, review both PRs together and check that they can be released together.

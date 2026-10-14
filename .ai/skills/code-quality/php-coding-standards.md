@@ -19,7 +19,7 @@ Runs `parallel-lint lib/ tests/ mailpoet.php`. Fast check that catches syntax er
 
 ```bash
 # PHP lint + PHPCS combined
-pnpm qa:php
+pnpm lint:php
 
 # PHPCS only on all files (Robo-only)
 cd mailpoet && ./do qa:code-sniffer
@@ -96,7 +96,7 @@ class SubscribersRepository {
 
 ### Disabled Rules (Legacy Debt)
 
-Many WordPress coding standard rules are disabled via `<severity>0</severity>` in the shared ruleset. These represent legacy code patterns that don't match WordPress conventions. Key disabled categories:
+Many WordPress coding standard rules are disabled via `<severity>0</severity>` in the shared ruleset. These represent legacy code patterns that don’t match WordPress conventions. Key disabled categories:
 
 - WordPress whitespace/spacing rules (MailPoet uses PSR-style spacing)
 - WordPress naming conventions (MailPoet uses camelCase)
@@ -149,25 +149,21 @@ echo $rendered_html;
 
 ## PHPStan (Static Analysis)
 
-### Running PHPStan
-
 ```bash
-# Run PHPStan
-pnpm qa:phpstan
-
-# Run with specific PHP version target
-pnpm qa:phpstan --php-version=70400
-pnpm qa:phpstan --php-version=80300
+pnpm lint:phpstan
 ```
+
+It is slow, and part of `pnpm lint` and `pnpm qa`.
 
 ### Configuration
 
 PHPStan config is at `mailpoet/tasks/phpstan/phpstan.neon`:
 
 - **Level 9** (strictest)
+- `phpVersion` covers PHP 7.4 to 8.5 in one run, so there is no per-version flag
 - Includes Doctrine ORM, WordPress, and PHPUnit extensions
 - Bootstraps the full vendor autoload plus WooCommerce stubs
-- Scans `lib/`, `tests/` directories
+- Scans `lib/` and the `tests/` directories
 - Excludes `generated/`, template files, and legacy model tests
 
 ### Key PHPStan Behaviors
@@ -177,67 +173,27 @@ PHPStan config is at `mailpoet/tasks/phpstan/phpstan.neon`:
 - WordPress functions are typed via `phpstan-wordpress`
 - Baseline errors are managed -- do not add new baseline entries without discussion
 
-## Running All PHP QA
-
-```bash
-# Full PHP QA: lint + PHPCS
-pnpm qa:php
-
-# Full QA: PHP + frontend
-pnpm qa
-```
-
-## Premium Plugin
-
-The premium plugin uses the same shared ruleset but with its own text domain. Run from `mailpoet-premium/`:
-
-```bash
-# PHPCS (uses premium-ruleset.xml automatically; Robo-only)
-cd mailpoet-premium && ./do qa:code-sniffer
-
-# Full QA (lint + PHPCS + ESLint + Stylelint)
-cd mailpoet-premium && pnpm qa
-
-# PHPStan (reuses free plugin's phpstan binary)
-cd mailpoet-premium && pnpm qa:phpstan
-
-# Fix a single file (Robo-only)
-cd mailpoet-premium && ./do qa:fix-file lib/SomePremiumClass.php
-```
-
-Key difference: text domain must be `mailpoet-premium` (not `mailpoet`) in translation functions.
-
-## CI Reference
-
-In CircleCI (`.circleci/config.yml`), jobs still invoke the plugin-level Robo commands directly:
-
-| Job                      | What it runs                                             | PHP version      |
-| ------------------------ | -------------------------------------------------------- | ---------------- |
-| `qa_php`                 | `./do qa:php` (lint + PHPCS)                             | Latest (8.3)     |
-| `qa_php_oldest`          | `./do qa:php`                                            | Oldest (7.4)     |
-| `qa_php_max_wporg`       | `./do qa:php-max-wporg` (lint including build artifacts) | 8.1 (WP.org max) |
-| `static_analysis` (php7) | `./do qa:phpstan --php-version=70400`                    | Latest           |
-| `static_analysis` (php8) | `./do qa:phpstan --php-version=80300`                    | Latest           |
-| `security_analysis`      | `./do qa:semgrep`                                        | 8.1              |
-
 ## Quick Command Reference
 
 ```bash
-# PHP syntax check (Robo-only)
-cd mailpoet && ./do qa:lint
+cd mailpoet && ./do qa:lint                        # PHP syntax only (Robo-only)
+cd mailpoet && ./do qa:code-sniffer                # PHPCS only (Robo-only)
+pnpm lint:php                                      # PHP lint + PHPCS
+pnpm lint:phpstan                                  # PHPStan
+cd mailpoet && ./do qa:fix-file path/to/file.php   # PHPCBF one file (Robo-only)
+pnpm lint                                          # PHP + PHPStan + JS + CSS
+pnpm qa                                            # lint + Prettier check + JS tests
+```
 
-# PHPCS check (Robo-only)
-cd mailpoet && ./do qa:code-sniffer
+For the CI jobs, see the “What CI runs” table in [SKILL.md](SKILL.md).
 
-# PHP lint + PHPCS
-pnpm qa:php
+## Premium
 
-# PHPStan
-pnpm qa:phpstan
+The premium plugin uses the same shared ruleset with its own text domain: `mailpoet-premium`, not `mailpoet`, in translation functions. Run from `mailpoet-premium/`:
 
-# Auto-fix a file (Robo-only)
-cd mailpoet && ./do qa:fix-file path/to/file.php
-
-# Full QA (PHP + JS + CSS)
-pnpm qa
+```bash
+cd mailpoet-premium && ./do qa:code-sniffer      # uses premium-ruleset.xml (Robo-only)
+cd mailpoet-premium && pnpm lint:phpstan          # reuses the free plugin's PHPStan binary
+cd mailpoet-premium && pnpm qa
+cd mailpoet-premium && ./do qa:fix-file lib/SomePremiumClass.php
 ```

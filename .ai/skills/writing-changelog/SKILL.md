@@ -1,6 +1,6 @@
 ---
 name: writing-changelog
-description: 'Use when adding a changelog entry for a branch. Use after completing work on a feature, fix, or improvement that is user-facing.'
+description: 'Use when adding a changelog entry for a branch, after finishing a user-facing feature, fix or improvement. Triggers on "add a changelog", "write the changelog entry".'
 ---
 
 # Writing Changelog Entries
@@ -23,10 +23,10 @@ Pick **one** valid type that best describes the change: `Added`, `Improved`, `Fi
 
 Write a **short, user-facing description**:
 
-- Write from the user's perspective — what they see or experience
+- Write from the user’s perspective — what they see or experience
 - Avoid technical jargon (no class names, method names, internal details)
-- Start with a capital letter, not "We" or "The plugin"
-- Make it read naturally after the type prefix, and don't repeat the type verb: the release notes print `Fixed: <description>`
+- Start with a capital letter, not “We” or “The plugin”
+- Make it read naturally after the type prefix, and don’t repeat the type verb: the release notes print `Fixed: <description>`
 - No trailing punctuation — the build system adds it
 - Keep it to one sentence
 
@@ -51,12 +51,6 @@ Run the command from the repo root for free-plugin changes:
 pnpm changelog:add --type=<type> --description="<description>"
 ```
 
-For premium-only changes, use the premium plugin's Robo command directly because there is no root `pnpm` wrapper for it yet:
-
-```bash
-cd mailpoet-premium && ./do changelog:add --type=<type> --description="<description>"
-```
-
 ### When to Skip
 
 Most branches need a changelog. Skip only when changes are:
@@ -66,3 +60,11 @@ Most branches need a changelog. Skip only when changes are:
 - Documentation-only changes
 
 When in doubt, add a changelog entry.
+
+## Premium
+
+Premium changes get their changelog file in the premium repo. The root has no wrapper for it, so run the premium script from its directory:
+
+```bash
+cd mailpoet-premium && pnpm changelog:add --type=<type> --description="<description>"
+```

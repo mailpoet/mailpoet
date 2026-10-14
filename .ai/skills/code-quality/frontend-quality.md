@@ -1,4 +1,4 @@
-# Code Quality Tools
+# Frontend Code Quality
 
 ## Overview
 
@@ -14,11 +14,13 @@ ESLint uses a flat config at `mailpoet/eslint.config.js` which imports shared co
 - **ES6 config** -- for `.jsx` files and JS test files
 - **TypeScript config** -- for `.ts` and `.tsx` files in `assets/js/src/`
 
+The config ignores `assets/js/src/vendor/**` and `tests/javascript-newsletter-editor/testBundles/**`.
+
 ### Running ESLint
 
 ```bash
 # Run ESLint + TypeScript type checking
-pnpm qa:js
+pnpm lint:js
 
 # Fix a single JS/TS file (Robo-only)
 cd mailpoet && ./do qa:fix-file assets/js/src/path/to/file.tsx
@@ -69,7 +71,7 @@ Stylelint config is at `mailpoet/.stylelintrc`. Key rules:
 
 ```bash
 # Check all SCSS files
-pnpm qa:css
+pnpm lint:css
 
 # Fix SCSS files (auto-fix where possible)
 cd mailpoet && pnpm run stylelint -- "assets/css/src/**/*.scss"
@@ -115,14 +117,14 @@ Files excluded from Prettier are listed in `.prettierignore` (vendor, dist, gene
 pnpm qa:prettier
 
 # Auto-fix formatting
-pnpm qa:fix
+pnpm format
 ```
 
 Prettier runs from the repo root internally via `npx prettier`. It applies to JS, TS, JSX, TSX, SCSS, JSON, and other supported file types.
 
 ### ⚠️ Docker vs CI Prettier Mismatch
 
-**Never use Docker's `./do run` to run Prettier write/check.** Docker's `npx` can resolve to a different Prettier version than what CI uses, causing the check to silently pass locally but fail in CI.
+**Never use Docker’s `./do run` to run Prettier write/check.** Docker’s `npx` can resolve to a different Prettier version than what CI uses, causing the check to silently pass locally but fail in CI.
 
 The project uses **Prettier 2.6.2** with `singleQuote: true`. CI runs `node_modules/.bin/prettier` from the repo root, which enforces single quotes for all string literals in JS/JSX/TS/TSX files.
 
@@ -137,50 +139,27 @@ npx prettier@2.6.2 --write mailpoet/assets/css/src/path/to/file.scss
 npx prettier@2.6.2 --check mailpoet/assets/js/src/path/to/file.jsx
 ```
 
-The most common symptom of this mismatch: CI fails with exactly the files you modified, while `./do qa:prettier-check` passes locally. This means Docker's Prettier formatted with double quotes (`"string"`) instead of the required single quotes (`'string'`).
+The most common symptom of this mismatch: CI fails with exactly the files you modified, while `./do qa:prettier-check` passes locally. This means Docker’s Prettier formatted with double quotes (`"string"`) instead of the required single quotes (`'string'`).
 
 ### When to Run Prettier
 
-Always run `pnpm qa:fix` before committing. CI checks formatting via the underlying Robo Prettier check during the build step.
+Always run `pnpm format` before committing. CI checks formatting via the underlying Robo Prettier check during the build step.
 
 ## Running All Frontend QA Checks
 
 ```bash
-# ESLint + TypeScript type checking
-pnpm qa:js
-
-# Stylelint
-pnpm qa:css
-
-# Everything: PHP lint + PHPCS + ESLint + Stylelint
-pnpm qa
+pnpm lint:js       # ESLint + TypeScript type checking
+pnpm lint:css      # Stylelint
+pnpm qa            # lint (PHP, PHPStan, JS, CSS) + Prettier check + JS tests
 ```
 
-## lint-staged (Git Hooks)
+The commit hook switches (`MP_GIT_HOOKS_*`) and the CI jobs are listed in [SKILL.md](SKILL.md).
 
-Pre-commit hooks are configured via `lint-staged` in `mailpoet/package.json`. They are controlled by environment variables in `mailpoet/.env`:
-
-| Variable                    | Controls                                            |
-| --------------------------- | --------------------------------------------------- |
-| `MP_GIT_HOOKS_ENABLE`       | Master switch -- must be `true` to enable any hooks |
-| `MP_GIT_HOOKS_ESLINT`       | ESLint on staged `.js`, `.jsx`, `.ts`, `.tsx` files |
-| `MP_GIT_HOOKS_STYLELINT`    | Stylelint on staged `.scss`, `.css` files           |
-| `MP_GIT_HOOKS_PHPLINT`      | PHP lint on staged `.php` files                     |
-| `MP_GIT_HOOKS_CODE_SNIFFER` | PHPCS on staged `.php` files                        |
-| `MP_GIT_HOOKS_PHPSTAN`      | PHPStan on staged `.php` files                      |
-
-## Premium Plugin
+## Premium
 
 The premium plugin (`mailpoet-premium/`) has the same JS and CSS linting commands. Run from its directory:
 
 ```bash
-cd mailpoet-premium && pnpm qa:js
-cd mailpoet-premium && pnpm qa:css
+cd mailpoet-premium && pnpm lint:js
+cd mailpoet-premium && pnpm lint:css
 ```
-
-## CI Reference
-
-In CircleCI (`.circleci/config.yml`):
-
-- `qa_js` job runs `./do qa:frontend-assets` (ESLint + Stylelint)
-- `build` job runs `./do qa:prettier-check` (Prettier formatting check)
