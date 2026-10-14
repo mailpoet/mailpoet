@@ -32,20 +32,22 @@ file_put_contents($file, $data);
 // Make the polyfill compatible with PHP 7.4
 $file = __DIR__ . '/../vendor-prefixed/symfony/polyfill-intl-grapheme/bootstrap80.php';
 $data = file_get_contents($file);
-$data = str_replace(') : string|false', ')', $data);
-$data = str_replace(') : int|false|null', ')', $data);
-$data = str_replace(') : int|false', ')', $data);
+$data = str_replace(
+  [') : string|false', ') : int|false|null', ') : int|false', '): string|false', '): int|false|null', '): int|false'],
+  ')',
+  $data
+);
 file_put_contents($file, $data);
 
 // Scoper (prefixer) was adding MailPoetVendor\\\mb_str_pad when it wasn't required
 $file = __DIR__ . '/../vendor-prefixed/symfony/polyfill-mbstring/bootstrap.php';
 $data = file_get_contents($file);
-$data = str_replace('MailPoetVendor\\\mb_str_pad', 'mb_str_pad', $data);
+$data = str_replace(['MailPoetVendor\\\mb_str_pad', 'MailPoetVendor\\mb_str_pad'], 'mb_str_pad', $data);
 file_put_contents($file, $data);
 
 $file = __DIR__ . '/../vendor-prefixed/symfony/polyfill-mbstring/bootstrap80.php';
 $data = file_get_contents($file);
-$data = str_replace('MailPoetVendor\\\mb_str_pad', 'mb_str_pad', $data);
+$data = str_replace(['MailPoetVendor\\\mb_str_pad', 'MailPoetVendor\\mb_str_pad'], 'mb_str_pad', $data);
 file_put_contents($file, $data);
 
 // Remove unnecessary polyfills these polyfills are required by symfony/console
