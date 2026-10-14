@@ -127,6 +127,40 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
     $this->assertEquals(['b', 'c'], $result);
   }
 
+  public function testItReturnsOnlyKeysInCommonForThreeTriggers(): void {
+    $keysByTrigger = [
+      'trigger1' => ['a', 'b', 'c', 'e'],
+      'trigger2' => ['b', 'c', 'd', 'e'],
+      'trigger3' => ['c', 'e', 'f'],
+    ];
+
+    $triggers = [];
+    $steps = [];
+    foreach ($keysByTrigger as $key => $subjectKeys) {
+      $trigger = $this->createMock(Trigger::class);
+      $trigger->expects($this->any())->method('getKey')->willReturn($key);
+      $trigger->expects($this->any())->method('getSubjectKeys')->willReturn($subjectKeys);
+      $triggers[$key] = $trigger;
+
+      $step = $this->createMock(Step::class);
+      $step->expects($this->any())->method('getType')->willReturn(Step::TYPE_TRIGGER);
+      $step->expects($this->any())->method('getKey')->willReturn($key);
+      $steps[] = $step;
+    }
+
+    $registry = $this->createMock(Registry::class);
+    $registry->expects($this->any())->method('getSubjectTransformers')->willReturn([]);
+    $registry->expects($this->any())->method('getTrigger')->willReturnCallback(function($key) use ($triggers){
+      return $triggers[$key] ?? null;
+    });
+    $testee = new SubjectTransformerHandler($registry);
+
+    $automation = $this->createMock(Automation::class);
+    $automation->method('getSteps')->willReturn($steps);
+    $result = $testee->getSubjectKeysForAutomation($automation);
+    $this->assertEquals(['c', 'e'], $result);
+  }
+
   public function testItProvidesAllSubjects(): void {
 
     $subjectTransformerStart = $this->createMock(SubjectTransformer::class);
