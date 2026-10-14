@@ -39,7 +39,7 @@ class SubjectTransformerHandler {
     foreach ($triggers as $trigger) {
       $all[] = $this->getSubjectKeysForTrigger($trigger);
     }
-    $all = count($all) > 1 ? array_intersect(...$all) : $all[0] ?? [];
+    $all = count($all) > 1 ? array_intersect($all[0], ...array_slice($all, 1)) : $all[0] ?? [];
     return array_values(array_unique($all));
   }
 
