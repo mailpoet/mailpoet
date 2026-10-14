@@ -68,6 +68,14 @@ class SourceUrlResolverTest extends \MailPoetUnitTest {
     verify(strlen((string)$this->createResolver(false, false, true)->resolve()))->equals(2048);
   }
 
+  public function testItTruncatesMultibyteUrlsWithoutSplittingCharacters(): void {
+    $_SERVER['HTTP_HOST'] = 'example.com';
+    $_SERVER['REQUEST_URI'] = '/' . str_repeat('é', 3000);
+    $url = (string)$this->createResolver(false, false, true)->resolve();
+    verify(mb_strlen($url))->equals(2048);
+    verify(mb_check_encoding($url, 'UTF-8'))->true();
+  }
+
   /**
    * @param string|false $referer
    */

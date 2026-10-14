@@ -92,6 +92,14 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     }
   }
 
+  public function testItAppliesSourcePluginOnlyForApiSource(): void {
+    $subscriber = $this->saveController->save(['email' => 'source-plugin-api@test.com', 'source' => 'api', 'source_plugin' => 'my-plugin']);
+    verify($subscriber->getSourcePlugin())->equals('my-plugin');
+
+    $subscriber = $this->saveController->save(['email' => 'source-plugin-form@test.com', 'source' => 'form', 'source_plugin' => 'my-plugin']);
+    verify($subscriber->getSourcePlugin())->null();
+  }
+
   public function testItStripsClientSuppliedTrackingConsentProofFields(): void {
     // A client (admin/API) can change the consent state but must not be able to
     // forge the proof-of-consent method/copy; those are stamped server-side only.
