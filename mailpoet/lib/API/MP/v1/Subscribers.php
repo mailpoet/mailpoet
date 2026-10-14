@@ -238,7 +238,11 @@ class Subscribers {
       $defaultFields['subscribed_ip'] = Helpers::getIP();
     }
     $defaultFields['source'] = Source::API;
-    $defaultFields['source_plugin'] = $this->apiSourcePluginResolver->resolve();
+    // Keep a previously stored slug when no plugin can be resolved
+    $sourcePlugin = $this->apiSourcePluginResolver->resolve();
+    if ($sourcePlugin) {
+      $defaultFields['source_plugin'] = $sourcePlugin;
+    }
 
     // Pre-resolve tag names before any persistence so invalid tags fail fast
     // and don't leave the subscriber partially updated.
