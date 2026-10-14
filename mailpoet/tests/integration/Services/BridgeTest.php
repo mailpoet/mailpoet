@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Services;
 
 use Codeception\Util\Stub;
+use MailPoet\Config\Env;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
@@ -322,6 +323,19 @@ class BridgeTest extends \MailPoetTest {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     $result = $this->bridge->pingBridge();
     verify($this->bridge->validateBridgePingResponse($result))->true();
+  }
+
+  public function testItSendsPluginVersionHeader() {
+    /** @var array $wpRemotePostArgs */
+    $wpRemotePostArgs = [];
+    $wp = Stub::make(new WPFunctions, [
+      'wpRemotePost' => function() use (&$wpRemotePostArgs) {
+        $wpRemotePostArgs = func_get_args();
+      },
+    ]);
+    $api = new API('test_key', $wp);
+    $api->sendMessages('test');
+    verify($wpRemotePostArgs[1]['headers']['X-MailPoet-Plugin-Version'])->equals((string)Env::$version);
   }
 
   public function testItAllowsChangingRequestTimeout() {
