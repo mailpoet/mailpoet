@@ -62,6 +62,7 @@ class SourceUrlResolver {
     if (!in_array(parse_url($sanitized, PHP_URL_SCHEME), ['http', 'https'], true)) {
       return null;
     }
-    return substr($sanitized, 0, self::MAX_LENGTH);
+    // Multibyte safe, so the value is never cut inside a UTF-8 character
+    return mb_substr($sanitized, 0, self::MAX_LENGTH);
   }
 }
