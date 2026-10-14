@@ -160,6 +160,14 @@ class Functions {
     return wp_timezone();
   }
 
+  public function registerAbilityCategory(string $slug, array $args): ?\WP_Ability_Category {
+    return wp_register_ability_category($slug, $args);
+  }
+
+  public function registerAbility(string $name, array $args): ?\WP_Ability {
+    return wp_register_ability($name, $args);
+  }
+
   public function currentUserCan($capability) {
     return current_user_can($capability);
   }
