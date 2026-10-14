@@ -133,9 +133,10 @@ jobs:
       - run:
           name: 'Compute checksum for prefixer'
           command: |
-            # The PHP version selects the php-scoper version, so it is part of the cache key
+            # The PHP version and the versions pinned in tools/install.php select the php-scoper version
             {
               php -r 'echo PHP_MAJOR_VERSION, ".", PHP_MINOR_VERSION, PHP_EOL;'
+              cat tools/install.php
               find prefixer -type f -not -path 'prefixer/build/*' -not -path 'prefixer/vendor/*' | sort | xargs cat
             } | sha512sum > prefixer-checksum
       - restore_cache:
