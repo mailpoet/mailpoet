@@ -27,6 +27,7 @@ export function tinyMceAdd(editor) {
 
   editor.ui.registry.addButton('mailpoet_shortcodes', {
     icon: 'mailpoet',
+    tooltip: __('Insert shortcode', 'mailpoet'),
     onAction: function onActionButton() {
       var shortcodes = [];
       var configShortcodes = editor.options.get('mailpoet_shortcodes');

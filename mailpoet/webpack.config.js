@@ -408,6 +408,8 @@ const testConfig = {
       'blocks/social.spec.js',
       'blocks/spacer.spec.js',
       'blocks/text.spec.js',
+
+      'tinymce/mailpoet-shortcodes.spec.js',
     ],
   },
   module: {
