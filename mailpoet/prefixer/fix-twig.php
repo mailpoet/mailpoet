@@ -9,18 +9,22 @@ $replacements = [
     'file' => '../vendor-prefixed/twig/twig/src/Token.php',
     'find' => [
       '\'Twig\\\\Token::\'',
+      '\'Twig\\Token::\'',
     ],
     'replace' => [
       '\'MailPoetVendor\\\\Twig\\\\Token::\'',
+      '\'MailPoetVendor\\Twig\\Token::\'',
     ],
   ],
   [
     'file' => '../vendor-prefixed/twig/twig/src/Profiler/Node/EnterProfileNode.php',
     'find' => [
       '\\\\Twig\\\\Profiler\\\\Profile',
+      '\\Twig\\Profiler\\Profile',
     ],
     'replace' => [
       '\\\\MailPoetVendor\\\\Twig\\\\Profiler\\\\Profile',
+      '\\MailPoetVendor\\Twig\\Profiler\\Profile',
     ],
   ],
   [
@@ -58,9 +62,11 @@ $replacements = [
     'file' => '../vendor-prefixed/twig/twig/src/Node/CaptureNode.php',
     'find' => [
       '\'\\\\Twig\\\\Extension\\\\CoreExtension',
+      '\'\\Twig\\Extension\\CoreExtension',
     ],
     'replace' => [
       '\'\\\\MailPoetVendor\\\\Twig\\\\Extension\\\\CoreExtension',
+      '\'\\MailPoetVendor\\Twig\\Extension\\CoreExtension',
     ],
   ],
 ];
