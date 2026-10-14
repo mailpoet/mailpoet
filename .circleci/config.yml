@@ -171,7 +171,7 @@ jobs:
             ./tools/vendor/composer.phar --working-dir=tasks/phpstan install
             ./do compile:all --env production --skip-tests
             ./do doctrine:generate-cache
-            ../tests_env/vendor/bin/codecept build
+            php -d register_argc_argv=1 ../tests_env/vendor/bin/codecept build
             ./do twig:generate-cache
       - run:
           name: 'Check Prettier formatting'
