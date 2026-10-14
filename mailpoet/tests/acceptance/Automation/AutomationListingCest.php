@@ -26,6 +26,7 @@ class AutomationListingCest {
     $i->waitForText('Explore essentials');
     $i->waitForText('Browse all templates');
     $i->waitForText('Build your own automations');
+    $this->assertNoHorizontalOverflow($i);
 
     // non-empty state - listing
     (new DataFactories\Automation())->withName('Test Automation 1')->create();
@@ -53,6 +54,7 @@ class AutomationListingCest {
     $i->waitForText('Explore essentials');
     $i->waitForText('Browse all templates');
     $i->waitForText('Build your own automations');
+    $this->assertNoHorizontalOverflow($i);
 
     // check automation 1
     $automation1row = $this->getAutomationRow('Test Automation 1');
@@ -219,6 +221,11 @@ class AutomationListingCest {
     Assert::assertNull($automationStorage->getAutomation($automation1->getId()));
     Assert::assertNull($automationStorage->getAutomation($automation2->getId()));
     $i->seeNoJSErrors();
+  }
+
+  private function assertNoHorizontalOverflow(AcceptanceTester $i): void {
+    $overflow = $i->executeJS('return document.documentElement.scrollWidth - document.documentElement.clientWidth;');
+    Assert::assertLessThanOrEqual(0, $overflow, 'The page should not scroll horizontally');
   }
 
   private function getAutomationRow(string $automationName): string {
