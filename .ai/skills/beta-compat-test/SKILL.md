@@ -1,6 +1,6 @@
 ---
-name: mailpoet-beta-compat-test
-description: Use when a new WooCommerce or WordPress beta / release candidate is available and you need to test MailPoet's compatibility against it. Triggers on phrases like "test against WC beta", "test MailPoet on WP beta", "compatibility test", "new WooCommerce version", "new WordPress version".
+name: beta-compat-test
+description: Use when a new WooCommerce or WordPress beta or release candidate is out and MailPoet's compatibility with it needs testing. Triggers on phrases like "test against WC beta", "test MailPoet on WP beta", "compatibility test", "new WooCommerce version", "new WordPress version".
 ---
 
 # MailPoet Beta Compatibility Test
@@ -14,9 +14,9 @@ Run a full compatibility test of the released MailPoet plugin against a new WooC
 Invoke with the target beta version(s) as argument:
 
 ```
-/mailpoet-beta-compat-test wc=10.6.0-beta.1
-/mailpoet-beta-compat-test wp=6.9-RC1
-/mailpoet-beta-compat-test wc=10.6.0-beta.1 wp=6.9-RC1
+/beta-compat-test wc=10.6.0-beta.1
+/beta-compat-test wp=6.9-RC1
+/beta-compat-test wc=10.6.0-beta.1 wp=6.9-RC1
 ```
 
 If neither is provided, detect the latest beta automatically:
@@ -78,41 +78,7 @@ Summarize pass/fail status and highlight any failures with details.
 
 ### Step 3 — Check the CircleCI beta workflows
 
-MailPoet's CircleCI config has job parameters for beta runs (`use_wordpress_beta`, `use_woocommerce_beta` — see `.circleci/config.yml`), but they are not top-level pipeline parameters. Do not trigger a pipeline with `parameters: {"use_woocommerce_beta": true}` unless `.circleci/config.yml` explicitly declares those names under top-level `parameters:`. CircleCI rejects undeclared pipeline parameters, and a normal `build_and_test` pipeline does not run the scheduled beta jobs.
-
-The scheduled `nightly` workflow picks up the latest WooCommerce / WordPress beta automatically. Check the latest scheduled `trunk` pipelines and inspect the beta jobs:
-
-```bash
-# Set CIRCLECI_TOKEN to a token with access to the mailpoet/mailpoet project.
-TOKEN="$CIRCLECI_TOKEN"
-
-curl -sH "Circle-Token: $TOKEN" \
-  "https://circleci.com/api/v2/project/gh/mailpoet/mailpoet/pipeline?branch=trunk" \
-  | jq -r '.items[] | select(.trigger.type == "schedule") | [.id,.number,.created_at,.state] | @tsv'
-```
-
-For each relevant scheduled pipeline id:
-
-1. Find workflow ids:
-   ```bash
-   curl -sH "Circle-Token: $TOKEN" \
-     "https://circleci.com/api/v2/pipeline/<PIPELINE_ID>/workflow"
-   ```
-2. Find jobs in the `nightly` workflow:
-   ```bash
-   curl -sH "Circle-Token: $TOKEN" \
-     "https://circleci.com/api/v2/workflow/<WORKFLOW_ID>/job"
-   ```
-3. Confirm `integration_tests_woocommerce_beta` and `acceptance_tests_woocommerce_beta` passed. If testing WordPress beta too, confirm the corresponding WordPress beta jobs passed.
-4. Fetch logs for the beta jobs and verify the expected beta version was installed:
-   ```bash
-   curl -sH "Circle-Token: $TOKEN" \
-     "https://circleci.com/api/v1.1/project/github/mailpoet/mailpoet/<JOB_NUMBER>" \
-     | jq '.steps[].actions[] | {name, status, output_url}'
-   ```
-5. For any failed job, fetch the raw `output_url` values, analyze what went wrong, and classify the failure using the triage section below.
-
-Premium compatibility is covered by the premium jobs in the same `nightly` workflow (`*_with_premium_*`). Check those jobs when WooCommerce-specific premium features such as Subscriptions, Bookings, or Memberships are in scope.
+The scheduled `nightly` workflow on `trunk` picks up the latest WooCommerce and WordPress beta automatically. Confirm its beta jobs (`integration_tests_woocommerce_beta`, `acceptance_tests_woocommerce_beta`, the WordPress beta jobs, and the `*_with_premium_*` jobs when premium features are in scope) passed and installed the expected version. Do not trigger a pipeline with beta parameters unless `.circleci/config.yml` declares them at the top level. API calls and steps: [circleci-beta-jobs.md](circleci-beta-jobs.md).
 
 ### Step 4 — Smoke tests in local wp-env
 
@@ -150,7 +116,7 @@ Then use an available browser automation tool, such as Playwright MCP or Chrome 
 2. **Subscribers list** — Open `MailPoet → Subscribers`. Verify the DataViews-based list renders, paginates, and a known subscriber is visible.
 3. **Send a standard newsletter** — `MailPoet → Emails → New → Newsletter`. Pick the block-based editor, save, send to a test segment, and confirm Mailpit (`http://localhost:8082`) captures the email.
 4. **Subscription form** — `MailPoet → Forms`. Edit a form, save. On the frontend, submit the form and confirm the new subscriber appears in the list.
-5. **Automation** — `MailPoet → Automations`. Activate a "Welcome email" automation, subscribe a new user, confirm the welcome email is delivered to Mailpit.
+5. **Automation** — `MailPoet → Automations`. Activate a “Welcome email” automation, subscribe a new user, confirm the welcome email is delivered to Mailpit.
 6. **WooCommerce integration** (if `wc=` was set) — Place a guest order in the shop. Confirm the WC abandoned-cart / first-purchase automation fires and the customer appears in the synced WooCommerce segments.
 
 Report the result of each check. Provide a screenshot of any failure and capture the relevant entry from `pnpm env:logs`.
@@ -175,29 +141,4 @@ Summarize all results in a table:
 
 ## Error triage
 
-When any test fails, classify each error into one of three categories and take the corresponding action:
-
-### 1. MailPoet error — fix it
-
-The error is in code from `mailpoet/` or `mailpoet-premium/` (e.g., a PHP fatal in `lib/`, a JS error from `assets/js/src/`, a failing test in `tests/`).
-
-**Action:** Open a feature branch (use the `starting-branch` skill), fix the issue, add or update a test, run `pnpm qa` and the relevant `pnpm test:*`, and open a draft PR via the `creating-pull-requests` skill. Do not commit straight to `trunk`.
-
-### 2. QIT / test environment error — report to #qit
-
-The error is in the QIT tool itself or the testing environment (QIT command crashes, Docker setup failures, infrastructure timeouts, flaky runner behavior unrelated to plugin code).
-
-**Action:** Draft a Slack message for the `#qit` channel including the QIT command, the version flags used, and the full error output. Show the draft to the requester before sending — never post without confirmation.
-
-### 3. WooCommerce / WordPress / other plugin error — report upstream
-
-The error is caused by WooCommerce core, WordPress core, or another bundled plugin (e.g., a WC REST API regression, a deprecation in a WP beta, a breaking change in the block editor).
-
-**Action:**
-
-1. Use the `context-a8c` MCP to identify which team owns the affected area (search Linear, Slack, GitHub for the relevant component).
-2. Draft a Slack message for `#woo-core-releases` (for WC) or the WordPress core release channel (for WP), describing:
-   - The beta version under test
-   - The specific error and which test surfaced it
-   - A ping to the responsible team identified above
-3. Show the draft to the requester before sending.
+Classify each failure as a MailPoet error (fix it on a branch), a QIT or environment error (draft a `#qit` message), or an upstream WooCommerce/WordPress error (draft a message to the owning team). Actions for each: [error-triage.md](error-triage.md).

@@ -11,7 +11,7 @@ CircleCI URLs come in two shapes:
 - `https://app.circleci.com/pipelines/github/mailpoet/mailpoet/<pipeline-num>/workflows/<workflow-uuid>/jobs/<job-number>`
 - `https://circleci.com/gh/mailpoet/mailpoet/<job-number>` (legacy)
 
-The trailing integer is the **job number** — that's what every endpoint below wants.
+The trailing integer is the **job number** — that’s what every endpoint below wants.
 
 ## Job details — status, pipeline id
 
@@ -21,7 +21,7 @@ The trailing integer is the **job number** — that's what every endpoint below 
 
 Useful fields:
 
-- `status` — `success`, `failed`, `running`, `infrastructure_fail`, `canceled`. `infrastructure_fail` is CircleCI's problem; retry the job before debugging.
+- `status` — `success`, `failed`, `running`, `infrastructure_fail`, `canceled`. `infrastructure_fail` is CircleCI’s problem; retry the job before debugging.
 - `pipeline.id` — the pipeline UUID. Feed this into the **Pipeline details** call below to get the commit SHA and branch, and into the **Sibling jobs** call further down.
 - `web_url` — the human URL of the job (handy to paste into a report).
 - `parallel_runs` — Codeception parallel-shard count.
@@ -38,7 +38,7 @@ Useful fields:
 
 - `vcs.revision` — the commit SHA the pipeline ran against.
 - `vcs.branch` — the branch the pipeline ran against.
-- `vcs.commit.subject` / `vcs.commit.body` — the commit message (handy for spotting "what changed" without leaving the API).
+- `vcs.commit.subject` / `vcs.commit.body` — the commit message (handy for spotting “what changed” without leaving the API).
 
 ## Test failures (structured)
 
@@ -53,7 +53,7 @@ One entry per test with `name`, `classname`, `result` (`success` / `failure` / `
   | jq '.items[] | select(.result != "success") | {classname, name, result, message}'
 ```
 
-If this endpoint returns zero non-success rows yet the job is red, the failure is in a build/install/lint/infrastructure step. Read the failing step's raw output via the job's web URL.
+If this endpoint returns zero non-success rows yet the job is red, the failure is in a build/install/lint/infrastructure step. Read the failing step’s raw output via the job’s web URL.
 
 ## Artifacts (screenshots, HTML dumps, browser logs)
 
@@ -73,7 +73,7 @@ Download an individual artifact (use the full URL from the listing):
 
 ## Sibling jobs in the same workflow
 
-When other parallel jobs failed alongside yours and the symptom looks the same (same test name or same error class), the root cause is shared (e.g. WC beta broke the whole matrix, a fixture changed and every shard tripped on it). If the sibling failures look unrelated, treat them as independent — don't conflate.
+When other parallel jobs failed alongside yours and the symptom looks the same (same test name or same error class), the root cause is shared (e.g. WC beta broke the whole matrix, a fixture changed and every shard tripped on it). If the sibling failures look unrelated, treat them as independent — don’t conflate.
 
 ```
 .ai/skills/debugging-failed-tests/circleci-api.sh /api/v2/pipeline/<pipeline-id>/workflow
@@ -86,13 +86,13 @@ When other parallel jobs failed alongside yours and the symptom looks the same (
 .ai/skills/debugging-failed-tests/circleci-api.sh "/api/v2/insights/gh/mailpoet/mailpoet/workflows/<workflow-name>?branch=trunk"
 ```
 
-Lists recent runs of the named workflow on a given branch with `status`, `duration`, `created_at`. Useful for distinguishing "first failure ever" from "been flaking for days", and for spotting the last known-good SHA to use as the floor of a `git bisect` or a `git diff <last-green>..<failing>`.
+Lists recent runs of the named workflow on a given branch with `status`, `duration`, `created_at`. Useful for distinguishing “first failure ever” from “been flaking for days”, and for spotting the last known-good SHA to use as the floor of a `git bisect` or a `git diff <last-green>..<failing>`.
 
 ## Things the v2 API does NOT give you
 
-- **WP / WC / PHP versions** used by the test container — these are printed in the raw step log by `tests_env/docker/codeception/docker-entrypoint.sh`, not surfaced as JSON. Easiest source: open the job's web URL and read the top of the failing step's output (`WORDPRESS VERSION:`, `TEST RUNNER PHP VERSION:`, WooCommerce version).
+- **WP / WC / PHP versions** used by the test container — these are printed in the raw step log by `tests_env/docker/codeception/docker-entrypoint.sh`, not surfaced as JSON. Easiest source: open the job’s web URL and read the top of the failing step’s output (`WORDPRESS VERSION:`, `TEST RUNNER PHP VERSION:`, WooCommerce version).
 - **The CircleCI YAML that ran** — if you need to understand the job matrix, read `.circleci/config.yml` at the failing SHA (`git show <sha>:.circleci/config.yml`).
 
 ## If the wrapper fails
 
-If the wrapper exits non-zero saying the token is not configured, stop and report exactly: "CircleCI token not configured locally — see `.ai/skills/debugging-failed-tests/circleci-api.sh` for setup". Do not attempt to set up auth in the user's environment, do not paste paths or env-var names, do not guess.
+If the wrapper exits non-zero saying the token is not configured, stop and report exactly: "CircleCI token not configured locally — see `.ai/skills/debugging-failed-tests/circleci-api.sh` for setup". Do not attempt to set up auth in the user’s environment, do not paste paths or env-var names, do not guess.
