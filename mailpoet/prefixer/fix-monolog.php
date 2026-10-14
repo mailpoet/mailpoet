@@ -23,6 +23,22 @@ $content = str_replace(
 );
 file_put_contents($file, $content);
 
+// Fix the callable class name in Utils::jsonEncode. The PHP-Scoper can't handle it
+$file = __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Utils.php';
+$content = file_get_contents($file);
+$content = str_replace(
+  [
+    'array(\'Monolog\\\\Utils\'',
+    'array(\'Monolog\\Utils\'',
+  ],
+  [
+    'array(\'MailPoetVendor\\\\Monolog\\\\Utils\'',
+    'array(\'MailPoetVendor\\Monolog\\Utils\'',
+  ],
+  $content
+);
+file_put_contents($file, $content);
+
 // cleanup unused Handlers
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Handler/AbstractSyslogHandler.php');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Handler/AmqpHandler.php');
