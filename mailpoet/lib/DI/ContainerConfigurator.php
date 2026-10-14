@@ -29,6 +29,11 @@ class ContainerConfigurator implements IContainerConfigurator {
         ContainerWrapper::class,
         'getInstance',
       ]);
+    // Abilities
+    $container->autowire(\MailPoet\Abilities\AbilitiesRegistrar::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\RecentNewslettersAbility::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\SendingStatusAbility::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\UnsubscribeTrendAbility::class)->setPublic(true);
     // AdminPages
     $container->autowire(\MailPoet\AdminPages\AssetsController::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\PageRenderer::class)->setPublic(true);

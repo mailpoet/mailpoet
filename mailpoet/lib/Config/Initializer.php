@@ -6,6 +6,7 @@ use Automattic\WooCommerce\EmailEditor\Bootstrap as EmailEditorBootstrap;
 use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger;
 use MailPoet\Abilities\Abilities;
+use MailPoet\Abilities\AbilitiesRegistrar;
 use MailPoet\API\JSON\API;
 use MailPoet\API\REST\API as RestApi;
 use MailPoet\AutomaticEmails\AutomaticEmails;
@@ -184,6 +185,8 @@ class Initializer {
 
   private UpdateFailureNotifier $updateFailureNotifier;
 
+  private AbilitiesRegistrar $abilitiesRegistrar;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   const PLUGIN_ACTIVATED = 'mailpoet_plugin_activated';
@@ -232,7 +235,8 @@ class Initializer {
     LogsDownload $logsDownload,
     PublicEmailRoute $publicEmailRoute,
     MailPoetPageResolver $mailPoetPageResolver,
-    UpdateFailureNotifier $updateFailureNotifier
+    UpdateFailureNotifier $updateFailureNotifier,
+    AbilitiesRegistrar $abilitiesRegistrar
   ) {
     $this->rendererFactory = $rendererFactory;
     $this->accessControl = $accessControl;
@@ -278,6 +282,7 @@ class Initializer {
     $this->publicEmailRoute = $publicEmailRoute;
     $this->mailPoetPageResolver = $mailPoetPageResolver;
     $this->updateFailureNotifier = $updateFailureNotifier;
+    $this->abilitiesRegistrar = $abilitiesRegistrar;
 
     $emailEditorContainer = Email_Editor_Container::container();
     $this->emailEditorBootstrap = $emailEditorContainer->get(EmailEditorBootstrap::class);
@@ -386,6 +391,7 @@ class Initializer {
   private function setupAbilities(): void {
     require_once __DIR__ . '/../Abilities/Abilities.php';
     Abilities::init();
+    $this->abilitiesRegistrar->init();
   }
 
   public function runActivator() {
