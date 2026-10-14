@@ -1,38 +1,34 @@
-## Description
+### Description
+
+<!-- What changed and why. Link the ticket (Linear ID or `Closes #…`) and any related PRs. -->
+
+### Testing instructions
+
+<!-- Numbered steps a reviewer can follow. -->
+
+1.
+
+### Screenshots
+
+<!-- Before and after for visible changes. Otherwise _N/A_. -->
 
 _N/A_
 
-## Code review notes
+### Code review notes
+
+<!-- Only what the diff doesn't show: trade-offs, risks, context. Otherwise _N/A_. -->
 
 _N/A_
 
-## QA notes
+### After-merge notes
+
+<!-- Anything to do after merging. Otherwise _N/A_. -->
 
 _N/A_
 
-## Linked PRs
+### Tasks
 
-_N/A_
-
-## Linked tickets
-
-_N/A_
-
-## After-merge notes
-
-_N/A_
-
-## Screenshots or screencast <!-- if applicable -->
-
-<!-- If you would like to upload screenshots, feel free to use the table below when it is useful to show the difference between before and after the change. -->
-
-| Before                          | After                          |
-| ------------------------------- | ------------------------------ |
-| <!-- Before screenshot here --> | <!-- After screenshot here --> |
-
-## Tasks
-
+- [ ] I added or updated tests where needed
 - [ ] I have added a changelog entry (`pnpm changelog:add --type=<type> --description=<description>`)
 - [ ] I followed [best practices](https://codex.wordpress.org/I18n_for_WordPress_Developers) for translations
-- [ ] I added sufficient test coverage
 - [ ] I embraced TypeScript by either creating new files in TypeScript or converting existing JavaScript files when making changes
