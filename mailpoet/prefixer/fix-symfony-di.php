@@ -16,7 +16,7 @@ replaceInFile(
 );
 
 // setAccessible() is deprecated in PHP 8.5 and has no effect since PHP 8.1
-// The spaces in the brackets prevent re-wrapping when the script runs repeatedly
+// The spaces keep the replacement from containing its own find string
 foreach (['ServiceLocator.php', 'Compiler/Compiler.php', 'Compiler/ResolveChildDefinitionsPass.php'] as $diFile) {
   replaceInFile(
     __DIR__ . '/../vendor-prefixed/symfony/dependency-injection/' . $diFile,

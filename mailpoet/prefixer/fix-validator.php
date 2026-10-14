@@ -10,7 +10,7 @@ require_once __DIR__ . '/replace-in-file.php';
 replaceInFile(
   __DIR__ . '/../vendor-prefixed/symfony/validator/Mapping/PropertyMetadata.php',
   ['$member->setAccessible(\true);'],
-  'if (PHP_VERSION_ID < 80100) { $member->setAccessible( \true ); }' // Add spaces in bracket to avoid multiple replacements
+  'if (PHP_VERSION_ID < 80100) { $member->setAccessible( \true ); }' // The spaces keep the replacement from containing its own find string
 );
 
 // cleanup unused Validator paths

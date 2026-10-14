@@ -24,18 +24,23 @@ replaceInFile(
   ['\'\\\\MailPoetVendor\\\\Twig\\\\Extension\\\\CoreExtension', '\'\\MailPoetVendor\\Twig\\Extension\\CoreExtension']
 );
 
-replaceInFile($twigSrc . 'Node/ModuleNode.php', ['"use Twig\\\\Environment;'], '"use MailPoetVendor\\\\Twig\\\\Environment;');
-replaceInFile($twigSrc . 'Node/ModuleNode.php', ['"use Twig\\\\Markup;'], '"use MailPoetVendor\\\\Twig\\\\Markup;');
-replaceInFile($twigSrc . 'Node/ModuleNode.php', ['"use Twig\\\\Source;'], '"use MailPoetVendor\\\\Twig\\\\Source;');
-replaceInFile($twigSrc . 'Node/ModuleNode.php', ['"use Twig\\\\Template;'], '"use MailPoetVendor\\\\Twig\\\\Template;');
-replaceInFile($twigSrc . 'Node/ModuleNode.php', ['"use Twig\\\\Error\\\\LoaderError;'], '"use MailPoetVendor\\\\Twig\\\\Error\\\\LoaderError;');
-replaceInFile($twigSrc . 'Node/ModuleNode.php', ['"use Twig\\\\Error\\\\RuntimeError;'], '"use MailPoetVendor\\\\Twig\\\\Error\\\\RuntimeError;');
-replaceInFile($twigSrc . 'Node/ModuleNode.php', ['"use Twig\\\\Sandbox\\\\SecurityError;'], '"use MailPoetVendor\\\\Twig\\\\Sandbox\\\\SecurityError;');
-replaceInFile($twigSrc . 'Node/ModuleNode.php', ['"use Twig\\\\Sandbox\\\\SecurityNotAllowedTagError;'], '"use MailPoetVendor\\\\Twig\\\\Sandbox\\\\SecurityNotAllowedTagError;');
-replaceInFile($twigSrc . 'Node/ModuleNode.php', ['"use Twig\\\\Sandbox\\\\SecurityNotAllowedFilterError;'], '"use MailPoetVendor\\\\Twig\\\\Sandbox\\\\SecurityNotAllowedFilterError;');
-replaceInFile($twigSrc . 'Node/ModuleNode.php', ['"use Twig\\\\Sandbox\\\\SecurityNotAllowedFunctionError;'], '"use MailPoetVendor\\\\Twig\\\\Sandbox\\\\SecurityNotAllowedFunctionError;');
-replaceInFile($twigSrc . 'Node/ModuleNode.php', ['"use Twig\\\\Extension\\\\SandboxExtension;'], '"use MailPoetVendor\\\\Twig\\\\Extension\\\\SandboxExtension;');
-replaceInFile($twigSrc . 'Node/ModuleNode.php', ['"use Twig\\\\Extension\\\\CoreExtension;'], '"use MailPoetVendor\\\\Twig\\\\Extension\\\\CoreExtension;');
+$moduleNodeClasses = [
+  'Environment',
+  'Markup',
+  'Source',
+  'Template',
+  'Error\\\\LoaderError',
+  'Error\\\\RuntimeError',
+  'Sandbox\\\\SecurityError',
+  'Sandbox\\\\SecurityNotAllowedTagError',
+  'Sandbox\\\\SecurityNotAllowedFilterError',
+  'Sandbox\\\\SecurityNotAllowedFunctionError',
+  'Extension\\\\SandboxExtension',
+  'Extension\\\\CoreExtension',
+];
+foreach ($moduleNodeClasses as $class) {
+  replaceInFile($twigSrc . 'Node/ModuleNode.php', ["\"use Twig\\\\$class;"], "\"use MailPoetVendor\\\\Twig\\\\$class;");
+}
 
 // Remove unwanted class aliases in lib/Twig
 exec("rm -rf ../vendor-prefixed/twig/twig/lib/Twig");
