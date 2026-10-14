@@ -30,6 +30,7 @@ use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class SubscribersTest extends \MailPoetTest {
@@ -197,7 +198,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
         'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
-        'apiSourcePluginResolver' => new ApiSourcePluginResolver(),
+        'apiSourcePluginResolver' => new ApiSourcePluginResolver(new WPFunctions()),
       ]
     );
 
@@ -231,7 +232,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
         'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
-        'apiSourcePluginResolver' => new ApiSourcePluginResolver(),
+        'apiSourcePluginResolver' => new ApiSourcePluginResolver(new WPFunctions()),
       ],
       $this
     );
@@ -314,7 +315,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
         'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
-        'apiSourcePluginResolver' => new ApiSourcePluginResolver(),
+        'apiSourcePluginResolver' => new ApiSourcePluginResolver(new WPFunctions()),
       ],
       $this
     );
@@ -341,7 +342,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
         'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
-        'apiSourcePluginResolver' => new ApiSourcePluginResolver(),
+        'apiSourcePluginResolver' => new ApiSourcePluginResolver(new WPFunctions()),
       ],
       $this
     );
@@ -658,7 +659,7 @@ class SubscribersTest extends \MailPoetTest {
         'settings' => $settings,
         'requiredCustomFieldsValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate' => true]),
         'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
-        'apiSourcePluginResolver' => new ApiSourcePluginResolver(),
+        'apiSourcePluginResolver' => new ApiSourcePluginResolver(new WPFunctions()),
       ],
       $this
     );
@@ -712,7 +713,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
         'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
-        'apiSourcePluginResolver' => new ApiSourcePluginResolver(),
+        'apiSourcePluginResolver' => new ApiSourcePluginResolver(new WPFunctions()),
       ],
       $this
     );
@@ -744,7 +745,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
         'confirmationEmailResolver' => $this->diContainer->get(ConfirmationEmailResolver::class),
-        'apiSourcePluginResolver' => new ApiSourcePluginResolver(),
+        'apiSourcePluginResolver' => new ApiSourcePluginResolver(new WPFunctions()),
       ],
       $this
     );
@@ -776,7 +777,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => $this->diContainer->get(SettingsController::class),
         'requiredCustomFieldsValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate' => true]),
-        'apiSourcePluginResolver' => new ApiSourcePluginResolver(),
+        'apiSourcePluginResolver' => new ApiSourcePluginResolver(new WPFunctions()),
         'subscribeToLists' => Expected::once(function ($subscriberId, $segmentsIds, $options) {
           verify($options)->arrayHasKey('send_confirmation_email');
           verify($options['send_confirmation_email'])->equals(1);

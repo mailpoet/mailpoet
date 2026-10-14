@@ -2,17 +2,24 @@
 
 namespace MailPoet\Subscribers;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class ApiSourcePluginResolver {
   private const IGNORED_SLUGS = ['mailpoet', 'mailpoet-premium'];
   private const TRACE_LIMIT = 50;
   private const MAX_SLUG_LENGTH = 191;
 
+  /** @var WPFunctions */
+  private $wp;
+
   /** @var string|null */
   private $pluginsDir;
 
   public function __construct(
+    WPFunctions $wp,
     ?string $pluginsDir = null
   ) {
+    $this->wp = $wp;
     $this->pluginsDir = $pluginsDir;
   }
 
@@ -38,12 +45,19 @@ class ApiSourcePluginResolver {
    * @param string[] $files
    */
   public function resolveFromFiles(array $files): ?string {
-    $pluginsDir = $this->getPluginsDir();
-    if (!$pluginsDir) {
-      return null;
-    }
+    $pluginsDirs = $this->getPluginsDirs();
     foreach ($files as $file) {
-      $slug = $this->getSlug($this->normalizePath($file), $pluginsDir);
+      $normalizedFile = $this->normalizePath($file);
+      $slug = null;
+      foreach ($pluginsDirs as $pluginsDir) {
+        $slug = $this->getSlug($normalizedFile, $pluginsDir);
+        if ($slug) {
+          break;
+        }
+      }
+      // Backtrace paths are real paths, so they don't match a plugin symlinked into the plugins directory.
+      // plugin_basename() knows about those through wp_register_plugin_realpath().
+      $slug = $slug ?: $this->getSlugFromPluginBasename($normalizedFile);
       if ($slug && !in_array($slug, self::IGNORED_SLUGS, true)) {
         return $slug;
       }
@@ -56,7 +70,23 @@ class ApiSourcePluginResolver {
     if (strpos($file, $prefix) !== 0) {
       return null;
     }
-    $relativePath = substr($file, strlen($prefix));
+    return $this->getSlugFromRelativePath(substr($file, strlen($prefix)));
+  }
+
+  private function getSlugFromPluginBasename(string $file): ?string {
+    $muPluginsDir = defined('WPMU_PLUGIN_DIR') ? rtrim($this->normalizePath((string)constant('WPMU_PLUGIN_DIR')), '/') : null;
+    if ($muPluginsDir && strpos($file, $muPluginsDir . '/') === 0) {
+      return null;
+    }
+    $basename = $this->wp->pluginBasename($file);
+    // plugin_basename() returns the path unchanged when the file is not inside a plugin directory
+    if (!is_string($basename) || $basename === '' || $this->normalizePath($basename) === $file) {
+      return null;
+    }
+    return $this->getSlugFromRelativePath(ltrim($this->normalizePath($basename), '/'));
+  }
+
+  private function getSlugFromRelativePath(string $relativePath): ?string {
     $slug = explode('/', $relativePath)[0];
     // Single file plugins live directly in the plugins directory
     if ($slug === $relativePath && substr($slug, -4) === '.php') {
@@ -65,9 +95,22 @@ class ApiSourcePluginResolver {
     return $slug && strlen($slug) <= self::MAX_SLUG_LENGTH ? $slug : null;
   }
 
-  private function getPluginsDir(): ?string {
+  /**
+   * Backtrace paths are real paths, so besides the configured directory
+   * the resolved one is needed when the plugins directory is a symlink.
+   * @return string[]
+   */
+  private function getPluginsDirs(): array {
     $pluginsDir = $this->pluginsDir ?? (defined('WP_PLUGIN_DIR') ? (string)constant('WP_PLUGIN_DIR') : null);
-    return $pluginsDir ? rtrim($this->normalizePath($pluginsDir), '/') : null;
+    if (!$pluginsDir) {
+      return [];
+    }
+    $dirs = [rtrim($this->normalizePath($pluginsDir), '/')];
+    $realPath = realpath($pluginsDir);
+    if ($realPath) {
+      $dirs[] = rtrim($this->normalizePath($realPath), '/');
+    }
+    return array_values(array_unique($dirs));
   }
 
   private function normalizePath(string $path): string {
