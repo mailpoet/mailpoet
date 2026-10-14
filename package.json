@@ -59,6 +59,9 @@
     "prettier": "2.6.2",
     "typescript": "^5.7.0"
   },
+  "engines": {
+    "node": "^24.15.0"
+  },
   "packageManager": "pnpm@10.33.0",
   "volta": {
     "node": "24.21.0"
