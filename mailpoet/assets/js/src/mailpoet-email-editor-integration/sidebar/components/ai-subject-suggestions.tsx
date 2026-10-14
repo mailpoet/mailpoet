@@ -20,6 +20,7 @@ import { store as editorStore } from '@wordpress/editor';
 import { closeSmall } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
+import { MailPoet } from 'mailpoet';
 
 const sparklesSvg =
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M9.5 3l1.5 3.5L14.5 8l-3.5 1.5L9.5 13 8 9.5 4.5 8 8 6.5 9.5 3zm7 7l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5L13 13.5l2.5-1 1-2.5zm-7 7l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2z"/></svg>';
@@ -59,7 +60,7 @@ export function AiSubjectSuggestions({ onSelect }: Props) {
     btn.insertBefore(icon, btn.firstChild);
   });
 
-  const fetchSuggestions = useCallback(() => {
+  const fetchSuggestions = useCallback((retry: boolean) => {
     abortControllerRef.current?.abort();
 
     const controller = new AbortController();
@@ -68,6 +69,9 @@ export function AiSubjectSuggestions({ onSelect }: Props) {
     setIsLoading(true);
     setError(null);
     setSuggestions([]);
+
+    MailPoet.trackEvent('Emails > AI suggestions requested', { retry });
+    const startedAt = Date.now();
 
     const postId = select(editorStore).getCurrentPostId();
 
@@ -80,12 +84,19 @@ export function AiSubjectSuggestions({ onSelect }: Props) {
       .then((response) => {
         if (abortControllerRef.current !== controller) return;
         setSuggestions(response.data.suggestions);
+        MailPoet.trackEvent('Emails > AI suggestions shown', {
+          count: response.data.suggestions.length,
+          duration_ms: Date.now() - startedAt,
+        });
       })
       .catch((err: Error & { code?: string }) => {
         if (err.name === 'AbortError') {
           return;
         }
         if (abortControllerRef.current !== controller) return;
+        MailPoet.trackEvent('Emails > AI suggestions failed', {
+          error_code: err.code || 'unknown',
+        });
         setError(
           err.message ||
             __('Failed to generate suggestions. Please try again.', 'mailpoet'),
@@ -116,7 +127,7 @@ export function AiSubjectSuggestions({ onSelect }: Props) {
             variant="secondary"
             onClick={() => {
               if (!isOpen) {
-                fetchSuggestions();
+                fetchSuggestions(false);
               }
               onToggle();
             }}
@@ -163,7 +174,10 @@ export function AiSubjectSuggestions({ onSelect }: Props) {
                 <Notice status="error" isDismissible={false}>
                   {error}
                 </Notice>
-                <Button variant="secondary" onClick={fetchSuggestions}>
+                <Button
+                  variant="secondary"
+                  onClick={() => fetchSuggestions(true)}
+                >
                   {__('Try again', 'mailpoet')}
                 </Button>
               </div>
@@ -171,12 +185,15 @@ export function AiSubjectSuggestions({ onSelect }: Props) {
 
             {!isLoading &&
               !error &&
-              suggestions.map((suggestion) => (
+              suggestions.map((suggestion, index) => (
                 <button
                   key={`${suggestion.subject}-${suggestion.preheader}`}
                   type="button"
                   className="mailpoet-ai-suggestions__item"
                   onClick={() => {
+                    MailPoet.trackEvent('Emails > AI suggestion selected', {
+                      position: index + 1,
+                    });
                     onSelect(suggestion);
                     onClose();
                   }}
