@@ -27,7 +27,7 @@ foreach (['Carbon.php', 'CarbonImmutable.php', 'Traits/Date.php'] as $carbonFile
 }
 
 // setAccessible() is deprecated in PHP 8.5 and has no effect since PHP 8.1
-// The spaces in the brackets prevent re-wrapping when the script runs repeatedly
+// The spaces keep the replacement from containing its own find string
 replaceInFile(
   __DIR__ . '/../vendor-prefixed/nesbot/carbon/src/Carbon/Traits/Mixin.php',
   ['$method->setAccessible(\true);'],
