@@ -99,22 +99,25 @@ dependencies at the end.
 ### Quality assurance
 
 ```shell
-pnpm qa             # All QA checks (PHP + JS + CSS + Prettier)
-pnpm qa:js          # ESLint + TypeScript type-check
-pnpm qa:css         # Stylelint
-pnpm qa:php         # PHP CodeSniffer
-pnpm qa:phpstan     # PHPStan static analysis
+pnpm qa             # All checks that need no database: lint + Prettier check + JS tests
+pnpm lint           # All linters: lint:php + lint:phpstan + lint:js + lint:css
+pnpm lint:php       # PHP syntax lint + PHP CodeSniffer
+pnpm lint:phpstan   # PHPStan static analysis
+pnpm lint:js        # ESLint + TypeScript type-check
+pnpm lint:css       # Stylelint
+pnpm format         # Prettier (write) — auto-format all files
 pnpm qa:prettier    # Prettier (check only)
-pnpm qa:fix         # Prettier (write) — auto-format all files
 ```
+
+The older names `qa:php`, `qa:phpstan`, `qa:js`, `qa:css` and `qa:fix` still work.
 
 ### Tests
 
 ```shell
-pnpm test:unit                 # Unit tests (tests_env)
+pnpm test:php                  # PHP unit tests (tests_env)
 pnpm test:integration          # Integration tests (tests_env)
-pnpm test:acceptance           # Acceptance tests with Selenium (tests_env)
-pnpm test:javascript           # Mocha JS tests
+pnpm test:e2e                  # Acceptance tests with Selenium (tests_env)
+pnpm test:js                   # Mocha JS tests
 
 pnpm test:integration:premium  # Premium integration tests
 pnpm test:acceptance:premium   # Premium acceptance tests
@@ -127,8 +130,10 @@ Pass test-runner flags directly — the `pnpm` scripts forward them to the under
 
 ```shell
 pnpm test:integration --file=tests/integration/WP/EmojiTest.php
-pnpm test:acceptance --file=tests/acceptance/Misc/MailpoetMenuCest.php
+pnpm test:e2e --file=tests/acceptance/Misc/MailpoetMenuCest.php
 ```
+
+The older names `test:unit`, `test:acceptance` and `test:javascript` still work.
 
 #### Premium tests from inside the container
 
@@ -235,6 +240,6 @@ Without it, some Git clients fail on hook execution.
 We use [Prettier](https://prettier.io/) for consistent formatting:
 
 ```bash
-pnpm qa:fix          # Auto-format all files (Prettier write)
+pnpm format          # Auto-format all files (Prettier write)
 pnpm qa:prettier     # Check formatting (read-only)
 ```

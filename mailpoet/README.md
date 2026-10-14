@@ -72,7 +72,7 @@ pnpm compile
 
 Use `pnpm` scripts for the common workflow commands. They wrap the plugin-level Robo tasks where needed and can be run from the repo root or from this plugin directory.
 
-At the repo root there are also `pnpm` scripts (`pnpm env:start`, `pnpm test:integration`, `pnpm migrations:*`, …) that orchestrate the wp-env container and route WordPress-runtime tasks into it. See the [monorepo README](../README.md) for the full list.
+At the repo root there are also `pnpm` scripts (`pnpm env:start`, `pnpm test:integration`, `pnpm migrations:*`, …) that orchestrate the wp-env container and route WordPress-runtime tasks into it. The root also has the script names shared with our other plugins (`lint`, `format`, `test:php`, `test:js`, `test:e2e`). See the [monorepo README](../README.md) for the full list.
 
 Use `./do` directly only for Robo helpers that do not have a `pnpm` wrapper yet. Those are listed separately below.
 
