@@ -22,6 +22,7 @@ The premium plugin is a **separate git repository** cloned into `mailpoet-premiu
 - `pnpm qa` runs `lint` (with PHPStan, so it is slow), the Prettier check and the JS tests. CI also runs the PHP test suites, PHP 7.4 lint and Semgrep.
 - `test:php` (unit) and `test:js` run on the host. `test:e2e` (acceptance) and `test:integration` run in the separate `tests_env/` Docker stack. See the `running-tests` skill.
 - For premium changes, also run `pnpm qa` from `mailpoet-premium/`.
+- `.claude/settings.json` lets Claude Code run the env, lint, format, qa, test and build scripts without asking.
 
 ## Git hooks
 
