@@ -6,6 +6,7 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
 use MailPoet\Util\Helpers;
+use MailPoetVendor\Doctrine\ORM\Query\Expr\Andx;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class ScheduledTaskSubscribersListingRepository extends ListingRepository {
@@ -76,18 +77,35 @@ class ScheduledTaskSubscribersListingRepository extends ListingRepository {
   }
 
   protected function applyGroup(QueryBuilder $queryBuilder, string $group) {
-    if ($group === ScheduledTaskSubscriberEntity::SENDING_STATUS_SENT) {
-      $queryBuilder->andWhere('sts.processed = :processedStatus');
-      $queryBuilder->andWhere('sts.failed = :failedStatus');
-      $queryBuilder->setParameter('processedStatus', ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
-      $queryBuilder->setParameter('failedStatus', ScheduledTaskSubscriberEntity::FAIL_STATUS_OK);
-    } elseif ($group === ScheduledTaskSubscriberEntity::SENDING_STATUS_FAILED) {
-      $queryBuilder->andWhere('sts.failed = :failedStatus');
-      $queryBuilder->setParameter('failedStatus', ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED);
-    } elseif ($group === ScheduledTaskSubscriberEntity::SENDING_STATUS_UNPROCESSED) {
-      $queryBuilder->andWhere('sts.processed = :processedStatus');
-      $queryBuilder->setParameter('processedStatus', ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
+    $predicate = $this->getResultPredicate($queryBuilder, $group, 'group');
+    if ($predicate !== null) {
+      $queryBuilder->andWhere($predicate);
     }
+  }
+
+  /**
+   * Builds the condition for one sending result. Parameter names are prefixed so that
+   * the group and the result filter can be applied to the same query.
+   * @return Andx|string|null
+   */
+  private function getResultPredicate(QueryBuilder $queryBuilder, string $result, string $prefix) {
+    if ($result === ScheduledTaskSubscriberEntity::SENDING_STATUS_SENT) {
+      $queryBuilder->setParameter("{$prefix}ProcessedStatus", ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
+      $queryBuilder->setParameter("{$prefix}FailedStatus", ScheduledTaskSubscriberEntity::FAIL_STATUS_OK);
+      return $queryBuilder->expr()->andX(
+        "sts.processed = :{$prefix}ProcessedStatus",
+        "sts.failed = :{$prefix}FailedStatus"
+      );
+    }
+    if ($result === ScheduledTaskSubscriberEntity::SENDING_STATUS_FAILED) {
+      $queryBuilder->setParameter("{$prefix}FailedStatus", ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED);
+      return "sts.failed = :{$prefix}FailedStatus";
+    }
+    if ($result === ScheduledTaskSubscriberEntity::SENDING_STATUS_UNPROCESSED) {
+      $queryBuilder->setParameter("{$prefix}ProcessedStatus", ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
+      return "sts.processed = :{$prefix}ProcessedStatus";
+    }
+    return null;
   }
 
   protected function applySorting(QueryBuilder $queryBuilder, string $sortBy, string $sortOrder) {
@@ -111,7 +129,26 @@ class ScheduledTaskSubscribersListingRepository extends ListingRepository {
   }
 
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {
-    // the parent class requires this method, but scheduled task subscribers listing doesn't currently support this feature.
+    $result = $filters['result'] ?? null;
+    if ($result === null || $result === '' || $result === []) {
+      return;
+    }
+    $results = is_array($result) ? $result : [$result];
+    $allowed = [
+      ScheduledTaskSubscriberEntity::SENDING_STATUS_SENT,
+      ScheduledTaskSubscriberEntity::SENDING_STATUS_FAILED,
+      ScheduledTaskSubscriberEntity::SENDING_STATUS_UNPROCESSED,
+    ];
+    $results = array_values(array_intersect($allowed, array_filter($results, 'is_string')));
+    if (!$results) {
+      $queryBuilder->andWhere('1 = 0');
+      return;
+    }
+    $predicates = [];
+    foreach ($results as $value) {
+      $predicates[] = $this->getResultPredicate($queryBuilder, $value, 'result' . ucfirst($value));
+    }
+    $queryBuilder->andWhere($queryBuilder->expr()->orX(...$predicates));
   }
 
   protected function applyParameters(QueryBuilder $queryBuilder, array $parameters) {

@@ -129,4 +129,57 @@ class ScheduledTaskSubscribersListingRepositoryTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $tasksSubscribers[0]->getSubscriber());
     verify($tasksSubscribers[0]->getSubscriber()->getEmail())->equals('subscriberProcessed@email.com');
   }
+
+  /**
+   * @param array<string, mixed> $extra
+   * @return string[]
+   */
+  private function getEmails(array $extra): array {
+    $listingData = array_merge([
+      'group' => 'all',
+      'params' => ['task_ids' => [$this->scheduledTask->getId()]],
+    ], $extra);
+    $rows = $this->repository->getData($this->listingHandler->getListingDefinition($listingData));
+    $count = $this->repository->getCount($this->listingHandler->getListingDefinition($listingData));
+    $emails = array_map(function (ScheduledTaskSubscriberEntity $row): string {
+      $subscriber = $row->getSubscriber();
+      $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+      return (string)$subscriber->getEmail();
+    }, $rows);
+    verify($count)->equals(count($emails));
+    sort($emails);
+    return $emails;
+  }
+
+  public function testItFiltersByResult() {
+    verify($this->getEmails(['filter' => ['result' => ['sent']]]))->equals(['subscriberProcessed@email.com']);
+    verify($this->getEmails(['filter' => ['result' => 'failed']]))->equals(['subscriberFailed@email.com']);
+    verify($this->getEmails(['filter' => ['result' => ['failed', 'unprocessed']]]))
+      ->equals(['subscriberFailed@email.com', 'subscriberUprocessed@email.com']);
+  }
+
+  public function testItDoesNotFilterWhenResultIsEmpty() {
+    verify($this->getEmails(['filter' => ['result' => []]]))->arrayCount(3);
+    verify($this->getEmails(['filter' => ['result' => '']]))->arrayCount(3);
+    verify($this->getEmails(['filter' => []]))->arrayCount(3);
+  }
+
+  public function testItFailsClosedForUnknownResultValues() {
+    verify($this->getEmails(['filter' => ['result' => ['bogus']]]))->arrayCount(0);
+    verify($this->getEmails(['filter' => ['result' => 'bogus']]))->arrayCount(0);
+    verify($this->getEmails(['filter' => ['result' => [['sent']]]]))->arrayCount(0);
+    verify($this->getEmails(['filter' => ['result' => 1]]))->arrayCount(0);
+  }
+
+  public function testItIgnoresUnknownResultValuesNextToKnownOnes() {
+    verify($this->getEmails(['filter' => ['result' => ['sent', 'bogus']]]))->equals(['subscriberProcessed@email.com']);
+  }
+
+  public function testGroupAndResultFilterCombineWithoutParameterClash() {
+    verify($this->getEmails(['group' => 'sent', 'filter' => ['result' => ['failed']]]))->arrayCount(0);
+    verify($this->getEmails(['group' => 'failed', 'filter' => ['result' => ['failed', 'unprocessed']]]))
+      ->equals(['subscriberFailed@email.com']);
+    verify($this->getEmails(['group' => 'unprocessed', 'filter' => ['result' => ['sent', 'unprocessed']]]))
+      ->equals(['subscriberUprocessed@email.com']);
+  }
 }
