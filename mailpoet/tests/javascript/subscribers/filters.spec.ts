@@ -203,6 +203,26 @@ describe('Subscribers filters: request to view', () => {
     });
   });
 
+  it('round-trips every score operator, including half-filled between', () => {
+    const cases: Array<[string, unknown]> = [
+      ['between', [50, '']],
+      ['between', ['', 80]],
+      ['between', [50, 80]],
+      ['between', [0, '']],
+      ['greaterThan', 2],
+      ['lessThan', 4],
+    ];
+    cases.forEach(([operator, value]) => {
+      const view = [f('statistics', operator, value)];
+      expect(
+        requestFilterToViewFilters(viewFiltersToRequestFilter(view)),
+      ).to.deep.equal(view);
+    });
+    expect(
+      viewFiltersToRequestFilter([f('statistics', 'between', [50, ''])]),
+    ).to.deep.equal({ score_min: 50 });
+  });
+
   it('maps score keys', () => {
     expect(requestFilterToViewFilters({ score_gt: 2 })).to.deep.equal([
       f('statistics', 'greaterThan', 2),
