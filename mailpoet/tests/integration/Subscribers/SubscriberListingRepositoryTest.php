@@ -279,6 +279,23 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->listingData['filter'] = [];
   }
 
+  public function testGetCountAndAllTrashGroupsDoesNotUseCachedCountsForAZeroScoreFilter() {
+    $segment = $this->segmentRepository->createOrUpdate('Zero Score Segment');
+    (new Subscriber())->withEmail('zero-score@example.com')->withEngagementScore(0)->withSegments([$segment])->create();
+    (new Subscriber())->withEmail('high-score-1@example.com')->withEngagementScore(50)->withSegments([$segment])->create();
+    (new Subscriber())->withEmail('high-score-2@example.com')->withEngagementScore(60)->create();
+    $this->entityManager->flush();
+
+    foreach ([[], ['segment_in' => [$segment->getId()]]] as $extra) {
+      foreach (['score_max' => 0, 'score_lt' => 1, 'score_gt' => '0'] as $key => $value) {
+        $expected = $key === 'score_gt' ? ($extra ? 1 : 2) : 1;
+        $result = $this->repository->getCountAndAllTrashGroups(new ListingDefinition('all', [$key => $value] + $extra));
+        verify($result['count'])->equals($expected);
+        verify($result['groups'][0]['count'])->equals($expected);
+      }
+    }
+  }
+
   public function testGetCountAndAllTrashGroupsRunsAtMostTwoCountQueries() {
     $dynamicSegment = $this->createDynamicSegment([[DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTextField::EMAIL, ['operator' => 'startsWith', 'value' => 'cq-dyn-']]]);
     $tag = (new Tag())->withName('Count Queries Tag')->create();

@@ -1370,12 +1370,22 @@ class SubscriberListingRepository extends ListingRepository {
       return false;
     }
     unset($filters['segment_in']);
+    return !$this->hasActiveFilter($filters);
+  }
+
+  /**
+   * "0" and 0 are real filter values (e.g. score_max=0); only null, '' and
+   * empty arrays mean "not set".
+   *
+   * @param array $filters
+   */
+  private function hasActiveFilter(array $filters): bool {
     foreach ($filters as $value) {
-      if (!empty($value)) {
-        return false;
+      if ($value !== null && $value !== '' && $value !== []) {
+        return true;
       }
     }
-    return true;
+    return false;
   }
 
   /**
@@ -1416,13 +1426,7 @@ class SubscriberListingRepository extends ListingRepository {
     if ($search !== null && strlen(trim($search)) > 0) {
       return false;
     }
-    $filters = $this->normalizeFilters($definition->getFilters() ?: []);
-    foreach ($filters as $value) {
-      if (!empty($value)) {
-        return false;
-      }
-    }
-    return true;
+    return !$this->hasActiveFilter($this->normalizeFilters($definition->getFilters() ?: []));
   }
 
   /**
