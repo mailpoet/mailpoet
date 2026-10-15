@@ -1,4 +1,7 @@
-import { pruneUnknownIds } from '../../../assets/js/src/subscribers/filter-sync';
+import {
+  pruneUnknownIds,
+  shouldPruneAfterResponse,
+} from '../../../assets/js/src/subscribers/filter-sync';
 
 describe('Subscribers pruneUnknownIds', () => {
   const known = { segments: ['4', 'without-list'], tags: ['7'] };
@@ -43,5 +46,21 @@ describe('Subscribers pruneUnknownIds', () => {
         { segments: [], tags: undefined },
       ),
     ).to.equal(null);
+  });
+});
+
+describe('Subscribers shouldPruneAfterResponse', () => {
+  it('waits for a response applied after the prune was armed', () => {
+    expect(shouldPruneAfterResponse(0, 0)).to.equal(false);
+    expect(shouldPruneAfterResponse(1, 0)).to.equal(true);
+  });
+
+  it('ignores a response that was already applied when re-armed', () => {
+    expect(shouldPruneAfterResponse(4, 4)).to.equal(false);
+    expect(shouldPruneAfterResponse(5, 4)).to.equal(true);
+  });
+
+  it('never prunes again once done', () => {
+    expect(shouldPruneAfterResponse(9, Infinity)).to.equal(false);
   });
 });
