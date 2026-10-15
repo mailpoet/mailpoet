@@ -49,6 +49,17 @@ function asNewsLetter(item: NewsletterListingItem): NewsLetter {
   return item as unknown as NewsLetter;
 }
 
+function renderDateTime(value: string | null) {
+  if (!value) return null;
+  return (
+    <>
+      {MailPoet.Date.short(value)}
+      <br />
+      {MailPoet.Date.time(value)}
+    </>
+  );
+}
+
 function buildFields(
   currentTime?: string,
   mailerLog: NewsletterMailerLog = { status: '' },
@@ -164,6 +175,24 @@ function buildFields(
           </>
         );
       },
+    },
+    {
+      id: 'created_at',
+      label: __('Date created', 'mailpoet'),
+      type: 'datetime',
+      enableSorting: true,
+      enableGlobalSearch: false,
+      filterBy: false,
+      render: ({ item }) => renderDateTime(item.created_at),
+    },
+    {
+      id: 'updated_at',
+      label: __('Last modified', 'mailpoet'),
+      type: 'datetime',
+      enableSorting: true,
+      enableGlobalSearch: false,
+      filterBy: false,
+      render: ({ item }) => renderDateTime(item.updated_at),
     },
   ];
 }
