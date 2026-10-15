@@ -11,6 +11,12 @@ const defaults = {
 };
 
 describe('Subscribers hash state: parse', () => {
+  it('swaps a reversed score range from the URL', () => {
+    expect(
+      parseSubscribersHash('#/filter[score_min=90&score_max=10]').filter,
+    ).to.deep.equal({ score_min: 10, score_max: 90 });
+  });
+
   it('parses the Lists page link', () => {
     expect(parseSubscribersHash('#/filter[segment=5]')).to.deep.equal({
       group: 'all',
