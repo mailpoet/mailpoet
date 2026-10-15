@@ -54,7 +54,6 @@ class SubscribersFilterTraitTest extends \MailPoetUnitTest {
       'legacy segment int' => [['segment' => 12]],
       'legacy segment without list' => [['segment' => 'without-list']],
       'legacy tag' => [['tag' => '3']],
-      'legacy status and source dropdown keys' => [['status' => 'subscribed', 'source' => 'form']],
       'segment sets' => [['segment_in' => ['1', 2, 'without-list'], 'segment_not_in' => ['5']]],
       'tag sets' => [['tag_in' => ['1', '2'], 'tag_not_in' => [3]]],
       'status sets' => [['status_in' => ['subscribed', 'unconfirmed', 'unsubscribed', 'inactive', 'bounced'], 'status_not_in' => ['bounced']]],
@@ -124,8 +123,8 @@ class SubscribersFilterTraitTest extends \MailPoetUnitTest {
       'engagementScoreExclude unknown' => [['engagementScoreExclude' => ['good', 'x']], 'mailpoet_subscribers_invalid_engagementScoreExclude'],
       'createdAtFrom garbage' => [['createdAtFrom' => 'not a date'], 'mailpoet_subscribers_invalid_createdAtFrom'],
       'createdAtTo array' => [['createdAtTo' => ['2026-01-01']], 'mailpoet_subscribers_invalid_createdAtTo'],
-      'status unknown' => [['status' => 'nope'], 'mailpoet_subscribers_invalid_status'],
-      'source unknown' => [['source' => 'nope'], 'mailpoet_subscribers_invalid_source'],
+      'single status key' => [['status' => 'subscribed'], 'mailpoet_subscribers_invalid_filter'],
+      'single source key' => [['source' => 'form'], 'mailpoet_subscribers_invalid_filter'],
     ];
   }
 }

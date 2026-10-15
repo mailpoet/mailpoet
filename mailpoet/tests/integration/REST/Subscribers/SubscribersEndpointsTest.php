@@ -3,9 +3,13 @@
 namespace MailPoet\Test\REST\Subscribers;
 
 use DateTimeImmutable;
+use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\DynamicSegmentFilterEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\REST\Test;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberTextField;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -13,6 +17,7 @@ use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Test\DataFactories\Tag as TagFactory;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 require_once __DIR__ . '/../Test.php';
 
@@ -62,7 +67,8 @@ class SubscribersEndpointsTest extends Test {
     $this->assertIsArray($groupsList);
     $groups = array_column($groupsList, 'count', 'name');
     $this->assertArrayHasKey('all', $groups);
-    $this->assertArrayHasKey('subscribed', $groups);
+    $this->assertArrayHasKey('trash', $groups);
+    $this->assertCount(2, $groups);
 
     $emails = array_column($items, 'email');
     $this->assertContains("rest-listing-{$suffix}@example.com", $emails);
@@ -687,6 +693,8 @@ class SubscribersEndpointsTest extends Test {
       'reversed dates' => [['filter' => ['subscribed_from' => '2026-03-01', 'subscribed_to' => '2026-02-01']], 'mailpoet_subscribers_invalid_date_range'],
       'bad score' => [['filter' => ['score_gt' => 'high']], 'mailpoet_subscribers_invalid_score_gt'],
       'reversed scores' => [['filter' => ['score_min' => '60', 'score_max' => '10']], 'mailpoet_subscribers_invalid_score_range'],
+      'single status key' => [['filter' => ['status' => 'subscribed']], 'mailpoet_subscribers_invalid_filter'],
+      'single source key' => [['filter' => ['source' => 'form']], 'mailpoet_subscribers_invalid_filter'],
       'too many values' => [['filter' => ['tag_in' => range(1, 101)]], 'mailpoet_subscribers_invalid_tag_in'],
     ];
   }
@@ -715,12 +723,11 @@ class SubscribersEndpointsTest extends Test {
       'search' => [['search' => 'someone@example.com']],
       'all lists dropdown' => [['filter' => ['segment' => '']]],
       'all tags dropdown' => [['filter' => ['tag' => '']]],
-      'all dropdowns' => [['filter' => ['segment' => '', 'tag' => '', 'status' => '', 'source' => '']]],
+      'all dropdowns' => [['filter' => ['segment' => '', 'tag' => '']]],
       'list dropdown' => [['filter' => ['segment' => '1']]],
       'without list' => [['filter' => ['segment' => 'without-list']]],
       'tag dropdown' => [['filter' => ['tag' => '1']]],
       'list and tag' => [['filter' => ['segment' => '1', 'tag' => '2']]],
-      'status and source dropdowns' => [['filter' => ['status' => 'subscribed', 'source' => 'form']]],
       'legacy status and engagement filters' => [['filter' => [
         'statusInclude' => 'subscribed',
         'statusExclude' => ['bounced'],
@@ -740,6 +747,98 @@ class SubscribersEndpointsTest extends Test {
     $this->assertSame([$data['a']], $this->listingEmails($sfx, ['tag' => (string)$data['tagId']]));
     $response = $this->get(self::LISTING_PATH, ['query' => ['search' => $sfx, 'group' => 'unconfirmed', 'orderby' => 'email', 'order' => 'asc']]);
     $this->assertSame([$data['b']], array_column($this->listingPayload($response)['items'], 'email'));
+  }
+
+  public function testListingReturnsOnlyAllAndTrashGroups(): void {
+    $data = $this->createGroupsData();
+    $sfx = $data['suffix'];
+
+    $response = $this->get(self::LISTING_PATH, ['query' => ['per_page' => 100]]);
+    $payload = $this->listingPayload($response);
+    $this->assertSame(['all', 'trash'], array_column($this->groupsOf($payload), 'name'));
+    $this->assertSame(['All', 'Trash'], array_column($this->groupsOf($payload), 'label'));
+    $this->assertSame($this->groupsOf($payload)[0]['count'], $payload['meta']['count']);
+
+    $scenarios = [
+      'search' => [['search' => $sfx], 3, 3, 1],
+      'search and tag' => [['search' => $sfx, 'filter' => ['tag_in' => [$data['tagId']]]], 1, 1, 1],
+      'search and dynamic segment' => [['search' => $sfx, 'filter' => ['segment_in' => [$data['dynamicId']]]], 1, 1, 1],
+      'search, tag and dynamic segment' => [['search' => $sfx, 'filter' => ['segment_in' => [$data['dynamicId']], 'tag_in' => [$data['tagId']]]], 1, 1, 1],
+      'search, list and tag' => [['search' => $sfx, 'filter' => ['segment_in' => [$data['segmentId']], 'tag_in' => [$data['tagId']]]], 1, 1, 0],
+      'legacy unconfirmed group' => [['search' => $sfx, 'group' => 'unconfirmed'], 1, 3, 1],
+      'legacy group with dynamic segment' => [['search' => $sfx, 'group' => 'subscribed', 'filter' => ['segment_in' => [$data['dynamicId']]]], 1, 1, 1],
+      'trash group' => [['search' => $sfx, 'group' => 'trash'], 1, 3, 1],
+    ];
+    foreach ($scenarios as $name => [$query, $count, $all, $trash]) {
+      $payload = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => $query]));
+      $groups = $this->groupsOf($payload);
+      $this->assertSame(['all', 'trash'], array_column($groups, 'name'), $name);
+      $this->assertSame($count, $payload['meta']['count'], "$name: meta.count");
+      $this->assertSame([$all, $trash], array_column($groups, 'count'), "$name: groups");
+    }
+  }
+
+  public function testListingGroupsUseTheSingleListCacheForAPlainListFilter(): void {
+    $data = $this->createGroupsData();
+    $payload = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => ['filter' => ['segment_in' => [$data['segmentId']]]]]));
+    $this->assertSame(['all', 'trash'], array_column($this->groupsOf($payload), 'name'));
+    $this->assertSame([2, 0], array_column($this->groupsOf($payload), 'count'));
+    $this->assertSame(2, $payload['meta']['count']);
+  }
+
+  /**
+   * @param array<string, mixed> $payload
+   * @return array<int, array{name: string, label: string, count: int}>
+   */
+  private function groupsOf(array $payload): array {
+    $this->assertIsArray($payload['groups']);
+    /** @var array<int, array{name: string, label: string, count: int}> $groups */
+    $groups = $payload['groups'];
+    return $groups;
+  }
+
+  /** @return array{suffix: string, segmentId: int, tagId: int, dynamicId: int} */
+  private function createGroupsData(): array {
+    $suffix = uniqid();
+    $segment = (new SegmentFactory())->withName('REST Groups ' . $suffix)->create();
+    $tag = (new TagFactory())->create();
+    $definitions = [
+      ['subscribed-tagged', SubscriberEntity::STATUS_SUBSCRIBED, [$segment], [$tag], false],
+      ['subscribed', SubscriberEntity::STATUS_SUBSCRIBED, [$segment], [], false],
+      ['unconfirmed', SubscriberEntity::STATUS_UNCONFIRMED, [], [], false],
+      ['trashed-tagged', SubscriberEntity::STATUS_SUBSCRIBED, [], [$tag], true],
+    ];
+    foreach ($definitions as [$name, $status, $segments, $tags, $trashed]) {
+      $factory = (new SubscriberFactory())
+        ->withEmail("{$name}-groups-{$suffix}@example.com")
+        ->withStatus($status)
+        ->withSegments($segments)
+        ->withTags($tags);
+      if ($trashed) {
+        $factory->withDeletedAt(new DateTimeImmutable());
+      }
+      $factory->create();
+    }
+
+    // Matches the two e-mails containing “tagged”, one of them trashed.
+    $dynamic = new SegmentEntity('REST Dynamic ' . $suffix, SegmentEntity::TYPE_DYNAMIC, '');
+    $entityManager = $this->diContainer->get(EntityManager::class);
+    $entityManager->persist($dynamic);
+    $filter = new DynamicSegmentFilterEntity($dynamic, new DynamicSegmentFilterData(
+      DynamicSegmentFilterData::TYPE_USER_ROLE,
+      SubscriberTextField::EMAIL,
+      ['operator' => 'contains', 'value' => 'tagged', 'action' => SubscriberTextField::EMAIL, 'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND]
+    ));
+    $dynamic->addDynamicFilter($filter);
+    $entityManager->persist($filter);
+    $entityManager->flush();
+
+    return [
+      'suffix' => $suffix,
+      'segmentId' => (int)$segment->getId(),
+      'tagId' => (int)$tag->getId(),
+      'dynamicId' => (int)$dynamic->getId(),
+    ];
   }
 
   public function testBulkActionWithSelectAllHonoursSetFilters(): void {
@@ -773,7 +872,7 @@ class SubscribersEndpointsTest extends Test {
   }
 
   public function testBulkActionAcceptsFrontendFilterShapes(): void {
-    foreach ([[], ['segment' => ''], ['segment' => '', 'tag' => '', 'status' => '', 'source' => '']] as $filter) {
+    foreach ([[], ['segment' => ''], ['segment' => '', 'tag' => '']] as $filter) {
       $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
         'action' => 'trash',
         'group' => 'all',
