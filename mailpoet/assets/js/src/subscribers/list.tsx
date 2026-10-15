@@ -56,7 +56,7 @@ import {
 import { getInitialPickerValue, type PickerConfig } from './picker-value';
 import { SelectAllBanner } from './select-all-banner';
 import { selectAllBannerState, shouldWarnLargeOperation } from './select-all';
-import { pruneUnknownIds } from './filter-sync';
+import { pruneUnknownIds, shouldPruneAfterResponse } from './filter-sync';
 import { canTriggerAutomations } from './bulk-action-payload';
 import {
   bulkAction,
@@ -752,6 +752,7 @@ function SubscriberList() {
     filters,
     groups,
     isLoading,
+    responseVersion,
     error: loadError,
     clearError: clearLoadError,
     refresh,
@@ -839,15 +840,16 @@ function SubscriberList() {
   // example a deleted list) are dropped once a listing response has arrived, so
   // the full list shows. The check waits for a response because the Trash lists
   // are only known from it.
-  const pendingPruneRef = useRef(true);
-  const wasLoadingRef = useRef(false);
+  const pruneArmedAfterRef = useRef(0);
+  const responseVersionRef = useRef(responseVersion);
+  responseVersionRef.current = responseVersion;
   useEffect(() => {
-    const finishedLoading = wasLoadingRef.current && !isLoading;
-    wasLoadingRef.current = isLoading;
-    if (!finishedLoading || loadError || !pendingPruneRef.current) {
+    if (
+      !shouldPruneAfterResponse(responseVersion, pruneArmedAfterRef.current)
+    ) {
       return;
     }
-    pendingPruneRef.current = false;
+    pruneArmedAfterRef.current = Infinity;
     const knownSegments = [
       ...segmentElements.map((element) => element.value),
       ...(group === 'trash'
@@ -875,8 +877,7 @@ function SubscriberList() {
   }, [
     filters.segment,
     group,
-    isLoading,
-    loadError,
+    responseVersion,
     segmentElements,
     setView,
     tagElements,
@@ -893,7 +894,7 @@ function SubscriberList() {
       setSelection([]);
       setSelectAll(false);
       clearLoadError();
-      pendingPruneRef.current = true;
+      pruneArmedAfterRef.current = responseVersionRef.current;
       // Fill hash segments the URL omits from the preference-merged defaults
       // (not the in-memory view) so back/forward resolves a URL exactly like
       // reopening it.

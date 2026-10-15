@@ -9,6 +9,16 @@ const PRUNABLE_KEYS: Array<[keyof SubscribersRequestFilter, keyof KnownIds]> = [
   ['tag_not_in', 'tags'],
 ];
 
+// The one-time prune needs a response that carries the Trash list options, so it
+// runs on the first applied response after it was armed (`armedAfter` is the
+// response version at that moment, or Infinity once done).
+export function shouldPruneAfterResponse(
+  responseVersion: number,
+  armedAfter: number,
+): boolean {
+  return responseVersion > armedAfter;
+}
+
 // Drops list/tag ids that are no longer selectable, value by value, and returns
 // the pruned filter or `null` when nothing changed. `without-list` is always
 // kept, and a key is only pruned once its option list has loaded (non-empty).
