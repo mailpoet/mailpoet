@@ -256,6 +256,23 @@ class AutomationListingCest {
     $i->waitForJS('return window.location.search.includes("page=mailpoet-forms");', 10);
   }
 
+  public function backButtonLeavesListingOpenedOnMissingPage(AcceptanceTester $i): void {
+    $i->wantTo('Leave the listing opened on a page past the last one with a single Back press');
+    $uniqueId = uniqid();
+    (new DataFactories\Automation())->withName('Missing page automation A ' . $uniqueId)->create();
+    (new DataFactories\Automation())->withName('Missing page automation B ' . $uniqueId)->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Forms');
+    $i->waitForText('Forms');
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-automation&status=all&orderby=name&order=asc&per_page=1&paged=99');
+    $i->waitForText('Missing page automation B ' . $uniqueId, 20, '[data-automation-id="automation_listing"]');
+    $i->waitForJS('return window.location.search.includes("paged=2");', 10);
+
+    $i->moveBack();
+    $i->waitForJS('return window.location.search.includes("page=mailpoet-forms");', 10);
+  }
+
   public function backButtonUndoesListingSort(AcceptanceTester $i): void {
     $i->wantTo('Undo a sort change on the automation listing with the Back button');
     $automationName = 'Sort automation ' . uniqid();
