@@ -113,6 +113,23 @@ describe('newsletter listing hash state', () => {
     });
   });
 
+  describe('comma-joined filter values', () => {
+    it('round-trips a list value through buildHash and parseHash', () => {
+      const hash = buildHash(
+        'standard',
+        'all',
+        {},
+        { status: 'draft,sent', segment: '1,2' },
+        defaults,
+      );
+      expect(hash).to.contain('%2C');
+      expect(parseHash(hash, 'standard', ['all']).filter).to.deep.equal({
+        status: 'draft,sent',
+        segment: '1,2',
+      });
+    });
+  });
+
   describe('parseFilter', () => {
     it('drops empty filter values', () => {
       expect(parseFilter('segment=5&type=')).to.deep.equal({ segment: '5' });
