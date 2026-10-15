@@ -186,6 +186,18 @@ class FormListingRepositoryTest extends \MailPoetTest {
     });
   }
 
+  public function testItReturnsNothingForAnInvalidCreatedDay(): void {
+    $this->entityManager->persist(new FormEntity('Form invalid day'));
+    $this->entityManager->flush();
+
+    foreach (['created_from', 'created_to'] as $key) {
+      $forms = $this->formListingRepository->getData(
+        $this->listingHandler->getListingDefinition(['filter' => [$key => '2024-13-01']])
+      );
+      verify($forms)->same([]);
+    }
+  }
+
   /**
    * Site timezone, options to set, filter day, and UTC created-at values grouped by whether the
    * row belongs to that site-local day. Rows sit one second either side of the UTC day boundaries.

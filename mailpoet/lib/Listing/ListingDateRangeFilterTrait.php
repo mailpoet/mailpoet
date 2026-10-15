@@ -31,7 +31,9 @@ trait ListingDateRangeFilterTrait {
     $from = $filters[$fromKey] ?? null;
     if (is_string($from) && $from !== '') {
       $fromValue = $this->getSiteDayStartInUtc($from);
-      if ($fromValue !== null) {
+      if ($fromValue === null) {
+        $queryBuilder->andWhere('1 = 0');
+      } else {
         $queryBuilder
           ->andWhere("$field >= :$fromParam")
           ->setParameter($fromParam, $fromValue);
@@ -40,7 +42,9 @@ trait ListingDateRangeFilterTrait {
     $to = $filters[$toKey] ?? null;
     if (is_string($to) && $to !== '') {
       $toValue = $this->getSiteDayStartInUtc($to, 1);
-      if ($toValue !== null) {
+      if ($toValue === null) {
+        $queryBuilder->andWhere('1 = 0');
+      } else {
         $queryBuilder
           ->andWhere("$field < :$toParam")
           ->setParameter($toParam, $toValue);
@@ -52,7 +56,7 @@ trait ListingDateRangeFilterTrait {
    * Returns the UTC `Y-m-d H:i:s` start of a site-local `yyyy-MM-dd` day, shifted by
    * `$addDays` days (1 gives the exclusive end of the day), or null for an invalid day.
    * Filter bounds use the offset in force on that date (DST aware), while the listing
-   * display uses the site's current gmt_offset, so close to a DST change a row can land
+   * display uses the site’s current gmt_offset, so close to a DST change a row can land
    * on the neighbouring day. This is intentional.
    */
   protected function getSiteDayStartInUtc(string $day, int $addDays = 0): ?string {

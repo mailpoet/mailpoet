@@ -177,6 +177,28 @@ class LogRepositoryTest extends \MailPoetTest {
     });
   }
 
+  /** @dataProvider invalidDayFilters */
+  public function testInvalidDayBoundMatchesNothingForExportAndDelete(array $filter): void {
+    (new Log())->withMessage('keep_me')->withCreatedAt(new \DateTimeImmutable('2024-02-01 10:00:00', new \DateTimeZone('UTC')))->create();
+
+    $exported = [];
+    foreach ($this->repository->getLogsForExport($filter) as $row) {
+      $exported[] = $row['message'];
+    }
+    verify($exported)->same([]);
+    verify($this->repository->deleteLogs($filter))->same(0);
+    verify(count($this->repository->getLogs()))->same(1);
+  }
+
+  /** @return array<string, array{array<string, string>}> */
+  public function invalidDayFilters(): array {
+    return [
+      'invalid to' => [['to' => '2024-13-01']],
+      'invalid from' => [['from' => 'yesterday']],
+      'zero from' => [['from' => '0']],
+    ];
+  }
+
   /**
    * Site timezone, options to set, filter day, and UTC created-at values grouped by whether the
    * row belongs to that site-local day. Rows sit one second either side of the UTC day boundaries.
