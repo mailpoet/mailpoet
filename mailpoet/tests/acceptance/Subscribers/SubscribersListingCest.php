@@ -794,6 +794,24 @@ class SubscribersListingCest {
     $i->waitForText('trash-subscribed@example.com');
   }
 
+  public function trashedListFilterSurvivesPageBeyondTheLastPage(\AcceptanceTester $i) {
+    $i->wantTo('Keep a trashed list in the Trash filter when the link asks for a page that does not exist');
+
+    $list = (new Segment())->withName('Trashed Link List')->withDeleted()->create();
+    (new Subscriber())
+      ->withEmail('trashed-in-list@example.com')
+      ->withSegments([$list])
+      ->withDeletedAt(new DateTime())
+      ->create();
+    $listId = $list->getId();
+
+    $i->login();
+    $i->amOnPage("/wp-admin/admin.php?page=mailpoet-subscribers#/group[trash]/filter[segment_in={$listId}]/page[5]");
+    $i->reloadPage();
+    $i->waitForText('trashed-in-list@example.com');
+    $i->waitForDataViewsFilterChip('Trashed Link List');
+  }
+
   public function searchInTrashWithNoResultsStaysInTrash(\AcceptanceTester $i) {
     $i->wantTo('Verify that searching in Trash with no results does not redirect to All');
 
