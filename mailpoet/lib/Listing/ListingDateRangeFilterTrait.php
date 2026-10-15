@@ -15,15 +15,13 @@ trait ListingDateRangeFilterTrait {
   /**
    * @param array<string, mixed> $filters
    * @param string $field Fully-qualified DQL field, e.g. `f.createdAt`.
-   * @param bool $siteLocalDays When false, the days are compared to the column as they are, without timezone conversion.
    */
   protected function applyDateRangeFilter(
     QueryBuilder $queryBuilder,
     string $field,
     array $filters,
     string $fromKey = 'from',
-    string $toKey = 'to',
-    bool $siteLocalDays = true
+    string $toKey = 'to'
   ): void {
     // Derive parameter names from the filter keys so multiple ranges on the
     // same query (e.g. created + modified) don't clobber each other's bindings.
@@ -32,7 +30,7 @@ trait ListingDateRangeFilterTrait {
 
     $from = $filters[$fromKey] ?? null;
     if (is_string($from) && $from !== '') {
-      $fromValue = $siteLocalDays ? $this->getSiteDayStartInUtc($from) : $from . ' 00:00:00';
+      $fromValue = $this->getSiteDayStartInUtc($from);
       if ($fromValue !== null) {
         $queryBuilder
           ->andWhere("$field >= :$fromParam")
@@ -41,12 +39,10 @@ trait ListingDateRangeFilterTrait {
     }
     $to = $filters[$toKey] ?? null;
     if (is_string($to) && $to !== '') {
-      [$operator, $toValue] = $siteLocalDays
-        ? ['<', $this->getSiteDayStartInUtc($to, 1)]
-        : ['<=', $to . ' 23:59:59'];
+      $toValue = $this->getSiteDayStartInUtc($to, 1);
       if ($toValue !== null) {
         $queryBuilder
-          ->andWhere("$field $operator :$toParam")
+          ->andWhere("$field < :$toParam")
           ->setParameter($toParam, $toValue);
       }
     }
