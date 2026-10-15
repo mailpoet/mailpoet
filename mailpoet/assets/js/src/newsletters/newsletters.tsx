@@ -220,6 +220,7 @@ function App() {
                 to={
                   window.mailpoet_newsletters_count === 0 ? '/new' : '/standard'
                 }
+                replace
               />
             }
           />

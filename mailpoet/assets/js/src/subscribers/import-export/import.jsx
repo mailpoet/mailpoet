@@ -87,7 +87,10 @@ function ImportSubscribers() {
                 />
               }
             />
-            <Route path="*" element={<Navigate to="/step_clean_list" />} />
+            <Route
+              path="*"
+              element={<Navigate to="/step_clean_list" replace />}
+            />
           </Routes>
         </ScrollToTop>
       </HashRouter>
