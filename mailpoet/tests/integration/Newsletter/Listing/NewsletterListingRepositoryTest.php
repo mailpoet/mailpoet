@@ -388,193 +388,115 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
 
     verify($filters['segment'])->arrayCount(2); // All list + 1 segments
     verify($filters['segment'][0]['label'])->equals('All Lists');
-    verify($filters['segment'][1]['label'])->equals('Segment 1 (1)');
+    verify($filters['segment'][1]['label'])->equals('Segment 1');
+    verify($filters['segment'][0]['value'])->equals('');
     verify($filters['segment'][1]['value'])->equals($segment1->getId());
   }
 
   public function testItFiltersBySentAtFrom() {
-    $newsletter1 = new NewsletterEntity();
-    $newsletter1->setType(NewsletterEntity::TYPE_STANDARD);
-    $newsletter1->setSubject('Newsletter 1');
-    $newsletter1->setSentAt(new \DateTime('2025-01-01 10:00:00'));
-    $this->entityManager->persist($newsletter1);
+    $this->createSent('Newsletter 1', '2025-01-01 10:00:00');
+    $this->createSent('Newsletter 2', '2025-02-01 10:00:00');
+    $this->createSent('Newsletter 3', '2025-03-01 10:00:00');
 
-    $newsletter2 = new NewsletterEntity();
-    $newsletter2->setType(NewsletterEntity::TYPE_STANDARD);
-    $newsletter2->setSubject('Newsletter 2');
-    $newsletter2->setSentAt(new \DateTime('2025-02-01 10:00:00'));
-    $this->entityManager->persist($newsletter2);
-
-    $newsletter3 = new NewsletterEntity();
-    $newsletter3->setType(NewsletterEntity::TYPE_STANDARD);
-    $newsletter3->setSubject('Newsletter 3');
-    $newsletter3->setSentAt(new \DateTime('2025-03-01 10:00:00'));
-    $this->entityManager->persist($newsletter3);
-
-    $this->entityManager->flush();
-
-    $listingHandler = new Handler();
-    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
-
-    // Filter from Feb 1st onwards
-    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
-      'filter' => [
-        'sent_at_from' => '2025-02-01 00:00:00',
-      ],
-    ]));
-    verify($newsletters)->arrayCount(2);
-    verify($newsletters[0]->getSubject())->equals('Newsletter 2');
-    verify($newsletters[1]->getSubject())->equals('Newsletter 3');
+    $this->assertSame(['Newsletter 2', 'Newsletter 3'], $this->listSubjects(['sent_at_from' => '2025-02-01']));
   }
 
-  public function testItFiltersBySentAtTo() {
-    $newsletter1 = new NewsletterEntity();
-    $newsletter1->setType(NewsletterEntity::TYPE_STANDARD);
-    $newsletter1->setSubject('Newsletter 1');
-    $newsletter1->setSentAt(new \DateTime('2025-01-01 10:00:00'));
-    $this->entityManager->persist($newsletter1);
+  public function testItFiltersBySentAtToAsWholeDay() {
+    $this->createSent('Newsletter 1', '2025-01-01 10:00:00');
+    $this->createSent('Newsletter 2', '2025-02-01 23:59:59');
+    $this->createSent('Newsletter 3', '2025-02-02 00:00:00');
 
-    $newsletter2 = new NewsletterEntity();
-    $newsletter2->setType(NewsletterEntity::TYPE_STANDARD);
-    $newsletter2->setSubject('Newsletter 2');
-    $newsletter2->setSentAt(new \DateTime('2025-02-01 10:00:00'));
-    $this->entityManager->persist($newsletter2);
-
-    $newsletter3 = new NewsletterEntity();
-    $newsletter3->setType(NewsletterEntity::TYPE_STANDARD);
-    $newsletter3->setSubject('Newsletter 3');
-    $newsletter3->setSentAt(new \DateTime('2025-03-01 10:00:00'));
-    $this->entityManager->persist($newsletter3);
-
-    $this->entityManager->flush();
-
-    $listingHandler = new Handler();
-    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
-
-    // Filter up to Feb 1st
-    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
-      'filter' => [
-        'sent_at_to' => '2025-02-01 23:59:59',
-      ],
-    ]));
-    verify($newsletters)->arrayCount(2);
-    verify($newsletters[0]->getSubject())->equals('Newsletter 1');
-    verify($newsletters[1]->getSubject())->equals('Newsletter 2');
+    $this->assertSame(['Newsletter 1', 'Newsletter 2'], $this->listSubjects(['sent_at_to' => '2025-02-01']));
   }
 
   public function testItFiltersBySentAtRange() {
-    $newsletter1 = new NewsletterEntity();
-    $newsletter1->setType(NewsletterEntity::TYPE_STANDARD);
-    $newsletter1->setSubject('Newsletter 1');
-    $newsletter1->setSentAt(new \DateTime('2025-01-01 10:00:00'));
-    $this->entityManager->persist($newsletter1);
+    $this->createSent('Newsletter 1', '2025-01-01 10:00:00');
+    $this->createSent('Newsletter 2', '2025-02-01 10:00:00');
+    $this->createSent('Newsletter 3', '2025-03-01 10:00:00');
 
-    $newsletter2 = new NewsletterEntity();
-    $newsletter2->setType(NewsletterEntity::TYPE_STANDARD);
-    $newsletter2->setSubject('Newsletter 2');
-    $newsletter2->setSentAt(new \DateTime('2025-02-01 10:00:00'));
-    $this->entityManager->persist($newsletter2);
-
-    $newsletter3 = new NewsletterEntity();
-    $newsletter3->setType(NewsletterEntity::TYPE_STANDARD);
-    $newsletter3->setSubject('Newsletter 3');
-    $newsletter3->setSentAt(new \DateTime('2025-03-01 10:00:00'));
-    $this->entityManager->persist($newsletter3);
-
-    $this->entityManager->flush();
-
-    $listingHandler = new Handler();
-    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
-
-    // Filter between Jan 15th and Feb 15th
-    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
-      'filter' => [
-        'sent_at_from' => '2025-01-15 00:00:00',
-        'sent_at_to' => '2025-02-15 23:59:59',
-      ],
-    ]));
-    verify($newsletters)->arrayCount(1);
-    verify($newsletters[0]->getSubject())->equals('Newsletter 2');
+    $this->assertSame(
+      ['Newsletter 2'],
+      $this->listSubjects(['sent_at_from' => '2025-01-15', 'sent_at_to' => '2025-02-15'])
+    );
   }
 
-  public function testItFiltersBySentAtIncludingScheduledNewsletters() {
-    // Create a sent newsletter
-    $newsletter1 = new NewsletterEntity();
-    $newsletter1->setType(NewsletterEntity::TYPE_STANDARD);
-    $newsletter1->setSubject('Sent Newsletter');
-    $newsletter1->setStatus(NewsletterEntity::STATUS_SENT);
-    $newsletter1->setSentAt(new \DateTime('2025-02-01 10:00:00'));
-    $this->entityManager->persist($newsletter1);
+  public function testItAcceptsDatetimeValuesForSentAt() {
+    $this->createSent('Newsletter 1', '2025-01-01 10:00:00');
+    $this->createSent('Newsletter 2', '2025-02-01 10:00:00');
+    $this->createSent('Newsletter 3', '2025-03-01 10:00:00');
 
-    // Create a scheduled newsletter
-    $newsletter2 = new NewsletterEntity();
-    $newsletter2->setType(NewsletterEntity::TYPE_STANDARD);
-    $newsletter2->setSubject('Scheduled Newsletter');
-    $newsletter2->setStatus(NewsletterEntity::STATUS_SCHEDULED);
-    $this->entityManager->persist($newsletter2);
+    $this->assertSame(
+      ['Newsletter 2'],
+      $this->listSubjects(['sent_at_from' => '2025-01-15 00:00:00', 'sent_at_to' => '2025-02-15 23:59:59'])
+    );
+  }
 
-    $task2 = new ScheduledTaskEntity();
-    $task2->setScheduledAt(new \DateTime('2025-02-15 10:00:00'));
-    $task2->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
-    $this->entityManager->persist($task2);
+  public function testUnparsableSentAtMatchesNothing() {
+    $this->createSent('Newsletter 1', '2025-01-01 10:00:00');
 
-    $queue2 = new SendingQueueEntity();
-    $queue2->setTask($task2);
-    $queue2->setNewsletter($newsletter2);
-    $this->entityManager->persist($queue2);
+    $this->assertSame([], $this->listSubjects(['sent_at_from' => 'not a date']));
+    $this->assertSame([], $this->listSubjects(['sent_at_to' => 'not a date']));
+    $this->assertSame([], $this->listSubjects(['sent_at_from' => ['2025-01-01']]));
+  }
 
-    // Create another sent newsletter outside the range
-    $newsletter3 = new NewsletterEntity();
-    $newsletter3->setType(NewsletterEntity::TYPE_STANDARD);
-    $newsletter3->setSubject('Old Newsletter');
-    $newsletter3->setStatus(NewsletterEntity::STATUS_SENT);
-    $newsletter3->setSentAt(new \DateTime('2025-01-01 10:00:00'));
-    $this->entityManager->persist($newsletter3);
+  public function testSentAtFilterExcludesScheduledNewsletters() {
+    $this->createSent('Sent Newsletter', '2025-02-01 10:00:00');
+    $this->createScheduled('Scheduled Newsletter', '2025-02-15 10:00:00');
+    $this->createSent('Old Newsletter', '2025-01-01 10:00:00');
+    $this->createScheduled('Future Newsletter', '2025-03-01 10:00:00');
 
-    // Create another scheduled newsletter outside the range
-    $newsletter4 = new NewsletterEntity();
-    $newsletter4->setType(NewsletterEntity::TYPE_STANDARD);
-    $newsletter4->setSubject('Future Newsletter');
-    $newsletter4->setStatus(NewsletterEntity::STATUS_SCHEDULED);
-    $this->entityManager->persist($newsletter4);
+    $this->assertSame(
+      ['Sent Newsletter'],
+      $this->listSubjects(['sent_at_from' => '2025-02-01', 'sent_at_to' => '2025-02-20'])
+    );
+    $this->assertSame([], $this->listSubjects(['sent_at_from' => '2025-02-10', 'sent_at_to' => '2025-02-20']));
+    $this->assertSame(['Sent Newsletter'], $this->listSubjects(['sent_at_from' => '2025-02-01']));
+  }
 
-    $task4 = new ScheduledTaskEntity();
-    $task4->setScheduledAt(new \DateTime('2025-03-01 10:00:00'));
-    $task4->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
-    $this->entityManager->persist($task4);
+  public function testSentAtRangeIgnoresScheduledTimeWhenSentAtIsOutside() {
+    $newsletter = $this->createSent('Rescheduled', '2025-01-01 10:00:00');
+    $this->addScheduledTask($newsletter, '2025-02-10 10:00:00');
 
-    $queue4 = new SendingQueueEntity();
-    $queue4->setTask($task4);
-    $queue4->setNewsletter($newsletter4);
-    $this->entityManager->persist($queue4);
+    $this->assertSame([], $this->listSubjects(['sent_at_from' => '2025-02-01', 'sent_at_to' => '2025-02-20']));
+    $this->assertSame([], $this->listSubjects(['sent_at_from' => '2025-02-01']));
+    $this->assertSame(['Rescheduled'], $this->listSubjects(['sent_at_to' => '2025-01-01']));
+  }
 
-    $this->entityManager->flush();
+  /** @dataProvider siteDayCases */
+  public function testSentAtFiltersBySiteLocalDay(string $timezone, $gmtOffset, string $day, array $inside, array $outside) {
+    $this->withSiteTimezone($timezone, $gmtOffset, function () use ($day, $inside, $outside) {
+      foreach (array_merge($inside, $outside) as $sentAt) {
+        $this->createSent($sentAt, $sentAt);
+      }
+      foreach ([['sent_at_from' => $day, 'sent_at_to' => $day], ['sent_at_from' => $day], ['sent_at_to' => $day]] as $filter) {
+        $subjects = $this->listSubjects($filter);
+        if (isset($filter['sent_at_from'])) {
+          $this->assertContains($inside[0], $subjects);
+          $this->assertNotContains($outside[0], $subjects);
+        }
+        if (isset($filter['sent_at_to'])) {
+          $this->assertContains($inside[1], $subjects);
+          $this->assertNotContains($outside[1], $subjects);
+        }
+        if (isset($filter['sent_at_from'], $filter['sent_at_to'])) {
+          $this->assertSame($inside, $subjects);
+        }
+      }
+    });
+  }
 
-    $listingHandler = new Handler();
-    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
-
-    // Filter from Feb 1st to Feb 20th - should include both sent and scheduled newsletters in range
-    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
-      'filter' => [
-        'sent_at_from' => '2025-02-01 00:00:00',
-        'sent_at_to' => '2025-02-20 23:59:59',
-      ],
-    ]));
-    verify($newsletters)->arrayCount(2);
-    $subjects = array_map(fn($n) => $n->getSubject(), $newsletters);
-    verify(in_array('Sent Newsletter', $subjects))->true();
-    verify(in_array('Scheduled Newsletter', $subjects))->true();
-
-    // Filter from Feb 10th onwards - should include only the scheduled newsletter
-    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
-      'filter' => [
-        'sent_at_from' => '2025-02-10 00:00:00',
-      ],
-    ]));
-    verify($newsletters)->arrayCount(2); // Scheduled Newsletter and Future Newsletter
-    $subjects = array_map(fn($n) => $n->getSubject(), $newsletters);
-    verify(in_array('Scheduled Newsletter', $subjects))->true();
-    verify(in_array('Future Newsletter', $subjects))->true();
+  /**
+   * Site timezone, options to set, filter day, and UTC sent-at values grouped by whether the
+   * row belongs to that site-local day. Rows sit one second either side of the day boundaries.
+   *
+   * @return array<string, array{string, string|float|int, string, string[], string[]}>
+   */
+  public function siteDayCases(): array {
+    return [
+      'utc site' => ['', 0, '2020-03-10', ['2020-03-10 00:00:00', '2020-03-10 23:59:59'], ['2020-03-09 23:59:59', '2020-03-11 00:00:00']],
+      'dst zone, standard time' => ['Europe/Prague', 0, '2020-03-10', ['2020-03-09 23:00:00', '2020-03-10 22:59:59'], ['2020-03-09 22:59:59', '2020-03-10 23:00:00']],
+      'fixed gmt offset' => ['', 5.5, '2020-03-10', ['2020-03-09 18:30:00', '2020-03-10 18:29:59'], ['2020-03-09 18:29:59', '2020-03-10 18:30:00']],
+    ];
   }
 
   public function testItFiltersBySegmentIdsWithIsAnyOperator() {
@@ -769,7 +691,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     // Combine sent_at_from and segment filter
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
       'filter' => [
-        'sent_at_from' => '2025-01-15 00:00:00',
+        'sent_at_from' => '2025-01-15',
         'segment_ids' => [$segment1->getId()],
         'segment_operator' => 'isAny',
       ],
@@ -932,6 +854,200 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     foreach (['status', 'name', 'subject', 'updated_at'] as $sortBy) {
       $this->assertSame($ids, $this->listIds([], null, null, $sortBy, 'asc'), "asc by $sortBy");
       $this->assertSame(array_reverse($ids), $this->listIds([], null, null, $sortBy, 'desc'), "desc by $sortBy");
+    }
+  }
+
+  public function testNewsletterInTwoSelectedListsAppearsOnce() {
+    [$listA, $listB, $listC] = $this->createLists(['A', 'B', 'C']);
+    $both = $this->createWithLists('Both', [$listA, $listB]);
+    $onlyA = $this->createWithLists('Only A', [$listA]);
+    $onlyC = $this->createWithLists('Only C', [$listC]);
+    $filter = ['segment_ids' => [$listA->getId(), $listB->getId()], 'segment_operator' => 'isAny'];
+
+    $this->assertSame([$both->getId(), $onlyA->getId()], $this->listIds($filter, null));
+    $repository = $this->diContainer->get(NewsletterListingRepository::class);
+    $definition = (new Handler())->getListingDefinition(['filter' => $filter, 'limit' => 1, 'offset' => 0]);
+    $this->assertCount(1, $repository->getData($definition));
+    $this->assertSame(2, $repository->getCount($definition));
+    $page2 = (new Handler())->getListingDefinition(['filter' => $filter, 'limit' => 1, 'offset' => 1]);
+    $this->assertSame([$onlyA->getId()], array_map(function(NewsletterEntity $n) {
+      return $n->getId();
+    }, $repository->getData($page2)));
+    $this->assertNotContains($onlyC->getId(), $this->listIds($filter, null));
+  }
+
+  public function testBulkActionableIdsAreUniqueForMultipleLists() {
+    [$listA, $listB] = $this->createLists(['A', 'B']);
+    $both = $this->createWithLists('Both', [$listA, $listB]);
+    $other = $this->createWithLists('Other', [$listB]);
+    $repository = $this->diContainer->get(NewsletterListingRepository::class);
+    $definition = (new Handler())->getListingDefinition([
+      'filter' => ['segment_ids' => [$listA->getId(), $listB->getId()], 'segment_operator' => 'isAny'],
+    ]);
+
+    $ids = array_map('intval', $repository->getActionableIds($definition));
+    sort($ids);
+    $this->assertSame([$both->getId(), $other->getId()], $ids);
+  }
+
+  public function testIsNoneExcludesEmailsInAnySelectedList() {
+    [$listA, $listB, $listC] = $this->createLists(['A', 'B', 'C']);
+    $this->createWithLists('Both', [$listA, $listB]);
+    $this->createWithLists('Only A', [$listA]);
+    $onlyC = $this->createWithLists('Only C', [$listC]);
+    $none = $this->createStandard('No list', NewsletterEntity::STATUS_DRAFT);
+    $filter = ['segment_ids' => [$listA->getId(), $listB->getId()], 'segment_operator' => 'isNone'];
+
+    $this->assertSame([$onlyC->getId(), $none->getId()], $this->listIds($filter, null));
+    $repository = $this->diContainer->get(NewsletterListingRepository::class);
+    $this->assertSame(2, $repository->getCount((new Handler())->getListingDefinition(['filter' => $filter])));
+  }
+
+  public function testLegacySegmentFilterDoesNotDuplicateRows() {
+    [$listA, $listB] = $this->createLists(['A', 'B']);
+    $both = $this->createWithLists('Both', [$listA, $listB]);
+    $this->assertSame([$both->getId()], $this->listIds(['segment' => $listA->getId()], null));
+    $this->assertSame([$both->getId()], $this->listIds(['segment' => (string)$listB->getId()], null));
+  }
+
+  public function testListOptionsHaveNoCountsAndAreSortedWithAllListsFirst() {
+    [$listB, $listA] = $this->createLists(['B list', 'A list']);
+    $this->createWithLists('One', [$listB, $listA]);
+    $this->createWithLists('Two', [$listB]);
+    $this->createLists(['Unused']);
+
+    $options = $this->getListOptions([]);
+
+    $this->assertSame(
+      [
+        ['label' => 'All Lists', 'value' => ''],
+        ['label' => 'A list', 'value' => $listA->getId()],
+        ['label' => 'B list', 'value' => $listB->getId()],
+      ],
+      $options
+    );
+  }
+
+  public function testListOptionsIgnoreGroupAndDeletedEmailsAndOtherTypes() {
+    [$listA, $listB, $listC, $listD] = $this->createLists(['A', 'B', 'C', 'D']);
+    $this->createWithLists('Draft', [$listA], NewsletterEntity::STATUS_DRAFT);
+    $this->createWithLists('Sent', [$listB], NewsletterEntity::STATUS_SENT);
+    $trashed = $this->createWithLists('Trashed', [$listC]);
+    $trashed->setDeletedAt(new \DateTime());
+    $this->entityManager->flush();
+    $welcome = $this->createWithLists('Welcome', [$listD], NewsletterEntity::STATUS_ACTIVE);
+    $welcome->setType(NewsletterEntity::TYPE_WELCOME);
+    $this->entityManager->flush();
+
+    $expected = ['', $listA->getId(), $listB->getId()];
+    $values = function(array $options): array {
+      return array_column($options, 'value');
+    };
+    foreach ([null, 'all', 'draft', 'sent', 'trash'] as $group) {
+      $this->assertSame($expected, $values($this->getListOptions(['group' => $group, 'params' => ['type' => 'standard']])), (string)$group);
+    }
+  }
+
+  public function testListOptionsForNotificationHistoryAreScopedToParent() {
+    [$listA, $listB] = $this->createLists(['A', 'B']);
+    $parent = $this->createStandard('Parent', NewsletterEntity::STATUS_ACTIVE);
+    $parent->setType(NewsletterEntity::TYPE_NOTIFICATION);
+    $otherParent = $this->createStandard('Other parent', NewsletterEntity::STATUS_ACTIVE);
+    $otherParent->setType(NewsletterEntity::TYPE_NOTIFICATION);
+    $child = $this->createWithLists('Child', [$listA], NewsletterEntity::STATUS_SENT);
+    $child->setType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+    $child->setParent($parent);
+    $otherChild = $this->createWithLists('Other child', [$listB], NewsletterEntity::STATUS_SENT);
+    $otherChild->setType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+    $otherChild->setParent($otherParent);
+    $this->entityManager->flush();
+
+    $options = $this->getListOptions(['params' => ['type' => 'notification_history', 'parentId' => $parent->getId()]]);
+
+    $this->assertSame(['', $listA->getId()], array_column($options, 'value'));
+  }
+
+  private function getListOptions(array $listing): array {
+    $repository = $this->diContainer->get(NewsletterListingRepository::class);
+    return $repository->getFilters((new Handler())->getListingDefinition($listing))['segment'];
+  }
+
+  /**
+   * @param string[] $names
+   * @return SegmentEntity[]
+   */
+  private function createLists(array $names): array {
+    $lists = [];
+    foreach ($names as $name) {
+      $list = new SegmentEntity($name, SegmentEntity::TYPE_DEFAULT, 'Description');
+      $this->entityManager->persist($list);
+      $lists[] = $list;
+    }
+    $this->entityManager->flush();
+    return $lists;
+  }
+
+  /** @param SegmentEntity[] $lists */
+  private function createWithLists(string $subject, array $lists, string $status = NewsletterEntity::STATUS_DRAFT): NewsletterEntity {
+    $newsletter = $this->createStandard($subject, $status);
+    foreach ($lists as $list) {
+      $this->entityManager->persist(new NewsletterSegmentEntity($newsletter, $list));
+    }
+    $this->entityManager->flush();
+    return $newsletter;
+  }
+
+  private function createSent(string $subject, string $sentAtUtc): NewsletterEntity {
+    $newsletter = $this->createStandard($subject, NewsletterEntity::STATUS_SENT);
+    $newsletter->setSentAt(new \DateTime($sentAtUtc, new \DateTimeZone('UTC')));
+    $this->entityManager->flush();
+    return $newsletter;
+  }
+
+  private function createScheduled(string $subject, string $scheduledAtUtc): NewsletterEntity {
+    $newsletter = $this->createStandard($subject, NewsletterEntity::STATUS_SCHEDULED);
+    $this->addScheduledTask($newsletter, $scheduledAtUtc);
+    return $newsletter;
+  }
+
+  private function addScheduledTask(NewsletterEntity $newsletter, string $scheduledAtUtc): void {
+    $task = new ScheduledTaskEntity();
+    $task->setScheduledAt(new \DateTime($scheduledAtUtc, new \DateTimeZone('UTC')));
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->entityManager->persist($task);
+    $queue = new SendingQueueEntity();
+    $queue->setTask($task);
+    $queue->setNewsletter($newsletter);
+    $this->entityManager->persist($queue);
+    $this->entityManager->flush();
+  }
+
+  /** @return string[] Subjects ordered by id */
+  private function listSubjects(array $filter): array {
+    $repository = $this->diContainer->get(NewsletterListingRepository::class);
+    $rows = $repository->getData((new Handler())->getListingDefinition(['filter' => $filter, 'limit' => 100]));
+    return array_map(function(NewsletterEntity $newsletter): string {
+      return (string)$newsletter->getSubject();
+    }, $rows);
+  }
+
+  private function withSiteTimezone(string $timezoneString, $gmtOffset, callable $callback): void {
+    $previous = [
+      'timezone_string' => get_option('timezone_string'),
+      'gmt_offset' => get_option('gmt_offset'),
+    ];
+    update_option('timezone_string', $timezoneString);
+    update_option('gmt_offset', $gmtOffset);
+    try {
+      $callback();
+    } finally {
+      foreach ($previous as $option => $value) {
+        if ($value === false) {
+          delete_option($option);
+        } else {
+          update_option($option, $value);
+        }
+      }
     }
   }
 
