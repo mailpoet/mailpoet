@@ -1592,6 +1592,32 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->assertNotContains($withBoth->getId(), $ids);
   }
 
+  public function testSegmentFilterLoadsAllListsWithOneQuery() {
+    $ids = [];
+    for ($i = 1; $i <= 5; $i++) {
+      $ids[] = (int)$this->segmentRepository->createOrUpdate("Batch Segment $i")->getId();
+    }
+    $dynamicId = (int)$this->createEmailSegment('batch-')->getId();
+    $this->entityManager->flush();
+    $this->entityManager->clear();
+    $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
+
+    $logger = new DebugStack();
+    $configuration = $this->entityManager->getConnection()->getConfiguration();
+    $previousLogger = $configuration->getSQLLogger();
+    $configuration->setSQLLogger($logger);
+    try {
+      $this->repository->getData(new ListingDefinition('all', ['segment_in' => array_merge($ids, [$dynamicId]), 'segment_not_in' => [$ids[0]]]));
+    } finally {
+      $configuration->setSQLLogger($previousLogger);
+    }
+    $segmentQueries = array_filter($logger->queries, function($query) use ($segmentsTable): bool {
+      $sql = is_array($query) && is_string($query['sql'] ?? null) ? $query['sql'] : '';
+      return (bool)preg_match('/FROM `?' . preg_quote($segmentsTable, '/') . '`?\s/i', $sql);
+    });
+    verify(count($segmentQueries))->equals(1);
+  }
+
   public function testSourceNotInKeepsSubscribersWithoutASource() {
     $imported = (new Subscriber())->withEmail('src-imported@example.com')->withSource(Source::IMPORTED)->create();
     $form = (new Subscriber())->withEmail('src-form@example.com')->withSource(Source::FORM)->create();

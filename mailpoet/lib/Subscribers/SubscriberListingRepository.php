@@ -29,6 +29,7 @@ class SubscriberListingRepository extends ListingRepository {
   public const FILTER_WITHOUT_LIST = 'without-list';
 
   const DEFAULT_SORT_BY = 'createdAt';
+  private const NORMALIZED_FILTERS_CACHE_SIZE = 8;
 
   public const ENGAGEMENT_SCORE_UNKNOWN = 'unknown';
   public const ENGAGEMENT_SCORE_DORMANT = 'dormant';
@@ -85,6 +86,9 @@ class SubscriberListingRepository extends ListingRepository {
   /** @var SegmentDependencyValidator */
   private $segmentDependencyValidator;
 
+  /** @var array<string, array> */
+  private $normalizedFilters = [];
+
   /** @var null | ListingDefinition */
   private $definition = null;
 
@@ -105,6 +109,7 @@ class SubscriberListingRepository extends ListingRepository {
 
   public function getData(ListingDefinition $definition): array {
     $this->definition = $definition;
+    $this->normalizedFilters = [];
     if (!$this->hasDynamicSegmentFilter($definition)) {
       return parent::getData($definition);
     }
@@ -113,6 +118,7 @@ class SubscriberListingRepository extends ListingRepository {
 
   public function getCount(ListingDefinition $definition): int {
     $this->definition = $definition;
+    $this->normalizedFilters = [];
     if (!$this->hasDynamicSegmentFilter($definition)) {
       return parent::getCount($definition);
     }
@@ -123,6 +129,7 @@ class SubscriberListingRepository extends ListingRepository {
 
   public function getActionableIds(ListingDefinition $definition): array {
     $this->definition = $definition;
+    $this->normalizedFilters = [];
     $ids = $definition->getSelection();
     if (!empty($ids)) {
       return $ids;
@@ -956,12 +963,13 @@ class SubscriberListingRepository extends ListingRepository {
    */
   private function partitionSegmentIds(array $ids): array {
     $result = ['static' => [], 'dynamic' => [], 'without' => false];
+    $segments = $this->loadSegments($ids);
     foreach ($ids as $id) {
       if ($id === self::FILTER_WITHOUT_LIST) {
         $result['without'] = true;
         continue;
       }
-      $segment = $this->entityManager->find(SegmentEntity::class, (int)$id);
+      $segment = $segments[(int)$id] ?? null;
       // An unknown id is treated as static: it matches nobody.
       if ($segment instanceof SegmentEntity && !$segment->isStatic()) {
         $result['dynamic'][] = (int)$id;
@@ -970,6 +978,36 @@ class SubscriberListingRepository extends ListingRepository {
       }
     }
     return $result;
+  }
+
+  /**
+   * Loads every list that is not yet in the identity map with one query, so the
+   * later find() calls for the same ids cost nothing.
+   *
+   * @param array<int|string> $ids
+   * @return array<int, SegmentEntity>
+   */
+  private function loadSegments(array $ids): array {
+    $unitOfWork = $this->entityManager->getUnitOfWork();
+    $segments = [];
+    $missing = [];
+    foreach ($ids as $id) {
+      if ($id === self::FILTER_WITHOUT_LIST) {
+        continue;
+      }
+      $known = $unitOfWork->tryGetById((int)$id, SegmentEntity::class);
+      if ($known instanceof SegmentEntity) {
+        $segments[(int)$id] = $known;
+      } else {
+        $missing[(int)$id] = (int)$id;
+      }
+    }
+    if ($missing) {
+      foreach ($this->entityManager->getRepository(SegmentEntity::class)->findBy(['id' => array_values($missing)]) as $segment) {
+        $segments[(int)$segment->getId()] = $segment;
+      }
+    }
+    return $segments;
   }
 
   /**
@@ -986,6 +1024,20 @@ class SubscriberListingRepository extends ListingRepository {
    * @return array
    */
   private function normalizeFilters(array $filters): array {
+    // Called many times per request with the same input. Keyed by the raw filters,
+    // small, and reset on every public entry point because the legacy `segment` and
+    // `tag` keys depend on what exists in the database.
+    $key = md5(serialize($filters));
+    if (!isset($this->normalizedFilters[$key])) {
+      if (count($this->normalizedFilters) >= self::NORMALIZED_FILTERS_CACHE_SIZE) {
+        $this->normalizedFilters = [];
+      }
+      $this->normalizedFilters[$key] = $this->buildNormalizedFilters($filters);
+    }
+    return $this->normalizedFilters[$key];
+  }
+
+  private function buildNormalizedFilters(array $filters): array {
     $normalized = $filters;
     unset($normalized['segment'], $normalized['tag'], $normalized['statusInclude'], $normalized['statusExclude']);
 
@@ -1293,6 +1345,7 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   public function getGroups(ListingDefinition $definition): array {
+    $this->normalizedFilters = [];
     return $this->formatGroups($this->getGroupCountsForDefinition($definition));
   }
 
@@ -1305,6 +1358,7 @@ class SubscriberListingRepository extends ListingRepository {
    * @return array{count: int, groups: array<int, array<string, mixed>>}
    */
   public function getCountAndAllTrashGroups(ListingDefinition $definition): array {
+    $this->normalizedFilters = [];
     $group = $definition->getGroup() ?: 'all';
     $cached = $this->getCachedGroupCounts($definition);
     if ($cached !== null) {
