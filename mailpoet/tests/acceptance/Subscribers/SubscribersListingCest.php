@@ -764,6 +764,36 @@ class SubscribersListingCest {
     );
   }
 
+  public function emptyTrashDeletesOnlyTheFilteredSubscribers(\AcceptanceTester $i) {
+    $i->wantTo('Verify that Empty Trash deletes only the subscribers matching the active filters');
+
+    (new Subscriber())
+      ->withEmail('trash-subscribed@example.com')
+      ->withStatus('subscribed')
+      ->withDeletedAt(new DateTime())
+      ->create();
+    (new Subscriber())
+      ->withEmail('trash-bounced@example.com')
+      ->withStatus('bounced')
+      ->withDeletedAt(new DateTime())
+      ->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->waitForListingItemsToLoad();
+    $i->addDataViewsFilter('Status', '', ['Bounced']);
+    $i->changeGroupInListingFilter('trash');
+    $i->waitForText('trash-bounced@example.com');
+    $i->dontSee('trash-subscribed@example.com');
+
+    $i->click('[data-automation-id="empty_trash"]');
+    $i->waitForText('1 subscriber was permanently deleted.');
+    $i->dontSee('trash-bounced@example.com');
+
+    $i->clearDataViewsFilters();
+    $i->waitForText('trash-subscribed@example.com');
+  }
+
   public function searchInTrashWithNoResultsStaysInTrash(\AcceptanceTester $i) {
     $i->wantTo('Verify that searching in Trash with no results does not redirect to All');
 
