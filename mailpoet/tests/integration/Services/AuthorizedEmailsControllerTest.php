@@ -1084,6 +1084,42 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     );
   }
 
+  public function testCachedListWithPendingAddressIsRefreshedFromBridge() {
+    $key = AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY;
+    set_transient($key, ['authorized' => [], 'pending' => ['new@email.com']], WEEK_IN_SECONDS);
+    $fresh = ['authorized' => ['new@email.com'], 'pending' => []];
+    $controller = $this->getController($fresh);
+
+    verify($controller->getAuthorizedEmailAddresses())->equals(['new@email.com']);
+    verify(get_transient($key))->equals($fresh);
+  }
+
+  public function testCachedListWithoutPendingAddressIsNotRefreshed() {
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY, ['authorized' => ['auth@email.com'], 'pending' => []], WEEK_IN_SECONDS);
+    $controller = $this->getController(null);
+
+    verify($controller->getAuthorizedEmailAddresses())->equals(['auth@email.com']);
+  }
+
+  public function testCachedListWithPendingAddressIsReturnedWhenBridgeFails() {
+    $cached = ['authorized' => ['auth@email.com'], 'pending' => ['new@email.com']];
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY, $cached, WEEK_IN_SECONDS);
+    $bridge = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(null)]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridge]);
+
+    verify($controller->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAILS_TYPE_ALL))->equals($cached);
+    verify(get_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY))->notEmpty();
+  }
+
+  public function testCachedListWithPendingAddressSkipsBridgeDuringBackoff() {
+    $cached = ['authorized' => ['auth@email.com'], 'pending' => ['new@email.com']];
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY, $cached, WEEK_IN_SECONDS);
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY, 1, 300);
+    $controller = $this->getController(null);
+
+    verify($controller->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAILS_TYPE_ALL))->equals($cached);
+  }
+
   private function getController($authorizedEmails) {
     if ($authorizedEmails === null) {
       $getEmailsExpectaton = Expected::never();
