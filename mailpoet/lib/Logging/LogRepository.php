@@ -319,17 +319,28 @@ class LogRepository extends Repository {
     $parameters = [];
     $types = [];
 
-    $dateFrom = !empty($filter['from']) ? $this->getSiteDayStartInUtc($filter['from']) : null;
-    if ($dateFrom !== null) {
-      $conditions[] = '`created_at` >= :date_from';
-      $parameters['date_from'] = $dateFrom;
-      $types['date_from'] = ParameterType::STRING;
+    // An unparsable day matches nothing, so it can never widen a delete.
+    $from = $filter['from'] ?? '';
+    if ($from !== '') {
+      $dateFrom = $this->getSiteDayStartInUtc($from);
+      if ($dateFrom === null) {
+        $conditions[] = '1 = 0';
+      } else {
+        $conditions[] = '`created_at` >= :date_from';
+        $parameters['date_from'] = $dateFrom;
+        $types['date_from'] = ParameterType::STRING;
+      }
     }
-    $dateTo = !empty($filter['to']) ? $this->getSiteDayStartInUtc($filter['to'], 1) : null;
-    if ($dateTo !== null) {
-      $conditions[] = '`created_at` < :date_to';
-      $parameters['date_to'] = $dateTo;
-      $types['date_to'] = ParameterType::STRING;
+    $to = $filter['to'] ?? '';
+    if ($to !== '') {
+      $dateTo = $this->getSiteDayStartInUtc($to, 1);
+      if ($dateTo === null) {
+        $conditions[] = '1 = 0';
+      } else {
+        $conditions[] = '`created_at` < :date_to';
+        $parameters['date_to'] = $dateTo;
+        $types['date_to'] = ParameterType::STRING;
+      }
     }
     if (!empty($filter['name'])) {
       $conditions[] = '`name` IN (:names)';
