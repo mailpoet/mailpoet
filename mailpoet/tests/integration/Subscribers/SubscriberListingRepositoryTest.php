@@ -27,6 +27,7 @@ use MailPoet\Test\DataFactories\Tag;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\Logging\DebugStack;
 
 class SubscriberListingRepositoryTest extends \MailPoetTest {
 
@@ -211,8 +212,8 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($byName['unsubscribed'])->equals(1);
   }
 
-  public function testGetCountAndGroupsMatchesStandaloneCountAndGroups() {
-    $segment = $this->segmentRepository->createOrUpdate('Count And Groups Segment');
+  public function testGetCountAndAllTrashGroupsMatchesStandaloneCounts() {
+    $segment = $this->segmentRepository->createOrUpdate('Count All Trash Segment');
 
     $this->createSubscriberEntity(); // subscribed, no list
     $unsubscribed = $this->createSubscriberEntity();
@@ -236,37 +237,80 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
 
     $this->entityManager->flush();
 
+    $dynamicFilter = ['segment_in' => [$dynamicSegment->getId()], 'tag_in' => [$countTag->getId()]];
     $scenarios = [
       ['group' => 'all', 'filter' => []],
-      ['group' => 'all', 'filter' => ['segment_in' => [$dynamicSegment->getId()], 'tag_in' => [$countTag->getId()]]],
-      ['group' => SubscriberEntity::STATUS_UNSUBSCRIBED, 'filter' => ['segment_in' => [$dynamicSegment->getId()], 'tag_in' => [$countTag->getId()]]],
+      ['group' => 'all', 'filter' => $dynamicFilter],
+      ['group' => SubscriberEntity::STATUS_UNSUBSCRIBED, 'filter' => $dynamicFilter],
+      ['group' => 'trash', 'filter' => $dynamicFilter],
       ['group' => 'all', 'filter' => ['segment_not_in' => [$dynamicSegment->getId()]]],
       ['group' => SubscriberEntity::STATUS_SUBSCRIBED, 'filter' => []],
-      ['group' => SubscriberEntity::STATUS_UNSUBSCRIBED, 'filter' => []],
       ['group' => 'trash', 'filter' => []],
-      ['group' => 'all', 'filter' => ['segment' => $segment->getId()]], // defers to getCount
+      ['group' => 'all', 'filter' => ['segment' => $segment->getId()]],
       ['group' => SubscriberEntity::STATUS_SUBSCRIBED, 'filter' => ['segment' => $segment->getId()]],
+      ['group' => 'all', 'filter' => ['tag_in' => [$countTag->getId()]]],
     ];
-
-    $this->listingData['group'] = 'all';
-    $this->listingData['filter'] = ['segment_in' => [$dynamicSegment->getId()], 'tag_in' => [$countTag->getId()]];
-    verify($this->repository->getCountAndGroups($this->getListingDefinition())['count'])->equals(2);
-    $this->listingData['filter'] = ['segment_not_in' => [$dynamicSegment->getId()]];
-    verify($this->repository->getCountAndGroups($this->getListingDefinition())['count'])->equals(5);
 
     foreach ($scenarios as $scenario) {
       $this->listingData['group'] = $scenario['group'];
       $this->listingData['filter'] = $scenario['filter'];
       $definition = $this->getListingDefinition();
+      $this->listingData['group'] = 'all';
+      $all = $this->repository->getCount($this->getListingDefinition());
+      $this->listingData['group'] = 'trash';
+      $trash = $this->repository->getCount($this->getListingDefinition());
 
-      $combined = $this->repository->getCountAndGroups($definition);
-      // The derived count drives pagination, so it must match getCount exactly.
-      verify($combined['count'])->equals($this->repository->getCount($definition));
-      verify($combined['groups'])->equals($this->repository->getGroups($definition));
+      $result = $this->repository->getCountAndAllTrashGroups($definition);
+
+      verify($result['count'])->equals($this->repository->getCount($definition));
+      verify($result['groups'])->equals([
+        ['name' => 'all', 'label' => 'All', 'count' => $all],
+        ['name' => 'trash', 'label' => 'Trash', 'count' => $trash],
+      ]);
     }
+
+    $this->listingData['group'] = 'all';
+    $this->listingData['filter'] = $dynamicFilter;
+    verify($this->repository->getCountAndAllTrashGroups($this->getListingDefinition())['count'])->equals(2);
+    $this->listingData['filter'] = ['segment_not_in' => [$dynamicSegment->getId()]];
+    verify($this->repository->getCountAndAllTrashGroups($this->getListingDefinition())['count'])->equals(5);
 
     $this->listingData['group'] = '';
     $this->listingData['filter'] = [];
+  }
+
+  public function testGetCountAndAllTrashGroupsRunsAtMostTwoCountQueries() {
+    $dynamicSegment = $this->createDynamicSegment([[DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTextField::EMAIL, ['operator' => 'startsWith', 'value' => 'cq-dyn-']]]);
+    $tag = (new Tag())->withName('Count Queries Tag')->create();
+    (new Subscriber())->withEmail('cq-dyn-1@example.com')->withTags([$tag])->create();
+    (new Subscriber())->withEmail('cq-dyn-2@example.com')->withTags([$tag])->withDeletedAt(new Carbon())->create();
+    $this->entityManager->flush();
+
+    $logger = new DebugStack();
+    $configuration = $this->entityManager->getConnection()->getConfiguration();
+    $previousLogger = $configuration->getSQLLogger();
+    $configuration->setSQLLogger($logger);
+    try {
+      foreach (['all', 'trash'] as $group) {
+        $logger->queries = [];
+        $result = $this->repository->getCountAndAllTrashGroups(new ListingDefinition(
+          $group,
+          ['segment_in' => [$dynamicSegment->getId()], 'tag_in' => [$tag->getId()]]
+        ));
+        $countQueries = array_filter($logger->queries, function(array $query): bool {
+          return stripos($query['sql'], 'COUNT(') !== false;
+        });
+        verify(count($countQueries))->lessThanOrEqual(2);
+        verify(array_column($result['groups'], 'count', 'name'))->equals(['all' => 1, 'trash' => 1]);
+      }
+    } finally {
+      $configuration->setSQLLogger($previousLogger);
+    }
+  }
+
+  public function testGetGroupsForAnEmptyDefinitionKeepsEveryStatusGroup() {
+    $groups = array_column($this->repository->getGroups(new ListingDefinition()), 'name');
+    verify($groups)->equals(['all', 'subscribed', 'unconfirmed', 'unsubscribed', 'inactive', 'bounced', 'trash']);
   }
 
   public function testLoadAllSubscribers() {

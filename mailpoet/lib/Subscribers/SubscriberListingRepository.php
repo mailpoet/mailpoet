@@ -1259,83 +1259,100 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   public function getGroups(ListingDefinition $definition): array {
-    return $this->formatGroups($this->getGroupCountsForDefinition($definition)['counts']);
+    return $this->formatGroups($this->getGroupCountsForDefinition($definition));
   }
 
   /**
-   * Count and status groups from a single computation, so the listing endpoint
-   * can drop the separate getCount() query: on the non-segment path both come
-   * from one grouped scan, and the current group's count is read straight from
-   * the buckets.
+   * The count of the current group plus the All and Trash tab counts, all under
+   * the active filters and search. Unfiltered and single-list requests are
+   * answered from the cron-warmed statistics. Anything narrower runs live
+   * counts, reusing the current group’s count when it is All or Trash.
    *
    * @return array{count: int, groups: array<int, array<string, mixed>>}
    */
-  public function getCountAndGroups(ListingDefinition $definition): array {
-    $computed = $this->getGroupCountsForDefinition($definition);
+  public function getCountAndAllTrashGroups(ListingDefinition $definition): array {
+    $group = $definition->getGroup() ?: 'all';
+    $cached = $this->getCachedGroupCounts($definition);
+    if ($cached !== null) {
+      $all = 0;
+      foreach (self::$supportedStatuses as $status) {
+        $all += $cached[$status];
+      }
+      $trash = $cached['trash'];
+      if ($group === 'all') {
+        $count = $all;
+      } elseif ($group === 'trash') {
+        $count = $trash;
+      } else {
+        $count = array_key_exists($group, $cached) ? $cached[$group] : $this->getCount($definition);
+      }
+    } else {
+      $count = $this->getCount($definition);
+      $all = $group === 'all' ? $count : $this->getCount($this->withGroup($definition, 'all'));
+      $trash = $group === 'trash' ? $count : $this->getCount($this->withGroup($definition, 'trash'));
+    }
+
     return [
-      'count' => $this->countForCurrentGroup($definition, $computed['counts'], $computed['consolidated']),
-      'groups' => $this->formatGroups($computed['counts']),
+      'count' => $count,
+      'groups' => [
+        ['name' => 'all', 'label' => __('All', 'mailpoet'), 'count' => $all],
+        ['name' => 'trash', 'label' => __('Trash', 'mailpoet'), 'count' => $trash],
+      ],
     ];
   }
 
+  private function withGroup(ListingDefinition $definition, string $group): ListingDefinition {
+    return new ListingDefinition(
+      $group,
+      $definition->getFilters(),
+      $definition->getSearch(),
+      $definition->getParameters(),
+      $definition->getSortBy(),
+      $definition->getSortOrder(),
+      $definition->getOffset(),
+      $definition->getLimit(),
+      $definition->getSelection()
+    );
+  }
+
   /**
-   * The status-tab counts, resolved through a three-tier cascade that prefers a
-   * cron-warmed cache and only computes live when nothing cheaper fits. Cheapest
-   * first:
+   * The status-tab counts. Cheapest first:
    *
-   *   1. Global cache — unfiltered "All Lists" view (no segment, no search, no
-   *      other filter). Served from the cron-warmed global status counts.
-   *   2. Per-segment cache — a plain single-list filter and nothing else. Served
-   *      from that segment's cron-warmed statistics.
-   *   3. Live fetch — anything narrower (search, tag, status, dates,
-   *      engagement...). No cache matches, so the counts are computed now: a
-   *      grouped scan on the non-segment path, or one count per status bucket
-   *      when a segment redefines the buckets.
+   *   1. Global cache: the unfiltered “All Lists” view (cron-warmed).
+   *   2. Per-segment cache: a plain single-list filter and nothing else.
+   *   3. Live: anything narrower. A grouped scan on the non-segment path, or
+   *      one count per status when a segment redefines the buckets (a static
+   *      segment uses the per-list status, a dynamic one an id subquery).
    *
-   * Why a segment can't share the non-segment grouped scan: a static segment
-   * redefines the subscribed/unsubscribed buckets in terms of the per-list
-   * status (s.status OR/AND ss.status), and a dynamic segment routes counts
-   * through an id subquery — neither is a single GROUP BY over s.status, so they
-   * fall back to one count per group (still cheap: scoped to one segment).
-   *
-   * 'consolidated' promises that the per-status buckets partition the whole
-   * non-deleted population exactly, so their sum IS the "all" total and
-   * countForCurrentGroup can skip a separate count. It is true only for the
-   * global/grouped scan; the live per-status path leaves it false because those
-   * ad-hoc counts are not guaranteed to add up to "all" (e.g. a segment member
-   * whose status lands in no displayed bucket).
-   *
-   * @return array{counts: array<string, int>, consolidated: bool}
+   * @return array<string, int>
    */
   private function getGroupCountsForDefinition(ListingDefinition $definition): array {
-    if (!$this->hasSegmentListFilter($definition)) {
-      // The unfiltered "All Lists" view maps to the cron-warmed global status
-      // counts — the default, most-loaded view, served from cache instead of a
-      // grouped scan over every subscriber on each page load.
-      if ($this->canUseGlobalStatisticsCache($definition)) {
-        return ['counts' => $this->globalStatisticsToCounts(), 'consolidated' => true];
-      }
-      return ['counts' => $this->getGroupCounts($definition), 'consolidated' => true];
+    $cached = $this->getCachedGroupCounts($definition);
+    if ($cached !== null) {
+      return $cached;
     }
+    return $this->hasSegmentListFilter($definition)
+      ? $this->getGroupCountsPerStatus($definition)
+      : $this->getGroupCounts($definition);
+  }
 
-    // A plain list filter (no search, no other filter) maps exactly to the
-    // cron-warmed per-segment statistics — single source of truth, served from
-    // cache instead of recomputing a count per status tab on every page load.
+  /**
+   * Counts from the cron-warmed statistics, or null when the request is
+   * narrower than they cover.
+   *
+   * @return array<string, int>|null
+   */
+  private function getCachedGroupCounts(ListingDefinition $definition): ?array {
+    if (!$this->hasSegmentListFilter($definition)) {
+      return $this->canUseGlobalStatisticsCache($definition) ? $this->globalStatisticsToCounts() : null;
+    }
     if ($this->canUseSegmentStatisticsCache($definition)) {
       $segment = $this->getSegmentFromDefinition($definition);
       if ($segment instanceof SegmentEntity) {
-        // 'consolidated' stays false here even though the buckets do partition
-        // the members exactly: countForCurrentGroup recognises this same case
-        // via canUseSegmentStatisticsCache($definition), so the "all" tab still
-        // takes the sum-of-buckets path. The two conditions are equivalent for
-        // this branch — the flag would be redundant, not contradictory.
-        return ['counts' => $this->segmentStatisticsToCounts($segment), 'consolidated' => false];
+        return $this->segmentStatisticsToCounts($segment);
       }
     }
-
-    // Search or an extra filter narrows the list beyond plain membership, so the
-    // cache can't answer it — compute live for that ad-hoc query.
-    return ['counts' => $this->getGroupCountsPerStatus($definition), 'consolidated' => false];
+    return null;
   }
 
   /**
@@ -1420,32 +1437,6 @@ class SubscriberListingRepository extends ListingRepository {
     }
     $counts['trash'] = (int)($stats['trash'] ?? 0);
     return $counts;
-  }
-
-  /**
-   * The current group's count read from the precomputed buckets — identical to
-   * getCount($definition). The one case the buckets can't reproduce exactly is
-   * the "all" tab under a segment filter, where members pending in the list
-   * fall into no status bucket, so that defers to getCount.
-   *
-   * @param array<string, int> $counts
-   */
-  private function countForCurrentGroup(ListingDefinition $definition, array $counts, bool $consolidated): int {
-    $group = $definition->getGroup() ?: 'all';
-    if ($group === 'all') {
-      // When the counts come from the consolidated scan or the per-segment
-      // statistics cache, the status buckets partition the non-deleted members
-      // exactly, so their sum is the "all" total — no extra query needed.
-      if ($consolidated || $this->canUseSegmentStatisticsCache($definition)) {
-        $total = 0;
-        foreach (self::$supportedStatuses as $status) {
-          $total += $counts[$status];
-        }
-        return $total;
-      }
-      return $this->getCount($definition);
-    }
-    return array_key_exists($group, $counts) ? $counts[$group] : $this->getCount($definition);
   }
 
   /**
@@ -1564,17 +1555,7 @@ class SubscriberListingRepository extends ListingRepository {
     $counts = array_fill_keys(self::$supportedStatuses, 0);
     $counts['trash'] = 0;
     foreach (array_keys($counts) as $group) {
-      $groupDefinition = $group === $definition->getGroup() ? $definition : new ListingDefinition(
-        $group,
-        $definition->getFilters(),
-        $definition->getSearch(),
-        $definition->getParameters(),
-        $definition->getSortBy(),
-        $definition->getSortOrder(),
-        $definition->getOffset(),
-        $definition->getLimit(),
-        $definition->getSelection()
-      );
+      $groupDefinition = $group === $definition->getGroup() ? $definition : $this->withGroup($definition, $group);
       $counts[$group] = $this->getCount($groupDefinition);
     }
     return $counts;
