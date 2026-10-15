@@ -151,6 +151,7 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
       $this->assertEquals($subscriber->getWpUserId(), $item['wp_user_id']);
       $this->assertEquals($subscriber->getIsWoocommerceUser(), $item['is_woocommerce_user']);
       $this->assertEquals($subscriber->getStatus(), $item['status']);
+      $this->assertEquals($subscriber->getSource(), $item['source']);
       $this->assertEquals($subscriber->getTrackingConsent(), $item['tracking_consent']);
       $this->assertArrayHasKey('created_at', $item);
       $this->assertArrayHasKey('deleted_at', $item);
