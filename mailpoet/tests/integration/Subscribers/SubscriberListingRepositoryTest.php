@@ -1592,6 +1592,20 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->assertNotContains($withBoth->getId(), $ids);
   }
 
+  public function testSourceNotInKeepsSubscribersWithoutASource() {
+    $imported = (new Subscriber())->withEmail('src-imported@example.com')->withSource(Source::IMPORTED)->create();
+    $form = (new Subscriber())->withEmail('src-form@example.com')->withSource(Source::FORM)->create();
+    $noSource = (new Subscriber())->withEmail('src-null@example.com')->create();
+    $table = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement("UPDATE $table SET source = NULL WHERE id = " . (int)$noSource->getId());
+    $dynamic = $this->createEmailSegment('src-');
+
+    foreach ([[], ['segment_in' => [$dynamic->getId()]]] as $scope) {
+      verify($this->getIds(['source_not_in' => [Source::IMPORTED]] + $scope))->equals([$form->getId(), $noSource->getId()]);
+      verify($this->getIds(['source_in' => [Source::IMPORTED]] + $scope))->equals([$imported->getId()]);
+    }
+  }
+
   public function testSourceInAndNotIn() {
     $form = (new Subscriber())->withSource(Source::FORM)->create();
     $imported = (new Subscriber())->withSource(Source::IMPORTED)->create();
