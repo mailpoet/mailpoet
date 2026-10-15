@@ -1969,6 +1969,16 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($this->repository->getNormalizedStatusIn(['status_in' => ['subscribed', 'unconfirmed'], 'statusInclude' => ['unconfirmed']]))->equals(['unconfirmed']);
   }
 
+  public function testDynamicSegmentAppliesMinUpdatedAt() {
+    $dynamic = $this->createEmailSegment('upd-dyn-');
+    (new Subscriber())->withEmail('upd-dyn-old@example.com')->withUpdatedAt(new Carbon('2022-10-10 13:00:00'))->create();
+    $recent = (new Subscriber())->withEmail('upd-dyn-recent@example.com')->withUpdatedAt(new Carbon('2022-10-12 13:00:00'))->create();
+
+    $filters = ['segment_in' => [$dynamic->getId()], 'minUpdatedAt' => new Carbon('2022-10-11 12:00:00')];
+    verify($this->getIds($filters))->equals([$recent->getId()]);
+    verify($this->repository->getCountAndAllTrashGroups(new ListingDefinition('all', $filters))['count'])->equals(1);
+  }
+
   public function testScoreGtAndLtAreExclusiveAndMinMaxAreInclusive() {
     $low = (new Subscriber())->withEngagementScore(10)->create();
     $edge = (new Subscriber())->withEngagementScore(50)->create();
