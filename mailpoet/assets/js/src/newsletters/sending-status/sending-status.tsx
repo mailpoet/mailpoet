@@ -18,6 +18,7 @@ import {
   getStoredDataViewsFieldIds,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
+  filterToExtraParams,
   type ListingGroup,
   type ListingQueryParams,
 } from 'common/dataviews';
@@ -28,6 +29,15 @@ import {
 import { formatTimezoneLabel } from 'newsletters/timezone-campaign';
 import { buildHash, parseHash } from 'newsletters/listings/hash-state';
 import {
+  RESULT_FIELD,
+  sanitizeSort,
+  sendingStatusHashFilterToRequestFilter,
+  sendingStatusRequestFilterToHashFilter,
+  sendingStatusRequestFilterToViewFilters,
+  sendingStatusViewFiltersToRequestFilter,
+  withoutFields,
+} from 'newsletters/listings/filters';
+import {
   getSendingStatusSubscribers,
   resendFailedEmail,
   type SendingStatusApiError,
@@ -37,6 +47,8 @@ import {
 const listingPerPage = Number(window.mailpoet_listing_per_page);
 
 const SUPPORTED_GROUPS = ['all', 'sent', 'failed', 'unprocessed'] as const;
+
+const SORTABLE_FIELD_IDS = ['subscriberId', RESULT_FIELD];
 
 const DEFAULT_SORT = { field: 'failed', direction: 'desc' as const };
 
@@ -67,8 +79,11 @@ function StatsLink({ newsletter }: { newsletter: Newsletter }) {
   );
 }
 
-function buildFields(includeTimezone: boolean): Field<SendingStatusItem>[] {
-  return [
+function buildFields(
+  includeTimezone: boolean,
+  filterable: boolean,
+): Field<SendingStatusItem>[] {
+  const fields: Field<SendingStatusItem>[] = [
     {
       id: 'subscriberId',
       label: __('Subscriber', 'mailpoet'),
@@ -91,8 +106,16 @@ function buildFields(includeTimezone: boolean): Field<SendingStatusItem>[] {
       ),
     },
     {
-      id: 'failed',
+      id: RESULT_FIELD,
       label: sendingStatusLabel,
+      type: 'text',
+      getValue: ({ item }) => {
+        if (!item.processed) return 'unprocessed';
+        return item.failed ? 'failed' : 'sent';
+      },
+      elements: (
+        Object.keys(statusLabels) as (keyof typeof statusLabels)[]
+      ).map((value) => ({ value, label: statusLabels[value] })),
       enableSorting: true,
       enableGlobalSearch: false,
       render: ({ item }) => {
@@ -143,6 +166,12 @@ function buildFields(includeTimezone: boolean): Field<SendingStatusItem>[] {
       ),
     },
   ];
+  // Only the result column maps to a request filter, and only on the All tab.
+  return fields.map((field) =>
+    field.id === RESULT_FIELD && filterable
+      ? { ...field, filterBy: { operators: ['isAny'] } }
+      : { ...field, filterBy: false },
+  );
 }
 
 export function SendingStatus() {
@@ -179,7 +208,10 @@ export function SendingStatus() {
   );
   const [group, setGroup] = useState<string>(hashState.group ?? 'all');
   const [includeTimezone, setIncludeTimezone] = useState(false);
-  const fields = useMemo(() => buildFields(includeTimezone), [includeTimezone]);
+  const fields = useMemo(
+    () => buildFields(includeTimezone, group === 'all'),
+    [includeTimezone, group],
+  );
 
   const getPreferredView = useCallback(
     () =>
@@ -205,14 +237,26 @@ export function SendingStatus() {
       perPage: hashState.perPage ?? preferredView.perPage,
       page: hashState.page ?? 1,
       search: hashState.search,
-      sort: {
-        field:
-          hashState.orderby ?? preferredView.sort?.field ?? DEFAULT_SORT.field,
-        direction:
-          hashState.order ??
-          preferredView.sort?.direction ??
-          DEFAULT_SORT.direction,
-      },
+      sort: sanitizeSort(
+        {
+          field:
+            hashState.orderby ??
+            preferredView.sort?.field ??
+            DEFAULT_SORT.field,
+          direction:
+            hashState.order ??
+            preferredView.sort?.direction ??
+            DEFAULT_SORT.direction,
+        },
+        SORTABLE_FIELD_IDS,
+        DEFAULT_SORT,
+      ),
+      filters: sendingStatusRequestFilterToViewFilters(
+        sendingStatusHashFilterToRequestFilter(
+          hashState.filter ?? {},
+          (hashState.group ?? 'all') === 'all',
+        ),
+      ),
     };
   });
 
@@ -250,7 +294,23 @@ export function SendingStatus() {
     error: loadError,
     clearError,
     refresh,
-  } = useDataViewsQuery<SendingStatusItem>({ initialView, load });
+  } = useDataViewsQuery<SendingStatusItem>({
+    initialView,
+    load,
+    extraParams: (currentView) =>
+      filterToExtraParams(
+        group === 'all'
+          ? sendingStatusViewFiltersToRequestFilter(currentView.filters)
+          : {},
+      ),
+  });
+  const requestFilter = useMemo(
+    () =>
+      group === 'all'
+        ? sendingStatusViewFiltersToRequestFilter(view.filters)
+        : {},
+    [group, view.filters],
+  );
   const persistedViewChange = usePersistedDataViewsPreference(
     'sending-status',
     view,
@@ -318,7 +378,7 @@ export function SendingStatus() {
       baseUrl,
       group,
       view,
-      {},
+      sendingStatusRequestFilterToHashFilter(requestFilter),
       {
         sort: preferredView.sort?.field ?? DEFAULT_SORT.field,
         order: preferredView.sort?.direction ?? DEFAULT_SORT.direction,
@@ -328,14 +388,15 @@ export function SendingStatus() {
     if (window.location.hash !== hash) {
       window.history.replaceState(null, '', hash);
     }
-  }, [baseUrl, getPreferredView, group, view]);
+  }, [baseUrl, getPreferredView, group, requestFilter, view]);
 
   useEffect(() => {
     const applyHash = (): void => {
       const next = parseHash(window.location.hash, baseUrl, [
         ...SUPPORTED_GROUPS,
       ]);
-      setGroup(next.group ?? 'all');
+      const nextGroup = next.group ?? 'all';
+      setGroup(nextGroup);
       clearError();
       // Fill hash segments the URL omits from the preference-merged defaults
       // (not the in-memory view) so back/forward resolves a URL exactly like
@@ -346,14 +407,24 @@ export function SendingStatus() {
         page: next.page ?? 1,
         perPage: next.perPage ?? preferredView.perPage,
         search: next.search ?? '',
-        sort: {
-          field:
-            next.orderby ?? preferredView.sort?.field ?? DEFAULT_SORT.field,
-          direction:
-            next.order ??
-            preferredView.sort?.direction ??
-            DEFAULT_SORT.direction,
-        },
+        sort: sanitizeSort(
+          {
+            field:
+              next.orderby ?? preferredView.sort?.field ?? DEFAULT_SORT.field,
+            direction:
+              next.order ??
+              preferredView.sort?.direction ??
+              DEFAULT_SORT.direction,
+          },
+          SORTABLE_FIELD_IDS,
+          DEFAULT_SORT,
+        ),
+        filters: sendingStatusRequestFilterToViewFilters(
+          sendingStatusHashFilterToRequestFilter(
+            next.filter ?? {},
+            nextGroup === 'all',
+          ),
+        ),
       }));
     };
     window.addEventListener('hashchange', applyHash);
@@ -374,7 +445,15 @@ export function SendingStatus() {
       if (nextGroup === group) return;
       setGroup(nextGroup);
       clearError();
-      setView((currentView) => ({ ...currentView, page: 1 }));
+      // The result filter exists only on the All tab; drop it in the same update.
+      setView((currentView) => ({
+        ...currentView,
+        page: 1,
+        filters:
+          nextGroup === 'all'
+            ? currentView.filters
+            : withoutFields(currentView.filters, [RESULT_FIELD]),
+      }));
     },
     [clearError, group, setView],
   );
@@ -521,10 +600,12 @@ export function SendingStatus() {
         >
           <div className="mailpoet-dataviews__toolbar">
             <DataViews.Search label={__('Search', 'mailpoet')} />
+            <DataViews.FiltersToggle />
             <div className="mailpoet-dataviews__toolbar-end">
               <DataViews.ViewConfig />
             </div>
           </div>
+          <DataViews.Filters />
           <DataViews.Layout />
           <DataViews.Footer />
         </DataViews>

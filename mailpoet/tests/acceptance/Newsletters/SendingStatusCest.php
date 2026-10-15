@@ -43,6 +43,67 @@ class SendingStatusCest {
     $this->checkSubscriber($i, $taskId, $unluckySubscriber, 'Failed', 'Oh no!');
   }
 
+  public function filtersBySendResult(\AcceptanceTester $i) {
+    $i->wantTo('Filter the sending status by the send result');
+    [$newsletter, $lucky, $unlucky, $taskId] = $this->createSentNewsletter();
+    $i->login();
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/sending-status/' . $newsletter->getId());
+    $this->checkSubscriber($i, $taskId, $lucky, 'Sent');
+    $this->checkSubscriber($i, $taskId, $unlucky, 'Failed', 'Oh no!');
+
+    $i->applyDataViewsFilter('Sending status', ['Failed']);
+    $i->waitForElementNotVisible($this->rowSelector($taskId, $lucky));
+    $i->seeElement($this->rowSelector($taskId, $unlucky));
+    $i->seeInCurrentUrl('result=failed');
+    $i->waitForElement($this->filterChip('Sending status'));
+
+    $i->reloadPage();
+    $i->waitForElement($this->filterChip('Sending status'));
+    $i->waitForElement($this->rowSelector($taskId, $unlucky));
+    $i->dontSeeElement($this->rowSelector($taskId, $lucky));
+  }
+
+  public function dropsResultFilterOnOtherTabs(\AcceptanceTester $i) {
+    $i->wantTo('Remove the send result filter when leaving the All tab');
+    [$newsletter, $lucky, $unlucky, $taskId] = $this->createSentNewsletter();
+    $i->login();
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/sending-status/' . $newsletter->getId() . '/filter[result=failed]');
+    $i->waitForElement($this->filterChip('Sending status'));
+    $i->waitForElement($this->rowSelector($taskId, $unlucky));
+    $i->dontSeeElement($this->rowSelector($taskId, $lucky));
+
+    $i->changeGroupInListingFilter('sent');
+    $i->waitForElement($this->rowSelector($taskId, $lucky));
+    $i->waitForElementNotVisible($this->filterChip('Sending status'));
+    $i->dontSeeInCurrentUrl('result=');
+
+    $i->changeGroupInListingFilter('all');
+    $i->waitForElement($this->rowSelector($taskId, $unlucky));
+    $i->seeElement($this->rowSelector($taskId, $lucky));
+    $i->dontSeeElement($this->filterChip('Sending status'));
+  }
+
+  private function createSentNewsletter(): array {
+    $lucky = (new Subscriber)->withFirstName('Lucky')->withLastName('Luke')->create();
+    $unlucky = (new Subscriber)->withFirstName('Unlucky')->withLastName('John')->create();
+    $newsletter = (new Newsletter)
+      ->withSubject('Testing sending status filter')
+      ->withSentStatus()
+      ->withSendingQueue(['count_processed' => 2, 'count_total' => 2])
+      ->withSubscriber($lucky)
+      ->withSubscriber($unlucky, ['failed' => 1, 'error' => 'Oh no!'])
+      ->create();
+    return [$newsletter, $lucky, $unlucky, $newsletter->getLatestQueue()->getTask()->getId()];
+  }
+
+  private function rowSelector($taskId, $subscriber): string {
+    return '[data-automation-id="name_' . $taskId . '_' . $subscriber->getId() . '"]';
+  }
+
+  private function filterChip(string $name): array {
+    return ['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip-container")][contains(., "' . $name . '")]'];
+  }
+
   private function checkSubscriber(\AcceptanceTester $i, $taskId, $subscriber, $status, $error = false) {
     $nameSelector = '[data-automation-id="name_' . $taskId . '_' . $subscriber->getId() . '"]';
     $statusSelector = '[data-automation-id="status_' . $taskId . '_' . $subscriber->getId() . '"]';
