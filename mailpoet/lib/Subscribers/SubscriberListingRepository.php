@@ -277,12 +277,7 @@ class SubscriberListingRepository extends ListingRepository {
       $query->andWhere($this->getStatusPredicate($group, $hasListJoin));
     }
 
-    // The public API has never applied minUpdatedAt to a dynamic list.
-    if (
-      isset($filters['minUpdatedAt'])
-      && $filters['minUpdatedAt'] instanceof \DateTimeInterface
-      && !$this->hasDynamicSegmentFilter($definition)
-    ) {
+    if (isset($filters['minUpdatedAt']) && $filters['minUpdatedAt'] instanceof \DateTimeInterface) {
       $query->andWhere('s.updated_at >= :updated_at')
         ->setParameter('updated_at', $filters['minUpdatedAt']->format('Y-m-d H:i:s'), ParameterType::STRING);
     }
