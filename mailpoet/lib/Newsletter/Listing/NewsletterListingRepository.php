@@ -3,12 +3,22 @@
 namespace MailPoet\Newsletter\Listing;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
+use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Util\Helpers;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class NewsletterListingRepository extends ListingRepository {
+  /**
+   * Filter-only status: a sending email whose latest send is paused. It is not a
+   * stored status and is deliberately absent from $supportedStatuses (listing groups).
+   */
+  public const FILTER_STATUS_PAUSED = 'paused';
+
   private static $supportedStatuses = [
     NewsletterEntity::STATUS_DRAFT,
     NewsletterEntity::STATUS_SCHEDULED,
@@ -25,6 +35,35 @@ class NewsletterListingRepository extends ListingRepository {
     NewsletterEntity::TYPE_NOTIFICATION,
     NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
   ];
+
+  /**
+   * @return string[]
+   */
+  public static function getSupportedStatusesForType(?string $type): array {
+    switch ($type) {
+      case NewsletterEntity::TYPE_STANDARD:
+        return [
+          NewsletterEntity::STATUS_DRAFT,
+          NewsletterEntity::STATUS_SCHEDULED,
+          NewsletterEntity::STATUS_SENDING,
+          self::FILTER_STATUS_PAUSED,
+          NewsletterEntity::STATUS_SENT,
+        ];
+      case NewsletterEntity::TYPE_NOTIFICATION_HISTORY:
+        return [
+          NewsletterEntity::STATUS_SENDING,
+          self::FILTER_STATUS_PAUSED,
+          NewsletterEntity::STATUS_SENT,
+        ];
+      case NewsletterEntity::TYPE_NOTIFICATION:
+      case NewsletterEntity::TYPE_RE_ENGAGEMENT:
+      case NewsletterEntity::TYPE_WELCOME:
+      case NewsletterEntity::TYPE_AUTOMATIC:
+        return [NewsletterEntity::STATUS_ACTIVE, NewsletterEntity::STATUS_DRAFT];
+      default:
+        return [];
+    }
+  }
 
   public function getFilters(ListingDefinition $definition): array {
     $group = $definition->getGroup();
@@ -221,9 +260,24 @@ class NewsletterListingRepository extends ListingRepository {
     }
   }
 
+  protected function applyConstraints(QueryBuilder $queryBuilder, ListingDefinition $definition) {
+    parent::applyConstraints($queryBuilder, $definition);
+    // The status filter depends on the email type, which applyFilters() does not receive.
+    $type = $definition->getParameters()['type'] ?? null;
+    $this->applyStatusFilter(
+      $queryBuilder,
+      $definition->getFilters()['status'] ?? null,
+      is_string($type) ? $type : null
+    );
+  }
+
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {
     $segmentId = $filters['segment'] ?? null;
-    if ($segmentId && is_numeric($segmentId)) {
+    if ($segmentId !== null && $segmentId !== '') {
+      if (!$this->isSegmentId($segmentId)) {
+        $queryBuilder->andWhere('1 = 0');
+        return;
+      }
       $queryBuilder
         ->join('n.newsletterSegments', 'ns')
         ->andWhere('ns.segment = :segmentId')
@@ -263,17 +317,13 @@ class NewsletterListingRepository extends ListingRepository {
 
     // Filter by segment IDs with advanced operators
     $segmentIds = $filters['segment_ids'] ?? null;
-    if (!$segmentIds || !is_array($segmentIds)) {
+    if ($segmentIds === null || $segmentIds === '' || $segmentIds === []) {
       return;
     }
-    $segmentIds = array_filter($segmentIds, 'is_numeric');
-    $segmentIds = array_map('intval', $segmentIds);
-    if (empty($segmentIds)) {
-      return;
-    }
-
     $segmentOperator = $filters['segment_operator'] ?? null;
-    if (!in_array($segmentOperator, ['isAny', 'isNone'], true)) {
+    $segmentIds = $this->normalizeSegmentIds($segmentIds);
+    if ($segmentIds === null || !in_array($segmentOperator, ['isAny', 'isNone'], true)) {
+      $queryBuilder->andWhere('1 = 0');
       return;
     }
 
@@ -294,6 +344,97 @@ class NewsletterListingRepository extends ListingRepository {
         ->andWhere('NOT EXISTS (' . $subQuery . ')')
         ->setParameter('segmentIdsNone', $segmentIds);
     }
+  }
+
+  /**
+   * @param mixed $segmentIds
+   * @return int[]|null Null when the value is not a list of list IDs
+   */
+  private function normalizeSegmentIds($segmentIds): ?array {
+    if (!is_array($segmentIds)) {
+      return null;
+    }
+    $ids = [];
+    foreach ($segmentIds as $id) {
+      if (is_int($id) && $id >= 0) {
+        $ids[] = $id;
+      } elseif (is_string($id) && ctype_digit($id)) {
+        $ids[] = (int)$id;
+      } else {
+        return null;
+      }
+    }
+    return $ids;
+  }
+
+  /** @param mixed $value */
+  private function isSegmentId($value): bool {
+    return is_int($value) ? $value >= 0 : (is_string($value) && ctype_digit($value));
+  }
+
+  /**
+   * @param mixed $status A status string or a list of them
+   */
+  private function applyStatusFilter(QueryBuilder $queryBuilder, $status, ?string $type): void {
+    if ($status === null || $status === '' || $status === []) {
+      return;
+    }
+    $requested = array_filter(is_array($status) ? $status : [$status], 'is_string');
+    $statuses = array_values(array_intersect(self::getSupportedStatusesForType($type), $requested));
+    if ($statuses === []) {
+      $queryBuilder->andWhere('1 = 0');
+      return;
+    }
+
+    $conditions = [];
+    $plainStatuses = array_values(array_diff($statuses, [NewsletterEntity::STATUS_SENDING, self::FILTER_STATUS_PAUSED]));
+    if ($plainStatuses) {
+      $conditions[] = 'n.status IN (:filterStatuses)';
+      $queryBuilder->setParameter('filterStatuses', $plainStatuses);
+    }
+    $wantsSending = in_array(NewsletterEntity::STATUS_SENDING, $statuses, true);
+    $wantsPaused = in_array(self::FILTER_STATUS_PAUSED, $statuses, true);
+    if ($wantsSending || $wantsPaused) {
+      $queryBuilder->setParameter('filterSendingStatus', NewsletterEntity::STATUS_SENDING);
+      if ($wantsSending && $wantsPaused) {
+        $conditions[] = 'n.status = :filterSendingStatus';
+      } else {
+        $isPaused = $this->getPausedExistsDql($queryBuilder);
+        $conditions[] = 'n.status = :filterSendingStatus AND ' . ($wantsPaused ? '' : 'NOT ') . $isPaused;
+      }
+    }
+    $queryBuilder->andWhere('(' . implode(') OR (', $conditions) . ')');
+  }
+
+  /**
+   * Mirrors the "paused" label: a non-time-zone email is paused when its latest
+   * non-replay queue is paused, a time zone campaign when any of its batches is.
+   * Known gap: batches of an older time zone campaign also count; those queues are
+   * deleted when a campaign is rescheduled, so this needs a started campaign to be
+   * replaced by a newer queue.
+   */
+  private function getPausedExistsDql(QueryBuilder $queryBuilder): string {
+    $entityManager = $queryBuilder->getEntityManager();
+    $latestQueueId = $entityManager->createQueryBuilder()
+      ->select('MAX(pausedLatest.id)')
+      ->from(SendingQueueEntity::class, 'pausedLatest')
+      ->where('pausedLatest.newsletter = n.id')
+      ->andWhere('pausedLatest.meta IS NULL OR pausedLatest.meta NOT LIKE :pausedReplayMeta')
+      ->getDQL();
+    $pausedQueue = $entityManager->createQueryBuilder()
+      ->select('1')
+      ->from(SendingQueueEntity::class, 'pausedQueue')
+      ->join('pausedQueue.task', 'pausedTask')
+      ->where('pausedQueue.newsletter = n.id')
+      ->andWhere('pausedTask.status = :pausedTaskStatus')
+      ->andWhere('pausedQueue.meta IS NULL OR pausedQueue.meta NOT LIKE :pausedReplayMeta')
+      ->andWhere("pausedQueue.id = ($latestQueueId) OR pausedQueue.meta LIKE :pausedTimeZoneMeta")
+      ->getDQL();
+    $queryBuilder
+      ->setParameter('pausedTaskStatus', ScheduledTaskEntity::STATUS_PAUSED)
+      ->setParameter('pausedReplayMeta', NewsletterReplayMetadata::getMetaLikePattern())
+      ->setParameter('pausedTimeZoneMeta', '%"' . TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE . '":true%');
+    return 'EXISTS (' . $pausedQueue . ')';
   }
 
   private function isValidDateTime(string $dateTime): bool {
@@ -325,6 +466,7 @@ class NewsletterListingRepository extends ListingRepository {
     if ($sortBy === 'name') {
       $queryBuilder->addSelect('CONCAT(COALESCE(wpPost.postTitle, \'\'), n.subject) AS HIDDEN sortingName');
       $queryBuilder->addOrderBy("sortingName", $sortOrder);
+      $queryBuilder->addOrderBy('n.id', $sortOrder);
       return;
     }
     if ($sortBy === 'sentAt') {
@@ -332,6 +474,9 @@ class NewsletterListingRepository extends ListingRepository {
       $queryBuilder->addOrderBy('sentAtIsNull', 'DESC');
     }
     $queryBuilder->addOrderBy("n.$sortBy", $sortOrder);
+    if ($sortBy !== 'id') {
+      $queryBuilder->addOrderBy('n.id', $sortOrder);
+    }
   }
 
   private function applyType(QueryBuilder $queryBuilder, string $type, ?string $group = null) {

@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\RestApi\Endpoints;
 
 use MailPoet\API\REST\ApiException;
 use MailPoet\API\REST\Endpoint;
+use MailPoet\API\REST\ListingRequestValidationTrait;
 use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\Config\AccessControl;
@@ -14,6 +15,7 @@ use MailPoet\Listing\ListingDefinition;
 use MailPoet\Newsletter\BulkActionController;
 use MailPoet\Newsletter\BulkActionException;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
+use MailPoet\Newsletter\RestApi\NewslettersFilterValidationTrait;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Statistics\Export\StatisticsExporter;
 use MailPoet\Util\License\Features\CapabilitiesManager;
@@ -30,7 +32,16 @@ use MailPoetVendor\Carbon\Carbon;
  * capability instead of the bulk dispatcher's plain list of supported actions.
  */
 class NewslettersBulkActionEndpoint extends Endpoint {
+  use ListingRequestValidationTrait;
+  use NewslettersFilterValidationTrait;
+
   public const ACTION_EXPORT_STATS = 'export_stats';
+
+  // Referenced by ListingRequestValidationTrait's pagination helpers, which this
+  // endpoint composes for filter/date validation but never calls. Values mirror
+  // AbstractListingEndpoint.
+  private const MAX_PER_PAGE = 100;
+  private const MAX_PAGE = 100000;
 
   /** @var ListingHandler */
   private $listingHandler;
@@ -168,6 +179,10 @@ class NewslettersBulkActionEndpoint extends Endpoint {
     ]);
   }
 
+  protected function getListingValidationErrorPrefix(): string {
+    return 'newsletters';
+  }
+
   /**
    * @return int[]
    */
@@ -185,6 +200,7 @@ class NewslettersBulkActionEndpoint extends Endpoint {
     $groupParam = $request->getParam('group');
     $typeParam = $request->getParam('type');
     $parentIdParam = $request->getParam('parent_id');
+    $this->validateNewslettersFilters($filter, $typeParam);
 
     $params = [];
     if (is_string($typeParam) && in_array($typeParam, NewslettersListingEndpoint::SUPPORTED_TYPES, true)) {

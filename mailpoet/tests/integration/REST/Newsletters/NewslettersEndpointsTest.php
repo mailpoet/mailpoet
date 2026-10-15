@@ -3,6 +3,7 @@
 namespace MailPoet\Test\REST\Newsletters;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\REST\Test;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
@@ -32,6 +33,166 @@ class NewslettersEndpointsTest extends Test {
   public function _after() {
     parent::_after();
     wp_set_current_user(0);
+  }
+
+  public function testListingRejectsInvalidSortAndFilters(): void {
+    $cases = [
+      'unknown orderby' => [['orderby' => 'segments'], 'mailpoet_newsletters_invalid_orderby'],
+      'camelCase orderby' => [['orderby' => 'sentAt'], 'mailpoet_newsletters_invalid_orderby'],
+      'unknown sort_by' => [['sort_by' => 'created_at'], 'mailpoet_newsletters_invalid_orderby'],
+      'bad order' => [['order' => 'sideways'], 'mailpoet_newsletters_invalid_order'],
+      'unknown filter key' => [['filter' => ['bogus' => '1']], 'mailpoet_newsletters_invalid_filter'],
+      'status invalid for standard' => [['filter' => ['status' => 'active']], 'mailpoet_newsletters_invalid_status'],
+      'paused invalid for notification' => [['type' => 'notification', 'filter' => ['status' => 'paused']], 'mailpoet_newsletters_invalid_status'],
+      'status without type' => [['type' => '', 'filter' => ['status' => 'draft']], 'mailpoet_newsletters_invalid_status'],
+      'status in list invalid' => [['filter' => ['status' => ['draft', 'bogus']]], 'mailpoet_newsletters_invalid_status'],
+      'bad segment' => [['filter' => ['segment' => 'abc']], 'mailpoet_newsletters_invalid_segment'],
+      'bad segment_ids' => [['filter' => ['segment_ids' => ['abc'], 'segment_operator' => 'isAny']], 'mailpoet_newsletters_invalid_segment_ids'],
+      'bad segment_operator' => [['filter' => ['segment_ids' => ['1'], 'segment_operator' => 'bogus']], 'mailpoet_newsletters_invalid_segment_operator'],
+      'bad date shape' => [['filter' => ['sent_at_from' => '2025-1-5']], 'mailpoet_newsletters_invalid_sent_at_from'],
+      'from after to' => [['filter' => ['sent_at_from' => '2025-02-02', 'sent_at_to' => '2025-02-01']], 'mailpoet_newsletters_invalid_date_range'],
+    ];
+    foreach ($cases as $name => [$query, $code]) {
+      $query = array_merge(['type' => NewsletterEntity::TYPE_STANDARD], $query);
+      $response = $this->get(self::LISTING_PATH, ['query' => $query]);
+      $this->assertIsArray($response, $name);
+      $this->assertSame($code, $response['code'] ?? null, $name);
+      $this->assertSame(400, $this->getErrorStatus($response), $name);
+    }
+  }
+
+  public function testListingKeepsAcceptingTodaysRequests(): void {
+    $queries = [
+      ['filter' => ['segment' => '']],
+      ['filter' => ['segment' => '3']],
+      ['orderby' => 'name', 'order' => 'asc'],
+      ['orderby' => 'subject', 'order' => 'DESC'],
+      ['orderby' => 'sent_at', 'order' => 'desc'],
+      ['orderby' => 'updated_at', 'order' => 'desc'],
+      ['sort_by' => 'status', 'sort_order' => 'asc'],
+      ['filter' => ['segment_ids' => ['3'], 'segment_operator' => 'isNone', 'sent_at_from' => '2025-01-01', 'sent_at_to' => '2025-01-31']],
+    ];
+    foreach ($queries as $query) {
+      $response = $this->get(self::LISTING_PATH, ['query' => array_merge(['type' => 'standard'], $query)]);
+      $this->assertIsArray($response);
+      $this->assertArrayNotHasKey('code', $response, (string)json_encode($query));
+      $this->assertIsArray($this->getPayload($response)['items'] ?? null, (string)json_encode($query));
+    }
+  }
+
+  public function testListingFiltersByStatusPerType(): void {
+    $suffix = uniqid();
+    foreach (['welcome', 'automatic', 're_engagement', 'notification'] as $type) {
+      $active = (new NewsletterFactory())->withSubject("{$type}_active_{$suffix}")->withType($type)->withStatus(NewsletterEntity::STATUS_ACTIVE)->create();
+      (new NewsletterFactory())->withSubject("{$type}_draft_{$suffix}")->withType($type)->withStatus(NewsletterEntity::STATUS_DRAFT)->create();
+      $this->assertSame([$active->getId()], $this->listIds(['type' => $type, 'filter' => ['status' => ['active']]]), $type);
+    }
+
+    $draft = (new NewsletterFactory())->withSubject("std_draft_{$suffix}")->withType('standard')->withStatus(NewsletterEntity::STATUS_DRAFT)->create();
+    (new NewsletterFactory())->withSubject("std_sent_{$suffix}")->withType('standard')->withStatus(NewsletterEntity::STATUS_SENT)->create();
+    $this->assertSame([$draft->getId()], $this->listIds(['type' => 'standard', 'filter' => ['status' => 'draft']]));
+
+    $paused = $this->createSending(ScheduledTaskEntity::STATUS_PAUSED, "hist_paused_{$suffix}", 'notification_history');
+    $this->createSending(ScheduledTaskEntity::STATUS_COMPLETED, "hist_running_{$suffix}", 'notification_history');
+    $this->assertSame([$paused->getId()], $this->listIds(['type' => 'notification_history', 'filter' => ['status' => 'paused']]));
+  }
+
+  public function testBulkActionRejectsInvalidFilters(): void {
+    $newsletter = (new NewsletterFactory())->withSubject('Keep_' . uniqid())->withType('standard')->create();
+    $cases = [
+      'unknown key' => [['bogus' => '1'], 'mailpoet_newsletters_invalid_filter'],
+      'invalid status' => [['status' => 'active'], 'mailpoet_newsletters_invalid_status'],
+      'bad date' => [['sent_at_to' => 'tomorrow'], 'mailpoet_newsletters_invalid_sent_at_to'],
+    ];
+    foreach ($cases as $name => [$filter, $code]) {
+      $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+        'action' => 'trash',
+        'type' => 'standard',
+        'selection' => [],
+        'select_all' => true,
+        'filter' => $filter,
+      ]]);
+      $this->assertIsArray($response, $name);
+      $this->assertSame($code, $response['code'] ?? null, $name);
+      $this->assertSame(400, $this->getErrorStatus($response), $name);
+    }
+    $this->newslettersRepository->refresh($newsletter);
+    $this->assertNull($newsletter->getDeletedAt());
+  }
+
+  public function testBulkTrashSelectAllHonoursStatusFilter(): void {
+    $suffix = uniqid();
+    $draft = (new NewsletterFactory())->withSubject("Draft_{$suffix}")->withType('standard')->withStatus(NewsletterEntity::STATUS_DRAFT)->create();
+    $sent = (new NewsletterFactory())->withSubject("Sent_{$suffix}")->withType('standard')->withStatus(NewsletterEntity::STATUS_SENT)->create();
+
+    $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+      'action' => 'trash',
+      'type' => 'standard',
+      'selection' => [],
+      'select_all' => true,
+      'filter' => ['status' => ['draft']],
+    ]]);
+
+    $this->assertIsArray($response);
+    $this->assertSame(1, $this->getPayload($response)['count']);
+    $this->newslettersRepository->refresh($draft);
+    $this->newslettersRepository->refresh($sent);
+    $this->assertNotNull($draft->getDeletedAt());
+    $this->assertNull($sent->getDeletedAt());
+  }
+
+  public function testBulkTrashSelectAllHonoursPausedFilter(): void {
+    $suffix = uniqid();
+    $paused = $this->createSending(ScheduledTaskEntity::STATUS_PAUSED, "Paused_{$suffix}");
+    $running = $this->createSending(ScheduledTaskEntity::STATUS_COMPLETED, "Running_{$suffix}");
+
+    $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+      'action' => 'trash',
+      'type' => 'standard',
+      'selection' => [],
+      'select_all' => true,
+      'filter' => ['status' => 'paused'],
+    ]]);
+
+    $this->assertIsArray($response);
+    $this->assertSame(1, $this->getPayload($response)['count']);
+    $this->newslettersRepository->refresh($paused);
+    $this->newslettersRepository->refresh($running);
+    $this->assertNotNull($paused->getDeletedAt());
+    $this->assertNull($running->getDeletedAt());
+  }
+
+  private function createSending(string $taskStatus, string $subject, string $type = 'standard'): NewsletterEntity {
+    return (new NewsletterFactory())
+      ->withSubject($subject)
+      ->withType($type)
+      ->withStatus(NewsletterEntity::STATUS_SENDING)
+      ->withSendingQueue(['status' => $taskStatus])
+      ->create();
+  }
+
+  /** @return int[] */
+  private function listIds(array $query): array {
+    $response = $this->get(self::LISTING_PATH, ['query' => array_merge(['per_page' => 100], $query)]);
+    $this->assertIsArray($response);
+    $this->assertArrayNotHasKey('code', $response, (string)json_encode($response));
+    $items = $this->getPayload($response)['items'] ?? [];
+    $this->assertIsArray($items);
+    return array_map(function($id): int {
+      return (int)$id;
+    }, array_column($items, 'id'));
+  }
+
+  private function getErrorStatus(array $response): ?int {
+    $data = $response['data'] ?? null;
+    $status = is_array($data) ? ($data['status'] ?? null) : null;
+    return is_int($status) ? $status : null;
+  }
+
+  private function getPayload(array $response): array {
+    $data = $response['data'] ?? null;
+    $this->assertIsArray($data);
+    return $data;
   }
 
   public function testListingReturnsItemsForTypeFilter(): void {
