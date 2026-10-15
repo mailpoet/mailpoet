@@ -9,6 +9,8 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Listing\Handler;
+use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
 
@@ -774,5 +776,194 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     ]));
     verify($newsletters)->arrayCount(1);
     verify($newsletters[0]->getSubject())->equals('Newsletter 2');
+  }
+
+  public function testItFiltersBySingleStatus() {
+    $draft = $this->createStandard('Draft', NewsletterEntity::STATUS_DRAFT);
+    $this->createStandard('Sent', NewsletterEntity::STATUS_SENT);
+
+    $this->assertSame([$draft->getId()], $this->listIds(['status' => 'draft'], 'standard'));
+    $this->assertSame([$draft->getId()], $this->listIds(['status' => ['draft']], 'standard'));
+  }
+
+  public function testItFiltersByMultipleStatuses() {
+    $draft = $this->createStandard('Draft', NewsletterEntity::STATUS_DRAFT);
+    $sent = $this->createStandard('Sent', NewsletterEntity::STATUS_SENT);
+    $this->createStandard('Scheduled', NewsletterEntity::STATUS_SCHEDULED);
+
+    $this->assertEqualsCanonicalizing(
+      [$draft->getId(), $sent->getId()],
+      $this->listIds(['status' => ['draft', 'sent']], 'standard')
+    );
+  }
+
+  public function testItSeparatesPausedFromSendingOnStandardEmails() {
+    $running = $this->createSendingWithTask(ScheduledTaskEntity::STATUS_COMPLETED, 'Running');
+    $paused = $this->createSendingWithTask(ScheduledTaskEntity::STATUS_PAUSED, 'Paused');
+
+    $this->assertSame([$paused->getId()], $this->listIds(['status' => 'paused'], 'standard'));
+    $this->assertSame([$running->getId()], $this->listIds(['status' => 'sending'], 'standard'));
+    $this->assertEqualsCanonicalizing(
+      [$running->getId(), $paused->getId()],
+      $this->listIds(['status' => ['sending', 'paused']], 'standard')
+    );
+  }
+
+  public function testItCombinesPausedWithPlainStatuses() {
+    $draft = $this->createStandard('Draft', NewsletterEntity::STATUS_DRAFT);
+    $paused = $this->createSendingWithTask(ScheduledTaskEntity::STATUS_PAUSED, 'Paused');
+    $this->createSendingWithTask(ScheduledTaskEntity::STATUS_COMPLETED, 'Running');
+
+    $this->assertEqualsCanonicalizing(
+      [$draft->getId(), $paused->getId()],
+      $this->listIds(['status' => ['draft', 'paused']], 'standard')
+    );
+  }
+
+  public function testReplayOnlyPausedQueueIsNotPaused() {
+    $newsletter = (new Newsletter())
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withStatus(NewsletterEntity::STATUS_SENDING)
+      ->withSubject('Replay paused')
+      ->withSendingQueue(['status' => ScheduledTaskEntity::STATUS_COMPLETED])
+      ->withSendingQueue([
+        'status' => ScheduledTaskEntity::STATUS_PAUSED,
+        'meta' => [NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true],
+      ])
+      ->create();
+
+    $this->assertSame([], $this->listIds(['status' => 'paused'], 'standard'));
+    $this->assertSame([$newsletter->getId()], $this->listIds(['status' => 'sending'], 'standard'));
+  }
+
+  public function testItUsesLatestNonReplayQueueForPausedStatus() {
+    $newsletter = (new Newsletter())
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withStatus(NewsletterEntity::STATUS_SENDING)
+      ->withSubject('Older paused')
+      ->withSendingQueue(['status' => ScheduledTaskEntity::STATUS_PAUSED])
+      ->withSendingQueue(['status' => ScheduledTaskEntity::STATUS_COMPLETED])
+      ->create();
+
+    $this->assertSame([], $this->listIds(['status' => 'paused'], 'standard'));
+    $this->assertSame([$newsletter->getId()], $this->listIds(['status' => 'sending'], 'standard'));
+  }
+
+  public function testTimeZoneCampaignWithPausedBatchIsPaused() {
+    $meta = [
+      TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+      TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => 'campaign-1',
+    ];
+    // The latest batch is completed, an earlier batch is paused: the label shows "paused".
+    $newsletter = (new Newsletter())
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withStatus(NewsletterEntity::STATUS_SENDING)
+      ->withSubject('Time zone')
+      ->withSendingQueue(['status' => ScheduledTaskEntity::STATUS_PAUSED, 'meta' => $meta])
+      ->withSendingQueue(['status' => ScheduledTaskEntity::STATUS_COMPLETED, 'meta' => $meta])
+      ->create();
+
+    $this->assertSame([$newsletter->getId()], $this->listIds(['status' => 'paused'], 'standard'));
+    $this->assertSame([], $this->listIds(['status' => 'sending'], 'standard'));
+  }
+
+  public function testItFiltersPausedNotificationHistory() {
+    $paused = $this->createSendingWithTask(ScheduledTaskEntity::STATUS_PAUSED, 'Paused history', NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+    $this->createSendingWithTask(ScheduledTaskEntity::STATUS_COMPLETED, 'Running history', NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+
+    $this->assertSame([$paused->getId()], $this->listIds(['status' => 'paused'], NewsletterEntity::TYPE_NOTIFICATION_HISTORY));
+  }
+
+  public function testItReturnsSupportedStatusesPerType() {
+    $this->assertSame(['draft', 'scheduled', 'sending', 'paused', 'sent'], NewsletterListingRepository::getSupportedStatusesForType('standard'));
+    $this->assertSame(['sending', 'paused', 'sent'], NewsletterListingRepository::getSupportedStatusesForType('notification_history'));
+    foreach (['notification', 're_engagement', 'welcome', 'automatic'] as $type) {
+      $this->assertSame(['active', 'draft'], NewsletterListingRepository::getSupportedStatusesForType($type));
+    }
+    $this->assertSame([], NewsletterListingRepository::getSupportedStatusesForType(null));
+    $this->assertSame([], NewsletterListingRepository::getSupportedStatusesForType('unknown'));
+  }
+
+  public function testUnsupportedStatusMatchesNothing() {
+    $this->createStandard('Draft', NewsletterEntity::STATUS_DRAFT);
+    $this->createStandard('Sent', NewsletterEntity::STATUS_SENT);
+
+    $this->assertSame([], $this->listIds(['status' => 'active'], 'standard'));
+    $this->assertSame([], $this->listIds(['status' => ['active', 'bogus']], 'standard'));
+    $this->assertSame([], $this->listIds(['status' => 'draft'], null));
+    $this->assertSame([], $this->listIds(['status' => 'draft'], 'unknown'));
+  }
+
+  public function testStatusFilterCombinesWithGroupAndType() {
+    $this->createStandard('Draft', NewsletterEntity::STATUS_DRAFT);
+    $sent = $this->createStandard('Sent', NewsletterEntity::STATUS_SENT);
+    (new Newsletter())->withType(NewsletterEntity::TYPE_NOTIFICATION)->withStatus(NewsletterEntity::STATUS_ACTIVE)->withSubject('Notif')->create();
+
+    $this->assertSame([$sent->getId()], $this->listIds(['status' => ['draft', 'sent']], 'standard', 'sent'));
+    $this->assertSame([], $this->listIds(['status' => 'draft'], 'standard', 'sent'));
+    $this->assertSame([], $this->listIds(['status' => 'draft'], 'standard', 'trash'));
+  }
+
+  public function testInvalidSegmentFiltersMatchNothing() {
+    $segment = new SegmentEntity('Segment', SegmentEntity::TYPE_DEFAULT, 'Segment description');
+    $this->entityManager->persist($segment);
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setSubject('With segment');
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->persist(new NewsletterSegmentEntity($newsletter, $segment));
+    $this->entityManager->flush();
+    $id = $segment->getId();
+
+    $this->assertCount(1, $this->listIds(['segment_ids' => [$id], 'segment_operator' => 'isAny'], null));
+    $this->assertSame([], $this->listIds(['segment_ids' => [$id], 'segment_operator' => 'bogus'], null));
+    $this->assertSame([], $this->listIds(['segment_ids' => [$id], 'segment_operator' => null], null));
+    $this->assertSame([], $this->listIds(['segment_ids' => ['abc'], 'segment_operator' => 'isAny'], null));
+    $this->assertSame([], $this->listIds(['segment_ids' => [$id, 'abc'], 'segment_operator' => 'isNone'], null));
+    $this->assertCount(1, $this->listIds(['segment' => ''], null));
+  }
+
+  public function testSortingIsStableWithTies() {
+    $first = $this->createStandard('Same', NewsletterEntity::STATUS_DRAFT);
+    $second = $this->createStandard('Same', NewsletterEntity::STATUS_DRAFT);
+    $third = $this->createStandard('Same', NewsletterEntity::STATUS_DRAFT);
+    $ids = [$first->getId(), $second->getId(), $third->getId()];
+
+    foreach (['status', 'name', 'subject', 'updated_at'] as $sortBy) {
+      $this->assertSame($ids, $this->listIds([], null, null, $sortBy, 'asc'), "asc by $sortBy");
+      $this->assertSame(array_reverse($ids), $this->listIds([], null, null, $sortBy, 'desc'), "desc by $sortBy");
+    }
+  }
+
+  private function createStandard(string $subject, string $status): NewsletterEntity {
+    return (new Newsletter())
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withStatus($status)
+      ->withSubject($subject)
+      ->create();
+  }
+
+  private function createSendingWithTask(string $taskStatus, string $subject, string $type = NewsletterEntity::TYPE_STANDARD): NewsletterEntity {
+    return (new Newsletter())
+      ->withType($type)
+      ->withStatus(NewsletterEntity::STATUS_SENDING)
+      ->withSubject($subject)
+      ->withSendingQueue(['status' => $taskStatus])
+      ->create();
+  }
+
+  private function listIds(array $filter, ?string $type, ?string $group = null, string $sortBy = 'id', string $sortOrder = 'asc'): array {
+    $repository = $this->diContainer->get(NewsletterListingRepository::class);
+    $rows = $repository->getData((new Handler())->getListingDefinition([
+      'filter' => $filter,
+      'group' => $group,
+      'params' => $type ? ['type' => $type] : [],
+      'sort_by' => $sortBy,
+      'sort_order' => $sortOrder,
+      'limit' => 100,
+    ]));
+    return array_map(function(NewsletterEntity $newsletter): int {
+      return (int)$newsletter->getId();
+    }, $rows);
   }
 }
