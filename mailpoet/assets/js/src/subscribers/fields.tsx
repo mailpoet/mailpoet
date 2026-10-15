@@ -6,6 +6,7 @@ import { SegmentTags, SubscriberTags } from 'common';
 import { Badge } from 'common/listings/newsletter-stats/badge';
 import { ListingsEngagementScore } from './listings-engagement-score';
 import type { Segment, Subscriber } from './api';
+import { SUBSCRIBER_SOURCES, SUBSCRIBER_STATUSES } from './filters';
 
 export type FieldElement = { value: string; label: string };
 
@@ -17,14 +18,6 @@ export type SubscriberFieldOptions = {
   // Defaults to the site's email tracking setting.
   trackingEnabled?: boolean;
 };
-
-const STATUSES = [
-  'subscribed',
-  'unconfirmed',
-  'unsubscribed',
-  'inactive',
-  'bounced',
-];
 
 type FilterBy = Exclude<Field<Subscriber>['filterBy'], false | undefined>;
 
@@ -64,18 +57,6 @@ export function sourceLabel(source: string): string {
       return __('Unknown', 'mailpoet');
   }
 }
-
-const SOURCES = [
-  'form',
-  'imported',
-  'administrator',
-  'api',
-  'wordpress_user',
-  'wordpress_user_deleted',
-  'woocommerce_user',
-  'woocommerce_checkout',
-  'unknown',
-];
 
 function statusLabel(status: string): string {
   switch (status) {
@@ -133,19 +114,6 @@ function dateTime(value: string | null): JSX.Element | null {
       {MailPoet.Date.time(value)}
     </>
   );
-}
-
-export function getSubscriberSortableFieldIds(
-  trackingEnabled: boolean = MailPoet.trackingConfig?.emailTrackingEnabled ??
-    false,
-): string[] {
-  return [
-    'email',
-    'status',
-    ...(trackingEnabled ? ['statistics'] : []),
-    'last_subscribed_at',
-    'created_at',
-  ];
 }
 
 export function getSubscriberFields(
@@ -230,7 +198,7 @@ export function getSubscriberFields(
       type: 'text',
       enableSorting: true,
       enableGlobalSearch: false,
-      elements: STATUSES.map((status) => ({
+      elements: SUBSCRIBER_STATUSES.map((status) => ({
         value: status,
         label: options.statusLabels?.[status] ?? statusLabel(status),
       })),
@@ -274,7 +242,7 @@ export function getSubscriberFields(
       type: 'text',
       enableSorting: false,
       enableGlobalSearch: false,
-      elements: SOURCES.map((source) => ({
+      elements: SUBSCRIBER_SOURCES.map((source) => ({
         value: source,
         label: sourceLabel(source),
       })),
@@ -303,4 +271,17 @@ export function getSubscriberFields(
       render: ({ item }) => <span>{dateTime(item.created_at)}</span>,
     },
   ];
+}
+
+export function getSubscriberSortableFieldIds(
+  trackingEnabled: boolean = MailPoet.trackingConfig?.emailTrackingEnabled ??
+    false,
+): string[] {
+  return getSubscriberFields(() => '', undefined, {
+    segments: [],
+    tags: [],
+    trackingEnabled,
+  })
+    .filter((field) => field.enableSorting)
+    .map((field) => field.id);
 }

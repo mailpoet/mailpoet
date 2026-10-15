@@ -1,4 +1,8 @@
 import NodeModule from 'module';
+import {
+  SUBSCRIBER_SOURCES,
+  SUBSCRIBER_STATUSES,
+} from '../../../assets/js/src/subscribers/filters';
 
 type FieldsModule = typeof import('../../../assets/js/src/subscribers/fields');
 type ModuleLoader = (
@@ -111,6 +115,25 @@ describe('subscribers fields', () => {
     expect(fields.segments.elements).to.deep.equal(options.segments);
     expect(fields.tags.type).to.equal('array');
     expect(fields.tags.elements).to.deep.equal(options.tags);
+  });
+
+  it('builds an element with a real label for every shared status and source', () => {
+    const { status, source } = byId(true);
+    expect(
+      status.elements?.map((element) => String(element.value)),
+    ).to.deep.equal(SUBSCRIBER_STATUSES);
+    expect(
+      source.elements?.map((element) => String(element.value)),
+    ).to.deep.equal(SUBSCRIBER_SOURCES);
+    [...(status.elements ?? []), ...(source.elements ?? [])].forEach(
+      (element) => {
+        expect(element.label, String(element.value)).to.not.equal('Invalid');
+        expect(element.label).to.not.equal('');
+      },
+    );
+    expect(
+      (source.elements ?? []).filter((element) => element.label === 'Unknown'),
+    ).to.have.length(1);
   });
 
   it('lists the nine sources including Unknown', () => {
