@@ -106,7 +106,7 @@ class SenderDomainPausedCampaignsNotice {
     }
     $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomains();
     return array_values(array_filter($newsletters, function (NewsletterEntity $newsletter) use ($verifiedDomains): bool {
-      return !in_array(Helpers::extractEmailDomain((string)$newsletter->getSenderAddress()), $verifiedDomains, true);
+      return !in_array(Helpers::extractEmailDomain($this->getSenderAddress($newsletter)), $verifiedDomains, true);
     }));
   }
 
@@ -116,7 +116,7 @@ class SenderDomainPausedCampaignsNotice {
   private function getMessage(array $newsletters): string {
     $groups = [];
     foreach ($newsletters as $newsletter) {
-      $senderAddress = (string)$newsletter->getSenderAddress();
+      $senderAddress = $this->getSenderAddress($newsletter);
       $domain = Helpers::extractEmailDomain($senderAddress);
       $groups[$domain]['senderAddress'] = $groups[$domain]['senderAddress'] ?? $senderAddress;
       $groups[$domain]['newsletters'][] = $newsletter;
@@ -229,6 +229,20 @@ class SenderDomainPausedCampaignsNotice {
       );
     }
     return $list;
+  }
+
+  /**
+   * A post notification copy is cloned at schedule time, but resuming uses the
+   * parent's sender, so the parent is the source of truth.
+   */
+  private function getSenderAddress(NewsletterEntity $newsletter): string {
+    if ($newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY) {
+      $parent = $newsletter->getParent();
+      if ($parent instanceof NewsletterEntity && $parent->getSenderAddress()) {
+        return (string)$parent->getSenderAddress();
+      }
+    }
+    return (string)$newsletter->getSenderAddress();
   }
 
   private function getResumeUrl(NewsletterEntity $newsletter): string {
