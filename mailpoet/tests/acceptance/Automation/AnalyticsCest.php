@@ -237,6 +237,20 @@ class AnalyticsCest {
     $i->see("You're previewing a report with sample data.");
   }
 
+  public function backButtonLeavesAnalyticsAfterOnePress(\AcceptanceTester $i) {
+    $i->wantTo('Leave the automation analytics page with a single Back press');
+    $i->login();
+    $i->amOnMailpoetPage('Forms');
+    $i->waitForText('Forms');
+
+    $i->amOnPage("/wp-admin/admin.php?page=mailpoet-automation-analytics&id=" . $this->automation->getId());
+    $i->waitForElement('button.mailpoet-analytics-tab-flow.is-active');
+    $i->waitForText('Opened');
+
+    $i->moveBack();
+    $i->waitForJS('return window.location.search.includes("page=mailpoet-forms");', 10);
+  }
+
   private function createSubscriber(): SubscriberEntity {
     $subscriber = (new DataFactories\Subscriber())
       ->create();

@@ -72,6 +72,11 @@ export function Tabs(): JSX.Element {
 
   const updateUrlSearchString = useCallback(
     (tab: string) => {
+      // TabPanel also calls onSelect for the initial tab on mount. Navigating
+      // then would add a history entry for the page the user is already on.
+      if (tab === currentTab) {
+        return;
+      }
       const newSearch = new URLSearchParams({
         ...Object.fromEntries(pageParams.entries()),
         ...{
@@ -80,7 +85,7 @@ export function Tabs(): JSX.Element {
       });
       navigate({ search: newSearch.toString() });
     },
-    [pageParams, navigate],
+    [currentTab, pageParams, navigate],
   );
 
   return (
