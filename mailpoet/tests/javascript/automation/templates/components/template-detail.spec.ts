@@ -199,7 +199,10 @@ const restoreModuleMocks = () => {
     originalModuleLoad;
 };
 
-const render = async () => {
+const render = async (
+  onPreviousClick: () => void = () => undefined,
+  onNextClick: () => void = () => undefined,
+) => {
   const rootElement = document.createElement('div');
   document.body.appendChild(rootElement);
   root = createRoot(rootElement);
@@ -208,8 +211,8 @@ const render = async () => {
       React.createElement(detailModule.TemplateDetail, {
         template,
         onRequestClose: () => undefined,
-        onPreviousClick: () => undefined,
-        onNextClick: () => undefined,
+        onPreviousClick,
+        onNextClick,
       }),
     );
   });
@@ -224,6 +227,14 @@ const getButton = (label: string): HTMLButtonElement =>
 
 const isDisabled = (button: HTMLButtonElement): boolean =>
   button.disabled || button.getAttribute('aria-disabled') === 'true';
+
+const pressKey = async (key: string) => {
+  await React.act(async () => {
+    document.dispatchEvent(
+      new window.KeyboardEvent('keydown', { key, bubbles: true }),
+    );
+  });
+};
 
 const clickStartBuilding = async () => {
   await React.act(async () => {
@@ -347,5 +358,41 @@ describe('automation template detail', function templateDetail() {
     const startBuilding = getButton('Start building');
     expect(startBuilding.disabled).to.equal(false);
     expect(startBuilding.getAttribute('aria-disabled')).to.equal('true');
+  });
+
+  it('switches templates with the arrow keys', async () => {
+    const clicks = { previous: 0, next: 0 };
+
+    await render(
+      () => {
+        clicks.previous += 1;
+      },
+      () => {
+        clicks.next += 1;
+      },
+    );
+    await pressKey('ArrowLeft');
+    await pressKey('ArrowRight');
+
+    expect(clicks).to.deep.equal({ previous: 1, next: 1 });
+  });
+
+  it('ignores the arrow keys while redirecting to the editor', async () => {
+    apiFetchStub.resolves({ data: { id: '123' } });
+    const clicks = { previous: 0, next: 0 };
+
+    await render(
+      () => {
+        clicks.previous += 1;
+      },
+      () => {
+        clicks.next += 1;
+      },
+    );
+    await clickStartBuilding();
+    await pressKey('ArrowLeft');
+    await pressKey('ArrowRight');
+
+    expect(clicks).to.deep.equal({ previous: 0, next: 0 });
   });
 });

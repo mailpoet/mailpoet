@@ -4,6 +4,7 @@ import {
   MouseEventHandler,
   ReactNode,
   useCallback,
+  useEffect,
   useState,
 } from 'react';
 import apiFetch from '@wordpress/api-fetch';
@@ -64,14 +65,31 @@ const useCreateFromTemplate = () => {
 type Props = {
   template: AutomationTemplate;
   onRequestClose: React.ComponentProps<typeof Modal>['onRequestClose'];
-  onPreviousClick?: MouseEventHandler<HTMLButtonElement>;
-  onNextClick?: MouseEventHandler<HTMLButtonElement>;
+  onPreviousClick?: () => void;
+  onNextClick?: () => void;
 };
 
 export const TemplateDetail = forwardRef<HTMLDivElement, Props>(
   ({ template, onRequestClose, onPreviousClick, onNextClick }, ref) => {
     const [createAutomationFromTemplate, { loading, error, resetError }] =
       useCreateFromTemplate();
+
+    useEffect(() => {
+      if (loading) {
+        return undefined;
+      }
+      // handle previous/next via keyboard keys
+      const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'ArrowLeft') {
+          onPreviousClick?.();
+        }
+        if (event.key === 'ArrowRight') {
+          onNextClick?.();
+        }
+      };
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [loading, onPreviousClick, onNextClick]);
 
     return (
       <Modal
