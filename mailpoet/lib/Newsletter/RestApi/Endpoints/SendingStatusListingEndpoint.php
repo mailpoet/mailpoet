@@ -9,7 +9,6 @@ use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Listing\Handler as ListingHandler;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
@@ -32,11 +31,7 @@ class SendingStatusListingEndpoint extends AbstractListingEndpoint {
   use ListingRequestValidationTrait;
 
   private const ALLOWED_SORT_FIELDS = ['subscriberId', 'failed'];
-  private const ALLOWED_RESULTS = [
-    ScheduledTaskSubscriberEntity::SENDING_STATUS_SENT,
-    ScheduledTaskSubscriberEntity::SENDING_STATUS_FAILED,
-    ScheduledTaskSubscriberEntity::SENDING_STATUS_UNPROCESSED,
-  ];
+  private const ALLOWED_RESULTS = ScheduledTaskSubscribersListingRepository::ALLOWED_RESULTS;
 
   /** @var ScheduledTaskSubscribersListingRepository */
   private $taskSubscribersListingRepository;

@@ -10,6 +10,12 @@ use MailPoetVendor\Doctrine\ORM\Query\Expr\Andx;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class ScheduledTaskSubscribersListingRepository extends ListingRepository {
+  public const ALLOWED_RESULTS = [
+    ScheduledTaskSubscriberEntity::SENDING_STATUS_SENT,
+    ScheduledTaskSubscriberEntity::SENDING_STATUS_FAILED,
+    ScheduledTaskSubscriberEntity::SENDING_STATUS_UNPROCESSED,
+  ];
+
   public function getGroups(ListingDefinition $definition): array {
     $queryBuilder = clone $this->queryBuilder;
     $this->applyFromClause($queryBuilder);
@@ -20,28 +26,18 @@ class ScheduledTaskSubscribersListingRepository extends ListingRepository {
     $countQueryBuilder->select('COUNT(sts.subscriber) AS subscriberCount');
     $totalCount = intval($countQueryBuilder->getQuery()->getSingleScalarResult());
 
-    // Sent count
-    $sentCountQuery = clone $queryBuilder;
-    $sentCountQuery->select('COUNT(sts.subscriber) AS subscriberCount');
-    $sentCountQuery->andWhere('sts.processed = :processedStatus');
-    $sentCountQuery->andWhere('sts.failed = :failedStatus');
-    $sentCountQuery->setParameter('processedStatus', ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
-    $sentCountQuery->setParameter('failedStatus', ScheduledTaskSubscriberEntity::FAIL_STATUS_OK);
-    $sentCount = intval($sentCountQuery->getQuery()->getSingleScalarResult());
-
-    // Failed count
-    $failedCountQuery = clone $queryBuilder;
-    $failedCountQuery->select('COUNT(sts.subscriber) AS subscriberCount');
-    $failedCountQuery->andWhere('sts.failed = :failedStatus');
-    $failedCountQuery->setParameter('failedStatus', ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED);
-    $failedCount = intval($failedCountQuery->getQuery()->getSingleScalarResult());
-
-    // Unprocessed count
-    $unprocessedCountQuery = clone $queryBuilder;
-    $unprocessedCountQuery->select('COUNT(sts.subscriber) AS subscriberCount');
-    $unprocessedCountQuery->andWhere('sts.processed = :processedStatus');
-    $unprocessedCountQuery->setParameter('processedStatus', ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
-    $unprocessedCount = intval($unprocessedCountQuery->getQuery()->getSingleScalarResult());
+    $countResult = function (string $result) use ($queryBuilder): int {
+      $resultQueryBuilder = clone $queryBuilder;
+      $resultQueryBuilder->select('COUNT(sts.subscriber) AS subscriberCount');
+      $predicate = $this->getResultPredicate($resultQueryBuilder, $result, 'group');
+      if ($predicate !== null) {
+        $resultQueryBuilder->andWhere($predicate);
+      }
+      return intval($resultQueryBuilder->getQuery()->getSingleScalarResult());
+    };
+    $sentCount = $countResult(ScheduledTaskSubscriberEntity::SENDING_STATUS_SENT);
+    $failedCount = $countResult(ScheduledTaskSubscriberEntity::SENDING_STATUS_FAILED);
+    $unprocessedCount = $countResult(ScheduledTaskSubscriberEntity::SENDING_STATUS_UNPROCESSED);
 
     return [
       [
@@ -134,12 +130,7 @@ class ScheduledTaskSubscribersListingRepository extends ListingRepository {
       return;
     }
     $results = is_array($result) ? $result : [$result];
-    $allowed = [
-      ScheduledTaskSubscriberEntity::SENDING_STATUS_SENT,
-      ScheduledTaskSubscriberEntity::SENDING_STATUS_FAILED,
-      ScheduledTaskSubscriberEntity::SENDING_STATUS_UNPROCESSED,
-    ];
-    $results = array_values(array_intersect($allowed, array_filter($results, 'is_string')));
+    $results = array_values(array_intersect(self::ALLOWED_RESULTS, array_filter($results, 'is_string')));
     if (!$results) {
       $queryBuilder->andWhere('1 = 0');
       return;
