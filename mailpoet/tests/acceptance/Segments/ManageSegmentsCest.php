@@ -39,9 +39,9 @@ class ManageSegmentsCest {
     $i->waitForText($segmentTitle, 10, $listingAutomationSelector);
     $i->clickWooTableActionByItemName($segmentTitle, 'View subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
-    $i->seeInCurrentUrl('segment=' . $segment->getId());
     $i->waitForText($wpEditorEmail, 20);
-    $i->see($segmentTitle, ['css' => 'select[name=segment]']);
+    $i->seeInCurrentUrl('segment_in=' . $segment->getId());
+    $i->waitForDataViewsFilterChip($segmentTitle);
     $i->dontSee($wpAdminEmail);
     $i->dontSee($wpAuthorEmail);
     $i->seeNoJSErrors();
