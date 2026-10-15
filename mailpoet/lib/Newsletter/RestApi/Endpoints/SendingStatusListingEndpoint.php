@@ -4,10 +4,12 @@ namespace MailPoet\Newsletter\RestApi\Endpoints;
 
 use MailPoet\API\JSON\ResponseBuilders\ScheduledTaskSubscriberResponseBuilder;
 use MailPoet\API\REST\AbstractListingEndpoint;
+use MailPoet\API\REST\ListingRequestValidationTrait;
 use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Listing\Handler as ListingHandler;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
@@ -27,6 +29,15 @@ use MailPoet\WP\Functions as WPFunctions;
  * mailer / cron envelope the page uses to surface sending notices.
  */
 class SendingStatusListingEndpoint extends AbstractListingEndpoint {
+  use ListingRequestValidationTrait;
+
+  private const ALLOWED_SORT_FIELDS = ['subscriberId', 'failed'];
+  private const ALLOWED_RESULTS = [
+    ScheduledTaskSubscriberEntity::SENDING_STATUS_SENT,
+    ScheduledTaskSubscriberEntity::SENDING_STATUS_FAILED,
+    ScheduledTaskSubscriberEntity::SENDING_STATUS_UNPROCESSED,
+  ];
+
   /** @var ScheduledTaskSubscribersListingRepository */
   private $taskSubscribersListingRepository;
 
@@ -68,6 +79,7 @@ class SendingStatusListingEndpoint extends AbstractListingEndpoint {
   }
 
   public function handle(Request $request): Response {
+    $this->validateRequest($request);
     /** @var Response $response */
     $response = parent::handle($request);
     $payload = $response->get_data();
@@ -115,6 +127,10 @@ class SendingStatusListingEndpoint extends AbstractListingEndpoint {
     return 'all';
   }
 
+  protected function getListingValidationErrorPrefix(): string {
+    return 'sending_status';
+  }
+
   protected function getRequestParameters(Request $request): array {
     $idParam = $request->getParam('id');
     $newsletterId = is_numeric($idParam) ? (int)$idParam : 0;
@@ -126,5 +142,44 @@ class SendingStatusListingEndpoint extends AbstractListingEndpoint {
     // records were cleaned up) fall back to a sentinel that matches no rows so
     // the listing returns empty instead of every subscriber across all emails.
     return ['task_ids' => $taskIds ?: [0]];
+  }
+
+  private function validateRequest(Request $request): void {
+    $this->validateSortField($request->getParam('orderby'), self::ALLOWED_SORT_FIELDS);
+    $this->validateSortField($request->getParam('sort_by'), self::ALLOWED_SORT_FIELDS);
+    $this->validateSortOrder($request->getParam('order'));
+    $this->validateSortOrder($request->getParam('sort_order'));
+    $this->validateFilters($request->getParam('filter'));
+  }
+
+  /** @param mixed $filters */
+  private function validateFilters($filters): void {
+    if ($filters === null || $filters === []) {
+      return;
+    }
+    if (!is_array($filters)) {
+      throw $this->listingValidationError(__('Filters must be an object.', 'mailpoet'), 'filter');
+    }
+    foreach (array_keys($filters) as $key) {
+      if ($key !== 'result') {
+        throw $this->listingValidationError(__('Unsupported sending status filter.', 'mailpoet'), 'filter');
+      }
+    }
+    $result = $filters['result'];
+    if ($result === null || $result === '' || $result === []) {
+      return;
+    }
+    foreach (is_array($result) ? $result : [$result] as $value) {
+      if (!is_string($value) || !in_array($value, self::ALLOWED_RESULTS, true)) {
+        throw $this->listingValidationError(
+          sprintf(
+            // translators: %s is a comma-separated list of allowed sending results.
+            __('Unsupported result filter. Allowed values are: %s.', 'mailpoet'),
+            implode(', ', self::ALLOWED_RESULTS)
+          ),
+          'result'
+        );
+      }
+    }
   }
 }

@@ -248,6 +248,82 @@ class SendingStatusEndpointsTest extends Test {
     $this->assertSame($failedSubscriber->getEmail(), $items[0]['email']);
   }
 
+  /** @return array{0: int, 1: array<string, string>} */
+  private function createMixedNewsletter(): array {
+    $newsletter = (new NewsletterFactory())
+      ->withSubject('Result_' . uniqid())
+      ->withBody(Fixtures::get('newsletter_body_template'))
+      ->withSendingQueue()
+      ->create();
+    $task = $newsletter->getLatestQueue()->getTask();
+    $subscriberFactory = new SubscriberFactory();
+    $taskSubscriberFactory = new TaskSubscriberFactory();
+    $emails = [];
+    foreach (['sent', 'failed', 'unprocessed'] as $key) {
+      $emails[$key] = $key . '_' . uniqid() . '@example.com';
+    }
+    $taskSubscriberFactory->createProcessed($task, $subscriberFactory->withEmail($emails['sent'])->create());
+    $taskSubscriberFactory->createFailed($task, $subscriberFactory->withEmail($emails['failed'])->create(), 'Boom');
+    $taskSubscriberFactory->createUnprocessed($task, $subscriberFactory->withEmail($emails['unprocessed'])->create());
+    return [(int)$newsletter->getId(), $emails];
+  }
+
+  /**
+   * @param array<string, mixed> $query
+   * @return string[]
+   */
+  private function listedEmails(int $newsletterId, array $query): array {
+    $payload = $this->payload($this->get($this->listingPath($newsletterId), ['query' => array_merge(['per_page' => 10], $query)]));
+    $items = $payload['items'];
+    $this->assertIsArray($items);
+    $emails = array_column($items, 'email');
+    sort($emails);
+    return $emails;
+  }
+
+  public function testListingFiltersByResult(): void {
+    [$id, $emails] = $this->createMixedNewsletter();
+    $this->assertSame([$emails['sent']], $this->listedEmails($id, ['filter' => ['result' => ['sent']]]));
+    $this->assertSame([$emails['failed']], $this->listedEmails($id, ['filter' => ['result' => 'failed']]));
+    $expected = [$emails['failed'], $emails['unprocessed']];
+    sort($expected);
+    $this->assertSame($expected, $this->listedEmails($id, ['filter' => ['result' => ['failed', 'unprocessed']]]));
+  }
+
+  public function testListingCombinesGroupAndResultFilter(): void {
+    [$id] = $this->createMixedNewsletter();
+    $this->assertSame([], $this->listedEmails($id, [
+      'group' => ScheduledTaskSubscriberEntity::SENDING_STATUS_SENT,
+      'filter' => ['result' => ['failed']],
+    ]));
+  }
+
+  public function testListingRejectsInvalidRequests(): void {
+    [$id] = $this->createMixedNewsletter();
+    $cases = [
+      'mailpoet_sending_status_invalid_result' => ['filter' => ['result' => ['bogus']]],
+      'mailpoet_sending_status_invalid_filter' => ['filter' => ['unknown' => 'x']],
+      'mailpoet_sending_status_invalid_orderby' => ['orderby' => 'error'],
+      'mailpoet_sending_status_invalid_order' => ['order' => 'sideways'],
+    ];
+    foreach ($cases as $code => $query) {
+      $response = $this->get($this->listingPath($id), ['query' => $query]);
+      $this->assertIsArray($response);
+      $this->assertSame($code, $response['code'] ?? null, $code);
+      $this->assertIsArray($response['data']);
+      $this->assertSame(400, $response['data']['status'] ?? null, $code);
+    }
+  }
+
+  public function testListingAcceptsEverySortFieldTheFrontendUses(): void {
+    [$id] = $this->createMixedNewsletter();
+    foreach (['subscriberId', 'failed'] as $field) {
+      foreach (['asc', 'desc'] as $order) {
+        $this->assertCount(3, $this->listedEmails($id, ['orderby' => $field, 'order' => $order]));
+      }
+    }
+  }
+
   public function testResendResetsAFailedTaskSubscriber(): void {
     $newsletter = (new NewsletterFactory())
       ->withSubject('Resend_' . uniqid())
