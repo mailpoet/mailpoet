@@ -4,6 +4,7 @@ import {
   fromOrderby,
   getExactStatus,
   hasActiveFilters,
+  normalizeRequestFilter,
   requestFilterToViewFilters,
   toOrderby,
   viewFiltersToRequestFilter,
@@ -221,6 +222,42 @@ describe('Subscribers filters: request to view', () => {
     expect(
       viewFiltersToRequestFilter([f('statistics', 'between', [50, ''])]),
     ).to.deep.equal({ score_min: 50 });
+  });
+
+  it('never produces a range the server rejects', () => {
+    expect(
+      viewFiltersToRequestFilter([f('statistics', 'between', [80, 20])]),
+    ).to.deep.equal({ score_min: 20, score_max: 80 });
+    expect(
+      viewFiltersToRequestFilter([
+        f('created_at', 'between', ['2025-05-01', '2025-01-01']),
+        f('last_subscribed_at', 'between', ['2025-06-01', '2025-02-01']),
+      ]),
+    ).to.deep.equal({
+      created_from: '2025-01-01',
+      created_to: '2025-05-01',
+      subscribed_from: '2025-02-01',
+      subscribed_to: '2025-06-01',
+    });
+    expect(
+      normalizeRequestFilter({ score_min: 90, score_max: 10 }),
+    ).to.deep.equal({ score_min: 10, score_max: 90 });
+    expect(
+      normalizeRequestFilter({
+        created_from: '2025-05-01',
+        created_to: '2025-01-01',
+      }),
+    ).to.deep.equal({ created_from: '2025-01-01', created_to: '2025-05-01' });
+  });
+
+  it('caps every set at 100 values', () => {
+    const ids = Array.from({ length: 101 }, (_, i) => String(i + 1));
+    const result = viewFiltersToRequestFilter([f('tags', 'isAny', ids)]);
+    expect(result.tag_in).to.have.length(100);
+    expect(result.tag_in?.[99]).to.equal(100);
+    expect(
+      normalizeRequestFilter({ segment_not_in: ids }).segment_not_in,
+    ).to.have.length(100);
   });
 
   it('maps score keys', () => {
