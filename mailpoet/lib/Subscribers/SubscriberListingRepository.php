@@ -8,6 +8,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Entities\TagEntity;
+use MailPoet\Listing\ListingDateRangeFilterTrait;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
@@ -23,6 +24,8 @@ use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class SubscriberListingRepository extends ListingRepository {
+  use ListingDateRangeFilterTrait;
+
   public const FILTER_WITHOUT_LIST = 'without-list';
 
   const DEFAULT_SORT_BY = 'createdAt';
@@ -308,6 +311,8 @@ class SubscriberListingRepository extends ListingRepository {
       $query->andWhere('s.source NOT IN (:source_not_in)')
         ->setParameter('source_not_in', $filters['source_not_in'], ArrayParameterType::STRING);
     }
+
+    $this->applyDbalScoreAndDateFilters($query, $filters);
 
     $createdAtFrom = $filters['createdAtFrom'] ?? null;
     if ($createdAtFrom && is_string($createdAtFrom) && $this->isValidDateTime($createdAtFrom)) {
@@ -781,6 +786,10 @@ class SubscriberListingRepository extends ListingRepository {
         ->setParameter('sourceNotIn', $filters['source_not_in']);
     }
 
+    $this->applyDqlScoreFilters($queryBuilder, $filters);
+    $this->applyDateRangeFilter($queryBuilder, 's.createdAt', $filters, 'created_from', 'created_to');
+    $this->applyDateRangeFilter($queryBuilder, 's.lastSubscribedAt', $filters, 'subscribed_from', 'subscribed_to');
+
     // Filter by created_at date
     $createdAtFrom = $filters['createdAtFrom'] ?? null;
     if ($createdAtFrom && is_string($createdAtFrom) && $this->isValidDateTime($createdAtFrom)) {
@@ -1176,6 +1185,46 @@ class SubscriberListingRepository extends ListingRepository {
       $alias,
       $sentAtCondition
     );
+  }
+
+  private const SCORE_FILTERS = [
+    'score_gt' => '>',
+    'score_lt' => '<',
+    'score_min' => '>=',
+    'score_max' => '<=',
+  ];
+
+  private function applyDqlScoreFilters(QueryBuilder $queryBuilder, array $filters): void {
+    foreach (self::SCORE_FILTERS as $key => $operator) {
+      if (isset($filters[$key]) && is_numeric($filters[$key])) {
+        $queryBuilder
+          ->andWhere("s.engagementScore $operator :$key")
+          ->setParameter($key, (float)$filters[$key]);
+      }
+    }
+  }
+
+  private function applyDbalScoreAndDateFilters(DBALQueryBuilder $query, array $filters): void {
+    foreach (self::SCORE_FILTERS as $key => $operator) {
+      if (isset($filters[$key]) && is_numeric($filters[$key])) {
+        $query->andWhere("s.engagement_score $operator :$key")
+          ->setParameter($key, (float)$filters[$key]);
+      }
+    }
+    // Same whole-day bounds as ListingDateRangeFilterTrait.
+    $dates = [
+      ['created_from', 's.created_at', '>=', ' 00:00:00'],
+      ['created_to', 's.created_at', '<=', ' 23:59:59'],
+      ['subscribed_from', 's.last_subscribed_at', '>=', ' 00:00:00'],
+      ['subscribed_to', 's.last_subscribed_at', '<=', ' 23:59:59'],
+    ];
+    foreach ($dates as [$key, $column, $operator, $time]) {
+      $value = $filters[$key] ?? null;
+      if (is_string($value) && $value !== '') {
+        $query->andWhere("$column $operator :date_$key")
+          ->setParameter("date_$key", $value . $time, ParameterType::STRING);
+      }
+    }
   }
 
   private function isValidDateTime(string $dateTime): bool {
