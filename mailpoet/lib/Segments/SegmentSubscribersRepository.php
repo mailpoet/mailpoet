@@ -517,6 +517,42 @@ class SegmentSubscribersRepository {
       ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
+  /**
+   * Self-contained predicate (no join) for subscribers without a list, aliased on `s`.
+   * It lets the caller combine it with other list conditions using AND / OR.
+   * With $negate it matches subscribers that have at least one list.
+   */
+  public function getWithoutSegmentDqlPredicate(bool $negate = false): string {
+    if ($this->isSegmentsCountColumnReady()) {
+      return $negate ? 's.segmentsCount > 0' : 's.segmentsCount = 0';
+    }
+    $membershipsQueryBuilder = $this->entityManager->createQueryBuilder();
+    $membershipsQueryBuilder->select('IDENTITY(ssw.subscriber)')
+      ->from(SubscriberSegmentEntity::class, 'ssw')
+      ->join('ssw.segment', 'sgw')
+      ->where("ssw.status = '" . SubscriberEntity::STATUS_SUBSCRIBED . "'")
+      ->andWhere('sgw.deletedAt IS NULL');
+    return 's.id ' . ($negate ? 'IN' : 'NOT IN') . ' (' . $membershipsQueryBuilder->getDQL() . ')';
+  }
+
+  /**
+   * SQL twin of getWithoutSegmentDqlPredicate() for DBAL queries aliased `s`.
+   */
+  public function getWithoutSegmentSqlPredicate(bool $negate = false): string {
+    if ($this->isSegmentsCountColumnReady()) {
+      return $negate ? 's.segments_count > 0' : 's.segments_count = 0';
+    }
+    $subscribersSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
+    return sprintf(
+      "s.id %s (SELECT ssw.subscriber_id FROM %s ssw JOIN %s sgw ON sgw.id = ssw.segment_id WHERE ssw.status = '%s' AND sgw.deleted_at IS NULL)",
+      $negate ? 'IN' : 'NOT IN',
+      $subscribersSegmentTable,
+      $segmentsTable,
+      SubscriberEntity::STATUS_SUBSCRIBED
+    );
+  }
+
   private function loadSubscriberIdsInSegment(int $segmentId, ?array $candidateIds = null): array {
     $segment = $this->getSegment($segmentId);
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();

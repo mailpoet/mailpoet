@@ -49,7 +49,7 @@ class SubscribersListingEndpoint extends AbstractListingEndpoint {
     // Mirror the legacy endpoint: when filtering by a specific segment, surface
     // the per-segment unsubscribe status as the visible status so the UI shows
     // "unsubscribed from this list" rather than the global subscriber status.
-    $segmentFilter = $this->extractSegmentFilter($definition);
+    $segmentFilter = $this->subscriberListingRepository->getSingleListFilter($definition);
     if ($segmentFilter !== null) {
       foreach ($subscribers as $key => $subscriber) {
         if ($this->isUnsubscribedFromSegment($subscriber, $segmentFilter)) {
@@ -70,15 +70,6 @@ class SubscribersListingEndpoint extends AbstractListingEndpoint {
 
   protected function getDefaultGroup(): ?string {
     return 'all';
-  }
-
-  private function extractSegmentFilter(ListingDefinition $definition): ?string {
-    $filters = $definition->getFilters();
-    if (!isset($filters['segment']) || !is_scalar($filters['segment'])) {
-      return null;
-    }
-    $segment = (string)$filters['segment'];
-    return $segment !== '' ? $segment : null;
   }
 
   /**

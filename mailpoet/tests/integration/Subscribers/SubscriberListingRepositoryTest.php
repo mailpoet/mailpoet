@@ -12,7 +12,9 @@ use MailPoet\Segments\DynamicSegments\FilterHandler;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SegmentSubscribersRepository;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\StatisticsNewsletters;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
@@ -1376,6 +1378,333 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
 
     $this->listingData['sort_by'] = '';
     $this->listingData['filter'] = [];
+  }
+
+  public function testSegmentInMatchesMembersOfAnyOfTheLists() {
+    $listA = (new SegmentFactory())->withName('List A')->create();
+    $listB = (new SegmentFactory())->withName('List B')->create();
+    $listC = (new SegmentFactory())->withName('List C')->create();
+    $inA = (new Subscriber())->withSegments([$listA])->create();
+    $inB = (new Subscriber())->withSegments([$listB])->create();
+    (new Subscriber())->withSegments([$listC])->create();
+    (new Subscriber())->create();
+
+    $ids = $this->getIds(['segment_in' => [$listA->getId(), $listB->getId()]]);
+
+    verify($ids)->equals([$inA->getId(), $inB->getId()]);
+  }
+
+  public function testSegmentNotInExcludesMembersOfTheLists() {
+    $listA = (new SegmentFactory())->withName('List A')->create();
+    $listB = (new SegmentFactory())->withName('List B')->create();
+    (new Subscriber())->withSegments([$listA])->create();
+    $inB = (new Subscriber())->withSegments([$listB])->create();
+    $inBoth = (new Subscriber())->withSegments([$listA, $listB])->create();
+    $withoutList = (new Subscriber())->create();
+
+    $ids = $this->getIds(['segment_not_in' => [$listA->getId()]]);
+
+    verify($ids)->equals([$inB->getId(), $withoutList->getId()]);
+    $this->assertNotContains($inBoth->getId(), $ids);
+  }
+
+  /**
+   * @dataProvider segmentsCountColumnStates
+   */
+  public function testSegmentInWithoutListAndAListIsAnOr(bool $columnReady) {
+    $list = (new SegmentFactory())->withName('List A')->create();
+    $otherList = (new SegmentFactory())->withName('List B')->create();
+    $inList = (new Subscriber())->withSegments([$list])->create();
+    $inOtherList = (new Subscriber())->withSegments([$otherList])->create();
+    $withoutList = (new Subscriber())->create();
+    $this->prepareSegmentsCountColumn($columnReady);
+
+    $ids = $this->getIds(['segment_in' => [SubscriberListingRepository::FILTER_WITHOUT_LIST, $list->getId()]]);
+
+    verify($ids)->equals([$inList->getId(), $withoutList->getId()]);
+    $this->assertNotContains($inOtherList->getId(), $ids);
+  }
+
+  /**
+   * @dataProvider segmentsCountColumnStates
+   */
+  public function testSegmentNotInWithoutListKeepsOnlySubscribersWithAList(bool $columnReady) {
+    $list = (new SegmentFactory())->withName('List A')->create();
+    $inList = (new Subscriber())->withSegments([$list])->create();
+    $withoutList = (new Subscriber())->create();
+    $this->prepareSegmentsCountColumn($columnReady);
+
+    $ids = $this->getIds(['segment_not_in' => [SubscriberListingRepository::FILTER_WITHOUT_LIST]]);
+
+    verify($ids)->equals([$inList->getId()]);
+    $this->assertNotContains($withoutList->getId(), $ids);
+  }
+
+  public function segmentsCountColumnStates(): array {
+    return [
+      'column not ready' => [false],
+      'column ready' => [true],
+    ];
+  }
+
+  public function testTagInMatchesSubscribersWithAnyOfTheTags() {
+    $tagA = (new Tag())->withName('Tag A')->create();
+    $tagB = (new Tag())->withName('Tag B')->create();
+    $tagC = (new Tag())->withName('Tag C')->create();
+    $withA = (new Subscriber())->withTags([$tagA])->create();
+    $withB = (new Subscriber())->withTags([$tagB])->create();
+    (new Subscriber())->withTags([$tagC])->create();
+    (new Subscriber())->create();
+
+    $ids = $this->getIds(['tag_in' => [$tagA->getId(), $tagB->getId()]]);
+
+    verify($ids)->equals([$withA->getId(), $withB->getId()]);
+  }
+
+  public function testTagNotInKeepsSubscribersWithoutAnyTag() {
+    $tagA = (new Tag())->withName('Tag A')->create();
+    $tagB = (new Tag())->withName('Tag B')->create();
+    $withA = (new Subscriber())->withTags([$tagA])->create();
+    $withB = (new Subscriber())->withTags([$tagB])->create();
+    $withBoth = (new Subscriber())->withTags([$tagA, $tagB])->create();
+    $untagged = (new Subscriber())->create();
+
+    $ids = $this->getIds(['tag_not_in' => [$tagA->getId()]]);
+
+    verify($ids)->equals([$withB->getId(), $untagged->getId()]);
+    $this->assertNotContains($withA->getId(), $ids);
+    $this->assertNotContains($withBoth->getId(), $ids);
+  }
+
+  public function testSourceInAndNotIn() {
+    $form = (new Subscriber())->withSource(Source::FORM)->create();
+    $imported = (new Subscriber())->withSource(Source::IMPORTED)->create();
+    $admin = (new Subscriber())->withSource(Source::ADMINISTRATOR)->create();
+
+    verify($this->getIds(['source_in' => [Source::FORM, Source::IMPORTED]]))->equals([$form->getId(), $imported->getId()]);
+    verify($this->getIds(['source_not_in' => [Source::FORM, Source::IMPORTED]]))->equals([$admin->getId()]);
+    verify($this->getIds(['source_in' => ['not-a-source']]))->equals([$form->getId(), $imported->getId(), $admin->getId()]);
+  }
+
+  public function testListingRowsCarryTheSource() {
+    (new Subscriber())->withSource(Source::IMPORTED)->create();
+    $this->entityManager->clear();
+
+    $rows = $this->repository->getData(new ListingDefinition(null, [], null, [], 'id', 'asc', 0, 10));
+
+    verify($rows)->arrayCount(1);
+    verify($rows[0]->getSource())->equals(Source::IMPORTED);
+  }
+
+  public function testLegacyScalarFiltersStillFilter() {
+    $list = (new SegmentFactory())->withName('List A')->create();
+    $tag = (new Tag())->withName('Tag A')->create();
+    $match = (new Subscriber())->withSegments([$list])->withTags([$tag])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withSegments([$list])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withTags([$tag])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withSegments([$list])->withTags([$tag])->withStatus(SubscriberEntity::STATUS_INACTIVE)->create();
+
+    $ids = $this->getIds([
+      'segment' => (string)$list->getId(),
+      'tag' => $tag->getId(),
+      'statusInclude' => SubscriberEntity::STATUS_SUBSCRIBED,
+    ]);
+
+    verify($ids)->equals([$match->getId()]);
+  }
+
+  public function testLegacyScalarSegmentAndTagThatDoNotExistAreIgnored() {
+    $first = (new Subscriber())->create();
+    $second = (new Subscriber())->create();
+
+    $ids = $this->getIds(['segment' => 999999, 'tag' => 999999]);
+
+    verify($ids)->equals([$first->getId(), $second->getId()]);
+  }
+
+  public function testLegacySegmentIsMergedWithSegmentIn() {
+    $listA = (new SegmentFactory())->withName('List A')->create();
+    $listB = (new SegmentFactory())->withName('List B')->create();
+    $inA = (new Subscriber())->withSegments([$listA])->create();
+    $inB = (new Subscriber())->withSegments([$listB])->create();
+    (new Subscriber())->create();
+
+    $ids = $this->getIds(['segment' => $listA->getId(), 'segment_in' => [$listB->getId()]]);
+
+    verify($ids)->equals([$inA->getId(), $inB->getId()]);
+  }
+
+  public function testStatusInUnderOneListUsesTheStatusOfThatList() {
+    $list = (new SegmentFactory())->withName('List A')->create();
+    $subscribed = (new Subscriber())->withSegments([$list])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $unsubscribedFromList = (new Subscriber())->withSegments([$list])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $unconfirmed = (new Subscriber())->withSegments([$list])->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->create();
+    $unconfirmedAndUnsubscribedFromList = (new Subscriber())->withSegments([$list])->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->create();
+    $this->setListStatus($unsubscribedFromList, $list, SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->setListStatus($unconfirmedAndUnsubscribedFromList, $list, SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    $filters = ['segment_in' => [$list->getId()]];
+
+    verify($this->getIds($filters + ['status_in' => [SubscriberEntity::STATUS_SUBSCRIBED]]))->equals([$subscribed->getId()]);
+    verify($this->getIds($filters + ['status_in' => [SubscriberEntity::STATUS_UNSUBSCRIBED]]))
+      ->equals([$unsubscribedFromList->getId(), $unconfirmedAndUnsubscribedFromList->getId()]);
+    verify($this->getIds($filters + ['status_in' => [SubscriberEntity::STATUS_UNCONFIRMED]]))->equals([$unconfirmed->getId()]);
+    verify($this->getIds($filters + ['status_not_in' => [SubscriberEntity::STATUS_SUBSCRIBED]]))
+      ->equals([$unsubscribedFromList->getId(), $unconfirmed->getId(), $unconfirmedAndUnsubscribedFromList->getId()]);
+  }
+
+  public function testStatusInUnderTwoListsUsesTheGlobalStatus() {
+    $listA = (new SegmentFactory())->withName('List A')->create();
+    $listB = (new SegmentFactory())->withName('List B')->create();
+    $globallySubscribed = (new Subscriber())->withSegments([$listA])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $globallyUnsubscribed = (new Subscriber())->withSegments([$listB])->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    $unsubscribedFromListOnly = (new Subscriber())->withSegments([$listA])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $this->setListStatus($unsubscribedFromListOnly, $listA, SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    $filters = ['segment_in' => [$listA->getId(), $listB->getId()]];
+
+    verify($this->getIds($filters, SubscriberEntity::STATUS_UNSUBSCRIBED))->equals([$globallyUnsubscribed->getId()]);
+    verify($this->getIds($filters + ['status_in' => [SubscriberEntity::STATUS_SUBSCRIBED]]))
+      ->equals([$globallySubscribed->getId(), $unsubscribedFromListOnly->getId()]);
+  }
+
+  public function testResendQueueSupportsSetFiltersAndLegacyFilters() {
+    $list = (new SegmentFactory())->withName('List A')->create();
+    $otherList = (new SegmentFactory())->withName('List B')->create();
+    $tag = (new Tag())->withName('Tag A')->create();
+    $otherTag = (new Tag())->withName('Tag B')->create();
+    $match = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->withSegments([$list])->withTags([$tag])->create();
+    $inOtherList = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->withSegments([$otherList])->withTags([$tag])->create();
+    $otherTagged = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->withSegments([$list])->withTags([$otherTag])->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->withSegments([$list])->withTags([$tag])->create();
+    $unlisted = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->create();
+
+    $queue = function(array $filters) {
+      return $this->repository->getConfirmationEmailResendQueueData(
+        new ListingDefinition(SubscriberEntity::STATUS_UNCONFIRMED, $filters, null, [], 'id', 'asc', 0, 100),
+        Carbon::now()->subDay(),
+        Carbon::now()->subYears(5),
+        10,
+        100
+      )['queued_ids'];
+    };
+
+    verify($queue(['tag_in' => [$tag->getId(), $otherTag->getId()], 'segment_not_in' => [$otherList->getId()]]))
+      ->equals([$match->getId(), $otherTagged->getId()]);
+    verify($queue(['tag_not_in' => [$otherTag->getId()], 'segment_in' => [$list->getId(), $otherList->getId()]]))
+      ->equals([$match->getId(), $inOtherList->getId()]);
+    verify($queue(['segment' => $list->getId(), 'tag' => $tag->getId()]))->equals([$match->getId()]);
+    verify($queue(['segment_in' => [SubscriberListingRepository::FILTER_WITHOUT_LIST]]))->equals([$unlisted->getId()]);
+    verify($queue(['segment_in' => [SubscriberListingRepository::FILTER_WITHOUT_LIST, $list->getId()]]))
+      ->equals([$match->getId(), $otherTagged->getId(), $unlisted->getId()]);
+
+    // Under one list the status filter uses the status of that list.
+    $this->setListStatus($otherTagged, $list, SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($queue(['segment_in' => [$list->getId()], 'status_in' => [SubscriberEntity::STATUS_UNCONFIRMED]]))->equals([$match->getId()]);
+  }
+
+  public function testGetGroupsWithoutFiltersCountsEveryStatus() {
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_BOUNCED)->create();
+    (new Subscriber())->withDeletedAt(new Carbon())->create();
+
+    $groups = array_column($this->repository->getGroups(new ListingDefinition()), 'count', 'name');
+
+    verify($groups)->equals([
+      'all' => 4,
+      SubscriberEntity::STATUS_SUBSCRIBED => 2,
+      SubscriberEntity::STATUS_UNCONFIRMED => 1,
+      SubscriberEntity::STATUS_UNSUBSCRIBED => 0,
+      SubscriberEntity::STATUS_INACTIVE => 0,
+      SubscriberEntity::STATUS_BOUNCED => 1,
+      'trash' => 1,
+    ]);
+  }
+
+  public function testGetGroupsWithSeveralListsCountsWithTheGlobalStatus() {
+    $listA = (new SegmentFactory())->withName('List A')->create();
+    $listB = (new SegmentFactory())->withName('List B')->create();
+    (new Subscriber())->withSegments([$listA])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withSegments([$listB])->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+
+    $definition = new ListingDefinition(null, ['segment_in' => [$listA->getId(), $listB->getId()]]);
+    $groups = array_column($this->repository->getGroups($definition), 'count', 'name');
+
+    verify($groups['all'])->equals(2);
+    verify($groups[SubscriberEntity::STATUS_SUBSCRIBED])->equals(1);
+    verify($groups[SubscriberEntity::STATUS_UNSUBSCRIBED])->equals(1);
+  }
+
+  public function testItBuildsStatusAndSourceFiltersWithGlobalStatusCounts() {
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_BOUNCED)->create();
+    $this->diContainer->get(SubscribersCountsController::class)->recalculateGlobalStatusStatisticsCache();
+
+    // The counts are global: the current filters and group do not narrow them.
+    $definition = new ListingDefinition(SubscriberEntity::STATUS_BOUNCED, ['source_in' => [Source::FORM]]);
+    $filters = $this->repository->getFilters($definition);
+
+    verify(array_column($filters['status'], 'value'))->equals([
+      SubscriberEntity::STATUS_SUBSCRIBED,
+      SubscriberEntity::STATUS_UNCONFIRMED,
+      SubscriberEntity::STATUS_UNSUBSCRIBED,
+      SubscriberEntity::STATUS_INACTIVE,
+      SubscriberEntity::STATUS_BOUNCED,
+    ]);
+    verify($filters['status'][0]['label'])->equals('Subscribed (2)');
+    verify($filters['status'][4]['label'])->equals('Bounced (1)');
+    verify(array_column($filters['source'], 'value'))->equals([
+      Source::FORM,
+      Source::IMPORTED,
+      Source::ADMINISTRATOR,
+      Source::API,
+      Source::WORDPRESS_USER,
+      Source::WORDPRESS_USER_DELETED,
+      Source::WOOCOMMERCE_USER,
+      Source::WOOCOMMERCE_CHECKOUT,
+      Source::UNKNOWN,
+    ]);
+    verify(array_column($filters['source'], 'label', 'value')[Source::UNKNOWN])->equals('Unknown');
+  }
+
+  /**
+   * @return int[]
+   */
+  private function getIds(array $filters, ?string $group = null): array {
+    $definition = new ListingDefinition($group, $filters, null, [], 'id', 'asc', 0, 100);
+    $rows = $this->repository->getData($definition);
+    $ids = array_map(function(SubscriberEntity $subscriber): int {
+      return (int)$subscriber->getId();
+    }, $rows);
+    // getCount must agree with getData for the same definition.
+    verify($this->repository->getCount($definition))->equals(count($ids));
+    return $ids;
+  }
+
+  private function setListStatus(SubscriberEntity $subscriber, SegmentEntity $segment, string $status): void {
+    $this->entityManager->clear();
+    $subscriberSegment = $this->entityManager->getRepository(SubscriberSegmentEntity::class)->findOneBy([
+      'subscriber' => $subscriber->getId(),
+      'segment' => $segment->getId(),
+    ]);
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
+    $subscriberSegment->setStatus($status);
+    $this->entityManager->flush();
+  }
+
+  private function prepareSegmentsCountColumn(bool $ready): void {
+    $settings = $this->diContainer->get(SettingsController::class);
+    if ($ready) {
+      $ids = array_map(function(SubscriberEntity $subscriber): int {
+        return (int)$subscriber->getId();
+      }, $this->entityManager->getRepository(SubscriberEntity::class)->findAll());
+      $this->diContainer->get(SegmentsCountRecalculator::class)->recalculateForSubscribers($ids);
+    }
+    $settings->set(SegmentSubscribersRepository::BACKFILLED_SETTING_KEY, $ready);
   }
 
   private function createSentEmails(SubscriberEntity $subscriber, int $count, Carbon $sentAt): void {
