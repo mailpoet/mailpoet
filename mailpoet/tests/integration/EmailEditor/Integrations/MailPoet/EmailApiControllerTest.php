@@ -181,6 +181,29 @@ class EmailApiControllerTest extends \MailPoetTest {
     verify($newsletter->getReplyToAddress())->equals('reply@example.com');
   }
 
+  public function testItMarksNewsletterAsUpdatedWhenItsEmailPostIsSaved(): void {
+    $wpPostId = 24;
+    $newsletter = (new NewsletterFactory())
+      ->withWpPostId($wpPostId)
+      ->create();
+    $oldUpdatedAt = new \DateTimeImmutable('2020-01-01 00:00:00');
+    $this->setUpdatedAtForEntity($newsletter, $oldUpdatedAt);
+
+    $this->emailApiController->markNewsletterAsUpdated(new \WP_Post((object)['ID' => $wpPostId]));
+
+    $this->entityManager->clear();
+    $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $updatedAt = $newsletter->getUpdatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $updatedAt);
+    verify($updatedAt->getTimestamp())->greaterThan($oldUpdatedAt->getTimestamp());
+  }
+
+  public function testItIgnoresSavedEmailPostWithoutNewsletter(): void {
+    $this->emailApiController->markNewsletterAsUpdated(new \WP_Post((object)['ID' => 999999]));
+    verify($this->newslettersRepository->findOneBy(['wpPost' => 999999]))->null();
+  }
+
   public function testItAllowsSavingEmptySenderName(): void {
     $wpPostId = 23;
     $newsletter = (new NewsletterFactory())

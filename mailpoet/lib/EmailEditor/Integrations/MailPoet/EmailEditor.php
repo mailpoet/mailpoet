@@ -58,6 +58,7 @@ class EmailEditor {
     $this->cli->initialize();
     $this->wp->addFilter('woocommerce_email_editor_post_types', [$this, 'addEmailPostType']);
     $this->wp->addAction('rest_delete_mailpoet_email', [$this->emailApiController, 'trashEmail'], 10, 1);
+    $this->wp->addAction('rest_after_insert_mailpoet_email', [$this->emailApiController, 'markNewsletterAsUpdated'], 10, 1);
     $this->wp->addFilter('woocommerce_is_email_editor_page', [$this, 'isEditorPage'], 10, 1);
     $this->wp->addFilter('replace_editor', [$this, 'replaceEditor'], 10, 2);
     $this->wp->addFilter('woocommerce_email_editor_send_preview_email', [$this->emailEditorPreviewEmail, 'sendPreviewEmail'], 10, 1);
