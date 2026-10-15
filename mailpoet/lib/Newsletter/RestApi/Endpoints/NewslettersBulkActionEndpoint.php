@@ -37,12 +37,6 @@ class NewslettersBulkActionEndpoint extends Endpoint {
 
   public const ACTION_EXPORT_STATS = 'export_stats';
 
-  // Referenced by ListingRequestValidationTrait's pagination helpers, which this
-  // endpoint composes for filter/date validation but never calls. Values mirror
-  // AbstractListingEndpoint.
-  private const MAX_PER_PAGE = 100;
-  private const MAX_PAGE = 100000;
-
   /** @var ListingHandler */
   private $listingHandler;
 
@@ -200,11 +194,13 @@ class NewslettersBulkActionEndpoint extends Endpoint {
     $groupParam = $request->getParam('group');
     $typeParam = $request->getParam('type');
     $parentIdParam = $request->getParam('parent_id');
+    $type = $this->validateScopeType($typeParam, $request->getParam('select_all') === true);
+    $group = $this->validateScopeGroup($groupParam, $type);
     $this->validateNewslettersFilters($filter, $typeParam);
 
     $params = [];
-    if (is_string($typeParam) && in_array($typeParam, NewslettersListingEndpoint::SUPPORTED_TYPES, true)) {
-      $params['type'] = $typeParam;
+    if ($type !== null) {
+      $params['type'] = $type;
     }
     if (is_numeric($parentIdParam)) {
       $params['parentId'] = (int)$parentIdParam;
@@ -216,11 +212,52 @@ class NewslettersBulkActionEndpoint extends Endpoint {
       'sort_by' => 'id',
       'sort_order' => 'desc',
       'search' => is_string($searchParam) ? $searchParam : null,
-      'group' => is_string($groupParam) ? $groupParam : null,
+      'group' => $group,
       'filter' => is_array($filter) ? $filter : [],
       'selection' => $selection,
       'params' => $params,
     ]);
+  }
+
+  /**
+   * “Select all” must act on the listing the user saw, so it needs a supported type.
+   *
+   * @param mixed $type
+   */
+  private function validateScopeType($type, bool $selectAll): ?string {
+    if ($type === null || $type === '') {
+      if ($selectAll) {
+        throw $this->listingValidationError(__('A supported email type is required.', 'mailpoet'), 'type');
+      }
+      return null;
+    }
+    if (!is_string($type) || !in_array($type, NewslettersListingEndpoint::SUPPORTED_TYPES, true)) {
+      throw $this->listingValidationError(__('Unsupported email type.', 'mailpoet'), 'type');
+    }
+    return $type;
+  }
+
+  /**
+   * Falls back to the listing’s default group, so trashed emails stay out of a request without one.
+   *
+   * @param mixed $group
+   */
+  private function validateScopeGroup($group, ?string $type): string {
+    if ($group === null || $group === '') {
+      return 'all';
+    }
+    $allowed = NewsletterListingRepository::getSupportedGroupsForType($type);
+    if (!is_string($group) || !in_array($group, $allowed, true)) {
+      throw $this->listingValidationError(
+        sprintf(
+          // translators: %s is a comma-separated list of allowed listing groups.
+          __('Unsupported group. Allowed values are: %s.', 'mailpoet'),
+          implode(', ', $allowed)
+        ),
+        'group'
+      );
+    }
+    return $group;
   }
 
   /**
