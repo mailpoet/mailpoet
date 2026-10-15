@@ -562,6 +562,20 @@ class SubscribersEndpointsTest extends Test {
     $this->assertSame([], $this->listingEmails($sfx, ['status_in' => ['subscribed'], 'source_in' => ['api']]));
   }
 
+  public function testListingCountMatchesRowsForAZeroScoreFilter(): void {
+    foreach ([0, 40, 50] as $i => $score) {
+      (new SubscriberFactory())
+        ->withEmail("rest-zero-{$i}-" . uniqid() . '@example.com')
+        ->withEngagementScore($score)
+        ->create();
+    }
+    $payload = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => ['filter' => ['score_gt' => '0']]]));
+    $this->assertCount(2, $payload['items']);
+    $this->assertSame(2, $payload['meta']['count']);
+    $groups = array_column($payload['groups'] ?? [], 'count', 'name');
+    $this->assertSame(2, $groups['all'] ?? null);
+  }
+
   public function testListingEmptyResultHasNoItemsAndNoPages(): void {
     $response = $this->get(self::LISTING_PATH, ['query' => [
       'search' => 'no-such-subscriber-' . uniqid(),
