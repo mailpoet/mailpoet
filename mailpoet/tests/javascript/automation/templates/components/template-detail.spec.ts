@@ -32,6 +32,7 @@ type TestRequire = (path: string) => unknown;
 type FakeButtonProps = {
   children?: React.ReactNode;
   disabled?: boolean;
+  accessibleWhenDisabled?: boolean;
   isBusy?: boolean;
   onClick?: () => void;
   'aria-label'?: string;
@@ -89,20 +90,24 @@ const setupWindow = () => {
   global.IS_REACT_ACT_ENVIRONMENT = true;
 };
 
+// mirrors how the real Button handles accessibleWhenDisabled
 function FakeButton({
   children,
   disabled = false,
+  accessibleWhenDisabled = false,
   isBusy = false,
   onClick = undefined,
   'aria-label': ariaLabel,
 }: FakeButtonProps): JSX.Element {
+  const focusableWhenDisabled = disabled && accessibleWhenDisabled;
   return React.createElement(
     'button',
     {
       'aria-label': ariaLabel,
+      'aria-disabled': focusableWhenDisabled ? 'true' : undefined,
       'data-busy': isBusy ? 'true' : 'false',
-      disabled,
-      onClick,
+      disabled: disabled && !accessibleWhenDisabled,
+      onClick: focusableWhenDisabled ? undefined : onClick,
       type: 'button',
     },
     children,
@@ -217,6 +222,9 @@ const getButton = (label: string): HTMLButtonElement =>
       button.getAttribute('aria-label') === label,
   );
 
+const isDisabled = (button: HTMLButtonElement): boolean =>
+  button.disabled || button.getAttribute('aria-disabled') === 'true';
+
 const clickStartBuilding = async () => {
   await React.act(async () => {
     getButton('Start building').dispatchEvent(
@@ -283,7 +291,7 @@ describe('automation template detail', function templateDetail() {
     expect(navigationAttempts).to.equal(1);
 
     const startBuilding = getButton('Start building');
-    expect(startBuilding.disabled).to.equal(true);
+    expect(isDisabled(startBuilding)).to.equal(true);
     expect(startBuilding.getAttribute('data-busy')).to.equal('true');
     expect(getButton('Cancel').disabled).to.equal(true);
     expect(getButton('Previous template').disabled).to.equal(true);
@@ -312,7 +320,7 @@ describe('automation template detail', function templateDetail() {
     expect(navigationAttempts).to.equal(0);
 
     const startBuilding = getButton('Start building');
-    expect(startBuilding.disabled).to.equal(false);
+    expect(isDisabled(startBuilding)).to.equal(false);
     expect(startBuilding.getAttribute('data-busy')).to.equal('false');
     expect(getButton('Cancel').disabled).to.equal(false);
     expect(getButton('Previous template').disabled).to.equal(false);
@@ -322,5 +330,22 @@ describe('automation template detail', function templateDetail() {
     await clickStartBuilding();
 
     expect(apiFetchStub.calledTwice).to.equal(true);
+  });
+
+  it('keeps Start building focusable while creating the automation', async () => {
+    apiFetchStub.returns(
+      new Promise(() => {
+        // keep the request pending
+      }),
+    );
+
+    await render();
+    await clickStartBuilding();
+
+    // a disabled button would drop focus to the body, so Escape would no
+    // longer reach the modal after an error
+    const startBuilding = getButton('Start building');
+    expect(startBuilding.disabled).to.equal(false);
+    expect(startBuilding.getAttribute('aria-disabled')).to.equal('true');
   });
 });
