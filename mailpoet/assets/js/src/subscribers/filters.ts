@@ -74,6 +74,17 @@ const SET_FIELDS: Array<[string, string]> = [
   [SOURCE_FIELD, 'source'],
 ];
 
+const MAX_SET_VALUES = 100;
+
+function sortedRange(
+  low: number | string | undefined,
+  high: number | string | undefined,
+): [number | string | undefined, number | string | undefined] {
+  return low !== undefined && high !== undefined && low > high
+    ? [high, low]
+    : [low, high];
+}
+
 function toPositiveInt(value: unknown): number | undefined {
   const text = String(value ?? '').trim();
   if (text === '' || !text.split('').every((c) => c >= '0' && c <= '9')) {
@@ -124,7 +135,7 @@ export function normalizeRequestFilter(
           : raw[key];
       const values = cleanValues(prefix, input);
       if (values.length > 0) {
-        result[key] = values;
+        result[key] = values.slice(0, MAX_SET_VALUES);
       }
     });
   });
@@ -142,6 +153,23 @@ export function normalizeRequestFilter(
       }
     },
   );
+  // The server rejects reversed ranges, so swap them to keep the user's intent.
+  [
+    ['score_min', 'score_max'],
+    ['created_from', 'created_to'],
+    ['subscribed_from', 'subscribed_to'],
+  ].forEach(([lowKey, highKey]) => {
+    const [low, high] = sortedRange(
+      result[lowKey] as number | string | undefined,
+      result[highKey] as number | string | undefined,
+    );
+    if (low !== undefined) {
+      result[lowKey] = low;
+    }
+    if (high !== undefined) {
+      result[highKey] = high;
+    }
+  });
   return result as SubscribersRequestFilter;
 }
 
@@ -205,7 +233,7 @@ export function viewFiltersToRequestFilter(
     }
   });
 
-  return result as SubscribersRequestFilter;
+  return normalizeRequestFilter(result);
 }
 
 function datesToFilter(
