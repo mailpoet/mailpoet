@@ -8,6 +8,7 @@
  * `group[<status>]`) are still understood. Pure, so it can be unit-tested.
  */
 import {
+  SUBSCRIBER_STATUSES,
   fromOrderby,
   normalizeRequestFilter,
   toOrderby,
@@ -29,14 +30,6 @@ export type SubscribersHashDefaults = {
   order: 'asc' | 'desc';
   perPage: number;
 };
-
-const LEGACY_STATUS_GROUPS = [
-  'subscribed',
-  'unconfirmed',
-  'unsubscribed',
-  'inactive',
-  'bounced',
-];
 
 const FILTER_KEYS: Array<keyof SubscribersRequestFilter> = [
   'status_in',
@@ -108,7 +101,7 @@ export function parseSubscribersHash(hash: string): SubscribersHashState {
     if (key === 'group') {
       if (value === 'trash') {
         state.group = 'trash';
-      } else if (LEGACY_STATUS_GROUPS.includes(value)) {
+      } else if (SUBSCRIBER_STATUSES.includes(value)) {
         legacyStatus = value;
       }
     } else if ((key === 'page' || key === 'paged') && Number(value) > 0) {

@@ -44,6 +44,7 @@ import {
 import {
   WITHOUT_LIST,
   getExactStatus,
+  hasActiveFilters,
   requestFilterToViewFilters,
   toOrderby,
   viewFiltersToRequestFilter,
@@ -945,8 +946,7 @@ function SubscriberList() {
       !isLoading &&
       !loadError &&
       groupCounts.trash === 0 &&
-      !view.search &&
-      (view.filters ?? []).length === 0
+      !hasActiveFilters(view.filters, view.search)
     ) {
       setGroup('all');
       setSelection([]);
