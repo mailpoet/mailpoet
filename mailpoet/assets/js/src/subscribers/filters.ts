@@ -34,14 +34,14 @@ export type SubscribersRequestFilter = {
 
 type Options = { trackingEnabled?: boolean };
 
-const STATUSES = [
+export const SUBSCRIBER_STATUSES = [
   'subscribed',
   'unconfirmed',
   'unsubscribed',
   'inactive',
   'bounced',
 ];
-const SOURCES = [
+export const SUBSCRIBER_SOURCES = [
   'form',
   'imported',
   'administrator',
@@ -105,7 +105,8 @@ function cleanValues(prefix: string, value: unknown): Array<number | string> {
       clean = toPositiveInt(entry);
     } else {
       const text = String(entry ?? '');
-      const allowed = prefix === 'status' ? STATUSES : SOURCES;
+      const allowed =
+        prefix === 'status' ? SUBSCRIBER_STATUSES : SUBSCRIBER_SOURCES;
       clean = allowed.includes(text) ? text : undefined;
     }
     if (clean !== undefined && !result.includes(clean)) {
