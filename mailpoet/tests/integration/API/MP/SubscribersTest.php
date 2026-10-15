@@ -1113,12 +1113,17 @@ class SubscribersTest extends \MailPoetTest {
     $this->assertEquals(2, $this->getApi()->getSubscribersCount($filter));
   }
 
-  public function testItIgnoresMinUpdatedAtForDynamicSegmentListId(): void {
+  public function testItAppliesMinUpdatedAtForDynamicSegmentListId(): void {
     $segment = (new DynamicSegmentFactory())->withEngagementScoreFilter(40, 'higherThan')->create();
-    $old = $this->subscriberFactory
+    $this->subscriberFactory
       ->withEmail('old@test.com')
       ->withEngagementScore(80)
       ->withUpdatedAt(new Carbon('2022-10-10 13:00:00'))
+      ->create();
+    $recent = $this->subscriberFactory
+      ->withEmail('recent@test.com')
+      ->withEngagementScore(90)
+      ->withUpdatedAt(new Carbon('2022-10-12 14:00:00'))
       ->create();
     $this->subscriberFactory
       ->withEmail('low@test.com')
@@ -1132,7 +1137,7 @@ class SubscribersTest extends \MailPoetTest {
     ];
     $subscribers = $this->getApi()->getSubscribers($filter);
     $this->assertCount(1, $subscribers);
-    $this->assertEquals($old->getEmail(), $subscribers[0]['email']);
+    $this->assertEquals($recent->getEmail(), $subscribers[0]['email']);
     $this->assertEquals(1, $this->getApi()->getSubscribersCount($filter));
   }
 
