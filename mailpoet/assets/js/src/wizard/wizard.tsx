@@ -31,7 +31,7 @@ function App(): JSX.Element {
         <Routes>
           <Route path="/steps/:step/*" element={<WizardWithBoundary />} />
           <Route path="/woocommerce" element={<WooCommerceWithBoundary />} />
-          <Route path="*" element={<Navigate to={basePath} />} />
+          <Route path="*" element={<Navigate to={basePath} replace />} />
         </Routes>
       </HashRouter>
     </GlobalContext.Provider>

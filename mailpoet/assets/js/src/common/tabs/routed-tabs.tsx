@@ -113,7 +113,7 @@ function RoutedTabs({
 
       <Route
         path="*"
-        element={<Navigate to={`${routerPrefix}${activeKey}`} />}
+        element={<Navigate to={`${routerPrefix}${activeKey}`} replace />}
       />
     </Routes>
   );
