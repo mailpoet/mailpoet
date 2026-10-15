@@ -175,10 +175,32 @@ describe('Subscribers filters: request to view', () => {
     ]);
     expect(
       requestFilterToViewFilters({ created_from: '2025-03-01' }),
-    ).to.deep.equal([f('created_at', 'afterInc', '2025-03-01')]);
+    ).to.deep.equal([f('created_at', 'after', '2025-02-28')]);
     expect(
       requestFilterToViewFilters({ created_to: '2025-03-01' }),
-    ).to.deep.equal([f('created_at', 'beforeInc', '2025-03-01')]);
+    ).to.deep.equal([f('created_at', 'before', '2025-03-02')]);
+  });
+
+  it('round-trips every offered date operator', () => {
+    const cases: Array<[string, unknown]> = [
+      ['on', '2025-03-10'],
+      ['after', '2025-02-28'],
+      ['after', '2024-02-28'],
+      ['after', '2024-12-31'],
+      ['before', '2025-03-01'],
+      ['before', '2025-02-28'],
+      ['before', '2024-02-28'],
+      ['before', '2024-12-31'],
+      ['between', ['2025-03-01', '2025-03-31']],
+    ];
+    ['created_at', 'last_subscribed_at'].forEach((field) => {
+      cases.forEach(([operator, value]) => {
+        const view = [f(field, operator, value)];
+        expect(
+          requestFilterToViewFilters(viewFiltersToRequestFilter(view)),
+        ).to.deep.equal(view);
+      });
+    });
   });
 
   it('maps score keys', () => {
