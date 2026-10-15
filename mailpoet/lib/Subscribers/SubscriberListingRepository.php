@@ -305,7 +305,7 @@ class SubscriberListingRepository extends ListingRepository {
         ->setParameter('source_in', $filters['source_in'], ArrayParameterType::STRING);
     }
     if (!empty($filters['source_not_in'])) {
-      $query->andWhere('s.source NOT IN (:source_not_in)')
+      $query->andWhere('(s.source IS NULL OR s.source NOT IN (:source_not_in))')
         ->setParameter('source_not_in', $filters['source_not_in'], ArrayParameterType::STRING);
     }
 
@@ -779,7 +779,7 @@ class SubscriberListingRepository extends ListingRepository {
         ->setParameter('sourceIn', $filters['source_in']);
     }
     if (!empty($filters['source_not_in'])) {
-      $queryBuilder->andWhere('s.source NOT IN (:sourceNotIn)')
+      $queryBuilder->andWhere('(s.source IS NULL OR s.source NOT IN (:sourceNotIn))')
         ->setParameter('sourceNotIn', $filters['source_not_in']);
     }
 
