@@ -9,6 +9,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -235,7 +236,8 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
       $this->wpWithCapability(),
       $this->diContainer->get(ScheduledTasksRepository::class),
       new FreeDomains(),
-      $this->settings
+      $this->settings,
+      $this->diContainer->get(AuthorizedSenderDomainController::class)
     );
 
     $result = $notice->init(true);
@@ -245,6 +247,56 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
     $this->diContainer->get(SendingQueuesRepository::class)->resume($queue);
 
     verify($notice->init(true))->null();
+  }
+
+  public function testItExposesTheDomainsListedByTheLastInit() {
+    $this->tasksRepository->method('findPausedForSenderDomain')->willReturn([
+      $this->makeTask(1, 'One', 'me@example.com'),
+      $this->makeTask(2, 'Two', 'me@gmail.com'),
+      $this->makeTask(3, 'Three', ''),
+    ]);
+    $notice = $this->createNotice();
+
+    verify($notice->getListedDomains())->equals([]);
+    $notice->init(true);
+    verify($notice->getListedDomains())->equals(['example.com', 'gmail.com']);
+  }
+
+  public function testItReturnsNullWhenSenderDomainIsAlreadyVerified() {
+    $this->tasksRepository->method('findPausedForSenderDomain')->willReturn([
+      $this->makeTask(1, 'Moved', 'me@example.com'),
+    ]);
+
+    $notice = $this->createNotice($this->createDomainController(true, ['example.com'], true));
+
+    verify($notice->init(true))->null();
+  }
+
+  public function testItListsCampaignsWithoutReadingVerifiedDomainsWhenCacheIsUnavailable() {
+    $this->tasksRepository->method('findPausedForSenderDomain')->willReturn([
+      $this->makeTask(1, 'Moved', 'me@example.com'),
+    ]);
+
+    $notice = $this->createNotice($this->createDomainController(false, ['example.com'], false))->init(true);
+
+    $this->assertInstanceOf(Notice::class, $notice);
+    verify($notice->getMessage())->stringContainsString('>Moved</a>”');
+  }
+
+  public function testItListsOnlyCampaignsOnUnverifiedDomains() {
+    $this->tasksRepository->method('findPausedForSenderDomain')->willReturn([
+      $this->makeTask(1, 'Verified one', 'me@example.com'),
+      $this->makeTask(2, 'Unverified one', 'me@other.com'),
+    ]);
+
+    $notice = $this->createNotice($this->createDomainController(true, ['example.com'], true))->init(true);
+
+    $this->assertInstanceOf(Notice::class, $notice);
+    $message = $notice->getMessage();
+    verify($message)->stringContainsString('Unverified one');
+    verify($message)->stringContainsString('authenticate other.com');
+    verify($message)->stringNotContainsString('Verified one');
+    verify($message)->stringNotContainsString('example.com');
   }
 
   private function render(Notice $notice): string {
@@ -266,13 +318,23 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
     return $wp;
   }
 
-  private function createNotice(): SenderDomainPausedCampaignsNotice {
+  private function createNotice(?AuthorizedSenderDomainController $domainController = null): SenderDomainPausedCampaignsNotice {
     return new SenderDomainPausedCampaignsNotice(
       $this->wpWithCapability(),
       $this->tasksRepository,
       new FreeDomains(),
-      $this->settings
+      $this->settings,
+      $domainController ?? $this->createMock(AuthorizedSenderDomainController::class)
     );
+  }
+
+  private function createDomainController(bool $cacheAvailable, array $verifiedDomains, bool $expectRead): AuthorizedSenderDomainController {
+    $controller = $this->createMock(AuthorizedSenderDomainController::class);
+    $controller->method('isCacheAvailable')->willReturn($cacheAvailable);
+    $controller->expects($expectRead ? $this->once() : $this->never())
+      ->method('getVerifiedSenderDomains')
+      ->willReturn($verifiedDomains);
+    return $controller;
   }
 
   private function makeTask(int $newsletterId, string $subject, string $senderAddress, string $type = NewsletterEntity::TYPE_STANDARD, ?int $parentId = null): ScheduledTaskEntity {

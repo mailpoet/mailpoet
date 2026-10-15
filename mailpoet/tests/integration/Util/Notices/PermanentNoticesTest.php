@@ -130,13 +130,29 @@ class PermanentNoticesTest extends \MailPoetTest {
     ];
   }
 
-  public function testItHidesDomainAuthenticationNoticesWhenPausedCampaignsNoticeIsShown() {
-    $pausedNotice = $this->createMock(SenderDomainPausedCampaignsNotice::class);
-    $pausedNotice->method('init')->willReturn(new Notice(Notice::TYPE_ERROR, 'Paused', '', '', true, new WPFunctions()));
+  public function testItHidesDomainAuthenticationNoticesWhenPausedCampaignsNoticeListsTheDefaultSenderDomain() {
+    $pausedNotice = $this->createPausedNotice(['example.com']);
     $authNotices = $this->createMock(SenderDomainAuthenticationNotices::class);
+    $authNotices->method('getDefaultFromDomain')->willReturn('example.com');
     $authNotices->expects($this->once())->method('init')->with(false);
 
     $this->initOnPage('mailpoet-newsletters', $pausedNotice, $authNotices);
+  }
+
+  public function testItKeepsDomainAuthenticationNoticesWhenDefaultSenderIsOnAnotherDomain() {
+    $pausedNotice = $this->createPausedNotice(['example.com']);
+    $authNotices = $this->createMock(SenderDomainAuthenticationNotices::class);
+    $authNotices->method('getDefaultFromDomain')->willReturn('other.com');
+    $authNotices->expects($this->once())->method('init')->with(true);
+
+    $this->initOnPage('mailpoet-newsletters', $pausedNotice, $authNotices);
+  }
+
+  private function createPausedNotice(array $listedDomains): SenderDomainPausedCampaignsNotice {
+    $pausedNotice = $this->createMock(SenderDomainPausedCampaignsNotice::class);
+    $pausedNotice->method('init')->willReturn(new Notice(Notice::TYPE_ERROR, 'Paused', '', '', true, new WPFunctions()));
+    $pausedNotice->method('getListedDomains')->willReturn($listedDomains);
+    return $pausedNotice;
   }
 
   public function testItKeepsDomainAuthenticationNoticesConditionWhenPausedCampaignsNoticeIsNull() {

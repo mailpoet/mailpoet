@@ -216,8 +216,14 @@ class PermanentNotices {
     $pausedCampaignsNotice = $this->senderDomainPausedCampaignsNotice->init(
       Menu::isOnMailPoetAdminPage($excludePausedCampaignsNotice)
     );
+    // The general notice stays visible unless the paused campaigns notice already covers the default sender domain
+    $coveredByPausedCampaignsNotice = $pausedCampaignsNotice !== null && in_array(
+      $this->senderDomainAuthenticationNotices->getDefaultFromDomain(),
+      $this->senderDomainPausedCampaignsNotice->getListedDomains(),
+      true
+    );
     $this->senderDomainAuthenticationNotices->init(
-      $pausedCampaignsNotice === null && Menu::isOnMailPoetAdminPage($excludeDomainAuthenticationNotices)
+      !$coveredByPausedCampaignsNotice && Menu::isOnMailPoetAdminPage($excludeDomainAuthenticationNotices)
     );
   }
 

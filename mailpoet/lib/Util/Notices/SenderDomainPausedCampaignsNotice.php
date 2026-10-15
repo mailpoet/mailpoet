@@ -6,6 +6,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\FreeDomains;
 use MailPoet\Util\Helpers;
@@ -23,19 +24,36 @@ class SenderDomainPausedCampaignsNotice {
 
   private SettingsController $settings;
 
+  private AuthorizedSenderDomainController $senderDomainController;
+
+  /** @var string[] */
+  private array $listedDomains = [];
+
   public function __construct(
     WPFunctions $wp,
     ScheduledTasksRepository $scheduledTasksRepository,
     FreeDomains $freeDomains,
-    SettingsController $settings
+    SettingsController $settings,
+    AuthorizedSenderDomainController $senderDomainController
   ) {
     $this->wp = $wp;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->freeDomains = $freeDomains;
     $this->settings = $settings;
+    $this->senderDomainController = $senderDomainController;
+  }
+
+  /**
+   * Domains named in the notice returned by the last init() call.
+   *
+   * @return string[]
+   */
+  public function getListedDomains(): array {
+    return $this->listedDomains;
   }
 
   public function init(bool $shouldDisplay): ?Notice {
+    $this->listedDomains = [];
     if (
       !$shouldDisplay
       || $this->settings->get('mta.method') !== Mailer::METHOD_MAILPOET
@@ -71,7 +89,25 @@ class SenderDomainPausedCampaignsNotice {
         $newsletters[$newsletter->getId()] = $newsletters[$newsletter->getId()] ?? $newsletter;
       }
     }
-    return array_values($newsletters);
+    return $this->withoutVerifiedSenderDomains(array_values($newsletters));
+  }
+
+  /**
+   * A campaign whose From address was changed to a verified domain after the pause
+   * no longer needs authentication. The list is read only from the cache so that
+   * rendering a page never calls the Bridge.
+   *
+   * @param NewsletterEntity[] $newsletters
+   * @return NewsletterEntity[]
+   */
+  private function withoutVerifiedSenderDomains(array $newsletters): array {
+    if (!$newsletters || !$this->senderDomainController->isCacheAvailable()) {
+      return $newsletters;
+    }
+    $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomains();
+    return array_values(array_filter($newsletters, function (NewsletterEntity $newsletter) use ($verifiedDomains): bool {
+      return !in_array(Helpers::extractEmailDomain((string)$newsletter->getSenderAddress()), $verifiedDomains, true);
+    }));
   }
 
   /**
@@ -85,6 +121,8 @@ class SenderDomainPausedCampaignsNotice {
       $groups[$domain]['senderAddress'] = $groups[$domain]['senderAddress'] ?? $senderAddress;
       $groups[$domain]['newsletters'][] = $newsletter;
     }
+
+    $this->listedDomains = array_values(array_filter(array_map('strval', array_keys($groups))));
 
     $branded = [];
     $freeMail = [];
