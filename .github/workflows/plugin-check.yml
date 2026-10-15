@@ -1,0 +1,112 @@
+name: 'CI'
+
+on:
+  pull_request:
+    paths:
+      - 'mailpoet/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/plugin-check.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  plugin-check:
+    name: 'WP.org Plugin Check'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    # build.sh loads WordPress to generate the Doctrine and Twig caches.
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: wordpress
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: 'Setup PHP'
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, mysql, gd, zip, intl
+          tools: wp-cli
+
+      - name: 'Setup pnpm'
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+
+      - name: 'Setup Node.js'
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: 'Install system dependencies'
+        run: sudo apt-get update && sudo apt-get install -y gettext
+
+      - name: 'Setup WordPress'
+        run: |
+          wp core download --path=wordpress
+          wp config create \
+            --dbname=wordpress \
+            --dbuser=root \
+            --dbpass=root \
+            --dbhost=127.0.0.1 \
+            --dbprefix=mp_ \
+            --path=wordpress
+          wp core install \
+            --admin_name=admin \
+            --admin_password=admin \
+            --admin_email=admin@example.com \
+            --url=http://localhost \
+            --title="WordPress" \
+            --path=wordpress \
+            --skip-email
+
+      - name: 'Configure build environment'
+        working-directory: mailpoet
+        run: echo "WP_ROOT=${{ github.workspace }}/wordpress" > .env
+
+      - name: 'Build zip'
+        working-directory: mailpoet
+        run: bash build.sh
+
+      # The action merges its settings into .wp-env.json in the workspace root.
+      # The repo's own file maps the source plugin and dev-only scripts, so remove it.
+      - name: 'Unzip the built plugin'
+        run: |
+          rm -f .wp-env.json .wp-env.override.json
+          mkdir plugin-build
+          unzip -q mailpoet/mailpoet.zip -d plugin-build
+
+      # Report-only for now: results show as annotations, but the job does not fail.
+      - name: 'WP.org Plugin Check'
+        continue-on-error: true
+        uses: wordpress/plugin-check-action@10857da14b6c2246d15402b3e69f777edcf8c12e # v1.1.9
+        with:
+          build-dir: ./plugin-build/mailpoet
+          repo-token: ''
+          # Each ignored code was reviewed. The reasons are in the PR that added this workflow.
+          ignore-codes: |
+            WordPress.Security.EscapeOutput.ExceptionNotEscaped
+            PluginCheck.CodeAnalysis.Offloading.OffloadedContent
+            WordPress.WP.I18n.TextDomainMismatch
+            plugin_updater_detected
