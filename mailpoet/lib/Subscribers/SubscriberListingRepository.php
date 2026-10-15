@@ -30,11 +30,11 @@ class SubscriberListingRepository extends ListingRepository {
 
   const DEFAULT_SORT_BY = 'createdAt';
 
-  private const ENGAGEMENT_SCORE_UNKNOWN = 'unknown';
-  private const ENGAGEMENT_SCORE_DORMANT = 'dormant';
-  private const ENGAGEMENT_SCORE_LOW = 'low';
-  private const ENGAGEMENT_SCORE_GOOD = 'good';
-  private const ENGAGEMENT_SCORE_EXCELLENT = 'excellent';
+  public const ENGAGEMENT_SCORE_UNKNOWN = 'unknown';
+  public const ENGAGEMENT_SCORE_DORMANT = 'dormant';
+  public const ENGAGEMENT_SCORE_LOW = 'low';
+  public const ENGAGEMENT_SCORE_GOOD = 'good';
+  public const ENGAGEMENT_SCORE_EXCELLENT = 'excellent';
   private const ENGAGEMENT_SCORE_LOW_MAX = 20;
   private const ENGAGEMENT_SCORE_GOOD_MIN = 20;
   private const ENGAGEMENT_SCORE_GOOD_MAX = 50;
@@ -234,6 +234,8 @@ class SubscriberListingRepository extends ListingRepository {
     $query = $this->createDbalSubscribersQuery('DISTINCT s.id');
     // A dynamic list never excluded trashed subscribers when no group was given; keep that.
     $this->applyDbalListingConstraints($query, $definition, !$this->hasDynamicSegmentFilter($definition));
+    // Whatever the group or filters say, a confirmation email never goes to a confirmed subscriber.
+    $query->andWhere(sprintf("s.status = '%s'", SubscriberEntity::STATUS_UNCONFIRMED));
     return ['query' => $query, 'id_column' => 's.id'];
   }
 

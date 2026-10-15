@@ -4,6 +4,7 @@ namespace MailPoet\Subscribers\RestApi\Endpoints;
 
 use MailPoet\API\REST\ApiException;
 use MailPoet\API\REST\Endpoint;
+use MailPoet\API\REST\ListingRequestValidationTrait;
 use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\Config\AccessControl;
@@ -13,10 +14,19 @@ use MailPoet\Listing\ListingDefinition;
 use MailPoet\Subscribers\BulkActionController;
 use MailPoet\Subscribers\BulkActionException;
 use MailPoet\Subscribers\BulkConfirmationEmailResender;
+use MailPoet\Subscribers\RestApi\SubscribersFilterTrait;
 use MailPoet\Validator\Builder;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SubscribersBulkActionEndpoint extends Endpoint {
+  use ListingRequestValidationTrait;
+  use SubscribersFilterTrait;
+
+  // Referenced by ListingRequestValidationTrait's pagination helpers, which this
+  // endpoint never calls; the date and error helpers are the ones it needs.
+  private const MAX_PER_PAGE = 100;
+  private const MAX_PAGE = 100000;
+
   public const ACTION_RESEND_CONFIRMATION_EMAILS = 'resendConfirmationEmails';
 
   private const VALID_SELECT_ALL_GROUPS = [
@@ -149,7 +159,7 @@ class SubscribersBulkActionEndpoint extends Endpoint {
         'mailpoet_subscribers_resend_forbidden'
       );
     }
-    if ($definition->getGroup() !== SubscriberEntity::STATUS_UNCONFIRMED) {
+    if (!$this->isResendScope($definition)) {
       throw new ApiException(
         __('Confirmation emails can be resent in bulk only from the Unconfirmed subscribers view.', 'mailpoet'),
         400,
@@ -199,8 +209,37 @@ class SubscribersBulkActionEndpoint extends Endpoint {
     ]);
   }
 
+  /**
+   * Resend is allowed from the legacy Unconfirmed group or when the status filter is exactly
+   * "unconfirmed". The repository restricts the recipients to unconfirmed subscribers either way.
+   */
+  private function isResendScope(ListingDefinition $definition): bool {
+    $group = $definition->getGroup();
+    if ($group === 'trash') {
+      return false;
+    }
+    if ($group === SubscriberEntity::STATUS_UNCONFIRMED) {
+      return true;
+    }
+    $statuses = $definition->getFilters()['status_in'] ?? null;
+    if (!is_array($statuses) || $statuses === []) {
+      return false;
+    }
+    foreach ($statuses as $status) {
+      if ($status !== SubscriberEntity::STATUS_UNCONFIRMED) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  protected function getListingValidationErrorPrefix(): string {
+    return 'subscribers';
+  }
+
   private function buildDefinition(Request $request): ListingDefinition {
     $filter = $request->getParam('filter');
+    $this->validateSubscribersFilter($filter);
     $selection = $request->getParam('selection');
     $selectAll = $request->getParam('select_all') === true;
     $searchParam = $request->getParam('search');
