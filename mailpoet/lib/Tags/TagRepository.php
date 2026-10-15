@@ -129,7 +129,7 @@ class TagRepository extends Repository {
       $qb->andWhere('t.name LIKE :search OR t.description LIKE :search')
         ->setParameter('search', '%' . $search . '%');
     }
-    $this->applyDateRangeFilter($qb, 't.createdAt', ['from' => $from, 'to' => $to], 'from', 'to', false);
+    $this->applyDateRangeFilter($qb, 't.createdAt', ['from' => $from, 'to' => $to], 'from', 'to');
     $this->applySubscriberRanges($qb, $ranges);
 
     /** @var array<array{id: int, name: string, description: string, created_at: mixed, updated_at: mixed, subscribersCount: int|string}> $rows */
@@ -171,7 +171,7 @@ class TagRepository extends Repository {
         $qb->andWhere('t.name LIKE :search OR t.description LIKE :search')
           ->setParameter('search', '%' . $search . '%');
       }
-      $this->applyDateRangeFilter($qb, 't.createdAt', ['from' => $from, 'to' => $to], 'from', 'to', false);
+      $this->applyDateRangeFilter($qb, 't.createdAt', ['from' => $from, 'to' => $to], 'from', 'to');
       $this->applySubscriberRanges($qb, $ranges);
       return count($qb->getQuery()->getArrayResult());
     }
@@ -183,7 +183,7 @@ class TagRepository extends Repository {
       $qb->andWhere('t.name LIKE :search OR t.description LIKE :search')
         ->setParameter('search', '%' . $search . '%');
     }
-    $this->applyDateRangeFilter($qb, 't.createdAt', ['from' => $from, 'to' => $to], 'from', 'to', false);
+    $this->applyDateRangeFilter($qb, 't.createdAt', ['from' => $from, 'to' => $to], 'from', 'to');
     return (int)$qb->getQuery()->getSingleScalarResult();
   }
 
