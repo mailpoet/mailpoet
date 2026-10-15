@@ -1855,6 +1855,127 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     }
   }
 
+  public function testScoreGtAndLtAreExclusiveAndMinMaxAreInclusive() {
+    $low = (new Subscriber())->withEngagementScore(10)->create();
+    $edge = (new Subscriber())->withEngagementScore(50)->create();
+    $high = (new Subscriber())->withEngagementScore(90)->create();
+    $noScore = (new Subscriber())->create();
+
+    verify($this->getIds(['score_gt' => 50]))->equals([$high->getId()]);
+    verify($this->getIds(['score_lt' => 50]))->equals([$low->getId()]);
+    verify($this->getIds(['score_min' => 50]))->equals([$edge->getId(), $high->getId()]);
+    verify($this->getIds(['score_max' => 50]))->equals([$low->getId(), $edge->getId()]);
+    verify($this->getIds(['score_min' => 10, 'score_max' => 50]))->equals([$low->getId(), $edge->getId()]);
+    verify($this->getIds(['score_gt' => 10, 'score_lt' => 90]))->equals([$edge->getId()]);
+    foreach (['score_gt' => -1, 'score_lt' => 1000, 'score_min' => 0, 'score_max' => 1000] as $key => $value) {
+      $this->assertNotContains($noScore->getId(), $this->getIds([$key => $value]));
+    }
+  }
+
+  public function testNonNumericScoreValuesAreIgnored() {
+    $a = (new Subscriber())->withEngagementScore(10)->create();
+    $b = (new Subscriber())->create();
+
+    verify($this->getIds(['score_gt' => 'abc', 'score_min' => '', 'score_max' => []]))->equals([$a->getId(), $b->getId()]);
+    verify($this->getIds(['score_gt' => '5']))->equals([$a->getId()]);
+  }
+
+  public function testCreatedFromAndToAreInclusiveWholeDays() {
+    $beforeDay = (new Subscriber())->withCreatedAt(new Carbon('2022-10-09 23:59:59'))->create();
+    $dayStart = (new Subscriber())->withCreatedAt(new Carbon('2022-10-10 00:00:00'))->create();
+    $dayEnd = (new Subscriber())->withCreatedAt(new Carbon('2022-10-10 23:59:59'))->create();
+    $afterDay = (new Subscriber())->withCreatedAt(new Carbon('2022-10-11 00:00:00'))->create();
+
+    verify($this->getIds(['created_from' => '2022-10-10', 'created_to' => '2022-10-10']))->equals([$dayStart->getId(), $dayEnd->getId()]);
+    verify($this->getIds(['created_from' => '2022-10-10']))->equals([$dayStart->getId(), $dayEnd->getId(), $afterDay->getId()]);
+    verify($this->getIds(['created_to' => '2022-10-10']))->equals([$beforeDay->getId(), $dayStart->getId(), $dayEnd->getId()]);
+  }
+
+  public function testSubscribedFromAndToAreInclusiveWholeDays() {
+    $never = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->create();
+    $beforeDay = (new Subscriber())->withLastSubscribedAt(new Carbon('2022-10-09 23:59:59'))->create();
+    $dayStart = (new Subscriber())->withLastSubscribedAt(new Carbon('2022-10-10 00:00:00'))->create();
+    $dayEnd = (new Subscriber())->withLastSubscribedAt(new Carbon('2022-10-10 23:59:59'))->create();
+    $afterDay = (new Subscriber())->withLastSubscribedAt(new Carbon('2022-10-11 00:00:00'))->create();
+
+    verify($this->getIds(['subscribed_from' => '2022-10-10', 'subscribed_to' => '2022-10-10']))->equals([$dayStart->getId(), $dayEnd->getId()]);
+    verify($this->getIds(['subscribed_from' => '2022-10-10']))->equals([$dayStart->getId(), $dayEnd->getId(), $afterDay->getId()]);
+    verify($this->getIds(['subscribed_to' => '2022-10-10']))->equals([$beforeDay->getId(), $dayStart->getId(), $dayEnd->getId()]);
+    $this->assertNotContains($never->getId(), $this->getIds(['subscribed_from' => '2000-01-01', 'subscribed_to' => '2100-01-01']));
+  }
+
+  public function testScoreCombinesWithTagAndStatus() {
+    $tag = (new Tag())->withName('Score Tag')->create();
+    $match = (new Subscriber())->withEngagementScore(70)->withTags([$tag])->create();
+    (new Subscriber())->withEngagementScore(30)->withTags([$tag])->create();
+    (new Subscriber())->withEngagementScore(70)->create();
+    (new Subscriber())->withEngagementScore(70)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->withTags([$tag])->create();
+
+    $filters = ['score_gt' => 50, 'tag_in' => [$tag->getId()], 'status_in' => [SubscriberEntity::STATUS_SUBSCRIBED]];
+    verify($this->getIds($filters))->equals([$match->getId()]);
+    verify($this->getIds(['score_gt' => 99] + $filters))->equals([]);
+  }
+
+  public function testScoreAndDateFiltersGiveTheSameResultOnTheListAndTheDynamicSegmentPath() {
+    $list = (new SegmentFactory())->withName('Parity List')->create();
+    $dynamic = $this->createEmailSegment('par-');
+    $make = function(string $name, $score, ?string $created, ?string $subscribed) use ($list) {
+      $subscriber = (new Subscriber())
+        ->withEmail("par-$name@example.com")
+        ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+        ->withSegments([$list]);
+      if ($score !== null) {
+        $subscriber->withEngagementScore($score);
+      }
+      if ($created) {
+        $subscriber->withCreatedAt(new Carbon($created));
+      }
+      if ($subscribed) {
+        $subscriber->withLastSubscribedAt(new Carbon($subscribed));
+      }
+      return $subscriber->create()->getId();
+    };
+    $make('a', 50, '2022-10-10 00:00:00', '2022-10-10 23:59:59');
+    $make('b', 50.5, '2022-10-10 23:59:59', '2022-10-11 00:00:00');
+    $make('c', 10, '2022-10-11 00:00:00', null);
+    $make('d', null, '2022-10-09 23:59:59', '2022-10-09 23:59:59');
+    $make('e', 90, '2022-10-10 12:00:00', '2022-10-10 00:00:00');
+
+    $cases = [
+      ['score_gt' => 50],
+      ['score_lt' => 50.5],
+      ['score_min' => 50, 'score_max' => 50.5],
+      ['score_min' => 0],
+      ['created_from' => '2022-10-10', 'created_to' => '2022-10-10'],
+      ['created_to' => '2022-10-10'],
+      ['subscribed_from' => '2022-10-10', 'subscribed_to' => '2022-10-10'],
+      ['subscribed_from' => '2022-10-11'],
+      ['score_gt' => 20, 'created_from' => '2022-10-10', 'subscribed_to' => '2022-10-10'],
+    ];
+    foreach ($cases as $filters) {
+      $viaList = $this->getIds(['segment_in' => [$list->getId()]] + $filters);
+      $viaDynamic = $this->getIds(['segment_in' => [$dynamic->getId()]] + $filters);
+      verify($viaDynamic)->equals($viaList);
+      verify($this->resendIds(['segment_in' => [$dynamic->getId()]] + $filters))->equals($viaList);
+    }
+    verify(count($this->getIds(['segment_in' => [$dynamic->getId()], 'created_from' => '2022-10-10', 'created_to' => '2022-10-10'])))->equals(3);
+    verify(count($this->getIds(['segment_in' => [$dynamic->getId()], 'score_gt' => 50])))->equals(2);
+  }
+
+  /**
+   * @return int[]
+   */
+  private function resendIds(array $filters): array {
+    $definition = new ListingDefinition(null, $filters, null, [], 'id', 'asc', 0, 100);
+    return $this->repository->getConfirmationEmailResendQueueData(
+      $definition,
+      Carbon::now()->subDay(),
+      Carbon::now()->subYears(5),
+      10,
+      100
+    )['queued_ids'];
+  }
+
   /**
    * @return int[]
    */
