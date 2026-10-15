@@ -92,6 +92,10 @@ const baseConfig = {
   optimization: {
     minimizer: [
       new WebpackTerserPlugin({
+        terserOptions: {
+          // Keep i18n function names so `wp i18n make-pot` still finds the strings.
+          mangle: { reserved: ['__', '_n', '_nx', '_x'] },
+        },
         parallel: false,
       }),
     ],
