@@ -440,6 +440,28 @@ class SubscribersEndpointsTest extends Test {
     $this->assertSame(1, $this->bulkPayload($selection)['queue']['queued_count']);
   }
 
+  public function testBulkResendConfirmationReadsTheLegacyStatusKey(): void {
+    $this->diContainer->get(SettingsController::class)->set('signup_confirmation.enabled', true);
+    $segment = (new SegmentFactory())->withName('REST Resend Legacy Status ' . uniqid())->create();
+    (new SubscriberFactory())
+      ->withEmail('rest-resend-legacy-status-' . uniqid() . '@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withSegments([$segment])
+      ->create();
+    $request = function(array $filter) use ($segment) {
+      return $this->post(self::BULK_ACTION_PATH, ['json' => [
+        'action' => 'resendConfirmationEmails',
+        'group' => 'all',
+        'select_all' => true,
+        'selection' => [],
+        'filter' => $filter + ['segment_in' => [$segment->getId()]],
+      ]]);
+    };
+
+    $this->assertSame(1, $this->bulkPayload($request(['statusInclude' => ['unconfirmed']]))['queue']['queued_count']);
+    $this->assertSame('mailpoet_subscribers_invalid_group', $this->asError($request(['statusInclude' => ['subscribed']]))['code']);
+  }
+
   public function testBulkResendConfirmationWithLegacyGroupAndOtherStatusFilterQueuesNothing(): void {
     $this->diContainer->get(SettingsController::class)->set('signup_confirmation.enabled', true);
     $segment = (new SegmentFactory())->withName('REST Resend Legacy Group ' . uniqid())->create();

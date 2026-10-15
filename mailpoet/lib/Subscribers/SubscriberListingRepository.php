@@ -1002,7 +1002,10 @@ class SubscriberListingRepository extends ListingRepository {
       'segment_not_in' => $this->normalizeIds($filters['segment_not_in'] ?? [], true),
       'tag_in' => array_merge($this->normalizeIds($filters['tag_in'] ?? [], false), $legacyTag),
       'tag_not_in' => $this->normalizeIds($filters['tag_not_in'] ?? [], false),
-      'status_in' => array_merge($this->sanitizeStatusFilter($filters['status_in'] ?? []), $this->sanitizeStatusFilter($filters['statusInclude'] ?? [])),
+      'status_in' => $this->combineStatusInclusions(
+        $this->sanitizeStatusFilter($filters['status_in'] ?? []),
+        $this->sanitizeStatusFilter($filters['statusInclude'] ?? [])
+      ),
       'status_not_in' => array_merge($this->sanitizeStatusFilter($filters['status_not_in'] ?? []), $this->sanitizeStatusFilter($filters['statusExclude'] ?? [])),
       'source_in' => $this->sanitizeSourceFilter($filters['source_in'] ?? []),
       'source_not_in' => $this->sanitizeSourceFilter($filters['source_not_in'] ?? []),
@@ -1016,6 +1019,36 @@ class SubscriberListingRepository extends ListingRepository {
       }
     }
     return $normalized;
+  }
+
+  /**
+   * Both include keys narrow the result (AND), as they did before they were
+   * merged. An empty intersection must match nothing, so it is kept as a single
+   * blank status (no subscriber has one) instead of an empty list, which would
+   * read as "no filter".
+   *
+   * @param string[] $statusIn
+   * @param string[] $legacyStatusInclude
+   * @return string[]
+   */
+  private function combineStatusInclusions(array $statusIn, array $legacyStatusInclude): array {
+    if (!$statusIn || !$legacyStatusInclude) {
+      return array_merge($statusIn, $legacyStatusInclude);
+    }
+    $common = array_values(array_intersect($statusIn, $legacyStatusInclude));
+    return $common ?: [''];
+  }
+
+  /**
+   * The statuses a listing is restricted to once legacy and new keys are combined,
+   * or null when it has no status restriction.
+   *
+   * @param array $filters
+   * @return string[]|null
+   */
+  public function getNormalizedStatusIn(array $filters): ?array {
+    $statuses = $this->getStringList($this->normalizeFilters($filters), 'status_in');
+    return $statuses ?: null;
   }
 
   /**

@@ -15,6 +15,7 @@ use MailPoet\Subscribers\BulkActionController;
 use MailPoet\Subscribers\BulkActionException;
 use MailPoet\Subscribers\BulkConfirmationEmailResender;
 use MailPoet\Subscribers\RestApi\SubscribersFilterTrait;
+use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Validator\Builder;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -64,6 +65,9 @@ class SubscribersBulkActionEndpoint extends Endpoint {
   /** @var BulkConfirmationEmailResender */
   private $bulkConfirmationEmailResender;
 
+  /** @var SubscriberListingRepository */
+  private $listingRepository;
+
   /** @var WPFunctions */
   private $wp;
 
@@ -71,11 +75,13 @@ class SubscribersBulkActionEndpoint extends Endpoint {
     ListingHandler $listingHandler,
     BulkActionController $bulkActionController,
     BulkConfirmationEmailResender $bulkConfirmationEmailResender,
+    SubscriberListingRepository $listingRepository,
     WPFunctions $wp
   ) {
     $this->listingHandler = $listingHandler;
     $this->bulkActionController = $bulkActionController;
     $this->bulkConfirmationEmailResender = $bulkConfirmationEmailResender;
+    $this->listingRepository = $listingRepository;
     $this->wp = $wp;
   }
 
@@ -221,8 +227,8 @@ class SubscribersBulkActionEndpoint extends Endpoint {
     if ($group === SubscriberEntity::STATUS_UNCONFIRMED) {
       return true;
     }
-    $statuses = $definition->getFilters()['status_in'] ?? null;
-    if (!is_array($statuses) || $statuses === []) {
+    $statuses = $this->listingRepository->getNormalizedStatusIn($definition->getFilters() ?: []);
+    if ($statuses === null) {
       return false;
     }
     foreach ($statuses as $status) {
