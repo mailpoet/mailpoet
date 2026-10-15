@@ -11,6 +11,7 @@ use MailPoet\Entities\TagEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
+use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
 use MailPoet\Util\Helpers;
@@ -78,6 +79,9 @@ class SubscriberListingRepository extends ListingRepository {
   /** @var SubscribersCountsController */
   private $subscribersCountsController;
 
+  /** @var SegmentDependencyValidator */
+  private $segmentDependencyValidator;
+
   /** @var null | ListingDefinition */
   private $definition = null;
 
@@ -85,38 +89,33 @@ class SubscriberListingRepository extends ListingRepository {
     EntityManager $entityManager,
     FilterHandler $dynamicSegmentsFilter,
     SegmentSubscribersRepository $segmentSubscribersRepository,
-    SubscribersCountsController $subscribersCountsController
+    SubscribersCountsController $subscribersCountsController,
+    SegmentDependencyValidator $segmentDependencyValidator
   ) {
     parent::__construct($entityManager);
     $this->dynamicSegmentsFilter = $dynamicSegmentsFilter;
     $this->entityManager = $entityManager;
     $this->segmentSubscribersRepository = $segmentSubscribersRepository;
     $this->subscribersCountsController = $subscribersCountsController;
+    $this->segmentDependencyValidator = $segmentDependencyValidator;
   }
 
   public function getData(ListingDefinition $definition): array {
     $this->definition = $definition;
-    $dynamicSegment = $this->getDynamicSegmentFromFilters($definition);
-    if ($dynamicSegment === null) {
+    if (!$this->hasDynamicSegmentFilter($definition)) {
       return parent::getData($definition);
     }
-    return $this->getDataForDynamicSegment($definition, $dynamicSegment);
+    return $this->getDataForDynamicSegment($definition);
   }
 
   public function getCount(ListingDefinition $definition): int {
     $this->definition = $definition;
-    $dynamicSegment = $this->getDynamicSegmentFromFilters($definition);
-    if ($dynamicSegment === null) {
+    if (!$this->hasDynamicSegmentFilter($definition)) {
       return parent::getCount($definition);
     }
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $subscribersIdsQuery = $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder()
-      ->select("count(DISTINCT $subscribersTable.id)")
-      ->from($subscribersTable);
-    $subscribersIdsQuery = $this->applyConstraintsForDynamicSegment($subscribersIdsQuery, $definition, $dynamicSegment);
-    return (int)$subscribersIdsQuery->execute()->fetchOne();
+    $query = $this->createDbalSubscribersQuery('COUNT(DISTINCT s.id)');
+    $this->applyDbalListingConstraints($query, $definition, false);
+    return $this->toInt($query->executeQuery()->fetchOne());
   }
 
   public function getActionableIds(ListingDefinition $definition): array {
@@ -125,20 +124,12 @@ class SubscriberListingRepository extends ListingRepository {
     if (!empty($ids)) {
       return $ids;
     }
-    $dynamicSegment = $this->getDynamicSegmentFromFilters($definition);
-    if ($dynamicSegment === null) {
+    if (!$this->hasDynamicSegmentFilter($definition)) {
       return parent::getActionableIds($definition);
     }
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $subscribersIdsQuery = $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder()
-      ->select("DISTINCT $subscribersTable.id")
-      ->from($subscribersTable);
-    $subscribersIdsQuery = $this->applyConstraintsForDynamicSegment($subscribersIdsQuery, $definition, $dynamicSegment);
-    $idsStatement = $subscribersIdsQuery->execute();
-    $result = $idsStatement->fetchAll();
-    return array_column($result, 'id');
+    $query = $this->createDbalSubscribersQuery('DISTINCT s.id');
+    $this->applyDbalListingConstraints($query, $definition, false);
+    return $query->executeQuery()->fetchFirstColumn();
   }
 
   /**
@@ -237,35 +228,31 @@ class SubscriberListingRepository extends ListingRepository {
    * @return array{query: DBALQueryBuilder, id_column: string}
    */
   private function createBulkResendBaseQuery(ListingDefinition $definition): array {
-    $dynamicSegment = $this->getDynamicSegmentFromFilters($definition);
-    if ($dynamicSegment instanceof SegmentEntity) {
-      $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-      $query = $this->entityManager->getConnection()->createQueryBuilder()
-        ->select("DISTINCT $subscribersTable.id")
-        ->from($subscribersTable);
-      $query = $this->applyConstraintsForDynamicSegment($query, $definition, $dynamicSegment);
-      return ['query' => $query, 'id_column' => "$subscribersTable.id"];
-    }
-
-    $query = $this->entityManager->getConnection()->createQueryBuilder();
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $query->select('DISTINCT s.id')
-      ->from($subscribersTable, 's');
-
-    $this->applyBulkResendListingConstraints($query, $definition);
+    $query = $this->createDbalSubscribersQuery('DISTINCT s.id');
+    // A dynamic list never excluded trashed subscribers when no group was given; keep that.
+    $this->applyDbalListingConstraints($query, $definition, !$this->hasDynamicSegmentFilter($definition));
     return ['query' => $query, 'id_column' => 's.id'];
   }
 
-  private function applyBulkResendListingConstraints(DBALQueryBuilder $query, ListingDefinition $definition): void {
+  private function createDbalSubscribersQuery(string $select): DBALQueryBuilder {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    return $this->entityManager->getConnection()->createQueryBuilder()
+      ->select($select)
+      ->from($subscribersTable, 's');
+  }
+
+  /**
+   * The SQL twin of the DQL listing constraints, always over `<subscribers> s`.
+   *
+   * @param bool $excludeTrashedWithoutGroup The DQL listing applies no deleted_at
+   *   condition when there is no group; the bulk resend always did.
+   */
+  private function applyDbalListingConstraints(DBALQueryBuilder $query, ListingDefinition $definition, bool $excludeTrashedWithoutGroup): void {
     $group = $definition->getGroup();
     if ($group === 'trash') {
       $query->andWhere('s.deleted_at IS NOT NULL');
-    } else {
+    } elseif ($group || $excludeTrashedWithoutGroup) {
       $query->andWhere('s.deleted_at IS NULL');
-    }
-    if ($group && in_array($group, self::$supportedStatuses, true)) {
-      $query->andWhere('s.status = :listing_status')
-        ->setParameter('listing_status', $group);
     }
 
     $search = $definition->getSearch();
@@ -280,7 +267,17 @@ class SubscriberListingRepository extends ListingRepository {
     $hasListJoin = $this->applyDbalSegmentFilters($query, $filters);
     $this->applyDbalTagFilters($query, $filters);
 
-    if (isset($filters['minUpdatedAt']) && $filters['minUpdatedAt'] instanceof \DateTimeInterface) {
+    // Under a single static list the group uses the per-list status, as in applyGroup().
+    if ($group && in_array($group, self::$supportedStatuses, true)) {
+      $query->andWhere($this->getStatusPredicate($group, $hasListJoin));
+    }
+
+    // The public API has never applied minUpdatedAt to a dynamic list.
+    if (
+      isset($filters['minUpdatedAt'])
+      && $filters['minUpdatedAt'] instanceof \DateTimeInterface
+      && !$this->hasDynamicSegmentFilter($definition)
+    ) {
       $query->andWhere('s.updated_at >= :updated_at')
         ->setParameter('updated_at', $filters['minUpdatedAt']->format('Y-m-d H:i:s'), ParameterType::STRING);
     }
@@ -379,6 +376,7 @@ class SubscriberListingRepository extends ListingRepository {
 
     $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $membershipSql = "s.id %s (SELECT ssm.subscriber_id FROM $subscriberSegmentsTable ssm WHERE ssm.segment_id IN (:%s))";
+    $dynamicIndex = 0;
 
     $partitionedIn = $this->partitionSegmentIds($in);
     $conditions = [];
@@ -389,7 +387,13 @@ class SubscriberListingRepository extends ListingRepository {
     if ($partitionedIn['without']) {
       $conditions[] = $this->segmentSubscribersRepository->getWithoutSegmentSqlPredicate();
     }
-    // Dynamic segments mixed into a multi-id filter are applied in a later step.
+    foreach ($partitionedIn['dynamic'] as $segmentId) {
+      $segment = $this->entityManager->find(SegmentEntity::class, $segmentId);
+      if (!$segment instanceof SegmentEntity) {
+        continue;
+      }
+      $conditions[] = $this->getDynamicSegmentPredicate($query, $segment, 'IN', $dynamicIndex++);
+    }
     if ($conditions) {
       $query->andWhere('(' . implode(' OR ', $conditions) . ')');
     }
@@ -402,7 +406,53 @@ class SubscriberListingRepository extends ListingRepository {
     if ($partitionedNotIn['without']) {
       $query->andWhere($this->segmentSubscribersRepository->getWithoutSegmentSqlPredicate(true));
     }
+    foreach ($partitionedNotIn['dynamic'] as $segmentId) {
+      $segment = $this->entityManager->find(SegmentEntity::class, $segmentId);
+      if (!$segment instanceof SegmentEntity || !$this->canExcludeDynamicSegment($segment)) {
+        // Fail closed: return nothing rather than keep members of a list we cannot evaluate.
+        $query->andWhere('1 = 0');
+        continue;
+      }
+      $query->andWhere($this->getDynamicSegmentPredicate($query, $segment, 'NOT IN', $dynamicIndex++));
+    }
     return false;
+  }
+
+  /**
+   * A filter whose plugin is missing yields an empty set, and excluding an empty
+   * set would keep every subscriber. For inclusion FilterHandler already returns
+   * no rows in that case.
+   */
+  private function canExcludeDynamicSegment(SegmentEntity $segment): bool {
+    return !$this->segmentDependencyValidator->getMissingPluginsBySegment($segment);
+  }
+
+  private function getDynamicSegmentPredicate(DBALQueryBuilder $outer, SegmentEntity $segment, string $operator, int $index): string {
+    // Not wrapped in a derived table: that extra materialisation made the page 2-4x slower on 100k subscribers.
+    return sprintf('s.id %s (%s)', $operator, $this->getDynamicSegmentInSql($outer, $segment, $index));
+  }
+
+  /**
+   * The SQL of the segment's subscriber ids, with its parameters copied onto
+   * $outer under names prefixed by the index so two segments never collide.
+   */
+  private function getDynamicSegmentInSql(DBALQueryBuilder $outer, SegmentEntity $segment, int $index): string {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $sub = $this->entityManager->getConnection()->createQueryBuilder()
+      ->select("DISTINCT $subscribersTable.id")
+      ->from($subscribersTable);
+    $sub = $this->dynamicSegmentsFilter->apply($sub, $segment);
+    $sql = $sub->getSQL();
+    $types = $sub->getParameterTypes();
+    foreach ($sub->getParameters() as $name => $value) {
+      $name = (string)$name;
+      $unique = "ds{$index}_{$name}";
+      // DBAL has no parameter rename API. The lookahead stops :products1 from matching
+      // inside :products10. Assumes filter SQL has no colon inside quoted literals.
+      $sql = (string)preg_replace('/:' . preg_quote($name, '/') . '(?![A-Za-z0-9_])/', ':' . $unique, $sql);
+      $outer->setParameter($unique, $value, $types[$name] ?? null);
+    }
+    return $sql;
   }
 
   /**
@@ -845,7 +895,7 @@ class SubscriberListingRepository extends ListingRepository {
     if ($partitionedIn['without']) {
       $conditions[] = $this->segmentSubscribersRepository->getWithoutSegmentDqlPredicate();
     }
-    // Dynamic segments mixed into a multi-id filter are applied in a later step.
+    // Dynamic segments never reach DQL: hasDynamicSegmentFilter() routes them to the SQL path.
     if ($conditions) {
       $queryBuilder->andWhere('(' . implode(' OR ', $conditions) . ')');
     }
@@ -1629,7 +1679,7 @@ class SubscriberListingRepository extends ListingRepository {
     return $tagsList;
   }
 
-  private function getDataForDynamicSegment(ListingDefinition $definition, SegmentEntity $segment) {
+  private function getDataForDynamicSegment(ListingDefinition $definition) {
     $queryBuilder = clone $this->queryBuilder;
     $sortBy = Helpers::underscoreToCamelCase($definition->getSortBy()) ?: self::DEFAULT_SORT_BY;
     $sortBy = $this->getDynamicSegmentSortBy($sortBy);
@@ -1637,25 +1687,18 @@ class SubscriberListingRepository extends ListingRepository {
     $this->applySelectClause($queryBuilder);
     $this->applyFromClause($queryBuilder);
 
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $subscribersIdsQuery = $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder()
-      ->select("DISTINCT $subscribersTable.id")
-      ->from($subscribersTable);
-    $subscribersIdsQuery = $this->applyConstraintsForDynamicSegment($subscribersIdsQuery, $definition, $segment);
-    $subscribersIdsQuery->orderBy($this->getDynamicSegmentSortColumn($sortBy, $subscribersTable), $sortOrder);
+    $subscribersIdsQuery = $this->createDbalSubscribersQuery('DISTINCT s.id');
+    $this->applyDbalListingConstraints($subscribersIdsQuery, $definition, false);
+    $subscribersIdsQuery->orderBy($this->getDynamicSegmentSortColumn($sortBy), $sortOrder);
     if ($sortBy !== 'id') {
       // The page boundary is cut here, so this query needs the same id
       // tiebreaker as applySorting() for pagination to stay stable.
-      $subscribersIdsQuery->addOrderBy($this->getDynamicSegmentSortColumn('id', $subscribersTable), $sortOrder);
+      $subscribersIdsQuery->addOrderBy($this->getDynamicSegmentSortColumn('id'), $sortOrder);
     }
     $subscribersIdsQuery->setFirstResult($definition->getOffset());
     $subscribersIdsQuery->setMaxResults($definition->getLimit());
 
-    $idsStatement = $subscribersIdsQuery->executeQuery();
-    $result = $idsStatement->fetchAll();
-    $ids = array_column($result, 'id');
+    $ids = $subscribersIdsQuery->executeQuery()->fetchFirstColumn();
     if (count($ids)) {
       $queryBuilder->andWhere('s.id IN (:subscriberIds)')
         ->setParameter('subscriberIds', $ids);
@@ -1671,50 +1714,18 @@ class SubscriberListingRepository extends ListingRepository {
     return $metadata->hasField($sortBy) ? $sortBy : self::DEFAULT_SORT_BY;
   }
 
-  private function getDynamicSegmentSortColumn(string $sortBy, string $subscribersTable): string {
+  private function getDynamicSegmentSortColumn(string $sortBy): string {
     $metadata = $this->entityManager->getClassMetadata(SubscriberEntity::class);
     $column = $metadata->getColumnName($sortBy);
-    $connection = $this->entityManager->getConnection();
-    return sprintf(
-      '%s.%s',
-      $connection->quoteIdentifier($subscribersTable),
-      $connection->quoteIdentifier($column)
-    );
+    return sprintf('s.%s', $this->entityManager->getConnection()->quoteIdentifier($column));
   }
 
-  private function applyConstraintsForDynamicSegment(
-    DBALQueryBuilder $subscribersQuery,
-    ListingDefinition $definition,
-    SegmentEntity $segment
-  ) {
-    // Apply dynamic segments filters
-    $subscribersQuery = $this->dynamicSegmentsFilter->apply($subscribersQuery, $segment);
-    // Apply group, search to fetch only necessary ids
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    if ($definition->getSearch()) {
-      $search = Helpers::escapeSearch((string)$definition->getSearch());
-      $subscribersQuery
-        ->andWhere("$subscribersTable.email LIKE :search or $subscribersTable.first_name LIKE :search or $subscribersTable.last_name LIKE :search")
-        ->setParameter('search', "%$search%");
-    }
-    if ($definition->getGroup()) {
-      if ($definition->getGroup() === 'trash') {
-        $subscribersQuery->andWhere("$subscribersTable.deleted_at IS NOT NULL");
-      } else {
-        $subscribersQuery->andWhere("$subscribersTable.deleted_at IS NULL");
-      }
-      if (in_array($definition->getGroup(), self::$supportedStatuses)) {
-        $subscribersQuery
-          ->andWhere("$subscribersTable.status = :status")
-          ->setParameter('status', $definition->getGroup());
-      }
-    }
-    return $subscribersQuery;
-  }
-
-  private function getDynamicSegmentFromFilters(ListingDefinition $definition): ?SegmentEntity {
-    // Only a lone dynamic list takes this path; combinations are not handled here yet.
-    $segment = $this->getSingleSegmentFromDefinition($definition);
-    return ($segment instanceof SegmentEntity && !$segment->isStatic()) ? $segment : null;
+  /**
+   * True when any dynamic segment is included or excluded. Such a definition is
+   * resolved with SQL over the subscribers table instead of DQL.
+   */
+  private function hasDynamicSegmentFilter(ListingDefinition $definition): bool {
+    $ids = $this->getSegmentIdsFromFilters($definition);
+    return (bool)$this->partitionSegmentIds($ids['in'])['dynamic'] || (bool)$this->partitionSegmentIds($ids['not_in'])['dynamic'];
   }
 }
