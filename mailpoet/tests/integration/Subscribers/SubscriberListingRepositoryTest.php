@@ -404,6 +404,38 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->listingData['sort_by'] = '';
   }
 
+  public function testItSortsByTheStatusOfTheSingleStaticList() {
+    $segment = $this->segmentRepository->createOrUpdate('Status Sort Segment');
+    $create = function(string $globalStatus, string $listStatus) use ($segment): SubscriberEntity {
+      $subscriber = $this->createSubscriberEntity();
+      $subscriber->setStatus($globalStatus);
+      $this->createSubscriberSegmentEntity($segment, $subscriber)->setStatus($listStatus);
+      return $subscriber;
+    };
+    $subscribed = $create(SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_SUBSCRIBED);
+    $leftList = $create(SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $unsubscribed = $create(SubscriberEntity::STATUS_UNSUBSCRIBED, SubscriberEntity::STATUS_SUBSCRIBED);
+    $subscribed2 = $create(SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->entityManager->flush();
+    $subscribed = (int)$subscribed->getId();
+    $leftList = (int)$leftList->getId();
+    $unsubscribed = (int)$unsubscribed->getId();
+    $subscribed2 = (int)$subscribed2->getId();
+
+    $ids = function(string $order, int $offset = 0, int $limit = 100) use ($segment): array {
+      $definition = new ListingDefinition('all', ['segment_in' => [$segment->getId()]], null, [], 'status', $order, $offset, $limit);
+      return array_map(function(SubscriberEntity $subscriber): int {
+        return (int)$subscriber->getId();
+      }, $this->repository->getData($definition));
+    };
+
+    // The member who left the list sorts with the unsubscribed rows, ties by id.
+    verify($ids('asc'))->equals([$subscribed, $subscribed2, $leftList, $unsubscribed]);
+    verify($ids('desc'))->equals([$unsubscribed, $leftList, $subscribed2, $subscribed]);
+    verify($ids('asc', 0, 2))->equals([$subscribed, $subscribed2]);
+    verify($ids('asc', 2, 2))->equals([$leftList, $unsubscribed]);
+  }
+
   public function testItSortsByCreatedAtWithIdTiebreaker() {
     // First-inserted (lowest id) but the newest created_at.
     $newestSameSecond = $this->createSubscriberEntity();
