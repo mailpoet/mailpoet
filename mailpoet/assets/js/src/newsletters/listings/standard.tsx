@@ -31,6 +31,12 @@ import {
   type ListingActionHelpers,
   type NewsletterMailerLog,
 } from './newsletters-listing';
+import {
+  SEGMENT_OPERATORS,
+  SENT_AT_OPERATORS,
+  getStatusFilterValue,
+  statusElements,
+} from './listing-fields';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
@@ -107,8 +113,18 @@ function buildFields(
     {
       id: 'status',
       label: __('Status', 'mailpoet'),
-      enableSorting: false,
+      type: 'text',
+      enableSorting: true,
       enableGlobalSearch: false,
+      getValue: ({ item }) => getStatusFilterValue(item),
+      elements: statusElements([
+        'draft',
+        'scheduled',
+        'sending',
+        'paused',
+        'sent',
+      ]),
+      filterBy: { operators: ['isAny'] },
       render: ({ item }) => (
         <QueueStatus newsletter={asNewsLetter(item)} mailerLog={mailerLog} />
       ),
@@ -116,8 +132,12 @@ function buildFields(
     {
       id: 'segments',
       label: __('Lists', 'mailpoet'),
+      type: 'text',
       enableSorting: false,
       enableGlobalSearch: false,
+      getValue: ({ item }) =>
+        item.segments.map((segment) => String(segment.id)),
+      filterBy: { operators: [...SEGMENT_OPERATORS] },
       render: ({ item }) => (
         <ErrorBoundary>
           <SegmentTags
@@ -150,9 +170,10 @@ function buildFields(
       id: 'sent_at',
       label: __('Date sent', 'mailpoet'),
       header: __('Sent on', 'mailpoet'),
-      type: 'datetime',
+      type: 'date',
       enableSorting: true,
       enableGlobalSearch: false,
+      filterBy: { operators: [...SENT_AT_OPERATORS] },
       render: ({ item }) => {
         const isTimezoneCampaign = isTimezoneCampaignQueue(
           asNewsLetter(item).queue,

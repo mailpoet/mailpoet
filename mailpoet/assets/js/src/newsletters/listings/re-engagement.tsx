@@ -25,6 +25,10 @@ import {
   NewslettersListing,
   type ListingActionHelpers,
 } from './newsletters-listing';
+import {
+  ACTIVATION_STATUS_ELEMENTS,
+  activationSegmentsField,
+} from './listing-fields';
 
 // See standard.tsx for the rationale behind widening at the boundary.
 function asNewsLetter(item: NewsletterListingItem): NewsLetter {
@@ -167,8 +171,12 @@ function buildFields(
     {
       id: 'status',
       label: __('Status', 'mailpoet'),
-      enableSorting: false,
+      type: 'text',
+      enableSorting: true,
       enableGlobalSearch: false,
+      getValue: ({ item }) => item.status,
+      elements: ACTIVATION_STATUS_ELEMENTS,
+      filterBy: { operators: ['isAny'] },
       render: ({ item }) => {
         const totalSent = Number(item.total_sent ?? 0);
         const totalSentMessage = _x(
@@ -216,6 +224,7 @@ function buildFields(
           </>
         ) : null,
     },
+    activationSegmentsField,
   ];
 }
 
