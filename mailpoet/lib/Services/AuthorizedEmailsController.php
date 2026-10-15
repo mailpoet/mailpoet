@@ -108,11 +108,13 @@ class AuthorizedEmailsController {
   private function getAllEmailData(bool $useCache): array {
     if ($useCache) {
       $cached = $this->wp->getTransient(self::AUTHORIZED_EMAILS_KEY);
-      if (is_array($cached)) {
+      $cached = is_array($cached) ? $cached : null;
+      // A pending address can be confirmed at any time, so it forces a fresh read.
+      if ($cached !== null && empty($cached[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_PENDING])) {
         return $cached;
       }
       if ($this->wp->getTransient(self::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY)) {
-        return [];
+        return $cached ?? [];
       }
     }
 
