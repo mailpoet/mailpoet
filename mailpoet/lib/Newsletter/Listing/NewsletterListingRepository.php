@@ -69,16 +69,36 @@ class NewsletterListingRepository extends ListingRepository {
     }
   }
 
+  /**
+   * Listing groups that exist for the type, as shown by getGroups().
+   *
+   * @return string[]
+   */
+  public static function getSupportedGroupsForType(?string $type): array {
+    $statuses = array_diff(self::getSupportedStatusesForType($type), [self::FILTER_STATUS_PAUSED]);
+    return array_merge(['all'], array_values($statuses), ['trash']);
+  }
+
+  /**
+   * A list ID filter value: a non-negative integer or a string of digits.
+   *
+   * @param mixed $value
+   * @phpstan-assert-if-true int|string $value
+   */
+  public static function isListId($value): bool {
+    return is_int($value) ? $value >= 0 : (is_string($value) && ctype_digit($value));
+  }
+
   public function getFilters(ListingDefinition $definition): array {
     $parameters = $definition->getParameters();
     $typeParam = $parameters['type'] ?? null;
 
-    // Options are every list linked to a non-deleted email of the type, whatever the group,
-    // so they stay the same when switching tabs. Soft-deleted lists are not excluded.
+    // Options are every list linked to any email of the type, trashed or not, whatever the
+    // group, so they stay the same when switching tabs. Soft-deleted lists are not excluded.
     $queryBuilder = clone $this->queryBuilder;
     $queryBuilder->from(NewsletterEntity::class, 'n');
     if ($typeParam) {
-      $this->applyType($queryBuilder, $typeParam, $parameters['group'] ?? null);
+      $this->applyType($queryBuilder, $typeParam);
     }
     $parentId = $parameters['parentId'] ?? null;
     if ($parentId) {
@@ -91,7 +111,6 @@ class NewsletterListingRepository extends ListingRepository {
       ->select('DISTINCT s.id, s.name')
       ->join('n.newsletterSegments', 'ns')
       ->join('ns.segment', 's')
-      ->andWhere('n.deletedAt IS NULL')
       ->orderBy('s.name')
       ->addOrderBy('s.id');
 
@@ -273,7 +292,7 @@ class NewsletterListingRepository extends ListingRepository {
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {
     $segmentId = $filters['segment'] ?? null;
     if ($segmentId !== null && $segmentId !== '') {
-      if (!$this->isSegmentId($segmentId)) {
+      if (!self::isListId($segmentId)) {
         $queryBuilder->andWhere('1 = 0');
         return;
       }
@@ -304,8 +323,7 @@ class NewsletterListingRepository extends ListingRepository {
 
   /**
    * Matches `sent_at` only, so scheduled and other unsent emails never match. A
-   * `yyyy-MM-dd` value is a whole site-local day. Any other parsable datetime is
-   * compared as given (kept for older callers); an unparsable value matches nothing.
+   * `yyyy-MM-dd` value is a whole site-local day; any other value matches nothing.
    *
    * @param mixed $value
    */
@@ -319,17 +337,13 @@ class NewsletterListingRepository extends ListingRepository {
       return;
     }
     $dayStart = $this->getSiteDayStartInUtc($value, $isUpperBound ? 1 : 0);
-    if ($dayStart !== null) {
-      $queryBuilder
-        ->andWhere('n.sentAt ' . ($isUpperBound ? '<' : '>=') . " :$param")
-        ->setParameter($param, $dayStart);
-    } elseif ($this->isValidDateTime($value)) {
-      $queryBuilder
-        ->andWhere('n.sentAt ' . ($isUpperBound ? '<=' : '>=') . " :$param")
-        ->setParameter($param, $value);
-    } else {
+    if ($dayStart === null) {
       $queryBuilder->andWhere('1 = 0');
+      return;
     }
+    $queryBuilder
+      ->andWhere('n.sentAt ' . ($isUpperBound ? '<' : '>=') . " :$param")
+      ->setParameter($param, $dayStart);
   }
 
   private function getListMembershipDql(QueryBuilder $queryBuilder, string $alias, string $parameter): string {
@@ -351,20 +365,12 @@ class NewsletterListingRepository extends ListingRepository {
     }
     $ids = [];
     foreach ($segmentIds as $id) {
-      if (is_int($id) && $id >= 0) {
-        $ids[] = $id;
-      } elseif (is_string($id) && ctype_digit($id)) {
-        $ids[] = (int)$id;
-      } else {
+      if (!self::isListId($id)) {
         return null;
       }
+      $ids[] = (int)$id;
     }
     return $ids;
-  }
-
-  /** @param mixed $value */
-  private function isSegmentId($value): bool {
-    return is_int($value) ? $value >= 0 : (is_string($value) && ctype_digit($value));
   }
 
   /**
@@ -402,7 +408,7 @@ class NewsletterListingRepository extends ListingRepository {
   }
 
   /**
-   * Mirrors the "paused" label: a non-time-zone email is paused when its latest
+   * Mirrors the “paused” label: a non-time-zone email is paused when its latest
    * non-replay queue is paused, a time zone campaign when any of its batches is.
    * Known gap: batches of an older time zone campaign also count; those queues are
    * deleted when a campaign is rescheduled, so this needs a started campaign to be
@@ -430,15 +436,6 @@ class NewsletterListingRepository extends ListingRepository {
       ->setParameter('pausedReplayMeta', NewsletterReplayMetadata::getMetaLikePattern())
       ->setParameter('pausedTimeZoneMeta', '%"' . TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE . '":true%');
     return 'EXISTS (' . $pausedQueue . ')';
-  }
-
-  private function isValidDateTime(string $dateTime): bool {
-    try {
-      new \DateTime($dateTime);
-      return true;
-    } catch (\Exception $e) {
-      return false;
-    }
   }
 
   protected function applyParameters(QueryBuilder $queryBuilder, array $parameters) {

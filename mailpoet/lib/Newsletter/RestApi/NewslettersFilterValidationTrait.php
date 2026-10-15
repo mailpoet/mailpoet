@@ -7,7 +7,7 @@ use MailPoet\Newsletter\RestApi\Endpoints\NewslettersListingEndpoint;
 
 /**
  * Validates the `filter` object shared by the newsletters listing and bulk
- * action endpoints, so "select all" acts on exactly the rows the listing shows.
+ * action endpoints, so “select all” acts on exactly the rows the listing shows.
  * Host endpoints must also use {@see \MailPoet\API\REST\ListingRequestValidationTrait}.
  */
 trait NewslettersFilterValidationTrait {
@@ -68,7 +68,7 @@ trait NewslettersFilterValidationTrait {
   /** @param array<mixed> $filters */
   private function validateNewslettersSegmentFilters(array $filters): void {
     $segment = $filters['segment'] ?? null;
-    if ($segment !== null && $segment !== '' && !$this->isNewslettersSegmentId($segment)) {
+    if ($segment !== null && $segment !== '' && !NewsletterListingRepository::isListId($segment)) {
       throw $this->listingValidationError(__('The list filter must be a list ID.', 'mailpoet'), 'segment');
     }
 
@@ -79,7 +79,7 @@ trait NewslettersFilterValidationTrait {
         throw $this->listingValidationError(__('The list IDs filter must be an array of list IDs.', 'mailpoet'), 'segment_ids');
       }
       foreach ($segmentIds as $segmentId) {
-        if (!$this->isNewslettersSegmentId($segmentId)) {
+        if (!NewsletterListingRepository::isListId($segmentId)) {
           throw $this->listingValidationError(__('The list IDs filter must be an array of list IDs.', 'mailpoet'), 'segment_ids');
         }
       }
@@ -93,10 +93,5 @@ trait NewslettersFilterValidationTrait {
         'segment_operator'
       );
     }
-  }
-
-  /** @param mixed $value */
-  private function isNewslettersSegmentId($value): bool {
-    return is_int($value) ? $value >= 0 : (is_string($value) && ctype_digit($value));
   }
 }

@@ -121,6 +121,63 @@ class NewslettersEndpointsTest extends Test {
     $this->assertNull($newsletter->getDeletedAt());
   }
 
+  public function testBulkActionSelectAllRejectsUnsupportedScope(): void {
+    $newsletter = (new NewsletterFactory())->withSubject('Keep_' . uniqid())->withType('standard')->create();
+    $cases = [
+      'unknown type' => [['type' => 'bogus'], 'mailpoet_newsletters_invalid_type'],
+      'missing type' => [[], 'mailpoet_newsletters_invalid_type'],
+      'unknown group' => [['type' => 'standard', 'group' => 'bogus'], 'mailpoet_newsletters_invalid_group'],
+      'group of another type' => [['type' => 'standard', 'group' => 'active'], 'mailpoet_newsletters_invalid_group'],
+    ];
+    foreach ($cases as $name => [$scope, $code]) {
+      $response = $this->post(self::BULK_ACTION_PATH, ['json' => array_merge([
+        'action' => 'delete',
+        'selection' => [],
+        'select_all' => true,
+      ], $scope)]);
+      $this->assertIsArray($response, $name);
+      $this->assertSame($code, $response['code'] ?? null, $name);
+      $this->assertSame(400, $this->getErrorStatus($response), $name);
+    }
+    $this->assertNotNull($this->newslettersRepository->findOneById($newsletter->getId()));
+  }
+
+  public function testBulkActionSelectAllAcceptsListingGroups(): void {
+    foreach (['all', 'trash', 'draft', 'scheduled', 'sending', 'sent'] as $group) {
+      $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+        'action' => 'restore',
+        'type' => 'standard',
+        'group' => $group,
+        'selection' => [],
+        'select_all' => true,
+        'search' => 'NoMatch_' . uniqid(),
+      ]]);
+      $this->assertIsArray($response, $group);
+      $this->assertSame(0, $this->getPayload($response)['count'], $group);
+    }
+  }
+
+  public function testBulkDeleteSelectAllWithoutGroupLeavesTrashedEmailsAlone(): void {
+    $suffix = uniqid();
+    $active = (new NewsletterFactory())->withSubject("Scope_{$suffix}_a")->withType('standard')->create();
+    $trashed = (new NewsletterFactory())->withSubject("Scope_{$suffix}_t")->withType('standard')->withDeleted()->create();
+    $trashedId = (int)$trashed->getId();
+
+    $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+      'action' => 'delete',
+      'type' => 'standard',
+      'search' => "Scope_{$suffix}",
+      'selection' => [],
+      'select_all' => true,
+    ]]);
+
+    $this->assertIsArray($response);
+    $this->assertSame(1, $this->getPayload($response)['count']);
+    $this->entityManager->clear();
+    $this->assertNull($this->newslettersRepository->findOneById($active->getId()));
+    $this->assertNotNull($this->newslettersRepository->findOneById($trashedId));
+  }
+
   public function testBulkTrashSelectAllHonoursStatusFilter(): void {
     $suffix = uniqid();
     $draft = (new NewsletterFactory())->withSubject("Draft_{$suffix}")->withType('standard')->withStatus(NewsletterEntity::STATUS_DRAFT)->create();

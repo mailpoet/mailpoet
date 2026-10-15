@@ -420,23 +420,13 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     );
   }
 
-  public function testItAcceptsDatetimeValuesForSentAt() {
-    $this->createSent('Newsletter 1', '2025-01-01 10:00:00');
-    $this->createSent('Newsletter 2', '2025-02-01 10:00:00');
-    $this->createSent('Newsletter 3', '2025-03-01 10:00:00');
-
-    $this->assertSame(
-      ['Newsletter 2'],
-      $this->listSubjects(['sent_at_from' => '2025-01-15 00:00:00', 'sent_at_to' => '2025-02-15 23:59:59'])
-    );
-  }
-
   public function testUnparsableSentAtMatchesNothing() {
     $this->createSent('Newsletter 1', '2025-01-01 10:00:00');
 
     $this->assertSame([], $this->listSubjects(['sent_at_from' => 'not a date']));
     $this->assertSame([], $this->listSubjects(['sent_at_to' => 'not a date']));
     $this->assertSame([], $this->listSubjects(['sent_at_from' => ['2025-01-01']]));
+    $this->assertSame([], $this->listSubjects(['sent_at_from' => '2025-01-01 00:00:00']));
   }
 
   public function testSentAtFilterExcludesScheduledNewsletters() {
@@ -776,7 +766,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
       TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
       TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => 'campaign-1',
     ];
-    // The latest batch is completed, an earlier batch is paused: the label shows "paused".
+    // The latest batch is completed, an earlier batch is paused: the label shows “paused”.
     $newsletter = (new Newsletter())
       ->withType(NewsletterEntity::TYPE_STANDARD)
       ->withStatus(NewsletterEntity::STATUS_SENDING)
@@ -928,7 +918,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     );
   }
 
-  public function testListOptionsIgnoreGroupAndDeletedEmailsAndOtherTypes() {
+  public function testListOptionsIgnoreGroupAndOtherTypes() {
     [$listA, $listB, $listC, $listD] = $this->createLists(['A', 'B', 'C', 'D']);
     $this->createWithLists('Draft', [$listA], NewsletterEntity::STATUS_DRAFT);
     $this->createWithLists('Sent', [$listB], NewsletterEntity::STATUS_SENT);
@@ -939,7 +929,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     $welcome->setType(NewsletterEntity::TYPE_WELCOME);
     $this->entityManager->flush();
 
-    $expected = ['', $listA->getId(), $listB->getId()];
+    $expected = ['', $listA->getId(), $listB->getId(), $listC->getId()];
     $values = function(array $options): array {
       return array_column($options, 'value');
     };
