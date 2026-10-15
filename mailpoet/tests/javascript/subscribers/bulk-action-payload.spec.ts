@@ -65,3 +65,25 @@ describe('Subscribers bulk-action payload', () => {
     expect(payload).not.to.have.property('trigger_automations');
   });
 });
+
+describe('Subscribers bulk-action payload with array filters', () => {
+  it('forwards array and range filter keys unchanged', () => {
+    const filter = {
+      segment_in: [3, 'without-list'],
+      tag_not_in: [7],
+      status_in: ['unconfirmed'],
+      score_min: 10,
+      score_max: 50,
+      created_from: '2026-01-01',
+    };
+    const payload = buildBulkActionPayload('trash', {
+      group: 'all',
+      filter,
+      search: '',
+      selection: [],
+      selectAll: true,
+    });
+    expect(payload.filter).to.deep.equal(filter);
+    expect(payload.group).to.equal('all');
+  });
+});

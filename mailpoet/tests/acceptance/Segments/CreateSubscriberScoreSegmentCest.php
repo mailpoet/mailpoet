@@ -55,7 +55,7 @@ class CreateSubscriberScoreSegmentCest {
     $i->waitForText($segmentTitle);
     $i->clickWooTableActionByItemName($segmentTitle, 'View subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
-    $i->see($segmentTitle, ['css' => 'select[name=segment]']);
+    $i->waitForDataViewsFilterChip($segmentTitle);
     $i->see('score_test1@example.com');
     $i->dontSee('score_test2@example.com');
     $i->dontSee('score_test3@example.com');
@@ -95,7 +95,7 @@ class CreateSubscriberScoreSegmentCest {
     $i->waitForText($segmentTitle);
     $i->clickWooTableActionByItemName($segmentTitle, 'View subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
-    $i->see($segmentTitle, ['css' => 'select[name=segment]']);
+    $i->waitForDataViewsFilterChip($segmentTitle);
     $i->dontSee('score_test1@example.com');
     $i->dontSee('score_test2@example.com');
     $i->see('score_test3@example.com');
