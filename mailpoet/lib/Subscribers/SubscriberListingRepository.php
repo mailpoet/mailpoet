@@ -1274,7 +1274,13 @@ class SubscriberListingRepository extends ListingRepository {
     if (!$sortBy) {
       $sortBy = self::DEFAULT_SORT_BY;
     }
-    $queryBuilder->addOrderBy("s.$sortBy", $sortOrder);
+    if ($sortBy === 'status' && in_array('ss', $queryBuilder->getAllAliases(), true)) {
+      // Under a single static list the column shows the per-list status, so sort by that.
+      $queryBuilder->addSelect("CASE WHEN ss.status = '" . SubscriberEntity::STATUS_UNSUBSCRIBED . "' THEN '" . SubscriberEntity::STATUS_UNSUBSCRIBED . "' ELSE s.status END AS HIDDEN effectiveStatus");
+      $queryBuilder->addOrderBy('effectiveStatus', $sortOrder);
+    } else {
+      $queryBuilder->addOrderBy("s.$sortBy", $sortOrder);
+    }
     if ($sortBy !== 'id') {
       // Deterministic tiebreaker so pagination stays stable when the sorted
       // column has duplicate values. created_at has per-second granularity, so
