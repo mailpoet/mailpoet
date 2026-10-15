@@ -18,6 +18,7 @@ use MailPoet\NotFoundException;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Validator\Builder;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class EmailApiController {
@@ -375,6 +376,19 @@ class EmailApiController {
       }
     }
     $this->entityManager->flush();
+  }
+
+  /**
+   * Content saved in the email editor lives in the post, so the newsletter row
+   * does not change on its own and its updated_at would stay old.
+   */
+  public function markNewsletterAsUpdated(\WP_Post $wpPost): void {
+    $newsletter = $this->newsletterRepository->findOneBy(['wpPost' => $wpPost->ID]);
+    if (!$newsletter) {
+      return;
+    }
+    $newsletter->setUpdatedAt(Carbon::now()->millisecond(0));
+    $this->newsletterRepository->flush();
   }
 
   public function trashEmail(\WP_Post $wpPost) {
