@@ -56,13 +56,6 @@ trait SubscribersFilterTrait {
       return in_array($value, $this->getSubscribersFilterSources(), true);
     });
 
-    foreach (['status', 'source'] as $key) {
-      $allowed = $key === 'status' ? $this->getSubscribersFilterStatuses() : $this->getSubscribersFilterSources();
-      if (array_key_exists($key, $values) && !in_array($values[$key], $allowed, true)) {
-        throw $this->listingValidationError(__('The filter has an unsupported value.', 'mailpoet'), $key);
-      }
-    }
-
     $this->validateSubscribersFilterScores($values);
 
     $createdFrom = $this->validateDateFilter($values, 'created_from');
@@ -78,7 +71,7 @@ trait SubscribersFilterTrait {
   /** @return string[] */
   private function getSubscribersFilterKeys(): array {
     return [
-      'segment', 'tag', 'status', 'source',
+      'segment', 'tag',
       'segment_in', 'segment_not_in', 'tag_in', 'tag_not_in',
       'status_in', 'status_not_in', 'source_in', 'source_not_in',
       'score_gt', 'score_lt', 'score_min', 'score_max',
