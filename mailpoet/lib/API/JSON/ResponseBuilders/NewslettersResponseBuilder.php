@@ -202,6 +202,7 @@ class NewslettersResponseBuilder {
       'type' => $newsletter->getType(),
       'status' => $newsletter->getStatus(),
       'sent_at' => ($sentAt = $newsletter->getSentAt()) ? $sentAt->format(self::DATE_FORMAT) : null,
+      'created_at' => ($createdAt = $newsletter->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
       'updated_at' => ($updatedAt = $newsletter->getUpdatedAt()) ? $updatedAt->format(self::DATE_FORMAT) : null,
       'deleted_at' => ($deletedAt = $newsletter->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
       'segments' => [],

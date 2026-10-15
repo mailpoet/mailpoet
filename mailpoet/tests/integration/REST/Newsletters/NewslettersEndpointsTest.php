@@ -59,6 +59,44 @@ class NewslettersEndpointsTest extends Test {
     $this->assertNotContains("Notification_{$suffix}", $subjects);
   }
 
+  public function testListingSortsByCreatedAtAndReturnsIt(): void {
+    $suffix = uniqid();
+    foreach (['2026-03-01 10:00:00', '2026-01-01 10:00:00', '2026-02-01 10:00:00'] as $createdAt) {
+      $newsletter = (new NewsletterFactory())
+        ->withSubject("Created_{$createdAt}_{$suffix}")
+        ->withType(NewsletterEntity::TYPE_STANDARD)
+        ->create();
+      $newsletter->setCreatedAt(new \DateTimeImmutable($createdAt));
+    }
+    $this->entityManager->flush();
+    $this->entityManager->clear();
+
+    $response = $this->get(self::LISTING_PATH, ['query' => [
+      'per_page' => 100,
+      'type' => NewsletterEntity::TYPE_STANDARD,
+      'search' => $suffix,
+      'orderby' => 'created_at',
+      'order' => 'asc',
+    ]]);
+    $this->assertIsArray($response);
+    $payload = $response['data'];
+    $this->assertIsArray($payload);
+    $items = $payload['items'];
+    $this->assertIsArray($items);
+    $this->assertSame(
+      [
+        "Created_2026-01-01 10:00:00_{$suffix}",
+        "Created_2026-02-01 10:00:00_{$suffix}",
+        "Created_2026-03-01 10:00:00_{$suffix}",
+      ],
+      array_column($items, 'subject')
+    );
+    $this->assertSame(
+      ['2026-01-01 10:00:00', '2026-02-01 10:00:00', '2026-03-01 10:00:00'],
+      array_column($items, 'created_at')
+    );
+  }
+
   public function testListingCarriesMailerEnvelopeFields(): void {
     $response = $this->get(self::LISTING_PATH, ['query' => [
       'per_page' => 10,
