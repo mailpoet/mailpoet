@@ -1843,16 +1843,44 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->create();
     $this->setListStatus($leftList, $list, SubscriberEntity::STATUS_UNSUBSCRIBED);
 
-    foreach ([SubscriberEntity::STATUS_UNCONFIRMED, SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_UNSUBSCRIBED] as $status) {
+    // The resend only ever targets unconfirmed subscribers, so the other
+    // statuses select only those that are unconfirmed globally.
+    $expectedSelected = [
+      SubscriberEntity::STATUS_UNCONFIRMED => 1,
+      SubscriberEntity::STATUS_SUBSCRIBED => 0,
+      SubscriberEntity::STATUS_UNSUBSCRIBED => 1,
+    ];
+    foreach ($expectedSelected as $status => $expected) {
       $definitions = [
         new ListingDefinition($status, ['segment_in' => [$list->getId()]], null, [], 'id', 'asc', 0, 100),
         new ListingDefinition(null, ['segment_in' => [$list->getId()], 'status_in' => [$status]], null, [], 'id', 'asc', 0, 100),
       ];
       foreach ($definitions as $definition) {
         $queue = $this->repository->getConfirmationEmailResendQueueData($definition, Carbon::now()->subDay(), Carbon::now()->subYears(5), 10, 100);
-        verify($queue['selected_count'])->equals($this->repository->getCount($definition));
+        verify($queue['selected_count'])->equals($expected);
+        if ($status === SubscriberEntity::STATUS_UNCONFIRMED) {
+          verify($queue['selected_count'])->equals($this->repository->getCount($definition));
+        }
       }
     }
+  }
+
+  public function testResendQueueNeverContainsConfirmedSubscribers() {
+    $list = (new SegmentFactory())->withName('Resend Guard')->create();
+    $unconfirmed = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->withSegments([$list])->create();
+    $subscribed = (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->withSegments([$list])->create();
+    $unsubscribed = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->withSegments([$list])->create();
+
+    foreach ([null, 'all'] as $group) {
+      foreach ([[], ['status_not_in' => [SubscriberEntity::STATUS_BOUNCED]]] as $extraFilter) {
+        $definition = new ListingDefinition($group, ['segment_in' => [$list->getId()]] + $extraFilter, null, [], 'id', 'asc', 0, 100);
+        $queue = $this->repository->getConfirmationEmailResendQueueData($definition, Carbon::now()->subDay(), Carbon::now()->subYears(5), 10, 100);
+        verify($queue['queued_ids'])->equals([$unconfirmed->getId()]);
+      }
+    }
+    $selection = new ListingDefinition(null, ['segment_in' => [$list->getId()]], null, [], 'id', 'asc', 0, 100, [(int)$unconfirmed->getId(), (int)$subscribed->getId(), (int)$unsubscribed->getId()]);
+    $queue = $this->repository->getConfirmationEmailResendQueueData($selection, Carbon::now()->subDay(), Carbon::now()->subYears(5), 10, 100, true);
+    verify($queue['queued_ids'])->equals([$unconfirmed->getId()]);
   }
 
   public function testScoreGtAndLtAreExclusiveAndMinMaxAreInclusive() {
