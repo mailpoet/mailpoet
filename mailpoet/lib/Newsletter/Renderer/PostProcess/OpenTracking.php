@@ -8,6 +8,11 @@ use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Functions as WPFunctions;
 
 class OpenTracking {
+  // Smallest widely supported transparent 1x1 GIF as a data: URI. Stands in for the tracking
+  // pixel where the img cannot be removed for a subscriber without tracking consent, because
+  // the markup is shared with other recipients; it makes no request.
+  const UNTRACKED_PIXEL_SRC = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAAIBAEAOw==';
+
   public static function process($template) {
     $DOM = new pQuery();
     $DOM = $DOM->parseStr($template);

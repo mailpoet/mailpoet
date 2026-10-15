@@ -9,6 +9,8 @@ use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
+use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
@@ -128,35 +130,104 @@ class Links {
     $content,
     $preview = false
   ) {
-    // match data tags
+    return strtr($content, $this->getTrackingUrlsByDataTag($subscriberId, $queueId, $content, $preview));
+  }
+
+  /**
+   * @param string $part One of the PlaceholderCollector::PART_* constants
+   */
+  public function replaceSubscriberDataWithPlaceholders($subscriberId, $queueId, string $content, PlaceholderCollector $collector, string $part): string {
+    $placeholders = [];
+    foreach ($this->getTrackingUrlsByDataTag($subscriberId, $queueId, $content) as $dataTag => $trackingUrl) {
+      $placeholders[$dataTag] = $this->addLinkPlaceholder($collector, $part, $trackingUrl, $dataTag);
+    }
+    return strtr($content, $placeholders);
+  }
+
+  /**
+   * For a recipient whose links must not be tracked: every hashed link becomes a placeholder
+   * standing for the destination the resolver returns for the stored link, and the open pixel
+   * one standing for an inert image. A data tag with no stored link keeps its literal text as
+   * the value, as the rendered path leaves it, so that every recipient of a batch gets the same
+   * set of placeholders.
+   *
+   * @param array<string, string> $urlsByHash The queue's stored link URLs by hash, see getUrlsByHash()
+   * @param array<string, string> $parts Content keyed by PlaceholderCollector::PART_* constant
+   * @param callable(string): string $urlResolver Receives the stored link: a URL, a link shortcode or a personalization tag token
+   * @return array<string, string>
+   */
+  public function replaceHashedLinksWithUntrackedPlaceholders(array $urlsByHash, array $parts, PlaceholderCollector $collector, callable $urlResolver): array {
+    foreach ($parts as $part => $content) {
+      $placeholders = [];
+      preg_match_all($this->getLinkRegex(), $content, $matches);
+      foreach (array_unique($matches[1]) as $dataTag) {
+        $hash = explode('-', $dataTag)[1] ?? null;
+        if (strpos($dataTag, self::DATA_TAG_OPEN) === 0 && $part === PlaceholderCollector::PART_HTML) {
+          // Not addHtmlUrl(): esc_url() would drop the data: scheme.
+          $placeholders[$dataTag] = $collector->addHtml(OpenTracking::UNTRACKED_PIXEL_SRC, $dataTag);
+          continue;
+        }
+        $value = $hash !== null && isset($urlsByHash[$hash]) ? $urlResolver($urlsByHash[$hash]) : $dataTag;
+        $placeholders[$dataTag] = $this->addLinkPlaceholder($collector, $part, $value, $dataTag);
+      }
+      $parts[$part] = strtr($content, $placeholders);
+    }
+    return $parts;
+  }
+
+  /**
+   * Tracking URL for every data tag in the content, keyed by the data tag.
+   *
+   * @return array<string, string>
+   */
+  private function getTrackingUrlsByDataTag($subscriberId, $queueId, string $content, bool $preview = false): array {
     $subscriber = $this->subscribersRepository->findOneById($subscriberId);
     if (!$subscriber) {
       throw new InvalidStateException('Subscriber not found for link replacement');
     }
+    $linkToken = $this->linkTokens->getToken($subscriber);
+    $trackingUrls = [];
     preg_match_all($this->getLinkRegex(), $content, $matches);
-    foreach ($matches[1] as $index => $match) {
-      $hash = null;
-      if (preg_match('/-/', $match)) {
-        [, $hash] = explode('-', $match);
+    foreach ($matches[1] as $index => $dataTag) {
+      if (isset($trackingUrls[$dataTag])) {
+        continue;
       }
-      $data = $this->createUrlDataObject(
-        $subscriber->getId(),
-        $this->linkTokens->getToken($subscriber),
-        $queueId,
-        $hash,
-        $preview
-      );
+      $hash = explode('-', $dataTag)[1] ?? null;
       $routerAction = ($matches[2][$index] === self::DATA_TAG_CLICK) ?
         TrackEndpoint::ACTION_CLICK :
         TrackEndpoint::ACTION_OPEN;
-      $link = Router::buildRequest(
+      $trackingUrls[$dataTag] = Router::buildRequest(
         TrackEndpoint::ENDPOINT,
         $routerAction,
-        $data
+        $this->createUrlDataObject($subscriber->getId(), $linkToken, $queueId, $hash, $preview)
       );
-      $content = str_replace($match, $link, $content);
     }
-    return $content;
+    return $trackingUrls;
+  }
+
+  /**
+   * Link URLs go in as is, like replaceSubscriberData() and convertHashedLinksToShortcodesAndUrls()
+   * insert them into rendered content.
+   */
+  private function addLinkPlaceholder(PlaceholderCollector $collector, string $part, string $url, string $token): string {
+    if ($part === PlaceholderCollector::PART_HTML) {
+      return $collector->addHtml($url, $token);
+    }
+    if ($part === PlaceholderCollector::PART_SUBJECT) {
+      return $collector->addSubjectText($url, $token);
+    }
+    return $collector->addText($url, $token);
+  }
+
+  /**
+   * @return array<string, string> Stored URL by hash
+   */
+  public function getUrlsByHash($queueId): array {
+    $urlsByHash = [];
+    foreach ($this->newsletterLinkRepository->findBy(['queue' => (int)$queueId]) as $link) {
+      $urlsByHash[$link->getHash()] = $link->getUrl();
+    }
+    return $urlsByHash;
   }
 
   public function save(array $links, $newsletterId, $queueId) {
@@ -203,24 +274,20 @@ class Links {
    * @param (callable(string): string)|null $urlMapper Applied to every restored URL before it is put back
    */
   public function convertHashedLinksToShortcodesAndUrls($content, $queueId, $convertAll = false, ?callable $urlMapper = null) {
+    $urlsByHash = $this->getUrlsByHash($queueId);
     preg_match_all($this->getLinkRegex(), $content, $links);
     $links = array_unique(Helpers::flattenArray($links));
     foreach ($links as $link) {
-      $linkHash = explode('-', $link);
-
-      if (!isset($linkHash[1])) {
+      $hash = explode('-', $link)[1] ?? null;
+      if ($hash === null || !isset($urlsByHash[$hash])) {
         continue;
       }
-
-      $newsletterLink = $this->newsletterLinkRepository->findOneBy(['hash' => $linkHash[1], 'queue' => $queueId]);
+      $storedUrl = $urlsByHash[$hash];
 
       // convert either only link shortcodes or all hashes links if "convert all"
       // option is specified
-      if (
-        ($newsletterLink instanceof NewsletterLinkEntity) &&
-        (preg_match('/\[link:/', $newsletterLink->getUrl()) || $convertAll)
-      ) {
-        $url = $urlMapper ? $urlMapper($newsletterLink->getUrl()) : $newsletterLink->getUrl();
+      if (preg_match('/\[link:/', $storedUrl) || $convertAll) {
+        $url = $urlMapper ? $urlMapper($storedUrl) : $storedUrl;
         $content = str_replace($link, $url, $content);
       }
     }
