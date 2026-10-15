@@ -57,8 +57,8 @@ class MailPoetCustomFieldSegmentCest {
     $i->waitForText($segmentTitle);
     $i->clickWooTableActionByItemName($segmentTitle, 'View subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
-    $i->see($segmentTitle, ['css' => 'select[name=segment]']);
-    $i->see('test2@example.com');
+    $i->waitForDataViewsFilterChip($segmentTitle);
+    $i->waitForText('test2@example.com');
     $i->dontSee('test1@example.com');
     $i->dontSee('test3@example.com');
   }

@@ -6,6 +6,7 @@ import {
   type ListingResponse,
   type RestApiError,
 } from 'common/dataviews';
+import type { SubscribersRequestFilter } from './filters';
 import type { EngagementScoreType } from './engagement-score-badge-type';
 import {
   type SubscriberBulkActionScope,
@@ -50,6 +51,7 @@ export type Subscriber = {
   created_at: string | null;
   deleted_at: string | null;
   last_subscribed_at: string | null;
+  source?: string | null;
   subscriptions: Array<{
     id: number;
     status: string;
@@ -96,7 +98,7 @@ export type SubscriberBulkActionResult = {
 };
 
 export type SubscriberListingParams = ListingQueryParams & {
-  filter?: Record<string, string>;
+  filter?: SubscribersRequestFilter;
 };
 
 export type SubscriberApiError = RestApiError;

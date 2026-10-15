@@ -1,6 +1,8 @@
+import type { SubscribersRequestFilter } from './filters';
+
 export type SubscriberBulkActionScope = {
   group: string;
-  filter: Record<string, string>;
+  filter: SubscribersRequestFilter;
   search: string;
   selection: number[];
   selectAll?: boolean;
