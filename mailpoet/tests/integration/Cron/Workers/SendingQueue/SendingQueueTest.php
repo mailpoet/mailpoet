@@ -37,6 +37,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
@@ -1605,6 +1606,27 @@ class SendingQueueTest extends \MailPoetTest {
     );
     $sendingQueueWorker->process();
     verify($mailerTaskExtraParams['meta']['tracking_consent'])->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+  }
+
+  public function testItPassesAnonymousPreviewUrlToMailerViaExtraParamsMeta() {
+    $mailerTaskExtraParams = [];
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'send' => Expected::exactly(1, function($newsletter, $subscriber, $extraParams = []) use (&$mailerTaskExtraParams) {
+            $mailerTaskExtraParams = $extraParams;
+            return $this->mailerTaskDummyResponse;
+          }),
+        ]
+      )
+    );
+    $sendingQueueWorker->process();
+    $expected = $this->diContainer->get(NewsletterUrl::class)
+      ->getViewInBrowserUrl($this->newsletter, null, $this->sendingQueue, false);
+    verify($mailerTaskExtraParams['meta']['preview_url'])->equals($expected);
+    verify($mailerTaskExtraParams['meta']['preview_url'])->stringNotContainsString((string)$this->subscriber->getEmail());
   }
 
   public function testCampaignIdsAreTheSameForDifferentSubscribers() {
