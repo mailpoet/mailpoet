@@ -3,8 +3,10 @@
 namespace MailPoet\Newsletter\Listing;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Listing\ListingDateRangeFilterTrait;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
@@ -13,6 +15,8 @@ use MailPoet\Util\Helpers;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class NewsletterListingRepository extends ListingRepository {
+  use ListingDateRangeFilterTrait;
+
   /**
    * Filter-only status: a sending email whose latest send is paused. It is not a
    * stored status and is deliberately absent from $supportedStatuses (listing groups).
@@ -66,36 +70,31 @@ class NewsletterListingRepository extends ListingRepository {
   }
 
   public function getFilters(ListingDefinition $definition): array {
-    $group = $definition->getGroup();
-    $typeParam = $definition->getParameters()['type'] ?? null;
-    $groupParam = $definition->getParameters()['group'] ?? null;
+    $parameters = $definition->getParameters();
+    $typeParam = $parameters['type'] ?? null;
 
-    // newsletter types without filters
-    if (in_array($typeParam, [NewsletterEntity::TYPE_NOTIFICATION_HISTORY])) {
-      return [];
-    }
-
+    // Options are every list linked to a non-deleted email of the type, whatever the group,
+    // so they stay the same when switching tabs. Soft-deleted lists are not excluded.
     $queryBuilder = clone $this->queryBuilder;
-    $this->applyFromClause($queryBuilder);
-
-    if ($group) {
-      $this->applyGroup($queryBuilder, $group);
-    }
-
+    $queryBuilder->from(NewsletterEntity::class, 'n');
     if ($typeParam) {
-      $this->applyType($queryBuilder, $typeParam, $groupParam);
+      $this->applyType($queryBuilder, $typeParam, $parameters['group'] ?? null);
+    }
+    $parentId = $parameters['parentId'] ?? null;
+    if ($parentId) {
+      $queryBuilder
+        ->andWhere('n.parent = :parentId')
+        ->setParameter('parentId', $parentId);
     }
 
     $queryBuilder
-      ->select('s.id, s.name, COUNT(n) AS newsletterCount')
+      ->select('DISTINCT s.id, s.name')
       ->join('n.newsletterSegments', 'ns')
       ->join('ns.segment', 's')
-      ->groupBy('s.id')
-      ->addGroupBy('s.name')
+      ->andWhere('n.deletedAt IS NULL')
       ->orderBy('s.name')
-      ->having('COUNT(n) > 0');
+      ->addOrderBy('s.id');
 
-    // format segment list
     $segmentList = [
       [
         'label' => __('All Lists', 'mailpoet'),
@@ -105,7 +104,7 @@ class NewsletterListingRepository extends ListingRepository {
 
     foreach ($queryBuilder->getQuery()->getResult() as $item) {
       $segmentList[] = [
-        'label' => sprintf('%s (%d)', $item['name'], $item['newsletterCount']),
+        'label' => $item['name'],
         'value' => $item['id'],
       ];
     }
@@ -279,41 +278,12 @@ class NewsletterListingRepository extends ListingRepository {
         return;
       }
       $queryBuilder
-        ->join('n.newsletterSegments', 'ns')
-        ->andWhere('ns.segment = :segmentId')
-        ->setParameter('segmentId', (int)$segmentId);
+        ->andWhere('EXISTS (' . $this->getListMembershipDql($queryBuilder, 'nsLegacy', 'segmentId') . ')')
+        ->setParameter('segmentId', [(int)$segmentId]);
     }
 
-    // Filter by sent_at/scheduled_at date
-    $sentAtFrom = $filters['sent_at_from'] ?? null;
-    if ($sentAtFrom && is_string($sentAtFrom) && $this->isValidDateTime($sentAtFrom)) {
-      $subQueryFrom = $queryBuilder->getEntityManager()->createQueryBuilder()
-        ->select('1')
-        ->from('MailPoet\Entities\SendingQueueEntity', 'queueFrom')
-        ->join('queueFrom.task', 'taskFrom')
-        ->where('queueFrom.newsletter = n.id')
-        ->andWhere('taskFrom.scheduledAt >= :sentAtFrom')
-        ->getDQL();
-
-      $queryBuilder
-        ->andWhere('(n.sentAt >= :sentAtFrom OR EXISTS (' . $subQueryFrom . '))')
-        ->setParameter('sentAtFrom', $sentAtFrom);
-    }
-
-    $sentAtTo = $filters['sent_at_to'] ?? null;
-    if ($sentAtTo && is_string($sentAtTo) && $this->isValidDateTime($sentAtTo)) {
-      $subQueryTo = $queryBuilder->getEntityManager()->createQueryBuilder()
-        ->select('1')
-        ->from('MailPoet\Entities\SendingQueueEntity', 'queueTo')
-        ->join('queueTo.task', 'taskTo')
-        ->where('queueTo.newsletter = n.id')
-        ->andWhere('taskTo.scheduledAt <= :sentAtTo')
-        ->getDQL();
-
-      $queryBuilder
-        ->andWhere('(n.sentAt <= :sentAtTo OR EXISTS (' . $subQueryTo . '))')
-        ->setParameter('sentAtTo', $sentAtTo);
-    }
+    $this->applySentAtBound($queryBuilder, $filters['sent_at_from'] ?? null, false);
+    $this->applySentAtBound($queryBuilder, $filters['sent_at_to'] ?? null, true);
 
     // Filter by segment IDs with advanced operators
     $segmentIds = $filters['segment_ids'] ?? null;
@@ -327,23 +297,48 @@ class NewsletterListingRepository extends ListingRepository {
       return;
     }
 
-    if ($segmentOperator === 'isAny') {
-      $queryBuilder
-        ->join('n.newsletterSegments', 'ns2')
-        ->andWhere('ns2.segment IN (:segmentIds)')
-        ->setParameter('segmentIds', $segmentIds);
-    } elseif ($segmentOperator === 'isNone') {
-      $subQuery = $queryBuilder->getEntityManager()->createQueryBuilder()
-        ->select('1')
-        ->from(NewsletterEntity::class, 'nNone')
-        ->join('nNone.newsletterSegments', 'nsNone')
-        ->where('nNone.id = n.id')
-        ->andWhere('nsNone.segment IN (:segmentIdsNone)')
-        ->getDQL();
-      $queryBuilder
-        ->andWhere('NOT EXISTS (' . $subQuery . ')')
-        ->setParameter('segmentIdsNone', $segmentIds);
+    $queryBuilder
+      ->andWhere(($segmentOperator === 'isNone' ? 'NOT ' : '') . 'EXISTS (' . $this->getListMembershipDql($queryBuilder, 'nsIds', 'segmentIds') . ')')
+      ->setParameter('segmentIds', $segmentIds);
+  }
+
+  /**
+   * Matches `sent_at` only, so scheduled and other unsent emails never match. A
+   * `yyyy-MM-dd` value is a whole site-local day. Any other parsable datetime is
+   * compared as given (kept for older callers); an unparsable value matches nothing.
+   *
+   * @param mixed $value
+   */
+  private function applySentAtBound(QueryBuilder $queryBuilder, $value, bool $isUpperBound): void {
+    if ($value === null || $value === '') {
+      return;
     }
+    $param = $isUpperBound ? 'sentToUtc' : 'sentFromUtc';
+    if (!is_string($value)) {
+      $queryBuilder->andWhere('1 = 0');
+      return;
+    }
+    $dayStart = $this->getSiteDayStartInUtc($value, $isUpperBound ? 1 : 0);
+    if ($dayStart !== null) {
+      $queryBuilder
+        ->andWhere('n.sentAt ' . ($isUpperBound ? '<' : '>=') . " :$param")
+        ->setParameter($param, $dayStart);
+    } elseif ($this->isValidDateTime($value)) {
+      $queryBuilder
+        ->andWhere('n.sentAt ' . ($isUpperBound ? '<=' : '>=') . " :$param")
+        ->setParameter($param, $value);
+    } else {
+      $queryBuilder->andWhere('1 = 0');
+    }
+  }
+
+  private function getListMembershipDql(QueryBuilder $queryBuilder, string $alias, string $parameter): string {
+    return $queryBuilder->getEntityManager()->createQueryBuilder()
+      ->select('1')
+      ->from(NewsletterSegmentEntity::class, $alias)
+      ->where("$alias.newsletter = n")
+      ->andWhere("$alias.segment IN (:$parameter)")
+      ->getDQL();
   }
 
   /**

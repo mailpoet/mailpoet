@@ -4,6 +4,7 @@ namespace MailPoet\Test\REST\Newsletters;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\REST\Test;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
@@ -160,6 +161,65 @@ class NewslettersEndpointsTest extends Test {
     $this->newslettersRepository->refresh($running);
     $this->assertNotNull($paused->getDeletedAt());
     $this->assertNull($running->getDeletedAt());
+  }
+
+  public function testListingFiltersBySentDayRangeAndListMembership(): void {
+    $suffix = uniqid();
+    $listA = $this->createList("A_{$suffix}");
+    $listB = $this->createList("B_{$suffix}");
+    $sentInA = $this->createSentWithLists("In_A_{$suffix}", '2025-01-10 12:00:00', [$listA]);
+    $sentInBoth = $this->createSentWithLists("In_both_{$suffix}", '2025-01-31 23:59:59', [$listA, $listB]);
+    $sentOnlyB = $this->createSentWithLists("In_B_{$suffix}", '2025-01-20 12:00:00', [$listB]);
+    $this->createSentWithLists("Too_late_{$suffix}", '2025-02-01 00:00:00', [$listA]);
+    $scheduled = (new NewsletterFactory())->withSubject("Scheduled_{$suffix}")->withType('standard')
+      ->withStatus(NewsletterEntity::STATUS_SCHEDULED)->withSegments([$listA])->create();
+
+    $dates = ['sent_at_from' => '2025-01-01', 'sent_at_to' => '2025-01-31'];
+    $isAny = ['segment_ids' => [(string)$listA->getId()], 'segment_operator' => 'isAny'];
+    $isNone = ['segment_ids' => [(string)$listA->getId()], 'segment_operator' => 'isNone'];
+    $ids = function(array $filter): array {
+      $ids = $this->listIds(['type' => 'standard', 'filter' => $filter]);
+      sort($ids);
+      return $ids;
+    };
+
+    $this->assertSame([$sentInA->getId(), $sentInBoth->getId(), $sentOnlyB->getId()], array_values(array_intersect($ids($dates), [$sentInA->getId(), $sentInBoth->getId(), $sentOnlyB->getId(), $scheduled->getId()])));
+    $this->assertNotContains($scheduled->getId(), $ids($dates));
+    $this->assertSame([$sentInA->getId(), $sentInBoth->getId()], $ids($dates + $isAny));
+    $this->assertSame([$sentOnlyB->getId()], $ids($dates + $isNone));
+  }
+
+  public function testListingReturnsListOptionsWithoutCountsForNotificationHistory(): void {
+    $suffix = uniqid();
+    $list = $this->createList("History_{$suffix}");
+    $parent = (new NewsletterFactory())->withSubject("Parent_{$suffix}")->withPostNotificationsType()->create();
+    (new NewsletterFactory())->withSubject("Child_{$suffix}")->withPostNotificationHistoryType()
+      ->withParent($parent)->withStatus(NewsletterEntity::STATUS_SENT)->withSegments([$list])->create();
+
+    $response = $this->get(self::LISTING_PATH, ['query' => ['type' => 'notification_history', 'parent_id' => $parent->getId()]]);
+    $this->assertIsArray($response);
+    $options = $this->getPayload($response)['filters']['segment'] ?? [];
+
+    $this->assertSame(
+      [['label' => 'All Lists', 'value' => ''], ['label' => "History_{$suffix}", 'value' => $list->getId()]],
+      $options
+    );
+  }
+
+  private function createList(string $name): SegmentEntity {
+    $list = new SegmentEntity($name, SegmentEntity::TYPE_DEFAULT, 'Description');
+    $this->entityManager->persist($list);
+    $this->entityManager->flush();
+    return $list;
+  }
+
+  /** @param SegmentEntity[] $lists */
+  private function createSentWithLists(string $subject, string $sentAtUtc, array $lists): NewsletterEntity {
+    $newsletter = (new NewsletterFactory())->withSubject($subject)->withType('standard')
+      ->withStatus(NewsletterEntity::STATUS_SENT)->withSegments($lists)->create();
+    $newsletter->setSentAt(new \DateTime($sentAtUtc, new \DateTimeZone('UTC')));
+    $this->entityManager->flush();
+    return $newsletter;
   }
 
   private function createSending(string $taskStatus, string $subject, string $type = 'standard'): NewsletterEntity {
