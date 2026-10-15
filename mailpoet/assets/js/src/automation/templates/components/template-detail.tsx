@@ -135,6 +135,7 @@ export const TemplateDetail = forwardRef<HTMLDivElement, Props>(
                 onClick={() => void createAutomationFromTemplate(template.slug)}
                 isBusy={loading}
                 disabled={loading}
+                accessibleWhenDisabled
               >
                 {__('Start building', 'mailpoet')}
               </Button>
