@@ -3,7 +3,6 @@
 namespace MailPoet\Subscribers\RestApi;
 
 use DateTimeImmutable;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberListingRepository;
 
@@ -83,28 +82,12 @@ trait SubscribersFilterTrait {
 
   /** @return string[] */
   private function getSubscribersFilterStatuses(): array {
-    return [
-      SubscriberEntity::STATUS_SUBSCRIBED,
-      SubscriberEntity::STATUS_UNCONFIRMED,
-      SubscriberEntity::STATUS_UNSUBSCRIBED,
-      SubscriberEntity::STATUS_INACTIVE,
-      SubscriberEntity::STATUS_BOUNCED,
-    ];
+    return SubscriberListingRepository::SUPPORTED_STATUSES;
   }
 
   /** @return string[] */
   private function getSubscribersFilterSources(): array {
-    return [
-      Source::FORM,
-      Source::IMPORTED,
-      Source::ADMINISTRATOR,
-      Source::API,
-      Source::WORDPRESS_USER,
-      Source::WORDPRESS_USER_DELETED,
-      Source::WOOCOMMERCE_USER,
-      Source::WOOCOMMERCE_CHECKOUT,
-      Source::UNKNOWN,
-    ];
+    return Source::ALL;
   }
 
   /** @return string[] */
