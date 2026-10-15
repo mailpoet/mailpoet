@@ -1944,6 +1944,31 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($queue['queued_ids'])->equals([$unconfirmed->getId()]);
   }
 
+  public function testLegacyStatusKeysNarrowTheNewStatusKeys() {
+    $subscribed = (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $unconfirmed = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->create();
+    $unsubscribed = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    $all = [SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_UNCONFIRMED];
+
+    verify($this->getIds(['status_in' => $all, 'statusInclude' => [SubscriberEntity::STATUS_UNCONFIRMED, SubscriberEntity::STATUS_UNSUBSCRIBED]]))
+      ->equals([$unconfirmed->getId()]);
+    verify($this->getIds(['status_in' => [SubscriberEntity::STATUS_SUBSCRIBED], 'statusInclude' => [SubscriberEntity::STATUS_UNSUBSCRIBED]]))
+      ->equals([]);
+    verify($this->repository->getCountAndAllTrashGroups(new ListingDefinition('all', [
+      'status_in' => [SubscriberEntity::STATUS_SUBSCRIBED],
+      'statusInclude' => [SubscriberEntity::STATUS_UNSUBSCRIBED],
+    ]))['count'])->equals(0);
+    verify($this->getIds(['status_not_in' => [SubscriberEntity::STATUS_SUBSCRIBED], 'statusExclude' => [SubscriberEntity::STATUS_UNCONFIRMED]]))
+      ->equals([$unsubscribed->getId()]);
+    verify($this->getIds(['statusInclude' => $all]))->equals([$subscribed->getId(), $unconfirmed->getId()]);
+  }
+
+  public function testGetNormalizedStatusInCombinesLegacyAndNewKeys() {
+    verify($this->repository->getNormalizedStatusIn([]))->null();
+    verify($this->repository->getNormalizedStatusIn(['statusInclude' => ['unconfirmed']]))->equals(['unconfirmed']);
+    verify($this->repository->getNormalizedStatusIn(['status_in' => ['subscribed', 'unconfirmed'], 'statusInclude' => ['unconfirmed']]))->equals(['unconfirmed']);
+  }
+
   public function testScoreGtAndLtAreExclusiveAndMinMaxAreInclusive() {
     $low = (new Subscriber())->withEngagementScore(10)->create();
     $edge = (new Subscriber())->withEngagementScore(50)->create();
