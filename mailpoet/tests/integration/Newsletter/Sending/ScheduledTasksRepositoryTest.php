@@ -288,7 +288,9 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
 
   public function testItFindsTasksPausedForSenderDomain(): void {
     $standard = $this->createPausedTask((new NewsletterFactory())->withSubject('Standard')->create(), true);
-    $reengagement = $this->createPausedTask((new NewsletterFactory())->withReengagementType()->create(), true);
+    $this->createPausedTask((new NewsletterFactory())->withReengagementType()->create(), true);
+    $this->createPausedTask((new NewsletterFactory())->withSubject('Queue replay')->create(), true, [], [NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true]);
+    $this->createPausedTask((new NewsletterFactory())->withSubject('Task replay')->create(), true, [NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true]);
     $withExtraMeta = $this->createPausedTask((new NewsletterFactory())->withSubject('Extra')->create(), true, ['other' => 'value/with/slashes']);
 
     $this->createPausedTask((new NewsletterFactory())->withSubject('No reason')->create(), false);
@@ -304,14 +306,15 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
 
     $ids = array_map(fn(ScheduledTaskEntity $task) => $task->getId(), $this->repository->findPausedForSenderDomain());
     sort($ids);
-    $expected = [$standard->getId(), $reengagement->getId(), $withExtraMeta->getId()];
+    $expected = [$standard->getId(), $withExtraMeta->getId()];
     sort($expected);
     $this->assertSame($expected, $ids);
   }
 
-  private function createPausedTask(NewsletterEntity $newsletter, bool $withReason, array $extraMeta = []): ScheduledTaskEntity {
+  private function createPausedTask(NewsletterEntity $newsletter, bool $withReason, array $extraMeta = [], ?array $queueMeta = null): ScheduledTaskEntity {
     $task = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_PAUSED);
-    $this->sendingQueueFactory->create($task, $newsletter);
+    $queue = $this->sendingQueueFactory->create($task, $newsletter);
+    $queue->setMeta($queueMeta);
     $meta = $extraMeta;
     if ($withReason) {
       $meta[ScheduledTaskEntity::META_PAUSE_REASON] = ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN;
