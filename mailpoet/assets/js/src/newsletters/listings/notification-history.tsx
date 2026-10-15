@@ -18,6 +18,12 @@ import {
   type ListingActionHelpers,
   type NewsletterMailerLog,
 } from './newsletters-listing';
+import {
+  SEGMENT_OPERATORS,
+  SENT_AT_OPERATORS,
+  getStatusFilterValue,
+  statusElements,
+} from './listing-fields';
 
 // See standard.tsx for the rationale behind widening at the boundary.
 function asNewsLetter(item: NewsletterListingItem): NewsLetter {
@@ -58,8 +64,12 @@ function buildFields(
     {
       id: 'status',
       label: __('Status', 'mailpoet'),
-      enableSorting: false,
+      type: 'text',
+      enableSorting: true,
       enableGlobalSearch: false,
+      getValue: ({ item }) => getStatusFilterValue(item),
+      elements: statusElements(['sending', 'paused', 'sent']),
+      filterBy: { operators: ['isAny'] },
       render: ({ item }) => (
         <QueueStatus newsletter={asNewsLetter(item)} mailerLog={mailerLog} />
       ),
@@ -67,8 +77,12 @@ function buildFields(
     {
       id: 'segments',
       label: __('Lists', 'mailpoet'),
+      type: 'text',
       enableSorting: false,
       enableGlobalSearch: false,
+      getValue: ({ item }) =>
+        item.segments.map((segment) => String(segment.id)),
+      filterBy: { operators: [...SEGMENT_OPERATORS] },
       render: ({ item }) => (
         <>
           <SegmentTags
@@ -100,9 +114,10 @@ function buildFields(
     {
       id: 'sent_at',
       label: __('Sent on', 'mailpoet'),
-      type: 'datetime',
+      type: 'date',
       enableSorting: true,
       enableGlobalSearch: false,
+      filterBy: { operators: [...SENT_AT_OPERATORS] },
       render: ({ item }) =>
         item.sent_at ? (
           <>

@@ -36,6 +36,10 @@ import {
   NewslettersListing,
   type ListingActionHelpers,
 } from './newsletters-listing';
+import {
+  ACTIVATION_STATUS_ELEMENTS,
+  activationSegmentsField,
+} from './listing-fields';
 import { confirmEdit } from './utils.jsx';
 
 // See standard.tsx for the rationale behind widening at the boundary.
@@ -213,8 +217,12 @@ function buildFields(
     {
       id: 'status',
       label: __('Status', 'mailpoet'),
-      enableSorting: false,
+      type: 'text',
+      enableSorting: true,
       enableGlobalSearch: false,
+      getValue: ({ item }) => item.status,
+      elements: ACTIVATION_STATUS_ELEMENTS,
+      filterBy: { operators: ['isAny'] },
       render: ({ item }) => {
         const status = statusOverrides[String(item.id)] ?? item.status;
         return (
@@ -246,6 +254,7 @@ function buildFields(
           </>
         ) : null,
     },
+    activationSegmentsField,
   ];
 }
 

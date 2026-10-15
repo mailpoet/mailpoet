@@ -35,8 +35,8 @@ class SearchForStandardNewsletterCest {
     $i->waitForText($newsletterTitle, 15, '[data-automation-id="newsletters_listing_tabs"]');
 
     // step 4 - Filter by assigned list and make sure the newsletter is present
-    $i->selectOption('[data-automation-id="listing_filter_segment"]', $segmentName);
-    $i->waitForElement('[data-automation-id="listing_filter_segment"]');
+    $i->applyDataViewsFilter('Lists', [$segmentName]);
+    $i->seeInCurrentUrl('segment=' . $segment->getId());
     $i->waitForText($newsletterTitle, 15, '[data-automation-id="newsletters_listing_tabs"]');
   }
 }

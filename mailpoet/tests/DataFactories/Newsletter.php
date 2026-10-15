@@ -101,6 +101,11 @@ class Newsletter {
     return $this;
   }
 
+  public function withSentAt(\DateTimeInterface $sentAt) {
+    $this->data['sent_at'] = $sentAt;
+    return $this;
+  }
+
   public function withActiveStatus() {
     $this->data['status'] = NewsletterEntity::STATUS_ACTIVE;
     return $this;
@@ -519,6 +524,7 @@ class Newsletter {
     $newsletter->setHash(Security::generateHash());
     if (isset($this->data['parent'])) $newsletter->setParent($this->data['parent']);
     if (isset($this->data['deleted_at'])) $newsletter->setDeletedAt($this->data['deleted_at']);
+    if (isset($this->data['sent_at'])) $newsletter->setSentAt($this->data['sent_at']);
     if (isset($this->data['ga_campaign'])) $newsletter->setGaCampaign($this->data['ga_campaign']);
     $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
     if (isset($this->data['wp_post_id'])) {

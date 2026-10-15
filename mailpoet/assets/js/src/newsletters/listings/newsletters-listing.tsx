@@ -21,13 +21,13 @@ import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { MailerError } from 'notices/mailer-error';
 import {
+  filterToExtraParams,
   getDataViewsPreference,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
   type ListingGroup,
   type ListingQueryParams,
 } from 'common/dataviews';
-import { Select } from 'common/form/select/select';
 import { pollExportStatus } from 'newsletters/statistics-export/poll-export-status';
 import {
   bulkAction,
@@ -43,6 +43,21 @@ import {
 } from '../api';
 import { checkCronStatus, checkMailerStatus } from './utils.jsx';
 import { buildHash, parseHash } from './hash-state';
+import {
+  STATUS_FIELD,
+  getAllowedStatuses,
+  hashFilterToRequestFilter,
+  requestFilterToHashFilter,
+  requestFilterToViewFilters,
+  sanitizeSort,
+  viewFiltersToRequestFilter,
+  withoutFields,
+} from './filters';
+import {
+  applyFilterConfig,
+  buildSegmentElements,
+  getSegmentFilterIds,
+} from './listing-fields';
 
 const listingPerPage = Number(window.mailpoet_listing_per_page);
 
@@ -218,14 +233,16 @@ export function NewslettersListing({
     [baseUrl, supportedGroups],
   );
   const [group, setGroup] = useState<Group>(hashState.group ?? 'all');
-  const [filter, setFilter] = useState<Record<string, string>>(
-    hashState.filter ?? {},
-  );
   const [selection, setSelection] = useState<string[]>([]);
   const [mailerExtras, setMailerExtras] = useState<{
     method: string | null;
     log: NewsletterMailerLog;
   }>({ method: null, log: { status: '' } });
+
+  const sortableFieldIds = useMemo(
+    () => fields.filter((field) => field.enableSorting).map(({ id }) => id),
+    [fields],
+  );
 
   const [defaultViewBase] = useState<View>(() => ({
     type: 'table',
@@ -251,14 +268,24 @@ export function NewslettersListing({
       perPage: hashState.perPage ?? preferredView.perPage,
       page: hashState.page ?? 1,
       search: hashState.search,
-      sort: {
-        field:
-          hashState.orderby ?? preferredView.sort?.field ?? defaultSort.field,
-        direction:
-          hashState.order ??
-          preferredView.sort?.direction ??
-          defaultSort.direction,
-      },
+      sort: sanitizeSort(
+        {
+          field:
+            hashState.orderby ?? preferredView.sort?.field ?? defaultSort.field,
+          direction:
+            hashState.order ??
+            preferredView.sort?.direction ??
+            defaultSort.direction,
+        },
+        sortableFieldIds,
+        defaultSort,
+      ),
+      filters: requestFilterToViewFilters(
+        hashFilterToRequestFilter(
+          hashState.filter ?? {},
+          getAllowedStatuses(type, hashState.group ?? 'all'),
+        ),
+      ),
     };
   });
 
@@ -267,13 +294,12 @@ export function NewslettersListing({
       const listingParams: NewslettersListingParams = {
         ...params,
         group,
-        filter,
         type,
       };
       if (parentId !== undefined) listingParams.parent_id = parentId;
       return getNewsletters(listingParams, signal);
     },
-    [filter, group, parentId, type],
+    [group, parentId, type],
   );
 
   const {
@@ -291,7 +317,20 @@ export function NewslettersListing({
   } = useDataViewsQuery<NewsletterListingItem>({
     initialView,
     load,
+    extraParams: (currentView) =>
+      filterToExtraParams(
+        viewFiltersToRequestFilter(
+          currentView.filters,
+          getAllowedStatuses(type, group),
+        ),
+      ),
   });
+
+  const requestFilter = useMemo(
+    () =>
+      viewFiltersToRequestFilter(view.filters, getAllowedStatuses(type, group)),
+    [group, type, view.filters],
+  );
 
   // Mailer + cron envelope info is dispatched through `checkMailerStatus` /
   // `checkCronStatus` every time the listing reloads. The REST endpoint
@@ -330,11 +369,17 @@ export function NewslettersListing({
     // (not the hardcoded ones, not a mount-time snapshot), so reloading a URL
     // without explicit params resolves to the same view it was written from.
     const preferredView = getPreferredView();
-    const hash = buildHash(baseUrl, group, view, filter, {
-      sort: preferredView.sort?.field ?? defaultSort.field,
-      order: preferredView.sort?.direction ?? defaultSort.direction,
-      perPage: preferredView.perPage ?? listingPerPage,
-    });
+    const hash = buildHash(
+      baseUrl,
+      group,
+      view,
+      requestFilterToHashFilter(requestFilter),
+      {
+        sort: preferredView.sort?.field ?? defaultSort.field,
+        order: preferredView.sort?.direction ?? defaultSort.direction,
+        perPage: preferredView.perPage ?? listingPerPage,
+      },
+    );
     if (window.location.hash !== hash) {
       window.history.replaceState(null, '', hash);
     }
@@ -342,9 +387,9 @@ export function NewslettersListing({
     baseUrl,
     defaultSort.direction,
     defaultSort.field,
-    filter,
     getPreferredView,
     group,
+    requestFilter,
     view,
   ]);
 
@@ -353,8 +398,8 @@ export function NewslettersListing({
       const next = parseHash(window.location.hash, baseUrl, [
         ...supportedGroups,
       ]);
-      setGroup(next.group ?? 'all');
-      setFilter(next.filter ?? {});
+      const nextGroup = next.group ?? 'all';
+      setGroup(nextGroup);
       setSelection([]);
       clearLoadError();
       // Fill hash segments the URL omits from the preference-merged defaults
@@ -366,13 +411,24 @@ export function NewslettersListing({
         page: next.page ?? 1,
         perPage: next.perPage ?? preferredView.perPage,
         search: next.search ?? '',
-        sort: {
-          field: next.orderby ?? preferredView.sort?.field ?? defaultSort.field,
-          direction:
-            next.order ??
-            preferredView.sort?.direction ??
-            defaultSort.direction,
-        },
+        sort: sanitizeSort(
+          {
+            field:
+              next.orderby ?? preferredView.sort?.field ?? defaultSort.field,
+            direction:
+              next.order ??
+              preferredView.sort?.direction ??
+              defaultSort.direction,
+          },
+          sortableFieldIds,
+          { field: defaultSort.field, direction: defaultSort.direction },
+        ),
+        filters: requestFilterToViewFilters(
+          hashFilterToRequestFilter(
+            next.filter ?? {},
+            getAllowedStatuses(type, nextGroup),
+          ),
+        ),
       }));
     };
     window.addEventListener('hashchange', applyHash);
@@ -384,18 +440,20 @@ export function NewslettersListing({
     defaultSort.field,
     getPreferredView,
     setView,
+    sortableFieldIds,
     supportedGroups,
+    type,
   ]);
 
   const listingParams = useMemo<NewslettersBulkScope>(
     () => ({
       type,
       group,
-      filter,
+      filter: requestFilter,
       search: view.search ?? '',
       parent_id: parentId,
     }),
-    [filter, group, parentId, type, view.search],
+    [group, parentId, requestFilter, type, view.search],
   );
 
   const handleApiError = useCallback((error: NewsletterApiError) => {
@@ -477,23 +535,17 @@ export function NewslettersListing({
       setGroup(nextGroup);
       setSelection([]);
       clearLoadError();
-      setView((currentView) => ({ ...currentView, page: 1 }));
+      // The status filter exists only on some tabs; drop it in the same update.
+      const keepStatus = getAllowedStatuses(type, nextGroup).length > 0;
+      setView((currentView) => ({
+        ...currentView,
+        page: 1,
+        filters: keepStatus
+          ? currentView.filters
+          : withoutFields(currentView.filters, [STATUS_FIELD]),
+      }));
     },
-    [clearLoadError, group, setView],
-  );
-
-  const handleFilterSelect = useCallback(
-    (name: string, value: string): void => {
-      setFilter((current) => {
-        const next = { ...current };
-        if (value) next[name] = value;
-        else delete next[name];
-        return next;
-      });
-      setSelection([]);
-      setView((currentView) => ({ ...currentView, page: 1 }));
-    },
-    [setView],
+    [clearLoadError, group, setView, type],
   );
 
   const groupCounts = useMemo(() => {
@@ -518,19 +570,19 @@ export function NewslettersListing({
       !loadError &&
       groupCounts.trash === 0 &&
       !view.search &&
-      Object.keys(filter).length === 0
+      (view.filters ?? []).length === 0
     ) {
       setGroup('all');
       setSelection([]);
       setView((currentView) => ({ ...currentView, page: 1 }));
     }
   }, [
-    filter,
     group,
     groupCounts.trash,
     isLoading,
     loadError,
     setView,
+    view.filters,
     view.search,
   ]);
 
@@ -628,13 +680,23 @@ export function NewslettersListing({
     );
   }, [executeBulkAction, parentId, type]);
 
-  const availableFilters = useMemo(
+  // Memoise on the option content so a reload that returns the same lists
+  // does not hand DataViews a new field set.
+  const segmentOptions = filters.segment;
+  const segmentElementsKey = JSON.stringify([
+    segmentOptions ?? [],
+    getSegmentFilterIds(view.filters),
+  ]);
+  const segmentElements = useMemo(
     () =>
-      Object.keys(filters).filter((name) => {
-        const opts = filters[name] ?? [];
-        return !(opts.length === 0 || (opts.length === 1 && !opts[0].value));
-      }),
-    [filters],
+      buildSegmentElements(segmentOptions, getSegmentFilterIds(view.filters)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [segmentElementsKey],
+  );
+  const statusEnabled = getAllowedStatuses(type, group).length > 0;
+  const listingFields = useMemo(
+    () => applyFilterConfig(fields, { segmentElements, statusEnabled }),
+    [fields, segmentElements, statusEnabled],
   );
 
   // The `all` group already aggregates every non-trash status, so summing all
@@ -709,7 +771,7 @@ export function NewslettersListing({
       >
         <DataViews<NewsletterListingItem>
           data={items}
-          fields={fields}
+          fields={listingFields}
           view={view}
           onChangeView={persistedViewChange}
           actions={actions}
@@ -732,46 +794,22 @@ export function NewslettersListing({
         >
           <div className="mailpoet-dataviews__toolbar mailpoet-newsletters-dataviews__toolbar">
             <DataViews.Search label={__('Search', 'mailpoet')} />
-            {(availableFilters.length > 0 || group === 'trash') && (
-              <div className="mailpoet-listing-filters">
-                {availableFilters.map((name) => (
-                  <Select
-                    isMinWidth
-                    dimension="small"
-                    key={`filter-${name}`}
-                    name={name}
-                    value={filter[name] ?? ''}
-                    automationId={`listing_filter_${name}`}
-                    onChange={(event) =>
-                      handleFilterSelect(name, event.currentTarget.value)
-                    }
-                  >
-                    {filters[name].map((option) => (
-                      <option
-                        value={option.value}
-                        key={`filter-option-${option.value}`}
-                      >
-                        {option.label}
-                      </option>
-                    ))}
-                  </Select>
-                ))}
-                {group === 'trash' && (
-                  <Button
-                    variant="secondary"
-                    size="compact"
-                    data-automation-id="empty_trash"
-                    onClick={handleEmptyTrash}
-                  >
-                    {__('Empty Trash', 'mailpoet')}
-                  </Button>
-                )}
-              </div>
+            <DataViews.FiltersToggle />
+            {group === 'trash' && (
+              <Button
+                variant="secondary"
+                size="compact"
+                data-automation-id="empty_trash"
+                onClick={handleEmptyTrash}
+              >
+                {__('Empty Trash', 'mailpoet')}
+              </Button>
             )}
             <div className="mailpoet-dataviews__toolbar-end">
               <DataViews.ViewConfig />
             </div>
           </div>
+          <DataViews.Filters />
           <DataViews.Layout />
           <DataViews.Footer />
         </DataViews>
