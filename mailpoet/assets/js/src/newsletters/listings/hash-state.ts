@@ -4,6 +4,7 @@
  * The newsletter listing has historically used the hash form
  * `#/<base>/group[trash]/page[2]/sort_by[updated_at]/...`. These helpers keep
  * that grammar so deep links continue to work after the DataViews migration.
+ * Filter values may be comma-joined lists (`filter[status=draft,sent]`).
  * They are pure (no `window` access) so the round-trip can be unit-tested.
  */
 
