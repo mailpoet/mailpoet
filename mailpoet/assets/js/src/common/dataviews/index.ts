@@ -24,6 +24,7 @@ export {
   filterToExtraParams,
   isStrictDateString,
   normalizeYmd,
+  shiftYmd,
   type FilterList,
 } from './filters';
 export type {
