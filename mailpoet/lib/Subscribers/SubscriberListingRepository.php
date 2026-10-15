@@ -51,24 +51,12 @@ class SubscriberListingRepository extends ListingRepository {
     'not_found',
   ];
 
-  private static $supportedStatuses = [
+  public const SUPPORTED_STATUSES = [
     SubscriberEntity::STATUS_SUBSCRIBED,
     SubscriberEntity::STATUS_UNSUBSCRIBED,
     SubscriberEntity::STATUS_INACTIVE,
     SubscriberEntity::STATUS_BOUNCED,
     SubscriberEntity::STATUS_UNCONFIRMED,
-  ];
-
-  private static $supportedSources = [
-    Source::FORM,
-    Source::IMPORTED,
-    Source::ADMINISTRATOR,
-    Source::API,
-    Source::WORDPRESS_USER,
-    Source::WORDPRESS_USER_DELETED,
-    Source::WOOCOMMERCE_USER,
-    Source::WOOCOMMERCE_CHECKOUT,
-    Source::UNKNOWN,
   ];
 
   /** @var FilterHandler */
@@ -280,7 +268,7 @@ class SubscriberListingRepository extends ListingRepository {
     $this->applyDbalTagFilters($query, $filters);
 
     // Under a single static list the group uses the per-list status, as in applyGroup().
-    if ($group && in_array($group, self::$supportedStatuses, true)) {
+    if ($group && in_array($group, self::SUPPORTED_STATUSES, true)) {
       $query->andWhere($this->getStatusPredicate($group, $hasListJoin));
     }
 
@@ -493,7 +481,7 @@ class SubscriberListingRepository extends ListingRepository {
   private function sanitizeStatusFilter($statuses): array {
     $statuses = is_array($statuses) ? $statuses : [$statuses];
     $statuses = array_filter($statuses, function($status) {
-      return is_string($status) && in_array($status, self::$supportedStatuses, true);
+      return is_string($status) && in_array($status, self::SUPPORTED_STATUSES, true);
     });
     return array_values(array_unique($statuses));
   }
@@ -686,7 +674,7 @@ class SubscriberListingRepository extends ListingRepository {
       $queryBuilder->andWhere('s.deletedAt IS NULL');
     }
 
-    if (!in_array($group, self::$supportedStatuses)) {
+    if (!in_array($group, self::SUPPORTED_STATUSES)) {
       return;
     }
 
@@ -709,7 +697,7 @@ class SubscriberListingRepository extends ListingRepository {
    * mirrors the count query in SegmentSubscribersRepository.
    */
   private function getStatusPredicate(string $status, bool $hasStaticListJoin): string {
-    if (!in_array($status, self::$supportedStatuses, true)) {
+    if (!in_array($status, self::SUPPORTED_STATUSES, true)) {
       return '1 = 0';
     }
     if (!$hasStaticListJoin) {
@@ -1151,7 +1139,7 @@ class SubscriberListingRepository extends ListingRepository {
   private function sanitizeSourceFilter($sources): array {
     $sources = is_array($sources) ? $sources : [$sources];
     return array_values(array_filter($sources, function($source): bool {
-      return is_string($source) && in_array($source, self::$supportedSources, true);
+      return is_string($source) && in_array($source, Source::ALL, true);
     }));
   }
 
@@ -1363,7 +1351,7 @@ class SubscriberListingRepository extends ListingRepository {
     $cached = $this->getCachedGroupCounts($definition);
     if ($cached !== null) {
       $all = 0;
-      foreach (self::$supportedStatuses as $status) {
+      foreach (self::SUPPORTED_STATUSES as $status) {
         $all += $cached[$status];
       }
       $trash = $cached['trash'];
@@ -1486,9 +1474,9 @@ class SubscriberListingRepository extends ListingRepository {
    */
   private function segmentStatisticsToCounts(SegmentEntity $segment): array {
     $stats = $this->subscribersCountsController->getSegmentStatisticsCount($segment);
-    $counts = array_fill_keys(self::$supportedStatuses, 0);
+    $counts = array_fill_keys(self::SUPPORTED_STATUSES, 0);
     $counts['trash'] = 0;
-    foreach (self::$supportedStatuses as $status) {
+    foreach (self::SUPPORTED_STATUSES as $status) {
       $counts[$status] = (int)($stats[$status] ?? 0);
     }
     $counts['trash'] = (int)($stats['trash'] ?? 0);
@@ -1522,9 +1510,9 @@ class SubscriberListingRepository extends ListingRepository {
    */
   private function globalStatisticsToCounts(): array {
     $stats = $this->subscribersCountsController->getGlobalStatusStatisticsCount();
-    $counts = array_fill_keys(self::$supportedStatuses, 0);
+    $counts = array_fill_keys(self::SUPPORTED_STATUSES, 0);
     $counts['trash'] = 0;
-    foreach (self::$supportedStatuses as $status) {
+    foreach (self::SUPPORTED_STATUSES as $status) {
       $counts[$status] = (int)($stats[$status] ?? 0);
     }
     $counts['trash'] = (int)($stats['trash'] ?? 0);
@@ -1537,7 +1525,7 @@ class SubscriberListingRepository extends ListingRepository {
    */
   private function formatGroups(array $counts): array {
     $totalCount = 0;
-    foreach (self::$supportedStatuses as $status) {
+    foreach (self::SUPPORTED_STATUSES as $status) {
       $totalCount += $counts[$status];
     }
 
@@ -1588,7 +1576,7 @@ class SubscriberListingRepository extends ListingRepository {
    * @return array<string, int>
    */
   private function getGroupCounts(ListingDefinition $definition): array {
-    $counts = array_fill_keys(self::$supportedStatuses, 0);
+    $counts = array_fill_keys(self::SUPPORTED_STATUSES, 0);
     $counts['trash'] = 0;
 
     $statusQuery = $this->createGroupCountQueryBuilder($definition);
@@ -1644,7 +1632,7 @@ class SubscriberListingRepository extends ListingRepository {
    * @return array<string, int>
    */
   private function getGroupCountsPerStatus(ListingDefinition $definition): array {
-    $counts = array_fill_keys(self::$supportedStatuses, 0);
+    $counts = array_fill_keys(self::SUPPORTED_STATUSES, 0);
     $counts['trash'] = 0;
     foreach (array_keys($counts) as $group) {
       $groupDefinition = $group === $definition->getGroup() ? $definition : $this->withGroup($definition, $group);

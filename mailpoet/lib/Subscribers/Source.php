@@ -12,4 +12,16 @@ class Source {
   const WOOCOMMERCE_USER = 'woocommerce_user';
   const WOOCOMMERCE_CHECKOUT = 'woocommerce_checkout';
   const UNKNOWN = 'unknown';
+
+  const ALL = [
+    self::FORM,
+    self::IMPORTED,
+    self::ADMINISTRATOR,
+    self::API,
+    self::WORDPRESS_USER,
+    self::WORDPRESS_USER_DELETED,
+    self::WOOCOMMERCE_USER,
+    self::WOOCOMMERCE_CHECKOUT,
+    self::UNKNOWN,
+  ];
 }
