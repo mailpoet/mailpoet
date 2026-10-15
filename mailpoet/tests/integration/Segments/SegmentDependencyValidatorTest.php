@@ -58,11 +58,9 @@ class SegmentDependencyValidatorTest extends \MailPoetTest {
     verify($validator->getMissingPluginsBySegment($segment))->equals(['MailPoet Premium']);
   }
 
-  public function testPremiumIsNotRunningWhenActiveButNotInitialized(): void {
-    if (defined('MAILPOET_PREMIUM_INITIALIZED')) {
-      $this->markTestSkipped('MailPoet Premium is initialized in this test run.');
-    }
-    verify($this->createValidator(true)->isPremiumPluginRunning())->false();
+  public function testPremiumIsRunningOnlyWhenActiveAndInitialized(): void {
+    $isInitialized = defined('MAILPOET_PREMIUM_INITIALIZED') && MAILPOET_PREMIUM_INITIALIZED;
+    verify($this->createValidator(true)->isPremiumPluginRunning())->equals($isInitialized);
   }
 
   private function createTagSegment(): SegmentEntity {
