@@ -223,6 +223,62 @@ class AutomationListingCest {
     $i->seeNoJSErrors();
   }
 
+  public function backButtonLeavesListingAfterOnePress(AcceptanceTester $i): void {
+    $i->wantTo('Leave the automation listing with a single Back press');
+    $automationName = 'Back button automation ' . uniqid();
+    (new DataFactories\Automation())->withName($automationName)->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Forms');
+    $i->waitForText('Forms');
+    $i->click('Automations', '#adminmenu .toplevel_page_mailpoet-homepage');
+    $i->waitForText($automationName, 20, '[data-automation-id="automation_listing"]');
+
+    $i->moveBack();
+    $i->waitForJS('return window.location.search.includes("page=mailpoet-forms");', 10);
+  }
+
+  public function backButtonLeavesListingPageAfterOnePress(AcceptanceTester $i): void {
+    $i->wantTo('Open the second listing page and leave it with a single Back press');
+    $uniqueId = uniqid();
+    (new DataFactories\Automation())->withName('Paged automation A ' . $uniqueId)->create();
+    (new DataFactories\Automation())->withName('Paged automation B ' . $uniqueId)->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Forms');
+    $i->waitForText('Forms');
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-automation&status=all&orderby=name&order=asc&per_page=1&paged=2');
+    $i->waitForText('Paged automation B ' . $uniqueId, 20, '[data-automation-id="automation_listing"]');
+    $i->dontSee('Paged automation A ' . $uniqueId, '[data-automation-id="automation_listing"]');
+    $i->seeInCurrentUrl('paged=2');
+
+    $i->moveBack();
+    $i->waitForJS('return window.location.search.includes("page=mailpoet-forms");', 10);
+  }
+
+  public function backButtonUndoesListingSort(AcceptanceTester $i): void {
+    $i->wantTo('Undo a sort change on the automation listing with the Back button');
+    $automationName = 'Sort automation ' . uniqid();
+    (new DataFactories\Automation())->withName($automationName)->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Forms');
+    $i->waitForText('Forms');
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-automation&status=all');
+    $i->waitForText($automationName, 20, '[data-automation-id="automation_listing"]');
+
+    $nameHeaderButton = ['xpath' => '//th//button[contains(@class, "dataviews-view-table-header-button")][contains(normalize-space(.), "Name")]'];
+    $sortDescendingItem = ['xpath' => '//*[@role="menuitem" or @role="menuitemradio"][contains(normalize-space(.), "Sort descending")]'];
+    $i->click($nameHeaderButton);
+    $i->waitForElementClickable($sortDescendingItem);
+    $i->click($sortDescendingItem);
+    $i->waitForJS('return window.location.search.includes("orderby=name");', 10);
+
+    $i->moveBack();
+    $i->waitForJS('return window.location.search === "?page=mailpoet-automation&status=all";', 10);
+    $i->waitForText($automationName, 20, '[data-automation-id="automation_listing"]');
+  }
+
   private function assertNoHorizontalOverflow(AcceptanceTester $i): void {
     $overflow = $i->executeJS('return document.documentElement.scrollWidth - document.documentElement.clientWidth;');
     Assert::assertLessThanOrEqual(0, $overflow, 'The page should not scroll horizontally');

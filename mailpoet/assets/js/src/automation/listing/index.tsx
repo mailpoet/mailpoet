@@ -86,7 +86,9 @@ function getViewFromSearch(
     ...defaultView,
     page: parsePositiveInt(search.get('paged')) ?? defaultView.page,
     perPage: parsePositiveInt(search.get('per_page')) ?? defaultView.perPage,
-    search: search.get('search') ?? undefined,
+    // DataViews syncs an undefined search to '' through onChangeView on
+    // mount, which resets the page to 1 and pushes a history entry.
+    search: search.get('search') ?? '',
     sort:
       orderby && (order === 'asc' || order === 'desc')
         ? { field: orderby, direction: order }
