@@ -4,7 +4,10 @@ namespace MailPoet\Test\Subscribers\RestApi;
 
 use MailPoet\API\REST\ApiException;
 use MailPoet\API\REST\ListingRequestValidationTrait;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\RestApi\SubscribersFilterTrait;
+use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SubscriberListingRepository;
 
 class SubscribersFilterTraitTest extends \MailPoetUnitTest {
   /** @var \Closure(mixed): void */
@@ -37,6 +40,17 @@ class SubscribersFilterTraitTest extends \MailPoetUnitTest {
    */
   public function testItAcceptsValidFilters($filters): void {
     ($this->check)($filters);
+    $this->addToAssertionCount(1);
+  }
+
+  public function testItAcceptsEverySharedSourceAndStatus(): void {
+    foreach (Source::ALL as $source) {
+      ($this->check)(['source_in' => [$source], 'source_not_in' => [$source]]);
+    }
+    foreach (SubscriberListingRepository::SUPPORTED_STATUSES as $status) {
+      ($this->check)(['status_in' => [$status], 'status_not_in' => [$status], 'statusInclude' => $status, 'statusExclude' => [$status]]);
+    }
+    verify(SubscriberListingRepository::SUPPORTED_STATUSES)->arrayContains(SubscriberEntity::STATUS_SUBSCRIBED);
     $this->addToAssertionCount(1);
   }
 
