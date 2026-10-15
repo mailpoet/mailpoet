@@ -229,12 +229,16 @@ function datesToFilter(
   return null;
 }
 
-// A lone score_min / score_max (inclusive, URL-only) has no matching native
-// operator and is dropped.
+// A lone bound becomes a half-filled "between": DataViews stores the empty
+// side as an empty string.
 function scoreToFilter(filter: SubscribersRequestFilter): Filter | null {
   const { score_min: min, score_max: max, score_gt: gt, score_lt: lt } = filter;
-  if (min !== undefined && max !== undefined) {
-    return { field: SCORE_FIELD, operator: 'between', value: [min, max] };
+  if (min !== undefined || max !== undefined) {
+    return {
+      field: SCORE_FIELD,
+      operator: 'between',
+      value: [min ?? '', max ?? ''],
+    };
   }
   if (gt !== undefined) {
     return { field: SCORE_FIELD, operator: 'greaterThan', value: gt };
