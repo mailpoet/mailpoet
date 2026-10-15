@@ -49,13 +49,12 @@ const useCreateFromTemplate = () => {
       MailPoet.trackEvent('Automations > Template selected', {
         'Automation slug': slug,
       });
+      // keep loading until the page unloads, so the automation can't be created again
       window.location.href = addQueryArgs(MailPoet.urls.automationEditor, {
         id: data.data.id,
       });
     } catch (error) {
-      setState((prevState) => ({ ...prevState, error }));
-    } finally {
-      setState((prevState) => ({ ...prevState, loading: false }));
+      setState((prevState) => ({ ...prevState, error, loading: false }));
     }
   }, []);
 
@@ -80,6 +79,9 @@ export const TemplateDetail = forwardRef<HTMLDivElement, Props>(
         className="mailpoet-automation-template-detail"
         title=""
         onRequestClose={onRequestClose}
+        isDismissible={!loading}
+        shouldCloseOnEsc={!loading}
+        shouldCloseOnClickOutside={!loading}
       >
         <div className="mailpoet-automation-template-detail-content">
           <div className="mailpoet-automation-template-detail-info">
