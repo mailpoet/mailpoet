@@ -1,5 +1,5 @@
 import type { Filter } from '@wordpress/dataviews';
-import { dateRangeFromFilter, normalizeYmd } from 'common/dataviews';
+import { dateRangeFromFilter, normalizeYmd, shiftYmd } from 'common/dataviews';
 import { toFiniteNumber } from 'segments/static/filters';
 
 export const STATUS_FIELD = 'status';
@@ -218,13 +218,13 @@ function datesToFilter(
       ? { field, operator: 'on', value: from }
       : { field, operator: 'between', value: [from, to] };
   }
-  // Stored boundaries are inclusive whole days, so seed the inclusive operators;
-  // the exclusive `after`/`before` would shift the day on re-serialize.
+  // The date fields offer only the exclusive `after`/`before`, so undo the
+  // one-day shift that `dateRangeFromFilter` applies to them.
   if (from) {
-    return { field, operator: 'afterInc', value: from };
+    return { field, operator: 'after', value: shiftYmd(from, -1) };
   }
   if (to) {
-    return { field, operator: 'beforeInc', value: to };
+    return { field, operator: 'before', value: shiftYmd(to, 1) };
   }
   return null;
 }
