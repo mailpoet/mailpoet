@@ -299,6 +299,54 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
     verify($message)->stringNotContainsString('example.com');
   }
 
+  public function testItUsesParentSenderToHideHistoryCopyOnVerifiedDomain() {
+    $this->tasksRepository->method('findPausedForSenderDomain')->willReturn([
+      $this->makeTask(9, 'Digest', 'old@example.com', NewsletterEntity::TYPE_NOTIFICATION_HISTORY, 4, 'news@verified.com'),
+    ]);
+
+    $notice = $this->createNotice($this->createDomainController(true, ['verified.com'], true));
+
+    verify($notice->init(true))->null();
+  }
+
+  public function testItUsesParentSenderForHistoryCopyGroupingAndButton() {
+    $this->tasksRepository->method('findPausedForSenderDomain')->willReturn([
+      $this->makeTask(9, 'Digest', 'old@example.com', NewsletterEntity::TYPE_NOTIFICATION_HISTORY, 4, 'news@other.com'),
+    ]);
+
+    $notice = $this->createNotice($this->createDomainController(true, ['verified.com'], true));
+    $result = $notice->init(true);
+
+    $this->assertInstanceOf(Notice::class, $result);
+    $message = $result->getMessage();
+    verify($message)->stringContainsString('authenticate other.com');
+    verify($message)->stringContainsString('data-email="news@other.com"');
+    verify($message)->stringNotContainsString('example.com');
+    verify($notice->getListedDomains())->equals(['other.com']);
+  }
+
+  public function testItUsesParentSenderForFreeMailDetection() {
+    $this->tasksRepository->method('findPausedForSenderDomain')->willReturn([
+      $this->makeTask(9, 'Digest', 'old@example.com', NewsletterEntity::TYPE_NOTIFICATION_HISTORY, 4, 'me@gmail.com'),
+    ]);
+
+    $notice = $this->createNotice()->init(true);
+
+    $this->assertInstanceOf(Notice::class, $notice);
+    verify($notice->getMessage())->stringContainsString('instead of gmail.com');
+  }
+
+  public function testItFallsBackToOwnSenderForHistoryCopyWithoutParent() {
+    $this->tasksRepository->method('findPausedForSenderDomain')->willReturn([
+      $this->makeTask(9, 'Digest', 'old@example.com', NewsletterEntity::TYPE_NOTIFICATION_HISTORY),
+    ]);
+
+    $notice = $this->createNotice()->init(true);
+
+    $this->assertInstanceOf(Notice::class, $notice);
+    verify($notice->getMessage())->stringContainsString('authenticate example.com');
+  }
+
   private function render(Notice $notice): string {
     ob_start();
     $notice->displayWPNotice();
@@ -337,7 +385,7 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
     return $controller;
   }
 
-  private function makeTask(int $newsletterId, string $subject, string $senderAddress, string $type = NewsletterEntity::TYPE_STANDARD, ?int $parentId = null): ScheduledTaskEntity {
+  private function makeTask(int $newsletterId, string $subject, string $senderAddress, string $type = NewsletterEntity::TYPE_STANDARD, ?int $parentId = null, ?string $parentSenderAddress = null): ScheduledTaskEntity {
     $newsletter = $this->createMock(NewsletterEntity::class);
     $newsletter->method('getId')->willReturn($newsletterId);
     $newsletter->method('getCampaignNameOrSubject')->willReturn($subject);
@@ -346,6 +394,7 @@ class SenderDomainPausedCampaignsNoticeTest extends \MailPoetTest {
     if ($parentId !== null) {
       $parent = $this->createMock(NewsletterEntity::class);
       $parent->method('getId')->willReturn($parentId);
+      $parent->method('getSenderAddress')->willReturn($parentSenderAddress);
       $newsletter->method('getParent')->willReturn($parent);
     }
     $queue = $this->createMock(\MailPoet\Entities\SendingQueueEntity::class);
