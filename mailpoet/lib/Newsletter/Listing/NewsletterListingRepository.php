@@ -12,6 +12,8 @@ use MailPoet\Listing\ListingRepository;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class NewsletterListingRepository extends ListingRepository {
@@ -42,6 +44,17 @@ class NewsletterListingRepository extends ListingRepository {
     NewsletterEntity::TYPE_NOTIFICATION,
     NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
   ];
+
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(
+    EntityManager $entityManager,
+    WPFunctions $wp
+  ) {
+    parent::__construct($entityManager);
+    $this->wp = $wp;
+  }
 
   /**
    * @return string[]
@@ -178,7 +191,7 @@ class NewsletterListingRepository extends ListingRepository {
     $options = [];
     foreach ($statuses as $status) {
       $options[] = [
-        'label' => sprintf('%s (%s)', $labels[$status], number_format($counts[$status] ?? 0)),
+        'label' => sprintf('%s (%s)', $labels[$status], $this->wp->numberFormatI18n($counts[$status] ?? 0)),
         'value' => $status,
       ];
     }
