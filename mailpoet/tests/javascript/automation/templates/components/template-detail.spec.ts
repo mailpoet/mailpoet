@@ -34,6 +34,7 @@ type FakeButtonProps = {
   disabled?: boolean;
   accessibleWhenDisabled?: boolean;
   isBusy?: boolean;
+  variant?: string;
   onClick?: () => void;
   'aria-label'?: string;
 };
@@ -58,7 +59,11 @@ let apiFetchStub: sinon.SinonStub;
 let navigationAttempts: number;
 let modalDismissal: Omit<FakeModalProps, 'children'>;
 
-const template: Template = {
+// created automations are remembered per template slug for the whole page,
+// so every test uses its own slug
+let templateCount = 0;
+let template: Template;
+const baseTemplate: Template = {
   slug: 'subscriber-welcome-email',
   name: 'Welcome new subscribers',
   description: 'Send a welcome email.',
@@ -96,6 +101,7 @@ function FakeButton({
   disabled = false,
   accessibleWhenDisabled = false,
   isBusy = false,
+  variant = undefined,
   onClick = undefined,
   'aria-label': ariaLabel,
 }: FakeButtonProps): JSX.Element {
@@ -106,6 +112,7 @@ function FakeButton({
       'aria-label': ariaLabel,
       'aria-disabled': focusableWhenDisabled ? 'true' : undefined,
       'data-busy': isBusy ? 'true' : 'false',
+      'data-variant': variant,
       disabled: disabled && !accessibleWhenDisabled,
       onClick: focusableWhenDisabled ? undefined : onClick,
       type: 'button',
@@ -225,6 +232,10 @@ const getButton = (label: string): HTMLButtonElement =>
       button.getAttribute('aria-label') === label,
   );
 
+// Start building is the only primary button
+const getStartBuilding = (): HTMLButtonElement =>
+  document.querySelector('button[data-variant="primary"]');
+
 const isDisabled = (button: HTMLButtonElement): boolean =>
   button.disabled || button.getAttribute('aria-disabled') === 'true';
 
@@ -238,7 +249,7 @@ const pressKey = async (key: string) => {
 
 const clickStartBuilding = async () => {
   await React.act(async () => {
-    getButton('Start building').dispatchEvent(
+    getStartBuilding().dispatchEvent(
       new window.MouseEvent('click', { bubbles: true }),
     );
     await Promise.resolve();
@@ -261,6 +272,11 @@ describe('automation template detail', function templateDetail() {
   beforeEach(() => {
     apiFetchStub = sinon.stub();
     navigationAttempts = 0;
+    templateCount += 1;
+    template = {
+      ...baseTemplate,
+      slug: `${baseTemplate.slug}-${templateCount}`,
+    };
   });
 
   afterEach(async () => {
@@ -286,32 +302,28 @@ describe('automation template detail', function templateDetail() {
     ].forEach((property) => Reflect.deleteProperty(global, property));
   });
 
-  it('keeps the buttons disabled and the modal open while redirecting to the editor', async () => {
+  it('keeps Start building busy while redirecting to the editor', async () => {
     apiFetchStub.resolves({ data: { id: '123' } });
 
     await render();
-    expect(isModalClosable()).to.equal(true);
     await clickStartBuilding();
 
     expect(apiFetchStub.calledOnce).to.equal(true);
     expect(apiFetchStub.firstCall.args[0]).to.deep.include({
       path: '/automations/create-from-template',
       method: 'POST',
-      data: { slug: 'subscriber-welcome-email' },
+      data: { slug: template.slug },
     });
     expect(navigationAttempts).to.equal(1);
 
-    const startBuilding = getButton('Start building');
+    const startBuilding = getStartBuilding();
     expect(isDisabled(startBuilding)).to.equal(true);
     expect(startBuilding.getAttribute('data-busy')).to.equal('true');
-    expect(getButton('Cancel').disabled).to.equal(true);
     expect(getButton('Previous template').disabled).to.equal(true);
     expect(getButton('Next template').disabled).to.equal(true);
-    expect(modalDismissal).to.deep.equal({
-      isDismissible: false,
-      shouldCloseOnEsc: false,
-      shouldCloseOnClickOutside: false,
-    });
+    // the user can still leave the modal if the editor doesn't open
+    expect(getButton('Cancel').disabled).to.equal(false);
+    expect(isModalClosable()).to.equal(true);
 
     await clickStartBuilding();
 
@@ -330,13 +342,12 @@ describe('automation template detail', function templateDetail() {
     );
     expect(navigationAttempts).to.equal(0);
 
-    const startBuilding = getButton('Start building');
+    const startBuilding = getStartBuilding();
     expect(isDisabled(startBuilding)).to.equal(false);
     expect(startBuilding.getAttribute('data-busy')).to.equal('false');
     expect(getButton('Cancel').disabled).to.equal(false);
     expect(getButton('Previous template').disabled).to.equal(false);
     expect(getButton('Next template').disabled).to.equal(false);
-    expect(isModalClosable()).to.equal(true);
 
     await clickStartBuilding();
 
@@ -355,7 +366,7 @@ describe('automation template detail', function templateDetail() {
 
     // a disabled button would drop focus to the body, so Escape would no
     // longer reach the modal after an error
-    const startBuilding = getButton('Start building');
+    const startBuilding = getStartBuilding();
     expect(startBuilding.disabled).to.equal(false);
     expect(startBuilding.getAttribute('aria-disabled')).to.equal('true');
   });
@@ -394,5 +405,44 @@ describe('automation template detail', function templateDetail() {
     await pressKey('ArrowRight');
 
     expect(clicks).to.deep.equal({ previous: 0, next: 0 });
+  });
+
+  it('opens the created automation after the modal was closed and reopened', async () => {
+    apiFetchStub.resolves({ data: { id: '123' } });
+
+    await render();
+    await clickStartBuilding();
+    await React.act(async () => {
+      root.unmount();
+    });
+    await render();
+    await clickStartBuilding();
+
+    expect(apiFetchStub.calledOnce).to.equal(true);
+    expect(navigationAttempts).to.equal(2);
+  });
+
+  it('waits for a pending create after the modal was closed and reopened', async () => {
+    let resolveCreate: (value: unknown) => void = () => undefined;
+    apiFetchStub.returns(
+      new Promise((resolve) => {
+        resolveCreate = resolve;
+      }),
+    );
+
+    await render();
+    await clickStartBuilding();
+    await React.act(async () => {
+      root.unmount();
+    });
+    await render();
+    await clickStartBuilding();
+    await React.act(async () => {
+      resolveCreate({ data: { id: '123' } });
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(apiFetchStub.calledOnce).to.equal(true);
   });
 });
