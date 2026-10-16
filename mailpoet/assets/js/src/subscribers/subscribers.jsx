@@ -12,11 +12,12 @@ import {
   restoreStrippedLocationHash,
   ErrorBoundary,
 } from 'common';
+import { ROUTER_FUTURE_FLAGS } from 'common/router-future-flags';
 
 function App() {
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
-      <HashRouter>
+      <HashRouter future={ROUTER_FUTURE_FLAGS}>
         <GlobalNotices />
         <Notices />
         <Routes>

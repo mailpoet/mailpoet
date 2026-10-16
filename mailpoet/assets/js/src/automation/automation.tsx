@@ -7,6 +7,7 @@ import { useSelect } from '@wordpress/data';
 import { registerTranslations } from 'common';
 import { GlobalNotices } from 'notices/global-notices';
 import { MssAccessNotices } from 'notices/mss-access-notices';
+import { ROUTER_FUTURE_FLAGS } from 'common/router-future-flags';
 import { initializeApi } from './api';
 import { legacyAutomationCount } from './config';
 import { createStore, storeName } from './listing/store';
@@ -85,6 +86,7 @@ function App(): JSX.Element {
   return (
     <SlotFillProvider>
       <BrowserRouter
+        future={ROUTER_FUTURE_FLAGS}
         basename={new URL(MailPoet.urls.automationListing).pathname}
       >
         <Automations />

@@ -11,6 +11,7 @@ import {
   restoreStrippedLocationHash,
   withBoundary,
 } from 'common';
+import { ROUTER_FUTURE_FLAGS } from 'common/router-future-flags';
 
 const container = document.getElementById('static_segments_container');
 const FormWithBoundary = withBoundary(SegmentForm);
@@ -19,7 +20,7 @@ const ListWithBoundary = withBoundary(SegmentList);
 function App(): JSX.Element {
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
-      <HashRouter>
+      <HashRouter future={ROUTER_FUTURE_FLAGS}>
         <GlobalNotices />
         <Notices />
         <Routes>
