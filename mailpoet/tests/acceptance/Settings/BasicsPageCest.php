@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Test\DataFactories\Settings;
 
@@ -100,6 +101,31 @@ class BasicsPageCest {
     $i->waitForText($postTitle);
     $i->click($postTitle);
     $i->dontSee($optinMessage);
+  }
+
+  public function editSubscribeInCommentsLabel(\AcceptanceTester $i) {
+    $labelField = '[data-automation-id="subscribe-on_comment-label"]';
+    $i->login();
+    $i->amOnMailPoetPage('Settings');
+    $i->click('[data-automation-id="subscribe-on_comment-checkbox"]');
+    $i->waitForElementVisible($labelField);
+
+    $i->wantTo('Clear the label field and see it stays empty');
+    $i->pressKey($labelField, [WebDriverKeys::CONTROL, 'a'], WebDriverKeys::BACKSPACE);
+    $i->seeInField($labelField, '');
+
+    $i->wantTo('Type a new label and see it saved');
+    $i->pressKey($labelField, 'Join our list');
+    $i->click('[data-automation-id="settings-submit-button"]');
+    $i->waitForText('Settings saved');
+    $i->reloadPage();
+    $i->waitForElementVisible($labelField);
+    $i->seeInField($labelField, 'Join our list');
+
+    $i->wantTo('Leave the label field blank and see the default label restored');
+    $i->pressKey($labelField, [WebDriverKeys::CONTROL, 'a'], WebDriverKeys::BACKSPACE);
+    $i->click('[data-automation-id="from-name-field"]');
+    $i->seeInField($labelField, 'Yes, add me to your mailing list');
   }
 
   public function checkSenderFreemailWarning(\AcceptanceTester $i) {

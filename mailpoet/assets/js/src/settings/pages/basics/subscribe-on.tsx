@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { t, onChange } from 'common/functions';
 import { Checkbox } from 'common/form/checkbox/checkbox';
 import { Input } from 'common/form/input/input';
@@ -15,9 +14,9 @@ export function SubscribeOn({ title, description, event }: Props) {
   const [enabled, setEnabled] = useSetting('subscribe', event, 'enabled');
   const [label, setLabel] = useSetting('subscribe', event, 'label');
   const [segments, setSegments] = useSetting('subscribe', event, 'segments');
-  useEffect(() => {
-    if (label === '') setLabel(t('yesAddMe'));
-  }, [label, setLabel]);
+  const restoreDefaultLabel = () => {
+    if (label.trim() === '') setLabel(t('yesAddMe'));
+  };
 
   return (
     <>
@@ -39,8 +38,10 @@ export function SubscribeOn({ title, description, event }: Props) {
             <Input
               dimension="small"
               type="text"
+              data-automation-id={`subscribe-${event}-label`}
               value={label}
               onChange={onChange(setLabel)}
+              onBlur={restoreDefaultLabel}
             />
             <label
               className="mailpoet-settings-inputs-row"
