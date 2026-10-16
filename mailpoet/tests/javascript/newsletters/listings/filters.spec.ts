@@ -1,5 +1,6 @@
 import type { Filter } from '@wordpress/dataviews';
 import {
+  getAllowedSortIds,
   getAllowedStatuses,
   hashFilterToRequestFilter,
   requestFilterToHashFilter,
@@ -135,13 +136,16 @@ describe('newsletter listing filters', () => {
       ).to.deep.equal({ sent_at_to: '2026-01-31' });
     });
 
-    it('drops an invalid or reversed date range', () => {
+    it('drops an invalid date', () => {
       expect(
         viewFiltersToRequestFilter(
           [{ field: 'sent_at', operator: 'on', value: 'nope' }],
           [],
         ),
       ).to.deep.equal({});
+    });
+
+    it('swaps a reversed date range', () => {
       expect(
         viewFiltersToRequestFilter(
           [
@@ -152,6 +156,21 @@ describe('newsletter listing filters', () => {
             },
           ],
           [],
+        ),
+      ).to.deep.equal({
+        sent_at_from: '2026-02-01',
+        sent_at_to: '2026-03-01',
+      });
+    });
+
+    it('yields no request filter for filters without a value yet', () => {
+      expect(
+        viewFiltersToRequestFilter(
+          [
+            { field: 'segments', operator: 'isAny', value: [] },
+            { field: 'status', operator: 'isAny', value: undefined },
+          ],
+          standardStatuses,
         ),
       ).to.deep.equal({});
     });
@@ -293,13 +312,16 @@ describe('newsletter listing filters', () => {
       );
     });
 
-    it('drops the date range when from is after to', () => {
+    it('swaps the date range when from is after to', () => {
       expect(
         hashFilterToRequestFilter(
           { sent_from: '2026-02-01', sent_to: '2026-01-01' },
           [],
         ),
-      ).to.deep.equal({});
+      ).to.deep.equal({
+        sent_at_from: '2026-01-01',
+        sent_at_to: '2026-02-01',
+      });
     });
 
     it('keeps a valid single bound', () => {
@@ -336,6 +358,26 @@ describe('newsletter listing filters', () => {
 
     it('returns an empty object for an empty filter', () => {
       expect(requestFilterToHashFilter({})).to.deep.equal({});
+    });
+
+    it('round-trips each sent on operator through the request and hash', () => {
+      const views: Filter[] = [
+        { field: 'sent_at', operator: 'on', value: '2026-01-05' },
+        { field: 'sent_at', operator: 'beforeInc', value: '2026-01-05' },
+        { field: 'sent_at', operator: 'afterInc', value: '2026-01-05' },
+        {
+          field: 'sent_at',
+          operator: 'between',
+          value: ['2026-01-01', '2026-01-31'],
+        },
+      ];
+      views.forEach((view) => {
+        const request = viewFiltersToRequestFilter([view], []);
+        const hash = requestFilterToHashFilter(request);
+        expect(
+          requestFilterToViewFilters(hashFilterToRequestFilter(hash, [])),
+        ).to.deep.equal([view]);
+      });
     });
 
     it('round-trips comma lists through buildHash and parseHash', () => {
@@ -435,6 +477,33 @@ describe('newsletter listing filters', () => {
         sanitizeSort({ field: 'bogus', direction: 'asc' }, ['name'], fallback),
       ).to.equal(fallback);
       expect(sanitizeSort(undefined, ['name'], fallback)).to.equal(fallback);
+    });
+  });
+
+  describe('getAllowedSortIds', () => {
+    it('adds the endpoint sort fields to the sortable columns', () => {
+      const ids = getAllowedSortIds(['subject', 'custom']);
+      expect(ids).to.include.members([
+        'custom',
+        'id',
+        'name',
+        'status',
+        'sent_at',
+        'updated_at',
+      ]);
+      expect(ids).to.include('created_at');
+      expect(ids.filter((id) => id === 'subject')).to.have.length(1);
+      expect(ids).to.not.include('bogus');
+    });
+
+    it('keeps a bookmarked sort the tab has no column for', () => {
+      const sort = { field: 'updated_at', direction: 'asc' as const };
+      expect(
+        sanitizeSort(sort, getAllowedSortIds(['name']), {
+          field: 'sent_at',
+          direction: 'desc',
+        }),
+      ).to.equal(sort);
     });
   });
 

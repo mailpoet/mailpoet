@@ -1,10 +1,13 @@
 import type { Field } from '@wordpress/dataviews';
 import type { NewsletterListingItem } from '../../../../assets/js/src/newsletters/api';
 import {
+  ACTIVATION_STATUS_ELEMENTS,
   applyFilterConfig,
   buildSegmentElements,
   getSegmentFilterIds,
   getStatusFilterValue,
+  SENT_AT_OPERATORS,
+  statusElements,
 } from '../../../../assets/js/src/newsletters/listings/listing-fields';
 
 type Row = NewsletterListingItem;
@@ -28,6 +31,33 @@ describe('newsletters/listings/listing-fields', () => {
 
     it('returns an empty list without a segments filter', () => {
       expect(getSegmentFilterIds(undefined)).to.deep.equal([]);
+    });
+  });
+
+  describe('SENT_AT_OPERATORS', () => {
+    it('only offers operators that map one-to-one onto the hash', () => {
+      expect([...SENT_AT_OPERATORS]).to.deep.equal([
+        'on',
+        'beforeInc',
+        'afterInc',
+        'between',
+      ]);
+    });
+  });
+
+  describe('status elements', () => {
+    it('builds the elements from the status values', () => {
+      expect(statusElements(['sending', 'sent'])).to.deep.equal([
+        { value: 'sending', label: 'Sending' },
+        { value: 'sent', label: 'Sent' },
+      ]);
+    });
+
+    it('labels the draft activation status as not active', () => {
+      expect(ACTIVATION_STATUS_ELEMENTS).to.deep.equal([
+        { value: 'active', label: 'Active' },
+        { value: 'draft', label: 'Not active' },
+      ]);
     });
   });
 

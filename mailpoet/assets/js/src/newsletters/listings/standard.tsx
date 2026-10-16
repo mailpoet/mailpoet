@@ -32,11 +32,12 @@ import {
   type NewsletterMailerLog,
 } from './newsletters-listing';
 import {
-  SEGMENT_OPERATORS,
+  segmentsFieldBase,
   SENT_AT_OPERATORS,
   getStatusFilterValue,
   statusElements,
 } from './listing-fields';
+import { getAllowedStatuses } from './filters';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
@@ -117,27 +118,14 @@ function buildFields(
       enableSorting: true,
       enableGlobalSearch: false,
       getValue: ({ item }) => getStatusFilterValue(item),
-      elements: statusElements([
-        'draft',
-        'scheduled',
-        'sending',
-        'paused',
-        'sent',
-      ]),
+      elements: statusElements(getAllowedStatuses('standard', 'all')),
       filterBy: { operators: ['isAny'] },
       render: ({ item }) => (
         <QueueStatus newsletter={asNewsLetter(item)} mailerLog={mailerLog} />
       ),
     },
     {
-      id: 'segments',
-      label: __('Lists', 'mailpoet'),
-      type: 'text',
-      enableSorting: false,
-      enableGlobalSearch: false,
-      getValue: ({ item }) =>
-        item.segments.map((segment) => String(segment.id)),
-      filterBy: { operators: [...SEGMENT_OPERATORS] },
+      ...segmentsFieldBase,
       render: ({ item }) => (
         <ErrorBoundary>
           <SegmentTags

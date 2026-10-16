@@ -22,6 +22,7 @@ export type { RestApiConfig, RestApiError } from './rest-listing';
 export {
   dateRangeFromFilter,
   filterToExtraParams,
+  hasOnlyDigits,
   isStrictDateString,
   normalizeYmd,
   type FilterList,

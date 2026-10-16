@@ -19,11 +19,12 @@ import {
   type NewsletterMailerLog,
 } from './newsletters-listing';
 import {
-  SEGMENT_OPERATORS,
+  segmentsFieldBase,
   SENT_AT_OPERATORS,
   getStatusFilterValue,
   statusElements,
 } from './listing-fields';
+import { getAllowedStatuses } from './filters';
 
 // See standard.tsx for the rationale behind widening at the boundary.
 function asNewsLetter(item: NewsletterListingItem): NewsLetter {
@@ -68,21 +69,16 @@ function buildFields(
       enableSorting: true,
       enableGlobalSearch: false,
       getValue: ({ item }) => getStatusFilterValue(item),
-      elements: statusElements(['sending', 'paused', 'sent']),
+      elements: statusElements(
+        getAllowedStatuses('notification_history', 'all'),
+      ),
       filterBy: { operators: ['isAny'] },
       render: ({ item }) => (
         <QueueStatus newsletter={asNewsLetter(item)} mailerLog={mailerLog} />
       ),
     },
     {
-      id: 'segments',
-      label: __('Lists', 'mailpoet'),
-      type: 'text',
-      enableSorting: false,
-      enableGlobalSearch: false,
-      getValue: ({ item }) =>
-        item.segments.map((segment) => String(segment.id)),
-      filterBy: { operators: [...SEGMENT_OPERATORS] },
+      ...segmentsFieldBase,
       render: ({ item }) => (
         <>
           <SegmentTags
