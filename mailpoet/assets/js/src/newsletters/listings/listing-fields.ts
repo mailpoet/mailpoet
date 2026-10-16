@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import type { Field, Filter } from '@wordpress/dataviews';
+import type { Field } from '@wordpress/dataviews';
 import type { ListingFilterOption } from 'common/dataviews/types';
 import type { NewsletterListingItem } from '../api';
 import {
@@ -7,7 +7,6 @@ import {
   SEGMENTS_FIELD,
   SENT_AT_FIELD,
   STATUS_FIELD,
-  toStrings,
 } from './filters';
 
 type Element = { value: string; label: string };
@@ -25,13 +24,10 @@ export const NEWSLETTER_STATUS_ELEMENTS: Record<string, Element> = {
 
 export const SEGMENT_OPERATORS = ['isAny', 'isNone'] as const;
 
-// Every operator maps one-to-one onto the sent_from / sent_to hash keys.
-export const SENT_AT_OPERATORS = [
-  'on',
-  'beforeInc',
-  'afterInc',
-  'between',
-] as const;
+// Every operator survives a round-trip through the sent_from / sent_to hash
+// keys. DataViews starts a new filter on the first one, and `between` is the
+// one whose presets (Past week, Past month) select a range.
+export const SENT_AT_OPERATORS = ['between', 'on', 'before', 'after'] as const;
 
 export function statusElements(
   values: string[],
@@ -44,7 +40,7 @@ export function statusElements(
 }
 
 export const ACTIVATION_STATUS_ELEMENTS: Element[] = statusElements(
-  getAllowedStatuses('notification', 'all'),
+  getAllowedStatuses('notification'),
   { draft: __('Not active', 'mailpoet') },
 );
 
@@ -57,36 +53,22 @@ export function getStatusFilterValue(item: NewsletterListingItem): string {
     : item.status;
 }
 
-export function getSegmentFilterIds(filters: Filter[] | undefined): string[] {
-  const filter = (filters ?? []).find((item) => item.field === SEGMENTS_FIELD);
-  return toStrings(filter?.value);
-}
-
-// Selected ids missing from the options (a deleted list in a bookmark) stay
-// selectable and removable, labelled by their id.
 export function buildSegmentElements(
   options: ListingFilterOption[] | undefined,
-  selectedIds: string[],
 ): Element[] {
-  const elements = (options ?? [])
+  return (options ?? [])
     .filter((option) => String(option.value) !== '')
     .map((option) => ({
       value: String(option.value),
       label: option.label,
     }));
-  selectedIds.forEach((id) => {
-    if (!elements.some((element) => element.value === id)) {
-      elements.push({ value: id, label: id });
-    }
-  });
-  return elements;
 }
 
 // DataViews makes every field filterable by default; only the fields that map
 // to a request filter should be.
 export function applyFilterConfig(
   fields: Field<NewsletterListingItem>[],
-  config: { segmentElements: Element[]; statusEnabled: boolean },
+  config: { segmentElements: Element[]; statusLabels: Record<string, string> },
 ): Field<NewsletterListingItem>[] {
   return fields.map((field) => {
     if (!FILTER_FIELDS.includes(field.id)) return { ...field, filterBy: false };
@@ -95,8 +77,14 @@ export function applyFilterConfig(
         ? { ...field, elements: config.segmentElements }
         : { ...field, filterBy: false };
     }
-    if (field.id === STATUS_FIELD && !config.statusEnabled) {
-      return { ...field, filterBy: false };
+    if (field.id === STATUS_FIELD && field.elements) {
+      return {
+        ...field,
+        elements: field.elements.map((element) => ({
+          ...element,
+          label: config.statusLabels[element.value] ?? element.label,
+        })),
+      };
     }
     return field;
   });

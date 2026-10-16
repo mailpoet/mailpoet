@@ -63,24 +63,43 @@ class SendingStatusCest {
     $i->dontSeeElement($this->rowSelector($taskId, $lucky));
   }
 
-  public function dropsResultFilterOnOtherTabs(\AcceptanceTester $i) {
-    $i->wantTo('Remove the send result filter when leaving the All tab');
+  public function opensLegacyGroupLinkAsResultFilter(\AcceptanceTester $i) {
+    $i->wantTo('Open a legacy sending status group link as a result filter');
     [$newsletter, $lucky, $unlucky, $taskId] = $this->createSentNewsletter();
     $i->login();
-    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/sending-status/' . $newsletter->getId() . '/filter[result=failed]');
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/sending-status/' . $newsletter->getId() . '/group[failed]');
     $i->waitForElement($this->filterChip('Sending status'));
     $i->waitForElement($this->rowSelector($taskId, $unlucky));
     $i->dontSeeElement($this->rowSelector($taskId, $lucky));
+    $i->waitForHashFilterValue('result', 'failed');
+    $i->dontSeeInCurrentUrl('group[');
+    $i->dontSeeElement('.mailpoet-dataviews-group-failed');
+  }
 
-    $i->changeGroupInListingFilter('sent');
+  public function explicitResultFilterWinsOverLegacyGroup(\AcceptanceTester $i) {
+    $i->wantTo('Prefer the result filter over a legacy group in the same link');
+    [$newsletter, $lucky, $unlucky, $taskId] = $this->createSentNewsletter();
+    $i->login();
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/sending-status/' . $newsletter->getId() . '/group[failed]/filter[result=sent]');
     $i->waitForElement($this->rowSelector($taskId, $lucky));
-    $i->waitForElementNotVisible($this->filterChip('Sending status'));
-    $i->dontSeeInCurrentUrl('result=');
+    $i->dontSeeElement($this->rowSelector($taskId, $unlucky));
+    $i->waitForHashFilterValue('result', 'sent');
+  }
 
-    $i->changeGroupInListingFilter('all');
-    $i->waitForElement($this->rowSelector($taskId, $unlucky));
-    $i->seeElement($this->rowSelector($taskId, $lucky));
-    $i->dontSeeElement($this->filterChip('Sending status'));
+  public function showsCountsInResultOptions(\AcceptanceTester $i) {
+    $i->wantTo('See the send result counts in the filter options');
+    [$newsletter, $lucky, $unlucky, $taskId] = $this->createSentNewsletter();
+    $i->login();
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/sending-status/' . $newsletter->getId());
+    $this->checkSubscriber($i, $taskId, $lucky, 'Sent');
+    $i->dontSeeElement('[role="tablist"]');
+    $addFilter = ['xpath' => '//button[@aria-label="Add filter" or normalize-space(.)="Add filter"]'];
+    $i->waitForElementClickable($addFilter);
+    $i->click($addFilter);
+    $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "Sending status")]']);
+    $i->waitForText('Sent (1)');
+    $i->waitForText('Failed (1)');
+    $i->waitForText('Unprocessed (0)');
   }
 
   private function createSentNewsletter(): array {

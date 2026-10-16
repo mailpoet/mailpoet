@@ -4,7 +4,6 @@ import {
   ACTIVATION_STATUS_ELEMENTS,
   applyFilterConfig,
   buildSegmentElements,
-  getSegmentFilterIds,
   getStatusFilterValue,
   SENT_AT_OPERATORS,
   statusElements,
@@ -19,28 +18,15 @@ const field = (id: string, extra: Partial<Field<Row>> = {}): Field<Row> => ({
 });
 
 describe('newsletters/listings/listing-fields', () => {
-  describe('getSegmentFilterIds', () => {
-    it('returns the string ids of the segments filter', () => {
-      expect(
-        getSegmentFilterIds([
-          { field: 'status', operator: 'isAny', value: ['draft'] },
-          { field: 'segments', operator: 'isAny', value: [3, '4'] },
-        ]),
-      ).to.deep.equal(['3', '4']);
-    });
-
-    it('returns an empty list without a segments filter', () => {
-      expect(getSegmentFilterIds(undefined)).to.deep.equal([]);
-    });
-  });
-
   describe('SENT_AT_OPERATORS', () => {
-    it('only offers operators that map one-to-one onto the hash', () => {
+    // DataViews starts a new filter on the first operator; between shows the
+    // range presets, a single-day operator would show none.
+    it('offers the round-tripping operators with between first', () => {
       expect([...SENT_AT_OPERATORS]).to.deep.equal([
-        'on',
-        'beforeInc',
-        'afterInc',
         'between',
+        'on',
+        'before',
+        'after',
       ]);
     });
   });
@@ -64,23 +50,15 @@ describe('newsletters/listings/listing-fields', () => {
   describe('buildSegmentElements', () => {
     it('drops the "All Lists" entry and keeps the others', () => {
       expect(
-        buildSegmentElements(
-          [
-            { label: 'All Lists', value: '' },
-            { label: 'News', value: 2 },
-          ],
-          [],
-        ),
+        buildSegmentElements([
+          { label: 'All Lists', value: '' },
+          { label: 'News', value: 2 },
+        ]),
       ).to.deep.equal([{ label: 'News', value: '2' }]);
     });
 
-    it('adds selected ids that are not in the options', () => {
-      expect(
-        buildSegmentElements([{ label: 'News', value: '2' }], ['2', '9']),
-      ).to.deep.equal([
-        { label: 'News', value: '2' },
-        { label: '9', value: '9' },
-      ]);
+    it('returns no elements without options', () => {
+      expect(buildSegmentElements(undefined)).to.deep.equal([]);
     });
   });
 
@@ -97,7 +75,7 @@ describe('newsletters/listings/listing-fields', () => {
     it('disables filtering on every field that is not a filter', () => {
       const result = applyFilterConfig(fields, {
         segmentElements: elements,
-        statusEnabled: true,
+        statusLabels: {},
       });
       expect(result.find((f) => f.id === 'name')?.filterBy).to.equal(false);
       expect(result.find((f) => f.id === 'statistics')?.filterBy).to.equal(
@@ -114,7 +92,7 @@ describe('newsletters/listings/listing-fields', () => {
     it('sets the segment elements', () => {
       const result = applyFilterConfig(fields, {
         segmentElements: elements,
-        statusEnabled: true,
+        statusLabels: {},
       });
       expect(result.find((f) => f.id === 'segments')?.elements).to.equal(
         elements,
@@ -124,17 +102,39 @@ describe('newsletters/listings/listing-fields', () => {
     it('disables the segments filter when there are no elements', () => {
       const result = applyFilterConfig(fields, {
         segmentElements: [],
-        statusEnabled: true,
+        statusLabels: {},
       });
       expect(result.find((f) => f.id === 'segments')?.filterBy).to.equal(false);
     });
 
-    it('disables the status filter when it is not enabled', () => {
+    it('keeps the status filter enabled', () => {
       const result = applyFilterConfig(fields, {
         segmentElements: elements,
-        statusEnabled: false,
+        statusLabels: {},
       });
-      expect(result.find((f) => f.id === 'status')?.filterBy).to.equal(false);
+      expect(result.find((f) => f.id === 'status')?.filterBy).to.deep.equal({
+        operators: ['isAny'],
+      });
+    });
+
+    it('labels the status options from the response labels', () => {
+      const withElements = [
+        field('status', {
+          filterBy: { operators: ['isAny'] },
+          elements: [
+            { value: 'draft', label: 'Draft' },
+            { value: 'sent', label: 'Sent' },
+          ],
+        }),
+      ];
+      const result = applyFilterConfig(withElements, {
+        segmentElements: elements,
+        statusLabels: { draft: 'Draft (2)' },
+      });
+      expect(result[0].elements).to.deep.equal([
+        { value: 'draft', label: 'Draft (2)' },
+        { value: 'sent', label: 'Sent' },
+      ]);
     });
   });
 

@@ -1,4 +1,3 @@
-import classnames from 'classnames';
 import jQuery from 'jquery';
 import { Link, useParams } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -19,7 +18,6 @@ import {
   usePersistedDataViewsPreference,
   useDataViewsQuery,
   filterToExtraParams,
-  type ListingGroup,
   type ListingQueryParams,
 } from 'common/dataviews';
 import {
@@ -30,12 +28,12 @@ import { formatTimezoneLabel } from 'newsletters/timezone-campaign';
 import { buildHash, parseHash } from 'newsletters/listings/hash-state';
 import {
   RESULT_FIELD,
+  RESULT_VALUES,
   sanitizeSort,
   sendingStatusHashFilterToRequestFilter,
   sendingStatusRequestFilterToHashFilter,
   sendingStatusRequestFilterToViewFilters,
   sendingStatusViewFiltersToRequestFilter,
-  withoutFields,
 } from 'newsletters/listings/filters';
 import {
   getSendingStatusSubscribers,
@@ -46,7 +44,9 @@ import {
 
 const listingPerPage = Number(window.mailpoet_listing_per_page);
 
-const SUPPORTED_GROUPS = ['all', 'sent', 'failed', 'unprocessed'] as const;
+const SUPPORTED_GROUPS = ['all'];
+
+const LEGACY_GROUP_FILTER = { key: 'result', values: RESULT_VALUES };
 
 const SORTABLE_FIELD_IDS = ['subscriberId', RESULT_FIELD];
 
@@ -81,7 +81,7 @@ function StatsLink({ newsletter }: { newsletter: Newsletter }) {
 
 function buildFields(
   includeTimezone: boolean,
-  filterable: boolean,
+  resultLabels: Record<string, string>,
 ): Field<SendingStatusItem>[] {
   const fields: Field<SendingStatusItem>[] = [
     {
@@ -115,7 +115,10 @@ function buildFields(
       },
       elements: (
         Object.keys(statusLabels) as (keyof typeof statusLabels)[]
-      ).map((value) => ({ value, label: statusLabels[value] })),
+      ).map((value) => ({
+        value,
+        label: resultLabels[value] ?? statusLabels[value],
+      })),
       enableSorting: true,
       enableGlobalSearch: false,
       render: ({ item }) => {
@@ -166,9 +169,9 @@ function buildFields(
       ),
     },
   ];
-  // Only the result column maps to a request filter, and only on the All tab.
+  // Only the result column maps to a request filter.
   return fields.map((field) =>
-    field.id === RESULT_FIELD && filterable
+    field.id === RESULT_FIELD
       ? { ...field, filterBy: { operators: ['isAny'] } }
       : { ...field, filterBy: false },
   );
@@ -203,14 +206,21 @@ export function SendingStatus() {
   }, [newsletterId, params.id]);
 
   const hashState = useMemo(
-    () => parseHash(window.location.hash, baseUrl, [...SUPPORTED_GROUPS]),
+    () =>
+      parseHash(
+        window.location.hash,
+        baseUrl,
+        SUPPORTED_GROUPS,
+        LEGACY_GROUP_FILTER,
+      ),
     [baseUrl],
   );
-  const [group, setGroup] = useState<string>(hashState.group ?? 'all');
   const [includeTimezone, setIncludeTimezone] = useState(false);
+  // Result labels carry the counts from the latest response.
+  const [resultLabels, setResultLabels] = useState<Record<string, string>>({});
   const fields = useMemo(
-    () => buildFields(includeTimezone, group === 'all'),
-    [includeTimezone, group],
+    () => buildFields(includeTimezone, resultLabels),
+    [includeTimezone, resultLabels],
   );
 
   const getPreferredView = useCallback(
@@ -252,10 +262,7 @@ export function SendingStatus() {
         DEFAULT_SORT,
       ),
       filters: sendingStatusRequestFilterToViewFilters(
-        sendingStatusHashFilterToRequestFilter(
-          hashState.filter ?? {},
-          (hashState.group ?? 'all') === 'all',
-        ),
+        sendingStatusHashFilterToRequestFilter(hashState.filter ?? {}),
       ),
     };
   });
@@ -264,7 +271,7 @@ export function SendingStatus() {
     async (queryParams: ListingQueryParams, signal?: AbortSignal) => {
       const response = await getSendingStatusSubscribers(
         newsletterId,
-        { ...queryParams, group },
+        { ...queryParams, group: 'all' },
         signal,
       );
       // Keep surfacing mailer / cron problems on every reload; the REST
@@ -280,15 +287,13 @@ export function SendingStatus() {
       checkCronStatus(state);
       return response;
     },
-    [group, newsletterId],
+    [newsletterId],
   );
 
   const toRequestFilter = useCallback(
     (viewFilters: View['filters']) =>
-      group === 'all'
-        ? sendingStatusViewFiltersToRequestFilter(viewFilters)
-        : {},
-    [group],
+      sendingStatusViewFiltersToRequestFilter(viewFilters),
+    [],
   );
 
   const {
@@ -312,6 +317,23 @@ export function SendingStatus() {
     () => toRequestFilter(view.filters),
     [toRequestFilter, view.filters],
   );
+  useEffect(() => {
+    const next = (groups ?? [])
+      .filter((entry) => RESULT_VALUES.includes(entry.name))
+      .reduce<Record<string, string>>(
+        (labels, entry) => ({
+          ...labels,
+          [entry.name]: `${
+            statusLabels[entry.name as keyof typeof statusLabels]
+          } (${Number(entry.count).toLocaleString()})`,
+        }),
+        {},
+      );
+    if (Object.keys(next).length === 0) return;
+    setResultLabels((current) =>
+      JSON.stringify(current) === JSON.stringify(next) ? current : next,
+    );
+  }, [groups]);
   const persistedViewChange = usePersistedDataViewsPreference(
     'sending-status',
     view,
@@ -377,7 +399,7 @@ export function SendingStatus() {
     const preferredView = getPreferredView();
     const hash = buildHash(
       baseUrl,
-      group,
+      'all',
       view,
       sendingStatusRequestFilterToHashFilter(requestFilter),
       {
@@ -389,15 +411,16 @@ export function SendingStatus() {
     if (window.location.hash !== hash) {
       window.history.replaceState(null, '', hash);
     }
-  }, [baseUrl, getPreferredView, group, requestFilter, view]);
+  }, [baseUrl, getPreferredView, requestFilter, view]);
 
   useEffect(() => {
     const applyHash = (): void => {
-      const next = parseHash(window.location.hash, baseUrl, [
-        ...SUPPORTED_GROUPS,
-      ]);
-      const nextGroup = next.group ?? 'all';
-      setGroup(nextGroup);
+      const next = parseHash(
+        window.location.hash,
+        baseUrl,
+        SUPPORTED_GROUPS,
+        LEGACY_GROUP_FILTER,
+      );
       clearError();
       // Fill hash segments the URL omits from the preference-merged defaults
       // (not the in-memory view) so back/forward resolves a URL exactly like
@@ -421,10 +444,7 @@ export function SendingStatus() {
           DEFAULT_SORT,
         ),
         filters: sendingStatusRequestFilterToViewFilters(
-          sendingStatusHashFilterToRequestFilter(
-            next.filter ?? {},
-            nextGroup === 'all',
-          ),
+          sendingStatusHashFilterToRequestFilter(next.filter ?? {}),
         ),
       }));
     };
@@ -440,24 +460,6 @@ export function SendingStatus() {
       jQuery(document).off('heartbeat-tick.mailpoet-sending-status', handler);
     };
   }, [refresh]);
-
-  const handleGroupSelect = useCallback(
-    (nextGroup: string): void => {
-      if (nextGroup === group) return;
-      setGroup(nextGroup);
-      clearError();
-      // The result filter exists only on the All tab; drop it in the same update.
-      setView((currentView) => ({
-        ...currentView,
-        page: 1,
-        filters:
-          nextGroup === 'all'
-            ? currentView.filters
-            : withoutFields(currentView.filters, [RESULT_FIELD]),
-      }));
-    },
-    [clearError, group, setView],
-  );
 
   const resend = useCallback(
     (item: SendingStatusItem): void => {
@@ -494,14 +496,6 @@ export function SendingStatus() {
     [resend],
   );
 
-  const tabs = useMemo(
-    () =>
-      (groups ?? []).filter((entry) =>
-        (SUPPORTED_GROUPS as readonly string[]).includes(entry.name),
-      ),
-    [groups],
-  );
-
   const paginationInfo = useMemo(
     () => ({ totalItems: meta.count, totalPages: meta.pages }),
     [meta],
@@ -513,8 +507,8 @@ export function SendingStatus() {
     newsletter.sent &&
     !isLoading &&
     !loadError &&
-    group === 'all' &&
     !view.search &&
+    Object.keys(requestFilter).length === 0 &&
     meta.count === 0;
 
   return (
@@ -549,40 +543,6 @@ export function SendingStatus() {
         </Notice>
       )}
 
-      <div className="mailpoet-categories mailpoet-dataviews__tabs">
-        <div className="components-tab-panel__tabs" role="tablist">
-          {tabs.map((entry: ListingGroup) => {
-            const tabClasses = classnames(
-              'components-button',
-              'components-tab-panel__tabs-item',
-              `mailpoet-dataviews-group-${entry.name}`,
-              { 'is-active': entry.name === group },
-            );
-            return (
-              <a
-                key={entry.name}
-                href="#"
-                role="tab"
-                aria-selected={entry.name === group}
-                className={tabClasses}
-                data-automation-id={`filters_${entry.name}`}
-                onClick={(event) => {
-                  event.preventDefault();
-                  handleGroupSelect(entry.name);
-                }}
-              >
-                <span data-title={entry.label}>{entry.label}</span>
-                {Number(entry.count) > 0 && (
-                  <span className="count">
-                    {Number(entry.count).toLocaleString()}
-                  </span>
-                )}
-              </a>
-            );
-          })}
-        </div>
-      </div>
-
       <div
         className="mailpoet-dataviews mailpoet-listing"
         data-automation-id="sending_status_listing"
@@ -606,7 +566,7 @@ export function SendingStatus() {
               <DataViews.ViewConfig />
             </div>
           </div>
-          <DataViews.Filters />
+          <DataViews.Filters className="mailpoet-dataviews__filters" />
           <DataViews.Layout />
           <DataViews.Footer />
         </DataViews>

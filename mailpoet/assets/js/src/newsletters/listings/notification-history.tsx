@@ -12,7 +12,6 @@ import { addStatsCTAAction } from 'newsletters/listings/utils.jsx';
 import type { NewsLetter } from 'common/newsletter';
 import { onNewslettersListingExtras, type NewsletterListingItem } from '../api';
 import {
-  NOTIFICATION_HISTORY_GROUPS,
   NewslettersListing,
   toNewsletterMailerLog,
   type ListingActionHelpers,
@@ -69,9 +68,7 @@ function buildFields(
       enableSorting: true,
       enableGlobalSearch: false,
       getValue: ({ item }) => getStatusFilterValue(item),
-      elements: statusElements(
-        getAllowedStatuses('notification_history', 'all'),
-      ),
+      elements: statusElements(getAllowedStatuses('notification_history')),
       filterBy: { operators: ['isAny'] },
       render: ({ item }) => (
         <QueueStatus newsletter={asNewsLetter(item)} mailerLog={mailerLog} />
@@ -199,7 +196,6 @@ function NewsletterListNotificationHistoryComponent({
         ]}
         defaultSort={{ field: 'sent_at', direction: 'desc' }}
         itemActions={itemActions}
-        supportedGroups={NOTIFICATION_HISTORY_GROUPS}
       />
     </>
   );

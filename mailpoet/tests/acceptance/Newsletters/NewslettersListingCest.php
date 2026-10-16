@@ -178,15 +178,20 @@ class NewslettersListingCest {
     $i->wantTo('Open the legacy hash links');
     $segment = (new Segment())->withName('Legacy list')->create();
     $sentInList = (new Newsletter())->withSubject('Legacy sent in list')->withSentStatus()->withSegments([$segment])->create();
+    $draftInList = (new Newsletter())->withSubject('Legacy draft in list')->withDraftStatus()->withSegments([$segment])->create();
     $sentNoList = (new Newsletter())->withSubject('Legacy sent no list')->withSentStatus()->create();
     $trashed = (new Newsletter())->withSubject('Legacy trashed')->withDraftStatus()->withDeleted()->create();
 
     $i->login();
     $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/standard/group[sent]/filter[segment=' . $segment->getId() . ']');
-    $i->waitForElement('.mailpoet-dataviews-group-sent.is-active');
-    $i->waitForElement('[data-automation-id="listing_item_' . $sentInList->getId() . '"]');
+    $i->waitForElement('.mailpoet-dataviews-group-all.is-active');
+    $i->waitForElement($this->filterChip('Status'));
     $i->waitForElement($this->filterChip('Lists'));
+    $i->waitForElement('[data-automation-id="listing_item_' . $sentInList->getId() . '"]');
+    $i->dontSeeElement('[data-automation-id="listing_item_' . $draftInList->getId() . '"]');
     $i->dontSeeElement('[data-automation-id="listing_item_' . $sentNoList->getId() . '"]');
+    $i->waitForHashFilterValue('status', 'sent');
+    $i->dontSeeElement('.mailpoet-dataviews-group-sent');
 
     $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/standard/group[trash]');
     $i->waitForElement('.mailpoet-dataviews-group-trash.is-active');
@@ -194,29 +199,125 @@ class NewslettersListingCest {
     $i->seeElement('[data-automation-id="empty_trash"]');
   }
 
-  public function dropStatusFilterOnOtherTabs(\AcceptanceTester $i) {
-    $i->wantTo('Remove the status filter when switching to a status tab');
-    $segment = (new Segment())->withName('Tab list')->create();
-    $draft = (new Newsletter())->withSubject('Tab draft')->withDraftStatus()->withSegments([$segment])->create();
-    (new Newsletter())->withSubject('Tab sent')->withSentStatus()->withSegments([$segment])->create();
+  public function explicitStatusFilterWinsOverLegacyGroup(\AcceptanceTester $i) {
+    $i->wantTo('Prefer the status filter over a legacy group in the same link');
+    $sent = (new Newsletter())->withSubject('Wins sent')->withSentStatus()->create();
+    $draft = (new Newsletter())->withSubject('Wins draft')->withDraftStatus()->create();
 
     $i->login();
-    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/standard/filter[status=sent&segment=' . $segment->getId() . ']');
-    $i->waitForElement($this->filterChip('Status'));
-    $i->waitForElementNotVisible('[data-automation-id="listing_item_' . $draft->getId() . '"]');
-
-    $i->changeGroupInListingFilter('draft');
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/standard/group[sent]/filter[status=draft]');
     $i->waitForElement('[data-automation-id="listing_item_' . $draft->getId() . '"]');
-    $i->dontSeeInCurrentUrl('status=');
-    $i->waitForHashFilterValue('segment', (string)$segment->getId());
-    $i->waitForElementNotVisible($this->filterChip('Status'));
-    $i->seeElement('.mailpoet-dataviews-group-draft.is-active');
+    $i->dontSeeElement('[data-automation-id="listing_item_' . $sent->getId() . '"]');
+    $i->waitForHashFilterValue('status', 'draft');
+  }
 
-    // DataViews hides a filter on a field that is not filterable, so go back to All
-    // to prove the status filter is gone from the view and does not come back.
+  public function filterByStatusOnAllAndTrashTabs(\AcceptanceTester $i) {
+    $i->wantTo('Keep the status filter across the All and Trash tabs');
+    $sent = (new Newsletter())->withSubject('Tab sent')->withSentStatus()->create();
+    $draft = (new Newsletter())->withSubject('Tab draft')->withDraftStatus()->create();
+    $trashedSent = (new Newsletter())->withSubject('Tab trashed sent')->withSentStatus()->withDeleted()->create();
+    $trashedDraft = (new Newsletter())->withSubject('Tab trashed draft')->withDraftStatus()->withDeleted()->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->waitForElement('[data-automation-id="listing_item_' . $draft->getId() . '"]');
+    $i->dontSeeElement('.mailpoet-dataviews-group-draft');
+    $i->dontSeeElement('.mailpoet-dataviews-group-sent');
+
+    $i->applyDataViewsFilter('Status', ['Sent']);
+    $i->waitForElementNotVisible('[data-automation-id="listing_item_' . $draft->getId() . '"]');
+    $i->seeElement('[data-automation-id="listing_item_' . $sent->getId() . '"]');
+
+    $i->changeGroupInListingFilter('trash');
+    $i->waitForElement('[data-automation-id="listing_item_' . $trashedSent->getId() . '"]');
+    $i->dontSeeElement('[data-automation-id="listing_item_' . $trashedDraft->getId() . '"]');
+    $i->waitForElement($this->filterChip('Status'));
+    $i->waitForHashFilterValue('status', 'sent');
+
     $i->changeGroupInListingFilter('all');
+    $i->waitForElement('[data-automation-id="listing_item_' . $sent->getId() . '"]');
+    $i->dontSeeElement('[data-automation-id="listing_item_' . $draft->getId() . '"]');
+    $i->waitForElement($this->filterChip('Status'));
+  }
+
+  public function showCountsInStatusOptions(\AcceptanceTester $i) {
+    $i->wantTo('See the email counts in the status filter options');
+    (new Newsletter())->withSubject('Count draft one')->withDraftStatus()->create();
+    (new Newsletter())->withSubject('Count draft two')->withDraftStatus()->create();
+    (new Newsletter())->withSubject('Count sent')->withSentStatus()->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->waitForText('Count sent', 10, '[data-automation-id="newsletters_listing_standard"]');
+    $addFilter = ['xpath' => '//button[@aria-label="Add filter" or normalize-space(.)="Add filter"]'];
+    $i->waitForElementClickable($addFilter);
+    $i->click($addFilter);
+    $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "Status")]']);
+    $i->waitForText('Draft (2)');
+    $i->waitForText('Sent (1)');
+    $i->waitForText('Scheduled (0)');
+  }
+
+  public function dropDeletedListFromDeepLink(\AcceptanceTester $i) {
+    $i->wantTo('Open a deep link with a deleted list without a list filter');
+    $segment = (new Segment())->withName('Existing list')->create();
+    (new Newsletter())->withSubject('Pruned link in list')->withSentStatus()->withSegments([$segment])->create();
+    $newsletter = (new Newsletter())->withSubject('Pruned link email')->withSentStatus()->create();
+    $deletedId = $segment->getId() + 1000;
+
+    $i->login();
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/standard/filter[segment=' . $deletedId . ']');
+    $i->waitForElement('[data-automation-id="listing_item_' . $newsletter->getId() . '"]');
+    $i->waitForJS('return decodeURIComponent(window.location.hash).indexOf("segment") === -1;', 10);
+    $i->dontSeeElement($this->filterChip('Lists'));
+  }
+
+  public function keepKnownListWhenDroppingDeletedOne(\AcceptanceTester $i) {
+    $i->wantTo('Keep the existing list when a deep link also names a deleted one');
+    $segment = (new Segment())->withName('Kept list')->create();
+    $inList = (new Newsletter())->withSubject('Kept in list')->withSentStatus()->withSegments([$segment])->create();
+    $noList = (new Newsletter())->withSubject('Kept no list')->withSentStatus()->create();
+    $deletedId = $segment->getId() + 1000;
+
+    $i->login();
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/standard/filter[segment=' . $segment->getId() . ',' . $deletedId . ']');
+    $i->waitForElement('[data-automation-id="listing_item_' . $inList->getId() . '"]');
+    $i->waitForElementNotVisible('[data-automation-id="listing_item_' . $noList->getId() . '"]');
+    $i->waitForHashFilterValue('segment', (string)$segment->getId());
+    $i->waitForJS('return decodeURIComponent(window.location.hash).indexOf(' . json_encode((string)$deletedId) . ') === -1;', 10);
     $i->waitForElement($this->filterChip('Lists'));
-    $i->dontSeeElement($this->filterChip('Status'));
+  }
+
+  public function keepBeforeOperatorAfterReload(\AcceptanceTester $i) {
+    $i->wantTo('Open a sent on "before" deep link with the same operator');
+    $early = (new Newsletter())->withSubject('Before early')->withSentStatus()->withSentAt(new \DateTimeImmutable('2026-01-10 12:00:00'))->create();
+    $edge = (new Newsletter())->withSubject('Before edge')->withSentStatus()->withSentAt(new \DateTimeImmutable('2026-01-15 12:00:00'))->create();
+
+    $i->login();
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/standard/filter[sent_to=2026-01-14]');
+    $i->waitForElement('[data-automation-id="listing_item_' . $early->getId() . '"]');
+    $i->dontSeeElement('[data-automation-id="listing_item_' . $edge->getId() . '"]');
+    $i->waitForElement(['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip-container")][contains(., "Sent on")][contains(., "is before:")]']);
+
+    $i->reloadPage();
+    $i->waitForElement('[data-automation-id="listing_item_' . $early->getId() . '"]');
+    $i->waitForElement(['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip-container")][contains(., "Sent on")][contains(., "is before:")]']);
+    $i->waitForHashFilterValue('sent_to', '2026-01-14');
+    $i->dontSeeElement('[data-automation-id="listing_item_' . $edge->getId() . '"]');
+  }
+
+  public function startNewSentOnFilterOnBetween(\AcceptanceTester $i) {
+    $i->wantTo('Start a new sent on filter on the between operator');
+    (new Newsletter())->withSubject('Operator email')->withSentStatus()->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->waitForText('Operator email', 10, '[data-automation-id="newsletters_listing_standard"]');
+    $addFilter = ['xpath' => '//button[@aria-label="Add filter" or normalize-space(.)="Add filter"]'];
+    $i->waitForElementClickable($addFilter);
+    $i->click($addFilter);
+    $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "Sent on")]']);
+    $i->waitForJS('var select = document.querySelector(".dataviews-filters__summary-operators-filter-select select"); return !!select && select.value === "between";', 10);
   }
 
   public function filterNotificationHistoryBySentOn(\AcceptanceTester $i) {

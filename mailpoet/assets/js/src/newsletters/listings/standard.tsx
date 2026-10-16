@@ -25,7 +25,6 @@ import {
   SHARE_VISIBILITY_PUBLIC,
 } from './share-modal';
 import {
-  STANDARD_NEWSLETTER_GROUPS,
   NewslettersListing,
   toNewsletterMailerLog,
   type ListingActionHelpers,
@@ -118,7 +117,7 @@ function buildFields(
       enableSorting: true,
       enableGlobalSearch: false,
       getValue: ({ item }) => getStatusFilterValue(item),
-      elements: statusElements(getAllowedStatuses('standard', 'all')),
+      elements: statusElements(getAllowedStatuses('standard')),
       filterBy: { operators: ['isAny'] },
       render: ({ item }) => (
         <QueueStatus newsletter={asNewsLetter(item)} mailerLog={mailerLog} />
@@ -415,7 +414,6 @@ function NewsletterListStandardComponent() {
         defaultSort={{ field: 'sent_at', direction: 'desc' }}
         itemActions={itemActions}
         supportsExportStats={trackingHooksOk}
-        supportedGroups={STANDARD_NEWSLETTER_GROUPS}
         emptyState={() => (
           <NewsletterTypes
             filter={(type) => type.slug === 'standard'}

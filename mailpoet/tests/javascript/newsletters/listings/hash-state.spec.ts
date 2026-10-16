@@ -56,11 +56,47 @@ describe('newsletter listing hash state', () => {
 
     it('matches a nested base url for notification history', () => {
       const state = parseHash(
-        '#/notification/history/12/group[sent]',
+        '#/notification/history/12/group[trash]',
         'notification/history/12',
-        ['all', 'sent', 'trash'],
+        ['all', 'trash'],
       );
-      expect(state.group).to.equal('sent');
+      expect(state.group).to.equal('trash');
+    });
+
+    describe('legacy status groups', () => {
+      const legacy = { key: 'status', values: ['draft', 'sent'] };
+      const parse = (hash: string) =>
+        parseHash(hash, 'standard', ['all', 'trash'], legacy);
+
+      it('turns a legacy status group into the all tab and a status filter', () => {
+        const state = parse('#/standard/group[sent]');
+        expect(state.group).to.equal(undefined);
+        expect(state.filter).to.deep.equal({ status: 'sent' });
+      });
+
+      it('lets an explicit filter win over the legacy group', () => {
+        expect(
+          parse('#/standard/group[sent]/filter[status=draft]').filter,
+        ).to.deep.equal({ status: 'draft' });
+        expect(
+          parse('#/standard/filter[status=draft]/group[sent]').filter,
+        ).to.deep.equal({ status: 'draft' });
+      });
+
+      it('keeps other filters next to the legacy status', () => {
+        expect(
+          parse('#/standard/group[draft]/filter[segment=3]').filter,
+        ).to.deep.equal({ segment: '3', status: 'draft' });
+      });
+
+      it('keeps the trash tab and ignores unknown groups', () => {
+        const trash = parse('#/standard/group[trash]');
+        expect(trash.group).to.equal('trash');
+        expect(trash.filter).to.equal(undefined);
+        const unknown = parse('#/standard/group[bogus]');
+        expect(unknown.group).to.equal(undefined);
+        expect(unknown.filter).to.equal(undefined);
+      });
     });
   });
 

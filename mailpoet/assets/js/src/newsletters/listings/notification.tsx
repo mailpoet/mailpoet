@@ -32,7 +32,6 @@ import {
   type NewsletterListingItem,
 } from '../api';
 import {
-  ACTIVATION_NEWSLETTER_GROUPS,
   NewslettersListing,
   type ListingActionHelpers,
 } from './newsletters-listing';
@@ -394,7 +393,6 @@ function NewsletterListNotificationComponent() {
       defaultSort={{ field: 'updated_at', direction: 'desc' }}
       itemActions={itemActions}
       onItemsLoaded={handleItemsLoaded}
-      supportedGroups={ACTIVATION_NEWSLETTER_GROUPS}
       emptyState={() => (
         <NewsletterTypes
           filter={(type) => type.slug === 'notification'}

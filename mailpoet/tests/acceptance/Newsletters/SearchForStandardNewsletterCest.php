@@ -29,7 +29,8 @@ class SearchForStandardNewsletterCest {
     $i->waitForText('No emails found.', 15, '[data-automation-id="newsletters_listing_tabs"]');
 
     // step 3 - Filter by Sent and search for the sent newsletter
-    $i->click('[data-automation-id="filters_sent"]');
+    $i->applyDataViewsFilter('Status', ['Sent']);
+    $i->waitForHashFilterValue('status', 'sent');
     $i->waitForText('No emails found.', 15, '[data-automation-id="newsletters_listing_tabs"]');
     $i->searchFor($newsletterTitle);
     $i->waitForText($newsletterTitle, 15, '[data-automation-id="newsletters_listing_tabs"]');

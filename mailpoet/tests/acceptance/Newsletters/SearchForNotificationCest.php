@@ -6,6 +6,10 @@ use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 
 class SearchForNotificationCest {
+  private function filterChip(string $name): array {
+    return ['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip-container")][contains(., "' . $name . '")]'];
+  }
+
   public function searchForStandardNotification(\AcceptanceTester $i) {
     $i->wantTo('Successfully search for an existing and active notification');
 
@@ -32,7 +36,8 @@ class SearchForNotificationCest {
     $i->waitForText('No emails found.', 15, '[data-automation-id="newsletters_listing_tabs"]');
 
     // step 3 - Filter by Active and search for the active post notification
-    $i->click('[data-automation-id="filters_active"]');
+    $i->applyDataViewsFilter('Status', ['Active']);
+    $i->waitForHashFilterValue('status', 'active');
     $i->waitForText('No emails found.', 15, '[data-automation-id="newsletters_listing_tabs"]');
     $i->searchFor($newsletterTitle);
     $i->waitForText($newsletterTitle, 15, '[data-automation-id="newsletters_listing_tabs"]');
@@ -43,8 +48,8 @@ class SearchForNotificationCest {
     $i->waitForText($newsletterTitle, 15, '[data-automation-id="newsletters_listing_tabs"]');
 
     // step 5 - Filter by Inactive and search for the active post notification
-    $i->click('[data-automation-id="filters_draft"]');
-    $i->searchFor($newsletterTitle);
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/notification/filter[status=draft]/search[' . rawurlencode($newsletterTitle) . ']');
+    $i->waitForElement($this->filterChip('Status'));
     $i->waitForText('No emails found.', 15, '[data-automation-id="newsletters_listing_tabs"]');
   }
 
