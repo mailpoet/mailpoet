@@ -232,7 +232,7 @@ function buildFields(
     },
     {
       id: 'updated_at',
-      label: __('Last modified on', 'mailpoet'),
+      label: __('Last modified', 'mailpoet'),
       type: 'datetime',
       enableSorting: true,
       enableGlobalSearch: false,
