@@ -97,10 +97,15 @@ class SwitchingLanguagesCest {
 
     $i->wantTo('Check Emails filter strings');
     $i->waitForText('Alle');
-    $i->waitForText('Entwurf');
-    $i->waitForText('Geplant');
-    $i->waitForText('Senden');
-    $i->waitForText('Gesendet');
+    // Status labels are built server side with counts, e.g. "Entwurf (0)".
+    $i->click('button.dataviews-filters__visibility-toggle[aria-haspopup="menu"]');
+    $i->click(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Status"]']);
+    $i->waitForElement('.dataviews-filters__search-widget-listitem');
+    $i->waitForText('Entwurf (');
+    $i->waitForText('Geplant (');
+    $i->waitForText('Senden (');
+    $i->waitForText('Gesendet (');
+    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
 
     $i->wantTo('Check Emails listing strings (translated with MailPoet.i18n)');
     $i->waitForText('GEKLICKT, GEÖFFNET');
