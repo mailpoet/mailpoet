@@ -447,4 +447,20 @@ describe('automation template detail', function templateDetail() {
 
     expect(apiFetchStub.calledOnce).to.equal(true);
   });
+
+  it('creates the automation again after a response without data', async () => {
+    apiFetchStub.onFirstCall().resolves(null);
+    apiFetchStub.onSecondCall().resolves({ data: { id: '123' } });
+
+    await render();
+    await clickStartBuilding();
+
+    expect(document.querySelector('[role="alert"]')).to.not.equal(null);
+    expect(navigationAttempts).to.equal(0);
+
+    await clickStartBuilding();
+
+    expect(apiFetchStub.calledTwice).to.equal(true);
+    expect(navigationAttempts).to.equal(1);
+  });
 });
