@@ -957,6 +957,103 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     $this->assertSame(['', $listA->getId()], array_column($options, 'value'));
   }
 
+  public function testStatusOptionsCountEmailsPerStandardStatus() {
+    $this->createStandard('Draft 1', NewsletterEntity::STATUS_DRAFT);
+    $this->createStandard('Draft 2', NewsletterEntity::STATUS_DRAFT);
+    $this->createStandard('Scheduled', NewsletterEntity::STATUS_SCHEDULED);
+    $this->createSendingWithTask(ScheduledTaskEntity::STATUS_COMPLETED, 'Running');
+    $this->createSendingWithTask(ScheduledTaskEntity::STATUS_PAUSED, 'Paused 1');
+    $this->createSendingWithTask(ScheduledTaskEntity::STATUS_PAUSED, 'Paused 2');
+    $this->createStandard('Sent', NewsletterEntity::STATUS_SENT);
+    $trashed = $this->createStandard('Trashed draft', NewsletterEntity::STATUS_DRAFT);
+    $trashed->setDeletedAt(new \DateTime());
+    $this->entityManager->flush();
+
+    $this->assertSame([
+      ['label' => 'Draft (2)', 'value' => 'draft'],
+      ['label' => 'Scheduled (1)', 'value' => 'scheduled'],
+      ['label' => 'Sending (1)', 'value' => 'sending'],
+      ['label' => 'Paused (2)', 'value' => 'paused'],
+      ['label' => 'Sent (1)', 'value' => 'sent'],
+    ], $this->getStatusOptions(['params' => ['type' => 'standard']]));
+  }
+
+  public function testStatusOptionCountsMatchFilteredResults() {
+    $this->createStandard('Draft', NewsletterEntity::STATUS_DRAFT);
+    $this->createSendingWithTask(ScheduledTaskEntity::STATUS_COMPLETED, 'Running');
+    $this->createSendingWithTask(ScheduledTaskEntity::STATUS_PAUSED, 'Paused');
+    $this->createStandard('Sent', NewsletterEntity::STATUS_SENT);
+
+    foreach (['draft', 'sending', 'paused', 'sent'] as $status) {
+      $options = $this->getStatusOptions(['params' => ['type' => 'standard']]);
+      $option = array_values(array_filter($options, function(array $option) use ($status): bool {
+        return $option['value'] === $status;
+      }))[0];
+      $this->assertStringEndsWith('(' . count($this->listIds(['status' => $status], 'standard')) . ')', $option['label'], $status);
+    }
+  }
+
+  public function testStatusOptionCountsIgnoreGroupAndOtherFilters() {
+    $this->createStandard('Draft', NewsletterEntity::STATUS_DRAFT);
+    $this->createStandard('Sent', NewsletterEntity::STATUS_SENT);
+
+    $options = $this->getStatusOptions([
+      'group' => 'sent',
+      'filter' => ['status' => 'sent'],
+      'search' => 'Sent',
+      'params' => ['type' => 'standard'],
+    ]);
+
+    $this->assertSame('Draft (1)', $options[0]['label']);
+    $this->assertSame('Sent (1)', $options[4]['label']);
+  }
+
+  public function testStatusOptionsForAutomaticTypesUseActiveAndNotActive() {
+    foreach (['notification', 're_engagement'] as $type) {
+      (new Newsletter())->withType($type)->withStatus(NewsletterEntity::STATUS_ACTIVE)->withSubject("$type active")->create();
+      (new Newsletter())->withType($type)->withStatus(NewsletterEntity::STATUS_DRAFT)->withSubject("$type draft 1")->create();
+      (new Newsletter())->withType($type)->withStatus(NewsletterEntity::STATUS_DRAFT)->withSubject("$type draft 2")->create();
+    }
+    $this->createStandard('Standard draft', NewsletterEntity::STATUS_DRAFT);
+
+    foreach (['notification', 're_engagement'] as $type) {
+      $this->assertSame([
+        ['label' => 'Active (1)', 'value' => 'active'],
+        ['label' => 'Not active (2)', 'value' => 'draft'],
+      ], $this->getStatusOptions(['params' => ['type' => $type]]), $type);
+    }
+  }
+
+  public function testStatusOptionsForNotificationHistoryAreScopedToParent() {
+    $parent = (new Newsletter())->withType(NewsletterEntity::TYPE_NOTIFICATION)->withStatus(NewsletterEntity::STATUS_ACTIVE)->withSubject('Parent')->create();
+    $otherParent = (new Newsletter())->withType(NewsletterEntity::TYPE_NOTIFICATION)->withStatus(NewsletterEntity::STATUS_ACTIVE)->withSubject('Other parent')->create();
+    $sent = $this->createStandard('Sent child', NewsletterEntity::STATUS_SENT);
+    $sent->setType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+    $sent->setParent($parent);
+    $paused = $this->createSendingWithTask(ScheduledTaskEntity::STATUS_PAUSED, 'Paused child', NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+    $paused->setParent($parent);
+    $otherSent = $this->createStandard('Other sent child', NewsletterEntity::STATUS_SENT);
+    $otherSent->setType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+    $otherSent->setParent($otherParent);
+    $this->entityManager->flush();
+
+    $this->assertSame([
+      ['label' => 'Sending (0)', 'value' => 'sending'],
+      ['label' => 'Paused (1)', 'value' => 'paused'],
+      ['label' => 'Sent (1)', 'value' => 'sent'],
+    ], $this->getStatusOptions(['params' => ['type' => 'notification_history', 'parentId' => $parent->getId()]]));
+  }
+
+  public function testStatusOptionsAreOmittedWithoutSupportedType() {
+    $repository = $this->diContainer->get(NewsletterListingRepository::class);
+    $this->assertArrayNotHasKey('status', $repository->getFilters((new Handler())->getListingDefinition([])));
+  }
+
+  private function getStatusOptions(array $listing): array {
+    $repository = $this->diContainer->get(NewsletterListingRepository::class);
+    return $repository->getFilters((new Handler())->getListingDefinition($listing))['status'];
+  }
+
   private function getListOptions(array $listing): array {
     $repository = $this->diContainer->get(NewsletterListingRepository::class);
     return $repository->getFilters((new Handler())->getListingDefinition($listing))['segment'];

@@ -132,6 +132,7 @@ class NewslettersEndpointsTest extends Test {
         'type' => 'standard',
         'selection' => [],
         'select_all' => true,
+        'group' => 'all',
         'filter' => $filter,
       ]]);
       $this->assertIsArray($response, $name);
@@ -146,7 +147,9 @@ class NewslettersEndpointsTest extends Test {
     $newsletter = (new NewsletterFactory())->withSubject('Keep_' . uniqid())->withType('standard')->create();
     $cases = [
       'unknown type' => [['type' => 'bogus'], 'mailpoet_newsletters_invalid_type'],
-      'missing type' => [[], 'mailpoet_newsletters_invalid_type'],
+      'missing type' => [['group' => 'all'], 'mailpoet_newsletters_invalid_type'],
+      'missing group' => [['type' => 'standard'], 'mailpoet_newsletters_invalid_group'],
+      'empty group' => [['type' => 'standard', 'group' => ''], 'mailpoet_newsletters_invalid_group'],
       'unknown group' => [['type' => 'standard', 'group' => 'bogus'], 'mailpoet_newsletters_invalid_group'],
       'group of another type' => [['type' => 'standard', 'group' => 'active'], 'mailpoet_newsletters_invalid_group'],
     ];
@@ -178,7 +181,7 @@ class NewslettersEndpointsTest extends Test {
     }
   }
 
-  public function testBulkDeleteSelectAllWithoutGroupLeavesTrashedEmailsAlone(): void {
+  public function testBulkDeleteSelectAllInAllGroupLeavesTrashedEmailsAlone(): void {
     $suffix = uniqid();
     $active = (new NewsletterFactory())->withSubject("Scope_{$suffix}_a")->withType('standard')->create();
     $trashed = (new NewsletterFactory())->withSubject("Scope_{$suffix}_t")->withType('standard')->withDeleted()->create();
@@ -187,6 +190,7 @@ class NewslettersEndpointsTest extends Test {
     $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
       'action' => 'delete',
       'type' => 'standard',
+      'group' => 'all',
       'search' => "Scope_{$suffix}",
       'selection' => [],
       'select_all' => true,
@@ -207,6 +211,7 @@ class NewslettersEndpointsTest extends Test {
     $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
       'action' => 'trash',
       'type' => 'standard',
+      'group' => 'all',
       'selection' => [],
       'select_all' => true,
       'filter' => ['status' => ['draft']],
@@ -228,6 +233,7 @@ class NewslettersEndpointsTest extends Test {
     $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
       'action' => 'trash',
       'type' => 'standard',
+      'group' => 'all',
       'selection' => [],
       'select_all' => true,
       'filter' => ['status' => 'paused'],
@@ -282,6 +288,63 @@ class NewslettersEndpointsTest extends Test {
       [['label' => 'All Lists', 'value' => ''], ['label' => "History_{$suffix}", 'value' => $list->getId()]],
       $options
     );
+  }
+
+  public function testListingReturnsStatusOptionsWithCounts(): void {
+    $suffix = uniqid();
+    $parent = (new NewsletterFactory())->withSubject("Parent_{$suffix}")->withPostNotificationsType()->create();
+    (new NewsletterFactory())->withSubject("Sent_{$suffix}")->withPostNotificationHistoryType()
+      ->withParent($parent)->withStatus(NewsletterEntity::STATUS_SENT)->create();
+    $this->createSending(ScheduledTaskEntity::STATUS_PAUSED, "Paused_{$suffix}", 'notification_history')->setParent($parent);
+    $this->entityManager->flush();
+
+    $response = $this->get(self::LISTING_PATH, ['query' => ['type' => 'notification_history', 'parent_id' => $parent->getId()]]);
+    $this->assertIsArray($response);
+    $filters = $this->getPayload($response)['filters'] ?? [];
+
+    $this->assertSame([
+      ['label' => 'Sending (0)', 'value' => 'sending'],
+      ['label' => 'Paused (1)', 'value' => 'paused'],
+      ['label' => 'Sent (1)', 'value' => 'sent'],
+    ], $filters['status'] ?? null);
+    $this->assertSame('', $filters['segment'][0]['value'] ?? null);
+  }
+
+  public function testFilterSetsAreCappedAtOneHundredValues(): void {
+    $statuses = array_fill(0, 101, 'draft');
+    $response = $this->get(self::LISTING_PATH, ['query' => ['type' => 'standard', 'filter' => ['status' => $statuses]]]);
+    $this->assertIsArray($response);
+    $this->assertSame('mailpoet_newsletters_invalid_status', $response['code'] ?? null);
+    $this->assertSame(400, $this->getErrorStatus($response));
+
+    $ids = array_map('strval', range(1, 101));
+    $response = $this->get(self::LISTING_PATH, ['query' => ['type' => 'standard', 'filter' => ['segment_ids' => $ids, 'segment_operator' => 'isAny']]]);
+    $this->assertIsArray($response);
+    $this->assertSame('mailpoet_newsletters_invalid_segment_ids', $response['code'] ?? null);
+    $this->assertSame(400, $this->getErrorStatus($response));
+
+    $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
+      'action' => 'trash',
+      'type' => 'standard',
+      'group' => 'all',
+      'selection' => [],
+      'select_all' => true,
+      'filter' => ['segment_ids' => array_slice($ids, 0, 100), 'segment_operator' => 'isNone', 'status' => array_fill(0, 101, 'draft')],
+    ]]);
+    $this->assertIsArray($response);
+    $this->assertSame('mailpoet_newsletters_invalid_status', $response['code'] ?? null);
+  }
+
+  public function testFilterSetsOfOneHundredValuesAreAccepted(): void {
+    $ids = array_map('strval', range(1, 100));
+    $response = $this->get(self::LISTING_PATH, ['query' => ['type' => 'standard', 'filter' => ['segment_ids' => $ids, 'segment_operator' => 'isAny']]]);
+    $this->assertIsArray($response);
+    $this->assertArrayNotHasKey('code', $response, (string)json_encode($response));
+    $this->assertArrayHasKey('items', $this->getPayload($response));
+
+    $response = $this->get(self::LISTING_PATH, ['query' => ['type' => 'standard', 'filter' => ['status' => array_fill(0, 100, 'draft')]]]);
+    $this->assertIsArray($response);
+    $this->assertArrayNotHasKey('code', $response, (string)json_encode($response));
   }
 
   private function createList(string $name): SegmentEntity {
@@ -488,6 +551,7 @@ class NewslettersEndpointsTest extends Test {
     $response = $this->post(self::BULK_ACTION_PATH, ['json' => [
       'action' => 'trash',
       'type' => NewsletterEntity::TYPE_STANDARD,
+      'group' => 'all',
       'search' => "BulkAll_{$suffix}",
       'selection' => [],
       'select_all' => true,

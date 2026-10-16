@@ -49,6 +49,16 @@ trait NewslettersFilterValidationTrait {
       ? NewsletterListingRepository::getSupportedStatusesForType($type)
       : [];
     $statuses = is_array($status) ? $status : [$status];
+    if (count($statuses) > NewsletterListingRepository::MAX_FILTER_SET_VALUES) {
+      throw $this->listingValidationError(
+        sprintf(
+          // translators: %d is the maximum number of values a filter accepts.
+          __('A filter accepts at most %d values.', 'mailpoet'),
+          NewsletterListingRepository::MAX_FILTER_SET_VALUES
+        ),
+        'status'
+      );
+    }
     foreach ($statuses as $value) {
       if (!is_string($value) || !in_array($value, $allowed, true)) {
         throw $this->listingValidationError(
@@ -77,6 +87,16 @@ trait NewslettersFilterValidationTrait {
     if ($hasSegmentIds) {
       if (!is_array($segmentIds)) {
         throw $this->listingValidationError(__('The list IDs filter must be an array of list IDs.', 'mailpoet'), 'segment_ids');
+      }
+      if (count($segmentIds) > NewsletterListingRepository::MAX_FILTER_SET_VALUES) {
+        throw $this->listingValidationError(
+          sprintf(
+            // translators: %d is the maximum number of values a filter accepts.
+            __('A filter accepts at most %d values.', 'mailpoet'),
+            NewsletterListingRepository::MAX_FILTER_SET_VALUES
+          ),
+          'segment_ids'
+        );
       }
       foreach ($segmentIds as $segmentId) {
         if (!NewsletterListingRepository::isListId($segmentId)) {
