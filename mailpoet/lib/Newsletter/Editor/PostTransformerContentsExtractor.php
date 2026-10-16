@@ -140,7 +140,7 @@ class PostTransformerContentsExtractor {
     $readMoreText = sprintf(
       '<p><a href="%s">%s</a></p>',
       $this->wp->getPermalink($postId),
-      $this->args['readMoreText']
+      $this->wp->escHtml($this->args['readMoreText'])
     );
 
     return [
