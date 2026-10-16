@@ -40,7 +40,7 @@ class NewslettersEndpointsTest extends Test {
     $cases = [
       'unknown orderby' => [['orderby' => 'segments'], 'mailpoet_newsletters_invalid_orderby'],
       'camelCase orderby' => [['orderby' => 'sentAt'], 'mailpoet_newsletters_invalid_orderby'],
-      'unknown sort_by' => [['sort_by' => 'created_at'], 'mailpoet_newsletters_invalid_orderby'],
+      'unknown sort_by' => [['sort_by' => 'bogus'], 'mailpoet_newsletters_invalid_orderby'],
       'bad order' => [['order' => 'sideways'], 'mailpoet_newsletters_invalid_order'],
       'unknown filter key' => [['filter' => ['bogus' => '1']], 'mailpoet_newsletters_invalid_filter'],
       'status invalid for standard' => [['filter' => ['status' => 'active']], 'mailpoet_newsletters_invalid_status'],
@@ -70,6 +70,7 @@ class NewslettersEndpointsTest extends Test {
       ['orderby' => 'subject', 'order' => 'DESC'],
       ['orderby' => 'sent_at', 'order' => 'desc'],
       ['orderby' => 'updated_at', 'order' => 'desc'],
+      ['orderby' => 'created_at', 'order' => 'asc'],
       ['sort_by' => 'status', 'sort_order' => 'asc'],
       ['filter' => ['segment_ids' => ['3'], 'segment_operator' => 'isNone', 'sent_at_from' => '2025-01-01', 'sent_at_to' => '2025-01-31']],
     ];
@@ -79,6 +80,26 @@ class NewslettersEndpointsTest extends Test {
       $this->assertArrayNotHasKey('code', $response, (string)json_encode($query));
       $this->assertIsArray($this->getPayload($response)['items'] ?? null, (string)json_encode($query));
     }
+  }
+
+  public function testListingSortsByCreatedAt(): void {
+    $suffix = uniqid();
+    $middle = (new NewsletterFactory())->withSubject("Middle_{$suffix}")->withType('standard')->create();
+    $oldest = (new NewsletterFactory())->withSubject("Oldest_{$suffix}")->withType('standard')->create();
+    $newest = (new NewsletterFactory())->withSubject("Newest_{$suffix}")->withType('standard')->create();
+    $middle->setCreatedAt(new \DateTimeImmutable('2025-01-02 10:00:00'));
+    $oldest->setCreatedAt(new \DateTimeImmutable('2025-01-01 10:00:00'));
+    $newest->setCreatedAt(new \DateTimeImmutable('2025-01-03 10:00:00'));
+    $this->newslettersRepository->flush();
+    $mine = [$oldest->getId(), $middle->getId(), $newest->getId()];
+    $only = function(array $ids) use ($mine): array {
+      return array_values(array_filter($ids, function(int $id) use ($mine): bool {
+        return in_array($id, $mine, true);
+      }));
+    };
+
+    $this->assertSame($mine, $only($this->listIds(['type' => 'standard', 'orderby' => 'created_at', 'order' => 'asc'])));
+    $this->assertSame(array_reverse($mine), $only($this->listIds(['type' => 'standard', 'orderby' => 'created_at', 'order' => 'desc'])));
   }
 
   public function testListingFiltersByStatusPerType(): void {

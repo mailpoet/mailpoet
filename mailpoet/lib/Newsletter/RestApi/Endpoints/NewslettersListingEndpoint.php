@@ -43,7 +43,7 @@ class NewslettersListingEndpoint extends AbstractListingEndpoint {
     NewsletterEntity::TYPE_AUTOMATIC,
   ];
 
-  private const ALLOWED_SORT_FIELDS = ['id', 'name', 'subject', 'status', 'sent_at', 'updated_at'];
+  private const ALLOWED_SORT_FIELDS = ['id', 'name', 'subject', 'status', 'sent_at', 'updated_at', 'created_at'];
 
   /** @var NewsletterListingRepository */
   private $newsletterListingRepository;
