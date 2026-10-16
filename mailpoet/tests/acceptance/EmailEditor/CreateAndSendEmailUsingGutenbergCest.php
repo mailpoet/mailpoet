@@ -41,8 +41,13 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->wantTo('Verify correct WP menu item is highlighted');
     $i->waitForText('Emails', 10, '#toplevel_page_mailpoet-homepage .current');
 
-    $i->wantTo('Change Campaign name');
+    $i->wantTo('Check the campaign name follows the subject until it is renamed');
     $i->click('Email', '.editor-sidebar__panel-tabs');
+    $i->click('Settings', '.woocommerce-email-editor__settings-panel');
+    $i->fillField('[data-automation-id="email_subject"]', 'My First Subject');
+    $i->waitForText('My First Subject', 10, '.editor-post-card-panel__title');
+
+    $i->wantTo('Change Campaign name');
     $i->click('.editor-all-actions-button');
     // Gutenberg 24.0 renamed "Rename" to "Rename…", match both labels.
     $renameMenuItem = '//*[@role="menuitem"][.//span[starts-with(normalize-space(.), "Rename")]]';
@@ -52,10 +57,9 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('.components-modal__content .components-button.is-primary');
 
     $i->wantTo('Change subject and preheader in the settings panel');
-    $i->click('Settings', '.woocommerce-email-editor__settings-panel');
-    $i->click('Content settings', '.mailpoet-content-settings-panel');
     $i->fillField('[data-automation-id="email_subject"]', 'My New Subject');
     $i->fillField('[data-automation-id="email_preheader"]', 'My New Preview Text');
+    $i->see('My Campaign Name', '.editor-post-card-panel__title');
 
     $i->wantTo('Open the send panel and verify the email details');
     $i->waitForText('Save draft', 10, '.edit-post-header');
