@@ -1648,6 +1648,17 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     }
   }
 
+  public function testDynamicSegmentWithScoreFilterListsItsMembers() {
+    $segment = (new \MailPoet\Test\DataFactories\DynamicSegment())->withEngagementScoreFilter(20, 'lowerThan')->create();
+    $zero = (new Subscriber())->withEmail('dyn-score-1@example.com')->withEngagementScore(0)->create();
+    (new Subscriber())->withEmail('dyn-score-2@example.com')->withEngagementScore(50)->create();
+    (new Subscriber())->withEmail('dyn-score-3@example.com')->create();
+
+    $filters = ['segment_in' => [$segment->getId()]];
+    verify($this->getIds($filters))->equals([$zero->getId()]);
+    verify($this->repository->getCountAndAllTrashGroups(new ListingDefinition('all', $filters))['count'])->equals(1);
+  }
+
   public function testSourceNotInKeepsSubscribersWithoutASource() {
     $imported = (new Subscriber())->withEmail('src-imported@example.com')->withSource(Source::IMPORTED)->create();
     $form = (new Subscriber())->withEmail('src-form@example.com')->withSource(Source::FORM)->create();
