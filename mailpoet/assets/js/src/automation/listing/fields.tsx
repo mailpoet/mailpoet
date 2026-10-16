@@ -12,6 +12,10 @@ export const automationFields: Field<AutomationItem>[] = [
     type: 'text',
     enableGlobalSearch: true,
     enableSorting: true,
+    // Name is the title column: it can't be hidden, and the listing has no
+    // filter UI, so both header menu items would do nothing.
+    enableHiding: false,
+    filterBy: false,
     render: ({ item }) => (
       <a href={getAutomationEditorUrl(item)}>{item.name}</a>
     ),
