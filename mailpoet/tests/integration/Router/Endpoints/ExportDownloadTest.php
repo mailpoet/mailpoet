@@ -9,6 +9,8 @@ use MailPoet\Router\Router;
 use MailPoet\Subscribers\ImportExport\Export\Export;
 use MailPoet\WP\Functions as WPFunctions;
 
+require_once __DIR__ . '/RemoteStorageStreamWrapper.php';
+
 class ExportDownloadTest extends \MailPoetTest {
   /** @var string */
   private $previousTempPath;
@@ -26,6 +28,8 @@ class ExportDownloadTest extends \MailPoetTest {
   }
 
   public function _after() {
+    RemoteStorageStreamWrapper::unregister();
+    Env::$tempPath = $this->tempDir;
     foreach ($this->getExportFiles() as $file) {
       unlink($file);
     }
@@ -152,6 +156,159 @@ class ExportDownloadTest extends \MailPoetTest {
     } finally {
       Env::$tempPath = $previousTempPath;
     }
+  }
+
+  public function testItWritesServerFilesOnLocalDisk() {
+    $exportDirectory = ExportDownload::getExportDirectory();
+
+    $this->assertFileExists($exportDirectory . '/index.php');
+    $this->assertStringContainsString('Require all denied', (string)file_get_contents($exportDirectory . '/.htaccess'));
+  }
+
+  public function testItSkipsServerFilesWhenExportDirectoryIsOnRemoteStorage() {
+    $this->useRemoteStorage();
+
+    ExportDownload::ensureExportDirectory(new WPFunctions());
+
+    verify(RemoteStorageStreamWrapper::$writes)->arrayCount(0);
+  }
+
+  public function testItWritesServerFilesOnRemoteStorageWhenFilterTurnsThemOn() {
+    $this->useRemoteStorage();
+    $wp = new WPFunctions();
+    $wp->addFilter('mailpoet_export_directory_server_files', '__return_true');
+
+    try {
+      ExportDownload::ensureExportDirectory($wp);
+    } finally {
+      $wp->removeFilter('mailpoet_export_directory_server_files', '__return_true');
+    }
+
+    verify(RemoteStorageStreamWrapper::$files)->arrayHasKey(ExportDownload::getExportDirectory() . '/index.php');
+    verify(RemoteStorageStreamWrapper::$files)->arrayHasKey(ExportDownload::getExportDirectory() . '/.htaccess');
+  }
+
+  public function testItSkipsServerFilesWhenFilterTurnsThemOff() {
+    foreach ($this->getExportFiles() as $file) {
+      unlink($file);
+    }
+    rmdir(ExportDownload::getExportDirectory());
+    $wp = new WPFunctions();
+    $wp->addFilter('mailpoet_export_directory_server_files', '__return_false');
+
+    try {
+      ExportDownload::ensureExportDirectory($wp);
+    } finally {
+      $wp->removeFilter('mailpoet_export_directory_server_files', '__return_false');
+    }
+
+    verify(is_dir(ExportDownload::getExportDirectory()))->true();
+    $this->assertFileNotExists(ExportDownload::getExportDirectory() . '/index.php');
+    $this->assertFileNotExists(ExportDownload::getExportDirectory() . '/.htaccess');
+  }
+
+  public function testItAllowsValidExportFilesOnRemoteStorage() {
+    $this->useRemoteStorage();
+    $file = ExportDownload::createExportFile(Export::getFilePrefix(), 'csv');
+    file_put_contents($file['path'], 'email');
+    $endpoint = new ExportDownload(new WPFunctions());
+
+    verify($endpoint->getDownloadFilePath(
+      [
+        'token' => $file['token'],
+        'format' => 'csv',
+      ],
+      Export::getFilePrefix()
+    ))->equals($file['path']);
+  }
+
+  public function testItRejectsUnexpectedExportFileNamesOnRemoteStorage() {
+    $this->useRemoteStorage();
+    $file = ExportDownload::createExportFile(StatisticsExporter::FILE_PREFIX, 'csv');
+    file_put_contents($file['path'], 'stats');
+    $endpoint = new ExportDownload(new WPFunctions());
+
+    verify($endpoint->getDownloadFilePath(
+      [
+        'token' => '../MailPoet_stats_export_abc123abc123abc.csv',
+        'format' => 'csv',
+      ],
+      StatisticsExporter::FILE_PREFIX
+    ))->null();
+    verify($endpoint->getDownloadFilePath(
+      [
+        'token' => $file['token'],
+        'format' => 'csv',
+      ],
+      Export::getFilePrefix()
+    ))->null();
+    verify($endpoint->getDownloadFilePath(
+      [
+        'token' => $file['token'],
+        'format' => 'php',
+      ],
+      StatisticsExporter::FILE_PREFIX
+    ))->null();
+    verify($endpoint->getDownloadFilePath(
+      [
+        'token' => ExportDownload::generateDownloadToken(),
+        'format' => 'csv',
+      ],
+      StatisticsExporter::FILE_PREFIX
+    ))->null();
+  }
+
+  public function testItWritesServerFilesWhenUploadsUseTheFileScheme() {
+    Env::$tempPath = 'file://' . $this->tempDir . '/file-scheme';
+
+    try {
+      ExportDownload::ensureExportDirectory(new WPFunctions());
+      $this->assertFileExists($this->tempDir . '/file-scheme/exports/.htaccess');
+      $this->assertFileExists($this->tempDir . '/file-scheme/exports/index.php');
+    } finally {
+      $this->removeFileSchemeDirectory();
+    }
+  }
+
+  public function testItAllowsValidExportFilesWhenUploadsUseTheFileScheme() {
+    Env::$tempPath = 'file://' . $this->tempDir . '/file-scheme';
+
+    try {
+      ExportDownload::ensureExportDirectory(new WPFunctions());
+      $file = ExportDownload::createExportFile(Export::getFilePrefix(), 'csv');
+      file_put_contents($file['path'], 'email');
+      $endpoint = new ExportDownload(new WPFunctions());
+
+      verify($endpoint->getDownloadFilePath(
+        [
+          'token' => $file['token'],
+          'format' => 'csv',
+        ],
+        Export::getFilePrefix()
+      ))->equals(realpath(substr($file['path'], strlen('file://'))));
+    } finally {
+      $this->removeFileSchemeDirectory();
+    }
+  }
+
+  private function removeFileSchemeDirectory(): void {
+    $directory = $this->tempDir . '/file-scheme';
+    foreach (array_merge(glob($directory . '/exports/*') ?: [], [$directory . '/exports/.htaccess']) as $file) {
+      if (is_file($file)) {
+        unlink($file);
+      }
+    }
+    if (is_dir($directory . '/exports')) {
+      rmdir($directory . '/exports');
+    }
+    if (is_dir($directory)) {
+      rmdir($directory);
+    }
+  }
+
+  private function useRemoteStorage(): void {
+    RemoteStorageStreamWrapper::register();
+    Env::$tempPath = RemoteStorageStreamWrapper::getRoot() . '/mailpoet';
   }
 
   private function getRouterData(string $url): array {

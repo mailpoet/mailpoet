@@ -19,6 +19,22 @@ class FormulaFreeXLSXWriter extends XLSXWriter {
   private const CELL_STYLES = ['money' => 1, 'dollar' => 1, 'datetime' => 2, 'date' => 3, 'string' => 0];
 
   /**
+   * ZipArchive can only write to a local path, so a file for remote storage is
+   * built in a local temporary file first and then copied.
+   *
+   * @param string $filename
+   */
+  public function writeToFile($filename) {
+    if (!RemoteStorage::isRemotePath($filename)) {
+      parent::writeToFile($filename);
+      return;
+    }
+    $localFile = $this->tempFilename();
+    parent::writeToFile($localFile);
+    copy($localFile, $filename);
+  }
+
+  /**
    * @param int $rowNumber
    * @param int $columnNumber
    * @param mixed $value
