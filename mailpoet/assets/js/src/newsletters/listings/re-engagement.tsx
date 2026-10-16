@@ -203,6 +203,7 @@ function buildFields(
     {
       id: 'updated_at',
       label: __('Last modified', 'mailpoet'),
+      header: __('Last modified on', 'mailpoet'),
       type: 'datetime',
       enableSorting: true,
       enableGlobalSearch: false,
