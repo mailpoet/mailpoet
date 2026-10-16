@@ -54,6 +54,7 @@ const setupWindow = () => {
   global.HTMLElement = dom.window.HTMLElement;
   global.Element = dom.window.Element;
   global.Node = dom.window.Node;
+  global.DOMParser = dom.window.DOMParser;
   global.IS_REACT_ACT_ENVIRONMENT = true;
 };
 
@@ -97,7 +98,11 @@ const restoreModuleMocks = () => {
     originalModuleLoad;
 };
 
-const renderNotice = async (operation: string, mtaMethod = 'MailPoet') => {
+const renderNotice = async (
+  operation: string,
+  mtaMethod = 'MailPoet',
+  errorMessage = 'Sending problem',
+) => {
   const rootElement = document.createElement('div');
   document.body.appendChild(rootElement);
   root = createRoot(rootElement);
@@ -106,7 +111,7 @@ const renderNotice = async (operation: string, mtaMethod = 'MailPoet') => {
       React.createElement(mailerErrorModule.MailerError, {
         mtaLog: {
           status: 'paused',
-          error: { operation, error_message: 'Sending problem' },
+          error: { operation, error_message: errorMessage },
         },
         mtaMethod,
       }),
@@ -149,6 +154,7 @@ describe('mailer error notice', function mailerErrorNotice() {
     dom.window.close();
     [
       'document',
+      'DOMParser',
       'Element',
       'HTMLElement',
       'IS_REACT_ACT_ENVIRONMENT',
@@ -199,6 +205,30 @@ describe('mailer error notice', function mailerErrorNotice() {
     expect(document.querySelector('a.button-primary').textContent).to.equal(
       'I have upgraded my subscription, resume sending',
     );
+  });
+
+  it('keeps only web and email links in the error message', async () => {
+    await renderNotice(
+      'send',
+      'SMTP',
+      [
+        '<a href="javascript:void(0)">first</a>',
+        '<a href=" &#9;javascript:void(0)">second</a>',
+        '<a href="https://kb.mailpoet.com/" target="_blank">third</a>',
+        '<a href="mailto:help@example.com">fourth</a>',
+        '<a href="?page=mailpoet-settings#mta">fifth</a>',
+      ].join(', '),
+    );
+    const hrefs = Array.from(
+      document.querySelectorAll('.notice-error p:first-child a'),
+    ).map((link) => [link.textContent, link.getAttribute('href')]);
+    expect(hrefs).to.deep.equal([
+      ['first', null],
+      ['second', null],
+      ['third', 'https://kb.mailpoet.com/'],
+      ['fourth', 'mailto:help@example.com'],
+      ['fifth', '?page=mailpoet-settings#mta'],
+    ]);
   });
 
   it('keeps the resume button for a generic sending error', async () => {

@@ -4,6 +4,7 @@ import ReactStringReplace from 'react-string-replace';
 import classnames from 'classnames';
 
 import { MailPoet } from 'mailpoet';
+import { isAllowedHref } from 'common/functions/filter-message-html';
 
 const resumeMailerSending = () =>
   MailPoet.Ajax.post({
@@ -226,10 +227,12 @@ export function MailerError({
       return acc;
     }, {});
 
+    const href = link.getAttribute('href');
+
     return (
       <a
         key={`a-${match}`}
-        href={link.getAttribute('href')}
+        href={href !== null && isAllowedHref(href) ? href : undefined}
         {...allowedAttributes}
       >
         {link.textContent}

@@ -38,7 +38,7 @@ const removedTags = [
 
 const allowedProtocols = ['http:', 'https:', 'mailto:'];
 
-const isAllowedHref = (href: string): boolean => {
+export const isAllowedHref = (href: string): boolean => {
   try {
     return allowedProtocols.includes(
       new URL(href, window.location.href).protocol,
