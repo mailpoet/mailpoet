@@ -57,7 +57,14 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
   /** @var array<string, mixed>|null */
   private $originalTimezoneOptions;
 
+  /** @var string|null */
+  private $originalThousandsSeparator;
+
   public function _after() {
+    if ($this->originalThousandsSeparator !== null) {
+      $this->setThousandsSeparator($this->originalThousandsSeparator);
+      $this->originalThousandsSeparator = null;
+    }
     if ($this->originalTimezoneOptions !== null) {
       foreach ($this->originalTimezoneOptions as $option => $value) {
         update_option($option, $value);
@@ -74,7 +81,8 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
       $this->diContainer->get(FilterHandler::class),
       $this->diContainer->get(SegmentSubscribersRepository::class),
       $this->diContainer->get(SubscribersCountsController::class),
-      $this->diContainer->get(SegmentDependencyValidator::class)
+      $this->diContainer->get(SegmentDependencyValidator::class),
+      $this->diContainer->get(WPFunctions::class)
     );
   }
 
@@ -114,6 +122,36 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($filters['tag'])->arrayCount(2);
     verify($filters['tag'][0]['label'])->equals('All Tags');
     verify($filters['tag'][1]['label'])->equals('My Tag (1)');
+  }
+
+  public function testFilterOptionCountsUseTheLocaleThousandsSeparator() {
+    $this->originalThousandsSeparator = $this->setThousandsSeparator('.');
+    $segment = $this->segmentRepository->createOrUpdate('Big List');
+    $tag = (new Tag())->withName('Big Tag')->create();
+    $this->entityManager->flush();
+    $counts = $this->make(SubscribersCountsController::class, [
+      'getGlobalStatusStatisticsCount' => ['subscribed' => 1234, 'unconfirmed' => 5, 'trash' => 0],
+      'getSubscribersWithoutSegmentStatisticsCount' => ['all' => 4321, 'trash' => 0],
+      'getSegmentStatisticsCount' => ['all' => 2345, 'trash' => 0],
+      'getTagsStatisticsCount' => [['id' => $tag->getId(), 'name' => 'Big Tag', 'subscribersCount' => 3456]],
+    ]);
+    $repository = new SubscriberListingRepository(
+      $this->entityManager,
+      $this->diContainer->get(FilterHandler::class),
+      $this->diContainer->get(SegmentSubscribersRepository::class),
+      $counts,
+      $this->diContainer->get(SegmentDependencyValidator::class),
+      $this->diContainer->get(WPFunctions::class)
+    );
+
+    $filters = $repository->getFilters(new ListingDefinition('all'));
+
+    verify($filters['status'][0]['label'])->equals('Subscribed (1.234)');
+    verify($filters['status'][1]['label'])->equals('Unconfirmed (5)');
+    verify($filters['segment'][1]['label'])->equals('Subscribers without a list (4.321)');
+    verify(array_column($filters['segment'], 'label'))->arrayContains('Big List (2.345)');
+    verify($filters['tag'][1]['label'])->equals('Big Tag (3.456)');
+    verify($segment->getId())->greaterThan(0);
   }
 
   public function testItBuildsGroups() {
@@ -2253,6 +2291,17 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     return $segment;
   }
 
+  /** Sets the locale's thousands separator and returns the previous one. */
+  private function setThousandsSeparator(string $separator): string {
+    global $wp_locale;
+    $property = 'number_format'; // WP_Locale's own (non camelCase) property name.
+    $format = $wp_locale->$property;
+    $previous = (string)$format['thousands_sep'];
+    $format['thousands_sep'] = $separator;
+    $wp_locale->$property = $format;
+    return $previous;
+  }
+
   /**
    * @param string[] $inactivePlugins
    */
@@ -2271,7 +2320,8 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
       new FilterHandler($this->entityManager, $validator, $this->diContainer->get(FilterFactory::class)),
       $this->diContainer->get(SegmentSubscribersRepository::class),
       $this->diContainer->get(SubscribersCountsController::class),
-      $validator
+      $validator,
+      new WPFunctions()
     );
   }
 
