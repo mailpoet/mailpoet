@@ -769,6 +769,19 @@ function SubscriberList() {
       orderby: currentView.sort ? toOrderby(currentView.sort.field) : undefined,
     }),
   });
+  // DataViews hides the filter row until the toggle is pressed. Active filters
+  // (from the URL, Back or the Add filter menu) must stay visible, so press the
+  // toggle once when the first filter appears.
+  const dataViewsRef = useRef<HTMLDivElement>(null);
+  const hasFilters = (view.filters ?? []).length > 0;
+  useEffect(() => {
+    const toggle = dataViewsRef.current?.querySelector<HTMLButtonElement>(
+      '.dataviews-filters__visibility-toggle[aria-expanded="false"]',
+    );
+    if (hasFilters && toggle) {
+      toggle.click();
+    }
+  }, [hasFilters]);
   const viewRef = useRef(view);
   viewRef.current = view;
 
@@ -1592,6 +1605,7 @@ function SubscriberList() {
       />
 
       <div
+        ref={dataViewsRef}
         className="mailpoet-dataviews mailpoet-subscribers-dataviews"
         data-automation-id="subscribers_listing"
       >
@@ -1636,7 +1650,7 @@ function SubscriberList() {
               <DataViews.ViewConfig />
             </div>
           </div>
-          <DataViews.Filters className="mailpoet-dataviews__filters" />
+          <DataViews.FiltersToggled className="mailpoet-dataviews__filters" />
           <DataViews.Layout />
           <DataViews.Footer />
         </DataViews>
