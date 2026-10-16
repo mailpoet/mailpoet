@@ -59,7 +59,7 @@ export function normalizeYmd(value: unknown): string | undefined {
 /**
  * Shift a `yyyy-MM-dd` string by whole days, preserving the `yyyy-MM-dd` shape.
  */
-function shiftYmd(ymd: string, deltaDays: number): string {
+export function shiftYmd(ymd: string, deltaDays: number): string {
   const [year, month, day] = ymd.split('-').map(Number);
   const date = new Date(Date.UTC(year, month - 1, day + deltaDays));
   const shiftedMonth = String(date.getUTCMonth() + 1).padStart(2, '0');

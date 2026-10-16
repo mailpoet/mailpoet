@@ -39,6 +39,11 @@ type UseDataViewsQueryResult<T> = {
   groups: ListingResponse<T>['groups'];
   isLoading: boolean;
   error: string | null;
+  /**
+   * Increments each time a response is applied (items, meta and filters set).
+   * Page-clamp re-fetches and errors do not count.
+   */
+  responseVersion: number;
   refresh: () => void;
   clearError: () => void;
 };
@@ -75,6 +80,7 @@ export function useDataViewsQuery<T>({
   const [groups, setGroups] = useState<ListingResponse<T>['groups']>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [responseVersion, setResponseVersion] = useState(0);
   const [refreshToken, setRefreshToken] = useState(0);
   const latestRequestIdRef = useRef(0);
   const completedInitialRequestRef = useRef(false);
@@ -163,6 +169,7 @@ export function useDataViewsQuery<T>({
         setFilters(result.filters ?? EMPTY_FILTERS);
         setGroups(result.groups);
         setError(null);
+        setResponseVersion((version) => version + 1);
       })
       .catch((err: unknown) => {
         if (requestId !== latestRequestIdRef.current) {
@@ -214,6 +221,7 @@ export function useDataViewsQuery<T>({
     groups,
     isLoading,
     error,
+    responseVersion,
     refresh,
     clearError,
   };

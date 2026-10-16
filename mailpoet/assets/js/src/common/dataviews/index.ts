@@ -25,6 +25,7 @@ export {
   hasOnlyDigits,
   isStrictDateString,
   normalizeYmd,
+  shiftYmd,
   type FilterList,
 } from './filters';
 export type {
