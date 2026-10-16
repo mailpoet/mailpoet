@@ -39,7 +39,7 @@ class SearchForNotificationCest {
 
     // step 4 - Filter by assigned list and make sure the notification is present
     $i->applyDataViewsFilter('Lists', [$segmentName]);
-    $i->seeInCurrentUrl('segment=' . $segment->getId());
+    $i->waitForHashFilterValue('segment', (string)$segment->getId());
     $i->waitForText($newsletterTitle, 15, '[data-automation-id="newsletters_listing_tabs"]');
 
     // step 5 - Filter by Inactive and search for the active post notification
