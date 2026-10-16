@@ -6,6 +6,7 @@ use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\LogEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\InvalidStateException;
+use MailPoet\Listing\ListingDateRangeFilterTrait;
 use MailPoet\Util\Helpers;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
@@ -15,6 +16,8 @@ use MailPoetVendor\Doctrine\DBAL\ParameterType;
  * @extends Repository<LogEntity>
  */
 class LogRepository extends Repository {
+  use ListingDateRangeFilterTrait;
+
   public function saveLog(LogEntity $log): void {
     // Save log entity using DBAL to avoid calling "flush()" on the entity manager.
     // Calling "flush()" can have unintended side effects, such as saving unwanted
@@ -304,8 +307,8 @@ class LogRepository extends Repository {
   }
 
   /**
-   * Build the WHERE clause shared by log deletion. Day boundaries
-   * (`00:00:00`–`23:59:59`) and the literal LOCATE() search match
+   * Build the WHERE clause shared by log deletion. The `from`/`to`
+   * days are site-local days converted to UTC, and the literal LOCATE() search match
    * LogListingRepository so deleting honours the same rows the listing shows.
    *
    * @param array{from?: string, to?: string, name?: string[], level?: int[]} $filter
@@ -316,15 +319,28 @@ class LogRepository extends Repository {
     $parameters = [];
     $types = [];
 
-    if (!empty($filter['from'])) {
-      $conditions[] = '`created_at` >= :date_from';
-      $parameters['date_from'] = $filter['from'] . ' 00:00:00';
-      $types['date_from'] = ParameterType::STRING;
+    // An unparsable day matches nothing, so it can never widen a delete.
+    $from = $filter['from'] ?? '';
+    if ($from !== '') {
+      $dateFrom = $this->getSiteDayStartInUtc($from);
+      if ($dateFrom === null) {
+        $conditions[] = '1 = 0';
+      } else {
+        $conditions[] = '`created_at` >= :date_from';
+        $parameters['date_from'] = $dateFrom;
+        $types['date_from'] = ParameterType::STRING;
+      }
     }
-    if (!empty($filter['to'])) {
-      $conditions[] = '`created_at` <= :date_to';
-      $parameters['date_to'] = $filter['to'] . ' 23:59:59';
-      $types['date_to'] = ParameterType::STRING;
+    $to = $filter['to'] ?? '';
+    if ($to !== '') {
+      $dateTo = $this->getSiteDayStartInUtc($to, 1);
+      if ($dateTo === null) {
+        $conditions[] = '1 = 0';
+      } else {
+        $conditions[] = '`created_at` < :date_to';
+        $parameters['date_to'] = $dateTo;
+        $types['date_to'] = ParameterType::STRING;
+      }
     }
     if (!empty($filter['name'])) {
       $conditions[] = '`name` IN (:names)';

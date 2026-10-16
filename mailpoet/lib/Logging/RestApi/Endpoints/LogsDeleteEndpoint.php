@@ -17,12 +17,6 @@ class LogsDeleteEndpoint extends Endpoint {
   use ListingRequestValidationTrait;
   use LogsFilterTrait;
 
-  // Referenced by ListingRequestValidationTrait's pagination helpers, which this
-  // endpoint composes for filter/date validation but never calls (it does not
-  // paginate). Values mirror AbstractListingEndpoint.
-  private const MAX_PER_PAGE = 100;
-  private const MAX_PAGE = 100000;
-
   /** @var LogRepository */
   private $logRepository;
 

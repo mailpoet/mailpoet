@@ -160,6 +160,40 @@ class TagRepositoryTest extends \MailPoetTest {
     $this->assertSame(['Mid'], $this->sortedNames($between['items']));
   }
 
+  /** @dataProvider siteDayCases */
+  public function testListWithCountsFiltersCreatedAtBySiteLocalDay(string $timezone, $gmtOffset, string $day, array $inside, array $outside): void {
+    $this->withSiteTimezone($timezone, $gmtOffset, function () use ($day, $inside, $outside) {
+      foreach (array_merge($inside, $outside) as $createdAt) {
+        $tag = (new TagFactory())->withName($createdAt)->create();
+        $tag->setCreatedAt(new \DateTimeImmutable($createdAt, new \DateTimeZone('UTC')));
+      }
+      $this->entityManager->flush();
+
+      $filter = ['from' => $day, 'to' => $day];
+      $plain = $this->repository->listWithCounts(['filter' => $filter]);
+      $this->assertSame($inside, $this->sortedNames($plain['items']));
+      $this->assertSame(count($inside), $plain['total']);
+
+      $grouped = $this->repository->listWithCounts(['filter' => $filter + ['subscriber_ranges' => [['min' => 0, 'max' => null]]]]);
+      $this->assertSame($inside, $this->sortedNames($grouped['items']));
+      $this->assertSame(count($inside), $grouped['total']);
+    });
+  }
+
+  /**
+   * Site timezone, options to set, filter day, and UTC created-at values grouped by whether the
+   * row belongs to that site-local day. Rows sit one second either side of the UTC day boundaries.
+   *
+   * @return array<string, array{string, string|float|int, string, string[], string[]}>
+   */
+  public function siteDayCases(): array {
+    return [
+      'utc site' => ['', 0, '2020-03-10', ['2020-03-10 00:00:00', '2020-03-10 23:59:59'], ['2020-03-09 23:59:59', '2020-03-11 00:00:00']],
+      'dst zone, standard time' => ['Europe/Prague', 0, '2020-03-10', ['2020-03-09 23:00:00', '2020-03-10 22:59:59'], ['2020-03-09 22:59:59', '2020-03-10 23:00:00']],
+      'fixed gmt offset' => ['', 5.5, '2020-03-10', ['2020-03-09 18:30:00', '2020-03-10 18:29:59'], ['2020-03-09 18:29:59', '2020-03-10 18:30:00']],
+    ];
+  }
+
   public function testListWithCountsSortsByCreatedAt(): void {
     $old = (new TagFactory())->withName('Old')->create();
     $recent = (new TagFactory())->withName('Recent')->create();
@@ -228,6 +262,29 @@ class TagRepositoryTest extends \MailPoetTest {
     $names = array_column($items, 'name');
     sort($names);
     return $names;
+  }
+
+  /**
+   * @param string|float|int $gmtOffset
+   */
+  private function withSiteTimezone(string $timezoneString, $gmtOffset, callable $callback): void {
+    $previous = [
+      'timezone_string' => get_option('timezone_string'),
+      'gmt_offset' => get_option('gmt_offset'),
+    ];
+    update_option('timezone_string', $timezoneString);
+    update_option('gmt_offset', $gmtOffset);
+    try {
+      $callback();
+    } finally {
+      foreach ($previous as $option => $value) {
+        if ($value === false) {
+          delete_option($option);
+        } else {
+          update_option($option, $value);
+        }
+      }
+    }
   }
 
   /**

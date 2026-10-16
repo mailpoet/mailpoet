@@ -12,11 +12,6 @@ use MailPoet\Validator\Builder;
 class TagsGetEndpoint extends TagsEndpoint {
   use ListingRequestValidationTrait;
 
-  // Bounds the shared validation trait relies on. Kept in sync with
-  // AbstractListingEndpoint so listing validation behaves the same everywhere.
-  public const MAX_PER_PAGE = 100;
-  public const MAX_PAGE = 100000;
-
   /** @var TagRepository */
   private $tagRepository;
 

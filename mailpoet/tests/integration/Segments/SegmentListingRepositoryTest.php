@@ -43,6 +43,61 @@ class SegmentListingRepositoryTest extends \MailPoetTest {
     verify($segments)->arrayCount(2);
   }
 
+  /** @dataProvider siteDayCases */
+  public function testItFiltersCreatedDateRangeBySiteLocalDay(string $timezone, $gmtOffset, string $day, array $inside, array $outside): void {
+    $this->withSiteTimezone($timezone, $gmtOffset, function () use ($day, $inside, $outside) {
+      foreach (array_merge($inside, $outside) as $createdAt) {
+        $segment = $this->createSegment($createdAt, SegmentEntity::TYPE_DEFAULT);
+        $segment->setCreatedAt(new \DateTimeImmutable($createdAt, new \DateTimeZone('UTC')));
+      }
+      $this->entityManager->flush();
+
+      $segments = $this->repository->getData(
+        $this->listingHandler->getListingDefinition(['filter' => ['created_from' => $day, 'created_to' => $day]])
+      );
+      $names = array_map(function (SegmentEntity $segment): string {
+        return $segment->getName();
+      }, $segments);
+      sort($names);
+      verify($names)->same($inside);
+    });
+  }
+
+  /**
+   * Site timezone, options to set, filter day, and UTC created-at values grouped by whether the
+   * row belongs to that site-local day. Rows sit one second either side of the UTC day boundaries.
+   *
+   * @return array<string, array{string, string|float, string, string[], string[]}>
+   */
+  public function siteDayCases(): array {
+    return [
+      'utc site' => ['', 0, '2020-03-10', ['2020-03-10 00:00:00', '2020-03-10 23:59:59'], ['2020-03-09 23:59:59', '2020-03-11 00:00:00']],
+      'dst zone, standard time' => ['Europe/Prague', 0, '2020-03-10', ['2020-03-09 23:00:00', '2020-03-10 22:59:59'], ['2020-03-09 22:59:59', '2020-03-10 23:00:00']],
+      'dst zone, 23-hour day' => ['America/New_York', 0, '2020-03-08', ['2020-03-08 05:00:00', '2020-03-09 03:59:59'], ['2020-03-08 04:59:59', '2020-03-09 04:00:00']],
+      'fixed gmt offset' => ['', 5.5, '2020-03-10', ['2020-03-09 18:30:00', '2020-03-10 18:29:59'], ['2020-03-09 18:29:59', '2020-03-10 18:30:00']],
+    ];
+  }
+
+  private function withSiteTimezone(string $timezoneString, $gmtOffset, callable $callback): void {
+    $previous = [
+      'timezone_string' => get_option('timezone_string'),
+      'gmt_offset' => get_option('gmt_offset'),
+    ];
+    update_option('timezone_string', $timezoneString);
+    update_option('gmt_offset', $gmtOffset);
+    try {
+      $callback();
+    } finally {
+      foreach ($previous as $option => $value) {
+        if ($value === false) {
+          delete_option($option);
+        } else {
+          update_option($option, $value);
+        }
+      }
+    }
+  }
+
   public function testItFiltersByEngagementScore(): void {
     $low = $this->createSegment('Low', SegmentEntity::TYPE_DEFAULT);
     $high = $this->createSegment('High', SegmentEntity::TYPE_DEFAULT);

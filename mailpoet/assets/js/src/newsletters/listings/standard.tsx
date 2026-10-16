@@ -25,12 +25,18 @@ import {
   SHARE_VISIBILITY_PUBLIC,
 } from './share-modal';
 import {
-  STANDARD_NEWSLETTER_GROUPS,
   NewslettersListing,
   toNewsletterMailerLog,
   type ListingActionHelpers,
   type NewsletterMailerLog,
 } from './newsletters-listing';
+import {
+  segmentsFieldBase,
+  SENT_AT_OPERATORS,
+  getStatusFilterValue,
+  statusElements,
+} from './listing-fields';
+import { getAllowedStatuses } from './filters';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
@@ -107,17 +113,18 @@ function buildFields(
     {
       id: 'status',
       label: __('Status', 'mailpoet'),
-      enableSorting: false,
+      type: 'text',
+      enableSorting: true,
       enableGlobalSearch: false,
+      getValue: ({ item }) => getStatusFilterValue(item),
+      elements: statusElements(getAllowedStatuses('standard')),
+      filterBy: { operators: ['isAny'] },
       render: ({ item }) => (
         <QueueStatus newsletter={asNewsLetter(item)} mailerLog={mailerLog} />
       ),
     },
     {
-      id: 'segments',
-      label: __('Lists', 'mailpoet'),
-      enableSorting: false,
-      enableGlobalSearch: false,
+      ...segmentsFieldBase,
       render: ({ item }) => (
         <ErrorBoundary>
           <SegmentTags
@@ -150,9 +157,10 @@ function buildFields(
       id: 'sent_at',
       label: __('Date sent', 'mailpoet'),
       header: __('Sent on', 'mailpoet'),
-      type: 'datetime',
+      type: 'date',
       enableSorting: true,
       enableGlobalSearch: false,
+      filterBy: { operators: [...SENT_AT_OPERATORS] },
       render: ({ item }) => {
         const isTimezoneCampaign = isTimezoneCampaignQueue(
           asNewsLetter(item).queue,
@@ -406,7 +414,6 @@ function NewsletterListStandardComponent() {
         defaultSort={{ field: 'sent_at', direction: 'desc' }}
         itemActions={itemActions}
         supportsExportStats={trackingHooksOk}
-        supportedGroups={STANDARD_NEWSLETTER_GROUPS}
         emptyState={() => (
           <NewsletterTypes
             filter={(type) => type.slug === 'standard'}

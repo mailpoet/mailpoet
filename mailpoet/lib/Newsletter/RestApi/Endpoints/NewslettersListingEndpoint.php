@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\RestApi\Endpoints;
 
 use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\API\REST\AbstractListingEndpoint;
+use MailPoet\API\REST\ListingRequestValidationTrait;
 use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\Config\AccessControl;
@@ -13,6 +14,7 @@ use MailPoet\Listing\Handler as ListingHandler;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
+use MailPoet\Newsletter\RestApi\NewslettersFilterValidationTrait;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Validator\Builder;
 use MailPoet\WP\Functions as WPFunctions;
@@ -29,6 +31,9 @@ use MailPoet\WP\Functions as WPFunctions;
  * fields the listing page used to read from the legacy meta.
  */
 class NewslettersListingEndpoint extends AbstractListingEndpoint {
+  use ListingRequestValidationTrait;
+  use NewslettersFilterValidationTrait;
+
   public const SUPPORTED_TYPES = [
     NewsletterEntity::TYPE_STANDARD,
     NewsletterEntity::TYPE_NOTIFICATION,
@@ -37,6 +42,8 @@ class NewslettersListingEndpoint extends AbstractListingEndpoint {
     NewsletterEntity::TYPE_WELCOME,
     NewsletterEntity::TYPE_AUTOMATIC,
   ];
+
+  private const ALLOWED_SORT_FIELDS = ['id', 'name', 'subject', 'status', 'sent_at', 'updated_at', 'created_at'];
 
   /** @var NewsletterListingRepository */
   private $newsletterListingRepository;
@@ -74,6 +81,7 @@ class NewslettersListingEndpoint extends AbstractListingEndpoint {
   }
 
   public function handle(Request $request): Response {
+    $this->validateRequest($request);
     /** @var Response $response */
     $response = parent::handle($request);
     $payload = $response->get_data();
@@ -120,6 +128,10 @@ class NewslettersListingEndpoint extends AbstractListingEndpoint {
     return 'all';
   }
 
+  protected function getListingValidationErrorPrefix(): string {
+    return 'newsletters';
+  }
+
   protected function getRequestParameters(Request $request): array {
     $params = [];
     $typeParam = $request->getParam('type');
@@ -131,5 +143,13 @@ class NewslettersListingEndpoint extends AbstractListingEndpoint {
       $params['parentId'] = (int)$parentIdParam;
     }
     return $params;
+  }
+
+  private function validateRequest(Request $request): void {
+    $this->validateSortField($request->getParam('orderby'), self::ALLOWED_SORT_FIELDS);
+    $this->validateSortField($request->getParam('sort_by'), self::ALLOWED_SORT_FIELDS);
+    $this->validateSortOrder($request->getParam('order'));
+    $this->validateSortOrder($request->getParam('sort_order'));
+    $this->validateNewslettersFilters($request->getParam('filter'), $request->getParam('type'));
   }
 }

@@ -32,10 +32,13 @@ import {
   type NewsletterListingItem,
 } from '../api';
 import {
-  ACTIVATION_NEWSLETTER_GROUPS,
   NewslettersListing,
   type ListingActionHelpers,
 } from './newsletters-listing';
+import {
+  ACTIVATION_STATUS_ELEMENTS,
+  activationSegmentsField,
+} from './listing-fields';
 import { confirmEdit } from './utils.jsx';
 
 // See standard.tsx for the rationale behind widening at the boundary.
@@ -213,8 +216,12 @@ function buildFields(
     {
       id: 'status',
       label: __('Status', 'mailpoet'),
-      enableSorting: false,
+      type: 'text',
+      enableSorting: true,
       enableGlobalSearch: false,
+      getValue: ({ item }) => item.status,
+      elements: ACTIVATION_STATUS_ELEMENTS,
+      filterBy: { operators: ['isAny'] },
       render: ({ item }) => {
         const status = statusOverrides[String(item.id)] ?? item.status;
         return (
@@ -246,6 +253,7 @@ function buildFields(
           </>
         ) : null,
     },
+    activationSegmentsField,
   ];
 }
 
@@ -385,7 +393,6 @@ function NewsletterListNotificationComponent() {
       defaultSort={{ field: 'updated_at', direction: 'desc' }}
       itemActions={itemActions}
       onItemsLoaded={handleItemsLoaded}
-      supportedGroups={ACTIVATION_NEWSLETTER_GROUPS}
       emptyState={() => (
         <NewsletterTypes
           filter={(type) => type.slug === 'notification'}

@@ -165,6 +165,74 @@ class FormListingRepositoryTest extends \MailPoetTest {
     verify($forms[0]->getName())->same('Form 1');
   }
 
+  /** @dataProvider siteDayCases */
+  public function testItFiltersCreatedDateRangeBySiteLocalDay(string $timezone, $gmtOffset, string $day, array $inside, array $outside): void {
+    $this->withSiteTimezone($timezone, $gmtOffset, function () use ($day, $inside, $outside) {
+      foreach (array_merge($inside, $outside) as $createdAt) {
+        $form = new FormEntity($createdAt);
+        $form->setCreatedAt(new \DateTimeImmutable($createdAt, new \DateTimeZone('UTC')));
+        $this->entityManager->persist($form);
+      }
+      $this->entityManager->flush();
+
+      $forms = $this->formListingRepository->getData(
+        $this->listingHandler->getListingDefinition(['filter' => ['created_from' => $day, 'created_to' => $day]])
+      );
+      $names = array_map(function (FormEntity $form): string {
+        return $form->getName();
+      }, $forms);
+      sort($names);
+      verify($names)->same($inside);
+    });
+  }
+
+  public function testItReturnsNothingForAnInvalidCreatedDay(): void {
+    $this->entityManager->persist(new FormEntity('Form invalid day'));
+    $this->entityManager->flush();
+
+    foreach (['created_from', 'created_to'] as $key) {
+      $forms = $this->formListingRepository->getData(
+        $this->listingHandler->getListingDefinition(['filter' => [$key => '2024-13-01']])
+      );
+      verify($forms)->same([]);
+    }
+  }
+
+  /**
+   * Site timezone, options to set, filter day, and UTC created-at values grouped by whether the
+   * row belongs to that site-local day. Rows sit one second either side of the UTC day boundaries.
+   *
+   * @return array<string, array{string, string|float, string, string[], string[]}>
+   */
+  public function siteDayCases(): array {
+    return [
+      'utc site' => ['', 0, '2020-03-10', ['2020-03-10 00:00:00', '2020-03-10 23:59:59'], ['2020-03-09 23:59:59', '2020-03-11 00:00:00']],
+      'dst zone, standard time' => ['Europe/Prague', 0, '2020-03-10', ['2020-03-09 23:00:00', '2020-03-10 22:59:59'], ['2020-03-09 22:59:59', '2020-03-10 23:00:00']],
+      'dst zone, 23-hour day' => ['America/New_York', 0, '2020-03-08', ['2020-03-08 05:00:00', '2020-03-09 03:59:59'], ['2020-03-08 04:59:59', '2020-03-09 04:00:00']],
+      'fixed gmt offset' => ['', 5.5, '2020-03-10', ['2020-03-09 18:30:00', '2020-03-10 18:29:59'], ['2020-03-09 18:29:59', '2020-03-10 18:30:00']],
+    ];
+  }
+
+  private function withSiteTimezone(string $timezoneString, $gmtOffset, callable $callback): void {
+    $previous = [
+      'timezone_string' => get_option('timezone_string'),
+      'gmt_offset' => get_option('gmt_offset'),
+    ];
+    update_option('timezone_string', $timezoneString);
+    update_option('gmt_offset', $gmtOffset);
+    try {
+      $callback();
+    } finally {
+      foreach ($previous as $option => $value) {
+        if ($value === false) {
+          delete_option($option);
+        } else {
+          update_option($option, $value);
+        }
+      }
+    }
+  }
+
   private function setUpdatedAt(FormEntity $form, string $date): void {
     $this->entityManager
       ->createQuery('UPDATE ' . FormEntity::class . ' f SET f.updatedAt = :date WHERE f.id = :id')

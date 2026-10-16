@@ -7,6 +7,7 @@ import {
   type ListingResponse,
   type RestApiError,
 } from 'common/dataviews';
+import type { NewslettersRequestFilter } from './listings/filters';
 
 declare global {
   interface Window {
@@ -106,7 +107,7 @@ export type NewslettersListingExtras = {
 export type NewslettersListingParams = ListingQueryParams & {
   type?: NewsletterType;
   parent_id?: number;
-  filter?: Record<string, string>;
+  filter?: NewslettersRequestFilter;
 };
 
 export type NewslettersBulkAction =
@@ -118,7 +119,7 @@ export type NewslettersBulkAction =
 export type NewslettersBulkScope = {
   type: NewsletterType;
   group?: string;
-  filter?: Record<string, string>;
+  filter?: NewslettersRequestFilter;
   search?: string;
   selection?: number[];
   select_all?: boolean;

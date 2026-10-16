@@ -539,6 +539,21 @@ class AcceptanceTester extends \Codeception\Actor {
     return $this->_waitForJS($script, $this->getDefaultTimeout($timeout));
   }
 
+  /**
+   * The browser reports the hash percent-encoded, so compare the decoded value.
+   */
+  public function waitForHashContaining(string $fragment, int $timeout = 10): void {
+    $this->waitForJS('return decodeURIComponent(window.location.hash).indexOf(' . json_encode($fragment) . ') !== -1;', $timeout);
+  }
+
+  /**
+   * Waits for `key=value` as a whole entry of the hash filter, so `segment=1` does not match `segment=12`.
+   */
+  public function waitForHashFilterValue(string $key, string $value, int $timeout = 10): void {
+    $pattern = '[\\[&,]' . preg_quote($key, '/') . '=' . preg_quote($value, '/') . '(?=[&,\\]]|$)';
+    $this->waitForJS('return new RegExp(' . json_encode($pattern) . ').test(decodeURIComponent(window.location.hash));', $timeout);
+  }
+
   public function waitForText($text, $timeout = 10, $selector = null) {
     return $this->_waitForText($text, $this->getDefaultTimeout($timeout), $selector);
   }
@@ -1094,6 +1109,26 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function isWooCustomOrdersTableEnabled(): bool {
     return (bool)getenv('ENABLE_COT');
+  }
+
+  /**
+   * Applies a native DataViews filter by picking the given option labels.
+   *
+   * @param string[] $optionLabels
+   */
+  public function applyDataViewsFilter(string $filterName, array $optionLabels): void {
+    $i = $this;
+    // The "Add filter" control is icon-only until a filter is active, then it gets a text label.
+    $addFilter = ['xpath' => '//button[@aria-label="Add filter" or normalize-space(.)="Add filter"]'];
+    $i->waitForElementClickable($addFilter);
+    $i->click($addFilter);
+    $i->waitForText($filterName);
+    $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "' . $filterName . '")]']);
+    $i->waitForElement('.dataviews-filters__search-widget-listitem');
+    foreach ($optionLabels as $label) {
+      $i->click(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][.//text()[contains(., "' . $label . '")]]']);
+    }
+    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
   }
 
   public function changeGroupInListingFilter(string $name): void {
