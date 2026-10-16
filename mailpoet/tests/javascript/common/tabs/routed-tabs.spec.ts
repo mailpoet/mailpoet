@@ -2,6 +2,7 @@ import { JSDOM } from 'jsdom';
 import NodeModule from 'module';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import sinon from 'sinon';
 
 type RoutedTabsModule = {
   RoutedTabs: React.ComponentType<{
@@ -25,6 +26,7 @@ const testRequire = (
 ).createRequire(`${process.cwd()}/package.json`);
 
 let dom: JSDOM;
+let warnSpy: sinon.SinonSpy;
 let routedTabsModule: RoutedTabsModule;
 let tabModule: TabModule;
 
@@ -32,6 +34,9 @@ describe('RoutedTabs', function routedTabsSuite() {
   this.timeout(20000);
 
   before(() => {
+    // React Router warns about missing future flags once per process, and this is the only spec
+    // that renders a real router, so the spy must be in place before the first render.
+    warnSpy = sinon.spy(console, 'warn');
     // A hash-less URL, as when the page is opened from the admin menu.
     dom = new JSDOM('<!doctype html><html><body></body></html>', {
       url: 'https://example.com/wp-admin/admin.php?page=mailpoet-settings',
@@ -51,6 +56,7 @@ describe('RoutedTabs', function routedTabsSuite() {
   });
 
   after(() => {
+    warnSpy.restore();
     delete testRequire.cache[testRequire.resolve(routedTabsPath)];
     dom.window.close();
     delete (global as { document?: unknown }).document;
@@ -93,6 +99,12 @@ describe('RoutedTabs', function routedTabsSuite() {
     // A pushed redirect would leave the hash-less entry behind, so Back would land on it and
     // redirect again instead of leaving the page.
     expect(window.history.length).to.equal(historyLength);
+    const flagWarnings = (warnSpy.args as unknown[][]).filter((args) =>
+      args.some((arg) =>
+        String(arg).includes('React Router Future Flag Warning'),
+      ),
+    );
+    expect(flagWarnings).to.have.length(0);
 
     await React.act(async () => {
       root.unmount();

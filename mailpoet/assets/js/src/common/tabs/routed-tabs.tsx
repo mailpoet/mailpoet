@@ -11,6 +11,7 @@ import {
 } from 'react-router-dom';
 import { noop } from 'lodash';
 
+import { ROUTER_FUTURE_FLAGS } from 'common/router-future-flags';
 import { isTabElement, type Props as TabProps, Tabs } from './tabs';
 
 function RouterAwareTabs(
@@ -119,9 +120,9 @@ function RoutedTabs({
   );
 
   return routerType === 'browser' ? (
-    <BrowserRouter>{routedTabs}</BrowserRouter>
+    <BrowserRouter future={ROUTER_FUTURE_FLAGS}>{routedTabs}</BrowserRouter>
   ) : (
-    <HashRouter>{routedTabs}</HashRouter>
+    <HashRouter future={ROUTER_FUTURE_FLAGS}>{routedTabs}</HashRouter>
   );
 }
 
