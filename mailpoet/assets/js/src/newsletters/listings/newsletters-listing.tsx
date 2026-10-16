@@ -49,6 +49,7 @@ import {
   hashFilterToRequestFilter,
   requestFilterToHashFilter,
   requestFilterToViewFilters,
+  getAllowedSortIds,
   sanitizeSort,
   viewFiltersToRequestFilter,
   withoutFields,
@@ -277,7 +278,7 @@ export function NewslettersListing({
             preferredView.sort?.direction ??
             defaultSort.direction,
         },
-        sortableFieldIds,
+        getAllowedSortIds(sortableFieldIds),
         defaultSort,
       ),
       filters: requestFilterToViewFilters(
@@ -302,6 +303,12 @@ export function NewslettersListing({
     [group, parentId, type],
   );
 
+  const toRequestFilter = useCallback(
+    (viewFilters: View['filters']) =>
+      viewFiltersToRequestFilter(viewFilters, getAllowedStatuses(type, group)),
+    [group, type],
+  );
+
   const {
     view,
     setView,
@@ -318,18 +325,12 @@ export function NewslettersListing({
     initialView,
     load,
     extraParams: (currentView) =>
-      filterToExtraParams(
-        viewFiltersToRequestFilter(
-          currentView.filters,
-          getAllowedStatuses(type, group),
-        ),
-      ),
+      filterToExtraParams(toRequestFilter(currentView.filters)),
   });
 
   const requestFilter = useMemo(
-    () =>
-      viewFiltersToRequestFilter(view.filters, getAllowedStatuses(type, group)),
-    [group, type, view.filters],
+    () => toRequestFilter(view.filters),
+    [toRequestFilter, view.filters],
   );
 
   // Mailer + cron envelope info is dispatched through `checkMailerStatus` /
@@ -420,7 +421,7 @@ export function NewslettersListing({
               preferredView.sort?.direction ??
               defaultSort.direction,
           },
-          sortableFieldIds,
+          getAllowedSortIds(sortableFieldIds),
           { field: defaultSort.field, direction: defaultSort.direction },
         ),
         filters: requestFilterToViewFilters(
@@ -570,7 +571,7 @@ export function NewslettersListing({
       !loadError &&
       groupCounts.trash === 0 &&
       !view.search &&
-      (view.filters ?? []).length === 0
+      Object.keys(requestFilter).length === 0
     ) {
       setGroup('all');
       setSelection([]);
@@ -581,8 +582,8 @@ export function NewslettersListing({
     groupCounts.trash,
     isLoading,
     loadError,
+    requestFilter,
     setView,
-    view.filters,
     view.search,
   ]);
 

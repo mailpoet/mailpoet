@@ -1,5 +1,9 @@
 import type { Filter } from '@wordpress/dataviews';
-import { dateRangeFromFilter, isStrictDateString } from 'common/dataviews';
+import {
+  dateRangeFromFilter,
+  hasOnlyDigits,
+  isStrictDateString,
+} from 'common/dataviews';
 
 export const STATUS_FIELD = 'status';
 export const SEGMENTS_FIELD = 'segments';
@@ -35,10 +39,10 @@ export function getAllowedStatuses(type: string, group: string): string[] {
 }
 
 function isDigits(value: string): boolean {
-  return value !== '' && value.split('').every((c) => c >= '0' && c <= '9');
+  return value !== '' && hasOnlyDigits(value);
 }
 
-function toStrings(value: unknown): string[] {
+export function toStrings(value: unknown): string[] {
   return (Array.isArray(value) ? value : [])
     .map((entry) => String(entry))
     .filter((entry) => entry !== '');
@@ -55,7 +59,9 @@ function validRange(
 ): { sent_at_from?: string; sent_at_to?: string } {
   const validFrom = from && isStrictDateString(from) ? from : undefined;
   const validTo = to && isStrictDateString(to) ? to : undefined;
-  if (validFrom && validTo && validFrom > validTo) return {};
+  if (validFrom && validTo && validFrom > validTo) {
+    return { sent_at_from: validTo, sent_at_to: validFrom };
+  }
   return {
     ...(validFrom ? { sent_at_from: validFrom } : {}),
     ...(validTo ? { sent_at_to: validTo } : {}),
@@ -189,6 +195,21 @@ export function sendingStatusRequestFilterToHashFilter(
   return filter.result && filter.result.length > 0
     ? { result: filter.result.join(',') }
     : {};
+}
+
+// Old links may sort by columns the tab no longer shows but the endpoint accepts.
+const ENDPOINT_SORT_FIELDS = [
+  'id',
+  'name',
+  'subject',
+  'status',
+  'sent_at',
+  'updated_at',
+  'created_at',
+];
+
+export function getAllowedSortIds(sortableFieldIds: string[]): string[] {
+  return [...new Set([...sortableFieldIds, ...ENDPOINT_SORT_FIELDS])];
 }
 
 export function sanitizeSort(

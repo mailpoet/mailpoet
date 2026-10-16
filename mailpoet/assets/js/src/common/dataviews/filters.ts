@@ -6,7 +6,7 @@ import type { Filter } from '@wordpress/dataviews';
  * listing should reuse these so date handling stays identical across listings.
  */
 
-function hasOnlyDigits(value: string): boolean {
+export function hasOnlyDigits(value: string): boolean {
   return value
     .split('')
     .every((character) => character >= '0' && character <= '9');

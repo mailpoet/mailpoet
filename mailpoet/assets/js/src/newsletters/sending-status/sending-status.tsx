@@ -283,6 +283,14 @@ export function SendingStatus() {
     [group, newsletterId],
   );
 
+  const toRequestFilter = useCallback(
+    (viewFilters: View['filters']) =>
+      group === 'all'
+        ? sendingStatusViewFiltersToRequestFilter(viewFilters)
+        : {},
+    [group],
+  );
+
   const {
     view,
     setView,
@@ -298,18 +306,11 @@ export function SendingStatus() {
     initialView,
     load,
     extraParams: (currentView) =>
-      filterToExtraParams(
-        group === 'all'
-          ? sendingStatusViewFiltersToRequestFilter(currentView.filters)
-          : {},
-      ),
+      filterToExtraParams(toRequestFilter(currentView.filters)),
   });
   const requestFilter = useMemo(
-    () =>
-      group === 'all'
-        ? sendingStatusViewFiltersToRequestFilter(view.filters)
-        : {},
-    [group, view.filters],
+    () => toRequestFilter(view.filters),
+    [toRequestFilter, view.filters],
   );
   const persistedViewChange = usePersistedDataViewsPreference(
     'sending-status',

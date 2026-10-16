@@ -2,7 +2,13 @@ import { __ } from '@wordpress/i18n';
 import type { Field, Filter } from '@wordpress/dataviews';
 import type { ListingFilterOption } from 'common/dataviews/types';
 import type { NewsletterListingItem } from '../api';
-import { SEGMENTS_FIELD, SENT_AT_FIELD, STATUS_FIELD } from './filters';
+import {
+  getAllowedStatuses,
+  SEGMENTS_FIELD,
+  SENT_AT_FIELD,
+  STATUS_FIELD,
+  toStrings,
+} from './filters';
 
 type Element = { value: string; label: string };
 
@@ -14,26 +20,33 @@ export const NEWSLETTER_STATUS_ELEMENTS: Record<string, Element> = {
   sending: { value: 'sending', label: __('Sending', 'mailpoet') },
   paused: { value: 'paused', label: __('Paused', 'mailpoet') },
   sent: { value: 'sent', label: __('Sent', 'mailpoet') },
+  active: { value: 'active', label: __('Active', 'mailpoet') },
 };
-
-export const ACTIVATION_STATUS_ELEMENTS: Element[] = [
-  { value: 'active', label: __('Active', 'mailpoet') },
-  { value: 'draft', label: __('Not active', 'mailpoet') },
-];
 
 export const SEGMENT_OPERATORS = ['isAny', 'isNone'] as const;
 
+// Every operator maps one-to-one onto the sent_from / sent_to hash keys.
 export const SENT_AT_OPERATORS = [
-  'before',
-  'after',
-  'between',
+  'on',
   'beforeInc',
   'afterInc',
+  'between',
 ] as const;
 
-export function statusElements(values: string[]): Element[] {
-  return values.map((value) => NEWSLETTER_STATUS_ELEMENTS[value]);
+export function statusElements(
+  values: string[],
+  labels: Record<string, string> = {},
+): Element[] {
+  return values.map((value) => ({
+    ...NEWSLETTER_STATUS_ELEMENTS[value],
+    ...(labels[value] ? { label: labels[value] } : {}),
+  }));
 }
+
+export const ACTIVATION_STATUS_ELEMENTS: Element[] = statusElements(
+  getAllowedStatuses('notification', 'all'),
+  { draft: __('Not active', 'mailpoet') },
+);
 
 // Paused is a queue state of a sending email, not a status of its own.
 export function getStatusFilterValue(item: NewsletterListingItem): string {
@@ -46,9 +59,7 @@ export function getStatusFilterValue(item: NewsletterListingItem): string {
 
 export function getSegmentFilterIds(filters: Filter[] | undefined): string[] {
   const filter = (filters ?? []).find((item) => item.field === SEGMENTS_FIELD);
-  return (Array.isArray(filter?.value) ? filter.value : []).map((id) =>
-    String(id),
-  );
+  return toStrings(filter?.value);
 }
 
 // Selected ids missing from the options (a deleted list in a bookmark) stay
@@ -91,14 +102,27 @@ export function applyFilterConfig(
   });
 }
 
-// Filter-only field: the activation listings show lists inside "Settings".
-export const activationSegmentsField: Field<NewsletterListingItem> = {
+export const segmentsFieldBase: Pick<
+  Field<NewsletterListingItem>,
+  | 'id'
+  | 'label'
+  | 'type'
+  | 'enableSorting'
+  | 'enableGlobalSearch'
+  | 'getValue'
+  | 'filterBy'
+> = {
   id: SEGMENTS_FIELD,
   label: __('Lists', 'mailpoet'),
   type: 'text',
   enableSorting: false,
   enableGlobalSearch: false,
-  enableHiding: false,
   getValue: ({ item }) => item.segments.map((segment) => String(segment.id)),
   filterBy: { operators: [...SEGMENT_OPERATORS] },
+};
+
+// Filter-only field: the activation listings show lists inside "Settings".
+export const activationSegmentsField: Field<NewsletterListingItem> = {
+  ...segmentsFieldBase,
+  enableHiding: false,
 };
