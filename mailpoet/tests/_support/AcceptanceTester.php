@@ -1119,6 +1119,64 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   /**
+   * Add a native DataViews element filter (Status, Lists, Tags, Source, …).
+   *
+   * @param string $field Field label shown in the "Add filter" menu.
+   * @param string $operator Operator label, e.g. "Is none of". Empty keeps the default.
+   * @param string[] $values Labels of the options to pick (matched by text).
+   */
+  public function addDataViewsFilter(string $field, string $operator, array $values): void {
+    $i = $this;
+    // The first filter is added from the toolbar icon button; once a filter
+    // exists, the filter bar has its own text "Add filter" button.
+    $addFilter = ['xpath' => '(//button[@aria-label="Add filter"] | //button[contains(concat(" ", normalize-space(@class), " "), " dataviews-filters-button ")][normalize-space(.)="Add filter"])[1]'];
+    $i->waitForElementClickable($addFilter);
+    $i->click($addFilter);
+    $i->waitForElement(['xpath' => '//*[@role="menuitem"][normalize-space(.)=' . self::xpathString($field) . ']']);
+    $i->click(['xpath' => '//*[@role="menuitem"][normalize-space(.)=' . self::xpathString($field) . ']']);
+    if ($operator !== '') {
+      $operatorSelect = '.dataviews-filters__summary-operators-filter-select select';
+      $i->waitForElement($operatorSelect);
+      $i->selectOption($operatorSelect, $operator);
+    }
+    $i->waitForElement('.dataviews-filters__search-widget-listitem');
+    foreach ($values as $value) {
+      $i->click(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][contains(normalize-space(.), ' . self::xpathString($value) . ')]']);
+    }
+    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+    $i->waitForListingItemsToLoad();
+  }
+
+  /**
+   * Remove every active DataViews filter via the chips' remove buttons.
+   */
+  public function clearDataViewsFilters(): void {
+    $i = $this;
+    for ($x = 0; $x < 10; $x++) {
+      $count = $i->executeJS('return document.querySelectorAll(".dataviews-filters__summary-chip-remove").length;');
+      if (!$count) {
+        break;
+      }
+      $i->executeJS('document.querySelector(".dataviews-filters__summary-chip-remove").click();');
+      $i->wait(0.5);
+    }
+    $i->waitForListingItemsToLoad();
+  }
+
+  /**
+   * Assert that an active DataViews filter chip contains the given text.
+   */
+  public function waitForDataViewsFilterChip(string $text): void {
+    $this->waitForJS(
+      'return Array.from(document.querySelectorAll(".dataviews-filters__summary-chip")).some(function (chip) { return chip.textContent.indexOf(' . json_encode($text) . ') !== -1; });',
+      10
+    );
+    // The chip is drawn from the URL before the first response, while the empty
+    // state is already showing, so also wait for the listing to settle.
+    $this->waitForListingItemsToLoad();
+  }
+
+  /**
    * Install a `@wordpress/api-fetch` middleware that lets the test mock or
    * inspect REST calls made by the listing pages. Pass JS that defines a
    * `window.mailpoetTestApiFetchInterceptor = function (options, next) {…}`

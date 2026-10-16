@@ -52,8 +52,8 @@ class CreateTrackingConsentSegmentCest {
     $i->waitForText($segmentTitle);
     $i->clickWooTableActionByItemName($segmentTitle, 'View subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
-    $i->see($segmentTitle, ['css' => 'select[name=segment]']);
-    $i->see('consent_denied@example.com');
+    $i->waitForDataViewsFilterChip($segmentTitle);
+    $i->waitForText('consent_denied@example.com');
     $i->dontSee('consent_granted@example.com');
     $i->dontSee('consent_unknown@example.com');
   }
@@ -72,8 +72,8 @@ class CreateTrackingConsentSegmentCest {
     $i->waitForText($segmentTitle);
     $i->clickWooTableActionByItemName($segmentTitle, 'View subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
-    $i->see($segmentTitle, ['css' => 'select[name=segment]']);
-    $i->see('consent_granted@example.com');
+    $i->waitForDataViewsFilterChip($segmentTitle);
+    $i->waitForText('consent_granted@example.com');
     $i->see('consent_unknown@example.com');
     $i->dontSee('consent_denied@example.com');
   }

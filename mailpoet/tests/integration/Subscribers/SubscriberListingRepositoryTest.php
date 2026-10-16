@@ -8,16 +8,26 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Listing\ListingDefinition;
+use MailPoet\Segments\DynamicSegments\FilterFactory;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
+use MailPoet\Segments\DynamicSegments\Filters\EmailAction as EmailActionFilter;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberTextField;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
+use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SegmentSubscribersRepository;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\StatisticsNewsletters;
+use MailPoet\Test\DataFactories\StatisticsOpens;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Test\DataFactories\Tag;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\Logging\DebugStack;
 
 class SubscriberListingRepositoryTest extends \MailPoetTest {
 
@@ -44,13 +54,35 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     'filter' => [],
   ];
 
+  /** @var array<string, mixed>|null */
+  private $originalTimezoneOptions;
+
+  /** @var string|null */
+  private $originalThousandsSeparator;
+
+  public function _after() {
+    if ($this->originalThousandsSeparator !== null) {
+      $this->setThousandsSeparator($this->originalThousandsSeparator);
+      $this->originalThousandsSeparator = null;
+    }
+    if ($this->originalTimezoneOptions !== null) {
+      foreach ($this->originalTimezoneOptions as $option => $value) {
+        update_option($option, $value);
+      }
+      $this->originalTimezoneOptions = null;
+    }
+    parent::_after();
+  }
+
   public function _before() {
     $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->repository = new SubscriberListingRepository(
       $this->entityManager,
       $this->diContainer->get(FilterHandler::class),
       $this->diContainer->get(SegmentSubscribersRepository::class),
-      $this->diContainer->get(SubscribersCountsController::class)
+      $this->diContainer->get(SubscribersCountsController::class),
+      $this->diContainer->get(SegmentDependencyValidator::class),
+      $this->diContainer->get(WPFunctions::class)
     );
   }
 
@@ -90,6 +122,36 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($filters['tag'])->arrayCount(2);
     verify($filters['tag'][0]['label'])->equals('All Tags');
     verify($filters['tag'][1]['label'])->equals('My Tag (1)');
+  }
+
+  public function testFilterOptionCountsUseTheLocaleThousandsSeparator() {
+    $this->originalThousandsSeparator = $this->setThousandsSeparator('.');
+    $segment = $this->segmentRepository->createOrUpdate('Big List');
+    $tag = (new Tag())->withName('Big Tag')->create();
+    $this->entityManager->flush();
+    $counts = $this->make(SubscribersCountsController::class, [
+      'getGlobalStatusStatisticsCount' => ['subscribed' => 1234, 'unconfirmed' => 5, 'trash' => 0],
+      'getSubscribersWithoutSegmentStatisticsCount' => ['all' => 4321, 'trash' => 0],
+      'getSegmentStatisticsCount' => ['all' => 2345, 'trash' => 0],
+      'getTagsStatisticsCount' => [['id' => $tag->getId(), 'name' => 'Big Tag', 'subscribersCount' => 3456]],
+    ]);
+    $repository = new SubscriberListingRepository(
+      $this->entityManager,
+      $this->diContainer->get(FilterHandler::class),
+      $this->diContainer->get(SegmentSubscribersRepository::class),
+      $counts,
+      $this->diContainer->get(SegmentDependencyValidator::class),
+      $this->diContainer->get(WPFunctions::class)
+    );
+
+    $filters = $repository->getFilters(new ListingDefinition('all'));
+
+    verify($filters['status'][0]['label'])->equals('Subscribed (1.234)');
+    verify($filters['status'][1]['label'])->equals('Unconfirmed (5)');
+    verify($filters['segment'][1]['label'])->equals('Subscribers without a list (4.321)');
+    verify(array_column($filters['segment'], 'label'))->arrayContains('Big List (2.345)');
+    verify($filters['tag'][1]['label'])->equals('Big Tag (3.456)');
+    verify($segment->getId())->greaterThan(0);
   }
 
   public function testItBuildsGroups() {
@@ -201,8 +263,8 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($byName['unsubscribed'])->equals(1);
   }
 
-  public function testGetCountAndGroupsMatchesStandaloneCountAndGroups() {
-    $segment = $this->segmentRepository->createOrUpdate('Count And Groups Segment');
+  public function testGetCountAndAllTrashGroupsMatchesStandaloneCounts() {
+    $segment = $this->segmentRepository->createOrUpdate('Count All Trash Segment');
 
     $this->createSubscriberEntity(); // subscribed, no list
     $unsubscribed = $this->createSubscriberEntity();
@@ -218,30 +280,105 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $leftLink = $this->createSubscriberSegmentEntity($segment, $memberLeftList);
     $leftLink->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
 
+    $dynamicSegment = $this->createDynamicSegment([[DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTextField::EMAIL, ['operator' => 'startsWith', 'value' => 'cg-dyn-']]]);
+    $countTag = (new Tag())->withName('Count Tag')->create();
+    (new Subscriber())->withEmail('cg-dyn-1@example.com')->withTags([$countTag])->create();
+    (new Subscriber())->withEmail('cg-dyn-2@example.com')->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->withTags([$countTag])->create();
+    (new Subscriber())->withEmail('cg-dyn-3@example.com')->create();
+
     $this->entityManager->flush();
 
+    $dynamicFilter = ['segment_in' => [$dynamicSegment->getId()], 'tag_in' => [$countTag->getId()]];
     $scenarios = [
       ['group' => 'all', 'filter' => []],
+      ['group' => 'all', 'filter' => $dynamicFilter],
+      ['group' => SubscriberEntity::STATUS_UNSUBSCRIBED, 'filter' => $dynamicFilter],
+      ['group' => 'trash', 'filter' => $dynamicFilter],
+      ['group' => 'all', 'filter' => ['segment_not_in' => [$dynamicSegment->getId()]]],
       ['group' => SubscriberEntity::STATUS_SUBSCRIBED, 'filter' => []],
-      ['group' => SubscriberEntity::STATUS_UNSUBSCRIBED, 'filter' => []],
       ['group' => 'trash', 'filter' => []],
-      ['group' => 'all', 'filter' => ['segment' => $segment->getId()]], // defers to getCount
+      ['group' => 'all', 'filter' => ['segment' => $segment->getId()]],
       ['group' => SubscriberEntity::STATUS_SUBSCRIBED, 'filter' => ['segment' => $segment->getId()]],
+      ['group' => 'all', 'filter' => ['tag_in' => [$countTag->getId()]]],
     ];
 
     foreach ($scenarios as $scenario) {
       $this->listingData['group'] = $scenario['group'];
       $this->listingData['filter'] = $scenario['filter'];
       $definition = $this->getListingDefinition();
+      $this->listingData['group'] = 'all';
+      $all = $this->repository->getCount($this->getListingDefinition());
+      $this->listingData['group'] = 'trash';
+      $trash = $this->repository->getCount($this->getListingDefinition());
 
-      $combined = $this->repository->getCountAndGroups($definition);
-      // The derived count drives pagination, so it must match getCount exactly.
-      verify($combined['count'])->equals($this->repository->getCount($definition));
-      verify($combined['groups'])->equals($this->repository->getGroups($definition));
+      $result = $this->repository->getCountAndAllTrashGroups($definition);
+
+      verify($result['count'])->equals($this->repository->getCount($definition));
+      verify($result['groups'])->equals([
+        ['name' => 'all', 'label' => 'All', 'count' => $all],
+        ['name' => 'trash', 'label' => 'Trash', 'count' => $trash],
+      ]);
     }
+
+    $this->listingData['group'] = 'all';
+    $this->listingData['filter'] = $dynamicFilter;
+    verify($this->repository->getCountAndAllTrashGroups($this->getListingDefinition())['count'])->equals(2);
+    $this->listingData['filter'] = ['segment_not_in' => [$dynamicSegment->getId()]];
+    verify($this->repository->getCountAndAllTrashGroups($this->getListingDefinition())['count'])->equals(5);
 
     $this->listingData['group'] = '';
     $this->listingData['filter'] = [];
+  }
+
+  public function testGetCountAndAllTrashGroupsDoesNotUseCachedCountsForAZeroScoreFilter() {
+    $segment = $this->segmentRepository->createOrUpdate('Zero Score Segment');
+    (new Subscriber())->withEmail('zero-score@example.com')->withEngagementScore(0)->withSegments([$segment])->create();
+    (new Subscriber())->withEmail('high-score-1@example.com')->withEngagementScore(50)->withSegments([$segment])->create();
+    (new Subscriber())->withEmail('high-score-2@example.com')->withEngagementScore(60)->create();
+    $this->entityManager->flush();
+
+    foreach ([[], ['segment_in' => [$segment->getId()]]] as $extra) {
+      foreach (['score_max' => 0, 'score_lt' => 1, 'score_gt' => '0'] as $key => $value) {
+        $expected = $key === 'score_gt' ? ($extra ? 1 : 2) : 1;
+        $result = $this->repository->getCountAndAllTrashGroups(new ListingDefinition('all', [$key => $value] + $extra));
+        verify($result['count'])->equals($expected);
+        verify($result['groups'][0]['count'])->equals($expected);
+      }
+    }
+  }
+
+  public function testGetCountAndAllTrashGroupsRunsAtMostTwoCountQueries() {
+    $dynamicSegment = $this->createDynamicSegment([[DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTextField::EMAIL, ['operator' => 'startsWith', 'value' => 'cq-dyn-']]]);
+    $tag = (new Tag())->withName('Count Queries Tag')->create();
+    (new Subscriber())->withEmail('cq-dyn-1@example.com')->withTags([$tag])->create();
+    (new Subscriber())->withEmail('cq-dyn-2@example.com')->withTags([$tag])->withDeletedAt(new Carbon())->create();
+    $this->entityManager->flush();
+
+    $logger = new DebugStack();
+    $configuration = $this->entityManager->getConnection()->getConfiguration();
+    $previousLogger = $configuration->getSQLLogger();
+    $configuration->setSQLLogger($logger);
+    try {
+      foreach (['all', 'trash'] as $group) {
+        $logger->queries = [];
+        $result = $this->repository->getCountAndAllTrashGroups(new ListingDefinition(
+          $group,
+          ['segment_in' => [$dynamicSegment->getId()], 'tag_in' => [$tag->getId()]]
+        ));
+        $countQueries = array_filter($logger->queries, function(array $query): bool {
+          return stripos($query['sql'], 'COUNT(') !== false;
+        });
+        verify(count($countQueries))->lessThanOrEqual(2);
+        verify(array_column($result['groups'], 'count', 'name'))->equals(['all' => 1, 'trash' => 1]);
+      }
+    } finally {
+      $configuration->setSQLLogger($previousLogger);
+    }
+  }
+
+  public function testGetGroupsForAnEmptyDefinitionKeepsEveryStatusGroup() {
+    $groups = array_column($this->repository->getGroups(new ListingDefinition()), 'name');
+    verify($groups)->equals(['all', 'subscribed', 'unconfirmed', 'unsubscribed', 'inactive', 'bounced', 'trash']);
   }
 
   public function testLoadAllSubscribers() {
@@ -316,6 +453,38 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($data[0]->getEmail())->equals($subscriberUnsubscribedFromAList->getEmail());
     verify($data[1]->getEmail())->equals($regularSubscriber->getEmail());
     $this->listingData['sort_by'] = '';
+  }
+
+  public function testItSortsByTheStatusOfTheSingleStaticList() {
+    $segment = $this->segmentRepository->createOrUpdate('Status Sort Segment');
+    $create = function(string $globalStatus, string $listStatus) use ($segment): SubscriberEntity {
+      $subscriber = $this->createSubscriberEntity();
+      $subscriber->setStatus($globalStatus);
+      $this->createSubscriberSegmentEntity($segment, $subscriber)->setStatus($listStatus);
+      return $subscriber;
+    };
+    $subscribed = $create(SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_SUBSCRIBED);
+    $leftList = $create(SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $unsubscribed = $create(SubscriberEntity::STATUS_UNSUBSCRIBED, SubscriberEntity::STATUS_SUBSCRIBED);
+    $subscribed2 = $create(SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->entityManager->flush();
+    $subscribed = (int)$subscribed->getId();
+    $leftList = (int)$leftList->getId();
+    $unsubscribed = (int)$unsubscribed->getId();
+    $subscribed2 = (int)$subscribed2->getId();
+
+    $ids = function(string $order, int $offset = 0, int $limit = 100) use ($segment): array {
+      $definition = new ListingDefinition('all', ['segment_in' => [$segment->getId()]], null, [], 'status', $order, $offset, $limit);
+      return array_map(function(SubscriberEntity $subscriber): int {
+        return (int)$subscriber->getId();
+      }, $this->repository->getData($definition));
+    };
+
+    // The member who left the list sorts with the unsubscribed rows, ties by id.
+    verify($ids('asc'))->equals([$subscribed, $subscribed2, $leftList, $unsubscribed]);
+    verify($ids('desc'))->equals([$unsubscribed, $leftList, $subscribed2, $subscribed]);
+    verify($ids('asc', 0, 2))->equals([$subscribed, $subscribed2]);
+    verify($ids('asc', 2, 2))->equals([$leftList, $unsubscribed]);
   }
 
   public function testItSortsByCreatedAtWithIdTiebreaker() {
@@ -1376,6 +1545,806 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
 
     $this->listingData['sort_by'] = '';
     $this->listingData['filter'] = [];
+  }
+
+  public function testSegmentInMatchesMembersOfAnyOfTheLists() {
+    $listA = (new SegmentFactory())->withName('List A')->create();
+    $listB = (new SegmentFactory())->withName('List B')->create();
+    $listC = (new SegmentFactory())->withName('List C')->create();
+    $inA = (new Subscriber())->withSegments([$listA])->create();
+    $inB = (new Subscriber())->withSegments([$listB])->create();
+    (new Subscriber())->withSegments([$listC])->create();
+    (new Subscriber())->create();
+
+    $ids = $this->getIds(['segment_in' => [$listA->getId(), $listB->getId()]]);
+
+    verify($ids)->equals([$inA->getId(), $inB->getId()]);
+  }
+
+  public function testSegmentNotInExcludesMembersOfTheLists() {
+    $listA = (new SegmentFactory())->withName('List A')->create();
+    $listB = (new SegmentFactory())->withName('List B')->create();
+    (new Subscriber())->withSegments([$listA])->create();
+    $inB = (new Subscriber())->withSegments([$listB])->create();
+    $inBoth = (new Subscriber())->withSegments([$listA, $listB])->create();
+    $withoutList = (new Subscriber())->create();
+
+    $ids = $this->getIds(['segment_not_in' => [$listA->getId()]]);
+
+    verify($ids)->equals([$inB->getId(), $withoutList->getId()]);
+    $this->assertNotContains($inBoth->getId(), $ids);
+  }
+
+  /**
+   * @dataProvider segmentsCountColumnStates
+   */
+  public function testSegmentInWithoutListAndAListIsAnOr(bool $columnReady) {
+    $list = (new SegmentFactory())->withName('List A')->create();
+    $otherList = (new SegmentFactory())->withName('List B')->create();
+    $inList = (new Subscriber())->withSegments([$list])->create();
+    $inOtherList = (new Subscriber())->withSegments([$otherList])->create();
+    $withoutList = (new Subscriber())->create();
+    $this->prepareSegmentsCountColumn($columnReady);
+
+    $ids = $this->getIds(['segment_in' => [SubscriberListingRepository::FILTER_WITHOUT_LIST, $list->getId()]]);
+
+    verify($ids)->equals([$inList->getId(), $withoutList->getId()]);
+    $this->assertNotContains($inOtherList->getId(), $ids);
+  }
+
+  /**
+   * @dataProvider segmentsCountColumnStates
+   */
+  public function testSegmentNotInWithoutListKeepsOnlySubscribersWithAList(bool $columnReady) {
+    $list = (new SegmentFactory())->withName('List A')->create();
+    $inList = (new Subscriber())->withSegments([$list])->create();
+    $withoutList = (new Subscriber())->create();
+    $this->prepareSegmentsCountColumn($columnReady);
+
+    $ids = $this->getIds(['segment_not_in' => [SubscriberListingRepository::FILTER_WITHOUT_LIST]]);
+
+    verify($ids)->equals([$inList->getId()]);
+    $this->assertNotContains($withoutList->getId(), $ids);
+  }
+
+  public function segmentsCountColumnStates(): array {
+    return [
+      'column not ready' => [false],
+      'column ready' => [true],
+    ];
+  }
+
+  public function testTagInMatchesSubscribersWithAnyOfTheTags() {
+    $tagA = (new Tag())->withName('Tag A')->create();
+    $tagB = (new Tag())->withName('Tag B')->create();
+    $tagC = (new Tag())->withName('Tag C')->create();
+    $withA = (new Subscriber())->withTags([$tagA])->create();
+    $withB = (new Subscriber())->withTags([$tagB])->create();
+    (new Subscriber())->withTags([$tagC])->create();
+    (new Subscriber())->create();
+
+    $ids = $this->getIds(['tag_in' => [$tagA->getId(), $tagB->getId()]]);
+
+    verify($ids)->equals([$withA->getId(), $withB->getId()]);
+  }
+
+  public function testTagNotInKeepsSubscribersWithoutAnyTag() {
+    $tagA = (new Tag())->withName('Tag A')->create();
+    $tagB = (new Tag())->withName('Tag B')->create();
+    $withA = (new Subscriber())->withTags([$tagA])->create();
+    $withB = (new Subscriber())->withTags([$tagB])->create();
+    $withBoth = (new Subscriber())->withTags([$tagA, $tagB])->create();
+    $untagged = (new Subscriber())->create();
+
+    $ids = $this->getIds(['tag_not_in' => [$tagA->getId()]]);
+
+    verify($ids)->equals([$withB->getId(), $untagged->getId()]);
+    $this->assertNotContains($withA->getId(), $ids);
+    $this->assertNotContains($withBoth->getId(), $ids);
+  }
+
+  public function testSegmentFilterLoadsAllListsWithOneQuery() {
+    $ids = [];
+    for ($i = 1; $i <= 5; $i++) {
+      $ids[] = (int)$this->segmentRepository->createOrUpdate("Batch Segment $i")->getId();
+    }
+    $dynamicId = (int)$this->createEmailSegment('batch-')->getId();
+    $this->entityManager->flush();
+    $this->entityManager->clear();
+    $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
+
+    $logger = new DebugStack();
+    $configuration = $this->entityManager->getConnection()->getConfiguration();
+    $previousLogger = $configuration->getSQLLogger();
+    $configuration->setSQLLogger($logger);
+    try {
+      $this->repository->getData(new ListingDefinition('all', ['segment_in' => array_merge($ids, [$dynamicId]), 'segment_not_in' => [$ids[0]]]));
+    } finally {
+      $configuration->setSQLLogger($previousLogger);
+    }
+    $segmentQueries = array_filter($logger->queries, function($query) use ($segmentsTable): bool {
+      $sql = is_array($query) && is_string($query['sql'] ?? null) ? $query['sql'] : '';
+      return (bool)preg_match('/FROM `?' . preg_quote($segmentsTable, '/') . '`?\s/i', $sql);
+    });
+    verify(count($segmentQueries))->equals(1);
+  }
+
+  public function testNullSourceCountsAsUnknown() {
+    $imported = (new Subscriber())->withEmail('src2-imported@example.com')->withSource(Source::IMPORTED)->create();
+    $unknown = (new Subscriber())->withEmail('src2-unknown@example.com')->withSource(Source::UNKNOWN)->create();
+    $noSource = (new Subscriber())->withEmail('src2-null@example.com')->create();
+    $table = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement("UPDATE $table SET source = NULL WHERE id = " . (int)$noSource->getId());
+    $dynamic = $this->createEmailSegment('src2-');
+
+    foreach ([[], ['segment_in' => [$dynamic->getId()]]] as $scope) {
+      verify($this->getIds(['source_in' => [Source::UNKNOWN]] + $scope))->equals([$unknown->getId(), $noSource->getId()]);
+      verify($this->getIds(['source_in' => [Source::IMPORTED]] + $scope))->equals([$imported->getId()]);
+      verify($this->getIds(['source_in' => [Source::IMPORTED, Source::UNKNOWN]] + $scope))->equals([$imported->getId(), $unknown->getId(), $noSource->getId()]);
+      verify($this->getIds(['source_not_in' => [Source::IMPORTED]] + $scope))->equals([$unknown->getId(), $noSource->getId()]);
+      verify($this->getIds(['source_not_in' => [Source::UNKNOWN]] + $scope))->equals([$imported->getId()]);
+    }
+  }
+
+  public function testDynamicSegmentWithScoreFilterListsItsMembers() {
+    $segment = (new \MailPoet\Test\DataFactories\DynamicSegment())->withEngagementScoreFilter(20, 'lowerThan')->create();
+    $zero = (new Subscriber())->withEmail('dyn-score-1@example.com')->withEngagementScore(0)->create();
+    (new Subscriber())->withEmail('dyn-score-2@example.com')->withEngagementScore(50)->create();
+    (new Subscriber())->withEmail('dyn-score-3@example.com')->create();
+
+    $filters = ['segment_in' => [$segment->getId()]];
+    verify($this->getIds($filters))->equals([$zero->getId()]);
+    verify($this->repository->getCountAndAllTrashGroups(new ListingDefinition('all', $filters))['count'])->equals(1);
+  }
+
+  public function testSourceNotInKeepsSubscribersWithoutASource() {
+    $imported = (new Subscriber())->withEmail('src-imported@example.com')->withSource(Source::IMPORTED)->create();
+    $form = (new Subscriber())->withEmail('src-form@example.com')->withSource(Source::FORM)->create();
+    $noSource = (new Subscriber())->withEmail('src-null@example.com')->create();
+    $table = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement("UPDATE $table SET source = NULL WHERE id = " . (int)$noSource->getId());
+    $dynamic = $this->createEmailSegment('src-');
+
+    foreach ([[], ['segment_in' => [$dynamic->getId()]]] as $scope) {
+      verify($this->getIds(['source_not_in' => [Source::IMPORTED]] + $scope))->equals([$form->getId(), $noSource->getId()]);
+      verify($this->getIds(['source_in' => [Source::IMPORTED]] + $scope))->equals([$imported->getId()]);
+    }
+  }
+
+  public function testSourceInAndNotIn() {
+    $form = (new Subscriber())->withSource(Source::FORM)->create();
+    $imported = (new Subscriber())->withSource(Source::IMPORTED)->create();
+    $admin = (new Subscriber())->withSource(Source::ADMINISTRATOR)->create();
+
+    verify($this->getIds(['source_in' => [Source::FORM, Source::IMPORTED]]))->equals([$form->getId(), $imported->getId()]);
+    verify($this->getIds(['source_not_in' => [Source::FORM, Source::IMPORTED]]))->equals([$admin->getId()]);
+    verify($this->getIds(['source_in' => ['not-a-source']]))->equals([$form->getId(), $imported->getId(), $admin->getId()]);
+  }
+
+  public function testListingRowsCarryTheSource() {
+    (new Subscriber())->withSource(Source::IMPORTED)->create();
+    $this->entityManager->clear();
+
+    $rows = $this->repository->getData(new ListingDefinition(null, [], null, [], 'id', 'asc', 0, 10));
+
+    verify($rows)->arrayCount(1);
+    verify($rows[0]->getSource())->equals(Source::IMPORTED);
+  }
+
+  public function testLegacyScalarFiltersStillFilter() {
+    $list = (new SegmentFactory())->withName('List A')->create();
+    $tag = (new Tag())->withName('Tag A')->create();
+    $match = (new Subscriber())->withSegments([$list])->withTags([$tag])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withSegments([$list])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withTags([$tag])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withSegments([$list])->withTags([$tag])->withStatus(SubscriberEntity::STATUS_INACTIVE)->create();
+
+    $ids = $this->getIds([
+      'segment' => (string)$list->getId(),
+      'tag' => $tag->getId(),
+      'statusInclude' => SubscriberEntity::STATUS_SUBSCRIBED,
+    ]);
+
+    verify($ids)->equals([$match->getId()]);
+  }
+
+  public function testLegacyScalarSegmentAndTagThatDoNotExistAreIgnored() {
+    $first = (new Subscriber())->create();
+    $second = (new Subscriber())->create();
+
+    $ids = $this->getIds(['segment' => 999999, 'tag' => 999999]);
+
+    verify($ids)->equals([$first->getId(), $second->getId()]);
+  }
+
+  public function testLegacySegmentIsMergedWithSegmentIn() {
+    $listA = (new SegmentFactory())->withName('List A')->create();
+    $listB = (new SegmentFactory())->withName('List B')->create();
+    $inA = (new Subscriber())->withSegments([$listA])->create();
+    $inB = (new Subscriber())->withSegments([$listB])->create();
+    (new Subscriber())->create();
+
+    $ids = $this->getIds(['segment' => $listA->getId(), 'segment_in' => [$listB->getId()]]);
+
+    verify($ids)->equals([$inA->getId(), $inB->getId()]);
+  }
+
+  public function testStatusInUnderOneListUsesTheStatusOfThatList() {
+    $list = (new SegmentFactory())->withName('List A')->create();
+    $subscribed = (new Subscriber())->withSegments([$list])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $unsubscribedFromList = (new Subscriber())->withSegments([$list])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $unconfirmed = (new Subscriber())->withSegments([$list])->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->create();
+    $unconfirmedAndUnsubscribedFromList = (new Subscriber())->withSegments([$list])->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->create();
+    $this->setListStatus($unsubscribedFromList, $list, SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->setListStatus($unconfirmedAndUnsubscribedFromList, $list, SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    $filters = ['segment_in' => [$list->getId()]];
+
+    verify($this->getIds($filters + ['status_in' => [SubscriberEntity::STATUS_SUBSCRIBED]]))->equals([$subscribed->getId()]);
+    verify($this->getIds($filters + ['status_in' => [SubscriberEntity::STATUS_UNSUBSCRIBED]]))
+      ->equals([$unsubscribedFromList->getId(), $unconfirmedAndUnsubscribedFromList->getId()]);
+    verify($this->getIds($filters + ['status_in' => [SubscriberEntity::STATUS_UNCONFIRMED]]))->equals([$unconfirmed->getId()]);
+    verify($this->getIds($filters + ['status_not_in' => [SubscriberEntity::STATUS_SUBSCRIBED]]))
+      ->equals([$unsubscribedFromList->getId(), $unconfirmed->getId(), $unconfirmedAndUnsubscribedFromList->getId()]);
+  }
+
+  public function testStatusInUnderTwoListsUsesTheGlobalStatus() {
+    $listA = (new SegmentFactory())->withName('List A')->create();
+    $listB = (new SegmentFactory())->withName('List B')->create();
+    $globallySubscribed = (new Subscriber())->withSegments([$listA])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $globallyUnsubscribed = (new Subscriber())->withSegments([$listB])->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    $unsubscribedFromListOnly = (new Subscriber())->withSegments([$listA])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $this->setListStatus($unsubscribedFromListOnly, $listA, SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    $filters = ['segment_in' => [$listA->getId(), $listB->getId()]];
+
+    verify($this->getIds($filters, SubscriberEntity::STATUS_UNSUBSCRIBED))->equals([$globallyUnsubscribed->getId()]);
+    verify($this->getIds($filters + ['status_in' => [SubscriberEntity::STATUS_SUBSCRIBED]]))
+      ->equals([$globallySubscribed->getId(), $unsubscribedFromListOnly->getId()]);
+  }
+
+  public function testResendQueueSupportsSetFiltersAndLegacyFilters() {
+    $list = (new SegmentFactory())->withName('List A')->create();
+    $otherList = (new SegmentFactory())->withName('List B')->create();
+    $tag = (new Tag())->withName('Tag A')->create();
+    $otherTag = (new Tag())->withName('Tag B')->create();
+    $match = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->withSegments([$list])->withTags([$tag])->create();
+    $inOtherList = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->withSegments([$otherList])->withTags([$tag])->create();
+    $otherTagged = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->withSegments([$list])->withTags([$otherTag])->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->withSegments([$list])->withTags([$tag])->create();
+    $unlisted = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->create();
+
+    $queue = function(array $filters) {
+      return $this->repository->getConfirmationEmailResendQueueData(
+        new ListingDefinition(SubscriberEntity::STATUS_UNCONFIRMED, $filters, null, [], 'id', 'asc', 0, 100),
+        Carbon::now()->subDay(),
+        Carbon::now()->subYears(5),
+        10,
+        100
+      )['queued_ids'];
+    };
+
+    verify($queue(['tag_in' => [$tag->getId(), $otherTag->getId()], 'segment_not_in' => [$otherList->getId()]]))
+      ->equals([$match->getId(), $otherTagged->getId()]);
+    verify($queue(['tag_not_in' => [$otherTag->getId()], 'segment_in' => [$list->getId(), $otherList->getId()]]))
+      ->equals([$match->getId(), $inOtherList->getId()]);
+    verify($queue(['segment' => $list->getId(), 'tag' => $tag->getId()]))->equals([$match->getId()]);
+    verify($queue(['segment_in' => [SubscriberListingRepository::FILTER_WITHOUT_LIST]]))->equals([$unlisted->getId()]);
+    verify($queue(['segment_in' => [SubscriberListingRepository::FILTER_WITHOUT_LIST, $list->getId()]]))
+      ->equals([$match->getId(), $otherTagged->getId(), $unlisted->getId()]);
+
+    // Under one list the status filter uses the status of that list.
+    $this->setListStatus($otherTagged, $list, SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($queue(['segment_in' => [$list->getId()], 'status_in' => [SubscriberEntity::STATUS_UNCONFIRMED]]))->equals([$match->getId()]);
+  }
+
+  public function testGetGroupsWithoutFiltersCountsEveryStatus() {
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_BOUNCED)->create();
+    (new Subscriber())->withDeletedAt(new Carbon())->create();
+
+    $groups = array_column($this->repository->getGroups(new ListingDefinition()), 'count', 'name');
+
+    verify($groups)->equals([
+      'all' => 4,
+      SubscriberEntity::STATUS_SUBSCRIBED => 2,
+      SubscriberEntity::STATUS_UNCONFIRMED => 1,
+      SubscriberEntity::STATUS_UNSUBSCRIBED => 0,
+      SubscriberEntity::STATUS_INACTIVE => 0,
+      SubscriberEntity::STATUS_BOUNCED => 1,
+      'trash' => 1,
+    ]);
+  }
+
+  public function testGetGroupsWithSeveralListsCountsWithTheGlobalStatus() {
+    $listA = (new SegmentFactory())->withName('List A')->create();
+    $listB = (new SegmentFactory())->withName('List B')->create();
+    (new Subscriber())->withSegments([$listA])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withSegments([$listB])->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+
+    $definition = new ListingDefinition(null, ['segment_in' => [$listA->getId(), $listB->getId()]]);
+    $groups = array_column($this->repository->getGroups($definition), 'count', 'name');
+
+    verify($groups['all'])->equals(2);
+    verify($groups[SubscriberEntity::STATUS_SUBSCRIBED])->equals(1);
+    verify($groups[SubscriberEntity::STATUS_UNSUBSCRIBED])->equals(1);
+  }
+
+  public function testItBuildsStatusAndSourceFiltersWithGlobalStatusCounts() {
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_BOUNCED)->create();
+    $this->diContainer->get(SubscribersCountsController::class)->recalculateGlobalStatusStatisticsCache();
+
+    // The counts are global: the current filters and group do not narrow them.
+    $definition = new ListingDefinition(SubscriberEntity::STATUS_BOUNCED, ['source_in' => [Source::FORM]]);
+    $filters = $this->repository->getFilters($definition);
+
+    verify(array_column($filters['status'], 'value'))->equals([
+      SubscriberEntity::STATUS_SUBSCRIBED,
+      SubscriberEntity::STATUS_UNCONFIRMED,
+      SubscriberEntity::STATUS_UNSUBSCRIBED,
+      SubscriberEntity::STATUS_INACTIVE,
+      SubscriberEntity::STATUS_BOUNCED,
+    ]);
+    verify($filters['status'][0]['label'])->equals('Subscribed (2)');
+    verify($filters['status'][4]['label'])->equals('Bounced (1)');
+    verify(array_column($filters['source'], 'value'))->equals([
+      Source::FORM,
+      Source::IMPORTED,
+      Source::ADMINISTRATOR,
+      Source::API,
+      Source::WORDPRESS_USER,
+      Source::WORDPRESS_USER_DELETED,
+      Source::WOOCOMMERCE_USER,
+      Source::WOOCOMMERCE_CHECKOUT,
+      Source::UNKNOWN,
+    ]);
+    verify(array_column($filters['source'], 'label', 'value')[Source::UNKNOWN])->equals('Unknown');
+  }
+
+  public function testDynamicSegmentAppliesTheOtherFilters() {
+    $dynamic = $this->createEmailSegment('dyn-f-');
+    $tag = (new Tag())->withName('Dynamic Tag')->create();
+    $tagged = (new Subscriber())->withEmail('dyn-f-tagged@example.com')->withTags([$tag])->create();
+    $untagged = (new Subscriber())->withEmail('dyn-f-untagged@example.com')->create();
+    $unsubscribed = (new Subscriber())->withEmail('dyn-f-unsub@example.com')->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->withTags([$tag])->create();
+    $old = (new Subscriber())->withEmail('dyn-f-old@example.com')->withCreatedAt(new Carbon('2020-01-01 10:00:00'))->create();
+    (new Subscriber())->withEmail('other-tagged@example.com')->withTags([$tag])->create();
+    $segment = ['segment_in' => [$dynamic->getId()]];
+
+    verify($this->getIds($segment + ['tag_in' => [$tag->getId()]]))->equals([$tagged->getId(), $unsubscribed->getId()]);
+    verify($this->getIds($segment + ['tag_not_in' => [$tag->getId()]]))->equals([$untagged->getId(), $old->getId()]);
+    verify($this->getIds($segment + ['status_in' => [SubscriberEntity::STATUS_UNSUBSCRIBED]]))->equals([$unsubscribed->getId()]);
+    verify($this->getIds($segment + ['status_not_in' => [SubscriberEntity::STATUS_UNSUBSCRIBED]]))
+      ->equals([$tagged->getId(), $untagged->getId(), $old->getId()]);
+    verify($this->getIds($segment + ['createdAtFrom' => '2021-01-01 00:00:00']))
+      ->equals([$tagged->getId(), $untagged->getId(), $unsubscribed->getId()]);
+    verify($this->getIds($segment + ['source_in' => [Source::FORM]]))->equals([]);
+    verify($this->getIds($segment, SubscriberEntity::STATUS_UNSUBSCRIBED))->equals([$unsubscribed->getId()]);
+
+    $definition = new ListingDefinition(null, $segment, 'untagged', [], 'id', 'asc', 0, 100);
+    verify(array_map(function(SubscriberEntity $s) {
+      return $s->getId();
+    }, $this->repository->getData($definition)))->equals([$untagged->getId()]);
+    verify($this->repository->getCount($definition))->equals(1);
+  }
+
+  public function testDynamicSegmentWithAnOrGroupAndANoneGroup() {
+    $this->repository = $this->buildRepository();
+    $orSegment = $this->createDynamicSegment([
+      [DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTextField::EMAIL, ['operator' => 'startsWith', 'value' => 'grp-or-a']],
+      [DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTextField::EMAIL, ['operator' => 'startsWith', 'value' => 'grp-or-b']],
+    ], DynamicSegmentFilterData::CONNECT_TYPE_OR);
+    $noneSegment = $this->createDynamicSegment([
+      [DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTextField::EMAIL, ['operator' => 'startsWith', 'value' => 'grp-none-x']],
+      [DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTextField::EMAIL, ['operator' => 'startsWith', 'value' => 'grp-none-y']],
+    ], DynamicSegmentFilterData::CONNECT_TYPE_NONE);
+    $orA = (new Subscriber())->withEmail('grp-or-a@example.com')->create();
+    $orB = (new Subscriber())->withEmail('grp-or-b@example.com')->create();
+    (new Subscriber())->withEmail('grp-or-c@example.com')->create();
+    (new Subscriber())->withEmail('grp-or-a-unsub@example.com')->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    $noneZ = (new Subscriber())->withEmail('grp-none-z@example.com')->create();
+    (new Subscriber())->withEmail('grp-none-x@example.com')->create();
+    (new Subscriber())->withEmail('grp-none-y@example.com')->create();
+
+    verify($this->getIds(['segment_in' => [$orSegment->getId()], 'status_in' => [SubscriberEntity::STATUS_SUBSCRIBED]]))
+      ->equals([$orA->getId(), $orB->getId()]);
+    $noneIds = $this->getIds(['segment_in' => [$noneSegment->getId()], 'status_in' => [SubscriberEntity::STATUS_SUBSCRIBED]]);
+    verify(in_array($noneZ->getId(), $noneIds, true))->true();
+    verify(count(array_intersect($noneIds, [$orA->getId(), $orB->getId()])))->equals(2);
+    $emails = array_map(function(SubscriberEntity $s) {
+      return $s->getEmail();
+    }, $this->repository->getData(new ListingDefinition(null, ['segment_in' => [$noneSegment->getId()]], 'grp-none', [], 'id', 'asc', 0, 100)));
+    verify($emails)->equals(['grp-none-z@example.com']);
+  }
+
+  public function testMultiSelectMixesStaticAndDynamicSegments() {
+    $dynamic = $this->createEmailSegment('mix-dyn-');
+    $list = (new SegmentFactory())->withName('Mix List')->create();
+    $dynMember = (new Subscriber())->withEmail('mix-dyn-1@example.com')->create();
+    $listMember = (new Subscriber())->withEmail('mix-list-1@example.com')->withSegments([$list])->create();
+    $both = (new Subscriber())->withEmail('mix-dyn-2@example.com')->withSegments([$list])->create();
+    $neither = (new Subscriber())->withEmail('mix-none@example.com')->create();
+
+    verify($this->getIds(['segment_in' => [$list->getId(), $dynamic->getId()]]))
+      ->equals([$dynMember->getId(), $listMember->getId(), $both->getId()]);
+    verify($this->getIds(['segment_in' => [$dynamic->getId()], 'segment_not_in' => [$list->getId()]]))->equals([$dynMember->getId()]);
+    verify($this->getIds(['segment_not_in' => [$dynamic->getId()]]))->equals([$listMember->getId(), $neither->getId()]);
+    verify($this->getIds(['segment_not_in' => [$dynamic->getId(), $list->getId()]]))->equals([$neither->getId()]);
+    verify($this->getIds(['segment_in' => [SubscriberListingRepository::FILTER_WITHOUT_LIST, $dynamic->getId()]]))
+      ->equals([$dynMember->getId(), $both->getId(), $neither->getId()]);
+    verify($this->getIds(['segment' => $dynamic->getId(), 'segment_in' => [$list->getId()]]))
+      ->equals([$dynMember->getId(), $listMember->getId(), $both->getId()]);
+  }
+
+  public function testDynamicSegmentWithMissingPluginFailsClosed() {
+    $this->repository = $this->buildRepository(['woocommerce/woocommerce.php']);
+    $missing = $this->createDynamicSegment([[DynamicSegmentFilterData::TYPE_WOOCOMMERCE, 'purchasedCategory', ['category_ids' => ['1'], 'operator' => DynamicSegmentFilterData::OPERATOR_ANY]]]);
+    $missingInNone = $this->createDynamicSegment([
+      [DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTextField::EMAIL, ['operator' => 'startsWith', 'value' => 'miss-']],
+      [DynamicSegmentFilterData::TYPE_WOOCOMMERCE, 'purchasedCategory', ['category_ids' => ['1'], 'operator' => DynamicSegmentFilterData::OPERATOR_ANY]],
+    ], DynamicSegmentFilterData::CONNECT_TYPE_NONE);
+    $list = (new SegmentFactory())->withName('Missing List')->create();
+    $member = (new Subscriber())->withEmail('miss-1@example.com')->withSegments([$list])->create();
+    (new Subscriber())->withEmail('miss-2@example.com')->create();
+
+    verify($this->getIds(['segment_in' => [$list->getId(), $missing->getId()]]))->equals([$member->getId()]);
+    verify($this->getIds(['segment_in' => [$missing->getId()]]))->equals([]);
+    verify($this->getIds(['segment_not_in' => [$missing->getId()]]))->equals([]);
+    verify($this->getIds(['segment_not_in' => [$missingInNone->getId()]]))->equals([]);
+    verify($this->getIds(['segment_in' => [$missingInNone->getId()]]))->equals([]);
+    verify($this->getIds(['segment_in' => [$list->getId(), $missingInNone->getId()]]))->equals([$member->getId()]);
+  }
+
+  public function testTwoDynamicSegmentsWithTheSameParameterNamesDoNotCollide() {
+    $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $opensData = ['newsletters' => [(int)$newsletter->getId()], 'operator' => DynamicSegmentFilterData::OPERATOR_ANY];
+    $humanOpens = $this->createDynamicSegment([[DynamicSegmentFilterData::TYPE_EMAIL, EmailActionFilter::ACTION_OPENED, $opensData]]);
+    $machineOpens = $this->createDynamicSegment([[DynamicSegmentFilterData::TYPE_EMAIL, EmailActionFilter::ACTION_MACHINE_OPENED, $opensData]]);
+    $human = (new Subscriber())->withEmail('open-human@example.com')->create();
+    $machine = (new Subscriber())->withEmail('open-machine@example.com')->create();
+    (new Subscriber())->withEmail('open-nobody@example.com')->create();
+    (new StatisticsOpens($newsletter, $human))->create();
+    (new StatisticsOpens($newsletter, $machine))->withMachineUserAgentType()->create();
+
+    verify($this->getIds(['segment_in' => [$humanOpens->getId()]]))->equals([$human->getId()]);
+    verify($this->getIds(['segment_in' => [$machineOpens->getId()]]))->equals([$machine->getId()]);
+    verify($this->getIds(['segment_in' => [$humanOpens->getId(), $machineOpens->getId()]]))->equals([$human->getId(), $machine->getId()]);
+    verify(count($this->getIds(['segment_not_in' => [$humanOpens->getId(), $machineOpens->getId()]])))->equals(1);
+  }
+
+  public function testPagingTheDynamicSegmentOverEqualSortValuesHasNoDuplicatesOrGaps() {
+    $dynamic = $this->createEmailSegment('page-');
+    $createdAt = new Carbon('2022-05-05 10:00:00');
+    $expected = [];
+    for ($i = 1; $i <= 5; $i++) {
+      $expected[] = (new Subscriber())->withEmail("page-$i@example.com")->withCreatedAt($createdAt)->withEngagementScore(10)->create()->getId();
+    }
+    foreach (['created_at', 'engagement_score', 'last_subscribed_at'] as $sortBy) {
+      $seen = [];
+      foreach ([0, 2, 4] as $offset) {
+        $rows = $this->repository->getData(new ListingDefinition(null, ['segment_in' => [$dynamic->getId()]], null, [], $sortBy, 'desc', $offset, 2));
+        foreach ($rows as $row) {
+          $seen[] = $row->getId();
+        }
+      }
+      verify($seen)->equals(array_reverse($expected));
+    }
+  }
+
+  public function testDynamicSegmentSortsByEngagementScore() {
+    $dynamic = $this->createEmailSegment('score-');
+    $low = (new Subscriber())->withEmail('score-1@example.com')->withEngagementScore(10)->create();
+    $high = (new Subscriber())->withEmail('score-2@example.com')->withEngagementScore(30)->create();
+    $mid = (new Subscriber())->withEmail('score-3@example.com')->withEngagementScore(20)->create();
+    $rows = $this->repository->getData(new ListingDefinition(null, ['segment_in' => [$dynamic->getId()]], null, [], 'engagement_score', 'desc', 0, 10));
+    verify(array_map(function(SubscriberEntity $s) {
+      return $s->getId();
+    }, $rows))->equals([$high->getId(), $mid->getId(), $low->getId()]);
+  }
+
+  public function testResendSelectedCountMatchesTheListingCountUnderOneList() {
+    $list = (new SegmentFactory())->withName('Resend Parity')->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->withSegments([$list])->create();
+    $leftList = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->withSegments([$list])->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->withSegments([$list])->create();
+    (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->create();
+    $this->setListStatus($leftList, $list, SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    // The resend only ever targets unconfirmed subscribers, so the other
+    // statuses select only those that are unconfirmed globally.
+    $expectedSelected = [
+      SubscriberEntity::STATUS_UNCONFIRMED => 1,
+      SubscriberEntity::STATUS_SUBSCRIBED => 0,
+      SubscriberEntity::STATUS_UNSUBSCRIBED => 1,
+    ];
+    foreach ($expectedSelected as $status => $expected) {
+      $definitions = [
+        new ListingDefinition($status, ['segment_in' => [$list->getId()]], null, [], 'id', 'asc', 0, 100),
+        new ListingDefinition(null, ['segment_in' => [$list->getId()], 'status_in' => [$status]], null, [], 'id', 'asc', 0, 100),
+      ];
+      foreach ($definitions as $definition) {
+        $queue = $this->repository->getConfirmationEmailResendQueueData($definition, Carbon::now()->subDay(), Carbon::now()->subYears(5), 10, 100);
+        verify($queue['selected_count'])->equals($expected);
+        if ($status === SubscriberEntity::STATUS_UNCONFIRMED) {
+          verify($queue['selected_count'])->equals($this->repository->getCount($definition));
+        }
+      }
+    }
+  }
+
+  public function testResendQueueNeverContainsConfirmedSubscribers() {
+    $list = (new SegmentFactory())->withName('Resend Guard')->create();
+    $unconfirmed = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->withSegments([$list])->create();
+    $subscribed = (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->withSegments([$list])->create();
+    $unsubscribed = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->withSegments([$list])->create();
+
+    foreach ([null, 'all'] as $group) {
+      foreach ([[], ['status_not_in' => [SubscriberEntity::STATUS_BOUNCED]]] as $extraFilter) {
+        $definition = new ListingDefinition($group, ['segment_in' => [$list->getId()]] + $extraFilter, null, [], 'id', 'asc', 0, 100);
+        $queue = $this->repository->getConfirmationEmailResendQueueData($definition, Carbon::now()->subDay(), Carbon::now()->subYears(5), 10, 100);
+        verify($queue['queued_ids'])->equals([$unconfirmed->getId()]);
+      }
+    }
+    $selection = new ListingDefinition(null, ['segment_in' => [$list->getId()]], null, [], 'id', 'asc', 0, 100, [(int)$unconfirmed->getId(), (int)$subscribed->getId(), (int)$unsubscribed->getId()]);
+    $queue = $this->repository->getConfirmationEmailResendQueueData($selection, Carbon::now()->subDay(), Carbon::now()->subYears(5), 10, 100, true);
+    verify($queue['queued_ids'])->equals([$unconfirmed->getId()]);
+  }
+
+  public function testLegacyStatusKeysNarrowTheNewStatusKeys() {
+    $subscribed = (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $unconfirmed = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->create();
+    $unsubscribed = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    $all = [SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_UNCONFIRMED];
+
+    verify($this->getIds(['status_in' => $all, 'statusInclude' => [SubscriberEntity::STATUS_UNCONFIRMED, SubscriberEntity::STATUS_UNSUBSCRIBED]]))
+      ->equals([$unconfirmed->getId()]);
+    verify($this->getIds(['status_in' => [SubscriberEntity::STATUS_SUBSCRIBED], 'statusInclude' => [SubscriberEntity::STATUS_UNSUBSCRIBED]]))
+      ->equals([]);
+    verify($this->repository->getCountAndAllTrashGroups(new ListingDefinition('all', [
+      'status_in' => [SubscriberEntity::STATUS_SUBSCRIBED],
+      'statusInclude' => [SubscriberEntity::STATUS_UNSUBSCRIBED],
+    ]))['count'])->equals(0);
+    verify($this->getIds(['status_not_in' => [SubscriberEntity::STATUS_SUBSCRIBED], 'statusExclude' => [SubscriberEntity::STATUS_UNCONFIRMED]]))
+      ->equals([$unsubscribed->getId()]);
+    verify($this->getIds(['statusInclude' => $all]))->equals([$subscribed->getId(), $unconfirmed->getId()]);
+  }
+
+  public function testGetNormalizedStatusInCombinesLegacyAndNewKeys() {
+    verify($this->repository->getNormalizedStatusIn([]))->null();
+    verify($this->repository->getNormalizedStatusIn(['statusInclude' => ['unconfirmed']]))->equals(['unconfirmed']);
+    verify($this->repository->getNormalizedStatusIn(['status_in' => ['subscribed', 'unconfirmed'], 'statusInclude' => ['unconfirmed']]))->equals(['unconfirmed']);
+  }
+
+  public function testDynamicSegmentAppliesMinUpdatedAt() {
+    $dynamic = $this->createEmailSegment('upd-dyn-');
+    (new Subscriber())->withEmail('upd-dyn-old@example.com')->withUpdatedAt(new Carbon('2022-10-10 13:00:00'))->create();
+    $recent = (new Subscriber())->withEmail('upd-dyn-recent@example.com')->withUpdatedAt(new Carbon('2022-10-12 13:00:00'))->create();
+
+    $filters = ['segment_in' => [$dynamic->getId()], 'minUpdatedAt' => new Carbon('2022-10-11 12:00:00')];
+    verify($this->getIds($filters))->equals([$recent->getId()]);
+    verify($this->repository->getCountAndAllTrashGroups(new ListingDefinition('all', $filters))['count'])->equals(1);
+  }
+
+  public function testScoreGtAndLtAreExclusiveAndMinMaxAreInclusive() {
+    $low = (new Subscriber())->withEngagementScore(10)->create();
+    $edge = (new Subscriber())->withEngagementScore(50)->create();
+    $high = (new Subscriber())->withEngagementScore(90)->create();
+    $noScore = (new Subscriber())->create();
+
+    verify($this->getIds(['score_gt' => 50]))->equals([$high->getId()]);
+    verify($this->getIds(['score_lt' => 50]))->equals([$low->getId()]);
+    verify($this->getIds(['score_min' => 50]))->equals([$edge->getId(), $high->getId()]);
+    verify($this->getIds(['score_max' => 50]))->equals([$low->getId(), $edge->getId()]);
+    verify($this->getIds(['score_min' => 10, 'score_max' => 50]))->equals([$low->getId(), $edge->getId()]);
+    verify($this->getIds(['score_gt' => 10, 'score_lt' => 90]))->equals([$edge->getId()]);
+    foreach (['score_gt' => -1, 'score_lt' => 1000, 'score_min' => 0, 'score_max' => 1000] as $key => $value) {
+      $this->assertNotContains($noScore->getId(), $this->getIds([$key => $value]));
+    }
+  }
+
+  public function testNonNumericScoreValuesAreIgnored() {
+    $a = (new Subscriber())->withEngagementScore(10)->create();
+    $b = (new Subscriber())->create();
+
+    verify($this->getIds(['score_gt' => 'abc', 'score_min' => '', 'score_max' => []]))->equals([$a->getId(), $b->getId()]);
+    verify($this->getIds(['score_gt' => '5']))->equals([$a->getId()]);
+  }
+
+  public function testCreatedFromAndToAreInclusiveWholeDays() {
+    $beforeDay = (new Subscriber())->withCreatedAt(new Carbon('2022-10-09 23:59:59'))->create();
+    $dayStart = (new Subscriber())->withCreatedAt(new Carbon('2022-10-10 00:00:00'))->create();
+    $dayEnd = (new Subscriber())->withCreatedAt(new Carbon('2022-10-10 23:59:59'))->create();
+    $afterDay = (new Subscriber())->withCreatedAt(new Carbon('2022-10-11 00:00:00'))->create();
+
+    verify($this->getIds(['created_from' => '2022-10-10', 'created_to' => '2022-10-10']))->equals([$dayStart->getId(), $dayEnd->getId()]);
+    verify($this->getIds(['created_from' => '2022-10-10']))->equals([$dayStart->getId(), $dayEnd->getId(), $afterDay->getId()]);
+    verify($this->getIds(['created_to' => '2022-10-10']))->equals([$beforeDay->getId(), $dayStart->getId(), $dayEnd->getId()]);
+  }
+
+  public function testSubscribedFromAndToAreInclusiveWholeDays() {
+    $never = (new Subscriber())->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)->create();
+    $beforeDay = (new Subscriber())->withLastSubscribedAt(new Carbon('2022-10-09 23:59:59'))->create();
+    $dayStart = (new Subscriber())->withLastSubscribedAt(new Carbon('2022-10-10 00:00:00'))->create();
+    $dayEnd = (new Subscriber())->withLastSubscribedAt(new Carbon('2022-10-10 23:59:59'))->create();
+    $afterDay = (new Subscriber())->withLastSubscribedAt(new Carbon('2022-10-11 00:00:00'))->create();
+
+    verify($this->getIds(['subscribed_from' => '2022-10-10', 'subscribed_to' => '2022-10-10']))->equals([$dayStart->getId(), $dayEnd->getId()]);
+    verify($this->getIds(['subscribed_from' => '2022-10-10']))->equals([$dayStart->getId(), $dayEnd->getId(), $afterDay->getId()]);
+    verify($this->getIds(['subscribed_to' => '2022-10-10']))->equals([$beforeDay->getId(), $dayStart->getId(), $dayEnd->getId()]);
+    $this->assertNotContains($never->getId(), $this->getIds(['subscribed_from' => '2000-01-01', 'subscribed_to' => '2100-01-01']));
+  }
+
+  public function testScoreCombinesWithTagAndStatus() {
+    $tag = (new Tag())->withName('Score Tag')->create();
+    $match = (new Subscriber())->withEngagementScore(70)->withTags([$tag])->create();
+    (new Subscriber())->withEngagementScore(30)->withTags([$tag])->create();
+    (new Subscriber())->withEngagementScore(70)->create();
+    (new Subscriber())->withEngagementScore(70)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->withTags([$tag])->create();
+
+    $filters = ['score_gt' => 50, 'tag_in' => [$tag->getId()], 'status_in' => [SubscriberEntity::STATUS_SUBSCRIBED]];
+    verify($this->getIds($filters))->equals([$match->getId()]);
+    verify($this->getIds(['score_gt' => 99] + $filters))->equals([]);
+  }
+
+  public function testScoreAndDateFiltersGiveTheSameResultOnTheListAndTheDynamicSegmentPath() {
+    // A non-UTC site: UTC and site-local days select different rows near midnight.
+    $this->originalTimezoneOptions = ['timezone_string' => get_option('timezone_string'), 'gmt_offset' => get_option('gmt_offset')];
+    update_option('timezone_string', 'Europe/Prague');
+    $list = (new SegmentFactory())->withName('Parity List')->create();
+    $dynamic = $this->createEmailSegment('par-');
+    $make = function(string $name, $score, ?string $created, ?string $subscribed) use ($list) {
+      $subscriber = (new Subscriber())
+        ->withEmail("par-$name@example.com")
+        ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+        ->withSegments([$list]);
+      if ($score !== null) {
+        $subscriber->withEngagementScore($score);
+      }
+      if ($created) {
+        $subscriber->withCreatedAt(new Carbon($created));
+      }
+      if ($subscribed) {
+        $subscriber->withLastSubscribedAt(new Carbon($subscribed));
+      }
+      return $subscriber->create()->getId();
+    };
+    $make('a', 50, '2022-10-10 00:00:00', '2022-10-10 23:59:59');
+    $make('b', 50.5, '2022-10-10 23:59:59', '2022-10-11 00:00:00');
+    $make('c', 10, '2022-10-11 00:00:00', null);
+    $make('d', null, '2022-10-09 23:59:59', '2022-10-09 23:59:59');
+    $make('e', 90, '2022-10-10 12:00:00', '2022-10-10 00:00:00');
+
+    $cases = [
+      ['score_gt' => 50],
+      ['score_lt' => 50.5],
+      ['score_min' => 50, 'score_max' => 50.5],
+      ['score_min' => 0],
+      ['created_from' => '2022-10-10', 'created_to' => '2022-10-10'],
+      ['created_to' => '2022-10-10'],
+      ['subscribed_from' => '2022-10-10', 'subscribed_to' => '2022-10-10'],
+      ['subscribed_from' => '2022-10-11'],
+      ['score_gt' => 20, 'created_from' => '2022-10-10', 'subscribed_to' => '2022-10-10'],
+    ];
+    foreach ($cases as $filters) {
+      $viaList = $this->getIds(['segment_in' => [$list->getId()]] + $filters);
+      $viaDynamic = $this->getIds(['segment_in' => [$dynamic->getId()]] + $filters);
+      verify($viaDynamic)->equals($viaList);
+      verify($this->resendIds(['segment_in' => [$dynamic->getId()]] + $filters))->equals($viaList);
+    }
+    verify(count($this->getIds(['segment_in' => [$dynamic->getId()], 'created_from' => '2022-10-10', 'created_to' => '2022-10-10'])))->equals(3);
+    verify(count($this->getIds(['segment_in' => [$dynamic->getId()], 'score_gt' => 50])))->equals(2);
+    // 2022-10-10 in Prague (UTC+2) is a, d and e; b and c fall on the next site day.
+    $siteDay = ['created_from' => '2022-10-10', 'created_to' => '2022-10-10'];
+    verify($this->getIds(['segment_in' => [$dynamic->getId()]] + $siteDay))->equals($this->getIds(['segment_in' => [$list->getId()]] + $siteDay));
+    verify(count($this->getIds(['segment_in' => [$dynamic->getId()]] + $siteDay)))->equals(3);
+  }
+
+  /**
+   * @return int[]
+   */
+  private function resendIds(array $filters): array {
+    $definition = new ListingDefinition(null, $filters, null, [], 'id', 'asc', 0, 100);
+    return $this->repository->getConfirmationEmailResendQueueData(
+      $definition,
+      Carbon::now()->subDay(),
+      Carbon::now()->subYears(5),
+      10,
+      100
+    )['queued_ids'];
+  }
+
+  /**
+   * @return int[]
+   */
+  private function getIds(array $filters, ?string $group = null): array {
+    $definition = new ListingDefinition($group, $filters, null, [], 'id', 'asc', 0, 100);
+    $rows = $this->repository->getData($definition);
+    $ids = array_map(function(SubscriberEntity $subscriber): int {
+      return (int)$subscriber->getId();
+    }, $rows);
+    // getCount must agree with getData for the same definition.
+    verify($this->repository->getCount($definition))->equals(count($ids));
+    return $ids;
+  }
+
+  private function createEmailSegment(string $prefix): SegmentEntity {
+    return $this->createDynamicSegment([[DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTextField::EMAIL, ['operator' => 'startsWith', 'value' => $prefix]]]);
+  }
+
+  /**
+   * @param array<int, array{0: string, 1: string, 2: array<string, mixed>}> $filters [type, action, data]
+   */
+  private function createDynamicSegment(array $filters, string $connect = DynamicSegmentFilterData::CONNECT_TYPE_AND): SegmentEntity {
+    $segment = new SegmentEntity('Dynamic ' . uniqid(), SegmentEntity::TYPE_DYNAMIC, 'Segment description');
+    $this->entityManager->persist($segment);
+    foreach ($filters as [$type, $action, $data]) {
+      $filter = new DynamicSegmentFilterEntity($segment, new DynamicSegmentFilterData($type, $action, $data + ['action' => $action, 'connect' => $connect]));
+      $segment->addDynamicFilter($filter);
+      $this->entityManager->persist($filter);
+    }
+    $this->entityManager->flush();
+    return $segment;
+  }
+
+  /** Sets the locale's thousands separator and returns the previous one. */
+  private function setThousandsSeparator(string $separator): string {
+    global $wp_locale;
+    $property = 'number_format'; // WP_Locale's own (non camelCase) property name.
+    $format = $wp_locale->$property;
+    $previous = (string)$format['thousands_sep'];
+    $format['thousands_sep'] = $separator;
+    $wp_locale->$property = $format;
+    return $previous;
+  }
+
+  /**
+   * @param string[] $inactivePlugins
+   */
+  private function buildRepository(array $inactivePlugins = []): SubscriberListingRepository {
+    $wp = $this->make(WPFunctions::class, [
+      'isPluginActive' => function(string $plugin) use ($inactivePlugins): bool {
+        return !in_array($plugin, $inactivePlugins, true);
+      },
+    ]);
+    $validator = new SegmentDependencyValidator(
+      $this->make(SubscribersFeature::class, ['hasValidPremiumKey' => true, 'check' => false]),
+      $wp
+    );
+    return new SubscriberListingRepository(
+      $this->entityManager,
+      new FilterHandler($this->entityManager, $validator, $this->diContainer->get(FilterFactory::class)),
+      $this->diContainer->get(SegmentSubscribersRepository::class),
+      $this->diContainer->get(SubscribersCountsController::class),
+      $validator,
+      new WPFunctions()
+    );
+  }
+
+  private function setListStatus(SubscriberEntity $subscriber, SegmentEntity $segment, string $status): void {
+    $this->entityManager->clear();
+    $subscriberSegment = $this->entityManager->getRepository(SubscriberSegmentEntity::class)->findOneBy([
+      'subscriber' => $subscriber->getId(),
+      'segment' => $segment->getId(),
+    ]);
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
+    $subscriberSegment->setStatus($status);
+    $this->entityManager->flush();
+  }
+
+  private function prepareSegmentsCountColumn(bool $ready): void {
+    $settings = $this->diContainer->get(SettingsController::class);
+    if ($ready) {
+      $ids = array_map(function(SubscriberEntity $subscriber): int {
+        return (int)$subscriber->getId();
+      }, $this->entityManager->getRepository(SubscriberEntity::class)->findAll());
+      $this->diContainer->get(SegmentsCountRecalculator::class)->recalculateForSubscribers($ids);
+    }
+    $settings->set(SegmentSubscribersRepository::BACKFILLED_SETTING_KEY, $ready);
   }
 
   private function createSentEmails(SubscriberEntity $subscriber, int $count, Carbon $sentAt): void {

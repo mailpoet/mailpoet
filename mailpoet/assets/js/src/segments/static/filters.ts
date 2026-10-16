@@ -16,7 +16,7 @@ export type SegmentsRequestFilter = {
  * null (which `Number()` would silently turn into 0 and activate an unintended
  * filter). Returns undefined for anything that isn't a real number.
  */
-function toFiniteNumber(value: unknown): number | undefined {
+export function toFiniteNumber(value: unknown): number | undefined {
   if (typeof value === 'number') {
     return Number.isFinite(value) ? value : undefined;
   }

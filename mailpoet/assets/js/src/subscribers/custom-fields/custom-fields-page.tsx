@@ -9,6 +9,7 @@ import {
   type LoadListing,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
+  useShowFiltersWhenActive,
 } from 'common/dataviews';
 import type { ListingGroup } from 'common/dataviews/types';
 import { CustomFieldsForm } from './custom-fields-form';
@@ -202,6 +203,8 @@ export function CustomFieldsPage() {
     load,
     extraParams,
   });
+  const dataViewsRef = useRef<HTMLDivElement>(null);
+  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
 
   const onChangeViewWithFilterReset = useCallback(
     (nextView: View): void => {
@@ -519,7 +522,10 @@ export function CustomFieldsPage() {
         onSelect={handleTabSelect}
       >
         {() => (
-          <div className="mailpoet-dataviews mailpoet-custom-fields-dataviews">
+          <div
+            ref={dataViewsRef}
+            className="mailpoet-dataviews mailpoet-custom-fields-dataviews"
+          >
             <DataViews<CustomField>
               data={items}
               fields={listFields}
@@ -543,9 +549,7 @@ export function CustomFieldsPage() {
                   <DataViews.ViewConfig />
                 </div>
               </div>
-              <div className="mailpoet-dataviews__filters">
-                <DataViews.Filters />
-              </div>
+              <DataViews.FiltersToggled className="mailpoet-dataviews__filters" />
               {group === 'trash' && (groupCounts.trash ?? 0) > 0 && (
                 <div className="mailpoet-custom-fields-dataviews__toolbar">
                   <button

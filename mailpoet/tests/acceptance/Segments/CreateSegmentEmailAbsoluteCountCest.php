@@ -129,7 +129,7 @@ class CreateSegmentEmailAbsoluteCountCest {
     // Wait for the search input — it only renders once the listing is mounted.
     $i->waitForElementVisible('.dataviews-search input');
     $i->waitForListingItemsToLoad();
-    $i->see($segmentTitle, ['css' => 'select[name=segment]']);
+    $i->waitForDataViewsFilterChip($segmentTitle);
     $i->see('stats_test1@example.com');
     $i->see('stats_test2@example.com');
     $i->dontSee('stats_test3@example.com');

@@ -28,6 +28,7 @@ use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Test\DataFactories\DynamicSegment as DynamicSegmentFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
@@ -1055,6 +1056,89 @@ class SubscribersTest extends \MailPoetTest {
     ]);
     $this->assertCount(1, $subscribers);
     $this->assertEquals($subscriber1->getEmail(), $subscribers[0]['email']);
+  }
+
+  public function testItFiltersSubscribersByListIdStatusAndMinUpdatedAt(): void {
+    $segment = (new SegmentFactory())->create();
+    $this->subscriberFactory
+      ->withEmail('old-subscribed@test.com')
+      ->withSegments([$segment])
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withUpdatedAt(new Carbon('2022-10-10 13:00:00'))
+      ->create();
+    $match = $this->subscriberFactory
+      ->withEmail('new-subscribed@test.com')
+      ->withSegments([$segment])
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withUpdatedAt(new Carbon('2022-10-11 13:00:00'))
+      ->create();
+    $this->subscriberFactory
+      ->withEmail('new-unconfirmed@test.com')
+      ->withSegments([$segment])
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withUpdatedAt(new Carbon('2022-10-11 13:00:00'))
+      ->create();
+
+    $filter = [
+      'listId' => $segment->getId(),
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'minUpdatedAt' => new Carbon('2022-10-11 12:00:00'),
+    ];
+    $subscribers = $this->getApi()->getSubscribers($filter);
+    $this->assertCount(1, $subscribers);
+    $this->assertEquals($match->getEmail(), $subscribers[0]['email']);
+    $this->assertEquals(1, $this->getApi()->getSubscribersCount($filter));
+  }
+
+  public function testItIncludesTrashedSubscribersWhenStatusIsOmitted(): void {
+    $active = $this->subscriberFactory->withEmail('active@test.com')->create();
+    $trashed = $this->subscriberFactory
+      ->withEmail('trashed@test.com')
+      ->withDeletedAt(new Carbon('2022-10-10 13:00:00'))
+      ->create();
+
+    $subscribers = $this->getApi()->getSubscribers([]);
+    $emails = array_column($subscribers, 'email');
+    sort($emails);
+    $this->assertEquals([$active->getEmail(), $trashed->getEmail()], $emails);
+    $this->assertEquals(2, $this->getApi()->getSubscribersCount([]));
+  }
+
+  public function testItReturnsAllSubscribersForNonexistentListId(): void {
+    $this->subscriberFactory->withEmail('one@test.com')->create();
+    $this->subscriberFactory->withEmail('two@test.com')->create();
+
+    $filter = ['listId' => 999999];
+    $this->assertCount(2, $this->getApi()->getSubscribers($filter));
+    $this->assertEquals(2, $this->getApi()->getSubscribersCount($filter));
+  }
+
+  public function testItAppliesMinUpdatedAtForDynamicSegmentListId(): void {
+    $segment = (new DynamicSegmentFactory())->withEngagementScoreFilter(40, 'higherThan')->create();
+    $this->subscriberFactory
+      ->withEmail('old@test.com')
+      ->withEngagementScore(80)
+      ->withUpdatedAt(new Carbon('2022-10-10 13:00:00'))
+      ->create();
+    $recent = $this->subscriberFactory
+      ->withEmail('recent@test.com')
+      ->withEngagementScore(90)
+      ->withUpdatedAt(new Carbon('2022-10-12 14:00:00'))
+      ->create();
+    $this->subscriberFactory
+      ->withEmail('low@test.com')
+      ->withEngagementScore(10)
+      ->withUpdatedAt(new Carbon('2022-10-12 13:00:00'))
+      ->create();
+
+    $filter = [
+      'listId' => $segment->getId(),
+      'minUpdatedAt' => new Carbon('2022-10-11 12:00:00'),
+    ];
+    $subscribers = $this->getApi()->getSubscribers($filter);
+    $this->assertCount(1, $subscribers);
+    $this->assertEquals($recent->getEmail(), $subscribers[0]['email']);
+    $this->assertEquals(1, $this->getApi()->getSubscribersCount($filter));
   }
 
   public function testItGetsSubscribersCount(): void {

@@ -6,6 +6,7 @@ import {
   getDataViewsPreference,
   usePersistedDataViewsPreference,
   wasInitialUrlStateReset,
+  useShowFiltersWhenActive,
 } from 'common/dataviews';
 import { BackButton, PageHeader } from 'common/page-header';
 import { TopBarWithBoundary } from 'common/top-bar/top-bar';
@@ -75,6 +76,8 @@ function resetPageWhenQueryChanges(currentView: View, nextView: View): View {
 
 export function TagsPage() {
   const [view, setView] = useState<View>(buildInitialView);
+  const dataViewsRef = useRef<HTMLDivElement>(null);
+  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
   const didMountRef = useRef(false);
   const [items, setItems] = useState<Tag[]>([]);
   const [meta, setMeta] = useState<TagListMeta>({
@@ -307,7 +310,10 @@ export function TagsPage() {
         </Notice>
       )}
 
-      <div className="mailpoet-dataviews mailpoet-tags-dataviews">
+      <div
+        ref={dataViewsRef}
+        className="mailpoet-dataviews mailpoet-tags-dataviews"
+      >
         <DataViews<Tag>
           data={items}
           fields={fields}
@@ -329,9 +335,7 @@ export function TagsPage() {
               <DataViews.ViewConfig />
             </div>
           </div>
-          <div className="mailpoet-dataviews__filters">
-            <DataViews.Filters />
-          </div>
+          <DataViews.FiltersToggled className="mailpoet-dataviews__filters" />
           <DataViews.Layout />
           <DataViews.Footer />
         </DataViews>

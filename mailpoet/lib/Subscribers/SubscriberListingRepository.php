@@ -8,12 +8,15 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Entities\TagEntity;
+use MailPoet\Listing\ListingDateRangeFilterTrait;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
+use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder as DBALQueryBuilder;
@@ -22,15 +25,18 @@ use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class SubscriberListingRepository extends ListingRepository {
+  use ListingDateRangeFilterTrait;
+
   public const FILTER_WITHOUT_LIST = 'without-list';
 
   const DEFAULT_SORT_BY = 'createdAt';
+  private const NORMALIZED_FILTERS_CACHE_SIZE = 8;
 
-  private const ENGAGEMENT_SCORE_UNKNOWN = 'unknown';
-  private const ENGAGEMENT_SCORE_DORMANT = 'dormant';
-  private const ENGAGEMENT_SCORE_LOW = 'low';
-  private const ENGAGEMENT_SCORE_GOOD = 'good';
-  private const ENGAGEMENT_SCORE_EXCELLENT = 'excellent';
+  public const ENGAGEMENT_SCORE_UNKNOWN = 'unknown';
+  public const ENGAGEMENT_SCORE_DORMANT = 'dormant';
+  public const ENGAGEMENT_SCORE_LOW = 'low';
+  public const ENGAGEMENT_SCORE_GOOD = 'good';
+  public const ENGAGEMENT_SCORE_EXCELLENT = 'excellent';
   private const ENGAGEMENT_SCORE_LOW_MAX = 20;
   private const ENGAGEMENT_SCORE_GOOD_MIN = 20;
   private const ENGAGEMENT_SCORE_GOOD_MAX = 50;
@@ -46,7 +52,7 @@ class SubscriberListingRepository extends ListingRepository {
     'not_found',
   ];
 
-  private static $supportedStatuses = [
+  public const SUPPORTED_STATUSES = [
     SubscriberEntity::STATUS_SUBSCRIBED,
     SubscriberEntity::STATUS_UNSUBSCRIBED,
     SubscriberEntity::STATUS_INACTIVE,
@@ -66,6 +72,15 @@ class SubscriberListingRepository extends ListingRepository {
   /** @var SubscribersCountsController */
   private $subscribersCountsController;
 
+  /** @var SegmentDependencyValidator */
+  private $segmentDependencyValidator;
+
+  /** @var WPFunctions */
+  private $wp;
+
+  /** @var array<string, array> */
+  private $normalizedFilters = [];
+
   /** @var null | ListingDefinition */
   private $definition = null;
 
@@ -73,60 +88,52 @@ class SubscriberListingRepository extends ListingRepository {
     EntityManager $entityManager,
     FilterHandler $dynamicSegmentsFilter,
     SegmentSubscribersRepository $segmentSubscribersRepository,
-    SubscribersCountsController $subscribersCountsController
+    SubscribersCountsController $subscribersCountsController,
+    SegmentDependencyValidator $segmentDependencyValidator,
+    WPFunctions $wp
   ) {
     parent::__construct($entityManager);
     $this->dynamicSegmentsFilter = $dynamicSegmentsFilter;
     $this->entityManager = $entityManager;
     $this->segmentSubscribersRepository = $segmentSubscribersRepository;
     $this->subscribersCountsController = $subscribersCountsController;
+    $this->segmentDependencyValidator = $segmentDependencyValidator;
+    $this->wp = $wp;
   }
 
   public function getData(ListingDefinition $definition): array {
     $this->definition = $definition;
-    $dynamicSegment = $this->getDynamicSegmentFromFilters($definition);
-    if ($dynamicSegment === null) {
+    $this->normalizedFilters = [];
+    if (!$this->hasDynamicSegmentFilter($definition)) {
       return parent::getData($definition);
     }
-    return $this->getDataForDynamicSegment($definition, $dynamicSegment);
+    return $this->getDataForDynamicSegment($definition);
   }
 
   public function getCount(ListingDefinition $definition): int {
     $this->definition = $definition;
-    $dynamicSegment = $this->getDynamicSegmentFromFilters($definition);
-    if ($dynamicSegment === null) {
+    $this->normalizedFilters = [];
+    if (!$this->hasDynamicSegmentFilter($definition)) {
       return parent::getCount($definition);
     }
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $subscribersIdsQuery = $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder()
-      ->select("count(DISTINCT $subscribersTable.id)")
-      ->from($subscribersTable);
-    $subscribersIdsQuery = $this->applyConstraintsForDynamicSegment($subscribersIdsQuery, $definition, $dynamicSegment);
-    return (int)$subscribersIdsQuery->execute()->fetchOne();
+    $query = $this->createDbalSubscribersQuery('COUNT(DISTINCT s.id)');
+    $this->applyDbalListingConstraints($query, $definition, false);
+    return $this->toInt($query->executeQuery()->fetchOne());
   }
 
   public function getActionableIds(ListingDefinition $definition): array {
     $this->definition = $definition;
+    $this->normalizedFilters = [];
     $ids = $definition->getSelection();
     if (!empty($ids)) {
       return $ids;
     }
-    $dynamicSegment = $this->getDynamicSegmentFromFilters($definition);
-    if ($dynamicSegment === null) {
+    if (!$this->hasDynamicSegmentFilter($definition)) {
       return parent::getActionableIds($definition);
     }
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $subscribersIdsQuery = $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder()
-      ->select("DISTINCT $subscribersTable.id")
-      ->from($subscribersTable);
-    $subscribersIdsQuery = $this->applyConstraintsForDynamicSegment($subscribersIdsQuery, $definition, $dynamicSegment);
-    $idsStatement = $subscribersIdsQuery->execute();
-    $result = $idsStatement->fetchAll();
-    return array_column($result, 'id');
+    $query = $this->createDbalSubscribersQuery('DISTINCT s.id');
+    $this->applyDbalListingConstraints($query, $definition, false);
+    return $query->executeQuery()->fetchFirstColumn();
   }
 
   /**
@@ -225,35 +232,33 @@ class SubscriberListingRepository extends ListingRepository {
    * @return array{query: DBALQueryBuilder, id_column: string}
    */
   private function createBulkResendBaseQuery(ListingDefinition $definition): array {
-    $dynamicSegment = $this->getDynamicSegmentFromFilters($definition);
-    if ($dynamicSegment instanceof SegmentEntity) {
-      $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-      $query = $this->entityManager->getConnection()->createQueryBuilder()
-        ->select("DISTINCT $subscribersTable.id")
-        ->from($subscribersTable);
-      $query = $this->applyConstraintsForDynamicSegment($query, $definition, $dynamicSegment);
-      return ['query' => $query, 'id_column' => "$subscribersTable.id"];
-    }
-
-    $query = $this->entityManager->getConnection()->createQueryBuilder();
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $query->select('DISTINCT s.id')
-      ->from($subscribersTable, 's');
-
-    $this->applyBulkResendListingConstraints($query, $definition);
+    $query = $this->createDbalSubscribersQuery('DISTINCT s.id');
+    // A dynamic list never excluded trashed subscribers when no group was given; keep that.
+    $this->applyDbalListingConstraints($query, $definition, !$this->hasDynamicSegmentFilter($definition));
+    // Whatever the group or filters say, a confirmation email never goes to a confirmed subscriber.
+    $query->andWhere(sprintf("s.status = '%s'", SubscriberEntity::STATUS_UNCONFIRMED));
     return ['query' => $query, 'id_column' => 's.id'];
   }
 
-  private function applyBulkResendListingConstraints(DBALQueryBuilder $query, ListingDefinition $definition): void {
+  private function createDbalSubscribersQuery(string $select): DBALQueryBuilder {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    return $this->entityManager->getConnection()->createQueryBuilder()
+      ->select($select)
+      ->from($subscribersTable, 's');
+  }
+
+  /**
+   * The SQL twin of the DQL listing constraints, always over `<subscribers> s`.
+   *
+   * @param bool $excludeTrashedWithoutGroup The DQL listing applies no deleted_at
+   *   condition when there is no group; the bulk resend always did.
+   */
+  private function applyDbalListingConstraints(DBALQueryBuilder $query, ListingDefinition $definition, bool $excludeTrashedWithoutGroup): void {
     $group = $definition->getGroup();
     if ($group === 'trash') {
       $query->andWhere('s.deleted_at IS NOT NULL');
-    } else {
+    } elseif ($group || $excludeTrashedWithoutGroup) {
       $query->andWhere('s.deleted_at IS NULL');
-    }
-    if ($group && in_array($group, self::$supportedStatuses, true)) {
-      $query->andWhere('s.status = :listing_status')
-        ->setParameter('listing_status', $group);
     }
 
     $search = $definition->getSearch();
@@ -264,27 +269,13 @@ class SubscriberListingRepository extends ListingRepository {
         ->setParameter('search', "%$search%");
     }
 
-    $filters = $definition->getFilters();
-    if (isset($filters['segment'])) {
-      if ($filters['segment'] === self::FILTER_WITHOUT_LIST) {
-        $this->segmentSubscribersRepository->addConstraintsForSubscribersWithoutSegmentToDBAL($query);
-      } else {
-        $segment = $this->entityManager->find(SegmentEntity::class, (int)$filters['segment']);
-        if ($segment instanceof SegmentEntity && $segment->isStatic()) {
-          $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
-          $query->join('s', $subscriberSegmentsTable, 'ss', 'ss.subscriber_id = s.id AND ss.segment_id = :segment_id')
-            ->setParameter('segment_id', $segment->getId(), ParameterType::INTEGER);
-        }
-      }
-    }
+    $filters = $this->normalizeFilters($definition->getFilters() ?: []);
+    $hasListJoin = $this->applyDbalSegmentFilters($query, $filters);
+    $this->applyDbalTagFilters($query, $filters);
 
-    if (isset($filters['tag'])) {
-      $tag = $this->entityManager->find(TagEntity::class, (int)$filters['tag']);
-      if ($tag instanceof TagEntity) {
-        $subscriberTagsTable = $this->entityManager->getClassMetadata(SubscriberTagEntity::class)->getTableName();
-        $query->join('s', $subscriberTagsTable, 'st', 'st.subscriber_id = s.id AND st.tag_id = :tag_id')
-          ->setParameter('tag_id', $tag->getId(), ParameterType::INTEGER);
-      }
+    // Under a single static list the group uses the per-list status, as in applyGroup().
+    if ($group && in_array($group, self::SUPPORTED_STATUSES, true)) {
+      $query->andWhere($this->getStatusPredicate($group, $hasListJoin));
     }
 
     if (isset($filters['minUpdatedAt']) && $filters['minUpdatedAt'] instanceof \DateTimeInterface) {
@@ -292,17 +283,34 @@ class SubscriberListingRepository extends ListingRepository {
         ->setParameter('updated_at', $filters['minUpdatedAt']->format('Y-m-d H:i:s'), ParameterType::STRING);
     }
 
-    $statusInclude = $this->sanitizeStatusFilter($filters['statusInclude'] ?? []);
-    if ($statusInclude) {
-      $query->andWhere('s.status IN (:status_include)')
-        ->setParameter('status_include', $statusInclude, ArrayParameterType::STRING);
+    if (!empty($filters['status_in'])) {
+      if ($hasListJoin) {
+        $query->andWhere($this->getStatusInPredicate($this->getStringList($filters, 'status_in'), true));
+      } else {
+        $query->andWhere('s.status IN (:status_in)')
+          ->setParameter('status_in', $filters['status_in'], ArrayParameterType::STRING);
+      }
     }
 
-    $statusExclude = $this->sanitizeStatusFilter($filters['statusExclude'] ?? []);
-    if ($statusExclude) {
-      $query->andWhere('s.status NOT IN (:status_exclude)')
-        ->setParameter('status_exclude', $statusExclude, ArrayParameterType::STRING);
+    if (!empty($filters['status_not_in'])) {
+      if ($hasListJoin) {
+        $query->andWhere('NOT ' . $this->getStatusInPredicate($this->getStringList($filters, 'status_not_in'), true));
+      } else {
+        $query->andWhere('s.status NOT IN (:status_not_in)')
+          ->setParameter('status_not_in', $filters['status_not_in'], ArrayParameterType::STRING);
+      }
     }
+
+    if (!empty($filters['source_in'])) {
+      $query->andWhere($this->getSourcePredicate($filters['source_in'], 's.source', ':source_in', false))
+        ->setParameter('source_in', $filters['source_in'], ArrayParameterType::STRING);
+    }
+    if (!empty($filters['source_not_in'])) {
+      $query->andWhere($this->getSourcePredicate($filters['source_not_in'], 's.source', ':source_not_in', true))
+        ->setParameter('source_not_in', $filters['source_not_in'], ArrayParameterType::STRING);
+    }
+
+    $this->applyDbalScoreAndDateFilters($query, $filters);
 
     $createdAtFrom = $filters['createdAtFrom'] ?? null;
     if ($createdAtFrom && is_string($createdAtFrom) && $this->isValidDateTime($createdAtFrom)) {
@@ -351,13 +359,135 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   /**
+   * @param array $filters Normalized filters.
+   * @return bool True when the single static list join (alias ss) was added.
+   */
+  private function applyDbalSegmentFilters(DBALQueryBuilder $query, array $filters): bool {
+    $in = $this->getIdList($filters, 'segment_in');
+    $notIn = $this->getIdList($filters, 'segment_not_in');
+    if (!$in && !$notIn) {
+      return false;
+    }
+
+    $single = $this->getSingleSegment($in, $notIn);
+    if ($single instanceof SegmentEntity && $single->isStatic()) {
+      $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+      $query->join('s', $subscriberSegmentsTable, 'ss', 'ss.subscriber_id = s.id AND ss.segment_id = :segment_id')
+        ->setParameter('segment_id', $single->getId(), ParameterType::INTEGER);
+      return true;
+    }
+
+    $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $membershipSql = "s.id %s (SELECT ssm.subscriber_id FROM $subscriberSegmentsTable ssm WHERE ssm.segment_id IN (:%s))";
+    $dynamicIndex = 0;
+
+    $partitionedIn = $this->partitionSegmentIds($in);
+    $conditions = [];
+    if ($partitionedIn['static']) {
+      $conditions[] = sprintf($membershipSql, 'IN', 'segment_in');
+      $query->setParameter('segment_in', $partitionedIn['static'], ArrayParameterType::INTEGER);
+    }
+    if ($partitionedIn['without']) {
+      $conditions[] = $this->segmentSubscribersRepository->getWithoutSegmentSqlPredicate();
+    }
+    foreach ($partitionedIn['dynamic'] as $segmentId) {
+      $segment = $this->entityManager->find(SegmentEntity::class, $segmentId);
+      if (!$segment instanceof SegmentEntity) {
+        continue;
+      }
+      $conditions[] = $this->getDynamicSegmentPredicate($query, $segment, 'IN', $dynamicIndex++);
+    }
+    if ($conditions) {
+      $query->andWhere('(' . implode(' OR ', $conditions) . ')');
+    }
+
+    $partitionedNotIn = $this->partitionSegmentIds($notIn);
+    if ($partitionedNotIn['static']) {
+      $query->andWhere(sprintf($membershipSql, 'NOT IN', 'segment_not_in'))
+        ->setParameter('segment_not_in', $partitionedNotIn['static'], ArrayParameterType::INTEGER);
+    }
+    if ($partitionedNotIn['without']) {
+      $query->andWhere($this->segmentSubscribersRepository->getWithoutSegmentSqlPredicate(true));
+    }
+    foreach ($partitionedNotIn['dynamic'] as $segmentId) {
+      $segment = $this->entityManager->find(SegmentEntity::class, $segmentId);
+      if (!$segment instanceof SegmentEntity || !$this->canExcludeDynamicSegment($segment)) {
+        // Fail closed: return nothing rather than keep members of a list we cannot evaluate.
+        $query->andWhere('1 = 0');
+        continue;
+      }
+      $query->andWhere($this->getDynamicSegmentPredicate($query, $segment, 'NOT IN', $dynamicIndex++));
+    }
+    return false;
+  }
+
+  /**
+   * A filter whose plugin is missing yields an empty set, and excluding an empty
+   * set would keep every subscriber. For inclusion FilterHandler already returns
+   * no rows in that case.
+   */
+  private function canExcludeDynamicSegment(SegmentEntity $segment): bool {
+    return !$this->segmentDependencyValidator->getMissingPluginsBySegment($segment);
+  }
+
+  private function getDynamicSegmentPredicate(DBALQueryBuilder $outer, SegmentEntity $segment, string $operator, int $index): string {
+    // Not wrapped in a derived table: that extra materialisation made the page 2-4x slower on 100k subscribers.
+    return sprintf('s.id %s (%s)', $operator, $this->getDynamicSegmentInSql($outer, $segment, $index));
+  }
+
+  /**
+   * The SQL of the segment's subscriber ids, with its parameters copied onto
+   * $outer under names prefixed by the index so two segments never collide.
+   */
+  private function getDynamicSegmentInSql(DBALQueryBuilder $outer, SegmentEntity $segment, int $index): string {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $sub = $this->entityManager->getConnection()->createQueryBuilder()
+      ->select("DISTINCT $subscribersTable.id")
+      ->from($subscribersTable);
+    $sub = $this->dynamicSegmentsFilter->apply($sub, $segment);
+    $sql = $sub->getSQL();
+    $types = $sub->getParameterTypes();
+    foreach ($sub->getParameters() as $name => $value) {
+      $name = (string)$name;
+      $unique = "ds{$index}_{$name}";
+      // DBAL has no parameter rename API. The lookahead stops :products1 from matching
+      // inside :products10. Assumes filter SQL has no colon inside quoted literals.
+      $sql = (string)preg_replace('/:' . preg_quote($name, '/') . '(?![A-Za-z0-9_])/', ':' . $unique, $sql);
+      $outer->setParameter($unique, $value, $types[$name] ?? null);
+    }
+    return $sql;
+  }
+
+  /**
+   * @param array $filters Normalized filters.
+   */
+  private function applyDbalTagFilters(DBALQueryBuilder $query, array $filters): void {
+    $in = $this->getIdList($filters, 'tag_in');
+    $notIn = $this->getIdList($filters, 'tag_not_in');
+    $subscriberTagsTable = $this->entityManager->getClassMetadata(SubscriberTagEntity::class)->getTableName();
+    if (count($in) === 1 && !$notIn) {
+      $query->join('s', $subscriberTagsTable, 'st', 'st.subscriber_id = s.id AND st.tag_id = :tag_id')
+        ->setParameter('tag_id', $in[0], ParameterType::INTEGER);
+      return;
+    }
+    if ($in) {
+      $query->andWhere("s.id IN (SELECT sti.subscriber_id FROM $subscriberTagsTable sti WHERE sti.tag_id IN (:tag_in))")
+        ->setParameter('tag_in', $in, ArrayParameterType::INTEGER);
+    }
+    if ($notIn) {
+      $query->andWhere("s.id NOT IN (SELECT stn.subscriber_id FROM $subscriberTagsTable stn WHERE stn.tag_id IN (:tag_not_in))")
+        ->setParameter('tag_not_in', $notIn, ArrayParameterType::INTEGER);
+    }
+  }
+
+  /**
    * @param mixed $statuses
    * @return string[]
    */
   private function sanitizeStatusFilter($statuses): array {
     $statuses = is_array($statuses) ? $statuses : [$statuses];
     $statuses = array_filter($statuses, function($status) {
-      return is_string($status) && in_array($status, self::$supportedStatuses, true);
+      return is_string($status) && in_array($status, self::SUPPORTED_STATUSES, true);
     });
     return array_values(array_unique($statuses));
   }
@@ -535,7 +665,7 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   protected function applySelectClause(QueryBuilder $queryBuilder) {
-    $queryBuilder->select("PARTIAL s.{id,email,firstName,lastName,status,createdAt,deletedAt,updatedAt,countConfirmations,wpUserId,isWoocommerceUser,engagementScore,lastSubscribedAt}");
+    $queryBuilder->select("PARTIAL s.{id,email,firstName,lastName,status,createdAt,deletedAt,updatedAt,countConfirmations,wpUserId,isWoocommerceUser,engagementScore,lastSubscribedAt,source}");
   }
 
   protected function applyFromClause(QueryBuilder $queryBuilder) {
@@ -550,47 +680,72 @@ class SubscriberListingRepository extends ListingRepository {
       $queryBuilder->andWhere('s.deletedAt IS NULL');
     }
 
-    if (!in_array($group, self::$supportedStatuses)) {
+    if (!in_array($group, self::SUPPORTED_STATUSES)) {
       return;
     }
 
-    $staticSegment = $this->getStaticSegmentFromDefinition();
+    // Under a single static list a member's status is the per-list status, so
+    // a member unsubscribed from THIS list belongs in the unsubscribed tab, not
+    // in inactive/unconfirmed/bounced. This keeps the listed rows in step with
+    // the per-list statistics tab counts.
+    $queryBuilder->andWhere($this->getStatusPredicate($group, (bool)$this->getStaticSegmentFromDefinition()));
+  }
 
-    if (in_array($group, [SubscriberEntity::STATUS_SUBSCRIBED, SubscriberEntity::STATUS_UNSUBSCRIBED]) && $staticSegment) {
-      $operator = $group === SubscriberEntity::STATUS_SUBSCRIBED ? 'AND' : 'OR';
-      $queryBuilder
-        ->andWhere('(s.status = :status ' . $operator . ' ss.status = :status)')
-        ->setParameter('status', $group);
-      return;
+  /**
+   * Predicate for one status, aliased on `s` (and `ss` for the static list join).
+   * Works in both DQL and SQL. The status is checked against the whitelist and
+   * inlined, so it never carries user input.
+   *
+   * With a single static list join (`ss`), subscribed/unsubscribed combine the
+   * global and per-list status; every other status also requires the member to
+   * be subscribed to that list. ss.status is only ever subscribed/unsubscribed,
+   * so that is an equality (an index seek) rather than != unsubscribed, and it
+   * mirrors the count query in SegmentSubscribersRepository.
+   */
+  private function getStatusPredicate(string $status, bool $hasStaticListJoin): string {
+    if (!in_array($status, self::SUPPORTED_STATUSES, true)) {
+      return '1 = 0';
     }
-
-    $queryBuilder
-      ->andWhere('s.status = :status')
-      ->setParameter('status', $group);
-
-    // Under a static list, a member unsubscribed from THIS list belongs in the
-    // unsubscribed tab — not in inactive/unconfirmed/bounced. Excluding them here
-    // keeps the listed rows in step with the per-list statistics tab counts.
-    // ss.status is only ever subscribed/unsubscribed, so this is an equality
-    // (ss.status = subscribed) rather than != unsubscribed — same rows, but an
-    // equality seek the (segment_id, status, subscriber_id) index can use, and
-    // it mirrors the count query in SegmentSubscribersRepository.
-    if ($staticSegment) {
-      $queryBuilder
-        ->andWhere('ss.status = :ssSubscribed')
-        ->setParameter('ssSubscribed', SubscriberEntity::STATUS_SUBSCRIBED);
+    if (!$hasStaticListJoin) {
+      return "s.status = '$status'";
     }
+    if ($status === SubscriberEntity::STATUS_SUBSCRIBED) {
+      return "(s.status = '$status' AND ss.status = '$status')";
+    }
+    if ($status === SubscriberEntity::STATUS_UNSUBSCRIBED) {
+      return "(s.status = '$status' OR ss.status = '$status')";
+    }
+    return "(s.status = '$status' AND ss.status = '" . SubscriberEntity::STATUS_SUBSCRIBED . "')";
+  }
+
+  /**
+   * A NULL source means "no known source", so it counts as Source::UNKNOWN.
+   *
+   * @param string[] $sources
+   */
+  private function getSourcePredicate(array $sources, string $column, string $parameter, bool $negate): string {
+    $matchesNull = in_array(Source::UNKNOWN, $sources, true);
+    if ($negate) {
+      return $matchesNull ? "$column NOT IN ($parameter)" : "($column IS NULL OR $column NOT IN ($parameter))";
+    }
+    return $matchesNull ? "($column IN ($parameter) OR $column IS NULL)" : "$column IN ($parameter)";
+  }
+
+  /**
+   * @param string[] $statuses
+   */
+  private function getStatusInPredicate(array $statuses, bool $hasStaticListJoin): string {
+    $predicates = array_map(function(string $status) use ($hasStaticListJoin): string {
+      return $this->getStatusPredicate($status, $hasStaticListJoin);
+    }, $statuses);
+    return '(' . implode(' OR ', $predicates) . ')';
   }
 
   private function getStaticSegmentFromDefinition(): ?SegmentEntity {
     if (!$this->definition) {
       return null;
     }
-    $filters = $this->definition->getFilters();
-    if (empty($filters['segment']) || $filters['segment'] === self::FILTER_WITHOUT_LIST) {
-      return null;
-    }
-    $segment = $this->entityManager->find(SegmentEntity::class, (int)$filters['segment']);
+    $segment = $this->getSingleSegmentFromDefinition($this->definition);
     return ($segment instanceof SegmentEntity && $segment->isStatic()) ? $segment : null;
   }
 
@@ -602,17 +757,9 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {
-    if (isset($filters['segment'])) {
-      if ($filters['segment'] === self::FILTER_WITHOUT_LIST) {
-        $this->segmentSubscribersRepository->addConstraintsForSubscribersWithoutSegment($queryBuilder);
-      } else {
-        $segment = $this->entityManager->find(SegmentEntity::class, (int)$filters['segment']);
-        if ($segment instanceof SegmentEntity && $segment->isStatic()) {
-          $queryBuilder->join('s.subscriberSegments', 'ss', Join::WITH, 'ss.segment = :ssSegment')
-            ->setParameter('ssSegment', $segment->getId());
-        }
-      }
-    }
+    $filters = $this->normalizeFilters($filters);
+    $hasListJoin = $this->applySegmentFilters($queryBuilder, $filters);
+    $this->applyTagFilters($queryBuilder, $filters);
 
     // filtering by minimal updated at
     if (isset($filters['minUpdatedAt']) && $filters['minUpdatedAt'] instanceof \DateTimeInterface) {
@@ -620,41 +767,39 @@ class SubscriberListingRepository extends ListingRepository {
         ->setParameter('updatedAt', $filters['minUpdatedAt']);
     }
 
-    if (isset($filters['tag'])) {
-      $tag = $this->entityManager->find(TagEntity::class, (int)$filters['tag']);
-      if ($tag) {
-        $queryBuilder->join('s.subscriberTags', 'st', Join::WITH, 'st.tag = :stTag')
-          ->setParameter('stTag', $tag);
+    // With a single static list the status is the per-list one (see getStatusPredicate).
+    // With 2+ lists or any segment_not_in there is no single list to take it from,
+    // so status is the global s.status.
+    if (!empty($filters['status_in'])) {
+      if ($hasListJoin) {
+        $queryBuilder->andWhere($this->getStatusInPredicate($this->getStringList($filters, 'status_in'), true));
+      } else {
+        $queryBuilder->andWhere('s.status IN (:statusIn)')
+          ->setParameter('statusIn', $filters['status_in']);
       }
     }
 
-    // Status inclusion filter
-    $statusInclude = $filters['statusInclude'] ?? [];
-    if (!empty($statusInclude)) {
-      $statusInclude = is_array($statusInclude) ? $statusInclude : [$statusInclude];
-      // Sanitize: only allow valid status values
-      $statusInclude = array_filter($statusInclude, function($status) {
-        return is_string($status) && in_array($status, self::$supportedStatuses, true);
-      });
-      if (!empty($statusInclude)) {
-        $queryBuilder->andWhere('s.status IN (:statusInclude)')
-          ->setParameter('statusInclude', $statusInclude);
+    if (!empty($filters['status_not_in'])) {
+      if ($hasListJoin) {
+        $queryBuilder->andWhere('NOT ' . $this->getStatusInPredicate($this->getStringList($filters, 'status_not_in'), true));
+      } else {
+        $queryBuilder->andWhere('s.status NOT IN (:statusNotIn)')
+          ->setParameter('statusNotIn', $filters['status_not_in']);
       }
     }
 
-    // Status exclusion filter
-    $statusExclude = $filters['statusExclude'] ?? [];
-    if (!empty($statusExclude)) {
-      $statusExclude = is_array($statusExclude) ? $statusExclude : [$statusExclude];
-      // Sanitize: only allow valid status values
-      $statusExclude = array_filter($statusExclude, function($status) {
-        return is_string($status) && in_array($status, self::$supportedStatuses, true);
-      });
-      if (!empty($statusExclude)) {
-        $queryBuilder->andWhere('s.status NOT IN (:statusExclude)')
-          ->setParameter('statusExclude', $statusExclude);
-      }
+    if (!empty($filters['source_in'])) {
+      $queryBuilder->andWhere($this->getSourcePredicate($filters['source_in'], 's.source', ':sourceIn', false))
+        ->setParameter('sourceIn', $filters['source_in']);
     }
+    if (!empty($filters['source_not_in'])) {
+      $queryBuilder->andWhere($this->getSourcePredicate($filters['source_not_in'], 's.source', ':sourceNotIn', true))
+        ->setParameter('sourceNotIn', $filters['source_not_in']);
+    }
+
+    $this->applyDqlScoreFilters($queryBuilder, $filters);
+    $this->applyDateRangeFilter($queryBuilder, 's.createdAt', $filters, 'created_from', 'created_to');
+    $this->applyDateRangeFilter($queryBuilder, 's.lastSubscribedAt', $filters, 'subscribed_from', 'subscribed_to');
 
     // Filter by created_at date
     $createdAtFrom = $filters['createdAtFrom'] ?? null;
@@ -719,6 +864,344 @@ class SubscriberListingRepository extends ListingRepository {
         ));
       }
     }
+  }
+
+  /**
+   * @param array $filters Normalized filters.
+   * @return array<int|string>
+   */
+  private function getIdList(array $filters, string $key): array {
+    $values = $filters[$key] ?? [];
+    /** @var array<int|string> $ids */
+    $ids = is_array($values) ? array_values($values) : [];
+    return $ids;
+  }
+
+  /**
+   * @param array $filters Normalized filters.
+   * @return string[]
+   */
+  private function getStringList(array $filters, string $key): array {
+    $values = $filters[$key] ?? [];
+    /** @var string[] $strings */
+    $strings = is_array($values) ? array_values($values) : [];
+    return $strings;
+  }
+
+  /**
+   * @param array $filters Normalized filters.
+   * @return bool True when the single static list join (alias ss) was added.
+   */
+  private function applySegmentFilters(QueryBuilder $queryBuilder, array $filters): bool {
+    $in = $this->getIdList($filters, 'segment_in');
+    $notIn = $this->getIdList($filters, 'segment_not_in');
+    if (!$in && !$notIn) {
+      return false;
+    }
+
+    $single = $this->getSingleSegment($in, $notIn);
+    if ($single instanceof SegmentEntity && $single->isStatic()) {
+      $queryBuilder->join('s.subscriberSegments', 'ss', Join::WITH, 'ss.segment = :ssSegment')
+        ->setParameter('ssSegment', $single->getId());
+      return true;
+    }
+
+    $partitionedIn = $this->partitionSegmentIds($in);
+    $conditions = [];
+    if ($partitionedIn['static']) {
+      $conditions[] = 's.id IN (' . $this->getMembershipDql(SubscriberSegmentEntity::class, 'ssIn', 'segment', 'segmentIn') . ')';
+      $queryBuilder->setParameter('segmentIn', $partitionedIn['static']);
+    }
+    if ($partitionedIn['without']) {
+      $conditions[] = $this->segmentSubscribersRepository->getWithoutSegmentDqlPredicate();
+    }
+    // Dynamic segments never reach DQL: hasDynamicSegmentFilter() routes them to the SQL path.
+    if ($conditions) {
+      $queryBuilder->andWhere('(' . implode(' OR ', $conditions) . ')');
+    }
+
+    $partitionedNotIn = $this->partitionSegmentIds($notIn);
+    if ($partitionedNotIn['static']) {
+      $queryBuilder->andWhere('s.id NOT IN (' . $this->getMembershipDql(SubscriberSegmentEntity::class, 'ssNotIn', 'segment', 'segmentNotIn') . ')')
+        ->setParameter('segmentNotIn', $partitionedNotIn['static']);
+    }
+    if ($partitionedNotIn['without']) {
+      $queryBuilder->andWhere($this->segmentSubscribersRepository->getWithoutSegmentDqlPredicate(true));
+    }
+    return false;
+  }
+
+  /**
+   * @param array $filters Normalized filters.
+   */
+  private function applyTagFilters(QueryBuilder $queryBuilder, array $filters): void {
+    $in = $this->getIdList($filters, 'tag_in');
+    $notIn = $this->getIdList($filters, 'tag_not_in');
+    if (count($in) === 1 && !$notIn) {
+      $queryBuilder->join('s.subscriberTags', 'st', Join::WITH, 'st.tag = :stTag')
+        ->setParameter('stTag', $in[0]);
+      return;
+    }
+    if ($in) {
+      $queryBuilder->andWhere('s.id IN (' . $this->getMembershipDql(SubscriberTagEntity::class, 'stIn', 'tag', 'tagIn') . ')')
+        ->setParameter('tagIn', $in);
+    }
+    if ($notIn) {
+      $queryBuilder->andWhere('s.id NOT IN (' . $this->getMembershipDql(SubscriberTagEntity::class, 'stNotIn', 'tag', 'tagNotIn') . ')')
+        ->setParameter('tagNotIn', $notIn);
+    }
+  }
+
+  /**
+   * DQL subquery with the ids of subscribers that have a membership row for
+   * any of the ids in the given parameter. The parameter is set on the outer query.
+   */
+  private function getMembershipDql(string $entityClass, string $alias, string $association, string $parameter): string {
+    return $this->entityManager->createQueryBuilder()
+      ->select("IDENTITY($alias.subscriber)")
+      ->from($entityClass, $alias)
+      ->where("$alias.$association IN (:$parameter)")
+      ->getDQL();
+  }
+
+  /**
+   * @param array<int|string> $ids
+   * @return array{static: int[], dynamic: int[], without: bool}
+   */
+  private function partitionSegmentIds(array $ids): array {
+    $result = ['static' => [], 'dynamic' => [], 'without' => false];
+    $segments = $this->loadSegments($ids);
+    foreach ($ids as $id) {
+      if ($id === self::FILTER_WITHOUT_LIST) {
+        $result['without'] = true;
+        continue;
+      }
+      $segment = $segments[(int)$id] ?? null;
+      // An unknown id is treated as static: it matches nobody.
+      if ($segment instanceof SegmentEntity && !$segment->isStatic()) {
+        $result['dynamic'][] = (int)$id;
+      } else {
+        $result['static'][] = (int)$id;
+      }
+    }
+    return $result;
+  }
+
+  /**
+   * Loads every list that is not yet in the identity map with one query, so the
+   * later find() calls for the same ids cost nothing.
+   *
+   * @param array<int|string> $ids
+   * @return array<int, SegmentEntity>
+   */
+  private function loadSegments(array $ids): array {
+    $unitOfWork = $this->entityManager->getUnitOfWork();
+    $segments = [];
+    $missing = [];
+    foreach ($ids as $id) {
+      if ($id === self::FILTER_WITHOUT_LIST) {
+        continue;
+      }
+      $known = $unitOfWork->tryGetById((int)$id, SegmentEntity::class);
+      if ($known instanceof SegmentEntity) {
+        $segments[(int)$id] = $known;
+      } else {
+        $missing[(int)$id] = (int)$id;
+      }
+    }
+    if ($missing) {
+      foreach ($this->entityManager->getRepository(SegmentEntity::class)->findBy(['id' => array_values($missing)]) as $segment) {
+        $segments[(int)$segment->getId()] = $segment;
+      }
+    }
+    return $segments;
+  }
+
+  /**
+   * Maps the legacy and the new filter keys onto one shape.
+   *
+   * Legacy `segment`, `tag`, `statusInclude` and `statusExclude` are merged into
+   * `segment_in`, `tag_in`, `status_in` and `status_not_in`. Values are cast and
+   * invalid or unknown ones are dropped, as are empty keys. Dropping silently is
+   * on purpose: the public API (MailPoet\API\MP\v1\Subscribers) has always
+   * ignored bad values, while the REST endpoint rejects them before they get here.
+   * Any other key (dates, engagement score...) passes through untouched.
+   *
+   * @param array $filters
+   * @return array
+   */
+  private function normalizeFilters(array $filters): array {
+    // Called many times per request with the same input. Keyed by the raw filters,
+    // small, and reset on every public entry point because the legacy `segment` and
+    // `tag` keys depend on what exists in the database.
+    $key = md5(serialize($filters));
+    if (!isset($this->normalizedFilters[$key])) {
+      if (count($this->normalizedFilters) >= self::NORMALIZED_FILTERS_CACHE_SIZE) {
+        $this->normalizedFilters = [];
+      }
+      $this->normalizedFilters[$key] = $this->buildNormalizedFilters($filters);
+    }
+    return $this->normalizedFilters[$key];
+  }
+
+  private function buildNormalizedFilters(array $filters): array {
+    $normalized = $filters;
+    unset($normalized['segment'], $normalized['tag'], $normalized['statusInclude'], $normalized['statusExclude']);
+
+    $legacySegment = $this->normalizeLegacySegment($filters['segment'] ?? null);
+    $legacyTag = $this->normalizeLegacyTag($filters['tag'] ?? null);
+
+    $sets = [
+      'segment_in' => array_merge($this->normalizeIds($filters['segment_in'] ?? [], true), $legacySegment),
+      'segment_not_in' => $this->normalizeIds($filters['segment_not_in'] ?? [], true),
+      'tag_in' => array_merge($this->normalizeIds($filters['tag_in'] ?? [], false), $legacyTag),
+      'tag_not_in' => $this->normalizeIds($filters['tag_not_in'] ?? [], false),
+      'status_in' => $this->combineStatusInclusions(
+        $this->sanitizeStatusFilter($filters['status_in'] ?? []),
+        $this->sanitizeStatusFilter($filters['statusInclude'] ?? [])
+      ),
+      'status_not_in' => array_merge($this->sanitizeStatusFilter($filters['status_not_in'] ?? []), $this->sanitizeStatusFilter($filters['statusExclude'] ?? [])),
+      'source_in' => $this->sanitizeSourceFilter($filters['source_in'] ?? []),
+      'source_not_in' => $this->sanitizeSourceFilter($filters['source_not_in'] ?? []),
+    ];
+    foreach ($sets as $key => $values) {
+      $values = array_values(array_unique($values));
+      if ($values) {
+        $normalized[$key] = $values;
+      } else {
+        unset($normalized[$key]);
+      }
+    }
+    return $normalized;
+  }
+
+  /**
+   * Both include keys narrow the result (AND), as they did before they were
+   * merged. An empty intersection must match nothing, so it is kept as a single
+   * blank status (no subscriber has one) instead of an empty list, which would
+   * read as "no filter".
+   *
+   * @param string[] $statusIn
+   * @param string[] $legacyStatusInclude
+   * @return string[]
+   */
+  private function combineStatusInclusions(array $statusIn, array $legacyStatusInclude): array {
+    if (!$statusIn || !$legacyStatusInclude) {
+      return array_merge($statusIn, $legacyStatusInclude);
+    }
+    $common = array_values(array_intersect($statusIn, $legacyStatusInclude));
+    return $common ?: [''];
+  }
+
+  /**
+   * The statuses a listing is restricted to once legacy and new keys are combined,
+   * or null when it has no status restriction.
+   *
+   * @param array $filters
+   * @return string[]|null
+   */
+  public function getNormalizedStatusIn(array $filters): ?array {
+    $statuses = $this->getStringList($this->normalizeFilters($filters), 'status_in');
+    return $statuses ?: null;
+  }
+
+  /**
+   * A legacy scalar that resolves to no list is ignored, as it always was.
+   *
+   * @param mixed $segment
+   * @return array<int|string>
+   */
+  private function normalizeLegacySegment($segment): array {
+    if ($segment === self::FILTER_WITHOUT_LIST) {
+      return [self::FILTER_WITHOUT_LIST];
+    }
+    if (!is_scalar($segment)) {
+      return [];
+    }
+    $id = (int)$segment;
+    return $this->entityManager->find(SegmentEntity::class, $id) instanceof SegmentEntity ? [$id] : [];
+  }
+
+  /**
+   * @param mixed $tag
+   * @return int[]
+   */
+  private function normalizeLegacyTag($tag): array {
+    if (!is_scalar($tag)) {
+      return [];
+    }
+    $id = (int)$tag;
+    return $this->entityManager->find(TagEntity::class, $id) instanceof TagEntity ? [$id] : [];
+  }
+
+  /**
+   * @param mixed $values
+   * @return array<int|string>
+   */
+  private function normalizeIds($values, bool $allowWithoutList): array {
+    $values = is_array($values) ? $values : [$values];
+    $ids = [];
+    foreach ($values as $value) {
+      if ($allowWithoutList && $value === self::FILTER_WITHOUT_LIST) {
+        $ids[] = $value;
+      } elseif ((is_int($value) || (is_string($value) && ctype_digit($value))) && (int)$value > 0) {
+        $ids[] = (int)$value;
+      }
+    }
+    return $ids;
+  }
+
+  /**
+   * @param mixed $sources
+   * @return string[]
+   */
+  private function sanitizeSourceFilter($sources): array {
+    $sources = is_array($sources) ? $sources : [$sources];
+    return array_values(array_filter($sources, function($source): bool {
+      return is_string($source) && in_array($source, Source::ALL, true);
+    }));
+  }
+
+  /**
+   * The only list a definition filters by, when it is exactly one and there is
+   * no exclusion. Legacy `segment` and `segment_in` give the same answer.
+   *
+   * @param array<int|string> $in
+   * @param array<int|string> $notIn
+   */
+  private function getSingleSegment(array $in, array $notIn): ?SegmentEntity {
+    if (count($in) !== 1 || $notIn || !is_int($in[0])) {
+      return null;
+    }
+    $segment = $this->entityManager->find(SegmentEntity::class, $in[0]);
+    return $segment instanceof SegmentEntity ? $segment : null;
+  }
+
+  private function getSingleSegmentFromDefinition(ListingDefinition $definition): ?SegmentEntity {
+    $ids = $this->getSegmentIdsFromFilters($definition);
+    return $this->getSingleSegment($ids['in'], $ids['not_in']);
+  }
+
+  /**
+   * @return array{in: array<int|string>, not_in: array<int|string>}
+   */
+  private function getSegmentIdsFromFilters(ListingDefinition $definition): array {
+    $filters = $this->normalizeFilters($definition->getFilters() ?: []);
+    return [
+      'in' => $this->getIdList($filters, 'segment_in'),
+      'not_in' => $this->getIdList($filters, 'segment_not_in'),
+    ];
+  }
+
+  /**
+   * The id (as string) of the one list the definition filters by, if it is exactly one.
+   */
+  public function getSingleListFilter(ListingDefinition $definition): ?string {
+    $ids = $this->getSegmentIdsFromFilters($definition);
+    if (count($ids['in']) !== 1 || $ids['not_in']) {
+      return null;
+    }
+    return (string)$ids['in'][0];
   }
 
   /**
@@ -793,6 +1276,47 @@ class SubscriberListingRepository extends ListingRepository {
     );
   }
 
+  private const SCORE_FILTERS = [
+    'score_gt' => '>',
+    'score_lt' => '<',
+    'score_min' => '>=',
+    'score_max' => '<=',
+  ];
+
+  private function applyDqlScoreFilters(QueryBuilder $queryBuilder, array $filters): void {
+    foreach (self::SCORE_FILTERS as $key => $operator) {
+      if (isset($filters[$key]) && is_numeric($filters[$key])) {
+        $queryBuilder
+          ->andWhere("s.engagementScore $operator :$key")
+          ->setParameter($key, (float)$filters[$key]);
+      }
+    }
+  }
+
+  private function applyDbalScoreAndDateFilters(DBALQueryBuilder $query, array $filters): void {
+    foreach (self::SCORE_FILTERS as $key => $operator) {
+      if (isset($filters[$key]) && is_numeric($filters[$key])) {
+        $query->andWhere("s.engagement_score $operator :$key")
+          ->setParameter($key, (float)$filters[$key]);
+      }
+    }
+    // The days are site-local; the columns are UTC. An invalid day is skipped, as in ListingDateRangeFilterTrait.
+    $dates = [
+      ['created_from', 's.created_at', '>=', 0],
+      ['created_to', 's.created_at', '<', 1],
+      ['subscribed_from', 's.last_subscribed_at', '>=', 0],
+      ['subscribed_to', 's.last_subscribed_at', '<', 1],
+    ];
+    foreach ($dates as [$key, $column, $operator, $addDays]) {
+      $value = $filters[$key] ?? null;
+      $bound = is_string($value) && $value !== '' ? $this->getSiteDayStartInUtc($value, $addDays) : null;
+      if ($bound !== null) {
+        $query->andWhere("$column $operator :date_$key")
+          ->setParameter("date_$key", $bound, ParameterType::STRING);
+      }
+    }
+  }
+
   private function isValidDateTime(string $dateTime): bool {
     try {
       new \DateTime($dateTime);
@@ -810,7 +1334,13 @@ class SubscriberListingRepository extends ListingRepository {
     if (!$sortBy) {
       $sortBy = self::DEFAULT_SORT_BY;
     }
-    $queryBuilder->addOrderBy("s.$sortBy", $sortOrder);
+    if ($sortBy === 'status' && in_array('ss', $queryBuilder->getAllAliases(), true)) {
+      // Under a single static list the column shows the per-list status, so sort by that.
+      $queryBuilder->addSelect("CASE WHEN ss.status = '" . SubscriberEntity::STATUS_UNSUBSCRIBED . "' THEN '" . SubscriberEntity::STATUS_UNSUBSCRIBED . "' ELSE s.status END AS HIDDEN effectiveStatus");
+      $queryBuilder->addOrderBy('effectiveStatus', $sortOrder);
+    } else {
+      $queryBuilder->addOrderBy("s.$sortBy", $sortOrder);
+    }
     if ($sortBy !== 'id') {
       // Deterministic tiebreaker so pagination stays stable when the sorted
       // column has duplicate values. created_at has per-second granularity, so
@@ -823,83 +1353,102 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   public function getGroups(ListingDefinition $definition): array {
-    return $this->formatGroups($this->getGroupCountsForDefinition($definition)['counts']);
+    $this->normalizedFilters = [];
+    return $this->formatGroups($this->getGroupCountsForDefinition($definition));
   }
 
   /**
-   * Count and status groups from a single computation, so the listing endpoint
-   * can drop the separate getCount() query: on the non-segment path both come
-   * from one grouped scan, and the current group's count is read straight from
-   * the buckets.
+   * The count of the current group plus the All and Trash tab counts, all under
+   * the active filters and search. Unfiltered and single-list requests are
+   * answered from the cron-warmed statistics. Anything narrower runs live
+   * counts, reusing the current group’s count when it is All or Trash.
    *
    * @return array{count: int, groups: array<int, array<string, mixed>>}
    */
-  public function getCountAndGroups(ListingDefinition $definition): array {
-    $computed = $this->getGroupCountsForDefinition($definition);
+  public function getCountAndAllTrashGroups(ListingDefinition $definition): array {
+    $this->normalizedFilters = [];
+    $group = $definition->getGroup() ?: 'all';
+    $cached = $this->getCachedGroupCounts($definition);
+    if ($cached !== null) {
+      $all = 0;
+      foreach (self::SUPPORTED_STATUSES as $status) {
+        $all += $cached[$status];
+      }
+      $trash = $cached['trash'];
+      if ($group === 'all') {
+        $count = $all;
+      } elseif ($group === 'trash') {
+        $count = $trash;
+      } else {
+        $count = array_key_exists($group, $cached) ? $cached[$group] : $this->getCount($definition);
+      }
+    } else {
+      $count = $this->getCount($definition);
+      $all = $group === 'all' ? $count : $this->getCount($this->withGroup($definition, 'all'));
+      $trash = $group === 'trash' ? $count : $this->getCount($this->withGroup($definition, 'trash'));
+    }
+
     return [
-      'count' => $this->countForCurrentGroup($definition, $computed['counts'], $computed['consolidated']),
-      'groups' => $this->formatGroups($computed['counts']),
+      'count' => $count,
+      'groups' => [
+        ['name' => 'all', 'label' => __('All', 'mailpoet'), 'count' => $all],
+        ['name' => 'trash', 'label' => __('Trash', 'mailpoet'), 'count' => $trash],
+      ],
     ];
   }
 
+  private function withGroup(ListingDefinition $definition, string $group): ListingDefinition {
+    return new ListingDefinition(
+      $group,
+      $definition->getFilters(),
+      $definition->getSearch(),
+      $definition->getParameters(),
+      $definition->getSortBy(),
+      $definition->getSortOrder(),
+      $definition->getOffset(),
+      $definition->getLimit(),
+      $definition->getSelection()
+    );
+  }
+
   /**
-   * The status-tab counts, resolved through a three-tier cascade that prefers a
-   * cron-warmed cache and only computes live when nothing cheaper fits. Cheapest
-   * first:
+   * The status-tab counts. Cheapest first:
    *
-   *   1. Global cache — unfiltered "All Lists" view (no segment, no search, no
-   *      other filter). Served from the cron-warmed global status counts.
-   *   2. Per-segment cache — a plain single-list filter and nothing else. Served
-   *      from that segment's cron-warmed statistics.
-   *   3. Live fetch — anything narrower (search, tag, status, dates,
-   *      engagement...). No cache matches, so the counts are computed now: a
-   *      grouped scan on the non-segment path, or one count per status bucket
-   *      when a segment redefines the buckets.
+   *   1. Global cache: the unfiltered “All Lists” view (cron-warmed).
+   *   2. Per-segment cache: a plain single-list filter and nothing else.
+   *   3. Live: anything narrower. A grouped scan on the non-segment path, or
+   *      one count per status when a segment redefines the buckets (a static
+   *      segment uses the per-list status, a dynamic one an id subquery).
    *
-   * Why a segment can't share the non-segment grouped scan: a static segment
-   * redefines the subscribed/unsubscribed buckets in terms of the per-list
-   * status (s.status OR/AND ss.status), and a dynamic segment routes counts
-   * through an id subquery — neither is a single GROUP BY over s.status, so they
-   * fall back to one count per group (still cheap: scoped to one segment).
-   *
-   * 'consolidated' promises that the per-status buckets partition the whole
-   * non-deleted population exactly, so their sum IS the "all" total and
-   * countForCurrentGroup can skip a separate count. It is true only for the
-   * global/grouped scan; the live per-status path leaves it false because those
-   * ad-hoc counts are not guaranteed to add up to "all" (e.g. a segment member
-   * whose status lands in no displayed bucket).
-   *
-   * @return array{counts: array<string, int>, consolidated: bool}
+   * @return array<string, int>
    */
   private function getGroupCountsForDefinition(ListingDefinition $definition): array {
-    if (!$this->hasSegmentListFilter($definition)) {
-      // The unfiltered "All Lists" view maps to the cron-warmed global status
-      // counts — the default, most-loaded view, served from cache instead of a
-      // grouped scan over every subscriber on each page load.
-      if ($this->canUseGlobalStatisticsCache($definition)) {
-        return ['counts' => $this->globalStatisticsToCounts(), 'consolidated' => true];
-      }
-      return ['counts' => $this->getGroupCounts($definition), 'consolidated' => true];
+    $cached = $this->getCachedGroupCounts($definition);
+    if ($cached !== null) {
+      return $cached;
     }
+    return $this->hasSegmentListFilter($definition)
+      ? $this->getGroupCountsPerStatus($definition)
+      : $this->getGroupCounts($definition);
+  }
 
-    // A plain list filter (no search, no other filter) maps exactly to the
-    // cron-warmed per-segment statistics — single source of truth, served from
-    // cache instead of recomputing a count per status tab on every page load.
+  /**
+   * Counts from the cron-warmed statistics, or null when the request is
+   * narrower than they cover.
+   *
+   * @return array<string, int>|null
+   */
+  private function getCachedGroupCounts(ListingDefinition $definition): ?array {
+    if (!$this->hasSegmentListFilter($definition)) {
+      return $this->canUseGlobalStatisticsCache($definition) ? $this->globalStatisticsToCounts() : null;
+    }
     if ($this->canUseSegmentStatisticsCache($definition)) {
       $segment = $this->getSegmentFromDefinition($definition);
       if ($segment instanceof SegmentEntity) {
-        // 'consolidated' stays false here even though the buckets do partition
-        // the members exactly: countForCurrentGroup recognises this same case
-        // via canUseSegmentStatisticsCache($definition), so the "all" tab still
-        // takes the sum-of-buckets path. The two conditions are equivalent for
-        // this branch — the flag would be redundant, not contradictory.
-        return ['counts' => $this->segmentStatisticsToCounts($segment), 'consolidated' => false];
+        return $this->segmentStatisticsToCounts($segment);
       }
     }
-
-    // Search or an extra filter narrows the list beyond plain membership, so the
-    // cache can't answer it — compute live for that ad-hoc query.
-    return ['counts' => $this->getGroupCountsPerStatus($definition), 'consolidated' => false];
+    return null;
   }
 
   /**
@@ -911,14 +1460,28 @@ class SubscriberListingRepository extends ListingRepository {
     if ($this->isSearchActive($definition)) {
       return false;
     }
-    $filters = $definition->getFilters() ?: [];
-    unset($filters['segment']);
+    $filters = $this->normalizeFilters($definition->getFilters() ?: []);
+    // Only a lone list (or none) keeps the cache valid; any other key narrows.
+    if (count($this->getIdList($filters, 'segment_in')) > 1) {
+      return false;
+    }
+    unset($filters['segment_in']);
+    return !$this->hasActiveFilter($filters);
+  }
+
+  /**
+   * "0" and 0 are real filter values (e.g. score_max=0); only null, '' and
+   * empty arrays mean "not set".
+   *
+   * @param array $filters
+   */
+  private function hasActiveFilter(array $filters): bool {
     foreach ($filters as $value) {
-      if (!empty($value)) {
-        return false;
+      if ($value !== null && $value !== '' && $value !== []) {
+        return true;
       }
     }
-    return true;
+    return false;
   }
 
   /**
@@ -931,9 +1494,9 @@ class SubscriberListingRepository extends ListingRepository {
    */
   private function segmentStatisticsToCounts(SegmentEntity $segment): array {
     $stats = $this->subscribersCountsController->getSegmentStatisticsCount($segment);
-    $counts = array_fill_keys(self::$supportedStatuses, 0);
+    $counts = array_fill_keys(self::SUPPORTED_STATUSES, 0);
     $counts['trash'] = 0;
-    foreach (self::$supportedStatuses as $status) {
+    foreach (self::SUPPORTED_STATUSES as $status) {
       $counts[$status] = (int)($stats[$status] ?? 0);
     }
     $counts['trash'] = (int)($stats['trash'] ?? 0);
@@ -941,12 +1504,7 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   private function getSegmentFromDefinition(ListingDefinition $definition): ?SegmentEntity {
-    $filters = $definition->getFilters();
-    if (empty($filters['segment']) || $filters['segment'] === self::FILTER_WITHOUT_LIST) {
-      return null;
-    }
-    $segment = $this->entityManager->find(SegmentEntity::class, (int)$filters['segment']);
-    return $segment instanceof SegmentEntity ? $segment : null;
+    return $this->getSingleSegmentFromDefinition($definition);
   }
 
   private function isSearchActive(ListingDefinition $definition): bool {
@@ -964,13 +1522,7 @@ class SubscriberListingRepository extends ListingRepository {
     if ($search !== null && strlen(trim($search)) > 0) {
       return false;
     }
-    $filters = $definition->getFilters() ?: [];
-    foreach ($filters as $value) {
-      if (!empty($value)) {
-        return false;
-      }
-    }
-    return true;
+    return !$this->hasActiveFilter($this->normalizeFilters($definition->getFilters() ?: []));
   }
 
   /**
@@ -978,39 +1530,13 @@ class SubscriberListingRepository extends ListingRepository {
    */
   private function globalStatisticsToCounts(): array {
     $stats = $this->subscribersCountsController->getGlobalStatusStatisticsCount();
-    $counts = array_fill_keys(self::$supportedStatuses, 0);
+    $counts = array_fill_keys(self::SUPPORTED_STATUSES, 0);
     $counts['trash'] = 0;
-    foreach (self::$supportedStatuses as $status) {
+    foreach (self::SUPPORTED_STATUSES as $status) {
       $counts[$status] = (int)($stats[$status] ?? 0);
     }
     $counts['trash'] = (int)($stats['trash'] ?? 0);
     return $counts;
-  }
-
-  /**
-   * The current group's count read from the precomputed buckets — identical to
-   * getCount($definition). The one case the buckets can't reproduce exactly is
-   * the "all" tab under a segment filter, where members pending in the list
-   * fall into no status bucket, so that defers to getCount.
-   *
-   * @param array<string, int> $counts
-   */
-  private function countForCurrentGroup(ListingDefinition $definition, array $counts, bool $consolidated): int {
-    $group = $definition->getGroup() ?: 'all';
-    if ($group === 'all') {
-      // When the counts come from the consolidated scan or the per-segment
-      // statistics cache, the status buckets partition the non-deleted members
-      // exactly, so their sum is the "all" total — no extra query needed.
-      if ($consolidated || $this->canUseSegmentStatisticsCache($definition)) {
-        $total = 0;
-        foreach (self::$supportedStatuses as $status) {
-          $total += $counts[$status];
-        }
-        return $total;
-      }
-      return $this->getCount($definition);
-    }
-    return array_key_exists($group, $counts) ? $counts[$group] : $this->getCount($definition);
   }
 
   /**
@@ -1019,7 +1545,7 @@ class SubscriberListingRepository extends ListingRepository {
    */
   private function formatGroups(array $counts): array {
     $totalCount = 0;
-    foreach (self::$supportedStatuses as $status) {
+    foreach (self::SUPPORTED_STATUSES as $status) {
       $totalCount += $counts[$status];
     }
 
@@ -1070,7 +1596,7 @@ class SubscriberListingRepository extends ListingRepository {
    * @return array<string, int>
    */
   private function getGroupCounts(ListingDefinition $definition): array {
-    $counts = array_fill_keys(self::$supportedStatuses, 0);
+    $counts = array_fill_keys(self::SUPPORTED_STATUSES, 0);
     $counts['trash'] = 0;
 
     $statusQuery = $this->createGroupCountQueryBuilder($definition);
@@ -1126,38 +1652,78 @@ class SubscriberListingRepository extends ListingRepository {
    * @return array<string, int>
    */
   private function getGroupCountsPerStatus(ListingDefinition $definition): array {
-    $counts = array_fill_keys(self::$supportedStatuses, 0);
+    $counts = array_fill_keys(self::SUPPORTED_STATUSES, 0);
     $counts['trash'] = 0;
     foreach (array_keys($counts) as $group) {
-      $groupDefinition = $group === $definition->getGroup() ? $definition : new ListingDefinition(
-        $group,
-        $definition->getFilters(),
-        $definition->getSearch(),
-        $definition->getParameters(),
-        $definition->getSortBy(),
-        $definition->getSortOrder(),
-        $definition->getOffset(),
-        $definition->getLimit(),
-        $definition->getSelection()
-      );
+      $groupDefinition = $group === $definition->getGroup() ? $definition : $this->withGroup($definition, $group);
       $counts[$group] = $this->getCount($groupDefinition);
     }
     return $counts;
   }
 
   private function hasSegmentListFilter(ListingDefinition $definition): bool {
-    $filters = $definition->getFilters();
-    if (empty($filters['segment']) || $filters['segment'] === self::FILTER_WITHOUT_LIST) {
+    $ids = $this->getSegmentIdsFromFilters($definition);
+    // "Without a list" alone has no list to bucket by, so it keeps the grouped scan.
+    if ($ids['in'] === [self::FILTER_WITHOUT_LIST] && !$ids['not_in']) {
       return false;
     }
-    return $this->entityManager->find(SegmentEntity::class, (int)$filters['segment']) instanceof SegmentEntity;
+    return (bool)($ids['in'] || $ids['not_in']);
   }
 
   public function getFilters(ListingDefinition $definition): array {
     return [
       'segment' => $this->getSegmentFilter($definition),
       'tag' => $this->getTagsFilter($definition),
+      'status' => $this->getStatusFilter(),
+      'source' => $this->getSourceFilter(),
     ];
+  }
+
+  /**
+   * The counts are global (all non-deleted subscribers), not narrowed by the
+   * current filters, so they come from the cached global statistics.
+   *
+   * @return array<int, array{label: string, value: string}>
+   */
+  private function getStatusFilter(): array {
+    $stats = $this->subscribersCountsController->getGlobalStatusStatisticsCount();
+    $labels = [
+      SubscriberEntity::STATUS_SUBSCRIBED => __('Subscribed', 'mailpoet'),
+      SubscriberEntity::STATUS_UNCONFIRMED => __('Unconfirmed', 'mailpoet'),
+      SubscriberEntity::STATUS_UNSUBSCRIBED => __('Unsubscribed', 'mailpoet'),
+      SubscriberEntity::STATUS_INACTIVE => __('Inactive', 'mailpoet'),
+      SubscriberEntity::STATUS_BOUNCED => __('Bounced', 'mailpoet'),
+    ];
+    $list = [];
+    foreach ($labels as $status => $label) {
+      $list[] = [
+        'label' => sprintf('%s (%s)', $label, $this->wp->numberFormatI18n((float)($stats[$status] ?? 0))),
+        'value' => $status,
+      ];
+    }
+    return $list;
+  }
+
+  /**
+   * @return array<int, array{label: string, value: string}>
+   */
+  private function getSourceFilter(): array {
+    $labels = [
+      Source::FORM => __('MailPoet subscription form', 'mailpoet'),
+      Source::IMPORTED => __('Import', 'mailpoet'),
+      Source::ADMINISTRATOR => __('Admin', 'mailpoet'),
+      Source::API => __('API', 'mailpoet'),
+      Source::WORDPRESS_USER => __('WordPress user sync', 'mailpoet'),
+      Source::WORDPRESS_USER_DELETED => __('WordPress user (deleted)', 'mailpoet'),
+      Source::WOOCOMMERCE_USER => __('WooCommerce customer sync', 'mailpoet'),
+      Source::WOOCOMMERCE_CHECKOUT => __('WooCommerce checkout', 'mailpoet'),
+      Source::UNKNOWN => __('Unknown', 'mailpoet'),
+    ];
+    $list = [];
+    foreach ($labels as $source => $label) {
+      $list[] = ['label' => $label, 'value' => $source];
+    }
+    return $list;
   }
 
   /**
@@ -1173,7 +1739,7 @@ class SubscriberListingRepository extends ListingRepository {
     $subscribersWithoutSegmentLabel = sprintf(
       // translators: %s is the number of subscribers without a list.
       __('Subscribers without a list (%s)', 'mailpoet'),
-      number_format((float)$subscribersWithoutSegmentCount)
+      $this->wp->numberFormatI18n((float)$subscribersWithoutSegmentCount)
     );
 
     $queryBuilder = clone $this->queryBuilder;
@@ -1205,7 +1771,7 @@ class SubscriberListingRepository extends ListingRepository {
         continue;
       }
       $segmentList[] = [
-        'label' => sprintf('%s (%s)', $segment->getName(), number_format($subscribersCount)),
+        'label' => sprintf('%s (%s)', $segment->getName(), $this->wp->numberFormatI18n($subscribersCount)),
         'value' => $segment->getId(),
       ];
     }
@@ -1236,7 +1802,7 @@ class SubscriberListingRepository extends ListingRepository {
     $tagsList = [];
     foreach ($tagsStatistics as $tagStatistics) {
       $tagsList[] = [
-        'label' => sprintf('%s (%s)', $tagStatistics['name'], number_format((float)$tagStatistics['subscribersCount'])),
+        'label' => sprintf('%s (%s)', $tagStatistics['name'], $this->wp->numberFormatI18n((float)$tagStatistics['subscribersCount'])),
         'value' => $tagStatistics['id'],
       ];
     }
@@ -1245,7 +1811,7 @@ class SubscriberListingRepository extends ListingRepository {
     return $tagsList;
   }
 
-  private function getDataForDynamicSegment(ListingDefinition $definition, SegmentEntity $segment) {
+  private function getDataForDynamicSegment(ListingDefinition $definition) {
     $queryBuilder = clone $this->queryBuilder;
     $sortBy = Helpers::underscoreToCamelCase($definition->getSortBy()) ?: self::DEFAULT_SORT_BY;
     $sortBy = $this->getDynamicSegmentSortBy($sortBy);
@@ -1253,25 +1819,18 @@ class SubscriberListingRepository extends ListingRepository {
     $this->applySelectClause($queryBuilder);
     $this->applyFromClause($queryBuilder);
 
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $subscribersIdsQuery = $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder()
-      ->select("DISTINCT $subscribersTable.id")
-      ->from($subscribersTable);
-    $subscribersIdsQuery = $this->applyConstraintsForDynamicSegment($subscribersIdsQuery, $definition, $segment);
-    $subscribersIdsQuery->orderBy($this->getDynamicSegmentSortColumn($sortBy, $subscribersTable), $sortOrder);
+    $subscribersIdsQuery = $this->createDbalSubscribersQuery('DISTINCT s.id');
+    $this->applyDbalListingConstraints($subscribersIdsQuery, $definition, false);
+    $subscribersIdsQuery->orderBy($this->getDynamicSegmentSortColumn($sortBy), $sortOrder);
     if ($sortBy !== 'id') {
       // The page boundary is cut here, so this query needs the same id
       // tiebreaker as applySorting() for pagination to stay stable.
-      $subscribersIdsQuery->addOrderBy($this->getDynamicSegmentSortColumn('id', $subscribersTable), $sortOrder);
+      $subscribersIdsQuery->addOrderBy($this->getDynamicSegmentSortColumn('id'), $sortOrder);
     }
     $subscribersIdsQuery->setFirstResult($definition->getOffset());
     $subscribersIdsQuery->setMaxResults($definition->getLimit());
 
-    $idsStatement = $subscribersIdsQuery->executeQuery();
-    $result = $idsStatement->fetchAll();
-    $ids = array_column($result, 'id');
+    $ids = $subscribersIdsQuery->executeQuery()->fetchFirstColumn();
     if (count($ids)) {
       $queryBuilder->andWhere('s.id IN (:subscriberIds)')
         ->setParameter('subscriberIds', $ids);
@@ -1287,59 +1846,18 @@ class SubscriberListingRepository extends ListingRepository {
     return $metadata->hasField($sortBy) ? $sortBy : self::DEFAULT_SORT_BY;
   }
 
-  private function getDynamicSegmentSortColumn(string $sortBy, string $subscribersTable): string {
+  private function getDynamicSegmentSortColumn(string $sortBy): string {
     $metadata = $this->entityManager->getClassMetadata(SubscriberEntity::class);
     $column = $metadata->getColumnName($sortBy);
-    $connection = $this->entityManager->getConnection();
-    return sprintf(
-      '%s.%s',
-      $connection->quoteIdentifier($subscribersTable),
-      $connection->quoteIdentifier($column)
-    );
+    return sprintf('s.%s', $this->entityManager->getConnection()->quoteIdentifier($column));
   }
 
-  private function applyConstraintsForDynamicSegment(
-    DBALQueryBuilder $subscribersQuery,
-    ListingDefinition $definition,
-    SegmentEntity $segment
-  ) {
-    // Apply dynamic segments filters
-    $subscribersQuery = $this->dynamicSegmentsFilter->apply($subscribersQuery, $segment);
-    // Apply group, search to fetch only necessary ids
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    if ($definition->getSearch()) {
-      $search = Helpers::escapeSearch((string)$definition->getSearch());
-      $subscribersQuery
-        ->andWhere("$subscribersTable.email LIKE :search or $subscribersTable.first_name LIKE :search or $subscribersTable.last_name LIKE :search")
-        ->setParameter('search', "%$search%");
-    }
-    if ($definition->getGroup()) {
-      if ($definition->getGroup() === 'trash') {
-        $subscribersQuery->andWhere("$subscribersTable.deleted_at IS NOT NULL");
-      } else {
-        $subscribersQuery->andWhere("$subscribersTable.deleted_at IS NULL");
-      }
-      if (in_array($definition->getGroup(), self::$supportedStatuses)) {
-        $subscribersQuery
-          ->andWhere("$subscribersTable.status = :status")
-          ->setParameter('status', $definition->getGroup());
-      }
-    }
-    return $subscribersQuery;
-  }
-
-  private function getDynamicSegmentFromFilters(ListingDefinition $definition): ?SegmentEntity {
-    $filters = $definition->getFilters();
-    if (!$filters || !isset($filters['segment'])) {
-      return null;
-    }
-    if ($filters['segment'] === self::FILTER_WITHOUT_LIST) {
-      return null;
-    }
-    $segment = $this->entityManager->find(SegmentEntity::class, (int)$filters['segment']);
-    if (!$segment instanceof SegmentEntity) {
-      return null;
-    }
-    return $segment->isStatic() ? null : $segment;
+  /**
+   * True when any dynamic segment is included or excluded. Such a definition is
+   * resolved with SQL over the subscribers table instead of DQL.
+   */
+  private function hasDynamicSegmentFilter(ListingDefinition $definition): bool {
+    $ids = $this->getSegmentIdsFromFilters($definition);
+    return (bool)$this->partitionSegmentIds($ids['in'])['dynamic'] || (bool)$this->partitionSegmentIds($ids['not_in'])['dynamic'];
   }
 }

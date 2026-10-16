@@ -5,6 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use DateTime;
 use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
+use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Test\DataFactories\Tag;
@@ -39,7 +40,7 @@ class SubscribersListingCest {
   }
 
   public function useTagFilter(\AcceptanceTester $i) {
-    $i->wantTo('Open subscribers listings page');
+    $i->wantTo('Filter subscribers by tag with the native Tags filter');
 
     $tag = (new Tag())
       ->withName('My Tag')
@@ -56,12 +57,238 @@ class SubscribersListingCest {
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
-    $i->waitForText('All Tags');
-    $i->selectOption('[data-automation-id="listing_filter_tag"]', $tag->getName());
-    $i->waitForListingItemsToLoad();
+    $i->waitForText('wp@example.com');
+    $i->dontSeeElement('select[name=tag]');
+    $i->addDataViewsFilter('Tags', '', [$tag->getName()]);
     $i->waitForText('wp@mailpoet.com');
     $i->dontSee('wp@example.com');
     $i->waitForText('My Tag');
+
+    $i->wantTo('Switch the Tags filter to "Is none of"');
+    $i->clearDataViewsFilters();
+    $i->addDataViewsFilter('Tags', 'Is none of', [$tag->getName()]);
+    $i->waitForText('wp@example.com');
+    $i->dontSee('wp@mailpoet.com');
+  }
+
+  public function useStatusFilter(\AcceptanceTester $i) {
+    $i->wantTo('Filter subscribers by status with the native Status filter');
+
+    (new Subscriber())->withEmail('status-subscribed@example.com')->withStatus('subscribed')->create();
+    (new Subscriber())->withEmail('status-unconfirmed@example.com')->withStatus('unconfirmed')->create();
+    (new Subscriber())->withEmail('status-bounced@example.com')->withStatus('bounced')->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->searchFor('status-');
+    $i->waitForText('status-subscribed@example.com');
+    $i->dontSeeElement('.mailpoet-dataviews-group-unconfirmed');
+
+    $i->addDataViewsFilter('Status', '', ['Unconfirmed']);
+    $i->waitForText('status-unconfirmed@example.com');
+    $i->dontSee('status-subscribed@example.com');
+    $i->dontSee('status-bounced@example.com');
+
+    $i->wantTo('Switch the Status filter to "Is none of"');
+    $i->clearDataViewsFilters();
+    $i->addDataViewsFilter('Status', 'Is none of', ['Unconfirmed']);
+    $i->waitForText('status-subscribed@example.com');
+    $i->waitForText('status-bounced@example.com');
+    $i->dontSee('status-unconfirmed@example.com');
+  }
+
+  public function useListsFilter(\AcceptanceTester $i) {
+    $i->wantTo('Filter subscribers by list, including subscribers without a list');
+
+    $listA = (new Segment())->withName('Filter List A')->create();
+    $listB = (new Segment())->withName('Filter List B')->create();
+    (new Subscriber())->withEmail('lists-a@example.com')->withSegments([$listA])->create();
+    (new Subscriber())->withEmail('lists-b@example.com')->withSegments([$listB])->create();
+    (new Subscriber())->withEmail('lists-none@example.com')->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->searchFor('lists-');
+    $i->waitForText('lists-none@example.com');
+    $i->dontSeeElement('select[name=segment]');
+
+    $i->addDataViewsFilter('Lists', '', ['Filter List A']);
+    $i->waitForText('lists-a@example.com');
+    $i->dontSee('lists-b@example.com');
+    $i->dontSee('lists-none@example.com');
+
+    $i->wantTo('Use "Is none of"');
+    $i->clearDataViewsFilters();
+    $i->addDataViewsFilter('Lists', 'Is none of', ['Filter List A']);
+    $i->waitForText('lists-b@example.com');
+    $i->waitForText('lists-none@example.com');
+    $i->dontSee('lists-a@example.com');
+
+    $i->wantTo('Pick "Subscribers without a list"');
+    $i->clearDataViewsFilters();
+    $i->addDataViewsFilter('Lists', '', ['Subscribers without a list']);
+    $i->waitForText('lists-none@example.com');
+    $i->dontSee('lists-a@example.com');
+    $i->dontSee('lists-b@example.com');
+  }
+
+  public function useSourceFilter(\AcceptanceTester $i) {
+    $i->wantTo('Filter subscribers by source, including Unknown');
+
+    (new Subscriber())->withEmail('source-form@example.com')->withSource('form')->create();
+    (new Subscriber())->withEmail('source-import@example.com')->withSource('imported')->create();
+    (new Subscriber())->withEmail('source-unknown@example.com')->withSource('unknown')->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->searchFor('source-');
+    $i->waitForText('source-form@example.com');
+    $i->dontSee('Source', '.mailpoet-subscribers-dataviews thead');
+
+    $i->addDataViewsFilter('Source', '', ['Unknown']);
+    $i->waitForText('source-unknown@example.com');
+    $i->dontSee('source-form@example.com');
+    $i->dontSee('source-import@example.com');
+
+    $i->clearDataViewsFilters();
+    $i->addDataViewsFilter('Source', 'Is none of', ['Unknown']);
+    $i->waitForText('source-form@example.com');
+    $i->waitForText('source-import@example.com');
+    $i->dontSee('source-unknown@example.com');
+  }
+
+  public function useScoreFilterOnlyWhenTrackingIsEnabled(\AcceptanceTester $i) {
+    $i->wantTo('Offer the Score filter only when email tracking is on');
+
+    $settings = new Settings();
+    $settings->withTrackingEnabled();
+    (new Subscriber())->withEmail('score-low@example.com')->withEngagementScore(10)->create();
+    (new Subscriber())->withEmail('score-high@example.com')->withEngagementScore(90)->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->searchFor('score-');
+    $i->waitForText('score-low@example.com');
+    $i->click(['xpath' => '//button[@aria-label="Add filter"]']);
+    $i->waitForElement(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Score"]']);
+    $i->pressKey('body', WebDriverKeys::ESCAPE);
+
+    $i->wantTo('Apply a "Greater than" score filter from a link');
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-subscribers#/group[all]/filter[score_gt=50]/search[score-]');
+    $i->waitForText('score-high@example.com');
+    $i->dontSee('score-low@example.com');
+    $i->waitForDataViewsFilterChip('Score');
+
+    $i->wantTo('Not offer the Score filter or column when tracking is basic');
+    $settings->withTrackingDisabled();
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-subscribers#/group[all]/filter[score_gt=50]/search[score-]');
+    $i->reloadPage();
+    $i->waitForText('score-low@example.com');
+    $i->waitForText('score-high@example.com');
+    $i->click(['xpath' => '//button[@aria-label="Add filter"]']);
+    $i->waitForElement(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Status"]']);
+    $i->dontSeeElement(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Score"]']);
+    $i->pressKey('body', WebDriverKeys::ESCAPE);
+    $settings->withTrackingEnabled();
+  }
+
+  public function useDateFilters(\AcceptanceTester $i) {
+    $i->wantTo('Filter subscribers by created and subscribed date');
+
+    (new Subscriber())
+      ->withEmail('date-old@example.com')
+      ->withCreatedAt(new DateTime('-30 days'))
+      ->withLastSubscribedAt(new DateTime('-30 days'))
+      ->create();
+    (new Subscriber())
+      ->withEmail('date-new@example.com')
+      ->withCreatedAt(new DateTime())
+      ->withLastSubscribedAt(new DateTime())
+      ->create();
+    $cutoff = (new DateTime('-10 days'))->format('Y-m-d');
+
+    $i->login();
+
+    $i->wantTo('Created on "Before" the cutoff keeps only the old subscriber');
+    $i->amOnPage("/wp-admin/admin.php?page=mailpoet-subscribers#/group[all]/filter[created_to={$cutoff}]/search[date-]");
+    $i->reloadPage();
+    $i->waitForText('date-old@example.com');
+    $i->dontSee('date-new@example.com');
+    $i->waitForDataViewsFilterChip('Created on');
+
+    $i->wantTo('Created on "After" the cutoff keeps only the new subscriber');
+    $i->amOnPage("/wp-admin/admin.php?page=mailpoet-subscribers#/group[all]/filter[created_from={$cutoff}]/search[date-]");
+    $i->waitForText('date-new@example.com');
+    $i->dontSee('date-old@example.com');
+
+    $i->wantTo('Subscribed on "After" the cutoff keeps only the new subscriber');
+    $i->amOnPage("/wp-admin/admin.php?page=mailpoet-subscribers#/group[all]/filter[subscribed_from={$cutoff}]/search[date-]");
+    $i->waitForText('date-new@example.com');
+    $i->dontSee('date-old@example.com');
+    $i->waitForDataViewsFilterChip('Subscribed on');
+
+    $i->wantTo('Subscribed on "Between" two dates keeps only the old subscriber');
+    $from = (new DateTime('-40 days'))->format('Y-m-d');
+    $to = (new DateTime('-20 days'))->format('Y-m-d');
+    $i->amOnPage("/wp-admin/admin.php?page=mailpoet-subscribers#/group[all]/filter[subscribed_from={$from}&subscribed_to={$to}]/search[date-]");
+    $i->waitForText('date-old@example.com');
+    $i->dontSee('date-new@example.com');
+  }
+
+  public function legacyLinksStillWork(\AcceptanceTester $i) {
+    $i->wantTo('Open the subscribers listing from links used before native filters');
+
+    $list = (new Segment())->withName('Legacy Link List')->create();
+    $otherList = (new Segment())->withName('Legacy Other List')->create();
+    $tag = (new Tag())->withName('Legacy Link Tag')->create();
+    (new Subscriber())->withEmail('legacy-in-list@example.com')->withSegments([$list])->withTags([$tag])->create();
+    (new Subscriber())->withEmail('legacy-other@example.com')->withSegments([$otherList])->create();
+    (new Subscriber())->withEmail('legacy-unconfirmed@example.com')->withStatus('unconfirmed')->create();
+    $listId = $list->getId();
+    $tagId = $tag->getId();
+    $page = '/wp-admin/admin.php?page=mailpoet-subscribers#';
+
+    $i->login();
+
+    $i->wantTo('Open a status tab link');
+    $i->amOnPage($page . '/group[unconfirmed]');
+    $i->reloadPage();
+    $i->waitForText('legacy-unconfirmed@example.com');
+    $i->dontSee('legacy-in-list@example.com');
+    $i->waitForDataViewsFilterChip('Status');
+
+    $i->wantTo('Open a list link');
+    $i->amOnPage($page . "/filter[segment={$listId}]");
+    $i->reloadPage();
+    $i->waitForText('legacy-in-list@example.com');
+    $i->dontSee('legacy-other@example.com');
+    $i->waitForDataViewsFilterChip('Legacy Link List');
+
+    $i->wantTo('Open a tag link');
+    $i->amOnPage($page . "/filter[tag={$tagId}]");
+    $i->reloadPage();
+    $i->waitForText('legacy-in-list@example.com');
+    $i->dontSee('legacy-other@example.com');
+    $i->waitForDataViewsFilterChip('Legacy Link Tag');
+
+    $i->wantTo('Open a list link with a page size');
+    $i->amOnPage($page . "/group[all]/filter[segment={$listId}]/limit[1]");
+    $i->reloadPage();
+    $i->waitForText('legacy-in-list@example.com');
+    $i->dontSee('legacy-other@example.com');
+
+    $i->wantTo('Open the homepage list link');
+    $i->amOnPage($page . "/page[1]/sort_by[created_at]/sort_order[desc]/group[all]/filter[segment={$listId}]");
+    $i->reloadPage();
+    $i->waitForText('legacy-in-list@example.com');
+    $i->dontSee('legacy-other@example.com');
+
+    $i->wantTo('Show the full list for a link to a deleted list');
+    $i->amOnPage($page . '/filter[segment=999999]');
+    $i->reloadPage();
+    $i->waitForText('legacy-in-list@example.com');
+    $i->waitForText('legacy-other@example.com');
+    $i->waitForJS('return window.location.hash.indexOf("999999") === -1;', 10);
   }
 
   public function sendConfirmationEmail(\AcceptanceTester $i) {
@@ -203,6 +430,8 @@ class SubscribersListingCest {
     $i->see('Resend confirmation emails', '.dataviews-bulk-actions-footer__action-buttons');
 
     $settings->withConfirmationEmailDisabled();
+    // The setting is page bootstrap data, so reload to pick it up.
+    $i->reloadPage();
     $this->openSubscribersGroup($i, 'unconfirmed');
     $this->selectSubscriberForBulkAction($i, $unconfirmedSubscriber);
     $i->dontSee('Resend confirmation emails', '.dataviews-bulk-actions-footer__action-buttons');
@@ -226,7 +455,7 @@ class SubscribersListingCest {
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
-    $i->changeGroupInListingFilter('unconfirmed');
+    $i->addDataViewsFilter('Status', '', ['Unconfirmed']);
     $this->selectSubscriberForBulkAction($i, $eligibleSubscriber);
     $this->selectSubscriberForBulkAction($i, $skippedSubscriber);
     $this->openBulkResendConfirmationModal($i);
@@ -280,7 +509,7 @@ class SubscribersListingCest {
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
-    $i->changeGroupInListingFilter('unconfirmed');
+    $i->addDataViewsFilter('Status', '', ['Unconfirmed']);
     $this->selectSubscriberForBulkAction($i, $subscriber);
     $this->openBulkResendConfirmationModal($i);
     $this->confirmBulkResendConfirmationEmailRequest($i);
@@ -350,7 +579,7 @@ class SubscribersListingCest {
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
-    $i->changeGroupInListingFilter('unconfirmed');
+    $i->addDataViewsFilter('Status', '', ['Unconfirmed']);
     $i->waitForText('bulk-resend-all-pages-');
     $i->click(['xpath' => '//table//thead//input[@type="checkbox"]']);
     $i->dontSee('Select all items on all pages');
@@ -361,6 +590,7 @@ class SubscribersListingCest {
     $i->executeJS(<<<'JS'
       window.mailpoetBulkResendHasSelection = null;
       window.mailpoetBulkResendGroup = null;
+      window.mailpoetBulkResendFilter = null;
       window.mailpoetBulkResendSelectionCount = null;
       window.mailpoetTestApiFetchInterceptor = function (options, next) {
         if (
@@ -372,6 +602,7 @@ class SubscribersListingCest {
           var selection = Array.isArray(options.data.selection) ? options.data.selection : [];
           window.mailpoetBulkResendHasSelection = selection.length > 0;
           window.mailpoetBulkResendGroup = options.data.group;
+          window.mailpoetBulkResendFilter = JSON.stringify(options.data.filter);
           window.mailpoetBulkResendSelectionCount = selection.length;
           return Promise.resolve({
             data: {
@@ -403,8 +634,12 @@ class SubscribersListingCest {
       $i->executeJS('return window.mailpoetBulkResendHasSelection;')
     );
     Assert::assertSame(
-      'unconfirmed',
+      'all',
       $i->executeJS('return window.mailpoetBulkResendGroup;')
+    );
+    Assert::assertSame(
+      '{"status_in":["unconfirmed"]}',
+      $i->executeJS('return window.mailpoetBulkResendFilter;')
     );
     Assert::assertEquals(
       $i->executeJS('return window.mailpoet_listing_per_page;'),
@@ -425,7 +660,7 @@ class SubscribersListingCest {
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
-    $i->changeGroupInListingFilter('unconfirmed');
+    $i->addDataViewsFilter('Status', '', ['Unconfirmed']);
     $this->selectSubscriberForBulkAction($i, $subscriber);
     $this->openBulkResendConfirmationModal($i);
     $this->confirmBulkResendConfirmationEmailRequest($i);
@@ -467,7 +702,7 @@ class SubscribersListingCest {
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
-    $i->changeGroupInListingFilter('unconfirmed');
+    $i->addDataViewsFilter('Status', '', ['Unconfirmed']);
     $this->selectSubscriberForBulkAction($i, $subscriber);
     $this->openBulkResendConfirmationModal($i);
     $this->confirmBulkResendConfirmationEmailRequest($i);
@@ -518,7 +753,7 @@ class SubscribersListingCest {
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
-    $i->changeGroupInListingFilter('unconfirmed');
+    $i->addDataViewsFilter('Status', '', ['Unconfirmed']);
     $this->selectSubscriberForBulkAction($i, $subscriber);
     $this->openBulkResendConfirmationModal($i);
     $this->confirmBulkResendConfirmationEmailRequest($i);
@@ -527,6 +762,80 @@ class SubscribersListingCest {
     $i->waitForText(
       'No confirmation emails were resent. The selected subscribers could not receive another confirmation email right now.'
     );
+  }
+
+  public function emptyTrashDeletesOnlyTheFilteredSubscribers(\AcceptanceTester $i) {
+    $i->wantTo('Verify that Empty Trash deletes only the subscribers matching the active filters');
+
+    (new Subscriber())
+      ->withEmail('trash-subscribed@example.com')
+      ->withStatus('subscribed')
+      ->withDeletedAt(new DateTime())
+      ->create();
+    (new Subscriber())
+      ->withEmail('trash-bounced@example.com')
+      ->withStatus('bounced')
+      ->withDeletedAt(new DateTime())
+      ->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->waitForListingItemsToLoad();
+    $i->addDataViewsFilter('Status', '', ['Bounced']);
+    $i->changeGroupInListingFilter('trash');
+    $i->waitForText('trash-bounced@example.com');
+    $i->dontSee('trash-subscribed@example.com');
+
+    $i->click('[data-automation-id="empty_trash"]');
+    $i->waitForText('1 subscriber was permanently deleted.');
+    $i->dontSee('trash-bounced@example.com');
+
+    $i->clearDataViewsFilters();
+    $i->waitForText('trash-subscribed@example.com');
+  }
+
+  public function trashedListFilterSurvivesPageBeyondTheLastPage(\AcceptanceTester $i) {
+    $i->wantTo('Keep a trashed list in the Trash filter when the link asks for a page that does not exist');
+
+    $list = (new Segment())->withName('Trashed Link List')->withDeleted()->create();
+    (new Subscriber())
+      ->withEmail('trashed-in-list@example.com')
+      ->withSegments([$list])
+      ->withDeletedAt(new DateTime())
+      ->create();
+    $listId = $list->getId();
+
+    $i->login();
+    $i->amOnPage("/wp-admin/admin.php?page=mailpoet-subscribers#/group[trash]/filter[segment_in={$listId}]/page[5]");
+    $i->reloadPage();
+    $i->waitForText('trashed-in-list@example.com');
+    $i->waitForDataViewsFilterChip('Trashed Link List');
+  }
+
+  public function filterToggleShowsAndHidesTheFilterRow(\AcceptanceTester $i) {
+    $i->wantTo('Hide and show the active filters with the filter toggle button');
+
+    (new Subscriber())->withEmail('toggle-filters@example.com')->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->waitForText('toggle-filters@example.com');
+
+    $i->wantTo('Add a Created on filter from the toggle button');
+    $i->click(['xpath' => '//button[@aria-label="Add filter"]']);
+    $i->click(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Created on"]']);
+    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+    $i->waitForDataViewsFilterChip('Created on');
+    $i->waitForElement('.dataviews-filters-toggle__count');
+
+    $i->wantTo('Hide the filter row with the toggle');
+    $i->click('.dataviews-filters__visibility-toggle');
+    $i->waitForElementNotVisible('.dataviews-filters__summary-chip');
+
+    $i->wantTo('Show the filter row again with the toggle');
+    $i->click('.dataviews-filters__visibility-toggle');
+    $i->waitForElementVisible('.dataviews-filters__summary-chip');
+    $i->waitForDataViewsFilterChip('Created on');
   }
 
   public function searchInTrashWithNoResultsStaysInTrash(\AcceptanceTester $i) {
@@ -553,48 +862,135 @@ class SubscribersListingCest {
     $i->seeInCurrentURL(urlencode('group[trash]'));
   }
 
-  public function sortingIsRestrictedToCreatedAt(\AcceptanceTester $i) {
-    $i->wantTo('Restrict subscribers listing sorting to the Created on column');
+  public function sortsByEachSortableColumn(\AcceptanceTester $i) {
+    $i->wantTo('Sort the subscribers listing by every sortable column');
 
+    // Ascending order per column: email a,b,c; score c,a,b; subscribed on
+    // b,c,a; created on a,c,b. Status: only "a" is subscribed.
     (new Subscriber())
-      ->withEmail('sortable@example.com')
+      ->withEmail('sort-a@example.com')
       ->withStatus('subscribed')
+      ->withEngagementScore(50)
+      ->withLastSubscribedAt(new DateTime('-10 days'))
+      ->withCreatedAt(new DateTime('-5 days'))
+      ->create();
+    (new Subscriber())
+      ->withEmail('sort-b@example.com')
+      ->withStatus('unsubscribed')
+      ->withEngagementScore(90)
+      ->withLastSubscribedAt(new DateTime('-30 days'))
+      ->withCreatedAt(new DateTime('-3 days'))
+      ->create();
+    (new Subscriber())
+      ->withEmail('sort-c@example.com')
+      ->withStatus('unsubscribed')
+      ->withEngagementScore(10)
+      ->withLastSubscribedAt(new DateTime('-20 days'))
+      ->withCreatedAt(new DateTime('-4 days'))
       ->create();
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
-    $i->waitForListingItemsToLoad();
-
-    $headerButton = function (string $contains): array {
-      return ['xpath' =>
-        '//thead//button[contains(concat(" ", normalize-space(@class), " "), " dataviews-view-table-header-button ")]' .
-        '[contains(., ' . \AcceptanceTester::xpathString($contains) . ')]',
-      ];
-    };
+    $i->searchFor('sort-');
+    $i->waitForText('sort-a@example.com');
+    $i->waitForText('sort-b@example.com');
+    $i->waitForText('sort-c@example.com');
 
     $i->wantTo('Confirm Created on is sorted descending by default');
     $i->seeElement(['xpath' => '//thead//th[@aria-sort="descending"][contains(., "Created on")]']);
+    $this->seeRowOrder($i, ['sort-b@example.com', 'sort-c@example.com', 'sort-a@example.com']);
 
-    $i->wantTo('Confirm the Subscriber column header offers no sort or filter control');
-    $i->click($headerButton('Subscriber'));
-    $i->waitForText('Hide column'); // the column menu is open
-    $i->dontSee('Sort ascending');
-    $i->dontSee('Add filter');
-    $i->pressKey('body', WebDriverKeys::ESCAPE);
+    $i->wantTo('Sort by the Subscriber column in both directions');
+    $this->sortByColumn($i, 'Subscriber', 'ascending', false);
+    $this->seeRowOrder($i, ['sort-a@example.com', 'sort-b@example.com', 'sort-c@example.com']);
+    $this->sortByColumn($i, 'Subscriber', 'descending', false);
+    $this->seeRowOrder($i, ['sort-c@example.com', 'sort-b@example.com', 'sort-a@example.com']);
 
-    $i->wantTo('Confirm the Created on column header offers sorting but no filter');
-    $i->click($headerButton('Created on'));
-    $i->waitForText('Sort ascending');
-    $i->dontSee('Add filter');
-    $i->pressKey('body', WebDriverKeys::ESCAPE);
+    $this->sortByColumn($i, 'Status', 'ascending');
+    $this->seeRowOrder($i, ['sort-a@example.com']);
+    $this->sortByColumn($i, 'Status', 'descending');
+    $this->seeLastRow($i, 'sort-a@example.com');
 
-    $i->wantTo('Restore an old hash that sorts by a now-unsortable column');
-    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-subscribers#/group[all]/sort_by[email]/sort_order[asc]');
+    $this->sortByColumn($i, 'Score', 'ascending');
+    $this->seeRowOrder($i, ['sort-c@example.com', 'sort-a@example.com', 'sort-b@example.com']);
+    $this->sortByColumn($i, 'Score', 'descending');
+    $this->seeRowOrder($i, ['sort-b@example.com', 'sort-a@example.com', 'sort-c@example.com']);
+
+    $this->sortByColumn($i, 'Subscribed on', 'ascending');
+    $this->seeRowOrder($i, ['sort-b@example.com', 'sort-c@example.com', 'sort-a@example.com']);
+    $this->sortByColumn($i, 'Subscribed on', 'descending');
+    $this->seeRowOrder($i, ['sort-a@example.com', 'sort-c@example.com', 'sort-b@example.com']);
+
+    $this->sortByColumn($i, 'Created on', 'ascending');
+    $this->seeRowOrder($i, ['sort-a@example.com', 'sort-c@example.com', 'sort-b@example.com']);
+
+    $i->wantTo('Restore a sort from a link');
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-subscribers#/group[all]/sort_by[email]/sort_order[asc]/search[sort-]');
+    $i->reloadPage();
+    $i->waitForText('sort-a@example.com');
+    $this->seeRowOrder($i, ['sort-a@example.com', 'sort-b@example.com', 'sort-c@example.com']);
+
+    $i->wantTo('Fall back to the saved sort (Created on) for an unknown sort field');
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-subscribers#/group[all]/sort_by[unknown_column]/search[sort-]');
+    $i->reloadPage();
+    $i->waitForText('sort-a@example.com');
+    $i->seeElement(['xpath' => '//thead//th[@aria-sort][contains(., "Created on")]']);
+
+    $i->wantTo('Restore the default sort so the saved preference does not leak into other tests');
+    $this->sortByColumn($i, 'Created on', 'descending');
+  }
+
+  // The title column's header carries no aria-sort, so callers check row order there.
+  private function sortByColumn(\AcceptanceTester $i, string $column, string $direction, bool $expectAriaSort = true): void {
+    $header = ['xpath' =>
+      '//thead//button[contains(concat(" ", normalize-space(@class), " "), " dataviews-view-table-header-button ")]' .
+      '[contains(., ' . \AcceptanceTester::xpathString($column) . ')]',
+    ];
+    $label = $direction === 'ascending' ? 'Sort ascending' : 'Sort descending';
+    $item = ['xpath' => '//*[@role="menuitem" or @role="menuitemradio"][contains(normalize-space(.), "' . $label . '")]'];
+    $sorted = ['xpath' => '//thead//th[@aria-sort="' . $direction . '"][contains(., ' . \AcceptanceTester::xpathString($column) . ')]'];
+
+    // The previous sort menu can still be closing; retry the whole interaction.
+    for ($attempt = 1; $attempt <= 3; $attempt++) {
+      try {
+        $i->wait(0.5);
+        $i->click($header);
+        $i->waitForElementClickable($item, 5);
+        $i->click($item);
+        if ($expectAriaSort) {
+          $i->waitForElement($sorted, 5);
+        }
+        break;
+      } catch (\Exception $e) {
+        if ($attempt === 3) {
+          throw $e;
+        }
+        $i->pressKey('body', WebDriverKeys::ESCAPE);
+      }
+    }
     $i->waitForListingItemsToLoad();
+  }
 
-    $i->wantTo('Confirm the stale sort field is dropped and Created on is sorted instead');
-    $i->dontSeeInCurrentUrl('sort_by');
-    $i->seeElement(['xpath' => '//thead//th[@aria-sort="ascending"][contains(., "Created on")]']);
+  /**
+   * @param string[] $emails Emails expected as the first rows, in this order.
+   */
+  private function seeRowOrder(\AcceptanceTester $i, array $emails): void {
+    $expected = json_encode($emails);
+    $i->waitForJS(<<<JS
+      const rows = Array.from(document.querySelectorAll('.mailpoet-subscribers-dataviews tbody tr'));
+      const found = rows.map((row) => (row.textContent.match(/sort-[a-z]@example\.com/) || [''])[0]);
+      const expected = {$expected};
+      return expected.every((email, index) => found[index] === email);
+    JS, 10);
+  }
+
+  private function seeLastRow(\AcceptanceTester $i, string $email): void {
+    $expected = json_encode($email);
+    $i->waitForJS(<<<JS
+      const rows = Array.from(document.querySelectorAll('.mailpoet-subscribers-dataviews tbody tr'));
+      const last = rows[rows.length - 1];
+      return !!last && last.textContent.indexOf({$expected}) !== -1;
+    JS, 10);
   }
 
   private function selectSubscriberForBulkAction(\AcceptanceTester $i, $subscriber): void {
