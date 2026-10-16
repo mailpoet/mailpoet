@@ -544,7 +544,7 @@ export function CustomFieldsPage() {
                 </div>
               </div>
               <div className="mailpoet-dataviews__filters">
-                <DataViews.Filters />
+                <DataViews.Filters className="mailpoet-dataviews__filters" />
               </div>
               {group === 'trash' && (groupCounts.trash ?? 0) > 0 && (
                 <div className="mailpoet-custom-fields-dataviews__toolbar">
