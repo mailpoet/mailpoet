@@ -53,14 +53,13 @@ const useCreateFromTemplate = () => {
           path: `/automations/create-from-template`,
           method: 'POST',
           data: { slug },
-        }).then(
-          ({ data }) => data.id,
-          (error) => {
+        })
+          .then(({ data }) => data.id)
+          .catch((error) => {
             // allow retrying after a failed create
             delete createdIds[slug];
             throw error;
-          },
-        );
+          });
       }
       const id = await createdIds[slug];
       if (isNew) {
