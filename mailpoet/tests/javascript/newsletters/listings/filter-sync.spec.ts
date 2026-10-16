@@ -55,10 +55,22 @@ describe('newsletter listing filter sync', () => {
       ).to.equal(null);
     });
 
-    it('does not prune while the option list is empty or missing', () => {
+    it('does not prune while the option list is missing', () => {
       const filter = { segment_ids: ['9'], segment_operator: 'isAny' as const };
-      expect(pruneUnknownIds(filter, { segments: [] })).to.equal(null);
       expect(pruneUnknownIds(filter, {})).to.equal(null);
+    });
+
+    it('removes every list id when the loaded option list is empty', () => {
+      expect(
+        pruneUnknownIds(
+          {
+            status: ['sent'],
+            segment_ids: ['9'],
+            segment_operator: 'isAny',
+          },
+          { segments: [] },
+        ),
+      ).to.deep.equal({ status: ['sent'] });
     });
   });
 });
