@@ -30,6 +30,20 @@ class TagsListingCest {
     $i->waitForElementVisible('.dataviews-filters__summary-chip');
   }
 
+  public function deepLinkShowsFilterWithOptionsFromTheResponse(\AcceptanceTester $i) {
+    $i->wantTo('See the chip of a filter whose options come from the listing response when opening a link');
+
+    $suffix = 'tagdeeplink' . uniqid();
+    $tag = (new TagFactory())->withName("Linked-{$suffix}")->create();
+    (new SubscriberFactory())->withEmail("sub-{$suffix}@example.com")->withTags([$tag])->create();
+
+    $i->login();
+    $i->amOnPage("/wp-admin/admin.php?page=mailpoet-tags&search={$suffix}&subscribers=1");
+    $i->reloadPage();
+    $i->waitForText("Linked-{$suffix}");
+    $i->waitForElementVisible('.dataviews-filters__summary-chip');
+  }
+
   public function tagsNativeFiltersAndSorting(\AcceptanceTester $i) {
     $i->wantTo('Filter and sort the tags listing with native DataViews controls');
 
