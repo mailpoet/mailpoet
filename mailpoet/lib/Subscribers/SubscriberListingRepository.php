@@ -296,11 +296,11 @@ class SubscriberListingRepository extends ListingRepository {
     }
 
     if (!empty($filters['source_in'])) {
-      $query->andWhere('s.source IN (:source_in)')
+      $query->andWhere($this->getSourcePredicate($filters['source_in'], 's.source', ':source_in', false))
         ->setParameter('source_in', $filters['source_in'], ArrayParameterType::STRING);
     }
     if (!empty($filters['source_not_in'])) {
-      $query->andWhere('(s.source IS NULL OR s.source NOT IN (:source_not_in))')
+      $query->andWhere($this->getSourcePredicate($filters['source_not_in'], 's.source', ':source_not_in', true))
         ->setParameter('source_not_in', $filters['source_not_in'], ArrayParameterType::STRING);
     }
 
@@ -713,6 +713,19 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   /**
+   * A NULL source means "no known source", so it counts as Source::UNKNOWN.
+   *
+   * @param string[] $sources
+   */
+  private function getSourcePredicate(array $sources, string $column, string $parameter, bool $negate): string {
+    $matchesNull = in_array(Source::UNKNOWN, $sources, true);
+    if ($negate) {
+      return $matchesNull ? "$column NOT IN ($parameter)" : "($column IS NULL OR $column NOT IN ($parameter))";
+    }
+    return $matchesNull ? "($column IN ($parameter) OR $column IS NULL)" : "$column IN ($parameter)";
+  }
+
+  /**
    * @param string[] $statuses
    */
   private function getStatusInPredicate(array $statuses, bool $hasStaticListJoin): string {
@@ -770,11 +783,11 @@ class SubscriberListingRepository extends ListingRepository {
     }
 
     if (!empty($filters['source_in'])) {
-      $queryBuilder->andWhere('s.source IN (:sourceIn)')
+      $queryBuilder->andWhere($this->getSourcePredicate($filters['source_in'], 's.source', ':sourceIn', false))
         ->setParameter('sourceIn', $filters['source_in']);
     }
     if (!empty($filters['source_not_in'])) {
-      $queryBuilder->andWhere('(s.source IS NULL OR s.source NOT IN (:sourceNotIn))')
+      $queryBuilder->andWhere($this->getSourcePredicate($filters['source_not_in'], 's.source', ':sourceNotIn', true))
         ->setParameter('sourceNotIn', $filters['source_not_in']);
     }
 
