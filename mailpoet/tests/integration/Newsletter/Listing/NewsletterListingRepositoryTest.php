@@ -1044,6 +1044,20 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     ], $this->getStatusOptions(['params' => ['type' => 'notification_history', 'parentId' => $parent->getId()]]));
   }
 
+  public function testStatusOptionCountsUseLocaleAwareFormatting() {
+    $this->createStandard('Draft one', NewsletterEntity::STATUS_DRAFT);
+    $filter = function ($formatted) {
+      return 'i18n:' . $formatted;
+    };
+    add_filter('number_format_i18n', $filter);
+    try {
+      $options = $this->getStatusOptions(['params' => ['type' => 'standard']]);
+    } finally {
+      remove_filter('number_format_i18n', $filter);
+    }
+    $this->assertSame('Draft (i18n:1)', $options[0]['label']);
+  }
+
   public function testStatusOptionsAreOmittedWithoutSupportedType() {
     $repository = $this->diContainer->get(NewsletterListingRepository::class);
     $this->assertArrayNotHasKey('status', $repository->getFilters((new Handler())->getListingDefinition([])));
