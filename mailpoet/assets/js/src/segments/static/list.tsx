@@ -647,7 +647,7 @@ function SegmentListComponent(): JSX.Element {
                   <DataViews.ViewConfig />
                 </div>
               </div>
-              <DataViews.Filters />
+              <DataViews.Filters className="mailpoet-dataviews__filters" />
               {group === 'trash' && (groupCounts.trash ?? 0) > 0 && (
                 <div className="mailpoet-segments-dataviews__toolbar">
                   <button
