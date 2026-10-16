@@ -148,13 +148,13 @@ class NewslettersListingCest {
     $i->seeElement('[data-automation-id="listing_item_' . $sentInList->getId() . '"]');
     $i->seeElement('[data-automation-id="listing_item_' . $draftInList->getId() . '"]');
     $i->seeElement('[data-automation-id="listing_item_' . $sentNoList->getId() . '"]');
-    $this->waitForHashContaining($i, 'filter[status=');
+    $i->waitForHashContaining('filter[status=');
 
     $i->applyDataViewsFilter('Lists', ['Filter list']);
     $i->waitForElementNotVisible('[data-automation-id="listing_item_' . $sentNoList->getId() . '"]');
     $i->seeElement('[data-automation-id="listing_item_' . $sentInList->getId() . '"]');
     $i->seeElement('[data-automation-id="listing_item_' . $draftInList->getId() . '"]');
-    $i->seeInCurrentUrl('segment=' . $segment->getId());
+    $i->waitForHashFilterValue('segment', (string)$segment->getId());
     $i->seeNoJSErrors();
   }
 
@@ -208,7 +208,7 @@ class NewslettersListingCest {
     $i->changeGroupInListingFilter('draft');
     $i->waitForElement('[data-automation-id="listing_item_' . $draft->getId() . '"]');
     $i->dontSeeInCurrentUrl('status=');
-    $i->seeInCurrentUrl('segment=' . $segment->getId());
+    $i->waitForHashFilterValue('segment', (string)$segment->getId());
     $i->waitForElementNotVisible($this->filterChip('Status'));
     $i->seeElement('.mailpoet-dataviews-group-draft.is-active');
 
@@ -244,6 +244,32 @@ class NewslettersListingCest {
     $i->dontSeeElement('[data-automation-id="listing_item_' . $march->getId() . '"]');
   }
 
+  public function showSingleDaySentOnLinkAsOnOperator(\AcceptanceTester $i) {
+    $i->wantTo('Open a single-day sent on deep link as the "is" operator');
+    $parent = (new Newsletter())->withSubject('Day parent')->withPostNotificationsType()->create();
+    $day = (new Newsletter())
+      ->withSubject('Day match')
+      ->withPostNotificationHistoryType()
+      ->withParent($parent)
+      ->withSentStatus()
+      ->withSentAt(new \DateTimeImmutable('2026-01-10 12:00:00'))
+      ->create();
+    $other = (new Newsletter())
+      ->withSubject('Day other')
+      ->withPostNotificationHistoryType()
+      ->withParent($parent)
+      ->withSentStatus()
+      ->withSentAt(new \DateTimeImmutable('2026-01-11 12:00:00'))
+      ->create();
+
+    $i->login();
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/notification/history/' . $parent->getId() . '/filter[sent_from=2026-01-10&sent_to=2026-01-10]');
+    $i->waitForElement('[data-automation-id="listing_item_' . $day->getId() . '"]');
+    $i->waitForElement(['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip-container")][contains(., "Sent on")][contains(., "is:")]']);
+    $i->dontSeeElement(['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip-container")][contains(., "or after") or contains(., "between")]']);
+    $i->dontSeeElement('[data-automation-id="listing_item_' . $other->getId() . '"]');
+  }
+
   public function sortByStatus(\AcceptanceTester $i) {
     $i->wantTo('Sort the standard emails listing by status');
     (new Newsletter())->withSubject('Sort draft')->withDraftStatus()->create();
@@ -273,10 +299,5 @@ class NewslettersListingCest {
 
   private function waitForFirstRow(\AcceptanceTester $i, string $subject): void {
     $i->waitForJS('return (document.querySelector(".mailpoet-newsletters-dataviews tbody tr")?.textContent ?? "").includes(' . json_encode($subject) . ');', 10);
-  }
-
-  // The browser reports the hash percent-encoded, so compare the decoded value.
-  private function waitForHashContaining(\AcceptanceTester $i, string $fragment): void {
-    $i->waitForJS('return decodeURIComponent(window.location.hash).indexOf(' . json_encode($fragment) . ') !== -1;', 10);
   }
 }

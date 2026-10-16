@@ -54,7 +54,7 @@ class SendingStatusCest {
     $i->applyDataViewsFilter('Sending status', ['Failed']);
     $i->waitForElementNotVisible($this->rowSelector($taskId, $lucky));
     $i->seeElement($this->rowSelector($taskId, $unlucky));
-    $i->seeInCurrentUrl('result=failed');
+    $i->waitForHashFilterValue('result', 'failed');
     $i->waitForElement($this->filterChip('Sending status'));
 
     $i->reloadPage();

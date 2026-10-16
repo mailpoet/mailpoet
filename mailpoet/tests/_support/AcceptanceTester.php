@@ -539,6 +539,21 @@ class AcceptanceTester extends \Codeception\Actor {
     return $this->_waitForJS($script, $this->getDefaultTimeout($timeout));
   }
 
+  /**
+   * The browser reports the hash percent-encoded, so compare the decoded value.
+   */
+  public function waitForHashContaining(string $fragment, int $timeout = 10): void {
+    $this->waitForJS('return decodeURIComponent(window.location.hash).indexOf(' . json_encode($fragment) . ') !== -1;', $timeout);
+  }
+
+  /**
+   * Waits for `key=value` as a whole entry of the hash filter, so `segment=1` does not match `segment=12`.
+   */
+  public function waitForHashFilterValue(string $key, string $value, int $timeout = 10): void {
+    $pattern = '[\\[&,]' . preg_quote($key, '/') . '=' . preg_quote($value, '/') . '(?=[&,\\]]|$)';
+    $this->waitForJS('return new RegExp(' . json_encode($pattern) . ').test(decodeURIComponent(window.location.hash));', $timeout);
+  }
+
   public function waitForText($text, $timeout = 10, $selector = null) {
     return $this->_waitForText($text, $this->getDefaultTimeout($timeout), $selector);
   }
