@@ -691,12 +691,7 @@ export function NewslettersListing({
   );
 
   const dataViewsRef = useRef<HTMLDivElement>(null);
-  // The toggle is the Add filter menu until the list options have loaded, so
-  // wait for the first response.
-  useShowFiltersWhenActive(
-    dataViewsRef,
-    (view.filters ?? []).length > 0 && responseVersion > 0,
-  );
+  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
 
   // List ids from the URL that are no longer selectable (a deleted list) are
   // dropped once a listing response has arrived, because the options are only
