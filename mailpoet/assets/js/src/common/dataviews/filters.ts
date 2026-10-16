@@ -69,8 +69,8 @@ function shiftYmd(ymd: string, deltaDays: number): string {
 
 /**
  * Translate a single DataViews date filter into a `{ from, to }` range the
- * listing endpoints apply as inclusive whole days (`>= from 00:00:00`,
- * `<= to 23:59:59`). Supports the standard date operators (`on`,
+ * listing endpoints apply as inclusive whole site-local days (from the start
+ * of `from` up to, not including, the start of the day after `to`). Supports the standard date operators (`on`,
  * `beforeInc`/`afterInc` inclusive, `before`/`after` exclusive, `between`).
  *
  * Because the backend boundaries are inclusive, the exclusive `before`/`after`
