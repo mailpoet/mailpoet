@@ -812,6 +812,32 @@ class SubscribersListingCest {
     $i->waitForDataViewsFilterChip('Trashed Link List');
   }
 
+  public function filterToggleShowsAndHidesTheFilterRow(\AcceptanceTester $i) {
+    $i->wantTo('Hide and show the active filters with the filter toggle button');
+
+    (new Subscriber())->withEmail('toggle-filters@example.com')->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->waitForText('toggle-filters@example.com');
+
+    $i->wantTo('Add a Created on filter from the toggle button');
+    $i->click(['xpath' => '//button[@aria-label="Add filter"]']);
+    $i->click(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Created on"]']);
+    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+    $i->waitForDataViewsFilterChip('Created on');
+    $i->waitForElement('.dataviews-filters-toggle__count');
+
+    $i->wantTo('Hide the filter row with the toggle');
+    $i->click('.dataviews-filters__visibility-toggle');
+    $i->waitForElementNotVisible('.dataviews-filters__summary-chip');
+
+    $i->wantTo('Show the filter row again with the toggle');
+    $i->click('.dataviews-filters__visibility-toggle');
+    $i->waitForElementVisible('.dataviews-filters__summary-chip');
+    $i->waitForDataViewsFilterChip('Created on');
+  }
+
   public function searchInTrashWithNoResultsStaysInTrash(\AcceptanceTester $i) {
     $i->wantTo('Verify that searching in Trash with no results does not redirect to All');
 
