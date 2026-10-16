@@ -132,15 +132,11 @@ class SwitchingLanguagesCest {
     // once that string is translated upstream.
     $i->waitForText(strtoupper('Änderungsdatum'));
 
-    $i->wantTo('Check Subscribers filter strings and button');
+    $i->wantTo('Check Subscribers tab and button strings');
+    // Statuses are no longer tabs; only the All tab (and Trash, when there are trashed subscribers) remains.
     $i->amOnMailpoetPage('subscribers');
     $i->waitForText('Neuen Abonnenten hinzufügen');
     $i->waitForText('Alle');
-    $i->waitForText('Eingetragen');
-    $i->waitForText('Unbestätigt');
-    $i->waitForText('Deabonniert');
-    $i->waitForText('Inaktiv');
-    $i->waitForText('Bounced');
 
     $i->wantTo('Check Subscribers listing strings');
     $i->waitForText('Neu berechnen');
