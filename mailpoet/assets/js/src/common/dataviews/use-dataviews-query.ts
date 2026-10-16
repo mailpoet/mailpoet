@@ -38,18 +38,30 @@ type UseDataViewsQueryResult<T> = {
   filters: ListingFilters;
   groups: ListingResponse<T>['groups'];
   isLoading: boolean;
-  error: string | null;
   /**
    * Increments each time a response is applied (items, meta and filters set).
    * Page-clamp re-fetches and errors do not count.
    */
   responseVersion: number;
+  error: string | null;
   refresh: () => void;
   clearError: () => void;
 };
 
 const EMPTY_META: ListingMeta = { count: 0, pages: 0 };
 const EMPTY_FILTERS: ListingFilters = {};
+
+/**
+ * The last valid page when the requested page is beyond it, otherwise null.
+ * A filter/search with zero rows (pages === 0) falls back to page 1.
+ */
+export function getClampedPage(
+  requestedPage: number,
+  pages: number,
+): number | null {
+  const lastValidPage = Math.max(1, pages);
+  return requestedPage > lastValidPage ? lastValidPage : null;
+}
 
 export function wasInitialUrlStateReset(
   currentView: View,
@@ -78,7 +90,9 @@ export function useDataViewsQuery<T>({
   const [meta, setMeta] = useState<ListingMeta>(EMPTY_META);
   const [filters, setFilters] = useState<ListingFilters>(EMPTY_FILTERS);
   const [groups, setGroups] = useState<ListingResponse<T>['groups']>(undefined);
-  const [isLoading, setIsLoading] = useState(false);
+  // Start loading: the first request is already on its way, so the very first
+  // render must not show the empty state.
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [responseVersion, setResponseVersion] = useState(0);
   const [refreshToken, setRefreshToken] = useState(0);
@@ -156,8 +170,8 @@ export function useDataViewsQuery<T>({
         // including when a filter/search yields zero rows (pages === 0), where
         // lastValidPage falls back to 1. Skipping that case would strand a
         // deep-linked page > 1 on an empty result.
-        const lastValidPage = Math.max(1, result.meta.pages);
-        if (requestedPage > lastValidPage) {
+        const lastValidPage = getClampedPage(requestedPage, result.meta.pages);
+        if (lastValidPage !== null) {
           // Avoid leaving a stale error visible while we re-fetch the
           // clamped page below.
           setError(null);
@@ -220,8 +234,8 @@ export function useDataViewsQuery<T>({
     filters,
     groups,
     isLoading,
-    error,
     responseVersion,
+    error,
     refresh,
     clearError,
   };
