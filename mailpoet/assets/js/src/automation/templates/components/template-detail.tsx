@@ -169,7 +169,9 @@ export const TemplateDetail = forwardRef<HTMLDivElement, Props>(
                 disabled={loading}
                 accessibleWhenDisabled
               >
-                {__('Start building', 'mailpoet')}
+                {loading
+                  ? __('Creating automation…', 'mailpoet')
+                  : __('Start building', 'mailpoet')}
               </Button>
             </div>
           </div>

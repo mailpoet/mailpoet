@@ -232,7 +232,7 @@ const getButton = (label: string): HTMLButtonElement =>
       button.getAttribute('aria-label') === label,
   );
 
-// Start building is the only primary button
+// Start building is the only primary button; its label changes while busy
 const getStartBuilding = (): HTMLButtonElement =>
   document.querySelector('button[data-variant="primary"]');
 
@@ -317,6 +317,7 @@ describe('automation template detail', function templateDetail() {
     expect(navigationAttempts).to.equal(1);
 
     const startBuilding = getStartBuilding();
+    expect(startBuilding.textContent).to.equal('Creating automation…');
     expect(isDisabled(startBuilding)).to.equal(true);
     expect(startBuilding.getAttribute('data-busy')).to.equal('true');
     expect(getButton('Previous template').disabled).to.equal(true);
@@ -343,6 +344,7 @@ describe('automation template detail', function templateDetail() {
     expect(navigationAttempts).to.equal(0);
 
     const startBuilding = getStartBuilding();
+    expect(startBuilding.textContent).to.equal('Start building');
     expect(isDisabled(startBuilding)).to.equal(false);
     expect(startBuilding.getAttribute('data-busy')).to.equal('false');
     expect(getButton('Cancel').disabled).to.equal(false);
