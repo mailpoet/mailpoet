@@ -195,7 +195,7 @@ class NewslettersBulkActionEndpoint extends Endpoint {
     $typeParam = $request->getParam('type');
     $parentIdParam = $request->getParam('parent_id');
     $type = $this->validateScopeType($typeParam, $request->getParam('select_all') === true);
-    $group = $this->validateScopeGroup($groupParam, $type);
+    $group = $this->validateScopeGroup($groupParam, $type, $request->getParam('select_all') === true);
     $this->validateNewslettersFilters($filter, $typeParam);
 
     $params = [];
@@ -238,12 +238,16 @@ class NewslettersBulkActionEndpoint extends Endpoint {
   }
 
   /**
-   * Falls back to the listing’s default group, so trashed emails stay out of a request without one.
+   * “Select all” needs the group the user saw. Other requests fall back to the listing’s
+   * default group, so trashed emails stay out of a request without one.
    *
    * @param mixed $group
    */
-  private function validateScopeGroup($group, ?string $type): string {
+  private function validateScopeGroup($group, ?string $type, bool $selectAll): string {
     if ($group === null || $group === '') {
+      if ($selectAll) {
+        throw $this->listingValidationError(__('A listing group is required.', 'mailpoet'), 'group');
+      }
       return 'all';
     }
     $allowed = NewsletterListingRepository::getSupportedGroupsForType($type);

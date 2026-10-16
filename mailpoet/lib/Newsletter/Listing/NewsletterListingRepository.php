@@ -23,6 +23,9 @@ class NewsletterListingRepository extends ListingRepository {
    */
   public const FILTER_STATUS_PAUSED = 'paused';
 
+  /** Largest number of values a multi-value filter (status, lists) accepts. */
+  public const MAX_FILTER_SET_VALUES = 100;
+
   private static $supportedStatuses = [
     NewsletterEntity::STATUS_DRAFT,
     NewsletterEntity::STATUS_SCHEDULED,
@@ -127,7 +130,77 @@ class NewsletterListingRepository extends ListingRepository {
         'value' => $item['id'],
       ];
     }
-    return ['segment' => $segmentList];
+    $filters = ['segment' => $segmentList];
+    $statusOptions = is_string($typeParam) ? $this->getStatusOptions($typeParam, $parentId ? (int)$parentId : null) : [];
+    if ($statusOptions) {
+      $filters['status'] = $statusOptions;
+    }
+    return $filters;
+  }
+
+  /**
+   * Counts non-trashed emails of the type, ignoring the group, search and other filters.
+   * “Sending” excludes and “Paused” includes paused emails, like the status filter.
+   *
+   * @return array<int, array{label: string, value: string}>
+   */
+  private function getStatusOptions(string $type, ?int $parentId): array {
+    $statuses = self::getSupportedStatusesForType($type);
+    if (!$statuses) {
+      return [];
+    }
+
+    $queryBuilder = clone $this->queryBuilder;
+    $queryBuilder->from(NewsletterEntity::class, 'n');
+    $this->applyParameters($queryBuilder, ['type' => $type, 'parentId' => $parentId]);
+    $queryBuilder->andWhere('n.deletedAt IS NULL');
+
+    $pausedCount = 0;
+    if (in_array(self::FILTER_STATUS_PAUSED, $statuses, true)) {
+      $pausedQueryBuilder = clone $queryBuilder;
+      $pausedQueryBuilder
+        ->select('COUNT(n)')
+        ->andWhere('n.status = :filterSendingStatus')
+        ->andWhere($this->getPausedExistsDql($pausedQueryBuilder))
+        ->setParameter('filterSendingStatus', NewsletterEntity::STATUS_SENDING);
+      $pausedCount = (int)$pausedQueryBuilder->getQuery()->getSingleScalarResult();
+    }
+
+    $queryBuilder->select('n.status, COUNT(n) AS newsletterCount')->groupBy('n.status');
+    $counts = [];
+    foreach ($queryBuilder->getQuery()->getResult() as $row) {
+      $counts[$row['status']] = (int)$row['newsletterCount'];
+    }
+    $counts[NewsletterEntity::STATUS_SENDING] = ($counts[NewsletterEntity::STATUS_SENDING] ?? 0) - $pausedCount;
+    $counts[self::FILTER_STATUS_PAUSED] = $pausedCount;
+
+    $labels = $this->getStatusLabels($type);
+    $options = [];
+    foreach ($statuses as $status) {
+      $options[] = [
+        'label' => sprintf('%s (%s)', $labels[$status], number_format($counts[$status] ?? 0)),
+        'value' => $status,
+      ];
+    }
+    return $options;
+  }
+
+  /** @return array<string, string> */
+  private function getStatusLabels(string $type): array {
+    $isAutomated = in_array($type, [
+      NewsletterEntity::TYPE_NOTIFICATION,
+      NewsletterEntity::TYPE_RE_ENGAGEMENT,
+      NewsletterEntity::TYPE_WELCOME,
+      NewsletterEntity::TYPE_AUTOMATIC,
+    ], true);
+    return [
+      NewsletterEntity::STATUS_DRAFT => $isAutomated ? __('Not active', 'mailpoet') : __('Draft', 'mailpoet'),
+      NewsletterEntity::STATUS_SCHEDULED => __('Scheduled', 'mailpoet'),
+      NewsletterEntity::STATUS_SENDING => __('Sending', 'mailpoet'),
+      self::FILTER_STATUS_PAUSED => __('Paused', 'mailpoet'),
+      NewsletterEntity::STATUS_SENT => __('Sent', 'mailpoet'),
+      NewsletterEntity::STATUS_ACTIVE => __('Active', 'mailpoet'),
+    ];
   }
 
   public function getGroups(ListingDefinition $definition): array {
