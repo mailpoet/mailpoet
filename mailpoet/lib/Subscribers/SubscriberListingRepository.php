@@ -16,6 +16,7 @@ use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder as DBALQueryBuilder;
@@ -74,6 +75,9 @@ class SubscriberListingRepository extends ListingRepository {
   /** @var SegmentDependencyValidator */
   private $segmentDependencyValidator;
 
+  /** @var WPFunctions */
+  private $wp;
+
   /** @var array<string, array> */
   private $normalizedFilters = [];
 
@@ -85,7 +89,8 @@ class SubscriberListingRepository extends ListingRepository {
     FilterHandler $dynamicSegmentsFilter,
     SegmentSubscribersRepository $segmentSubscribersRepository,
     SubscribersCountsController $subscribersCountsController,
-    SegmentDependencyValidator $segmentDependencyValidator
+    SegmentDependencyValidator $segmentDependencyValidator,
+    WPFunctions $wp
   ) {
     parent::__construct($entityManager);
     $this->dynamicSegmentsFilter = $dynamicSegmentsFilter;
@@ -93,6 +98,7 @@ class SubscriberListingRepository extends ListingRepository {
     $this->segmentSubscribersRepository = $segmentSubscribersRepository;
     $this->subscribersCountsController = $subscribersCountsController;
     $this->segmentDependencyValidator = $segmentDependencyValidator;
+    $this->wp = $wp;
   }
 
   public function getData(ListingDefinition $definition): array {
@@ -1691,7 +1697,7 @@ class SubscriberListingRepository extends ListingRepository {
     $list = [];
     foreach ($labels as $status => $label) {
       $list[] = [
-        'label' => sprintf('%s (%s)', $label, number_format((float)($stats[$status] ?? 0))),
+        'label' => sprintf('%s (%s)', $label, $this->wp->numberFormatI18n((float)($stats[$status] ?? 0))),
         'value' => $status,
       ];
     }
@@ -1733,7 +1739,7 @@ class SubscriberListingRepository extends ListingRepository {
     $subscribersWithoutSegmentLabel = sprintf(
       // translators: %s is the number of subscribers without a list.
       __('Subscribers without a list (%s)', 'mailpoet'),
-      number_format((float)$subscribersWithoutSegmentCount)
+      $this->wp->numberFormatI18n((float)$subscribersWithoutSegmentCount)
     );
 
     $queryBuilder = clone $this->queryBuilder;
@@ -1765,7 +1771,7 @@ class SubscriberListingRepository extends ListingRepository {
         continue;
       }
       $segmentList[] = [
-        'label' => sprintf('%s (%s)', $segment->getName(), number_format($subscribersCount)),
+        'label' => sprintf('%s (%s)', $segment->getName(), $this->wp->numberFormatI18n($subscribersCount)),
         'value' => $segment->getId(),
       ];
     }
@@ -1796,7 +1802,7 @@ class SubscriberListingRepository extends ListingRepository {
     $tagsList = [];
     foreach ($tagsStatistics as $tagStatistics) {
       $tagsList[] = [
-        'label' => sprintf('%s (%s)', $tagStatistics['name'], number_format((float)$tagStatistics['subscribersCount'])),
+        'label' => sprintf('%s (%s)', $tagStatistics['name'], $this->wp->numberFormatI18n((float)$tagStatistics['subscribersCount'])),
         'value' => $tagStatistics['id'],
       ];
     }
