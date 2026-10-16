@@ -324,6 +324,27 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     verify($results[1]->getId())->equals($secondVisible->getId());
   }
 
+  public function testFindLatestSentStandardReturnsNewestSentCampaignsFirst(): void {
+    $this->createSentStandardNewsletter('Older', '2026-01-01 10:00:00');
+    $newest = $this->createSentStandardNewsletter('Newest', '2026-03-01 10:00:00');
+    $middle = $this->createSentStandardNewsletter('Middle', '2026-02-01 10:00:00');
+    (new NewsletterFactory())->withSubject('Draft')->withDraftStatus()->create();
+    (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
+      ->withSentStatus()
+      ->withSubject('Notification history')
+      ->create();
+    $deleted = $this->createSentStandardNewsletter('Trashed', '2026-04-01 10:00:00');
+    $deleted->setDeletedAt(new Carbon());
+    $this->entityManager->flush();
+
+    $resultIds = array_map(function(NewsletterEntity $newsletter): ?int {
+      return $newsletter->getId();
+    }, $this->repository->findLatestSentStandard(2));
+
+    verify($resultIds)->equals([$newest->getId(), $middle->getId()]);
+  }
+
   public function testFindStuckPostNotificationParentsReturnsOneRowPerParent() {
     $parentPaused = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
     // Multiple stuck histories under the same parent should collapse to one row
@@ -439,6 +460,16 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     }
 
     return [$newsletters, $scheduledTasks];
+  }
+
+  private function createSentStandardNewsletter(string $subject, string $sentAt): NewsletterEntity {
+    $newsletter = (new NewsletterFactory())
+      ->withSubject($subject)
+      ->withSentStatus()
+      ->create();
+    $newsletter->setSentAt(new Carbon($sentAt));
+    $this->entityManager->flush();
+    return $newsletter;
   }
 
   private function createQueueWithTaskAndSegmentAndSubscribers(NewsletterEntity $newsletter, $status = ScheduledTaskEntity::STATUS_SCHEDULED): SendingQueueEntity {
