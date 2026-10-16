@@ -1,3 +1,6 @@
+@use '../../settings/editor' as *;
+@use '../../settings/grid' as *;
+
 .mailpoet_divider_block {
   cursor: all-scroll;
   padding: 0;

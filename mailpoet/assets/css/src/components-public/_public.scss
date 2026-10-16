@@ -1,4 +1,6 @@
 @use 'sass:math';
+@use '../mixins/breakpoints' as *;
+@use '../settings/colors' as *;
 
 $form-break-small-width: 500px;
 $form-container-break-small-width: 400px;

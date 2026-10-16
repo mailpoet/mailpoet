@@ -1,28 +1,22 @@
 // dependencies
 
-@import '../../../node_modules/react-dates/lib/css/_datepicker';
-
-// settings & mixins
-
-@import 'settings/breakpoints';
-@import 'settings/colors';
-@import 'mixins/breakpoints';
+@use '../../../node_modules/react-dates/lib/css/_datepicker' as react-dates;
 
 // automation editor styles
 
-@import './components-automation/badges';
-@import './components-automation/statistics';
-@import './components-automation-editor/editor';
+@use './components-automation/badges' as *;
+@use './components-automation/statistics' as *;
+@use './components-automation-editor/editor' as *;
 
 // automation integration styles
 
-@import './components-automation-integrations/core';
-@import './components-automation-integrations/mailpoet';
-@import './components-automation-integrations/woocommerce';
+@use './components-automation-integrations/core' as *;
+@use './components-automation-integrations/mailpoet' as *;
+@use './components-automation-integrations/woocommerce' as *;
 
 // styles
 
-@import './components-automation-analytics/header';
-@import './components-automation-analytics/overview';
-@import './components-automation-analytics/table';
-@import './components-automation-analytics/tabs';
+@use './components-automation-analytics/header' as *;
+@use './components-automation-analytics/overview' as *;
+@use './components-automation-analytics/table' as *;
+@use './components-automation-analytics/tabs' as *;

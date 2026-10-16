@@ -1,3 +1,7 @@
+@use '../mixins/breakpoints' as *;
+@use '../settings/grid' as *;
+@use '../settings/typography' as *;
+
 .mailpoet-template-iframe {
   left: 0;
   max-width: $grid-editor-width;

@@ -1,3 +1,5 @@
+@use '../mixins/breakpoints' as *;
+
 /*
 Based on /wp-admin/css/about.css of WP 4.7.
 This is to make MailPoet pages independent of the WordPress

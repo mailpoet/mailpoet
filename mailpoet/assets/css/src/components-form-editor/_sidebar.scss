@@ -1,3 +1,7 @@
+@use '../settings/colors' as *;
+@use '../settings/form-editor' as *;
+@use '../settings/grid' as *;
+
 .components-panel {
   .select2-container {
     width: 100% !important;

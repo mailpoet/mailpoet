@@ -1,3 +1,7 @@
+@use '../../mixins/animations' as *;
+@use '../../settings/colors' as *;
+@use '../../settings/editor' as *;
+
 .mailpoet_tools {
   bottom: 100%;
   left: 50%;

@@ -1,3 +1,6 @@
+@use '../../settings/colors' as *;
+@use '../../settings/editor' as *;
+
 /* Sidepanel */
 .mailpoet_editor_settings {
   color: $editor-sidebar-color;

@@ -1,3 +1,5 @@
+@use '../settings/colors' as *;
+
 .mailpoet-automation-editor-chip-gray {
   background-color: $color-chip-gray-bg !important;
   color: $color-chip-gray-text;

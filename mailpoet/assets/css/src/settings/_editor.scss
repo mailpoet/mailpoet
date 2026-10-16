@@ -1,4 +1,7 @@
 @use 'sass:math';
+@use 'sass:color';
+@use 'colors' as *;
+@use 'grid' as *;
 
 $editor-line-height: 1.6em;
 
@@ -43,7 +46,13 @@ $editor-tool-social-hover: #bbb;
 $editor-tool-social-width: 16px;
 
 $editor-widget-icon-color-hover: $color-primary;
-$editor-widget-icon-color: darken($color-primary-background, 31.5%);
+$editor-widget-icon-color: color.adjust(
+  $color-primary-background,
+  $lightness: -31.5%
+);
 $editor-widget-icon-size: 30px;
-$editor-widget-shadow-color: darken($color-primary-background, 13%);
+$editor-widget-shadow-color: color.adjust(
+  $color-primary-background,
+  $lightness: -13%
+);
 $editor-widget-size: 70px;

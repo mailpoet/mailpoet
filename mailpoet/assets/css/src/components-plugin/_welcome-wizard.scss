@@ -1,3 +1,8 @@
+@use '../mixins/breakpoints' as *;
+@use '../settings/colors' as *;
+@use '../settings/grid' as *;
+@use '../settings/typography' as *;
+
 .admin_page_mailpoet-welcome-wizard,
 .admin_page_mailpoet-woocommerce-setup {
   background: #fff;

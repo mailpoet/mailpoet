@@ -1,4 +1,9 @@
-@import '../../../../node_modules/react-datepicker/dist/react-datepicker';
+@use '../settings/colors' as *;
+@use '../settings/grid' as *;
+@use '../settings/typography' as *;
+
+@use '../../../../node_modules/react-datepicker/dist/react-datepicker' as
+  react-datepicker;
 
 .mailpoet-datetime-container {
   display: flex;

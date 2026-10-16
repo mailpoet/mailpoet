@@ -1,4 +1,9 @@
 @use 'sass:math';
+@use '../mixins/breakpoints' as *;
+@use '../settings/colors' as *;
+@use '../settings/grid' as *;
+@use '../settings/modal' as *;
+@use '../settings/typography' as *;
 
 #mailpoet-modal {
   display: block !important;

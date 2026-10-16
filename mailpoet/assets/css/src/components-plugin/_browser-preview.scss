@@ -1,4 +1,6 @@
 @use 'sass:math';
+@use '../settings/colors' as *;
+@use '../settings/grid' as *;
 
 .mailpoet_browser_preview_toggle {
   flex: 0 1 auto;

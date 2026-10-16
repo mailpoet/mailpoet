@@ -1,3 +1,5 @@
+@use '../settings/grid' as *;
+
 .mailpoet-templates {
   display: grid;
   grid-gap: $grid-gap;

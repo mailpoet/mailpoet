@@ -1,3 +1,8 @@
+@use '../mixins/breakpoints' as *;
+@use '../settings/colors' as *;
+@use '../settings/form' as *;
+@use '../settings/grid' as *;
+
 .mailpoet-settings-grid {
   display: grid;
   grid-template-columns: 30em 1fr;

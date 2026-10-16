@@ -1,3 +1,5 @@
+@use '../mixins/breakpoints' as *;
+
 // Fix for settings toolbar placement in header
 .edit-post-header {
   flex-direction: row-reverse;

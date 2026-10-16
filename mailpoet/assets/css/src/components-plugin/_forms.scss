@@ -1,3 +1,9 @@
+@use '../mixins/breakpoints' as *;
+@use '../settings/colors' as *;
+@use '../settings/grid' as *;
+@use '../settings/progress' as *;
+@use '../settings/typography' as *;
+
 .mailpoet_form {
   margin: 0 0 20px;
 }

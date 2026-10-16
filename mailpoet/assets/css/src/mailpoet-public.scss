@@ -1,22 +1,9 @@
-// Settings
-// Global variables, config switches. Not producing any CSS.
-
-@import 'settings/breakpoints';
-@import 'settings/grid';
-@import 'settings/colors';
-
-// Tools
-// Default mixins and functions. Not producing any CSS.
-
-@import 'mixins/breakpoints';
-@import 'mixins/clearfix';
-
 // Components
 // Actual UI components.
 
-@import 'components-public/resets';
-@import 'components/parsley';
-@import 'components-public/public';
-@import 'components-public/animation';
-@import 'components-public/form_colors';
-@import 'components-public/captcha';
+@use 'components-public/resets' as *;
+@use 'components/parsley' as *;
+@use 'components-public/public' as *;
+@use 'components-public/animation' as *;
+@use 'components-public/form_colors' as *;
+@use 'components-public/captcha' as *;

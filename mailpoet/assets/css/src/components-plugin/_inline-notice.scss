@@ -1,4 +1,6 @@
-@import '../components-automation/colors';
+@use '../settings/grid' as *;
+
+@use '../components-automation/colors' as *;
 
 .mailpoet-inline-notice {
   color: $color-gutenberg-grey-900;

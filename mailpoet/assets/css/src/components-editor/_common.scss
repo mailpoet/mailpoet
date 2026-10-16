@@ -1,3 +1,6 @@
+@use '../settings/colors' as *;
+@use '../settings/typography' as *;
+
 a {
   color: $color-primary-button;
   text-decoration: none;

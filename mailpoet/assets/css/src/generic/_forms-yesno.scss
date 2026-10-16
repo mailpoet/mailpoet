@@ -1,3 +1,6 @@
+@use '../settings/colors' as *;
+@use '../settings/form' as *;
+
 .mailpoet-form-yesno {
   background: $color-input-background;
   border: 1px solid $color-input-border;
