@@ -1206,6 +1206,9 @@ class AcceptanceTester extends \Codeception\Actor {
       'return Array.from(document.querySelectorAll(".dataviews-filters__summary-chip")).some(function (chip) { return chip.textContent.indexOf(' . json_encode($text) . ') !== -1; });',
       10
     );
+    // The chip is drawn from the URL before the first response, while the empty
+    // state is already showing, so also wait for the listing to settle.
+    $this->waitForListingItemsToLoad();
   }
 
   /**
