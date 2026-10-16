@@ -43,6 +43,11 @@
   padding: 8px;
 }
 
+// The active filter chips would otherwise touch the table header below them.
+.mailpoet-dataviews__filters {
+  padding: 0 8px 8px;
+}
+
 // Right-aligned group inside a listing toolbar. Holds the DataViews filters
 // toggle and view-config (preferences) buttons so they sit at the toolbar's
 // right edge while search and legacy filters stay on the left.

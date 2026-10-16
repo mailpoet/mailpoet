@@ -3,6 +3,7 @@ import {
   dateRangeFromFilter,
   hasOnlyDigits,
   isStrictDateString,
+  shiftYmd,
 } from 'common/dataviews';
 
 export const STATUS_FIELD = 'status';
@@ -30,11 +31,12 @@ const STATUSES_BY_TYPE: Record<string, string[]> = {
   re_engagement: ['active', 'draft'],
 };
 
-const RESULT_VALUES = ['sent', 'failed', 'unprocessed'];
+export const RESULT_VALUES = ['sent', 'failed', 'unprocessed'];
 
-// The status filter exists only on the All and Trash tabs.
-export function getAllowedStatuses(type: string, group: string): string[] {
-  if (group !== 'all' && group !== 'trash') return [];
+// Most values a status or list filter keeps.
+const MAX_SET_VALUES = 100;
+
+export function getAllowedStatuses(type: string): string[] {
   return STATUSES_BY_TYPE[type] ?? [];
 }
 
@@ -49,7 +51,9 @@ export function toStrings(value: unknown): string[] {
 }
 
 function pick(values: string[], allowed: string[]): string[] | undefined {
-  const kept = values.filter((value) => allowed.includes(value));
+  const kept = values
+    .filter((value) => allowed.includes(value))
+    .slice(0, MAX_SET_VALUES);
   return kept.length > 0 ? kept : undefined;
 }
 
@@ -78,7 +82,9 @@ export function viewFiltersToRequestFilter(
       const status = pick(toStrings(filter.value), allowedStatuses);
       if (status) result.status = status;
     } else if (filter.field === SEGMENTS_FIELD) {
-      const ids = toStrings(filter.value).filter(isDigits);
+      const ids = toStrings(filter.value)
+        .filter(isDigits)
+        .slice(0, MAX_SET_VALUES);
       if (ids.length > 0) {
         result.segment_ids = ids;
         result.segment_operator =
@@ -98,9 +104,22 @@ function datesToFilter(from?: string, to?: string): Filter | null {
       ? { field: SENT_AT_FIELD, operator: 'on', value: from }
       : { field: SENT_AT_FIELD, operator: 'between', value: [from, to] };
   }
-  // Stored bounds are inclusive days, so seed the inclusive operators.
-  if (from) return { field: SENT_AT_FIELD, operator: 'afterInc', value: from };
-  if (to) return { field: SENT_AT_FIELD, operator: 'beforeInc', value: to };
+  // The date field offers only the exclusive `after`/`before`, so undo the
+  // one-day shift that `dateRangeFromFilter` applies to them.
+  if (from) {
+    return {
+      field: SENT_AT_FIELD,
+      operator: 'after',
+      value: shiftYmd(from, -1),
+    };
+  }
+  if (to) {
+    return {
+      field: SENT_AT_FIELD,
+      operator: 'before',
+      value: shiftYmd(to, 1),
+    };
+  }
   return null;
 }
 
@@ -140,7 +159,7 @@ export function hashFilterToRequestFilter(
   const status = pick(splitList(hash.status), allowedStatuses);
   if (status) result.status = status;
   // A legacy `segment=3` is a one-item list and means "is any".
-  const ids = splitList(hash.segment).filter(isDigits);
+  const ids = splitList(hash.segment).filter(isDigits).slice(0, MAX_SET_VALUES);
   if (ids.length > 0) {
     result.segment_ids = ids;
     result.segment_operator = hash.segment_op === 'isNone' ? 'isNone' : 'isAny';
@@ -182,9 +201,7 @@ export function sendingStatusRequestFilterToViewFilters(
 
 export function sendingStatusHashFilterToRequestFilter(
   hash: Record<string, string>,
-  allowResult: boolean,
 ): SendingStatusRequestFilter {
-  if (!allowResult) return {};
   const result = pick(splitList(hash.result), RESULT_VALUES);
   return result ? { result } : {};
 }
@@ -197,32 +214,10 @@ export function sendingStatusRequestFilterToHashFilter(
     : {};
 }
 
-// Old links may sort by columns the tab no longer shows but the endpoint accepts.
-const ENDPOINT_SORT_FIELDS = [
-  'id',
-  'name',
-  'subject',
-  'status',
-  'sent_at',
-  'updated_at',
-  'created_at',
-];
-
-export function getAllowedSortIds(sortableFieldIds: string[]): string[] {
-  return [...new Set([...sortableFieldIds, ...ENDPOINT_SORT_FIELDS])];
-}
-
 export function sanitizeSort(
   sort: SortValue | undefined,
   sortableFieldIds: string[],
   defaultSort: SortValue,
 ): SortValue {
   return sort && sortableFieldIds.includes(sort.field) ? sort : defaultSort;
-}
-
-export function withoutFields(
-  filters: Filter[] | undefined,
-  fieldIds: string[],
-): Filter[] {
-  return (filters ?? []).filter((filter) => !fieldIds.includes(filter.field));
 }

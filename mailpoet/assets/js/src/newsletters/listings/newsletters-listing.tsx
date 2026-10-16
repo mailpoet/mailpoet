@@ -11,6 +11,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
   type SetStateAction,
@@ -44,21 +45,15 @@ import {
 import { checkCronStatus, checkMailerStatus } from './utils.jsx';
 import { buildHash, parseHash } from './hash-state';
 import {
-  STATUS_FIELD,
   getAllowedStatuses,
   hashFilterToRequestFilter,
   requestFilterToHashFilter,
   requestFilterToViewFilters,
-  getAllowedSortIds,
   sanitizeSort,
   viewFiltersToRequestFilter,
-  withoutFields,
 } from './filters';
-import {
-  applyFilterConfig,
-  buildSegmentElements,
-  getSegmentFilterIds,
-} from './listing-fields';
+import { pruneUnknownIds, shouldPruneAfterResponse } from './filter-sync';
+import { applyFilterConfig, buildSegmentElements } from './listing-fields';
 
 const listingPerPage = Number(window.mailpoet_listing_per_page);
 
@@ -68,27 +63,7 @@ function formatCount(count: number): string {
   return count.toLocaleString();
 }
 
-const DEFAULT_GROUPS = ['all', 'trash'] as const;
-export const STANDARD_NEWSLETTER_GROUPS = [
-  'all',
-  'draft',
-  'scheduled',
-  'sending',
-  'sent',
-  'trash',
-] as const;
-export const ACTIVATION_NEWSLETTER_GROUPS = [
-  'all',
-  'active',
-  'draft',
-  'trash',
-] as const;
-export const NOTIFICATION_HISTORY_GROUPS = [
-  'all',
-  'sending',
-  'sent',
-  'trash',
-] as const;
+const SUPPORTED_GROUPS = ['all', 'trash'];
 
 export type NewsletterMailerLog = {
   status: string;
@@ -119,7 +94,6 @@ export type NewslettersListingProps = {
   defaultSort: { field: string; direction: 'asc' | 'desc' };
   emptyState?: (count: number) => ReactNode;
   supportsExportStats?: boolean;
-  supportedGroups?: readonly string[];
   // Optional custom row id resolver (defaults to item.id).
   getItemId?: (item: NewsletterListingItem) => string;
   // Called whenever the listing data reloads, so callers can reconcile
@@ -223,15 +197,25 @@ export function NewslettersListing({
   defaultSort,
   emptyState,
   supportsExportStats = false,
-  supportedGroups = DEFAULT_GROUPS,
   getItemId,
   onItemsLoaded,
 }: NewslettersListingProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const allowedStatuses = useMemo(() => getAllowedStatuses(type), [type]);
+  const legacyGroupFilter = useMemo(
+    () => ({ key: 'status', values: allowedStatuses }),
+    [allowedStatuses],
+  );
   const hashState = useMemo(
-    () => parseHash(window.location.hash, baseUrl, [...supportedGroups]),
-    [baseUrl, supportedGroups],
+    () =>
+      parseHash(
+        window.location.hash,
+        baseUrl,
+        SUPPORTED_GROUPS,
+        legacyGroupFilter,
+      ),
+    [baseUrl, legacyGroupFilter],
   );
   const [group, setGroup] = useState<Group>(hashState.group ?? 'all');
   const [selection, setSelection] = useState<string[]>([]);
@@ -278,14 +262,11 @@ export function NewslettersListing({
             preferredView.sort?.direction ??
             defaultSort.direction,
         },
-        getAllowedSortIds(sortableFieldIds),
+        sortableFieldIds,
         defaultSort,
       ),
       filters: requestFilterToViewFilters(
-        hashFilterToRequestFilter(
-          hashState.filter ?? {},
-          getAllowedStatuses(type, hashState.group ?? 'all'),
-        ),
+        hashFilterToRequestFilter(hashState.filter ?? {}, allowedStatuses),
       ),
     };
   });
@@ -305,8 +286,8 @@ export function NewslettersListing({
 
   const toRequestFilter = useCallback(
     (viewFilters: View['filters']) =>
-      viewFiltersToRequestFilter(viewFilters, getAllowedStatuses(type, group)),
-    [group, type],
+      viewFiltersToRequestFilter(viewFilters, allowedStatuses),
+    [allowedStatuses],
   );
 
   const {
@@ -317,6 +298,7 @@ export function NewslettersListing({
     meta,
     filters,
     groups,
+    responseVersion,
     isLoading,
     error: loadError,
     clearError: clearLoadError,
@@ -332,6 +314,12 @@ export function NewslettersListing({
     () => toRequestFilter(view.filters),
     [toRequestFilter, view.filters],
   );
+
+  const pruneArmedAfterRef = useRef(0);
+  const responseVersionRef = useRef(responseVersion);
+  responseVersionRef.current = responseVersion;
+  const viewRef = useRef(view);
+  viewRef.current = view;
 
   // Mailer + cron envelope info is dispatched through `checkMailerStatus` /
   // `checkCronStatus` every time the listing reloads. The REST endpoint
@@ -396,13 +384,16 @@ export function NewslettersListing({
 
   useEffect(() => {
     const applyHash = (): void => {
-      const next = parseHash(window.location.hash, baseUrl, [
-        ...supportedGroups,
-      ]);
-      const nextGroup = next.group ?? 'all';
-      setGroup(nextGroup);
+      const next = parseHash(
+        window.location.hash,
+        baseUrl,
+        SUPPORTED_GROUPS,
+        legacyGroupFilter,
+      );
+      setGroup(next.group ?? 'all');
       setSelection([]);
       clearLoadError();
+      pruneArmedAfterRef.current = responseVersionRef.current;
       // Fill hash segments the URL omits from the preference-merged defaults
       // (not the in-memory view) so back/forward resolves a URL exactly like
       // reopening it.
@@ -421,29 +412,26 @@ export function NewslettersListing({
               preferredView.sort?.direction ??
               defaultSort.direction,
           },
-          getAllowedSortIds(sortableFieldIds),
+          sortableFieldIds,
           { field: defaultSort.field, direction: defaultSort.direction },
         ),
         filters: requestFilterToViewFilters(
-          hashFilterToRequestFilter(
-            next.filter ?? {},
-            getAllowedStatuses(type, nextGroup),
-          ),
+          hashFilterToRequestFilter(next.filter ?? {}, allowedStatuses),
         ),
       }));
     };
     window.addEventListener('hashchange', applyHash);
     return () => window.removeEventListener('hashchange', applyHash);
   }, [
+    allowedStatuses,
     baseUrl,
     clearLoadError,
     defaultSort.direction,
     defaultSort.field,
     getPreferredView,
+    legacyGroupFilter,
     setView,
     sortableFieldIds,
-    supportedGroups,
-    type,
   ]);
 
   const listingParams = useMemo<NewslettersBulkScope>(
@@ -536,31 +524,20 @@ export function NewslettersListing({
       setGroup(nextGroup);
       setSelection([]);
       clearLoadError();
-      // The status filter exists only on some tabs; drop it in the same update.
-      const keepStatus = getAllowedStatuses(type, nextGroup).length > 0;
-      setView((currentView) => ({
-        ...currentView,
-        page: 1,
-        filters: keepStatus
-          ? currentView.filters
-          : withoutFields(currentView.filters, [STATUS_FIELD]),
-      }));
+      setView((currentView) => ({ ...currentView, page: 1 }));
     },
-    [clearLoadError, group, setView, type],
+    [clearLoadError, group, setView],
   );
 
   const groupCounts = useMemo(() => {
     const counts: Record<string, number | null> = { all: null, trash: null };
-    supportedGroups.forEach((g) => {
-      counts[g] = null;
-    });
     (groups ?? []).forEach((entry: ListingGroup) => {
       if (entry.name in counts) {
         counts[entry.name] = entry.count;
       }
     });
     return counts;
-  }, [groups, supportedGroups]);
+  }, [groups]);
 
   // If the user is in trash with no items and no filters/search active, bounce
   // them back to All.
@@ -684,21 +661,55 @@ export function NewslettersListing({
   // Memoise on the option content so a reload that returns the same lists
   // does not hand DataViews a new field set.
   const segmentOptions = filters.segment;
-  const segmentElementsKey = JSON.stringify([
-    segmentOptions ?? [],
-    getSegmentFilterIds(view.filters),
-  ]);
+  const segmentElementsKey = JSON.stringify(segmentOptions ?? []);
   const segmentElements = useMemo(
-    () =>
-      buildSegmentElements(segmentOptions, getSegmentFilterIds(view.filters)),
+    () => buildSegmentElements(segmentOptions),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [segmentElementsKey],
   );
-  const statusEnabled = getAllowedStatuses(type, group).length > 0;
+
+  // Status labels carry the global per-status counts from the latest response.
+  const [statusLabels, setStatusLabels] = useState<Record<string, string>>({});
+  useEffect(() => {
+    const next = (filters.status ?? []).reduce<Record<string, string>>(
+      (labels, option) =>
+        option.value
+          ? { ...labels, [String(option.value)]: option.label }
+          : labels,
+      {},
+    );
+    if (Object.keys(next).length === 0) return;
+    setStatusLabels((current) =>
+      JSON.stringify(current) === JSON.stringify(next) ? current : next,
+    );
+  }, [filters.status]);
+
   const listingFields = useMemo(
-    () => applyFilterConfig(fields, { segmentElements, statusEnabled }),
-    [fields, segmentElements, statusEnabled],
+    () => applyFilterConfig(fields, { segmentElements, statusLabels }),
+    [fields, segmentElements, statusLabels],
   );
+
+  // List ids from the URL that are no longer selectable (a deleted list) are
+  // dropped once a listing response has arrived, because the options are only
+  // known from it.
+  useEffect(() => {
+    if (
+      !shouldPruneAfterResponse(responseVersion, pruneArmedAfterRef.current)
+    ) {
+      return;
+    }
+    pruneArmedAfterRef.current = Infinity;
+    const pruned = pruneUnknownIds(toRequestFilter(viewRef.current.filters), {
+      segments: segmentElements.map((element) => element.value),
+    });
+    if (!pruned) return;
+    setSelection([]);
+    setView((currentView) => ({
+      ...currentView,
+      filters: requestFilterToViewFilters(pruned),
+      page: 1,
+    }));
+  }, [responseVersion, segmentElements, setView, toRequestFilter]);
 
   // The `all` group already aggregates every non-trash status, so summing all
   // groups would double-count. The listing is empty only when both `all` and
@@ -810,7 +821,7 @@ export function NewslettersListing({
               <DataViews.ViewConfig />
             </div>
           </div>
-          <DataViews.Filters />
+          <DataViews.Filters className="mailpoet-dataviews__filters" />
           <DataViews.Layout />
           <DataViews.Footer />
         </DataViews>

@@ -44,21 +44,30 @@ function safeDecode(value: string): string {
   }
 }
 
+// Old links put a status in the group (`group[sent]`); it now lives in a filter.
+export type LegacyGroupFilter = { key: string; values: readonly string[] };
+
 export function parseHash(
   hash: string,
   baseUrl: string,
   supportedGroups: string[],
+  legacy?: LegacyGroupFilter,
 ): RouteHashState {
   const prefix = `#/${baseUrl}`;
   if (!hash.startsWith(prefix)) return {};
   const tail = hash.slice(prefix.length).replace(/^\//, '');
-  return tail
+  let legacyValue: string | undefined;
+  const state = tail
     .split('/')
     .map((part) => (part.endsWith(']') ? part.slice(0, -1) : part).split('['))
     .reduce<RouteHashState>((params, [key, value]) => {
       if (!value) return params;
       if (key === 'group' && supportedGroups.includes(value)) {
         return { ...params, group: value };
+      }
+      if (key === 'group' && legacy?.values.includes(value)) {
+        legacyValue = value;
+        return params;
       }
       if ((key === 'page' || key === 'paged') && Number(value) > 0) {
         return { ...params, page: Number(value) };
@@ -83,6 +92,11 @@ export function parseHash(
       }
       return params;
     }, {});
+  // An explicit filter wins over the legacy group.
+  if (legacy && legacyValue && !state.filter?.[legacy.key]) {
+    return { ...state, filter: { ...state.filter, [legacy.key]: legacyValue } };
+  }
+  return state;
 }
 
 export function buildHash(
