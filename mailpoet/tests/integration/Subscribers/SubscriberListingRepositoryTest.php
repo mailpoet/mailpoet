@@ -1618,6 +1618,23 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify(count($segmentQueries))->equals(1);
   }
 
+  public function testNullSourceCountsAsUnknown() {
+    $imported = (new Subscriber())->withEmail('src2-imported@example.com')->withSource(Source::IMPORTED)->create();
+    $unknown = (new Subscriber())->withEmail('src2-unknown@example.com')->withSource(Source::UNKNOWN)->create();
+    $noSource = (new Subscriber())->withEmail('src2-null@example.com')->create();
+    $table = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement("UPDATE $table SET source = NULL WHERE id = " . (int)$noSource->getId());
+    $dynamic = $this->createEmailSegment('src2-');
+
+    foreach ([[], ['segment_in' => [$dynamic->getId()]]] as $scope) {
+      verify($this->getIds(['source_in' => [Source::UNKNOWN]] + $scope))->equals([$unknown->getId(), $noSource->getId()]);
+      verify($this->getIds(['source_in' => [Source::IMPORTED]] + $scope))->equals([$imported->getId()]);
+      verify($this->getIds(['source_in' => [Source::IMPORTED, Source::UNKNOWN]] + $scope))->equals([$imported->getId(), $unknown->getId(), $noSource->getId()]);
+      verify($this->getIds(['source_not_in' => [Source::IMPORTED]] + $scope))->equals([$unknown->getId(), $noSource->getId()]);
+      verify($this->getIds(['source_not_in' => [Source::UNKNOWN]] + $scope))->equals([$imported->getId()]);
+    }
+  }
+
   public function testSourceNotInKeepsSubscribersWithoutASource() {
     $imported = (new Subscriber())->withEmail('src-imported@example.com')->withSource(Source::IMPORTED)->create();
     $form = (new Subscriber())->withEmail('src-form@example.com')->withSource(Source::FORM)->create();
