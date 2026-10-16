@@ -154,13 +154,13 @@ describe('subscribers fields', () => {
     expect(source.elements?.[8].label).to.equal('Unknown');
   });
 
-  it('uses date fields with on / before / after / between', () => {
+  it('uses date fields that start on between, then on / before / after', () => {
     const fields = byId(true);
     ['last_subscribed_at', 'created_at'].forEach((id) => {
       expect(fields[id].type, id).to.equal('date');
       expect(fields[id].enableSorting, id).to.equal(true);
       expect(fields[id].filterBy, id).to.deep.equal({
-        operators: ['on', 'before', 'after', 'between'],
+        operators: ['between', 'on', 'before', 'after'],
       });
     });
   });

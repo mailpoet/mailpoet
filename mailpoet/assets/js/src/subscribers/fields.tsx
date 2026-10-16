@@ -22,8 +22,10 @@ export type SubscriberFieldOptions = {
 type FilterBy = Exclude<Field<Subscriber>['filterBy'], false | undefined>;
 
 const SET_OPERATORS: FilterBy = { operators: ['isAny', 'isNone'] };
+// DataViews opens a new filter on the first operator; `between` has range
+// presets (last 7 days, month to date…), unlike `on`, which picks a single day.
 const DATE_OPERATORS: FilterBy = {
-  operators: ['on', 'before', 'after', 'between'],
+  operators: ['between', 'on', 'before', 'after'],
 };
 
 // Mirrors SubscribersRepository::bulkDelete: subscribers linked to a WordPress
