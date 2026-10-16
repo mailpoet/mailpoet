@@ -102,6 +102,25 @@ class SendingStatusCest {
     $i->waitForText('Unprocessed (0)');
   }
 
+  public function filterToggleShowsAndHidesTheFilterRow(\AcceptanceTester $i) {
+    $i->wantTo('Hide and show the active filters with the filter toggle button');
+    [$newsletter, $lucky, $unlucky, $taskId] = $this->createSentNewsletter();
+    $i->login();
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/sending-status/' . $newsletter->getId() . '/filter[result=failed]');
+    $i->waitForElement($this->rowSelector($taskId, $unlucky));
+    $i->waitForElement($this->filterChip('Sending status'));
+    $i->waitForElement('.dataviews-filters-toggle__count');
+
+    $i->wantTo('Hide the filter row with the toggle');
+    $i->click('.dataviews-filters__visibility-toggle');
+    $i->waitForElementNotVisible('.dataviews-filters__summary-chip');
+
+    $i->wantTo('Show the filter row again with the toggle');
+    $i->click('.dataviews-filters__visibility-toggle');
+    $i->waitForElementVisible('.dataviews-filters__summary-chip');
+    $i->waitForElement($this->filterChip('Sending status'));
+  }
+
   private function createSentNewsletter(): array {
     $lucky = (new Subscriber)->withFirstName('Lucky')->withLastName('Luke')->create();
     $unlucky = (new Subscriber)->withFirstName('Unlucky')->withLastName('John')->create();

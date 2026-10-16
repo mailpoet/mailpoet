@@ -12,14 +12,15 @@ export function shouldPruneAfterResponse(
 
 // Drops list ids that are no longer selectable (for example a deleted list)
 // and returns the pruned filter, or `null` when nothing changed. Nothing is
-// pruned until the option list has loaded (non-empty).
+// pruned while the option list is missing; a loaded empty list means no list
+// exists, so every list id is dropped.
 export function pruneUnknownIds(
   filter: NewslettersRequestFilter,
   known: { segments?: string[] },
 ): NewslettersRequestFilter | null {
   const ids = filter.segment_ids;
   const options = known.segments;
-  if (!ids || !options || options.length === 0) return null;
+  if (!ids || !options) return null;
   const kept = ids.filter((id) => options.includes(id));
   if (kept.length === ids.length) return null;
   if (kept.length > 0) return { ...filter, segment_ids: kept };

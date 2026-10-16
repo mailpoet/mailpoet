@@ -272,6 +272,37 @@ class NewslettersListingCest {
     $i->dontSeeElement($this->filterChip('Lists'));
   }
 
+  public function filterToggleShowsAndHidesTheFilterRow(\AcceptanceTester $i) {
+    $i->wantTo('Hide and show the active filters with the filter toggle button');
+    $segment = (new Segment())->withName('Toggle list')->create();
+    (new Newsletter())->withSubject('Toggle in list')->withSentStatus()->withSegments([$segment])->create();
+    $i->login();
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/standard/filter[segment=' . $segment->getId() . ']');
+    $i->waitForText('Toggle in list');
+    $i->waitForElement($this->filterChip('Lists'));
+    $i->waitForElement('.dataviews-filters-toggle__count');
+
+    $i->wantTo('Hide the filter row with the toggle');
+    $i->click('.dataviews-filters__visibility-toggle');
+    $i->waitForElementNotVisible('.dataviews-filters__summary-chip');
+
+    $i->wantTo('Show the filter row again with the toggle');
+    $i->click('.dataviews-filters__visibility-toggle');
+    $i->waitForElementVisible('.dataviews-filters__summary-chip');
+    $i->waitForElement($this->filterChip('Lists'));
+  }
+
+  public function dropDeletedListFromDeepLinkWhenNoEmailHasList(\AcceptanceTester $i) {
+    $i->wantTo('Open a deep link with a deleted list when no email has a list');
+    $newsletter = (new Newsletter())->withSubject('No list email')->withSentStatus()->create();
+
+    $i->login();
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/standard/filter[segment=1000]');
+    $i->waitForElement('[data-automation-id="listing_item_' . $newsletter->getId() . '"]');
+    $i->waitForJS('return decodeURIComponent(window.location.hash).indexOf("segment") === -1;', 10);
+    $i->dontSeeElement($this->filterChip('Lists'));
+  }
+
   public function keepKnownListWhenDroppingDeletedOne(\AcceptanceTester $i) {
     $i->wantTo('Keep the existing list when a deep link also names a deleted one');
     $segment = (new Segment())->withName('Kept list')->create();
