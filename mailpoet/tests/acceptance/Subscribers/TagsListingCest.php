@@ -6,6 +6,30 @@ use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Test\DataFactories\Tag as TagFactory;
 
 class TagsListingCest {
+  public function filterToggleShowsAndHidesTheFilterRow(\AcceptanceTester $i) {
+    $i->wantTo('Hide and show the active filters with the filter toggle button');
+
+    $name = 'ToggleTag-' . uniqid();
+    (new TagFactory())->withName($name)->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('tags');
+    $i->waitForText($name);
+
+    $i->click(['xpath' => '//button[@aria-label="Add filter"]']);
+    $i->click(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Created"]']);
+    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+    $i->waitForElementVisible('.dataviews-filters__summary-chip');
+
+    $i->wantTo('Hide the filter row with the toggle');
+    $i->click('.dataviews-filters__visibility-toggle');
+    $i->waitForElementNotVisible('.dataviews-filters__summary-chip');
+
+    $i->wantTo('Show the filter row again with the toggle');
+    $i->click('.dataviews-filters__visibility-toggle');
+    $i->waitForElementVisible('.dataviews-filters__summary-chip');
+  }
+
   public function tagsNativeFiltersAndSorting(\AcceptanceTester $i) {
     $i->wantTo('Filter and sort the tags listing with native DataViews controls');
 

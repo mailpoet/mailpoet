@@ -13,6 +13,7 @@ import {
   useDataViewsQuery,
   filterToExtraParams,
   type ListingQueryParams,
+  useShowFiltersWhenActive,
 } from 'common/dataviews';
 import { viewFiltersToRequestFilter } from './filters';
 import { Notices } from './list/notices';
@@ -297,6 +298,8 @@ export function DynamicSegmentList(): JSX.Element {
       return filterParams;
     },
   });
+  const dataViewsRef = useRef<HTMLDivElement>(null);
+  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
 
   useEffect(() => {
     latestViewRef.current = view;
@@ -595,6 +598,7 @@ export function DynamicSegmentList(): JSX.Element {
       >
         {() => (
           <div
+            ref={dataViewsRef}
             className="mailpoet-dataviews mailpoet-segments-dataviews mailpoet-segments-listing"
             data-automation-id="dynamic_segments_listing"
           >
@@ -619,7 +623,7 @@ export function DynamicSegmentList(): JSX.Element {
                   <DataViews.ViewConfig />
                 </div>
               </div>
-              <DataViews.Filters className="mailpoet-dataviews__filters" />
+              <DataViews.FiltersToggled className="mailpoet-dataviews__filters" />
               <DataViews.Layout />
               <DataViews.Footer />
             </DataViews>

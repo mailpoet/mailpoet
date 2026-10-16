@@ -11,6 +11,7 @@ export {
   persistDataViewsPreference,
   usePersistedDataViewsPreference,
 } from './preferences';
+export { useShowFiltersWhenActive } from './use-show-filters-when-active';
 export {
   buildRestApiPath,
   configureRestApi,
