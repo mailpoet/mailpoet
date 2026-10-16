@@ -328,11 +328,11 @@ class NewslettersListingCest {
     $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/standard/filter[sent_to=2026-01-14]');
     $i->waitForElement('[data-automation-id="listing_item_' . $early->getId() . '"]');
     $i->dontSeeElement('[data-automation-id="listing_item_' . $edge->getId() . '"]');
-    $i->waitForElement(['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip-container")][contains(., "Sent on")][contains(., "is before:")]']);
+    $i->waitForElement(['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip-container")][contains(., "Date sent")][contains(., "is before:")]']);
 
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="listing_item_' . $early->getId() . '"]');
-    $i->waitForElement(['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip-container")][contains(., "Sent on")][contains(., "is before:")]']);
+    $i->waitForElement(['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip-container")][contains(., "Date sent")][contains(., "is before:")]']);
     $i->waitForHashFilterValue('sent_to', '2026-01-14');
     $i->dontSeeElement('[data-automation-id="listing_item_' . $edge->getId() . '"]');
   }
@@ -347,7 +347,7 @@ class NewslettersListingCest {
     $addFilter = ['xpath' => '//button[@aria-label="Add filter" or normalize-space(.)="Add filter"]'];
     $i->waitForElementClickable($addFilter);
     $i->click($addFilter);
-    $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "Sent on")]']);
+    $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "Date sent")]']);
     $i->waitForJS('var select = document.querySelector(".dataviews-filters__summary-operators-filter-select select"); return !!select && select.value === "between";', 10);
   }
 
