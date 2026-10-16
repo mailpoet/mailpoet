@@ -330,7 +330,7 @@ export function TagsPage() {
             </div>
           </div>
           <div className="mailpoet-dataviews__filters">
-            <DataViews.Filters />
+            <DataViews.Filters className="mailpoet-dataviews__filters" />
           </div>
           <DataViews.Layout />
           <DataViews.Footer />

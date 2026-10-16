@@ -1636,7 +1636,7 @@ function SubscriberList() {
               <DataViews.ViewConfig />
             </div>
           </div>
-          <DataViews.Filters />
+          <DataViews.Filters className="mailpoet-dataviews__filters" />
           <DataViews.Layout />
           <DataViews.Footer />
         </DataViews>
