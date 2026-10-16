@@ -1294,18 +1294,19 @@ class SubscriberListingRepository extends ListingRepository {
           ->setParameter($key, (float)$filters[$key]);
       }
     }
-    // Same whole-day bounds as ListingDateRangeFilterTrait.
+    // The days are site-local; the columns are UTC. An invalid day is skipped, as in ListingDateRangeFilterTrait.
     $dates = [
-      ['created_from', 's.created_at', '>=', ' 00:00:00'],
-      ['created_to', 's.created_at', '<=', ' 23:59:59'],
-      ['subscribed_from', 's.last_subscribed_at', '>=', ' 00:00:00'],
-      ['subscribed_to', 's.last_subscribed_at', '<=', ' 23:59:59'],
+      ['created_from', 's.created_at', '>=', 0],
+      ['created_to', 's.created_at', '<', 1],
+      ['subscribed_from', 's.last_subscribed_at', '>=', 0],
+      ['subscribed_to', 's.last_subscribed_at', '<', 1],
     ];
-    foreach ($dates as [$key, $column, $operator, $time]) {
+    foreach ($dates as [$key, $column, $operator, $addDays]) {
       $value = $filters[$key] ?? null;
-      if (is_string($value) && $value !== '') {
+      $bound = is_string($value) && $value !== '' ? $this->getSiteDayStartInUtc($value, $addDays) : null;
+      if ($bound !== null) {
         $query->andWhere("$column $operator :date_$key")
-          ->setParameter("date_$key", $value . $time, ParameterType::STRING);
+          ->setParameter("date_$key", $bound, ParameterType::STRING);
       }
     }
   }
