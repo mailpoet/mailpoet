@@ -54,6 +54,19 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     'filter' => [],
   ];
 
+  /** @var array<string, mixed>|null */
+  private $originalTimezoneOptions;
+
+  public function _after() {
+    if ($this->originalTimezoneOptions !== null) {
+      foreach ($this->originalTimezoneOptions as $option => $value) {
+        update_option($option, $value);
+      }
+      $this->originalTimezoneOptions = null;
+    }
+    parent::_after();
+  }
+
   public function _before() {
     $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->repository = new SubscriberListingRepository(
@@ -2130,6 +2143,9 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
   }
 
   public function testScoreAndDateFiltersGiveTheSameResultOnTheListAndTheDynamicSegmentPath() {
+    // A non-UTC site: UTC and site-local days select different rows near midnight.
+    $this->originalTimezoneOptions = ['timezone_string' => get_option('timezone_string'), 'gmt_offset' => get_option('gmt_offset')];
+    update_option('timezone_string', 'Europe/Prague');
     $list = (new SegmentFactory())->withName('Parity List')->create();
     $dynamic = $this->createEmailSegment('par-');
     $make = function(string $name, $score, ?string $created, ?string $subscribed) use ($list) {
@@ -2173,6 +2189,10 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     }
     verify(count($this->getIds(['segment_in' => [$dynamic->getId()], 'created_from' => '2022-10-10', 'created_to' => '2022-10-10'])))->equals(3);
     verify(count($this->getIds(['segment_in' => [$dynamic->getId()], 'score_gt' => 50])))->equals(2);
+    // 2022-10-10 in Prague (UTC+2) is a, d and e; b and c fall on the next site day.
+    $siteDay = ['created_from' => '2022-10-10', 'created_to' => '2022-10-10'];
+    verify($this->getIds(['segment_in' => [$dynamic->getId()]] + $siteDay))->equals($this->getIds(['segment_in' => [$list->getId()]] + $siteDay));
+    verify(count($this->getIds(['segment_in' => [$dynamic->getId()]] + $siteDay)))->equals(3);
   }
 
   /**
