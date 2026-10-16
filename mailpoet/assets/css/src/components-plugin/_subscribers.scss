@@ -1,6 +1,13 @@
+@use 'sass:color';
+@use '../components-automation/colors' as *;
+@use '../mixins/breakpoints' as *;
+@use '../settings/colors' as *;
+@use '../settings/grid' as *;
+@use '../settings/typography' as *;
+
 #subscribers_container {
   .mailpoet_segments_unsubscribed {
-    color: lighten(#555, 33);
+    color: color.adjust(#555, $lightness: 33%);
   }
 }
 

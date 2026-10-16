@@ -1,3 +1,5 @@
+@use '../settings/form-editor' as *;
+
 .selection-item {
   background-color: #fff;
   border: solid $selection-item-active-border $selection-item-base-color;

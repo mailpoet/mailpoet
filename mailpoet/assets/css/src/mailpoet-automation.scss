@@ -1,17 +1,15 @@
-@import 'settings/colors';
-
 // automation components
 
-@import './components-automation/badges';
-@import './components-automation/statistics';
-@import './components-automation/option-button';
+@use './components-automation/badges' as *;
+@use './components-automation/statistics' as *;
+@use './components-automation/option-button' as *;
 
 // automation listing
 
-@import './components-automation-listing/sections';
-@import './components-automation-listing/listing';
-@import './components-automation-listing/cells/status';
+@use './components-automation-listing/sections' as *;
+@use './components-automation-listing/listing' as *;
+@use './components-automation-listing/cells/status' as *;
 
 // automation templates
 
-@import './mailpoet-automation-templates';
+@use './mailpoet-automation-templates' as *;

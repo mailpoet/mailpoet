@@ -1,3 +1,6 @@
+@use '../../settings/colors' as *;
+@use '../../settings/editor' as *;
+
 .mailpoet_block,
 .mailpoet_woocommerce_heading_block {
   background-color: inherit;

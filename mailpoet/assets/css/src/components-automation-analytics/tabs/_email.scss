@@ -1,4 +1,4 @@
-@import '../../components-automation/colors';
+@use '../../components-automation/colors' as *;
 
 .mailpoet-analytics-main-value {
   font-size: 13px;

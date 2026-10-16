@@ -1,4 +1,7 @@
 @use 'sass:math';
+@use '../settings/colors' as *;
+@use '../settings/form' as *;
+@use '../settings/grid' as *;
 
 .mailpoet-form-checkbox {
   align-items: center;

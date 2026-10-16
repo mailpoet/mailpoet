@@ -1,3 +1,7 @@
+@use '../../settings/colors' as *;
+@use '../../settings/editor' as *;
+@use '../../settings/grid' as *;
+
 #mailpoet_editor_sidebar {
   border-bottom: $color-editor-border-content;
   border-left: $color-editor-border-content;

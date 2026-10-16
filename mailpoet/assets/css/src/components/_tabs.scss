@@ -1,3 +1,7 @@
+@use '../mixins/breakpoints' as *;
+@use '../settings/colors' as *;
+@use '../settings/grid' as *;
+
 .mailpoet-tabs > .components-tab-panel__tabs {
   box-shadow: none;
   margin-top: $grid-gap-half;

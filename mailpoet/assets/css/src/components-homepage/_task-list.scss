@@ -1,3 +1,7 @@
+@use '../settings/colors' as *;
+@use '../settings/grid' as *;
+@use '../settings/typography' as *;
+
 $task-icon-size: 32px;
 
 .mailpoet-task-list__task {

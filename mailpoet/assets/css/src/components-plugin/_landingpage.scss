@@ -1,3 +1,7 @@
+@use '../mixins/breakpoints' as *;
+@use '../mixins/full-width-background' as *;
+@use '../settings/colors' as *;
+
 .admin_page_mailpoet-landingpage {
   #wpcontent {
     overflow-x: hidden;

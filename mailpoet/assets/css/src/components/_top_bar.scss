@@ -1,3 +1,7 @@
+@use '../mixins/breakpoints' as *;
+@use '../settings/colors' as *;
+@use '../settings/grid' as *;
+
 .mailpoet-top-bar {
   align-items: center;
   background-color: $color-white;

@@ -1,3 +1,5 @@
+@use '../mixins/breakpoints' as *;
+
 .mailpoet-automation-analytics {
   .woocommerce-table__header,
   .woocommerce-table__item,

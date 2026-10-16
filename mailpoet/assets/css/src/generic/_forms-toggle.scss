@@ -1,4 +1,6 @@
 @use 'sass:math';
+@use '../settings/colors' as *;
+@use '../settings/form' as *;
 
 .mailpoet-form-toggle {
   cursor: pointer;

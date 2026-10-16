@@ -1,4 +1,7 @@
 @use 'sass:math';
+@use '../settings/colors' as *;
+@use '../settings/grid' as *;
+@use '../settings/typography' as *;
 
 $badge-fancy-border-width: math.div($grid-gap-medium, 2);
 

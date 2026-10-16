@@ -1,3 +1,8 @@
+@use '../mixins/breakpoints' as *;
+@use '../settings/colors' as *;
+@use '../settings/grid' as *;
+@use '../settings/typography' as *;
+
 .mailpoet-premium-required {
   background-color: $color-secondary-light;
   border: 1px solid $color-secondary-middle;

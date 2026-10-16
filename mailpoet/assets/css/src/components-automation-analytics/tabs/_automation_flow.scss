@@ -1,4 +1,4 @@
-@import '../../components-automation/colors';
+@use '../../components-automation/colors' as *;
 
 .mailpoet-automation-editor-stats-placeholder {
   .mailpoet-automation-stats-label {

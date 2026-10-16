@@ -1,3 +1,8 @@
+@use '../settings/colors' as *;
+@use '../settings/form' as *;
+@use '../settings/grid' as *;
+@use '../settings/typography' as *;
+
 .mailpoet-form-input {
   align-items: center;
   background: $color-input-background;

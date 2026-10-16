@@ -1,3 +1,8 @@
+@use '../mixins/breakpoints' as *;
+@use '../settings/colors' as *;
+@use '../settings/grid' as *;
+@use '../settings/typography' as *;
+
 #newsletters_container {
   h2.nav-tab-wrapper {
     margin-bottom: 1rem;

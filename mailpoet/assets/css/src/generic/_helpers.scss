@@ -1,3 +1,6 @@
+@use '../mixins/breakpoints' as *;
+@use '../settings/grid' as *;
+
 .mailpoet-min-width {
   width: min-content;
 }

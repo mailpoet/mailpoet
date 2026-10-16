@@ -1,4 +1,4 @@
-@import 'components-plugin/custom-fields-form';
+@use 'components-plugin/custom-fields-form' as *;
 
 #mailpoet_custom_fields_container .components-notice {
   margin: 8px 0 0;

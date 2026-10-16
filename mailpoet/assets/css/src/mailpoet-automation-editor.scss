@@ -1,21 +1,24 @@
-@import '../../../node_modules/@wordpress/components/build-style/style';
-@import '../../../node_modules/@wordpress/interface/build-style/style';
-@import '../../../node_modules/@wordpress/edit-site/build-style/style';
-@import '../../../node_modules/@wordpress/editor/build-style/style';
-@import '../../../node_modules/@wordpress/block-editor/build-style/style'; // for inserter styles
-@import 'settings/colors';
+@use '../../../node_modules/@wordpress/components/build-style/style' as
+  wp-components;
+@use '../../../node_modules/@wordpress/interface/build-style/style' as
+  wp-interface;
+@use '../../../node_modules/@wordpress/edit-site/build-style/style' as
+  wp-edit-site;
+@use '../../../node_modules/@wordpress/editor/build-style/style' as wp-editor;
+@use '../../../node_modules/@wordpress/block-editor/build-style/style' as
+  wp-block-editor; // for inserter styles
 
 // automation components
 
-@import './components-automation/badges';
-@import './components-automation/statistics';
+@use './components-automation/badges' as *;
+@use './components-automation/statistics' as *;
 
 // automation editor
 
-@import './components-automation-editor/editor';
+@use './components-automation-editor/editor' as *;
 
 // integrations
 
-@import './components-automation-integrations/core';
-@import './components-automation-integrations/mailpoet';
-@import './components-automation-integrations/woocommerce';
+@use './components-automation-integrations/core' as *;
+@use './components-automation-integrations/mailpoet' as *;
+@use './components-automation-integrations/woocommerce' as *;
