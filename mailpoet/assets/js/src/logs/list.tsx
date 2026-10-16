@@ -10,6 +10,7 @@ import {
   useDataViewsQuery,
   filterToExtraParams,
   type ListingQueryParams,
+  useShowFiltersWhenActive,
 } from 'common/dataviews';
 import { getLogs, type LogListingItem } from './api';
 import { DeleteLogsModal } from './delete-modal';
@@ -115,6 +116,8 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
     extraParams: (currentView) =>
       filterToExtraParams(viewFiltersToRequestFilter(currentView.filters)),
   });
+  const dataViewsRef = useRef<HTMLDivElement>(null);
+  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
 
   const requestFilter = viewFiltersToRequestFilter(view.filters);
   const dateRangeError = getDateRangeError(requestFilter);
@@ -199,7 +202,10 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
   );
 
   return (
-    <div className="mailpoet-listing mailpoet-logs mailpoet-dataviews mailpoet-logs-dataviews">
+    <div
+      ref={dataViewsRef}
+      className="mailpoet-listing mailpoet-logs mailpoet-dataviews mailpoet-logs-dataviews"
+    >
       {successMessage && (
         <Notice status="success" onRemove={() => setSuccessMessage(null)}>
           {successMessage}
@@ -267,7 +273,7 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
             <DataViews.ViewConfig />
           </div>
         </div>
-        <DataViews.Filters className="mailpoet-dataviews__filters" />
+        <DataViews.FiltersToggled className="mailpoet-dataviews__filters" />
         <DataViews.Layout />
         <DataViews.Footer />
       </DataViews>
