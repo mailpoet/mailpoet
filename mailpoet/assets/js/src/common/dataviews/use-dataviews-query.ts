@@ -90,7 +90,9 @@ export function useDataViewsQuery<T>({
   const [meta, setMeta] = useState<ListingMeta>(EMPTY_META);
   const [filters, setFilters] = useState<ListingFilters>(EMPTY_FILTERS);
   const [groups, setGroups] = useState<ListingResponse<T>['groups']>(undefined);
-  const [isLoading, setIsLoading] = useState(false);
+  // Start loading: the first request is already on its way, so the very first
+  // render must not show the empty state.
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [responseVersion, setResponseVersion] = useState(0);
   const [refreshToken, setRefreshToken] = useState(0);
