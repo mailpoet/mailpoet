@@ -57,7 +57,7 @@ class NewslettersListingCest {
 
     $i->wantTo('See Date created selected and Last modified offered in Sort by');
     $i->click(['xpath' => '//button[@aria-label="View options"]']);
-    $sortBySelect = ['xpath' => '//select[option[normalize-space()="Sent on"]]'];
+    $sortBySelect = ['xpath' => '//select[option[normalize-space()="Date sent"]]'];
     $i->waitForElement($sortBySelect);
     $i->seeOptionIsSelected($sortBySelect, 'Date created');
     $i->seeElement(['xpath' => '//select/option[normalize-space()="Last modified"]']);

@@ -148,7 +148,8 @@ function buildFields(
       : []) as Field<NewsletterListingItem>[]),
     {
       id: 'sent_at',
-      label: __('Sent on', 'mailpoet'),
+      label: __('Date sent', 'mailpoet'),
+      header: __('Sent on', 'mailpoet'),
       type: 'datetime',
       enableSorting: true,
       enableGlobalSearch: false,
@@ -179,6 +180,7 @@ function buildFields(
     {
       id: 'created_at',
       label: __('Date created', 'mailpoet'),
+      header: __('Created on', 'mailpoet'),
       type: 'datetime',
       enableSorting: true,
       enableGlobalSearch: false,
@@ -188,6 +190,7 @@ function buildFields(
     {
       id: 'updated_at',
       label: __('Last modified', 'mailpoet'),
+      header: __('Last modified on', 'mailpoet'),
       type: 'datetime',
       enableSorting: true,
       enableGlobalSearch: false,
