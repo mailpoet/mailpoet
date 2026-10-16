@@ -27,6 +27,7 @@ import {
   getDataViewsPreference,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
+  useShowFiltersWhenActive,
   type ListingQueryParams,
 } from 'common/dataviews';
 import type { ListingGroup } from 'common/dataviews/types';
@@ -769,19 +770,8 @@ function SubscriberList() {
       orderby: currentView.sort ? toOrderby(currentView.sort.field) : undefined,
     }),
   });
-  // DataViews hides the filter row until the toggle is pressed. Active filters
-  // (from the URL, Back or the Add filter menu) must stay visible, so press the
-  // toggle once when the first filter appears.
   const dataViewsRef = useRef<HTMLDivElement>(null);
-  const hasFilters = (view.filters ?? []).length > 0;
-  useEffect(() => {
-    const toggle = dataViewsRef.current?.querySelector<HTMLButtonElement>(
-      '.dataviews-filters__visibility-toggle[aria-expanded="false"]',
-    );
-    if (hasFilters && toggle) {
-      toggle.click();
-    }
-  }, [hasFilters]);
+  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
   const viewRef = useRef(view);
   viewRef.current = view;
 
