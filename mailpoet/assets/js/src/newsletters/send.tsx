@@ -4,6 +4,7 @@ import jQuery from 'jquery';
 import { __, _x } from '@wordpress/i18n';
 import ReactStringReplace from 'react-string-replace';
 import slugify from 'slugify';
+import { addQueryArgs } from '@wordpress/url';
 import {
   useNavigate,
   useLocation,
@@ -291,15 +292,23 @@ class NewsletterSendComponent extends Component<
         // to an associated automation from the send page
         if (item.type === NewsletterType.Automation) {
           const automationId = item.options?.automationId;
-          const goToUrl = automationId
-            ? `admin.php?page=mailpoet-automation-editor&id=${automationId}`
-            : '/new';
           return this.setState(
             {
               item: {} as NewsLetter,
             },
             () => {
-              this.props.navigate(goToUrl);
+              if (automationId) {
+                // The editor is a separate admin page, not a route of this
+                // hash router, so it needs a full page load.
+                window.location.href = addQueryArgs(
+                  MailPoet.urls.automationEditor,
+                  {
+                    id: automationId,
+                  },
+                );
+                return;
+              }
+              this.props.navigate('/new');
             },
           );
         }
