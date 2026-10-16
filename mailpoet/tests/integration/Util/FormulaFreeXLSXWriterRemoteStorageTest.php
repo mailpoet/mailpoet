@@ -28,4 +28,23 @@ class FormulaFreeXLSXWriterRemoteStorageTest extends \MailPoetTest {
     verify(RemoteStorageStreamWrapper::$files)->arrayHasKey($file);
     verify(substr(RemoteStorageStreamWrapper::$files[$file], 0, 2))->equals('PK');
   }
+
+  public function testItFailsWhenRemoteStorageRejectsTheFile() {
+    RemoteStorageStreamWrapper::$rejectWrites = true;
+    $writer = new FormulaFreeXLSXWriter();
+    $writer->writeSheetRow('Sheet1', ['email@example.com']);
+    $previousErrorReporting = error_reporting(E_ALL & ~E_WARNING);
+    $exception = null;
+
+    try {
+      $writer->writeToFile(RemoteStorageStreamWrapper::getRoot() . '/mailpoet/exports/export.xlsx');
+    } catch (\RuntimeException $e) {
+      $exception = $e;
+    } finally {
+      error_reporting($previousErrorReporting);
+    }
+
+    verify($exception)->instanceOf(\RuntimeException::class);
+    verify(RemoteStorageStreamWrapper::$files)->arrayCount(0);
+  }
 }
