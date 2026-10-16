@@ -17,6 +17,9 @@ class RemoteStorageStreamWrapper {
   /** @var string[] */
   public static $writes = [];
 
+  /** @var bool */
+  public static $rejectWrites = false;
+
   /** @var resource|null */
   public $context;
 
@@ -38,6 +41,7 @@ class RemoteStorageStreamWrapper {
     }
     self::$files = [];
     self::$writes = [];
+    self::$rejectWrites = false;
   }
 
   public static function unregister(): void {
@@ -46,6 +50,7 @@ class RemoteStorageStreamWrapper {
     }
     self::$files = [];
     self::$writes = [];
+    self::$rejectWrites = false;
   }
 
   public static function getRoot(): string {
@@ -56,6 +61,9 @@ class RemoteStorageStreamWrapper {
     $this->path = $path;
     $this->position = 0;
     $this->isWriting = strpbrk($mode, 'waxc') !== false;
+    if ($this->isWriting && self::$rejectWrites) {
+      return false;
+    }
     if ($this->isWriting) {
       self::$writes[] = $path;
       $this->buffer = '';

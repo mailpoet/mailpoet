@@ -23,6 +23,7 @@ class FormulaFreeXLSXWriter extends XLSXWriter {
    * built in a local temporary file first and then copied.
    *
    * @param string $filename
+   * @throws \RuntimeException When the copy to remote storage fails.
    */
   public function writeToFile($filename) {
     if (!RemoteStorage::isRemotePath($filename)) {
@@ -31,7 +32,9 @@ class FormulaFreeXLSXWriter extends XLSXWriter {
     }
     $localFile = $this->tempFilename();
     parent::writeToFile($localFile);
-    copy($localFile, $filename);
+    if (!copy($localFile, $filename)) {
+      throw new \RuntimeException(__('The export file could not be saved on the server.', 'mailpoet'));
+    }
   }
 
   /**
