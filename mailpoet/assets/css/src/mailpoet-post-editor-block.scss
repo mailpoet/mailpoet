@@ -1,4 +1,4 @@
 // Components
 // Actual UI components.
 
-@import 'components-post-editor-block/post-editor-block';
+@use 'components-post-editor-block/post-editor-block' as *;

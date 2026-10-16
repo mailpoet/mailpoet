@@ -1,4 +1,6 @@
-@import '../components-automation/colors';
+@use '../mixins/breakpoints' as *;
+
+@use '../components-automation/colors' as *;
 
 .mailpoet-tiers-page {
   margin: 0 auto;

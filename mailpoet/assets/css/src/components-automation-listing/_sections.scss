@@ -1,3 +1,5 @@
+@use '../settings/colors' as *;
+
 // Offsets match the #wpcontent left padding plus the .wrap side margins
 @mixin full-width {
   margin-left: -22px;

@@ -1,6 +1,11 @@
+@use 'sass:color';
+@use '../mixins/breakpoints' as *;
+@use '../settings/colors' as *;
+@use '../settings/grid' as *;
+
 .mailpoet-subscribers-stats {
   .mailpoet-homepage-section__heading-after span {
-    color: darken($color-stats-excellent, 10%);
+    color: color.adjust($color-stats-excellent, $lightness: -10%);
     display: grid;
     font-size: 20px;
     grid-template-columns: 1fr 1fr;
@@ -8,16 +13,16 @@
     line-height: 28px;
 
     svg {
-      fill: darken($color-stats-excellent, 10%);
+      fill: color.adjust($color-stats-excellent, $lightness: -10%);
       height: 28px;
       width: 28px;
     }
 
     &.mailpoet-decrease {
-      color: darken($color-stats-critical, 10%);
+      color: color.adjust($color-stats-critical, $lightness: -10%);
 
       svg {
-        fill: darken($color-stats-critical, 10%);
+        fill: color.adjust($color-stats-critical, $lightness: -10%);
         transform: scale(1, -1);
       }
     }

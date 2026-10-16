@@ -1,3 +1,7 @@
+@use '../settings/colors' as *;
+@use '../settings/form' as *;
+@use '../settings/grid' as *;
+
 // In @wordpress/components v32+, the className prop on FormTokenField lands on
 // __input-container, which holds the tokens/input wrapper and the suggestions
 // list. The grid centers that content inside the min-height so it lines up

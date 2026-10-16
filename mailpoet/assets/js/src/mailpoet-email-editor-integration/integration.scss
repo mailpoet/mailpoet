@@ -1,6 +1,6 @@
 /* stylelint-disable selector-nested-pattern */
-@import '~@wordpress/base-styles/colors';
-@import '~@wordpress/base-styles/variables';
+@use '~@wordpress/base-styles/colors' as *;
+@use '~@wordpress/base-styles/variables' as *;
 
 .mailpoet-editor-feedback-button {
   bottom: 5px;

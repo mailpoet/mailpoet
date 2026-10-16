@@ -1,3 +1,5 @@
+@use '../settings/grid' as *;
+
 @mixin full-width-background($background) {
   z-index: 0;
 

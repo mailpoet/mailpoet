@@ -1,24 +1,22 @@
 // settings & mixins
 
-@import 'settings/breakpoints';
-@import 'settings/colors';
-@import 'mixins/breakpoints';
+@use 'settings/colors' as *;
 
 // automation editor styles
 
-@import './components-automation/badges';
-@import './components-automation/statistics';
-@import './components-automation-editor/editor';
+@use './components-automation/badges' as *;
+@use './components-automation/statistics' as *;
+@use './components-automation-editor/editor' as *;
 
 // automation integration styles
 
-@import './components-automation-integrations/core';
-@import './components-automation-integrations/mailpoet';
-@import './components-automation-integrations/woocommerce';
+@use './components-automation-integrations/core' as *;
+@use './components-automation-integrations/mailpoet' as *;
+@use './components-automation-integrations/woocommerce' as *;
 
 // template styles
 
-@import './mailpoet-templates';
+@use './mailpoet-templates' as *;
 
 .mailpoet-automation-template-detail {
   height: 100%;

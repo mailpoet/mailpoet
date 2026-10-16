@@ -1,3 +1,6 @@
+@use '../../settings/colors' as *;
+@use '../../settings/grid' as *;
+
 .mailpoet_history_wrapper {
   display: grid;
   grid-gap: $grid-gap;

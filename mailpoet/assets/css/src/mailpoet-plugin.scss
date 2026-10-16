@@ -1,98 +1,74 @@
-// Settings
-// Global variables, config switches. Not producing any CSS.
-
-@import 'settings/breakpoints';
-@import 'settings/grid';
-@import 'settings/colors';
-@import 'settings/form';
-@import 'settings/legacy-modal';
-@import 'settings/modal';
-@import 'settings/newsletter';
-@import 'settings/progress';
-@import 'settings/typography';
-
-// Tools
-// Default mixins and functions. Still not producing any CSS.
-
-@import 'mixins/breakpoints';
-@import 'mixins/clearfix';
-@import 'mixins/full-width-background';
-
 // 3rd party styles
 
-@import '../../../node_modules/select2/dist/css/select2';
+@use '../../../node_modules/select2/dist/css/select2' as select2;
 
 // @wordpress/components styles come from the core `wp-components` handle, which is a
 // dependency of mailpoet-plugin (see AssetsLoader) so they still load first.
 
-// WordPress Admin Theme Color Variables
-// Needed for the WordPress Admin color scheme support for @wordpress/components.
-@import '../../../node_modules/@wordpress/base-styles/mixins';
-
 // Generic
-@import 'generic/admin-colors'; // Has to be after @wordpress/components/build-style/style
-@import 'generic/typography';
-@import 'generic/buttons';
-@import 'generic/buttons-spinners';
-@import 'generic/forms';
-@import 'generic/forms-checkbox';
-@import 'generic/forms-input';
-@import 'generic/forms-radio';
-@import 'generic/forms-select';
-@import 'generic/forms-select2';
-@import 'generic/forms-textarea';
-@import 'generic/forms-toggle';
-@import 'generic/forms-token-field';
-@import 'generic/forms-yesno';
-@import 'generic/grid';
-@import 'generic/helpers'; // must be the last
+@use 'generic/admin-colors' as *; // Has to be after @wordpress/components/build-style/style
+@use 'generic/typography' as *;
+@use 'generic/buttons' as *;
+@use 'generic/buttons-spinners' as *;
+@use 'generic/forms' as *;
+@use 'generic/forms-checkbox' as *;
+@use 'generic/forms-input' as *;
+@use 'generic/forms-radio' as *;
+@use 'generic/forms-select' as *;
+@use 'generic/forms-select2' as *;
+@use 'generic/forms-textarea' as *;
+@use 'generic/forms-toggle' as *;
+@use 'generic/forms-token-field' as *;
+@use 'generic/forms-yesno' as *;
+@use 'generic/grid' as *;
+@use 'generic/helpers' as *; // must be the last
 
 // Components
 // Actual UI components.
 
-@import 'components/badge';
-@import 'components/categories';
-@import 'components/datepicker';
-@import 'components/modal';
-@import 'components/parsley';
-@import 'components/premium_required';
-@import 'components/steps';
-@import 'components/tabs';
-@import 'components/tags';
-@import 'components/template_box';
-@import 'components/tooltips';
-@import 'components/top_bar';
-@import 'components-plugin/automatic-emails';
-@import 'components-plugin/browser-preview';
-@import 'components-plugin/common';
-@import 'components-plugin/custom-fields-form';
-@import 'components-plugin/legacy-modal';
-@import 'components-plugin/inline-notice';
-@import 'components-plugin/notice';
-@import 'components-plugin/listing';
-@import 'components-plugin/listing-forms';
-@import 'components-plugin/listing-newsletters';
-@import 'components-plugin/logs';
-@import 'components-plugin/forms';
-@import 'components-plugin/help';
-@import 'components-plugin/settings';
-@import 'components-plugin/segments';
-@import 'components-plugin/subscribers';
-@import 'components-plugin/pages';
-@import 'components-plugin/pages-custom';
-@import 'components-plugin/premium-tiers-hero-sections';
-@import 'components-plugin/premium-tiers-page';
-@import 'components-plugin/mp-toggle';
-@import 'components-plugin/menu';
-@import 'components-plugin/newsletter';
-@import 'components-plugin/newsletter-templates';
-@import 'components-plugin/newsletter-types';
-@import 'components-plugin/newsletter-template-styles';
-@import 'components-plugin/welcome-wizard';
-@import 'components-plugin/newsletter-congratulate';
-@import 'components-plugin/discounts';
-@import 'components-plugin/review-request';
-@import 'components-plugin/set-from-address-modal';
-@import 'components-plugin/stats';
-@import 'components-plugin/import-export';
-@import 'components-plugin/landingpage';
+@use 'components/badge' as *;
+@use 'components/categories' as *;
+@use 'components/datepicker' as *;
+@use 'components/modal' as *;
+@use 'components/parsley' as *;
+@use 'components/premium_required' as *;
+@use 'components/steps' as *;
+@use 'components/tabs' as *;
+@use 'components/tags' as *;
+@use 'components/template_box' as *;
+@use 'components/tooltips' as *;
+@use 'components/top_bar' as *;
+@use 'components-plugin/automatic-emails' as *;
+@use 'components-plugin/browser-preview' as *;
+@use 'components-plugin/common' as *;
+@use 'components-plugin/custom-fields-form' as *;
+@use 'components-plugin/legacy-modal' as *;
+@use 'components-plugin/inline-notice' as *;
+@use 'components-plugin/notice' as *;
+@use 'components-plugin/listing' as *;
+@use 'components-plugin/listing-forms' as *;
+@use 'components-plugin/listing-newsletters' as *;
+@use 'components-plugin/logs' as *;
+@use 'components-plugin/forms' as *;
+@use 'components-plugin/help' as *;
+@use 'components-plugin/settings' as *;
+@use 'components-plugin/segments' as *;
+@use 'components-plugin/subscribers' as *;
+@use 'components-plugin/pages' as *;
+@use 'components-plugin/pages-custom' as *;
+@use 'components-plugin/premium-tiers-hero-sections' as *;
+@use 'components-plugin/premium-tiers-page' as *;
+@use 'components-plugin/mp-toggle' as *;
+@use 'components-plugin/menu' as *;
+@use 'components-plugin/newsletter' as *;
+@use 'components-plugin/newsletter-templates' as *;
+@use 'components-plugin/newsletter-types' as *;
+@use 'components-plugin/newsletter-template-styles' as *;
+@use 'components-plugin/welcome-wizard' as *;
+@use 'components-plugin/newsletter-congratulate' as *;
+@use 'components-plugin/discounts' as *;
+@use 'components-plugin/review-request' as *;
+@use 'components-plugin/set-from-address-modal' as *;
+@use 'components-plugin/stats' as *;
+@use 'components-plugin/import-export' as *;
+@use 'components-plugin/landingpage' as *;

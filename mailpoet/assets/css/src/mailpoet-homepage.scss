@@ -1,24 +1,15 @@
-// Settings
-// Global variables, config switches. Not producing any CSS.
-
-@import 'settings/breakpoints';
-@import 'settings/colors';
-@import 'settings/grid';
-@import 'settings/typography';
-
 // Tools
 // Default mixins and functions. Still not producing any CSS.
 
-@import 'mixins/breakpoints';
-@import 'mixins/animations';
+@use 'mixins/animations' as *;
 
 // Components
 // Actual UI components.
 
-@import 'components-homepage/_layout';
-@import 'components-homepage/_task-list';
-@import 'components-homepage/_content-section';
-@import 'components-homepage/_product-discovery';
-@import 'components-homepage/_upsell';
-@import 'components-homepage/_subscribers-stats';
-@import 'components-homepage/_resources';
+@use 'components-homepage/_layout' as *;
+@use 'components-homepage/_task-list' as *;
+@use 'components-homepage/_content-section' as *;
+@use 'components-homepage/_product-discovery' as *;
+@use 'components-homepage/_upsell' as *;
+@use 'components-homepage/_subscribers-stats' as *;
+@use 'components-homepage/_resources' as *;

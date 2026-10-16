@@ -1,3 +1,7 @@
+// WordPress Admin Theme Color Variables
+// Needed for the WordPress Admin color scheme support for @wordpress/components.
+@use '../../../../node_modules/@wordpress/base-styles/mixins' as *;
+
 // Colors for default theme as it is not included in wordpress-admin-schemes mixins
 :root {
   @include admin-scheme(#007cba);

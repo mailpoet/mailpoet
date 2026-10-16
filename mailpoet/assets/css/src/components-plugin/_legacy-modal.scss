@@ -1,3 +1,7 @@
+@use '../mixins/breakpoints' as *;
+@use '../settings/colors' as *;
+@use '../settings/legacy-modal' as *;
+
 body.mailpoet_modal_opened {
   overflow: hidden;
 }
