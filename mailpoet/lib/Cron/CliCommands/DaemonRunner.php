@@ -8,6 +8,7 @@ use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Cron\Daemon;
 use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -36,6 +37,8 @@ class DaemonRunner {
 
   private WorkersFactory $workersFactory;
 
+  private SendingEnvironment $sendingEnvironment;
+
   public function __construct(
     ExecutionLimitOverride $executionLimitOverride,
     CronHelper $cronHelper,
@@ -43,7 +46,8 @@ class DaemonRunner {
     ScheduledTasksRepository $scheduledTasksRepository,
     EntityManager $entityManager,
     LoggerFactory $loggerFactory,
-    WorkersFactory $workersFactory
+    WorkersFactory $workersFactory,
+    SendingEnvironment $sendingEnvironment
   ) {
     $this->executionLimitOverride = $executionLimitOverride;
     $this->cronHelper = $cronHelper;
@@ -52,6 +56,7 @@ class DaemonRunner {
     $this->entityManager = $entityManager;
     $this->loggerFactory = $loggerFactory;
     $this->workersFactory = $workersFactory;
+    $this->sendingEnvironment = $sendingEnvironment;
   }
 
   /**
@@ -113,7 +118,8 @@ class DaemonRunner {
       $cronWorkerRunner,
       $this->entityManager,
       $this->workersFactory,
-      $this->loggerFactory
+      $this->loggerFactory,
+      $this->sendingEnvironment
     );
   }
 }

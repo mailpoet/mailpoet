@@ -10,6 +10,7 @@ use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\InvalidStateException;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use RuntimeException;
 use Throwable;
@@ -41,13 +42,16 @@ class TaskRunner {
 
   private ClaimedTaskRunner $claimedTaskRunner;
 
+  private SendingEnvironment $sendingEnvironment;
+
   public function __construct(
     WorkerTypesCatalog $workerTypesCatalog,
     WorkersFactory $workersFactory,
     ExecutionLimitOverride $executionLimitOverride,
     ScheduledTasksRepository $scheduledTasksRepository,
     ScheduledTaskResolver $taskResolver,
-    ClaimedTaskRunner $claimedTaskRunner
+    ClaimedTaskRunner $claimedTaskRunner,
+    SendingEnvironment $sendingEnvironment
   ) {
     $this->workerTypesCatalog = $workerTypesCatalog;
     $this->workersFactory = $workersFactory;
@@ -55,6 +59,7 @@ class TaskRunner {
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->taskResolver = $taskResolver;
     $this->claimedTaskRunner = $claimedTaskRunner;
+    $this->sendingEnvironment = $sendingEnvironment;
   }
 
   /**
@@ -62,6 +67,13 @@ class TaskRunner {
    */
   public function run(string $type, ?int $taskId = null, ?int $timeout = null): array {
     $this->workerTypesCatalog->assertValidType($type);
+
+    if ($this->sendingEnvironment->isTaskTypeGated($type)) {
+      throw new RuntimeException(sprintf(
+        'Sending is paused because this is a %s site. Allow sending in MailPoet › Settings › Advanced.',
+        $this->sendingEnvironment->getEnvironmentType()
+      ));
+    }
 
     if ($taskId !== null) {
       return $this->runClaimedTask($type, $taskId, $timeout);

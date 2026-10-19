@@ -11,6 +11,7 @@ use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Entities\LogEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Logging\LogRepository;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Mailer\SendingLimitReachedException;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WpFunctions;
@@ -193,6 +194,53 @@ class DaemonTest extends \MailPoetTest {
     $log = $this->logRepository->findOneBy(['name' => 'cron', 'level' => 400]);
     $this->assertInstanceOf(LogEntity::class, $log);
     verify($log->getMessage())->stringContainsString('must be of type');
+  }
+
+  public function testItDoesNotBuildSendingWorkersWhenSendingIsPaused() {
+    $cronWorkerRunner = $this->make(CronWorkerRunner::class, ['run' => null]);
+    $data = ['token' => 123];
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
+    $daemon = $this->getServiceWithOverrides(Daemon::class, [
+      'cronWorkerRunner' => $cronWorkerRunner,
+      'sendingEnvironment' => $this->createSendingEnvironment('staging'),
+      'workersFactory' => $this->createWorkersFactoryMock([
+        'createScheduleWorker' => Expected::never(),
+        'createQueueWorker' => Expected::never(),
+        'createStatsNotificationsWorker' => Expected::never(),
+        'createStatsNotificationsWorkerForAutomatedEmails' => Expected::never(),
+        'createBulkConfirmationEmailResendWorker' => Expected::never(),
+        'createSubscriberLimitNotificationWorker' => Expected::never(),
+        'createBounceWorker' => $this->createSimpleWorkerMock(),
+      ]),
+    ]);
+
+    $daemon->run($data);
+
+    verify($this->logRepository->findOneBy(['name' => 'cron', 'level' => 400]))->null();
+  }
+
+  public function testItBuildsSendingWorkersWhenSendingIsAllowed() {
+    $cronWorkerRunner = $this->make(CronWorkerRunner::class, ['run' => null]);
+    $data = ['token' => 123];
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
+    $this->settings->set(SendingEnvironment::SETTING_ALLOW_SENDING, '1');
+    $daemon = $this->getServiceWithOverrides(Daemon::class, [
+      'cronWorkerRunner' => $cronWorkerRunner,
+      'sendingEnvironment' => $this->createSendingEnvironment('staging'),
+      'workersFactory' => $this->createWorkersFactoryMock(),
+    ]);
+
+    // The default factory mock expects every worker, gated ones included, to be processed once.
+    $daemon->run($data);
+
+    verify($this->logRepository->findOneBy(['name' => 'cron', 'level' => 400]))->null();
+  }
+
+  private function createSendingEnvironment(string $environmentType): SendingEnvironment {
+    return new SendingEnvironment(
+      $this->settings,
+      $this->make(WpFunctions::class, ['wpGetEnvironmentType' => $environmentType])
+    );
   }
 
   private function createWorkersFactoryMock(array $workers = []) {

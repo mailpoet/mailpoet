@@ -1,0 +1,82 @@
+<?php declare(strict_types = 1);
+
+namespace MailPoet\Mailer;
+
+use MailPoet\Cron\Workers\BulkConfirmationEmailResend;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
+use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails as StatsNotificationsAutomatedEmails;
+use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
+use MailPoet\Cron\Workers\SubscriberLimitNotificationWorker;
+use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
+
+/**
+ * Decides whether the queue and cron may send email on this site. Staging, development and local
+ * sites wait unless sending is allowed. Direct sends (sign-up confirmations, test emails) are not
+ * affected.
+ */
+class SendingEnvironment {
+  public const SETTING_ALLOW_SENDING = 'allow_sending_in_non_production';
+  public const FILTER_ALLOW_SENDING = 'mailpoet_allow_sending_in_non_production';
+
+  /**
+   * Task types of the workers that send email from the queue or cron. The scheduler turns scheduled
+   * newsletters into sending tasks and has no task type of its own, so it is listed by its worker name.
+   */
+  public const GATED_TASK_TYPES = [
+    'schedule',
+    SendingQueue::TASK_TYPE,
+    StatsNotificationsWorker::TASK_TYPE,
+    StatsNotificationsAutomatedEmails::TASK_TYPE,
+    BulkConfirmationEmailResend::TASK_TYPE,
+    SubscriberLimitNotificationWorker::TASK_TYPE,
+  ];
+
+  private SettingsController $settings;
+
+  private WPFunctions $wp;
+
+  public function __construct(
+    SettingsController $settings,
+    WPFunctions $wp
+  ) {
+    $this->settings = $settings;
+    $this->wp = $wp;
+  }
+
+  public function getEnvironmentType(): string {
+    return $this->wp->wpGetEnvironmentType();
+  }
+
+  public function isProduction(): bool {
+    return $this->getEnvironmentType() === 'production';
+  }
+
+  public function isSendingAllowed(): bool {
+    $allowedBySetting = (bool)$this->settings->get(self::SETTING_ALLOW_SENDING);
+    if ($this->isProduction()) {
+      // The override only matters on non-production sites. Drop it so a site moved to production
+      // and later back to staging does not keep sending.
+      if ($allowedBySetting) {
+        $this->settings->delete(self::SETTING_ALLOW_SENDING);
+      }
+      return true;
+    }
+
+    /**
+     * Lets a developer allow or block queued sending on a non-production site.
+     * Return true (for example with __return_true) to allow sending.
+     *
+     * @param bool $allowed Whether the "Allow sending" setting is on.
+     */
+    return (bool)$this->wp->applyFilters(self::FILTER_ALLOW_SENDING, $allowedBySetting);
+  }
+
+  public function isTaskTypeGated(string $type): bool {
+    return in_array($type, self::GATED_TASK_TYPES, true) && !$this->isSendingAllowed();
+  }
+
+  public function allowSending(): void {
+    $this->settings->set(self::SETTING_ALLOW_SENDING, '1');
+  }
+}

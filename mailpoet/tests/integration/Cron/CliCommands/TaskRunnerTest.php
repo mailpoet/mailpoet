@@ -12,6 +12,7 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronWorkerInterface;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
+use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails as StatsNotificationsAutomatedEmails;
 use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Cron\Workers\WorkersFactory;
@@ -20,11 +21,13 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerFactory;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use RuntimeException;
 
@@ -358,6 +361,59 @@ class TaskRunnerTest extends \MailPoetTest {
     verify($task->getStatus())->same(ScheduledTaskEntity::STATUS_PAUSED);
   }
 
+  public function testItRefusesToRunGatedTypesWhenSendingIsPaused() {
+    $runner = $this->makeTaskRunnerOnEnvironment('staging');
+    foreach (SendingEnvironment::GATED_TASK_TYPES as $type) {
+      if ($type === 'schedule') {
+        continue; // not a runnable CLI type
+      }
+      try {
+        $runner->run($type);
+        $this->fail("Expected a RuntimeException for '{$type}'.");
+      } catch (RuntimeException $e) {
+        verify($e->getMessage())->stringContainsString('Sending is paused because this is a staging site');
+      }
+    }
+  }
+
+  public function testItRefusesToRunAGatedTaskByIdWhenSendingIsPaused() {
+    $task = $this->taskFactory->create(StatsNotificationsAutomatedEmails::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now());
+    $runner = $this->makeTaskRunnerOnEnvironment('staging');
+
+    $this->expectException(RuntimeException::class);
+    $this->expectExceptionMessage('Sending is paused');
+    $runner->run(StatsNotificationsAutomatedEmails::TASK_TYPE, $task->getId());
+  }
+
+  public function testItRunsGatedTypesOnANonProductionSiteWhenSendingIsAllowed() {
+    $this->settings->set(SendingEnvironment::SETTING_ALLOW_SENDING, '1');
+    $result = $this->makeTaskRunnerOnEnvironment('staging')->run(StatsNotificationsWorker::TASK_TYPE);
+
+    verify($result['limit_reached'])->false();
+  }
+
+  public function testItStillRunsUngatedTypesWhenSendingIsPaused() {
+    $result = $this->makeTaskRunnerOnEnvironment('staging')->run(UnsubscribeTokens::TASK_TYPE);
+
+    verify($result['limit_reached'])->false();
+  }
+
+  private function makeTaskRunnerOnEnvironment(string $environmentType): TaskRunner {
+    $sendingEnvironment = new SendingEnvironment(
+      $this->settings,
+      $this->make(WPFunctions::class, ['wpGetEnvironmentType' => $environmentType])
+    );
+    return new TaskRunner(
+      $this->diContainer->get(WorkerTypesCatalog::class),
+      $this->diContainer->get(WorkersFactory::class),
+      $this->diContainer->get(ExecutionLimitOverride::class),
+      $this->diContainer->get(ScheduledTasksRepository::class),
+      $this->diContainer->get(ScheduledTaskResolver::class),
+      $this->diContainer->get(ClaimedTaskRunner::class),
+      $sendingEnvironment
+    );
+  }
+
   private function configureMailer(): void {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_PHPMAIL]);
     $this->settings->set('sender', ['name' => 'Sender', 'address' => 'sender@example.com']);
@@ -625,6 +681,7 @@ class TaskRunnerTest extends \MailPoetTest {
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->diContainer->get(ScheduledTaskResolver::class),
       $this->diContainer->get(ClaimedTaskRunner::class),
+      $this->diContainer->get(SendingEnvironment::class),
       $worker
     ) extends TaskRunner {
       /** @var ?CronWorkerInterface */
@@ -637,6 +694,7 @@ class TaskRunnerTest extends \MailPoetTest {
         ScheduledTasksRepository $scheduledTasksRepository,
         ScheduledTaskResolver $taskResolver,
         ClaimedTaskRunner $claimedTaskRunner,
+        SendingEnvironment $sendingEnvironment,
         CronWorkerInterface $stubWorker
       ) {
         parent::__construct(
@@ -645,7 +703,8 @@ class TaskRunnerTest extends \MailPoetTest {
           $executionLimitOverride,
           $scheduledTasksRepository,
           $taskResolver,
-          $claimedTaskRunner
+          $claimedTaskRunner,
+          $sendingEnvironment
         );
         $this->stubWorker = $stubWorker;
       }
@@ -689,7 +748,8 @@ class TaskRunnerTest extends \MailPoetTest {
       $this->diContainer->get(ExecutionLimitOverride::class),
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->diContainer->get(ScheduledTaskResolver::class),
-      $this->diContainer->get(ClaimedTaskRunner::class)
+      $this->diContainer->get(ClaimedTaskRunner::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
   }
 }
