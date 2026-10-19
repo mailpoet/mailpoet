@@ -32,15 +32,48 @@ describe('send page held email helpers', () => {
   });
 
   describe('withoutStaleSchedule', () => {
-    it('turns scheduling off and drops the old date', () => {
+    const defaults = {
+      scheduledAt: '2026-07-25 06:00:00',
+      scheduledLocalDate: '2026-07-25',
+      scheduledLocalTime: '08:00:00',
+    };
+
+    it('turns scheduling off and replaces the old date with the default', () => {
       const options = {
         isScheduled: '1',
         scheduledAt: '2026-07-23 10:00:00',
         other: 'x',
       };
-      const result = withoutStaleSchedule(options);
-      expect(result).to.deep.equal({ isScheduled: '0', other: 'x' });
+      const result = withoutStaleSchedule(options, defaults);
+      expect(result).to.deep.equal({
+        isScheduled: '0',
+        scheduledAt: '2026-07-25 06:00:00',
+        scheduledLocalDate: '',
+        scheduledLocalTime: '',
+        other: 'x',
+      });
       expect(options.scheduledAt).to.equal('2026-07-23 10:00:00');
+    });
+
+    it('replaces the old subscriber time zone date and time too', () => {
+      const result = withoutStaleSchedule(
+        {
+          isScheduled: '1',
+          scheduleMode: 'subscriber_timezone',
+          scheduledLocalDate: '2026-07-23',
+          scheduledLocalTime: '10:00:00',
+          other: 'x',
+        },
+        defaults,
+      );
+      expect(result).to.deep.equal({
+        isScheduled: '0',
+        scheduleMode: 'subscriber_timezone',
+        scheduledAt: '2026-07-25 06:00:00',
+        scheduledLocalDate: '2026-07-25',
+        scheduledLocalTime: '08:00:00',
+        other: 'x',
+      });
     });
   });
 

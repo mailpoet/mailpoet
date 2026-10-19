@@ -2,6 +2,7 @@ import {
   DEFAULT_SCHEDULED_LOCAL_TIME,
   SCHEDULE_MODE_SUBSCRIBER_TIMEZONE,
   SCHEDULE_MODE_WEBSITE_TIME,
+  getDefaultScheduledAt,
   getScheduleMode,
   getScheduleModeOptionChanges,
   snapLocalDateTimeToQuarterHour,
@@ -94,5 +95,31 @@ describe('newsletter schedule mode helpers', () => {
     it('returns null for invalid values', () => {
       expect(snapLocalDateTimeToQuarterHour('not-a-date')).to.equal(null);
     });
+  });
+});
+
+describe('getDefaultScheduledAt', () => {
+  const globalWithWindow = global as unknown as { window?: unknown };
+  const originalWindow = globalWithWindow.window;
+
+  const setSite = (tomorrow: string, offset: string) => {
+    globalWithWindow.window = {
+      mailpoet_tomorrow_date: tomorrow,
+      mailpoet_date_offset: offset,
+    };
+  };
+
+  afterEach(() => {
+    globalWithWindow.window = originalWindow;
+  });
+
+  it('returns tomorrow at the default local time converted to GMT', () => {
+    setSite('2026-10-20', '2');
+    expect(getDefaultScheduledAt()).to.equal('2026-10-20 06:00:00');
+  });
+
+  it('keeps the local time when the site is on GMT', () => {
+    setSite('2026-10-20', '0');
+    expect(getDefaultScheduledAt()).to.equal('2026-10-20 08:00:00');
   });
 });

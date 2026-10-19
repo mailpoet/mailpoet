@@ -5,6 +5,8 @@ type SchedulingOptions = {
   isScheduled?: string;
   scheduledAt?: string;
   scheduleMode?: string;
+  scheduledLocalDate?: string;
+  scheduledLocalTime?: string;
 };
 
 // A held email is paused by MailPoet, not by the user, so the send page treats
@@ -21,11 +23,27 @@ export function isPausedOnSendPage(
   );
 }
 
+type ScheduleDefaults = {
+  scheduledAt: string;
+  scheduledLocalDate: string;
+  scheduledLocalTime: string;
+};
+
+// The server keeps options that are missing from a save, so the old date is
+// replaced with the one the page shows when Schedule is turned on.
 export function withoutStaleSchedule<T extends SchedulingOptions>(
   options: T,
-): Omit<T, 'scheduledAt'> {
-  const { scheduledAt, ...rest } = options;
-  return { ...rest, isScheduled: '0' };
+  defaults: ScheduleDefaults,
+): T {
+  const isTimeZoneMode =
+    options.scheduleMode === SCHEDULE_MODE_SUBSCRIBER_TIMEZONE;
+  return {
+    ...options,
+    isScheduled: '0',
+    scheduledAt: defaults.scheduledAt,
+    scheduledLocalDate: isTimeZoneMode ? defaults.scheduledLocalDate : '',
+    scheduledLocalTime: isTimeZoneMode ? defaults.scheduledLocalTime : '',
+  };
 }
 
 export function isScheduleInPast(

@@ -23,6 +23,7 @@ import {
   SCHEDULE_MODE_WEBSITE_TIME,
   SUBSCRIBER_TIMEZONE_LEAD_TIME_HOURS,
   ScheduleMode,
+  getDefaultScheduledAt,
   getScheduleMode,
   getScheduleModeOptionChanges,
 } from 'common/newsletter-schedule-mode';
@@ -61,9 +62,7 @@ class StandardScheduling extends Component<
   constructor(props: StandardSchedulingProps) {
     super(props);
     this.state = { showPremiumModal: false };
-    this.tomorrowDateTime = MailPoet.Date.toGmtDatetimeString(
-      `${window.mailpoet_tomorrow_date} ${DEFAULT_SCHEDULED_LOCAL_TIME}`,
-    );
+    this.tomorrowDateTime = getDefaultScheduledAt();
   }
 
   getCurrentValue = (): Partial<NewsLetter['options']> => {
