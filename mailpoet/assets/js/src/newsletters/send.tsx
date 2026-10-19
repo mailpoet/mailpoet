@@ -30,6 +30,10 @@ import { GlobalContext } from 'context';
 
 import { extractEmailDomain } from 'common/functions';
 import { NewsLetter, NewsletterType } from 'common/newsletter';
+import {
+  DEFAULT_SCHEDULED_LOCAL_TIME,
+  getDefaultScheduledAt,
+} from 'common/newsletter-schedule-mode';
 import { mapFilterType } from '../analytics';
 import { PremiumModal, premiumValidAndActive } from '../common/premium-modal';
 import { setNewsletterStatus, type NewsletterApiError } from './api';
@@ -300,9 +304,11 @@ class NewsletterSendComponent extends Component<
         const item = response.data;
         const wasHeld = !!item.queue && isHeldQueue(item.queue);
         if (wasHeld) {
-          item.options = withoutStaleSchedule(
-            item.options,
-          ) as NewsLetter['options'];
+          item.options = withoutStaleSchedule(item.options, {
+            scheduledAt: getDefaultScheduledAt(),
+            scheduledLocalDate: window.mailpoet_tomorrow_date ?? '',
+            scheduledLocalTime: DEFAULT_SCHEDULED_LOCAL_TIME,
+          });
         }
         // Automation type emails should redirect
         // to an associated automation from the send page
