@@ -167,6 +167,18 @@ class InitializerTest extends \MailPoetTest {
     verify($html)->stringContainsString('Argument 1 must be of type string');
   }
 
+  public function testOnlyAdministratorsSeeWhyInitializationFailed(): void {
+    $initializer = $this->createInitializer([]);
+
+    verify($this->renderNotice($initializer->handleFailedInitialization(new \Exception('Unknown column wp_mailpoet_x.y'))))
+      ->stringContainsString('Unknown column wp_mailpoet_x.y');
+
+    wp_set_current_user(0);
+    $html = $this->renderNotice($initializer->handleFailedInitialization(new \Exception('Unknown column wp_mailpoet_x.y')));
+    verify($html)->stringNotContainsString('Unknown column');
+    verify($html)->stringContainsString('contact the site administrator');
+  }
+
   public function testTheActivationHookTellsALockApartFromAFailure(): void {
     $lockedInitializer = $this->createInitializer([
       'activate' => Expected::once(function () {
