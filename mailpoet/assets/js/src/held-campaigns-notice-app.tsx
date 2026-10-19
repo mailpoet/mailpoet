@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
 import { HeldCampaignsNotice } from 'notices/held-campaigns-notice';
-import { removeRow } from 'notices/held-campaigns';
+import { applyBulkResult, removeRow } from 'notices/held-campaigns';
 
 const REFRESH_ACTION = 'mailpoet.held_campaigns.refresh';
 
@@ -33,6 +33,9 @@ function HeldCampaignsApp() {
     <HeldCampaignsNotice
       campaigns={campaigns}
       onRemove={(id) => setCampaigns((rows) => removeRow(rows, id))}
+      onBulkResult={(result) =>
+        setCampaigns((rows) => applyBulkResult(rows, result))
+      }
       onRefresh={refetch}
     />
   );

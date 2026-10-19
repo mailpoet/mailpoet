@@ -8,7 +8,11 @@ const DAY = 24 * HOUR;
 
 type Lateness = { unit: 'minute' | 'hour' | 'day'; count: number };
 export type HeldRowAction = 'resume' | 'reschedule' | 'cancel';
-export type HeldConfirmAction = 'cancel' | 'reschedule';
+export type HeldBulkAction = 'resume' | 'cancel';
+export type HeldBulkResult = {
+  done: number[];
+  failed: { id: number; message: string }[];
+};
 
 export function getLateness(lateSeconds: number): Lateness {
   if (lateSeconds >= 2 * DAY) {
@@ -107,16 +111,7 @@ export function subjectText(subject: string): string {
   return subject || __('(no subject)', 'mailpoet');
 }
 
-export function confirmCopy(
-  type: HeldCampaign['type'],
-  action: HeldConfirmAction,
-): string {
-  if (action === 'reschedule') {
-    return __(
-      'The email goes back to drafts so you can pick a new time.',
-      'mailpoet',
-    );
-  }
+export function confirmCopy(type: HeldCampaign['type']): string {
   if (type === 'notification_history') {
     return __(
       'This issue will be deleted. Its posts go in the next one.',
@@ -135,10 +130,8 @@ export function actionLabel(action: HeldRowAction): string {
   return __('Don’t send…', 'mailpoet');
 }
 
-export function confirmButtonLabel(action: HeldConfirmAction): string {
-  return action === 'reschedule'
-    ? __('Reschedule', 'mailpoet')
-    : __('Don’t send', 'mailpoet');
+export function confirmButtonLabel(): string {
+  return __('Don’t send', 'mailpoet');
 }
 
 export function actionScreenReaderText(
@@ -156,4 +149,89 @@ export function actionScreenReaderText(
 
 export function unsentAnnouncement(subject: string): string {
   return sprintf(__('Won’t be sent: %s', 'mailpoet'), subject);
+}
+
+export function showBulkActions(count: number): boolean {
+  return count >= 2;
+}
+
+export function bulkResumeMessage(count: number): string {
+  return sprintf(
+    _n(
+      '%d email will be sent to its lists now.',
+      '%d emails will be sent to their lists now.',
+      count,
+      'mailpoet',
+    ),
+    count,
+  );
+}
+
+export function bulkCancelCopy(types: HeldCampaign['type'][]): string {
+  const sentences: string[] = [];
+  if (types.includes('standard')) {
+    sentences.push(__('Newsletters go back to drafts.', 'mailpoet'));
+  }
+  if (types.includes('notification_history')) {
+    sentences.push(
+      __(
+        'Post notification issues are deleted and their posts go in the next one.',
+        'mailpoet',
+      ),
+    );
+  }
+  if (types.includes('re_engagement')) {
+    sentences.push(__('Re-engagement runs are skipped.', 'mailpoet'));
+  }
+  return sentences.join(' ');
+}
+
+export function bulkScreenReaderText(action: HeldBulkAction): string {
+  return action === 'resume'
+    ? __('Send all held emails', 'mailpoet')
+    : __('Don’t send any held email', 'mailpoet');
+}
+
+export function applyBulkResult(
+  rows: HeldCampaign[],
+  result: HeldBulkResult,
+): HeldCampaign[] {
+  return rows.filter((row) => !result.done.includes(row.id));
+}
+
+export function bulkSummary(
+  action: HeldBulkAction,
+  doneCount: number,
+  failedCount: number,
+): string {
+  const parts: string[] = [];
+  if (doneCount > 0) {
+    parts.push(
+      action === 'resume'
+        ? sprintf(
+            _n('%d email sent', '%d emails sent', doneCount, 'mailpoet'),
+            doneCount,
+          )
+        : sprintf(
+            _n(
+              '%d email won’t be sent',
+              '%d emails won’t be sent',
+              doneCount,
+              'mailpoet',
+            ),
+            doneCount,
+          ),
+    );
+  }
+  if (failedCount > 0) {
+    parts.push(
+      sprintf(
+        action === 'resume'
+          ? __('%d couldn’t be sent', 'mailpoet')
+          : __('%d couldn’t be updated', 'mailpoet'),
+        failedCount,
+      ),
+    );
+  }
+  return parts.join(', ');
 }

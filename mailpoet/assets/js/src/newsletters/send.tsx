@@ -33,6 +33,12 @@ import { NewsLetter, NewsletterType } from 'common/newsletter';
 import { mapFilterType } from '../analytics';
 import { PremiumModal, premiumValidAndActive } from '../common/premium-modal';
 import { setNewsletterStatus, type NewsletterApiError } from './api';
+import {
+  isPausedOnSendPage,
+  isScheduleInPast,
+  withoutStaleSchedule,
+} from './send/held-email';
+import { isHeldQueue } from './listings/queue-labels';
 import { PendingNewsletterMessage } from './send/pending-newsletter-message';
 import { SendContext, SendContextType } from './send-context';
 
@@ -55,6 +61,7 @@ type NewsletterSendComponentProps = {
 type NewsletterSendComponentState = {
   fields: Record<string, unknown>[] | boolean;
   item: NewsLetter;
+  wasHeld: boolean;
   loading: boolean;
   thumbnailPromise?: Promise<unknown>;
   showPremiumModal: boolean;
@@ -176,6 +183,7 @@ class NewsletterSendComponent extends Component<
     this.state = {
       fields: [],
       item: {} as NewsLetter,
+      wasHeld: false,
       loading: true,
       thumbnailPromise: null,
       showPremiumModal: false,
@@ -210,7 +218,9 @@ class NewsletterSendComponent extends Component<
 
   getSendButtonOptions = () => {
     const type = this.getSubtype(this.state.item);
-    return type.getSendButtonOptions(this.state.item);
+    const options = type.getSendButtonOptions(this.state.item);
+    // A held email has status "sending", which would disable the button.
+    return this.state.wasHeld ? { value: options.value } : options;
   };
 
   getSubtype = (newsletter: NewsLetter) => {
@@ -288,6 +298,12 @@ class NewsletterSendComponent extends Component<
             ? this.getThumbnailPromise(response.meta.preview_url)
             : null;
         const item = response.data;
+        const wasHeld = !!item.queue && isHeldQueue(item.queue);
+        if (wasHeld) {
+          item.options = withoutStaleSchedule(
+            item.options,
+          ) as NewsLetter['options'];
+        }
         // Automation type emails should redirect
         // to an associated automation from the send page
         if (item.type === NewsletterType.Automation) {
@@ -327,6 +343,7 @@ class NewsletterSendComponent extends Component<
 
         this.setState({
           item: response.data,
+          wasHeld,
           fields: this.getFieldsByNewsletter(response.data),
           thumbnailPromise,
           validationError: validateNewsletter(response.data),
@@ -413,6 +430,18 @@ class NewsletterSendComponent extends Component<
 
     if (!this.isValid()) {
       return jQuery('#mailpoet_newsletter').parsley().validate();
+    }
+
+    if (
+      isScheduleInPast(this.state.wasHeld, this.state.item.options, new Date())
+    ) {
+      return this.showError({
+        errors: [
+          {
+            message: __('Pick a date and time in the future.', 'mailpoet'),
+          },
+        ],
+      });
     }
 
     MailPoet.Modal.loading(true);
@@ -801,7 +830,7 @@ class NewsletterSendComponent extends Component<
       item: { status, queue, type, options, wp_post_id: wpPostId },
       mssKeyPendingApproval,
     } = this.state;
-    const isPaused = status === 'sending' && queue && queue.status === 'paused';
+    const isPaused = isPausedOnSendPage(status, queue);
     const sendButtonOptions = this.getSendButtonOptions();
     const fields = this.getPreparedFields(isPaused);
 

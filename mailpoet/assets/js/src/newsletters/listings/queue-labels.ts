@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 
 type QueueState = {
-  status: string | null;
+  status?: string | null;
   pause_reason?: string | null;
 };
 
