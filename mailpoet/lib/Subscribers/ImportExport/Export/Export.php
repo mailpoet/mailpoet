@@ -127,7 +127,10 @@ class Export {
         $this->writeCSVRow($cSVFile, $row);
       }
     }
-    fclose($cSVFile);
+    // Remote storage can fail to save on close and still report success.
+    if (!fclose($cSVFile) || !is_file($this->exportFile)) {
+      throw new \Exception(__('The export file could not be saved on the server.', 'mailpoet'));
+    }
     return $processedSubscribers;
   }
 
