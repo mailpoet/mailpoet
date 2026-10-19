@@ -4,6 +4,7 @@ import { isTruthy } from 'common/utils';
 type NormalizeSettingsModule = {
   normalizeSettings: (data: Record<string, unknown>) => {
     subscribe: Record<'on_comment' | 'on_register', { label: string }>;
+    allow_sending_in_non_production: string;
   };
 };
 type ModuleLoader = (
@@ -83,5 +84,29 @@ describe('normalizeSettings subscribe labels', () => {
     const subscribe = normalizeSubscribeLabels('   ');
     expect(subscribe.on_comment.label).to.equal('Default label');
     expect(subscribe.on_register.label).to.equal('Default label');
+  });
+});
+
+describe('normalizeSettings non-production sending', () => {
+  before(loadWithMockedCommon);
+
+  after(() => {
+    delete testRequire.cache[testRequire.resolve(normalizeSettingsPath)];
+  });
+
+  const normalize = (data: Record<string, unknown>) =>
+    normalizeSettingsModule.normalizeSettings(data)
+      .allow_sending_in_non_production;
+
+  it('turns sending off when the setting is missing', () => {
+    expect(normalize({})).to.equal('');
+  });
+
+  it('keeps sending on when the setting is 1', () => {
+    expect(normalize({ allow_sending_in_non_production: '1' })).to.equal('1');
+  });
+
+  it('keeps sending off when the setting is empty', () => {
+    expect(normalize({ allow_sending_in_non_production: '' })).to.equal('');
   });
 });

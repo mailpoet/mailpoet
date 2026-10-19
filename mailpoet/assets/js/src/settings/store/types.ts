@@ -66,6 +66,7 @@ export type Settings = {
     enabled: '' | '1';
   };
   send_transactional_emails: '' | '1';
+  allow_sending_in_non_production: '' | '1';
   deactivate_subscriber_after_inactive_days: '' | '90' | '180' | '365' | '540';
   delete_unconfirmed_subscribers_after_days: '' | '30';
   sending_status_retention_days: '' | '30' | '60' | '90' | '180';
@@ -287,6 +288,7 @@ export type State = {
   flags: {
     woocommerce: boolean;
     membersPlugin: boolean;
+    environmentType: string;
     builtInCaptcha: boolean;
     newUser: boolean;
     error: boolean;
@@ -317,6 +319,7 @@ export type SettingsWindow = {
   mailpoet_is_new_user: string;
   mailpoet_woocommerce_active: string;
   mailpoet_members_plugin_active: string;
+  mailpoet_environment_type: string;
   mailpoet_built_in_captcha_supported: boolean;
   mailpoet_mss_key_valid: string;
   mailpoet_premium_key_valid: string;
