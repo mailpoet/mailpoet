@@ -5,6 +5,7 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response;
+use MailPoet\API\JSON\ResponseBuilders\HeldCampaignsResponseBuilder;
 use MailPoet\API\JSON\ResponseBuilders\SendingQueuesResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
@@ -18,6 +19,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\NewsletterValidator;
+use MailPoet\Newsletter\Sending\OverdueCampaignHold;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
@@ -76,6 +78,10 @@ class SendingQueue extends APIEndpoint {
   /** @var FreeDomains */
   private $freeDomains;
 
+  private OverdueCampaignHold $overdueCampaignHold;
+
+  private HeldCampaignsResponseBuilder $heldCampaignsResponseBuilder;
+
   public function __construct(
     SubscribersFeature $subscribersFeature,
     NewslettersRepository $newsletterRepository,
@@ -90,7 +96,9 @@ class SendingQueue extends APIEndpoint {
     CronHelper $cronHelper,
     TimeZoneCampaignScheduler $timeZoneCampaignScheduler,
     AuthorizedEmailsController $authorizedEmailsController,
-    FreeDomains $freeDomains
+    FreeDomains $freeDomains,
+    OverdueCampaignHold $overdueCampaignHold,
+    HeldCampaignsResponseBuilder $heldCampaignsResponseBuilder
   ) {
     $this->subscribersFeature = $subscribersFeature;
     $this->subscribersFinder = $subscribersFinder;
@@ -106,6 +114,8 @@ class SendingQueue extends APIEndpoint {
     $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->freeDomains = $freeDomains;
+    $this->overdueCampaignHold = $overdueCampaignHold;
+    $this->heldCampaignsResponseBuilder = $heldCampaignsResponseBuilder;
   }
 
   public function add($data = []) {
@@ -323,6 +333,11 @@ class SendingQueue extends APIEndpoint {
         APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet'),
       ]);
     }
+  }
+
+  public function getHeld() {
+    $this->overdueCampaignHold->holdDueCampaigns();
+    return $this->successResponse($this->heldCampaignsResponseBuilder->buildAll($this->overdueCampaignHold->getHeld()));
   }
 
   public function pingCron() {
