@@ -233,7 +233,7 @@ class TimeZoneCampaignScheduler {
     return false;
   }
 
-  public function pauseCampaign(SendingQueueEntity $queue): void {
+  public function pauseCampaign(SendingQueueEntity $queue, ?string $reason = null): void {
     foreach ($this->getCampaignQueues($queue) as $campaignQueue) {
       // Mirrors the guard in resumeCampaign(): a queue is only "fully processed"
       // when it has work to do AND all of it has been done. A zero-count queue
@@ -242,8 +242,16 @@ class TimeZoneCampaignScheduler {
         continue;
       }
       $task = $campaignQueue->getTask();
-      if ($task instanceof ScheduledTaskEntity) {
-        $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+      if (!$task instanceof ScheduledTaskEntity) {
+        continue;
+      }
+      // A reason describes why a batch that is waiting or running was paused; don't attach it to a batch that is already paused or finished.
+      if ($reason !== null && !in_array($task->getStatus(), [null, ScheduledTaskEntity::STATUS_SCHEDULED], true)) {
+        continue;
+      }
+      $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+      if ($reason !== null) {
+        $task->setPauseReason($reason);
       }
     }
     $this->entityManager->flush();

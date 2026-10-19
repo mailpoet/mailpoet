@@ -38,10 +38,13 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\SubscriberError;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
+use MailPoet\Newsletter\Sending\OverdueCampaignHold;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Sending\TemplateBatch;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Router\Endpoints\Track;
@@ -2418,6 +2421,288 @@ class SendingQueueTest extends \MailPoetTest {
     $this->entityManager->flush();
   }
 
+  public function testItHoldsStandardNewsletterOverdueByMoreThanThreshold() {
+    $this->makeTaskDueHoursAgo(25);
+
+    $this->getWorkerExpectingSends(0)->process();
+
+    $this->assertTaskHeld($this->scheduledTask);
+    verify($this->scheduledTask->getInProgress())->false();
+    verify($this->sendingQueue->getNewsletterRenderedBody())->null();
+    verify($this->sendingQueue->getCountProcessed())->equals(0);
+  }
+
+  public function testItSendsNewsletterOverdueByLessThanThreshold() {
+    $this->makeTaskDueHoursAgo(23);
+
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+  }
+
+  public function testItDoesNotTouchOverdueTaskThatIsStillScheduled() {
+    $this->makeTaskDueHoursAgo(25);
+    $this->scheduledTask->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->entityManager->flush();
+
+    $this->getWorkerExpectingSends(0)->process();
+
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($this->scheduledTask->getPauseReason())->null();
+  }
+
+  public function testItDoesNotHoldCampaignThatAlreadySentToSomeone() {
+    $this->makeTaskDueHoursAgo(25);
+    $this->sendingQueue->setCountProcessed(1);
+    $this->entityManager->flush();
+
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getPauseReason())->null();
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+  }
+
+  public function testItSendsConfirmedOverdueCampaign() {
+    $this->makeTaskDueHoursAgo(25);
+    $this->scheduledTask->setOverdueSendConfirmed(true);
+    $this->entityManager->flush();
+
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+    verify($this->scheduledTask->isOverdueSendConfirmed())->true();
+  }
+
+  public function testItSendsHeldCampaignOnceItIsConfirmedAndResumed() {
+    $this->makeTaskDueHoursAgo(25);
+    $this->getWorkerExpectingSends(0)->process();
+    $this->assertTaskHeld($this->scheduledTask);
+
+    $this->scheduledTask->setOverdueSendConfirmed(true);
+    $this->scheduledTask->setStatus(null);
+    $this->entityManager->flush();
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+    verify($this->scheduledTask->isOverdueSendConfirmed())->true();
+  }
+
+  public function testItDoesNotHoldLatestNewsletterReplay() {
+    $this->makeTaskDueHoursAgo(25);
+    $this->sendingQueue->setMeta([NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true]);
+    $this->entityManager->flush();
+
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getPauseReason())->null();
+  }
+
+  public function testItDoesNotHoldWelcomeEmail() {
+    $this->newsletter->setType(NewsletterEntity::TYPE_WELCOME);
+    $this->newsletter->getNewsletterSegments()->clear();
+    $this->makeTaskDueHoursAgo(25);
+
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getPauseReason())->null();
+  }
+
+  public function testItHoldsPostNotificationHistoryBeforeAllocatingPosts() {
+    $parent = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, 'Post Notification', NewsletterEntity::STATUS_ACTIVE);
+    $this->newsletter->setType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+    $this->newsletter->setParent($parent);
+    $this->makeTaskDueHoursAgo(25);
+
+    $this->getWorkerExpectingSends(0)->process();
+
+    $this->assertTaskHeld($this->scheduledTask);
+    verify($this->sendingQueue->getNewsletterRenderedBody())->null();
+    $postsTable = $this->entityManager->getClassMetadata(\MailPoet\Entities\NewsletterPostEntity::class)->getTableName();
+    verify($this->entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM $postsTable"))->equals(0);
+  }
+
+  public function testItHoldsReEngagementEmail() {
+    $this->newsletter->setType(NewsletterEntity::TYPE_RE_ENGAGEMENT);
+    $this->makeTaskDueHoursAgo(25);
+
+    $this->getWorkerExpectingSends(0)->process();
+
+    $this->assertTaskHeld($this->scheduledTask);
+  }
+
+  public function testItHoldsLegacyTaskWithoutScheduledTimeByCreationTime() {
+    $this->scheduledTask->setScheduledAt(null);
+    $this->scheduledTask->setCreatedAt(Carbon::now()->subDays(2));
+    $this->entityManager->flush();
+
+    $this->getWorkerExpectingSends(0)->process();
+
+    $this->assertTaskHeld($this->scheduledTask);
+  }
+
+  public function testItDoesNotHoldWhenTheHoldIsFilteredOff() {
+    $this->makeTaskDueHoursAgo(25);
+    $callback = '__return_false';
+    add_filter('mailpoet_hold_overdue_campaigns', $callback);
+    try {
+      $this->getWorkerExpectingSends(1)->process();
+    } finally {
+      remove_filter('mailpoet_hold_overdue_campaigns', $callback);
+    }
+
+    verify($this->scheduledTask->getPauseReason())->null();
+  }
+
+  public function testItDoesNotHoldWhenThresholdIsZero() {
+    $this->makeTaskDueHoursAgo(25);
+    $callback = '__return_zero';
+    add_filter('mailpoet_overdue_campaign_threshold', $callback);
+    try {
+      $this->getWorkerExpectingSends(1)->process();
+    } finally {
+      remove_filter('mailpoet_overdue_campaign_threshold', $callback);
+    }
+
+    verify($this->scheduledTask->getPauseReason())->null();
+  }
+
+  public function testItUsesTheFilteredThreshold() {
+    $this->makeTaskDueHoursAgo(2);
+    $callback = function() {
+      return 3600;
+    };
+    add_filter('mailpoet_overdue_campaign_threshold', $callback);
+    try {
+      $this->getWorkerExpectingSends(0)->process();
+    } finally {
+      remove_filter('mailpoet_overdue_campaign_threshold', $callback);
+    }
+
+    $this->assertTaskHeld($this->scheduledTask);
+  }
+
+  public function testItHoldsWholeTimeZoneCampaignWhenAnotherBatchIsOverdue() {
+    $campaignId = 'campaign-1';
+    $this->makeTaskDueHoursAgo(25);
+    $this->sendingQueue->setMeta($this->getTimeZoneMeta($campaignId));
+    $second = $this->addTimeZoneBatch($campaignId, Carbon::now()->subHours(23));
+    // The worker reaches the batch that is not yet 24 hours late first
+    $this->setTaskUpdatedAt($this->scheduledTask, Carbon::now()->subMinutes(5));
+    $this->setTaskUpdatedAt($this->getBatchTask($second), Carbon::now()->subMinutes(10));
+
+    $this->getWorkerExpectingSends(0)->process();
+
+    $this->assertTaskHeld($this->scheduledTask);
+    $this->assertTaskHeld($this->getBatchTask($second));
+    // The batch that was held together with the first one is not rendered afterwards
+    verify($this->sendingQueue->getNewsletterRenderedBody())->null();
+  }
+
+  public function testItHoldsFutureTimeZoneBatchesWithTheRunningOne() {
+    $campaignId = 'campaign-2';
+    $this->makeTaskDueHoursAgo(25);
+    $this->sendingQueue->setMeta($this->getTimeZoneMeta($campaignId));
+    $future1 = $this->addTimeZoneBatch($campaignId, Carbon::now()->addHours(2), ScheduledTaskEntity::STATUS_SCHEDULED);
+    $future2 = $this->addTimeZoneBatch($campaignId, Carbon::now()->addHours(5), ScheduledTaskEntity::STATUS_SCHEDULED);
+
+    $this->getWorkerExpectingSends(0)->process();
+
+    $this->assertTaskHeld($this->scheduledTask);
+    $this->assertTaskHeld($this->getBatchTask($future1));
+    $this->assertTaskHeld($this->getBatchTask($future2));
+
+    $this->diContainer->get(TimeZoneCampaignScheduler::class)->resumeCampaign($this->sendingQueue);
+
+    verify($this->scheduledTask->getStatus())->null();
+    verify($this->scheduledTask->getPauseReason())->null();
+    verify($this->getBatchTask($future1)->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($this->getBatchTask($future1)->getPauseReason())->null();
+    verify($this->getBatchTask($future2)->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+  }
+
+  public function testItDoesNotHoldTimeZoneCampaignThatAlreadyStarted() {
+    $campaignId = 'campaign-3';
+    $this->makeTaskDueHoursAgo(25);
+    $this->sendingQueue->setMeta($this->getTimeZoneMeta($campaignId));
+    $this->addTimeZoneBatch($campaignId, Carbon::now()->subHours(30), ScheduledTaskEntity::STATUS_COMPLETED, 1);
+
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getPauseReason())->null();
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+  }
+
+  public function testItSendsConfirmedTimeZoneBatch() {
+    $campaignId = 'campaign-4';
+    $this->makeTaskDueHoursAgo(25);
+    $this->scheduledTask->setOverdueSendConfirmed(true);
+    $this->sendingQueue->setMeta($this->getTimeZoneMeta($campaignId));
+    $this->addTimeZoneBatch($campaignId, Carbon::now()->addHours(3), ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->entityManager->flush();
+
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+  }
+
+  private function getWorkerExpectingSends(int $sends): SendingQueueWorker {
+    return $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        ['send' => $sends === 0 ? Expected::never() : Expected::exactly($sends, function() {
+          return $this->mailerTaskDummyResponse;
+        })]
+      )
+    );
+  }
+
+  private function makeTaskDueHoursAgo(int $hours): void {
+    $this->scheduledTask->setScheduledAt(Carbon::now()->subHours($hours));
+    $this->entityManager->flush();
+  }
+
+  private function assertTaskHeld(ScheduledTaskEntity $task): void {
+    $this->entityManager->refresh($task);
+    verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($task->getPauseReason())->equals(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+    verify((bool)$task->getInProgress())->false();
+  }
+
+  private function getTimeZoneMeta(string $campaignId): array {
+    return [
+      TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+      TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => $campaignId,
+    ];
+  }
+
+  private function addTimeZoneBatch(string $campaignId, \DateTimeInterface $scheduledAt, ?string $status = null, int $countProcessed = 0): SendingQueueEntity {
+    $queue = $this->createQueueWithTask($this->newsletter, $status);
+    $task = $queue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    $task->setScheduledAt($scheduledAt);
+    $queue->setMeta($this->getTimeZoneMeta($campaignId));
+    $queue->setCountProcessed($countProcessed);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($task, [$this->subscriber->getId()]);
+    $this->entityManager->flush();
+    return $queue;
+  }
+
+  private function getBatchTask(SendingQueueEntity $queue): ScheduledTaskEntity {
+    $task = $queue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    return $task;
+  }
+
+  private function setTaskUpdatedAt(ScheduledTaskEntity $task, \DateTimeInterface $updatedAt): void {
+    $table = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE $table SET updated_at = :updatedAt WHERE id = :id",
+      ['updatedAt' => $updatedAt->format('Y-m-d H:i:s'), 'id' => $task->getId()]
+    );
+    $this->entityManager->refresh($task);
+  }
+
   private function createQueueWithTask(NewsletterEntity $newsletter, $status = null, $body = null): SendingQueueEntity {
     $task = new ScheduledTaskEntity();
     $task->setType(SendingQueueWorker::TASK_TYPE);
@@ -2458,6 +2743,10 @@ class SendingQueueTest extends \MailPoetTest {
       $this->statisticsNewslettersRepository,
       $authorizedEmailControllerMock ?? $this->authorizedEmailsController,
       $this->featuresController,
+      $this->diContainer->get(TimeZoneCampaignScheduler::class),
+      false,
+      null,
+      $this->diContainer->get(OverdueCampaignHold::class)
     );
   }
 

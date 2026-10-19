@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\Sending;
 
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Doctrine\Repository;
+use MailPoet\Doctrine\Types\JsonType;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
@@ -11,8 +12,11 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
+use MailPoetVendor\Doctrine\DBAL\Types\Type;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
+use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 /**
  * @extends Repository<ScheduledTaskEntity>
@@ -55,13 +59,122 @@ class ScheduledTasksRepository extends Repository {
    * @return ScheduledTaskEntity[]
    */
   public function findPausedForSenderDomain(): array {
-    // Task meta is a LONGTEXT column written by JsonType (unescaped slashes and unicode), so the
-    // stored text contains exactly this fragment of the encoder output.
-    $marker = '%' . trim((string)json_encode(
-      [ScheduledTaskEntity::META_PAUSE_REASON => ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN],
-      JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-    ), '{}') . '%';
+    return $this->createPausedByReasonQueryBuilder(
+      ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN,
+      // Re-engagement emails and "Send latest newsletter" replays have no Resume action, so don't list them.
+      array_diff(NewsletterEntity::CAMPAIGN_TYPES, [NewsletterEntity::TYPE_RE_ENGAGEMENT])
+    )
+      ->orderBy('t.updatedAt', 'DESC')
+      ->getQuery()
+      ->getResult();
+  }
 
+  /**
+   * @return ScheduledTaskEntity[]
+   */
+  public function findHeldOverdue(): array {
+    return $this->createPausedByReasonQueryBuilder(ScheduledTaskEntity::PAUSE_REASON_OVERDUE, OverdueCampaignHold::HELD_TYPES)
+      ->orderBy('t.scheduledAt', 'ASC')
+      ->getQuery()
+      ->getResult();
+  }
+
+  /**
+   * @return ScheduledTaskEntity[]
+   */
+  public function findHeldOverdueForNewsletter(NewsletterEntity $newsletter): array {
+    return $this->createPausedByReasonQueryBuilder(ScheduledTaskEntity::PAUSE_REASON_OVERDUE, OverdueCampaignHold::HELD_TYPES)
+      ->andWhere('q.newsletter = :newsletter')
+      ->setParameter('newsletter', $newsletter)
+      ->orderBy('t.scheduledAt', 'ASC')
+      ->getQuery()
+      ->getResult();
+  }
+
+  /**
+   * Sending tasks that the Scheduler has moved to running, nothing has been sent for and that were due before the cutoff.
+   * A NULL scheduled time (older tasks) falls back to the creation time.
+   *
+   * @return ScheduledTaskEntity[]
+   */
+  public function findUnconfirmedRunningCampaignTasksDueBefore(\DateTimeInterface $cutoff): array {
+    return $this->doctrineRepository->createQueryBuilder('t')
+      ->select('t', 'q', 'n')
+      ->join('t.sendingQueue', 'q')
+      ->join('q.newsletter', 'n')
+      ->where('t.type = :type')
+      ->andWhere('t.status IS NULL')
+      ->andWhere('COALESCE(t.inProgress, 0) = 0')
+      ->andWhere('t.deletedAt IS NULL')
+      ->andWhere('n.deletedAt IS NULL')
+      ->andWhere('n.type IN (:types)')
+      ->andWhere('COALESCE(t.scheduledAt, t.createdAt) <= :cutoff')
+      ->andWhere('q.countProcessed = 0')
+      ->andWhere('q.meta IS NULL OR q.meta NOT LIKE :replayMeta')
+      ->andWhere('t.meta IS NULL OR (t.meta NOT LIKE :replayMeta AND t.meta NOT LIKE :confirmedMarker)')
+      ->setParameter('type', SendingQueue::TASK_TYPE)
+      ->setParameter('types', OverdueCampaignHold::HELD_TYPES)
+      ->setParameter('cutoff', $cutoff)
+      ->setParameter('replayMeta', NewsletterReplayMetadata::getMetaLikePattern())
+      ->setParameter('confirmedMarker', $this->getMetaMarker(ScheduledTaskEntity::META_OVERDUE_SEND_CONFIRMED, true))
+      ->orderBy('t.scheduledAt', 'ASC')
+      ->getQuery()
+      ->getResult();
+  }
+
+  /**
+   * Pauses a running task as overdue unless a worker got to it first. The conditions sit in one UPDATE so
+   * the decision and the write cannot be split by a worker that starts sending in between.
+   * Returns false when the task was not claimed. The entity is refreshed either way.
+   */
+  public function claimForOverdueHold(ScheduledTaskEntity $task): bool {
+    $connection = $this->entityManager->getConnection();
+    $tasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $queuesTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+
+    $oldMeta = $connection->fetchOne("SELECT `meta` FROM `{$tasksTable}` WHERE `id` = :id", ['id' => $task->getId()]);
+    $claimed = false;
+    if ($oldMeta === null || is_string($oldMeta)) {
+      $meta = ($oldMeta === null || $oldMeta === '') ? [] : json_decode($oldMeta, true);
+      if (is_array($meta)) {
+        $meta[ScheduledTaskEntity::META_PAUSE_REASON] = ScheduledTaskEntity::PAUSE_REASON_OVERDUE;
+        $newMeta = Type::getType(JsonType::NAME)->convertToDatabaseValue($meta, $connection->getDatabasePlatform());
+        $affectedRows = $connection->executeStatement(
+          "UPDATE `{$tasksTable}` t
+           INNER JOIN `{$queuesTable}` q ON q.`task_id` = t.`id`
+           SET t.`status` = :paused, t.`meta` = :newMeta, t.`updated_at` = :updatedAt
+           WHERE t.`id` = :id
+             AND t.`status` IS NULL
+             AND COALESCE(t.`in_progress`, 0) = 0
+             AND q.`count_processed` = 0
+             AND t.`meta` <=> :oldMeta",
+          [
+            'paused' => ScheduledTaskEntity::STATUS_PAUSED,
+            'newMeta' => $newMeta,
+            'updatedAt' => Carbon::now()->millisecond(0)->format('Y-m-d H:i:s'),
+            'id' => $task->getId(),
+            'oldMeta' => $oldMeta,
+          ],
+          [
+            'paused' => ParameterType::STRING,
+            'newMeta' => ParameterType::STRING,
+            'updatedAt' => ParameterType::STRING,
+            'id' => ParameterType::INTEGER,
+            'oldMeta' => ParameterType::STRING,
+          ]
+        );
+        $claimed = $affectedRows === 1;
+      }
+    }
+
+    $this->entityManager->refresh($task);
+    return $claimed;
+  }
+
+  /**
+   * @param string[] $newsletterTypes
+   */
+  private function createPausedByReasonQueryBuilder(string $reason, array $newsletterTypes): QueryBuilder {
     return $this->doctrineRepository->createQueryBuilder('t')
       ->select('t')
       ->join('t.sendingQueue', 'q')
@@ -70,18 +183,23 @@ class ScheduledTasksRepository extends Repository {
       ->where('t.status = :paused')
       ->andWhere('t.deletedAt IS NULL')
       ->andWhere('n.deletedAt IS NULL')
-      // Re-engagement emails and "Send latest newsletter" replays have no Resume action, so don't list them.
       ->andWhere('n.type IN (:campaignTypes)')
       ->andWhere('q.meta IS NULL OR q.meta NOT LIKE :replayMeta')
       ->andWhere('t.meta LIKE :marker')
       ->andWhere('t.meta NOT LIKE :replayMeta')
       ->setParameter('paused', ScheduledTaskEntity::STATUS_PAUSED)
-      ->setParameter('campaignTypes', array_diff(NewsletterEntity::CAMPAIGN_TYPES, [NewsletterEntity::TYPE_RE_ENGAGEMENT]))
+      ->setParameter('campaignTypes', $newsletterTypes)
       ->setParameter('replayMeta', NewsletterReplayMetadata::getMetaLikePattern())
-      ->setParameter('marker', $marker)
-      ->orderBy('t.updatedAt', 'DESC')
-      ->getQuery()
-      ->getResult();
+      ->setParameter('marker', $this->getMetaMarker(ScheduledTaskEntity::META_PAUSE_REASON, $reason));
+  }
+
+  /**
+   * @param string|bool $value
+   */
+  private function getMetaMarker(string $key, $value): string {
+    // Task meta is a LONGTEXT column written by JsonType (unescaped slashes and unicode), so the
+    // stored text contains exactly this fragment of the encoder output.
+    return '%' . trim((string)json_encode([$key => $value], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), '{}') . '%';
   }
 
   /**
