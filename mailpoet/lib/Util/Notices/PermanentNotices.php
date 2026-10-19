@@ -89,6 +89,9 @@ class PermanentNotices {
   /** @var SenderDomainPausedCampaignsNotice */
   private $senderDomainPausedCampaignsNotice;
 
+  /** @var NonProductionSendingNotice */
+  private $nonProductionSendingNotice;
+
   public function __construct(
     WPFunctions $wp,
     CronHelper $cronHelper,
@@ -103,7 +106,8 @@ class PermanentNotices {
     AuthorizedSenderDomainController $senderDomainController,
     NewslettersRepository $newslettersRepository,
     CaptchaDisabledNotice $captchaDisabledNotice,
-    SenderDomainPausedCampaignsNotice $senderDomainPausedCampaignsNotice
+    SenderDomainPausedCampaignsNotice $senderDomainPausedCampaignsNotice,
+    NonProductionSendingNotice $nonProductionSendingNotice
   ) {
     $this->wp = $wp;
     $this->phpVersionWarnings = new PHPVersionWarnings($wp);
@@ -128,6 +132,7 @@ class PermanentNotices {
     $this->senderDomainAuthenticationNotices = $senderDomainAuthenticationNotices;
     $this->captchaDisabledNotice = $captchaDisabledNotice;
     $this->senderDomainPausedCampaignsNotice = $senderDomainPausedCampaignsNotice;
+    $this->nonProductionSendingNotice = $nonProductionSendingNotice;
   }
 
   public function init() {
@@ -221,6 +226,9 @@ class PermanentNotices {
       $this->senderDomainAuthenticationNotices->getDefaultFromDomain(),
       $this->senderDomainPausedCampaignsNotice->getListedDomains(),
       true
+    );
+    $this->nonProductionSendingNotice->init(
+      Menu::isOnMailPoetAdminPage($excludePausedCampaignsNotice)
     );
     $this->senderDomainAuthenticationNotices->init(
       !$coveredByPausedCampaignsNotice && Menu::isOnMailPoetAdminPage($excludeDomainAuthenticationNotices)

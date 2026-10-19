@@ -197,7 +197,8 @@ class PermanentNoticesTest extends \MailPoetTest {
   private function createPermanentNotices(
     WPFunctions $wp,
     ?SenderDomainAuthenticationNotices $authNotices = null,
-    ?SenderDomainPausedCampaignsNotice $pausedNotice = null
+    ?SenderDomainPausedCampaignsNotice $pausedNotice = null,
+    ?NonProductionSendingNotice $sendingNotice = null
   ): PermanentNotices {
     return new PermanentNotices(
       $wp,
@@ -213,7 +214,8 @@ class PermanentNoticesTest extends \MailPoetTest {
       $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(CaptchaDisabledNotice::class),
-      $pausedNotice ?? $this->diContainer->get(SenderDomainPausedCampaignsNotice::class)
+      $pausedNotice ?? $this->diContainer->get(SenderDomainPausedCampaignsNotice::class),
+      $sendingNotice ?? $this->diContainer->get(NonProductionSendingNotice::class)
     );
   }
 }
