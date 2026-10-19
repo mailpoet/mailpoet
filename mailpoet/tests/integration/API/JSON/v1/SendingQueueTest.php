@@ -17,6 +17,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\NewsletterValidator;
+use MailPoet\Newsletter\Sending\OverdueCampaignHold;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
@@ -25,6 +26,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\ScheduledTaskSubscriber as ScheduledTaskSubscriberFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
@@ -659,6 +661,379 @@ class SendingQueueTest extends \MailPoetTest {
 
     $this->assertSame([], $result->data);
     $this->assertNull($task->getStatus());
+  }
+
+  public function testResumeConfirmsAndResumesAHeldCampaign(): void {
+    [$task] = $this->createHeldCampaign($this->newsletter);
+    $calls = [];
+
+    $result = $this->getResumeApi($calls, true)->resume(['newsletter_id' => $this->newsletter->getId()]);
+
+    $this->assertSame(200, $result->status);
+    $this->entityManager->clear();
+    $reloaded = $this->diContainer->get(ScheduledTasksRepository::class)->findOneById((int)$task->getId());
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $reloaded);
+    $this->assertNull($reloaded->getStatus());
+    $this->assertNull($reloaded->getPauseReason());
+    $this->assertTrue($reloaded->isOverdueSendConfirmed());
+  }
+
+  public function testResumeConfirmsEveryBatchOfAHeldTimeZoneCampaign(): void {
+    $campaignId = 'held-timezone-campaign';
+    $tasks = [];
+    foreach ([-30, -26, 20] as $hours) {
+      [$task, $queue] = $this->createHeldCampaign($this->newsletter, $hours);
+      $queue->setMeta([
+        TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+        TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => $campaignId,
+      ]);
+      $tasks[] = $task;
+    }
+    $this->entityManager->flush();
+    $calls = [];
+
+    $result = $this->getResumeApi($calls, true)->resume(['newsletter_id' => $this->newsletter->getId()]);
+
+    $this->assertSame(200, $result->status);
+    $this->entityManager->clear();
+    $repository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $statuses = [];
+    foreach ($tasks as $task) {
+      $reloaded = $repository->findOneById((int)$task->getId());
+      $this->assertInstanceOf(ScheduledTaskEntity::class, $reloaded);
+      $this->assertTrue($reloaded->isOverdueSendConfirmed());
+      $this->assertNull($reloaded->getPauseReason());
+      $statuses[] = $reloaded->getStatus();
+    }
+    $this->assertSame([null, null, ScheduledTaskEntity::STATUS_SCHEDULED], $statuses);
+  }
+
+  public function testResumeOfAUserPausedCampaignConfirmsItSoItIsNotHeldAgain(): void {
+    $task = (new ScheduledTaskFactory())->create(
+      SendingQueue::TASK_TYPE,
+      ScheduledTaskEntity::STATUS_PAUSED,
+      Carbon::now()->subHours(30)->millisecond(0)
+    );
+    $queue = (new SendingQueueFactory())->create($task, $this->newsletter);
+    $queue->setCountTotal(1);
+    $this->newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $this->entityManager->flush();
+    $this->entityManager->refresh($this->newsletter);
+    $calls = [];
+
+    $result = $this->getResumeApi($calls, true)->resume(['newsletter_id' => $this->newsletter->getId()]);
+
+    $this->assertSame(200, $result->status);
+    $this->assertNull($task->getStatus());
+    $this->assertTrue($task->isOverdueSendConfirmed());
+    $this->assertFalse($this->diContainer->get(OverdueCampaignHold::class)->shouldHold($task, $this->newsletter));
+  }
+
+  public function testResumeActsOnTheHeldRunOfAReEngagementEmail(): void {
+    $newsletter = (new NewsletterFactory())->withReengagementType()->withDefaultBody()->create();
+    [$heldTask] = $this->createHeldCampaign($newsletter);
+    $completedTask = (new ScheduledTaskFactory())->create(
+      SendingQueue::TASK_TYPE,
+      ScheduledTaskEntity::STATUS_COMPLETED,
+      Carbon::now()->subDays(40)->millisecond(0)
+    );
+    $completedQueue = (new SendingQueueFactory())->create($completedTask, $newsletter);
+    // Written with SQL because the entity listener overwrites updatedAt on flush.
+    $this->entityManager->getConnection()->executeStatement(
+      'UPDATE ' . $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName() . ' SET updated_at = ? WHERE id = ?',
+      [Carbon::now()->addHour()->format('Y-m-d H:i:s'), $completedQueue->getId()]
+    );
+    $this->entityManager->refresh($completedQueue);
+    $this->entityManager->refresh($newsletter);
+    $lastQueue = $newsletter->getLastUpdatedQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $lastQueue);
+    $this->assertSame($completedQueue->getId(), $lastQueue->getId());
+    $calls = [];
+
+    $result = $this->getResumeApi($calls, true)->resume(['newsletter_id' => $newsletter->getId()]);
+
+    $this->assertSame(200, $result->status);
+    $this->assertNull($heldTask->getStatus());
+    $this->assertTrue($heldTask->isOverdueSendConfirmed());
+    $this->assertSame(ScheduledTaskEntity::STATUS_COMPLETED, $completedTask->getStatus());
+    $this->assertFalse($completedTask->isOverdueSendConfirmed());
+  }
+
+  /**
+   * @dataProvider activeSiblingIssues
+   */
+  public function testResumeOfAHeldIssueIsRefusedWhileAnotherIssueOfThePostNotificationIsActive(?string $siblingStatus, int $siblingScheduledHoursFromNow): void {
+    $parent = (new NewsletterFactory())->withPostNotificationsType()->create();
+    $held = (new NewsletterFactory())->withPostNotificationHistoryType()->withParent($parent)->withSenderAddress('john.doe@example.com')->create();
+    [$heldTask] = $this->createHeldCampaign($held);
+    $sibling = (new NewsletterFactory())->withPostNotificationHistoryType()->withParent($parent)->create();
+    $siblingTask = (new ScheduledTaskFactory())->create(
+      SendingQueue::TASK_TYPE,
+      $siblingStatus,
+      Carbon::now()->addHours($siblingScheduledHoursFromNow)->millisecond(0)
+    );
+    (new SendingQueueFactory())->create($siblingTask, $sibling);
+    $this->entityManager->refresh($held);
+    $calls = [];
+
+    $result = $this->getResumeApi($calls, true)->resume(['newsletter_id' => $held->getId()]);
+
+    $this->assertSame(APIResponse::STATUS_BAD_REQUEST, $result->status);
+    $this->assertSame(APIError::BAD_REQUEST, $result->errors[0]['error']);
+    $this->assertSame('Another issue of this post notification is being sent. Wait until it finishes, then send this one.', $result->errors[0]['message']);
+    $this->assertSame(ScheduledTaskEntity::STATUS_PAUSED, $heldTask->getStatus());
+    $this->assertFalse($heldTask->isOverdueSendConfirmed());
+  }
+
+  public function activeSiblingIssues(): array {
+    return [
+      'running' => [null, -1],
+      'scheduled and due' => [ScheduledTaskEntity::STATUS_SCHEDULED, -1],
+    ];
+  }
+
+  public function testResumeOfAHeldIssueIsAllowedWhenNoOtherIssueIsActive(): void {
+    $parent = (new NewsletterFactory())->withPostNotificationsType()->create();
+    $held = (new NewsletterFactory())->withPostNotificationHistoryType()->withParent($parent)->withSenderAddress('john.doe@example.com')->create();
+    [$heldTask] = $this->createHeldCampaign($held);
+    $future = (new NewsletterFactory())->withPostNotificationHistoryType()->withParent($parent)->create();
+    $futureTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addHours(5)->millisecond(0));
+    (new SendingQueueFactory())->create($futureTask, $future);
+    $this->entityManager->refresh($held);
+    $calls = [];
+
+    $result = $this->getResumeApi($calls, true)->resume(['newsletter_id' => $held->getId()]);
+
+    $this->assertSame(200, $result->status);
+    $this->assertNull($heldTask->getStatus());
+    $this->assertTrue($heldTask->isOverdueSendConfirmed());
+  }
+
+  public function testCancelHeldDeletesTheQueuesAndMakesAStandardEmailADraft(): void {
+    $this->newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $this->newsletterOptionsFactory->create($this->newsletter, NewsletterOptionFieldEntity::NAME_SCHEDULED_AT, '2018-10-10 10:00:00');
+    [$task, $queue] = $this->createHeldCampaign($this->newsletter);
+    $taskId = (int)$task->getId();
+    $queueId = (int)$queue->getId();
+    $this->entityManager->refresh($this->newsletter);
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->cancelHeld(['newsletter_id' => $this->newsletter->getId()]);
+
+    $this->assertSame(200, $result->status);
+    $this->entityManager->clear();
+    $this->assertNull($this->diContainer->get(SendingQueuesRepository::class)->findOneById($queueId));
+    $this->assertNull($this->diContainer->get(ScheduledTasksRepository::class)->findOneById($taskId));
+    $this->assertSame(0, $this->countTaskSubscribers($taskId));
+    $newsletter = $this->entityManager->find(NewsletterEntity::class, $this->newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $this->assertSame(NewsletterEntity::STATUS_DRAFT, $newsletter->getStatus());
+    $this->assertSame('2018-10-10 10:00:00', $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT));
+  }
+
+  public function testCancelHeldDeletesEveryBatchOfATimeZoneCampaign(): void {
+    $queueIds = [];
+    foreach ([-30, 20] as $hours) {
+      [, $queue] = $this->createHeldCampaign($this->newsletter, $hours);
+      $queue->setMeta([
+        TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+        TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => 'cancel-tz',
+      ]);
+      $queueIds[] = (int)$queue->getId();
+    }
+    $this->entityManager->flush();
+    $this->entityManager->refresh($this->newsletter);
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->cancelHeld(['newsletter_id' => $this->newsletter->getId()]);
+
+    $this->assertSame(200, $result->status);
+    $this->entityManager->clear();
+    foreach ($queueIds as $queueId) {
+      $this->assertNull($this->diContainer->get(SendingQueuesRepository::class)->findOneById($queueId));
+    }
+  }
+
+  public function testCancelHeldWithRescheduleClearsTheStaleDateButKeepsScheduleMode(): void {
+    $this->newsletterOptionsFactory->createMultipleOptions($this->newsletter, [
+      NewsletterOptionFieldEntity::NAME_IS_SCHEDULED => '1',
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_AT => '2018-10-10 10:00:00',
+    ]);
+    $this->createHeldCampaign($this->newsletter);
+    $this->entityManager->refresh($this->newsletter);
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->cancelHeld(['newsletter_id' => $this->newsletter->getId(), 'reschedule' => true]);
+
+    $this->assertSame(200, $result->status);
+    $this->entityManager->clear();
+    $newsletter = $this->entityManager->find(NewsletterEntity::class, $this->newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $this->assertSame(NewsletterEntity::STATUS_DRAFT, $newsletter->getStatus());
+    $this->assertEmpty($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT));
+    $this->assertEquals('1', $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_IS_SCHEDULED));
+  }
+
+  public function testCancelHeldDeletesAHeldPostNotificationIssueAndKeepsItsParent(): void {
+    $parent = (new NewsletterFactory())->withPostNotificationsType()->create();
+    $issue = (new NewsletterFactory())->withPostNotificationHistoryType()->withParent($parent)->create();
+    $this->createHeldCampaign($issue);
+    $this->entityManager->refresh($issue);
+    $issueId = (int)$issue->getId();
+    $parentId = (int)$parent->getId();
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->cancelHeld(['newsletter_id' => $issueId]);
+
+    $this->assertSame(200, $result->status);
+    $this->entityManager->clear();
+    $this->assertNull($this->entityManager->find(NewsletterEntity::class, $issueId));
+    $this->assertInstanceOf(NewsletterEntity::class, $this->entityManager->find(NewsletterEntity::class, $parentId));
+  }
+
+  public function testCancelHeldDeletesOnlyTheHeldRunOfAReEngagementEmail(): void {
+    $newsletter = (new NewsletterFactory())->withReengagementType()->withActiveStatus()->withDefaultBody()->create();
+    [$heldTask, $heldQueue] = $this->createHeldCampaign($newsletter);
+    $completedTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->subDays(60)->millisecond(0));
+    $completedQueue = (new SendingQueueFactory())->create($completedTask, $newsletter);
+    $this->entityManager->refresh($newsletter);
+    $ids = [(int)$heldTask->getId(), (int)$heldQueue->getId(), (int)$completedTask->getId(), (int)$completedQueue->getId(), (int)$newsletter->getId()];
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->cancelHeld(['newsletter_id' => $ids[4]]);
+
+    $this->assertSame(200, $result->status);
+    $this->entityManager->clear();
+    $this->assertNull($this->diContainer->get(ScheduledTasksRepository::class)->findOneById($ids[0]));
+    $this->assertNull($this->diContainer->get(SendingQueuesRepository::class)->findOneById($ids[1]));
+    $this->assertSame(0, $this->countTaskSubscribers($ids[0]));
+    $this->assertNotNull($this->diContainer->get(ScheduledTasksRepository::class)->findOneById($ids[2]));
+    $this->assertNotNull($this->diContainer->get(SendingQueuesRepository::class)->findOneById($ids[3]));
+    $reloaded = $this->entityManager->find(NewsletterEntity::class, $ids[4]);
+    $this->assertInstanceOf(NewsletterEntity::class, $reloaded);
+    $this->assertSame(NewsletterEntity::STATUS_ACTIVE, $reloaded->getStatus());
+  }
+
+  public function testCancelHeldRefusesAnEmailThatIsNotHeld(): void {
+    $task = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_PAUSED, Carbon::now()->subHours(30)->millisecond(0));
+    $queue = (new SendingQueueFactory())->create($task, $this->newsletter);
+    $this->entityManager->refresh($this->newsletter);
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->cancelHeld(['newsletter_id' => $this->newsletter->getId()]);
+
+    $this->assertSame(APIResponse::STATUS_BAD_REQUEST, $result->status);
+    $this->assertSame('This email is not held.', $result->errors[0]['message']);
+    $this->assertNotNull($this->diContainer->get(SendingQueuesRepository::class)->findOneById((int)$queue->getId()));
+  }
+
+  public function testCancelHeldRefusesRescheduleForAnEmailThatIsNotStandard(): void {
+    $newsletter = (new NewsletterFactory())->withReengagementType()->withActiveStatus()->withDefaultBody()->create();
+    [$task] = $this->createHeldCampaign($newsletter);
+    $this->entityManager->refresh($newsletter);
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->cancelHeld(['newsletter_id' => $newsletter->getId(), 'reschedule' => true]);
+
+    $this->assertSame(APIResponse::STATUS_BAD_REQUEST, $result->status);
+    $this->assertNotNull($this->diContainer->get(ScheduledTasksRepository::class)->findOneById((int)$task->getId()));
+  }
+
+  public function testAddDeletesTheHeldQueueInsteadOfLeavingADuplicate(): void {
+    $segment = (new SegmentFactory())->create();
+    (new SubscriberFactory())->withSegments([$segment])->create();
+    $newsletter = (new NewsletterFactory())->withSubject('Held')->withDefaultBody()->withSegments([$segment])->create();
+    [$heldTask, $heldQueue] = $this->createHeldCampaign($newsletter);
+    $heldQueueId = (int)$heldQueue->getId();
+    $heldTaskId = (int)$heldTask->getId();
+    $this->entityManager->refresh($newsletter);
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->add(['newsletter_id' => $newsletter->getId()]);
+
+    $this->assertSame(200, $result->status);
+    $this->entityManager->clear();
+    $queues = $this->diContainer->get(SendingQueuesRepository::class)->findBy(['newsletter' => $newsletter->getId()]);
+    $this->assertCount(1, $queues);
+    $this->assertNotSame($heldQueueId, $queues[0]->getId());
+    $this->assertNull($this->diContainer->get(ScheduledTasksRepository::class)->findOneById($heldTaskId));
+  }
+
+  public function testAddInTimeZoneModeLeavesNoHeldQueueBehind(): void {
+    $segment = (new SegmentFactory())->create();
+    (new SubscriberFactory())->withSegments([$segment])->withTimeZone('America/New_York')->create();
+    (new SubscriberFactory())->withSegments([$segment])->withTimeZone('Europe/Bratislava')->create();
+    $newsletter = (new NewsletterFactory())->withDefaultBody()->withSenderAddress('sender@brand.com')->withSegments([$segment])->create();
+    [$heldTask, $heldQueue] = $this->createHeldCampaign($newsletter);
+    $heldQueueId = (int)$heldQueue->getId();
+    $heldTaskId = (int)$heldTask->getId();
+    $date = (new \DateTimeImmutable('+3 days', new \DateTimeZone('UTC')));
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_IS_SCHEDULED => '1',
+      NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE => TimeZoneCampaignScheduler::SCHEDULE_MODE_SUBSCRIBER_TIMEZONE,
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_DATE => $date->format('Y-m-d'),
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_TIME => '12:00:00',
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_AT => $date->format('Y-m-d H:i:s'),
+    ]);
+    $scheduler = $this->getServiceWithOverrides(TimeZoneCampaignScheduler::class, [
+      'capabilitiesManager' => Stub::makeEmpty(CapabilitiesManager::class, [
+        'getCapability' => new Capability('sendByTimezone', Capability::TYPE_BOOLEAN, false),
+      ]),
+      'featuresController' => Stub::make(FeaturesController::class, ['isSupported' => true]),
+      'wp' => Stub::make(WPFunctions::class, ['wpTimezone' => new \DateTimeZone('Europe/Bratislava')]),
+    ]);
+    $this->entityManager->refresh($newsletter);
+
+    $result = $this->getServiceWithOverrides(SendingQueueAPI::class, [
+      'timeZoneCampaignScheduler' => $scheduler,
+      'actionSchedulerDaemonTriggerAction' => Stub::makeEmpty(DaemonTrigger::class),
+    ])->add(['newsletter_id' => $newsletter->getId()]);
+
+    $this->assertSame(200, $result->status);
+    $this->entityManager->clear();
+    $this->assertNull($this->diContainer->get(SendingQueuesRepository::class)->findOneById($heldQueueId));
+    $this->assertNull($this->diContainer->get(ScheduledTasksRepository::class)->findOneById($heldTaskId));
+    $this->assertGreaterThan(1, count($this->diContainer->get(SendingQueuesRepository::class)->findBy(['newsletter' => $newsletter->getId()])));
+  }
+
+  /**
+   * @dataProvider refusedAdds
+   */
+  public function testARefusedAddDeletesNothing(string $refusal): void {
+    [$heldTask, $heldQueue] = $this->createHeldCampaign($this->newsletter);
+    $this->entityManager->refresh($this->newsletter);
+    $overrides = $refusal === 'limit'
+      ? ['subscribersFeature' => Stub::make(SubscribersFeature::class, ['check' => true])]
+      : ['newsletterValidator' => Stub::make(NewsletterValidator::class, ['validate' => 'Invalid email'])];
+
+    $result = $this->getServiceWithOverrides(SendingQueueAPI::class, $overrides)->add(['newsletter_id' => $this->newsletter->getId()]);
+
+    $this->assertGreaterThanOrEqual(400, $result->status);
+    $this->entityManager->clear();
+    $this->assertNotNull($this->diContainer->get(SendingQueuesRepository::class)->findOneById((int)$heldQueue->getId()));
+    $this->assertNotNull($this->diContainer->get(ScheduledTasksRepository::class)->findOneById((int)$heldTask->getId()));
+  }
+
+  public function refusedAdds(): array {
+    return [
+      'subscribers limit' => ['limit'],
+      'invalid newsletter' => ['invalid'],
+    ];
+  }
+
+  /**
+   * @return array{0: ScheduledTaskEntity, 1: SendingQueueEntity, 2: \MailPoet\Entities\SubscriberEntity}
+   */
+  private function createHeldCampaign(NewsletterEntity $newsletter, int $hoursFromNow = -30): array {
+    $task = (new ScheduledTaskFactory())->create(
+      SendingQueue::TASK_TYPE,
+      ScheduledTaskEntity::STATUS_PAUSED,
+      Carbon::now()->addHours($hoursFromNow)->millisecond(0)
+    );
+    $task->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+    $queue = (new SendingQueueFactory())->create($task, $newsletter);
+    $queue->setCountTotal(1);
+    $subscriber = (new SubscriberFactory())->create();
+    (new ScheduledTaskSubscriberFactory())->createUnprocessed($task, $subscriber);
+    $this->entityManager->flush();
+    $this->entityManager->refresh($newsletter);
+    return [$task, $queue, $subscriber];
+  }
+
+  private function countTaskSubscribers(int $taskId): int {
+    return $this->entityManager->getRepository(\MailPoet\Entities\ScheduledTaskSubscriberEntity::class)->count(['task' => $taskId]);
   }
 
   public function testItRejectsInvalidNewsletters() {
