@@ -60,7 +60,7 @@ class SubscriberCountShortcodeCest {
 
     $i->amOnMailpoetPage('Subscribers');
     $i->waitForListingItemsToLoad();
-    $i->addDataViewsFilter('Lists', '', [self::SUBSCRIBERS_LIST_NAME_TWO]);
+    $i->applyDataViewsFilter('Lists', [self::SUBSCRIBERS_LIST_NAME_TWO]);
     $i->selectAllListingItems();
     $i->selectListingBulkAction('Move to trash');
     $i->waitForListingItemsToLoad();
