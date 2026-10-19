@@ -2632,6 +2632,19 @@ class SendingQueueTest extends \MailPoetTest {
     verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
   }
 
+  public function testItDoesNotHoldTimeZoneCampaignWithBatchSendingRightNow() {
+    $campaignId = 'campaign-3b';
+    $this->makeTaskDueHoursAgo(25);
+    $this->sendingQueue->setMeta($this->getTimeZoneMeta($campaignId));
+    $midSendBatch = $this->addTimeZoneBatch($campaignId, Carbon::now()->addHours(1), null, 1);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($this->getBatchTask($midSendBatch), []);
+
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getPauseReason())->null();
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+  }
+
   public function testItSendsConfirmedTimeZoneBatch() {
     $campaignId = 'campaign-4';
     $this->makeTaskDueHoursAgo(25);
