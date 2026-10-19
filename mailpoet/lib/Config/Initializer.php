@@ -477,8 +477,6 @@ class Initializer {
       $this->logsDownload->initialize();
       $this->blockTypesController->initialize();
       $this->wpFunctions->doAction('mailpoet_initialized', MAILPOET_VERSION);
-    } catch (InvalidStateException $e) {
-      return $this->handleRunningMigration($e);
     } catch (\Exception $e) {
       return $this->handleFailedInitialization($e);
     }
