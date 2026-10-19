@@ -9,8 +9,11 @@ import { confirmAlert } from 'common/confirm-alert';
 import { Notice } from 'notices/notice';
 import { APIErrorsNotice } from 'notices/api-errors-notice';
 import {
+  actionLabel,
+  actionScreenReaderText,
   BusyRows,
   clearBusy,
+  confirmButtonLabel,
   confirmCopy,
   HeldRowAction,
   markBusy,
@@ -18,6 +21,7 @@ import {
   rowActions,
   scheduleText,
   subjectText,
+  unsentAnnouncement,
   visibleRows,
   VISIBLE_ROWS_LIMIT,
 } from './held-campaigns';
@@ -31,12 +35,6 @@ type Props = {
 type FocusRequest =
   | { rowIndex: number }
   | { rowId: number; action: HeldRowAction };
-
-function getLabel(action: HeldRowAction): string {
-  if (action === 'resume') return __('Send now', 'mailpoet');
-  if (action === 'reschedule') return __('Reschedule', 'mailpoet');
-  return __('Cancel', 'mailpoet');
-}
 
 function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
   const [showAll, setShowAll] = useState(false);
@@ -131,21 +129,18 @@ function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
     cancel: (row) => {
       confirmAlert({
         message: confirmCopy(row.type, 'cancel'),
-        confirmLabel: __('Cancel email', 'mailpoet'),
+        confirmLabel: confirmButtonLabel('cancel'),
         cancelLabel: __('Keep it held', 'mailpoet'),
         onConfirm: () =>
           post(row, 'cancel', 'cancelHeld', { newsletter_id: row.id }, () =>
-            finish(
-              row,
-              sprintf(__('Cancelled: %s', 'mailpoet'), subjectOf(row)),
-            ),
+            finish(row, unsentAnnouncement(subjectOf(row))),
           ),
       });
     },
     reschedule: (row) => {
       confirmAlert({
         message: confirmCopy(row.type, 'reschedule'),
-        confirmLabel: __('Reschedule', 'mailpoet'),
+        confirmLabel: confirmButtonLabel('reschedule'),
         cancelLabel: __('Keep it held', 'mailpoet'),
         onConfirm: () =>
           post(
@@ -214,9 +209,9 @@ function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
                         isDisabled={rowBusy}
                         onClick={() => handlers[action](row)}
                       >
-                        {getLabel(action)}
+                        <span aria-hidden="true">{actionLabel(action)}</span>
                         <span className="screen-reader-text">
-                          {`: ${subjectOf(row)}`}
+                          {actionScreenReaderText(action, subjectOf(row))}
                         </span>
                       </Button>
                     ))}
