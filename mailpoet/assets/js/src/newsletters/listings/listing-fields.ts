@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import type { Field } from '@wordpress/dataviews';
 import type { ListingFilterOption } from 'common/dataviews/types';
 import type { NewsletterListingItem } from '../api';
@@ -10,6 +10,15 @@ import {
 } from './filters';
 
 type Element = { value: string; label: string };
+
+export function formatLabelWithCount(label: string, count: number): string {
+  return sprintf(
+    /* translators: %1$s is the name of a filter option, %2$s is the number of matching items. */
+    __('%1$s (%2$s)', 'mailpoet'),
+    label,
+    count.toLocaleString(),
+  );
+}
 
 const FILTER_FIELDS = [STATUS_FIELD, SEGMENTS_FIELD, SENT_AT_FIELD];
 

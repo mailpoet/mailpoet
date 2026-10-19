@@ -36,6 +36,7 @@ import {
   sendingStatusRequestFilterToViewFilters,
   sendingStatusViewFiltersToRequestFilter,
 } from 'newsletters/listings/filters';
+import { formatLabelWithCount } from 'newsletters/listings/listing-fields';
 import {
   getSendingStatusSubscribers,
   resendFailedEmail,
@@ -326,9 +327,10 @@ export function SendingStatus() {
       .reduce<Record<string, string>>(
         (labels, entry) => ({
           ...labels,
-          [entry.name]: `${
-            statusLabels[entry.name as keyof typeof statusLabels]
-          } (${Number(entry.count).toLocaleString()})`,
+          [entry.name]: formatLabelWithCount(
+            statusLabels[entry.name as keyof typeof statusLabels],
+            Number(entry.count),
+          ),
         }),
         {},
       );
