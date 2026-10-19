@@ -157,6 +157,62 @@ class OverdueCampaignHold {
       $this->scheduledTasksRepository->flush();
     }
 
+    $this->logHold($task);
+  }
+
+  /**
+   * Holds running campaigns that are overdue and that no worker has started. Used where the worker
+   * has not reached them yet, e.g. when sending is blocked or before a page shows held campaigns.
+   * Returns how many campaigns were held.
+   */
+  public function holdDueCampaigns(): int {
+    if (!$this->isEnabled()) {
+      return 0;
+    }
+    $threshold = $this->getThreshold();
+    if ($threshold <= 0) {
+      return 0;
+    }
+    $cutoff = Carbon::createFromTimestamp($this->now()->getTimestamp() - $threshold);
+    $held = 0;
+    foreach ($this->scheduledTasksRepository->findUnconfirmedRunningCampaignTasksDueBefore($cutoff) as $task) {
+      $queue = $task->getSendingQueue();
+      $newsletter = $queue instanceof SendingQueueEntity ? $queue->getNewsletter() : null;
+      if (!$queue instanceof SendingQueueEntity || !$newsletter instanceof NewsletterEntity || !$this->shouldHold($task, $newsletter)) {
+        continue;
+      }
+      // Winning the claim means no worker started this batch; the rest of a time zone campaign follows it.
+      if (!$this->scheduledTasksRepository->claimForOverdueHold($task)) {
+        continue;
+      }
+      if ($this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)) {
+        $this->timeZoneCampaignScheduler->pauseCampaign($queue, ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+      }
+      $this->logHold($task);
+      $held++;
+    }
+    return $held;
+  }
+
+  /**
+   * Held campaigns for display: the earliest held task of each newsletter.
+   *
+   * @return ScheduledTaskEntity[]
+   */
+  public function getHeld(): array {
+    $held = [];
+    foreach ($this->scheduledTasksRepository->findHeldOverdue() as $task) {
+      $queue = $task->getSendingQueue();
+      $newsletter = $queue ? $queue->getNewsletter() : null;
+      if ($newsletter instanceof NewsletterEntity) {
+        $held[$newsletter->getId()] = $held[$newsletter->getId()] ?? $task;
+      }
+    }
+    return array_values($held);
+  }
+
+  private function logHold(ScheduledTaskEntity $task): void {
+    $queue = $task->getSendingQueue();
     $referenceTime = $this->getReferenceTime($task);
     $newsletter = $queue instanceof SendingQueueEntity ? $queue->getNewsletter() : null;
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(

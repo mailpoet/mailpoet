@@ -606,6 +606,61 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertEqualsWithDelta(time(), $scheduledAt->getTimestamp(), 10);
   }
 
+  /**
+   * @dataProvider heldCampaignTypes
+   */
+  public function testGetHeldReturnsRowForEachHeldCampaignType(string $type, bool $canReschedule): void {
+    $parent = (new NewsletterFactory())->withPostNotificationsType()->create();
+    $factory = (new NewsletterFactory())->withSubject('Late one')->withType($type);
+    if ($type === NewsletterEntity::TYPE_NOTIFICATION_HISTORY) {
+      $factory = $factory->withParent($parent);
+    }
+    $newsletter = $factory->create();
+    $scheduledAt = Carbon::now()->subHours(30)->millisecond(0);
+    $task = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, null, $scheduledAt);
+    (new SendingQueueFactory())->create($task, $newsletter);
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->getHeld();
+
+    $this->assertSame(200, $result->status);
+    $this->assertCount(1, $result->data);
+    $row = $result->data[0];
+    $this->assertSame($newsletter->getId(), $row['id']);
+    $this->assertSame('Late one', $row['subject']);
+    $this->assertSame($type, $row['type']);
+    $this->assertSame($scheduledAt->format('Y-m-d H:i:s'), $row['scheduled_at']);
+    $this->assertEqualsWithDelta(30 * 3600, $row['late_seconds'], 10);
+    $this->assertGreaterThan(86400, $row['late_seconds']);
+    $this->assertSame($type === NewsletterEntity::TYPE_NOTIFICATION_HISTORY ? $parent->getId() : null, $row['parent_id']);
+    $this->assertSame($canReschedule, $row['can_reschedule']);
+    $this->assertSame(
+      [
+        NewsletterEntity::TYPE_STANDARD => 'admin.php?page=mailpoet-newsletters#/send/' . $newsletter->getId(),
+        NewsletterEntity::TYPE_NOTIFICATION_HISTORY => 'admin.php?page=mailpoet-newsletters#/notification/history/' . $parent->getId(),
+        NewsletterEntity::TYPE_RE_ENGAGEMENT => 'admin.php?page=mailpoet-newsletters#/re_engagement/' . $newsletter->getId(),
+      ][$type],
+      substr((string)$row['can_edit_link'], (int)strpos((string)$row['can_edit_link'], 'admin.php'))
+    );
+  }
+
+  public function heldCampaignTypes(): array {
+    return [
+      'standard' => [NewsletterEntity::TYPE_STANDARD, true],
+      'post notification issue' => [NewsletterEntity::TYPE_NOTIFICATION_HISTORY, false],
+      're-engagement' => [NewsletterEntity::TYPE_RE_ENGAGEMENT, false],
+    ];
+  }
+
+  public function testGetHeldReturnsNothingWhenNothingIsOverdue(): void {
+    $task = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, null, Carbon::now()->subHours(2));
+    (new SendingQueueFactory())->create($task, $this->newsletter);
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->getHeld();
+
+    $this->assertSame([], $result->data);
+    $this->assertNull($task->getStatus());
+  }
+
   public function testItRejectsInvalidNewsletters() {
     $sendingQueue = $this->getServiceWithOverrides(SendingQueueAPI::class, [
       'newsletterValidator' => Stub::make(NewsletterValidator::class, ['validate' => 'some error']),

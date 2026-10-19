@@ -17,6 +17,7 @@
   <div id="mailpoet_notice_success" class="mailpoet_notice" style="display:none;"></div>
   <!-- React notices -->
   <div id="mailpoet_notices"></div>
+  <div id="mailpoet_held_campaigns"></div>
 
   <!-- Set FROM address modal React root -->
   <div id="mailpoet_set_from_address_modal"></div>
@@ -72,6 +73,7 @@
   var mailpoet_admin_plugins_url = '<%= admin_plugins_url %>';
   var mailpoet_is_dotcom = <%= json_encode(is_dotcom()) %>;
   var mailpoet_cron_trigger_method = <%= json_encode(cron_trigger_method) %>;
+  var mailpoet_held_campaigns = <%= json_encode(held_campaigns) %>;
 
   var mailpoet_site_name = '<%= site_name %>';
   var mailpoet_site_url = "<%= site_url %>";

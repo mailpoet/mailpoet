@@ -112,6 +112,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\DynamicSegmentsResponseBuilder::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\ScheduledTaskSubscriberResponseBuilder::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\SendingQueuesResponseBuilder::class)->setPublic(true);
+    $container->autowire(\MailPoet\API\JSON\ResponseBuilders\HeldCampaignsResponseBuilder::class)->setPublic(true);
     // REST API
     $container->autowire(\MailPoet\API\REST\API::class)->setPublic(true);
     $container->autowire(\MailPoet\API\REST\EndpointContainer::class)

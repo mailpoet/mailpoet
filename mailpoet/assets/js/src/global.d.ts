@@ -12,6 +12,17 @@ type ErrorResponse = {
   }[];
 };
 
+type HeldCampaign = {
+  id: number;
+  subject: string;
+  type: 'standard' | 'notification_history' | 're_engagement';
+  scheduled_at: string | null;
+  late_seconds: number;
+  parent_id: number | null;
+  can_reschedule: boolean;
+  can_edit_link: string | null;
+};
+
 type MtaLog = {
   status: string;
   error: {
@@ -344,6 +355,7 @@ interface Window {
   mailpoet_admin_plugins_url: string;
   mailpoet_is_dotcom: boolean;
   mailpoet_cron_trigger_method: string;
+  mailpoet_held_campaigns?: HeldCampaign[];
   dataInconsistencies: {
     [key: string]: number;
   };
