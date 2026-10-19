@@ -1755,6 +1755,16 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     }
   }
 
+  public function testInvalidDateBoundsMatchNothingOnTheListAndTheDynamicSegmentPath() {
+    $dynamic = $this->createEmailSegment('badday-');
+    (new Subscriber())->withEmail('badday-1@example.com')->withLastSubscribedAt(new Carbon('2022-10-10 12:00:00'))->create();
+
+    foreach (['created_from', 'created_to', 'subscribed_from', 'subscribed_to'] as $key) {
+      verify($this->getIds([$key => '2026-13-45']))->equals([]);
+      verify($this->getIds(['segment_in' => [$dynamic->getId()], $key => '2026-13-45']))->equals([]);
+    }
+  }
+
   public function testSourceNotInKeepsSubscribersWithoutASource() {
     $imported = (new Subscriber())->withEmail('src-imported@example.com')->withSource(Source::IMPORTED)->create();
     $form = (new Subscriber())->withEmail('src-form@example.com')->withSource(Source::FORM)->create();
