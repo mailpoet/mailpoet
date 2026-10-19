@@ -11,6 +11,23 @@ import {
   NewsletterStatus as NewsletterStatusEnum,
 } from 'common/newsletter';
 import { isTimezoneCampaignQueue } from 'newsletters/timezone-campaign';
+import {
+  getQueueActionLabels,
+  getScheduledFor,
+} from 'newsletters/listings/queue-labels';
+
+function HeldNewsletter() {
+  return (
+    <div className="mailpoet-listing-stats-too-early">
+      <span
+        className="mailpoet-tag mailpoet-tag-inverted mailpoet-tag-unknown"
+        title={__('Waiting for your confirmation', 'mailpoet')}
+      >
+        {__('Held', 'mailpoet')}
+      </span>
+    </div>
+  );
+}
 
 type QueueSendingProps = {
   newsletter: NewsLetter;
@@ -62,9 +79,15 @@ function QueueSending({ newsletter }: QueueSendingProps) {
     });
   };
 
+  const { isHeld, showPause, resumeLabel } = getQueueActionLabels({
+    status: paused ? 'paused' : null,
+    pause_reason: newsletter.queue.pause_reason,
+  });
+
   return (
     <>
       <APIErrorsNotice errors={errors} />
+      {isHeld && <HeldNewsletter />}
       {paused && (
         <Button
           dimension="small"
@@ -74,10 +97,10 @@ function QueueSending({ newsletter }: QueueSendingProps) {
               : resumeSending
           }
         >
-          {__('Resume', 'mailpoet')}
+          {resumeLabel}
         </Button>
       )}
-      {!paused && (
+      {!paused && showPause && (
         <Button dimension="small" onClick={pauseSending}>
           {__('Pause', 'mailpoet')}
         </Button>
@@ -122,7 +145,7 @@ function QueueStatus({ newsletter, mailerLog }: QueueStatusProps) {
       (newsletter.queue.status === 'scheduled' && hasStartedSending));
   const newsletterDate = isRunningTimezoneCampaign
     ? newsletter.sent_at
-    : newsletter.sent_at || newsletter.queue.scheduled_at;
+    : getScheduledFor(newsletter);
   const isNewsletterCancelled =
     newsletter.queue && newsletter.queue.status === 'cancelled';
   const isNewsletterSending =
