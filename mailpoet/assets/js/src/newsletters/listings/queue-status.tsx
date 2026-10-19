@@ -179,7 +179,7 @@ function QueueStatus({ newsletter, mailerLog }: QueueStatusProps) {
       {isNewsletterCancelled && <CancelledNewsletter />}
       {isMtaPaused &&
         isHeldQueue({
-          status: newsletter.queue.status as string | null,
+          status: newsletter.queue.status,
           pause_reason: newsletter.queue.pause_reason,
         }) && <HeldNewsletter />}
       {newsletter.queue.status !== 'completed' &&

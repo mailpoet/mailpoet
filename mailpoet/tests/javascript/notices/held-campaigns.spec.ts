@@ -2,8 +2,14 @@ import { expect } from 'chai';
 import {
   actionLabel,
   actionScreenReaderText,
+  applyBulkResult,
+  bulkCancelCopy,
+  bulkResumeMessage,
+  bulkScreenReaderText,
+  bulkSummary,
   confirmButtonLabel,
   confirmCopy,
+  showBulkActions,
   getLateness,
   lateText,
   markBusy,
@@ -220,16 +226,12 @@ describe('held campaigns notice helpers', () => {
 
   describe('confirmCopy', () => {
     it('has distinct cancel copy per type', () => {
-      const standard = confirmCopy('standard', 'cancel');
-      const history = confirmCopy('notification_history', 'cancel');
-      const reEngagement = confirmCopy('re_engagement', 'cancel');
+      const standard = confirmCopy('standard');
+      const history = confirmCopy('notification_history');
+      const reEngagement = confirmCopy('re_engagement');
       expect(standard).to.contain('drafts');
       expect(history).to.contain('deleted');
       expect(reEngagement).to.contain('skipped');
-    });
-
-    it('has reschedule copy', () => {
-      expect(confirmCopy('standard', 'reschedule')).to.contain('drafts');
     });
   });
 
@@ -240,9 +242,8 @@ describe('held campaigns notice helpers', () => {
       expect(actionLabel('cancel')).to.equal('Don\u2019t send\u2026');
     });
 
-    it('labels dialog confirm buttons without an ellipsis', () => {
-      expect(confirmButtonLabel('reschedule')).to.equal('Reschedule');
-      expect(confirmButtonLabel('cancel')).to.equal('Don\u2019t send');
+    it('labels the dialog confirm button without an ellipsis', () => {
+      expect(confirmButtonLabel()).to.equal('Don\u2019t send');
     });
 
     it('names buttons for screen readers without the ellipsis', () => {
@@ -259,6 +260,80 @@ describe('held campaigns notice helpers', () => {
 
     it('announces an email that will not be sent', () => {
       expect(unsentAnnouncement('Hello')).to.equal('Won\u2019t be sent: Hello');
+    });
+  });
+
+  describe('bulk actions', () => {
+    it('shows bulk buttons only for two or more held emails', () => {
+      expect(showBulkActions(0)).to.equal(false);
+      expect(showBulkActions(1)).to.equal(false);
+      expect(showBulkActions(2)).to.equal(true);
+    });
+
+    it('words the send all confirmation with the count', () => {
+      expect(bulkResumeMessage(2)).to.equal(
+        '2 emails will be sent to their lists now.',
+      );
+      expect(bulkResumeMessage(1)).to.equal(
+        '1 email will be sent to its lists now.',
+      );
+    });
+
+    it('describes only the types that are held', () => {
+      const standard = bulkCancelCopy(['standard']);
+      expect(standard).to.contain('drafts');
+      expect(standard).not.to.contain('deleted');
+      expect(standard).not.to.contain('skipped');
+      expect(bulkCancelCopy(['notification_history'])).to.contain('deleted');
+      expect(bulkCancelCopy(['re_engagement'])).to.contain('skipped');
+      const all = bulkCancelCopy([
+        'standard',
+        'notification_history',
+        're_engagement',
+        'standard',
+      ]);
+      expect(all).to.contain('drafts');
+      expect(all).to.contain('deleted');
+      expect(all).to.contain('skipped');
+    });
+
+    it('names bulk buttons for screen readers without the ellipsis', () => {
+      expect(bulkScreenReaderText('resume')).to.equal('Send all held emails');
+      expect(bulkScreenReaderText('cancel')).to.equal(
+        'Don\u2019t send any held email',
+      );
+    });
+
+    it('removes done rows and keeps failed rows', () => {
+      const result = applyBulkResult(rows(4), {
+        done: [1, 3],
+        failed: [{ id: 2, message: 'Nope' }],
+      });
+      expect(result.map((r) => r.id)).to.deep.equal([2, 4]);
+    });
+
+    it('summarises a bulk send', () => {
+      expect(bulkSummary('resume', 3, 0)).to.equal('3 emails sent');
+      expect(bulkSummary('resume', 1, 0)).to.equal('1 email sent');
+      expect(bulkSummary('resume', 3, 1)).to.equal(
+        '3 emails sent, 1 couldn\u2019t be sent',
+      );
+      expect(bulkSummary('resume', 0, 2)).to.equal('2 couldn\u2019t be sent');
+    });
+
+    it('summarises a bulk cancel', () => {
+      expect(bulkSummary('cancel', 2, 0)).to.equal(
+        '2 emails won\u2019t be sent',
+      );
+      expect(bulkSummary('cancel', 1, 0)).to.equal(
+        '1 email won\u2019t be sent',
+      );
+      expect(bulkSummary('cancel', 2, 1)).to.equal(
+        '2 emails won\u2019t be sent, 1 couldn\u2019t be updated',
+      );
+      expect(bulkSummary('cancel', 0, 1)).to.equal(
+        '1 couldn\u2019t be updated',
+      );
     });
   });
 });

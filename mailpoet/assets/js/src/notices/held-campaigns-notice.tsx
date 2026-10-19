@@ -11,15 +11,22 @@ import { APIErrorsNotice } from 'notices/api-errors-notice';
 import {
   actionLabel,
   actionScreenReaderText,
+  bulkCancelCopy,
+  bulkResumeMessage,
+  bulkScreenReaderText,
+  bulkSummary,
   BusyRows,
   clearBusy,
   confirmButtonLabel,
   confirmCopy,
+  HeldBulkAction,
+  HeldBulkResult,
   HeldRowAction,
   markBusy,
   nextFocusIndex,
   rowActions,
   scheduleText,
+  showBulkActions,
   subjectText,
   unsentAnnouncement,
   visibleRows,
@@ -29,6 +36,7 @@ import {
 type Props = {
   campaigns: HeldCampaign[];
   onRemove: (id: number) => void;
+  onBulkResult: (result: HeldBulkResult) => void;
   onRefresh: () => void;
 };
 
@@ -36,9 +44,15 @@ type FocusRequest =
   | { rowIndex: number }
   | { rowId: number; action: HeldRowAction };
 
-function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
+function HeldCampaignsNotice({
+  campaigns,
+  onRemove,
+  onBulkResult,
+  onRefresh,
+}: Props) {
   const [showAll, setShowAll] = useState(false);
   const [busy, setBusy] = useState<BusyRows>({});
+  const [bulkBusy, setBulkBusy] = useState<HeldBulkAction | null>(null);
   const [errors, setErrors] = useState<{ message: string }[]>([]);
   const [focusRequest, setFocusRequest] = useState<FocusRequest | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -128,8 +142,8 @@ function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
     },
     cancel: (row) => {
       confirmAlert({
-        message: confirmCopy(row.type, 'cancel'),
-        confirmLabel: confirmButtonLabel('cancel'),
+        message: confirmCopy(row.type),
+        confirmLabel: confirmButtonLabel(),
         cancelLabel: __('Keep it held', 'mailpoet'),
         onConfirm: () =>
           post(row, 'cancel', 'cancelHeld', { newsletter_id: row.id }, () =>
@@ -138,24 +152,62 @@ function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
       });
     },
     reschedule: (row) => {
-      confirmAlert({
-        message: confirmCopy(row.type, 'reschedule'),
-        confirmLabel: confirmButtonLabel('reschedule'),
-        cancelLabel: __('Keep it held', 'mailpoet'),
-        onConfirm: () =>
-          post(
-            row,
-            'reschedule',
-            'cancelHeld',
-            { newsletter_id: row.id, reschedule: true },
-            () => {
-              setBusy((current) => clearBusy(current, row.id));
-              onRemove(row.id);
-              if (row.can_edit_link) window.location.href = row.can_edit_link;
-            },
-          ),
-      });
+      if (row.can_edit_link) window.location.href = row.can_edit_link;
     },
+  };
+
+  const anyBusy = bulkBusy !== null || Object.keys(busy).length > 0;
+
+  const runBulk = (action: HeldBulkAction) => {
+    setBulkBusy(action);
+    setErrors([]);
+    return MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'sendingQueue',
+      action: action === 'resume' ? 'resumeAllHeld' : 'cancelAllHeld',
+    })
+      .done((response: { data: HeldBulkResult }) => {
+        const result = response.data;
+        setBulkBusy(null);
+        onBulkResult(result);
+        setErrors(
+          result.failed.map((failure) => ({
+            message: `${subjectText(
+              campaigns.find((item) => item.id === failure.id)?.subject ?? '',
+            )}: ${failure.message}`,
+          })),
+        );
+        setFocusRequest({ rowIndex: -1 });
+        speak(
+          bulkSummary(action, result.done.length, result.failed.length),
+          'polite',
+        );
+        jQuery(document).trigger('heartbeat-tick.mailpoet-listing');
+      })
+      .fail((response) => {
+        setBulkBusy(null);
+        setErrors(response?.errors ?? []);
+        onRefresh();
+      });
+  };
+
+  const bulkHandlers: Record<HeldBulkAction, () => void> = {
+    resume: () =>
+      confirmAlert({
+        title: __('Send all held emails?', 'mailpoet'),
+        message: bulkResumeMessage(campaigns.length),
+        confirmLabel: __('Send all', 'mailpoet'),
+        cancelLabel: __('Keep them held', 'mailpoet'),
+        onConfirm: () => runBulk('resume'),
+      }),
+    cancel: () =>
+      confirmAlert({
+        title: __('Don’t send any held email?', 'mailpoet'),
+        message: bulkCancelCopy(campaigns.map((item) => item.type)),
+        confirmLabel: __('Don’t send', 'mailpoet'),
+        cancelLabel: __('Keep them held', 'mailpoet'),
+        onConfirm: () => runBulk('cancel'),
+      }),
   };
 
   return (
@@ -172,6 +224,29 @@ function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
               'mailpoet',
             )}
           </p>
+          {showBulkActions(campaigns.length) && (
+            <p className="mailpoet-held-campaigns-bulk">
+              {(['resume', 'cancel'] as HeldBulkAction[]).map((action) => (
+                <Button
+                  key={action}
+                  dimension="small"
+                  variant={action === 'resume' ? undefined : 'secondary'}
+                  withSpinner={bulkBusy === action}
+                  isDisabled={anyBusy}
+                  onClick={bulkHandlers[action]}
+                >
+                  <span aria-hidden="true">
+                    {action === 'resume'
+                      ? __('Send all…', 'mailpoet')
+                      : __('Don’t send all…', 'mailpoet')}
+                  </span>
+                  <span className="screen-reader-text">
+                    {bulkScreenReaderText(action)}
+                  </span>
+                </Button>
+              ))}
+            </p>
+          )}
           <ul className="mailpoet-held-campaigns" ref={listRef}>
             {visible.map((row) => {
               const busyAction = busy[row.id];
@@ -206,7 +281,7 @@ function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
                         dimension="small"
                         variant={action === 'resume' ? undefined : 'secondary'}
                         withSpinner={busyAction === action}
-                        isDisabled={rowBusy}
+                        isDisabled={rowBusy || bulkBusy !== null}
                         onClick={() => handlers[action](row)}
                       >
                         <span aria-hidden="true">{actionLabel(action)}</span>
