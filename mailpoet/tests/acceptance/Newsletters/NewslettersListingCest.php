@@ -258,6 +258,39 @@ class NewslettersListingCest {
     $i->waitForText('Scheduled (0)');
   }
 
+  public function showTrashCountsInStatusOptionsOnTrashTab(\AcceptanceTester $i) {
+    $i->wantTo('See the counts of trashed emails in the status filter options on the Trash tab');
+    (new Newsletter())->withSubject('Live draft')->withDraftStatus()->create();
+    (new Newsletter())->withSubject('Trashed draft one')->withDraftStatus()->withDeleted()->create();
+    (new Newsletter())->withSubject('Trashed draft two')->withDraftStatus()->withDeleted()->create();
+    (new Newsletter())->withSubject('Trashed sent')->withSentStatus()->withDeleted()->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->waitForText('Live draft', 10, '[data-automation-id="newsletters_listing_standard"]');
+    $i->changeGroupInListingFilter('trash');
+    $i->waitForText('Trashed sent', 10, '[data-automation-id="newsletters_listing_standard"]');
+    $addFilter = ['xpath' => '//button[@aria-label="Add filter" or normalize-space(.)="Add filter"]'];
+    $i->waitForElementClickable($addFilter);
+    $i->click($addFilter);
+    $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "Status")]']);
+    $i->waitForText('Draft (2)');
+    $i->waitForText('Sent (1)');
+  }
+
+  public function showNotFoundMessageWhenFiltersMatchNothing(\AcceptanceTester $i) {
+    $i->wantTo('See the not found message when a filter matches no emails');
+    (new Newsletter())->withSubject('Only a draft')->withDraftStatus()->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->waitForText('Only a draft', 10, '[data-automation-id="newsletters_listing_standard"]');
+
+    $i->applyDataViewsFilter('Status', ['Sent']);
+    $i->waitForText('No emails found.', 10, '[data-automation-id="newsletters_listing_standard"]');
+    $i->dontSee('Nothing here yet!');
+  }
+
   public function dropDeletedListFromDeepLink(\AcceptanceTester $i) {
     $i->wantTo('Open a deep link with a deleted list without a list filter');
     $segment = (new Segment())->withName('Existing list')->create();

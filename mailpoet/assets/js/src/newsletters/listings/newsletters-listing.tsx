@@ -800,7 +800,7 @@ export function NewslettersListing({
           isLoading={isLoading}
           empty={
             <p>
-              {view.search
+              {view.search || Object.keys(requestFilter).length > 0
                 ? __('No emails found.', 'mailpoet')
                 : __(
                     "Nothing here yet! But, don't fret - there's no reason to get upset. Pretty soon, you’ll be sending emails faster than a turbo-jet.",
