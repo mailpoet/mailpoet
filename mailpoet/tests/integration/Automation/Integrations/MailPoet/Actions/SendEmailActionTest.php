@@ -491,6 +491,24 @@ class SendEmailActionTest extends \MailPoetTest {
     );
   }
 
+  public function testItUsesThePollIntervalOfTheEffectiveRunAfterManyPausedPolls(): void {
+    [$step, $run, $controllerFor, $argsFor] = $this->prepareUnsentEmail();
+
+    for ($runNumber = 2; $runNumber <= 11; $runNumber++) {
+      $this->getActionWithSendingAllowed(false)->run($argsFor($runNumber), $controllerFor($runNumber));
+    }
+    $this->assertSame(10, $controllerFor(11)->getRunLog()->getLog()->getData()['paused_polls']);
+
+    // Run 12 minus 10 paused polls is the 2nd real check, so the next one is due after 10 minutes.
+    $before = time();
+    $this->getActionWithSendingAllowed(true)->run($argsFor(12), $controllerFor(12));
+
+    $runAt = as_next_scheduled_action('mailpoet/automation/step', [['automation_run_id' => $run->getId(), 'step_id' => $step->getId(), 'run_number' => 13]]);
+    $this->assertIsInt($runAt);
+    $this->assertGreaterThanOrEqual($before + 10 * MINUTE_IN_SECONDS, $runAt);
+    $this->assertLessThanOrEqual(time() + 10 * MINUTE_IN_SECONDS, $runAt);
+  }
+
   private function getActionWithSendingAllowed(bool $allowed): SendEmailAction {
     $environment = $this->createMock(SendingEnvironment::class);
     $environment->method('isSendingAllowed')->willReturn($allowed);
