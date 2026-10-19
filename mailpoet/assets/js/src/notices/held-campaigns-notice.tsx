@@ -1,14 +1,19 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { speak } from '@wordpress/a11y';
+import jQuery from 'jquery';
 import { MailPoet } from 'mailpoet';
+import { withBoundary } from 'common';
 import { Button } from 'common/button/button';
 import { confirmAlert } from 'common/confirm-alert';
 import { Notice } from 'notices/notice';
 import { APIErrorsNotice } from 'notices/api-errors-notice';
 import {
+  BusyRows,
+  clearBusy,
   confirmCopy,
   HeldRowAction,
+  markBusy,
   nextFocusIndex,
   rowActions,
   scheduleText,
@@ -35,10 +40,7 @@ function getLabel(action: HeldRowAction): string {
 
 function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
   const [showAll, setShowAll] = useState(false);
-  const [busy, setBusy] = useState<{
-    id: number;
-    action: HeldRowAction;
-  } | null>(null);
+  const [busy, setBusy] = useState<BusyRows>({});
   const [errors, setErrors] = useState<{ message: string }[]>([]);
   const [focusRequest, setFocusRequest] = useState<FocusRequest | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -57,12 +59,17 @@ function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
     } else {
       const item = listRef.current?.children[focusRequest.rowIndex];
       const button = item?.querySelector<HTMLElement>('button');
-      (button ?? headingRef.current)?.focus();
+      const target =
+        button ??
+        headingRef.current ??
+        document.getElementById('mailpoet_held_campaigns');
+      target?.setAttribute('tabindex', '-1');
+      target?.focus();
     }
     setFocusRequest(null);
   }, [focusRequest, campaigns]);
 
-  if (campaigns.length === 0) return null;
+  if (campaigns.length === 0) return <APIErrorsNotice errors={errors} />;
 
   const visible = visibleRows(campaigns, showAll);
   const heading = sprintf(
@@ -73,10 +80,11 @@ function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
   const finish = (row: HeldCampaign, announcement: string) => {
     const index = visible.findIndex((item) => item.id === row.id);
     const rowIndex = nextFocusIndex(visible, index, campaigns.length);
-    setBusy(null);
+    setBusy((current) => clearBusy(current, row.id));
     onRemove(row.id);
     setFocusRequest({ rowIndex });
     speak(announcement, 'polite');
+    jQuery(document).trigger('heartbeat-tick.mailpoet-listing');
   };
 
   const fail = (
@@ -84,7 +92,7 @@ function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
     action: HeldRowAction,
     response?: { errors?: { message: string }[] },
   ) => {
-    setBusy(null);
+    setBusy((current) => clearBusy(current, row.id));
     setErrors(response?.errors ?? []);
     setFocusRequest({ rowId: row.id, action });
     onRefresh();
@@ -97,7 +105,7 @@ function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
     data: Record<string, unknown>,
     onSuccess: () => void,
   ) => {
-    setBusy({ id: row.id, action });
+    setBusy((current) => markBusy(current, row.id, action));
     setErrors([]);
     return MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -146,9 +154,9 @@ function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
             'cancelHeld',
             { newsletter_id: row.id, reschedule: true },
             () => {
-              window.location.href =
-                row.can_edit_link ??
-                `admin.php?page=mailpoet-newsletters#/send/${row.id}`;
+              setBusy((current) => clearBusy(current, row.id));
+              onRemove(row.id);
+              if (row.can_edit_link) window.location.href = row.can_edit_link;
             },
           ),
       });
@@ -171,7 +179,8 @@ function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
           </p>
           <ul className="mailpoet-held-campaigns" ref={listRef}>
             {visible.map((row) => {
-              const rowBusy = busy?.id === row.id;
+              const busyAction = busy[row.id];
+              const rowBusy = busyAction !== undefined;
               return (
                 <li
                   key={row.id}
@@ -201,7 +210,7 @@ function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
                         key={action}
                         dimension="small"
                         variant={action === 'resume' ? undefined : 'secondary'}
-                        withSpinner={rowBusy && busy.action === action}
+                        withSpinner={busyAction === action}
                         isDisabled={rowBusy}
                         onClick={() => handlers[action](row)}
                       >
@@ -237,4 +246,5 @@ function HeldCampaignsNotice({ campaigns, onRemove, onRefresh }: Props) {
 }
 
 HeldCampaignsNotice.displayName = 'HeldCampaignsNotice';
-export { HeldCampaignsNotice };
+const HeldCampaignsNoticeWithBoundary = withBoundary(HeldCampaignsNotice);
+export { HeldCampaignsNoticeWithBoundary as HeldCampaignsNotice };

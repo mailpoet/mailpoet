@@ -81,10 +81,26 @@ export function nextFocusIndex(
   return removedIndex < remainingVisible ? removedIndex : -1;
 }
 
-export function rowActions(row: HeldCampaign): HeldRowAction[] {
-  return row.can_reschedule
+export function rowActions(row?: HeldCampaign): HeldRowAction[] {
+  if (!row) return [];
+  return row.can_reschedule && row.can_edit_link
     ? ['resume', 'reschedule', 'cancel']
     : ['resume', 'cancel'];
+}
+
+export type BusyRows = Record<number, HeldRowAction>;
+
+export function markBusy(
+  busy: BusyRows,
+  id: number,
+  action: HeldRowAction,
+): BusyRows {
+  return { ...busy, [id]: action };
+}
+
+export function clearBusy(busy: BusyRows, id: number): BusyRows {
+  const { [id]: removed, ...rest } = busy;
+  return rest;
 }
 
 export function subjectText(subject: string): string {

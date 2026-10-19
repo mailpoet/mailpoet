@@ -9,7 +9,7 @@ const REFRESH_ACTION = 'mailpoet.held_campaigns.refresh';
 
 function HeldCampaignsApp() {
   const [campaigns, setCampaigns] = useState<HeldCampaign[]>(
-    MailPoet.heldCampaigns,
+    window.mailpoet_held_campaigns ?? [],
   );
 
   const refetch = useCallback(() => {
