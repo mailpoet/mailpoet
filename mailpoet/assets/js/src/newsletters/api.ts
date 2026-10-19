@@ -61,6 +61,7 @@ export type NewsletterListingItem = {
     | {
         status: string | null;
         scheduled_at: string | null;
+        pause_reason?: string | null;
         newsletter_rendered_subject: string | null;
         count_processed: string | number;
         count_to_process: string | number;
