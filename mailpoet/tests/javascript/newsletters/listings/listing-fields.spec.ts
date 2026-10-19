@@ -1,9 +1,11 @@
 import type { Field } from '@wordpress/dataviews';
+import { resetLocaleData, setLocaleData } from '@wordpress/i18n';
 import type { NewsletterListingItem } from '../../../../assets/js/src/newsletters/api';
 import {
   ACTIVATION_STATUS_ELEMENTS,
   applyFilterConfig,
   buildSegmentElements,
+  formatLabelWithCount,
   getStatusFilterValue,
   SENT_AT_OPERATORS,
   statusElements,
@@ -18,6 +20,27 @@ const field = (id: string, extra: Partial<Field<Row>> = {}): Field<Row> => ({
 });
 
 describe('newsletters/listings/listing-fields', () => {
+  describe('formatLabelWithCount', () => {
+    afterEach(() => resetLocaleData());
+
+    it('puts the count in brackets after the label and formats it for the locale', () => {
+      expect(formatLabelWithCount('Sent', 1234)).to.equal(
+        `Sent (${(1234).toLocaleString()})`,
+      );
+    });
+
+    it('lets translators change the order and the brackets', () => {
+      setLocaleData(
+        { '%1$s (%2$s)': ['%2$s × %1$s'] } as unknown as Record<
+          string,
+          string[]
+        >,
+        'mailpoet',
+      );
+      expect(formatLabelWithCount('Sent', 5)).to.equal('5 × Sent');
+    });
+  });
+
   describe('SENT_AT_OPERATORS', () => {
     // DataViews starts a new filter on the first operator; between shows the
     // range presets, a single-day operator would show none.
