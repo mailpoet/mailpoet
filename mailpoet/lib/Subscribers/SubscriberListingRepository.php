@@ -1697,11 +1697,20 @@ class SubscriberListingRepository extends ListingRepository {
     $list = [];
     foreach ($labels as $status => $label) {
       $list[] = [
-        'label' => sprintf('%s (%s)', $label, $this->wp->numberFormatI18n((float)($stats[$status] ?? 0))),
+        'label' => $this->formatCountLabel($label, (float)($stats[$status] ?? 0)),
         'value' => $status,
       ];
     }
     return $list;
+  }
+
+  private function formatCountLabel(string $name, float $count): string {
+    return sprintf(
+      // translators: %1$s is the name of a filter option, %2$s is the number of matching items.
+      __('%1$s (%2$s)', 'mailpoet'),
+      $name,
+      $this->wp->numberFormatI18n($count)
+    );
   }
 
   /**
@@ -1771,7 +1780,7 @@ class SubscriberListingRepository extends ListingRepository {
         continue;
       }
       $segmentList[] = [
-        'label' => sprintf('%s (%s)', $segment->getName(), $this->wp->numberFormatI18n($subscribersCount)),
+        'label' => $this->formatCountLabel($segment->getName(), $subscribersCount),
         'value' => $segment->getId(),
       ];
     }
@@ -1802,7 +1811,7 @@ class SubscriberListingRepository extends ListingRepository {
     $tagsList = [];
     foreach ($tagsStatistics as $tagStatistics) {
       $tagsList[] = [
-        'label' => sprintf('%s (%s)', $tagStatistics['name'], $this->wp->numberFormatI18n((float)$tagStatistics['subscribersCount'])),
+        'label' => $this->formatCountLabel($tagStatistics['name'], (float)$tagStatistics['subscribersCount']),
         'value' => $tagStatistics['id'],
       ];
     }

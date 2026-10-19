@@ -60,7 +60,14 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
   /** @var string|null */
   private $originalThousandsSeparator;
 
+  /** @var callable|null */
+  private $countLabelFilter;
+
   public function _after() {
+    if ($this->countLabelFilter !== null) {
+      remove_filter('gettext', $this->countLabelFilter, 10);
+      $this->countLabelFilter = null;
+    }
     if ($this->originalThousandsSeparator !== null) {
       $this->setThousandsSeparator($this->originalThousandsSeparator);
       $this->originalThousandsSeparator = null;
@@ -151,6 +158,37 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($filters['segment'][1]['label'])->equals('Subscribers without a list (4.321)');
     verify(array_column($filters['segment'], 'label'))->arrayContains('Big List (2.345)');
     verify($filters['tag'][1]['label'])->equals('Big Tag (3.456)');
+    verify($segment->getId())->greaterThan(0);
+  }
+
+  public function testFilterOptionLabelsUseATranslatableCountFormat() {
+    $this->countLabelFilter = function($translated, $text, $domain) {
+      return ($text === '%1$s (%2$s)' && $domain === 'mailpoet') ? '%2$s – %1$s' : $translated;
+    };
+    add_filter('gettext', $this->countLabelFilter, 10, 3);
+    $segment = $this->segmentRepository->createOrUpdate('Fmt List');
+    $tag = (new Tag())->withName('Fmt Tag')->create();
+    $this->entityManager->flush();
+    $counts = $this->make(SubscribersCountsController::class, [
+      'getGlobalStatusStatisticsCount' => ['subscribed' => 12, 'trash' => 0],
+      'getSubscribersWithoutSegmentStatisticsCount' => ['all' => 1, 'trash' => 0],
+      'getSegmentStatisticsCount' => ['all' => 7, 'trash' => 0],
+      'getTagsStatisticsCount' => [['id' => $tag->getId(), 'name' => 'Fmt Tag', 'subscribersCount' => 3]],
+    ]);
+    $repository = new SubscriberListingRepository(
+      $this->entityManager,
+      $this->diContainer->get(FilterHandler::class),
+      $this->diContainer->get(SegmentSubscribersRepository::class),
+      $counts,
+      $this->diContainer->get(SegmentDependencyValidator::class),
+      $this->diContainer->get(WPFunctions::class)
+    );
+
+    $filters = $repository->getFilters(new ListingDefinition('all'));
+
+    verify($filters['status'][0]['label'])->equals('12 – Subscribed');
+    verify(array_column($filters['segment'], 'label'))->arrayContains('7 – Fmt List');
+    verify($filters['tag'][1]['label'])->equals('3 – Fmt Tag');
     verify($segment->getId())->greaterThan(0);
   }
 
