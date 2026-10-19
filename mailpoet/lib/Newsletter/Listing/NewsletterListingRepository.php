@@ -144,7 +144,7 @@ class NewsletterListingRepository extends ListingRepository {
       ];
     }
     $filters = ['segment' => $segmentList];
-    $statusOptions = is_string($typeParam) ? $this->getStatusOptions($typeParam, $parentId ? (int)$parentId : null) : [];
+    $statusOptions = is_string($typeParam) ? $this->getStatusOptions($typeParam, $parentId ? (int)$parentId : null, $definition->getGroup() === 'trash') : [];
     if ($statusOptions) {
       $filters['status'] = $statusOptions;
     }
@@ -152,12 +152,13 @@ class NewsletterListingRepository extends ListingRepository {
   }
 
   /**
-   * Counts non-trashed emails of the type, ignoring the group, search and other filters.
+   * Counts the emails of the type that are trashed (Trash group) or not (any other group),
+   * ignoring search and other filters.
    * “Sending” excludes and “Paused” includes paused emails, like the status filter.
    *
    * @return array<int, array{label: string, value: string}>
    */
-  private function getStatusOptions(string $type, ?int $parentId): array {
+  private function getStatusOptions(string $type, ?int $parentId, bool $trashed): array {
     $statuses = self::getSupportedStatusesForType($type);
     if (!$statuses) {
       return [];
@@ -166,7 +167,7 @@ class NewsletterListingRepository extends ListingRepository {
     $queryBuilder = clone $this->queryBuilder;
     $queryBuilder->from(NewsletterEntity::class, 'n');
     $this->applyParameters($queryBuilder, ['type' => $type, 'parentId' => $parentId]);
-    $queryBuilder->andWhere('n.deletedAt IS NULL');
+    $queryBuilder->andWhere($trashed ? 'n.deletedAt IS NOT NULL' : 'n.deletedAt IS NULL');
 
     $pausedCount = 0;
     if (in_array(self::FILTER_STATUS_PAUSED, $statuses, true)) {
@@ -191,7 +192,8 @@ class NewsletterListingRepository extends ListingRepository {
     $options = [];
     foreach ($statuses as $status) {
       $options[] = [
-        'label' => sprintf('%s (%s)', $labels[$status], $this->wp->numberFormatI18n($counts[$status] ?? 0)),
+        // translators: %1$s is the name of a filter option, %2$s is the number of matching items.
+        'label' => sprintf(__('%1$s (%2$s)', 'mailpoet'), $labels[$status], $this->wp->numberFormatI18n($counts[$status] ?? 0)),
         'value' => $status,
       ];
     }
