@@ -92,6 +92,36 @@ class ScheduledTasksRepository extends Repository {
   }
 
   /**
+   * Whether another issue of the same post notification is running or due, so held ones must wait.
+   */
+  public function hasActiveSiblingIssue(NewsletterEntity $issue): bool {
+    $parent = $issue->getParent();
+    if (!$parent instanceof NewsletterEntity) {
+      return false;
+    }
+    $count = $this->doctrineRepository->createQueryBuilder('t')
+      ->select('COUNT(t.id)')
+      ->join('t.sendingQueue', 'q')
+      ->join('q.newsletter', 'n')
+      ->where('t.type = :type')
+      ->andWhere('t.deletedAt IS NULL')
+      ->andWhere('n.deletedAt IS NULL')
+      ->andWhere('n.parent = :parent')
+      ->andWhere('n.type = :historyType')
+      ->andWhere('n.id != :issueId')
+      ->andWhere('t.status IS NULL OR (t.status = :scheduled AND t.scheduledAt <= :now)')
+      ->setParameter('type', SendingQueue::TASK_TYPE)
+      ->setParameter('parent', $parent)
+      ->setParameter('historyType', NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
+      ->setParameter('issueId', $issue->getId())
+      ->setParameter('scheduled', ScheduledTaskEntity::STATUS_SCHEDULED)
+      ->setParameter('now', Carbon::now()->millisecond(0))
+      ->getQuery()
+      ->getSingleScalarResult();
+    return (int)$count > 0;
+  }
+
+  /**
    * Sending tasks that the Scheduler has moved to running, nothing has been sent for and that were due before the cutoff.
    * A NULL scheduled time (older tasks) falls back to the creation time.
    *

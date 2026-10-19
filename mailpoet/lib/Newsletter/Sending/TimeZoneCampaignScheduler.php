@@ -504,7 +504,7 @@ class TimeZoneCampaignScheduler {
   public function deleteReplaceableScheduledQueues(NewsletterEntity $newsletter): void {
     foreach ($this->getQueuesForNewsletter($newsletter) as $queue) {
       if ($this->isReplaceableScheduledQueue($queue)) {
-        $this->deleteQueue($queue);
+        $this->deleteCampaignQueue($queue);
       }
     }
     $this->entityManager->flush();
@@ -512,7 +512,7 @@ class TimeZoneCampaignScheduler {
 
   public function deleteScheduledCampaignQueues(NewsletterEntity $newsletter): void {
     foreach ($this->getTimeZoneQueuesForNewsletter($newsletter) as $queue) {
-      $this->deleteQueue($queue);
+      $this->deleteCampaignQueue($queue);
     }
     $this->entityManager->flush();
   }
@@ -551,7 +551,7 @@ class TimeZoneCampaignScheduler {
       );
   }
 
-  private function deleteQueue(SendingQueueEntity $queue): void {
+  public function deleteCampaignQueue(SendingQueueEntity $queue): void {
     $task = $queue->getTask();
     if ($task instanceof ScheduledTaskEntity) {
       $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($task);
