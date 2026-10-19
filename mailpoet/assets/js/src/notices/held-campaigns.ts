@@ -128,3 +128,32 @@ export function confirmCopy(
   }
   return __('This email returns to drafts.', 'mailpoet');
 }
+
+export function actionLabel(action: HeldRowAction): string {
+  if (action === 'resume') return __('Send now', 'mailpoet');
+  if (action === 'reschedule') return __('Reschedule…', 'mailpoet');
+  return __('Don’t send…', 'mailpoet');
+}
+
+export function confirmButtonLabel(action: HeldConfirmAction): string {
+  return action === 'reschedule'
+    ? __('Reschedule', 'mailpoet')
+    : __('Don’t send', 'mailpoet');
+}
+
+export function actionScreenReaderText(
+  action: HeldRowAction,
+  subject: string,
+): string {
+  if (action === 'resume') {
+    return sprintf(__('Send now: %s', 'mailpoet'), subject);
+  }
+  if (action === 'reschedule') {
+    return sprintf(__('Reschedule: %s', 'mailpoet'), subject);
+  }
+  return sprintf(__('Don’t send: %s', 'mailpoet'), subject);
+}
+
+export function unsentAnnouncement(subject: string): string {
+  return sprintf(__('Won’t be sent: %s', 'mailpoet'), subject);
+}

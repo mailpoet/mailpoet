@@ -1,5 +1,8 @@
 import { expect } from 'chai';
 import {
+  actionLabel,
+  actionScreenReaderText,
+  confirmButtonLabel,
   confirmCopy,
   getLateness,
   lateText,
@@ -10,6 +13,7 @@ import {
   rowActions,
   scheduleText,
   subjectText,
+  unsentAnnouncement,
   visibleRows,
   VISIBLE_ROWS_LIMIT,
 } from '../../../assets/js/src/notices/held-campaigns';
@@ -226,6 +230,35 @@ describe('held campaigns notice helpers', () => {
 
     it('has reschedule copy', () => {
       expect(confirmCopy('standard', 'reschedule')).to.contain('drafts');
+    });
+  });
+
+  describe('button copy', () => {
+    it('labels row buttons, with an ellipsis where a dialog follows', () => {
+      expect(actionLabel('resume')).to.equal('Send now');
+      expect(actionLabel('reschedule')).to.equal('Reschedule\u2026');
+      expect(actionLabel('cancel')).to.equal('Don\u2019t send\u2026');
+    });
+
+    it('labels dialog confirm buttons without an ellipsis', () => {
+      expect(confirmButtonLabel('reschedule')).to.equal('Reschedule');
+      expect(confirmButtonLabel('cancel')).to.equal('Don\u2019t send');
+    });
+
+    it('names buttons for screen readers without the ellipsis', () => {
+      expect(actionScreenReaderText('resume', 'Hello')).to.equal(
+        'Send now: Hello',
+      );
+      expect(actionScreenReaderText('reschedule', 'Hello')).to.equal(
+        'Reschedule: Hello',
+      );
+      expect(actionScreenReaderText('cancel', 'Hello')).to.equal(
+        'Don\u2019t send: Hello',
+      );
+    });
+
+    it('announces an email that will not be sent', () => {
+      expect(unsentAnnouncement('Hello')).to.equal('Won\u2019t be sent: Hello');
     });
   });
 });
