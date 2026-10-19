@@ -20,7 +20,8 @@ class FormulaFreeXLSXWriter extends XLSXWriter {
 
   /**
    * ZipArchive can only write to a local path, so a file for remote storage is
-   * built in a local temporary file first and then copied.
+   * built in a local temporary file first and then copied. Remote storage can
+   * fail to save on close while copy() still returns true, so the file is checked.
    *
    * @param string $filename
    * @throws \RuntimeException When the copy to remote storage fails.
@@ -32,7 +33,7 @@ class FormulaFreeXLSXWriter extends XLSXWriter {
     }
     $localFile = $this->tempFilename();
     parent::writeToFile($localFile);
-    if (!copy($localFile, $filename)) {
+    if (!copy($localFile, $filename) || !is_file($filename)) {
       throw new \RuntimeException(__('The export file could not be saved on the server.', 'mailpoet'));
     }
   }

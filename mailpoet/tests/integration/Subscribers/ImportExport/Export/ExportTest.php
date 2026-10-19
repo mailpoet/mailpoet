@@ -15,6 +15,9 @@ use MailPoet\Subscribers\ImportExport\ImportExportRepository;
 use MailPoet\Subscribers\SubscriberCustomFieldRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Test\Router\Endpoints\RemoteStorageStreamWrapper;
+
+require_once __DIR__ . '/../../../Router/Endpoints/RemoteStorageStreamWrapper.php';
 
 class ExportTest extends \MailPoetTest {
   /** @var array */
@@ -245,6 +248,32 @@ class ExportTest extends \MailPoetTest {
     }
   }
 
+  public function testItExportsCsvToRemoteStorage() {
+    RemoteStorageStreamWrapper::register();
+    try {
+      $exception = $this->processCsvOnRemoteStorage();
+      $files = RemoteStorageStreamWrapper::$files;
+    } finally {
+      RemoteStorageStreamWrapper::unregister();
+    }
+
+    verify($exception)->null();
+    verify($files)->arrayCount(1);
+  }
+
+  public function testItFailsWhenRemoteStorageCannotSaveTheCsvFile() {
+    RemoteStorageStreamWrapper::register();
+    RemoteStorageStreamWrapper::$failSaves = true;
+    try {
+      $exception = $this->processCsvOnRemoteStorage();
+    } finally {
+      RemoteStorageStreamWrapper::unregister();
+    }
+
+    verify($exception)->instanceOf(\Exception::class);
+    verify($exception ? $exception->getMessage() : '')->equals('The export file could not be saved on the server.');
+  }
+
   public function testItCanProcess() {
     try {
       $this->export->exportFile = $this->export->getExportFile('csv');
@@ -445,5 +474,20 @@ class ExportTest extends \MailPoetTest {
       $this->segmentsRepository,
       $jsonData
     );
+  }
+
+  private function processCsvOnRemoteStorage(): ?\Exception {
+    $this->export->exportPath = RemoteStorageStreamWrapper::getRoot() . '/mailpoet/exports';
+    $this->export->exportFile = $this->export->exportPath . '/export.csv';
+    $this->export->exportFormatOption = 'csv';
+    $previousErrorReporting = error_reporting(E_ALL & ~E_WARNING & ~E_USER_WARNING);
+    try {
+      $this->export->process();
+    } catch (\Exception $e) {
+      return $e;
+    } finally {
+      error_reporting($previousErrorReporting);
+    }
+    return null;
   }
 }

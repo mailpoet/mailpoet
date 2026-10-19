@@ -20,6 +20,13 @@ class RemoteStorageStreamWrapper {
   /** @var bool */
   public static $rejectWrites = false;
 
+  /**
+   * Opens for writing, then fails to save on flush, like vip:// does.
+   *
+   * @var bool
+   */
+  public static $failSaves = false;
+
   /** @var resource|null */
   public $context;
 
@@ -42,6 +49,7 @@ class RemoteStorageStreamWrapper {
     self::$files = [];
     self::$writes = [];
     self::$rejectWrites = false;
+    self::$failSaves = false;
   }
 
   public static function unregister(): void {
@@ -51,6 +59,7 @@ class RemoteStorageStreamWrapper {
     self::$files = [];
     self::$writes = [];
     self::$rejectWrites = false;
+    self::$failSaves = false;
   }
 
   public static function getRoot(): string {
@@ -92,6 +101,9 @@ class RemoteStorageStreamWrapper {
   }
 
   public function stream_flush(): bool {
+    if ($this->isWriting && self::$failSaves) {
+      return false;
+    }
     if ($this->isWriting) {
       self::$files[$this->path] = $this->buffer;
     }

@@ -31,20 +31,33 @@ class FormulaFreeXLSXWriterRemoteStorageTest extends \MailPoetTest {
 
   public function testItFailsWhenRemoteStorageRejectsTheFile() {
     RemoteStorageStreamWrapper::$rejectWrites = true;
-    $writer = new FormulaFreeXLSXWriter();
-    $writer->writeSheetRow('Sheet1', ['email@example.com']);
-    $previousErrorReporting = error_reporting(E_ALL & ~E_WARNING);
-    $exception = null;
 
-    try {
-      $writer->writeToFile(RemoteStorageStreamWrapper::getRoot() . '/mailpoet/exports/export.xlsx');
-    } catch (\RuntimeException $e) {
-      $exception = $e;
-    } finally {
-      error_reporting($previousErrorReporting);
-    }
+    $exception = $this->writeToRemoteStorage();
 
     verify($exception)->instanceOf(\RuntimeException::class);
     verify(RemoteStorageStreamWrapper::$files)->arrayCount(0);
+  }
+
+  public function testItFailsWhenRemoteStorageCannotSaveTheFile() {
+    RemoteStorageStreamWrapper::$failSaves = true;
+
+    $exception = $this->writeToRemoteStorage();
+
+    verify($exception)->instanceOf(\RuntimeException::class);
+    verify(RemoteStorageStreamWrapper::$files)->arrayCount(0);
+  }
+
+  private function writeToRemoteStorage(): ?\RuntimeException {
+    $writer = new FormulaFreeXLSXWriter();
+    $writer->writeSheetRow('Sheet1', ['email@example.com']);
+    $previousErrorReporting = error_reporting(E_ALL & ~E_WARNING & ~E_USER_WARNING);
+    try {
+      $writer->writeToFile(RemoteStorageStreamWrapper::getRoot() . '/mailpoet/exports/export.xlsx');
+    } catch (\RuntimeException $e) {
+      return $e;
+    } finally {
+      error_reporting($previousErrorReporting);
+    }
+    return null;
   }
 }
