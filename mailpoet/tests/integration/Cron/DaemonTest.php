@@ -227,13 +227,24 @@ class DaemonTest extends \MailPoetTest {
     $daemon = $this->getServiceWithOverrides(Daemon::class, [
       'cronWorkerRunner' => $cronWorkerRunner,
       'sendingEnvironment' => $this->createSendingEnvironment('staging'),
-      'workersFactory' => $this->createWorkersFactoryMock(),
+      'workersFactory' => $this->createWorkersFactoryMock($this->expectEveryGatedWorkerOnce()),
     ]);
 
-    // The default factory mock expects every worker, gated ones included, to be processed once.
     $daemon->run($data);
 
     verify($this->logRepository->findOneBy(['name' => 'cron', 'level' => 400]))->null();
+  }
+
+  public function testGatedWorkersMatchTheGatedTaskTypes() {
+    verify(array_values(Daemon::GATED_WORKERS))->equalsCanonicalizing(SendingEnvironment::GATED_TASK_TYPES);
+  }
+
+  private function expectEveryGatedWorkerOnce(): array {
+    $workers = [];
+    foreach (array_keys(Daemon::GATED_WORKERS) as $factoryMethod) {
+      $workers[$factoryMethod] = Expected::once($this->createSimpleWorkerMock());
+    }
+    return $workers;
   }
 
   private function createSendingEnvironment(string $environmentType): SendingEnvironment {

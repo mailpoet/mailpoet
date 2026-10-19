@@ -19,7 +19,7 @@ class Daemon {
    * Factory methods of the workers that send email, mapped to their task type in
    * SendingEnvironment::GATED_TASK_TYPES. They are skipped when sending is paused.
    */
-  private const GATED_WORKERS = [
+  public const GATED_WORKERS = [
     'createStatsNotificationsWorker' => StatsNotificationsWorker::TASK_TYPE,
     'createScheduleWorker' => 'schedule',
     'createQueueWorker' => SendingQueue::TASK_TYPE,
@@ -69,14 +69,14 @@ class Daemon {
     $this->cronHelper->saveDaemon($settingsDaemonData);
 
     $errors = [];
+    $sendingAllowed = $this->sendingEnvironment->isSendingAllowed();
     foreach ($this->getWorkers() as $factoryMethod => $createWorker) {
       if (wp_is_maintenance_mode()) {
         // stop execution when in maintenance mode
         break;
       }
 
-      $gatedTaskType = self::GATED_WORKERS[$factoryMethod] ?? null;
-      if ($gatedTaskType !== null && $this->sendingEnvironment->isTaskTypeGated($gatedTaskType)) {
+      if (!$sendingAllowed && isset(self::GATED_WORKERS[$factoryMethod])) {
         continue;
       }
 
