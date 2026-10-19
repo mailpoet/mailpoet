@@ -165,6 +165,7 @@ function HeldCampaignsNotice({
       api_version: window.mailpoet_api_version,
       endpoint: 'sendingQueue',
       action: action === 'resume' ? 'resumeAllHeld' : 'cancelAllHeld',
+      data: { newsletter_ids: campaigns.map((item) => item.id) },
     })
       .done((response: { data: HeldBulkResult }) => {
         const result = response.data;
@@ -178,10 +179,13 @@ function HeldCampaignsNotice({
           })),
         );
         setFocusRequest({ rowIndex: -1 });
-        speak(
-          bulkSummary(action, result.done.length, result.failed.length),
-          'polite',
+        const summary = bulkSummary(
+          action,
+          result.done.length,
+          result.failed.length,
+          result.skipped.length,
         );
+        if (summary) speak(summary, 'polite');
         jQuery(document).trigger('heartbeat-tick.mailpoet-listing');
       })
       .fail((response) => {
