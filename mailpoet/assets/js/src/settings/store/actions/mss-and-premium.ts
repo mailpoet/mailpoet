@@ -64,6 +64,7 @@ export function* verifyMssKey(key: string) {
     fields.mssStatus = MssStatus.VALID_MSS_NOT_ACTIVE;
   } else {
     yield setSettings(call.res.data);
+    yield { type: 'REFRESH_HELD_CAMPAIGNS' };
     fields.mssStatus = getMssStatus(
       Number(call.res.data.mta.mailpoet_api_key_state.code) === 200,
       call.res.data,
@@ -116,6 +117,7 @@ export function* verifyPremiumKey(key: string) {
   }
 
   yield updateKeyActivationState(fields);
+  yield { type: 'REFRESH_HELD_CAMPAIGNS' };
 
   MailPoet.trackEvent('User has validated a Premium key');
 
