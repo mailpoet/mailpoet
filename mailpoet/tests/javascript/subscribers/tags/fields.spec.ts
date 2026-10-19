@@ -48,3 +48,11 @@ describe('tags created column', () => {
     expect(renderCreatedAt(null)).to.equal('<span></span>');
   });
 });
+
+describe('tags fields', () => {
+  it('does not offer hiding the name title column', () => {
+    const name = buildListFields([]).find(({ id }) => id === 'name');
+
+    expect(name.enableHiding).to.equal(false);
+  });
+});

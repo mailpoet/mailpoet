@@ -54,13 +54,16 @@ function formatDateTimeInZone(value: string, timeZone: string | null): string {
   return formatDateTime(value);
 }
 
-const fields: Field<TimezoneRow>[] = [
+export const timezoneScheduleFields: Field<TimezoneRow>[] = [
   {
     id: 'timezone',
     label: __('Time zone', 'mailpoet'),
     type: 'text',
     enableSorting: true,
     enableGlobalSearch: false,
+    enableHiding: false,
+    // The schedule has no filter UI to show an added filter in.
+    filterBy: false,
     getValue: ({ item }) =>
       formatTimezoneLabel(item.timezone, item.fallbackUsed),
     render: ({ item }) => (
@@ -116,7 +119,7 @@ export function TimezoneSchedule({ newsletter }: Props) {
   );
 
   const { data, paginationInfo } = useMemo(
-    () => filterSortAndPaginate(rows, view, fields),
+    () => filterSortAndPaginate(rows, view, timezoneScheduleFields),
     [rows, view],
   );
 
@@ -140,7 +143,7 @@ export function TimezoneSchedule({ newsletter }: Props) {
       <div className="mailpoet-dataviews mailpoet-listing">
         <DataViews<TimezoneRow>
           data={data}
-          fields={fields}
+          fields={timezoneScheduleFields}
           view={view}
           onChangeView={setView}
           paginationInfo={paginationInfo}

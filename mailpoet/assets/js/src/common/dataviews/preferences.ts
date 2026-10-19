@@ -195,8 +195,13 @@ export function getDataViewsPreference<T>(
     view.mediaField = mediaField;
   }
 
+  // A title field that can't be hidden is also locked in View options, so a
+  // showTitle: false saved before the lock would hide it with no way back.
+  const isTitleLocked = fields?.some(
+    (field) => field.id === view.titleField && field.enableHiding === false,
+  );
   const showTitle = getBooleanPreference(persistedView, 'showTitle');
-  if (showTitle !== undefined) {
+  if (showTitle !== undefined && !isTitleLocked) {
     view.showTitle = showTitle;
   }
 

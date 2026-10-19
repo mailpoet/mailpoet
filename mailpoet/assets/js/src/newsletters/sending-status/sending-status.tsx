@@ -92,6 +92,7 @@ function buildFields(
       type: 'text',
       enableSorting: true,
       enableGlobalSearch: true,
+      enableHiding: false,
       getValue: ({ item }) => item.email,
       render: ({ item }) => (
         <div data-automation-id={`name_${item.taskId}_${item.subscriberId}`}>

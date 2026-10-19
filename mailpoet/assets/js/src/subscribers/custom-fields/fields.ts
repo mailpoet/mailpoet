@@ -19,6 +19,7 @@ export const listFields: Field<CustomField>[] = [
     label: __('Name', 'mailpoet'),
     type: 'text',
     enableGlobalSearch: true,
+    enableHiding: false,
     enableSorting: true,
     filterBy: false,
   },

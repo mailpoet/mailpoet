@@ -54,6 +54,7 @@ export const segmentFields: Field<SegmentListingItem>[] = [
     type: 'text',
     enableSorting: true,
     enableGlobalSearch: false,
+    enableHiding: false,
     filterBy: false,
     render: ({ item }) => {
       const privateLabel =

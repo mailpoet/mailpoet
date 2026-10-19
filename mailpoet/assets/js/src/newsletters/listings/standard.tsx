@@ -80,6 +80,7 @@ function buildFields(
       type: 'text',
       enableSorting: true,
       enableGlobalSearch: true,
+      enableHiding: false,
       getValue: ({ item }) => item.campaign_name || item.subject,
       render: ({ item }) => {
         const subject =

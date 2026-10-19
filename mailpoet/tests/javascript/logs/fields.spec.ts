@@ -47,6 +47,15 @@ describe('logs fields', () => {
     expect(byId.action).to.equal(undefined);
   });
 
+  it('keeps the name title column visible but filterable', () => {
+    const name = getLogFields(new Set(), { names: [] }).find(
+      ({ id }) => id === 'name',
+    );
+
+    expect(name.enableHiding).to.equal(false);
+    expect(name.filterBy).not.to.equal(false);
+  });
+
   it('exposes a primary toggle action whose label tracks expanded state', () => {
     const item = { id: 7 } as LogListingItem;
     const toggled: number[] = [];
