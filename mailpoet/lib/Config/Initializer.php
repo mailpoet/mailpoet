@@ -182,6 +182,8 @@ class Initializer {
 
   private MailPoetPageResolver $mailPoetPageResolver;
 
+  private UpdateFailureNotifier $updateFailureNotifier;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   const PLUGIN_ACTIVATED = 'mailpoet_plugin_activated';
@@ -229,7 +231,8 @@ class Initializer {
     NewslettersRestApi $newslettersRestApi,
     LogsDownload $logsDownload,
     PublicEmailRoute $publicEmailRoute,
-    MailPoetPageResolver $mailPoetPageResolver
+    MailPoetPageResolver $mailPoetPageResolver,
+    UpdateFailureNotifier $updateFailureNotifier
   ) {
     $this->rendererFactory = $rendererFactory;
     $this->accessControl = $accessControl;
@@ -274,6 +277,7 @@ class Initializer {
     $this->logsDownload = $logsDownload;
     $this->publicEmailRoute = $publicEmailRoute;
     $this->mailPoetPageResolver = $mailPoetPageResolver;
+    $this->updateFailureNotifier = $updateFailureNotifier;
 
     $emailEditorContainer = Email_Editor_Container::container();
     $this->emailEditorBootstrap = $emailEditorContainer->get(EmailEditorBootstrap::class);
@@ -388,7 +392,7 @@ class Initializer {
     try {
       $this->wpFunctions->addOption(self::PLUGIN_ACTIVATED, true); // used in afterPluginActivation
       $this->activator->activate();
-    } catch (InvalidStateException $e) {
+    } catch (ActivationInProgressException $e) {
       return $this->handleRunningMigration($e);
     } catch (\Exception $e) {
       return $this->handleFailedInitialization($e);
@@ -517,27 +521,35 @@ class Initializer {
    * will run the database migrations and update the db version among a few other things.
    *
    * @return void
-   * @throws InvalidStateException
    */
   public function maybeRunActivator() {
-    try {
-      $currentDbVersion = $this->settings->get('db_version');
-    } catch (\Exception $e) {
-      $currentDbVersion = null;
-    }
-
-    if (version_compare((string)$currentDbVersion, Env::$version) === 0) {
+    if ($this->activator->isDbUpToDate()) {
       return;
     }
 
-    // if current db version and plugin version differ
+    // The request may be the post-update loopback, which disconnects at once; a migration
+    // must not be cut off halfway when the client goes away.
+    if (function_exists('ignore_user_abort')) {
+      ignore_user_abort(true);
+    }
     try {
       $this->activator->activate();
-    } catch (InvalidStateException $e) {
-      $this->handleRunningMigration($e);
-    } catch (\Exception $e) {
-      $this->handleFailedInitialization($e);
+    } catch (ActivationInProgressException $e) {
+      // The request holding the lock may have finished by now; re-read db_version before warning.
+      $this->activator->refreshDbVersion();
+      if (!$this->activator->isDbUpToDate()) {
+        $this->handleRunningMigration($e);
+      }
+    } catch (\Throwable $e) {
+      $this->handleFailedDatabaseUpdate($e);
     }
+  }
+
+  private function handleFailedDatabaseUpdate(\Throwable $failure): void {
+    if (function_exists('wp_get_current_user')) {
+      Menu::addErrorPage($this->accessControl);
+    }
+    $this->updateFailureNotifier->notify($failure);
   }
 
   public function setupInstaller() {
