@@ -24,12 +24,12 @@ class RegistrationTest extends \MailPoetTest {
 
   public function testItRendersTheDefaultLabelWhenTheSavedLabelIsEmpty() {
     $this->settings->set('subscribe.on_register.label', '');
-    verify($this->renderForm())->stringContainsString('Yes, please add me to your mailing list.');
+    verify($this->renderForm())->stringContainsString('Yes, add me to your mailing list');
   }
 
   public function testItRendersTheDefaultLabelWhenTheSavedLabelIsWhitespace() {
     $this->settings->set('subscribe.on_register.label', '   ');
-    verify($this->renderForm())->stringContainsString('Yes, please add me to your mailing list.');
+    verify($this->renderForm())->stringContainsString('Yes, add me to your mailing list');
   }
 
   public function testItAddsSubscriber() {
