@@ -84,11 +84,23 @@ class Migrator {
         'started_at' => $data['started_at'] ?? null,
         'completed_at' => $data['completed_at'] ?? null,
         'retries' => isset($data['retries']) ? (int)$data['retries'] : null,
-        'error' => $data && $data['error'] ? mb_strimwidth($data['error'], 0, 20, '…') : null,
+        'error' => $data && $data['error'] ? $data['error'] : null,
         'unknown' => !isset($definedMap[$name]),
       ];
     }
     return $status;
+  }
+
+  /**
+   * Failed migrations that still exist in the plugin. A row for a migration that a later
+   * release renamed or removed stays failed forever and is left out.
+   *
+   * @return array<int, array{name: string, level: string|null, status: string, started_at: string|null, completed_at: string|null, retries: int|null, error: string|null, unknown: bool}>
+   */
+  public function getFailedMigrations(): array {
+    return array_values(array_filter($this->getStatus(), function (array $migration): bool {
+      return $migration['status'] === self::MIGRATION_STATUS_FAILED && !$migration['unknown'];
+    }));
   }
 
   private function getMigrationStatus(array $data): string {
