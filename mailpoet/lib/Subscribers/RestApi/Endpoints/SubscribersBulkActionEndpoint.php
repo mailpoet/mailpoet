@@ -23,11 +23,6 @@ class SubscribersBulkActionEndpoint extends Endpoint {
   use ListingRequestValidationTrait;
   use SubscribersFilterTrait;
 
-  // Referenced by ListingRequestValidationTrait's pagination helpers, which this
-  // endpoint never calls; the date and error helpers are the ones it needs.
-  private const MAX_PER_PAGE = 100;
-  private const MAX_PAGE = 100000;
-
   public const ACTION_RESEND_CONFIRMATION_EMAILS = 'resendConfirmationEmails';
 
   private const VALID_SELECT_ALL_GROUPS = [

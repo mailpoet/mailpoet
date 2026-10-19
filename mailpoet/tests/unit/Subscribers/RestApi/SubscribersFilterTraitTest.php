@@ -19,9 +19,6 @@ class SubscribersFilterTraitTest extends \MailPoetUnitTest {
       use ListingRequestValidationTrait;
       use SubscribersFilterTrait;
 
-      private const MAX_PER_PAGE = 100;
-      private const MAX_PAGE = 100000;
-
       protected function getListingValidationErrorPrefix(): string {
         return 'subscribers';
       }
