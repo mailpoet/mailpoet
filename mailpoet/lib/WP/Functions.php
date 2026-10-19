@@ -1163,6 +1163,10 @@ class Functions {
     return wp_is_maintenance_mode();
   }
 
+  public function wpGetEnvironmentType(): string {
+    return wp_get_environment_type();
+  }
+
   public function headersSent(): bool {
     return headers_sent();
   }
