@@ -108,6 +108,29 @@ export async function typeInDataViewsSearch(page, text, options = {}) {
   await page.locator('.dataviews-search input').type(text, options);
 }
 
+// Apply a native DataViews filter (e.g. "Lists") by choosing its options by label.
+export async function applyDataViewsFilter(page, filterName, optionLabels) {
+  await page
+    .locator(
+      'button.dataviews-filters__visibility-toggle[aria-haspopup="menu"]',
+    )
+    .click();
+  await page
+    .locator(
+      `//*[@role="menuitem"][contains(normalize-space(.), "${filterName}")]`,
+    )
+    .click();
+  await page.waitForSelector('.dataviews-filters__search-widget-listitem');
+  for (const label of optionLabels) {
+    await page
+      .locator(
+        `//*[contains(@class, "dataviews-filters__search-widget-listitem")][contains(normalize-space(.), "${label}")]`,
+      )
+      .click();
+  }
+  await page.keyboard.press('Escape');
+}
+
 export async function selectDataViewsPage(
   page,
   rootSelector = '.mailpoet-dataviews',

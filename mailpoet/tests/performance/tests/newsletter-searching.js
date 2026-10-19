@@ -18,10 +18,12 @@ import {
   thinkTimeMin,
   thinkTimeMax,
   emailsPageTitle,
+  defaultListName,
   fullPageSet,
   screenshotPath,
 } from '../config.js';
 import {
+  applyDataViewsFilter,
   gotoMailPoetNewsletterPage,
   login,
   typeInDataViewsSearch,
@@ -48,7 +50,6 @@ export async function newsletterSearching() {
     // Search for a newsletter
     await typeInDataViewsSearch(page, 'Newsletter 1st', { delay: 50 });
     await waitForDataViews(page, '.mailpoet-newsletters-dataviews');
-    await page.waitForSelector('[data-automation-id="listing_filter_segment"]');
     await page.waitForLoadState('networkidle');
     const listingTitleElement = await page
       .locator('.mailpoet-listing-title')
@@ -60,14 +61,11 @@ export async function newsletterSearching() {
     });
 
     // Filter newsletter results by a default list "Newsletter mailing list"
-    await page
-      .locator('[data-automation-id="listing_filter_segment"]')
-      .selectOption('3');
+    await applyDataViewsFilter(page, 'Lists', [defaultListName]);
     await waitForDataViews(page, '.mailpoet-newsletters-dataviews');
-    await page.waitForSelector('[data-automation-id="listing_filter_segment"]');
     await page.waitForLoadState('networkidle');
     const listingFilterElement = await page.locator(
-      '[data-automation-id="listing_filter_segment"]',
+      '.dataviews-filters__summary-chip-container',
     );
     describe(emailsPageTitle, () => {
       describe('newsletter-searching: should be able to see Lists Filter', async () => {
