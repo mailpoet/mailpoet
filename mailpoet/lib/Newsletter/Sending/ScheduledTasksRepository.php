@@ -92,6 +92,19 @@ class ScheduledTasksRepository extends Repository {
   }
 
   /**
+   * @param int[] $newsletterIds
+   * @return ScheduledTaskEntity[]
+   */
+  public function findHeldOverdueForNewsletterIds(array $newsletterIds): array {
+    return $this->createPausedByReasonQueryBuilder(ScheduledTaskEntity::PAUSE_REASON_OVERDUE, OverdueCampaignHold::HELD_TYPES)
+      ->andWhere('n.id IN (:newsletterIds)')
+      ->setParameter('newsletterIds', $newsletterIds)
+      ->orderBy('t.scheduledAt', 'ASC')
+      ->getQuery()
+      ->getResult();
+  }
+
+  /**
    * Whether another issue of the same post notification is running, or a run of it is scheduled and due, so held ones must wait.
    */
   public function hasActiveSiblingIssue(NewsletterEntity $issue): bool {

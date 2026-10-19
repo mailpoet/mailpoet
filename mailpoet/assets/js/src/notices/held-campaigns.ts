@@ -12,6 +12,7 @@ export type HeldBulkAction = 'resume' | 'cancel';
 export type HeldBulkResult = {
   done: number[];
   failed: { id: number; message: string }[];
+  skipped: number[];
 };
 
 export function getLateness(lateSeconds: number): Lateness {
@@ -196,13 +197,16 @@ export function applyBulkResult(
   rows: HeldCampaign[],
   result: HeldBulkResult,
 ): HeldCampaign[] {
-  return rows.filter((row) => !result.done.includes(row.id));
+  return rows.filter(
+    (row) => !result.done.includes(row.id) && !result.skipped.includes(row.id),
+  );
 }
 
 export function bulkSummary(
   action: HeldBulkAction,
   doneCount: number,
   failedCount: number,
+  skippedCount = 0,
 ): string {
   const parts: string[] = [];
   if (doneCount > 0) {
@@ -227,9 +231,32 @@ export function bulkSummary(
     parts.push(
       sprintf(
         action === 'resume'
-          ? __('%d couldn’t be sent', 'mailpoet')
-          : __('%d couldn’t be updated', 'mailpoet'),
+          ? _n(
+              '%d couldn’t be sent',
+              '%d couldn’t be sent',
+              failedCount,
+              'mailpoet',
+            )
+          : _n(
+              '%d couldn’t be updated',
+              '%d couldn’t be updated',
+              failedCount,
+              'mailpoet',
+            ),
         failedCount,
+      ),
+    );
+  }
+  if (skippedCount > 0) {
+    parts.push(
+      sprintf(
+        _n(
+          '%d already handled',
+          '%d already handled',
+          skippedCount,
+          'mailpoet',
+        ),
+        skippedCount,
       ),
     );
   }

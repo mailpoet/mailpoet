@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { resetLocaleData, setLocaleData } from '@wordpress/i18n';
 import {
   actionLabel,
   actionScreenReaderText,
@@ -308,6 +309,16 @@ describe('held campaigns notice helpers', () => {
       const result = applyBulkResult(rows(4), {
         done: [1, 3],
         failed: [{ id: 2, message: 'Nope' }],
+        skipped: [],
+      });
+      expect(result.map((r) => r.id)).to.deep.equal([2, 4]);
+    });
+
+    it('removes skipped rows because they were handled elsewhere', () => {
+      const result = applyBulkResult(rows(4), {
+        done: [1],
+        failed: [{ id: 2, message: 'Nope' }],
+        skipped: [3],
       });
       expect(result.map((r) => r.id)).to.deep.equal([2, 4]);
     });
@@ -319,6 +330,33 @@ describe('held campaigns notice helpers', () => {
         '3 emails sent, 1 couldn\u2019t be sent',
       );
       expect(bulkSummary('resume', 0, 2)).to.equal('2 couldn\u2019t be sent');
+    });
+
+    describe('failed count plural forms', () => {
+      afterEach(() => resetLocaleData());
+
+      it('lets translators pick the plural form of the failed count', () => {
+        setLocaleData(
+          {
+            '%d couldn\u2019t be sent': ['%d: one', '%d: many'],
+            '%d couldn\u2019t be updated': ['%d: one', '%d: many'],
+          } as unknown as Record<string, string[]>,
+          'mailpoet',
+        );
+        expect(bulkSummary('resume', 0, 1)).to.equal('1: one');
+        expect(bulkSummary('resume', 0, 3)).to.equal('3: many');
+        expect(bulkSummary('cancel', 0, 1)).to.equal('1: one');
+        expect(bulkSummary('cancel', 0, 3)).to.equal('3: many');
+      });
+    });
+
+    it('mentions emails that were already handled', () => {
+      expect(bulkSummary('resume', 0, 0, 2)).to.equal('2 already handled');
+      expect(bulkSummary('cancel', 0, 0, 1)).to.equal('1 already handled');
+      expect(bulkSummary('resume', 2, 1, 3)).to.equal(
+        '2 emails sent, 1 couldn\u2019t be sent, 3 already handled',
+      );
+      expect(bulkSummary('resume', 0, 0, 0)).to.equal('');
     });
 
     it('summarises a bulk cancel', () => {
