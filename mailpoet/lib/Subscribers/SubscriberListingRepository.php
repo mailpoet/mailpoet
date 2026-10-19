@@ -1300,7 +1300,7 @@ class SubscriberListingRepository extends ListingRepository {
           ->setParameter($key, (float)$filters[$key]);
       }
     }
-    // The days are site-local; the columns are UTC. An invalid day is skipped, as in ListingDateRangeFilterTrait.
+    // The days are site-local; the columns are UTC. An invalid day matches nothing, as in ListingDateRangeFilterTrait.
     $dates = [
       ['created_from', 's.created_at', '>=', 0],
       ['created_to', 's.created_at', '<', 1],
@@ -1309,8 +1309,13 @@ class SubscriberListingRepository extends ListingRepository {
     ];
     foreach ($dates as [$key, $column, $operator, $addDays]) {
       $value = $filters[$key] ?? null;
-      $bound = is_string($value) && $value !== '' ? $this->getSiteDayStartInUtc($value, $addDays) : null;
-      if ($bound !== null) {
+      if (!is_string($value) || $value === '') {
+        continue;
+      }
+      $bound = $this->getSiteDayStartInUtc($value, $addDays);
+      if ($bound === null) {
+        $query->andWhere('1 = 0');
+      } else {
         $query->andWhere("$column $operator :date_$key")
           ->setParameter("date_$key", $bound, ParameterType::STRING);
       }
