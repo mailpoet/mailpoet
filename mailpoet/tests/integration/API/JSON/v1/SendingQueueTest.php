@@ -32,6 +32,7 @@ use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\Util\License\Features\Data\Capability;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class SendingQueueTest extends \MailPoetTest {
   /** @var NewsletterEntity */
@@ -554,13 +555,15 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertSame(0, $sendingQueue->getCountProcessed());
     $this->assertSame(1, $sendingQueue->getCountToProcess());
     $this->assertNull($scheduledTask->getStatus());
-    $this->assertNull($scheduledTask->getScheduledAt());
+    $sentAt = $scheduledTask->getScheduledAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $sentAt);
+    $this->assertEqualsWithDelta(time(), $sentAt->getTimestamp(), 10);
 
     $this->assertSame($sendingQueue->getId(), $result->data['id']);
     $this->assertSame(SendingQueue::TASK_TYPE, $result->data['type']);
     $this->assertNull($result->data['status']);
     $this->assertSame(5, $result->data['priority']);
-    $this->assertNull($result->data['scheduled_at']);
+    $this->assertMatchesRegularExpression('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result->data['scheduled_at']);
     $this->assertNull($result->data['processed_at']);
     $this->assertMatchesRegularExpression('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result->data['created_at']);
     $this->assertMatchesRegularExpression('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result->data['updated_at']);
@@ -576,6 +579,31 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertSame(0, $result->data['count_processed']);
     $this->assertSame(1, $result->data['count_to_process']);
     $this->assertSame(200, $result->status);
+  }
+
+  public function testAddOnReusedScheduledTaskStampsScheduledAt(): void {
+    $segment = (new SegmentFactory())->create();
+    $subscriber = (new SubscriberFactory())->withSegments([$segment])->create();
+    $newsletter = (new NewsletterFactory())
+      ->withSegments([$segment])
+      ->withSubscriber($subscriber)
+      ->create();
+    $task = (new ScheduledTaskFactory())->create(
+      SendingQueue::TASK_TYPE,
+      ScheduledTaskEntity::STATUS_SCHEDULED,
+      Carbon::now()->subDays(3)->millisecond(0)
+    );
+    (new SendingQueueFactory())->create($task, $newsletter);
+    $this->entityManager->refresh($newsletter);
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->add(['newsletter_id' => $newsletter->getId()]);
+
+    $this->assertSame(200, $result->status);
+    $this->assertSame($task->getId(), $result->data['task_id']);
+    $this->assertNull($task->getStatus());
+    $scheduledAt = $task->getScheduledAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
+    $this->assertEqualsWithDelta(time(), $scheduledAt->getTimestamp(), 10);
   }
 
   public function testItRejectsInvalidNewsletters() {
