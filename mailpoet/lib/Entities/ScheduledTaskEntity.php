@@ -27,6 +27,8 @@ class ScheduledTaskEntity {
   const VIRTUAL_STATUS_RUNNING = 'running'; // For historical reasons this is stored as null in DB
   const META_PAUSE_REASON = 'pause_reason';
   const PAUSE_REASON_SENDER_DOMAIN = 'sender_domain';
+  const PAUSE_REASON_OVERDUE = 'overdue';
+  const META_OVERDUE_SEND_CONFIRMED = 'overdue_send_confirmed';
   const PRIORITY_HIGH = 1;
   const PRIORITY_MEDIUM = 5;
   const PRIORITY_LOW = 10;
@@ -228,6 +230,23 @@ class ScheduledTaskEntity {
       return;
     }
     unset($meta[self::META_PAUSE_REASON]);
+    $this->setMeta($meta ?: null);
+  }
+
+  public function isOverdueSendConfirmed(): bool {
+    return (($this->getMeta() ?? [])[self::META_OVERDUE_SEND_CONFIRMED] ?? false) === true;
+  }
+
+  public function setOverdueSendConfirmed(bool $confirmed): void {
+    if ($confirmed) {
+      $this->setMeta(array_merge($this->getMeta() ?? [], [self::META_OVERDUE_SEND_CONFIRMED => true]));
+      return;
+    }
+    $meta = $this->getMeta();
+    if ($meta === null) {
+      return;
+    }
+    unset($meta[self::META_OVERDUE_SEND_CONFIRMED]);
     $this->setMeta($meta ?: null);
   }
 

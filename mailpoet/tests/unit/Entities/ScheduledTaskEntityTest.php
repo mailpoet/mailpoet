@@ -65,6 +65,38 @@ class ScheduledTaskEntityTest extends \MailPoetUnitTest {
     verify($task->getMeta())->same(['other' => 'value']);
   }
 
+  public function testOverdueSendConfirmedDefaultsToFalse(): void {
+    $task = new ScheduledTaskEntity();
+    verify($task->isOverdueSendConfirmed())->false();
+  }
+
+  public function testItStoresOverdueSendConfirmedAndKeepsOtherMetaKeys(): void {
+    $task = new ScheduledTaskEntity();
+    $task->setMeta(['other' => 'value']);
+    $task->setOverdueSendConfirmed(true);
+    verify($task->isOverdueSendConfirmed())->true();
+    verify($task->getMeta())->same(['other' => 'value', 'overdue_send_confirmed' => true]);
+  }
+
+  public function testItRemovesOverdueSendConfirmedAndStoresNullMetaWhenNothingIsLeft(): void {
+    $task = new ScheduledTaskEntity();
+    $task->setOverdueSendConfirmed(true);
+    $task->setOverdueSendConfirmed(false);
+    verify($task->isOverdueSendConfirmed())->false();
+    verify($task->getMeta())->null();
+  }
+
+  public function testOverdueSendConfirmedSurvivesLeavingThePausedStatusWhileReasonIsCleared(): void {
+    $task = new ScheduledTaskEntity();
+    $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+    $task->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+    $task->setOverdueSendConfirmed(true);
+    $task->setStatus(null);
+    verify($task->getPauseReason())->null();
+    verify($task->isOverdueSendConfirmed())->true();
+    verify($task->getMeta())->same(['overdue_send_confirmed' => true]);
+  }
+
   public function nonPausedStatuses(): array {
     return [
       'running (null)' => [null],
