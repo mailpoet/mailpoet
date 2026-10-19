@@ -164,6 +164,10 @@ class Functions {
     return current_user_can($capability);
   }
 
+  public function wpDoingCron(): bool {
+    return wp_doing_cron();
+  }
+
   public function wpDoingAjax() {
     return wp_doing_ajax();
   }
