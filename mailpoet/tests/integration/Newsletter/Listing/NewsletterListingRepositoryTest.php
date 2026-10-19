@@ -1008,6 +1008,37 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     $this->assertSame('Sent (1)', $options[4]['label']);
   }
 
+  public function testStatusOptionCountsInTrashGroupCountTrashedEmails() {
+    $this->createStandard('Draft', NewsletterEntity::STATUS_DRAFT);
+    $this->createStandard('Sent', NewsletterEntity::STATUS_SENT);
+    foreach ([NewsletterEntity::STATUS_DRAFT, NewsletterEntity::STATUS_DRAFT, NewsletterEntity::STATUS_SENT] as $index => $status) {
+      $trashed = $this->createStandard("Trashed $index", $status);
+      $trashed->setDeletedAt(new \DateTime());
+    }
+    $this->entityManager->flush();
+
+    $options = $this->getStatusOptions(['group' => 'trash', 'params' => ['type' => 'standard']]);
+
+    $this->assertSame('Draft (2)', $options[0]['label']);
+    $this->assertSame('Scheduled (0)', $options[1]['label']);
+    $this->assertSame('Sent (1)', $options[4]['label']);
+    $this->assertSame('Draft (1)', $this->getStatusOptions(['group' => 'all', 'params' => ['type' => 'standard']])[0]['label']);
+  }
+
+  public function testStatusOptionLabelsUseTranslatableFormat() {
+    $this->createStandard('Draft one', NewsletterEntity::STATUS_DRAFT);
+    $filter = function ($translation, $text) {
+      return $text === '%1$s (%2$s)' ? '%2$s x %1$s' : $translation;
+    };
+    add_filter('gettext', $filter, 10, 2);
+    try {
+      $options = $this->getStatusOptions(['params' => ['type' => 'standard']]);
+    } finally {
+      remove_filter('gettext', $filter, 10);
+    }
+    $this->assertSame('1 x Draft', $options[0]['label']);
+  }
+
   public function testStatusOptionsForAutomaticTypesUseActiveAndNotActive() {
     foreach (['notification', 're_engagement'] as $type) {
       (new Newsletter())->withType($type)->withStatus(NewsletterEntity::STATUS_ACTIVE)->withSubject("$type active")->create();
