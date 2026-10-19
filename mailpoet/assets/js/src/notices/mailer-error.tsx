@@ -3,6 +3,7 @@ import { __ } from '@wordpress/i18n';
 import ReactStringReplace from 'react-string-replace';
 import classnames from 'classnames';
 
+import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
 import { isAllowedHref } from 'common/functions/filter-message-html';
 
@@ -14,6 +15,7 @@ const resumeMailerSending = () =>
   })
     .done(() => {
       MailPoet.Notice.success(__('Sending has been resumed.', 'mailpoet'));
+      Hooks.doAction('mailpoet.held_campaigns.refresh');
     })
     .fail((response) => {
       if (response.errors.length > 0) {

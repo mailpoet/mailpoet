@@ -69,6 +69,9 @@ const installModuleMocks = () => {
     if (request === '@wordpress/i18n') {
       return { __: (text: string) => text };
     }
+    if (request === 'wp-js-hooks') {
+      return { Hooks: { doAction: () => undefined } };
+    }
     if (request === 'mailpoet') {
       return {
         MailPoet: {
