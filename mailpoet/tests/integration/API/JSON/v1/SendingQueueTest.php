@@ -951,6 +951,40 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertNull($this->diContainer->get(ScheduledTasksRepository::class)->findOneById($heldTaskId));
   }
 
+  public function testAddSchedulesAHeldStandardEmailForANewTimeAndReplacesTheHeldQueue(): void {
+    $segment = (new SegmentFactory())->create();
+    (new SubscriberFactory())->withSegments([$segment])->create();
+    $newsletter = (new NewsletterFactory())->withSubject('Held')->withDefaultBody()->withSegments([$segment])->create();
+    $newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $newScheduledAt = Carbon::now()->addDays(2)->millisecond(0)->format('Y-m-d H:i:s');
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_IS_SCHEDULED => '1',
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_AT => $newScheduledAt,
+    ]);
+    [$heldTask, $heldQueue] = $this->createHeldCampaign($newsletter);
+    $heldTaskId = (int)$heldTask->getId();
+    $heldQueueId = (int)$heldQueue->getId();
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->add(['newsletter_id' => $newsletter->getId()]);
+
+    $this->assertSame(200, $result->status);
+    $this->entityManager->clear();
+    $queues = $this->diContainer->get(SendingQueuesRepository::class)->findBy(['newsletter' => $newsletter->getId()]);
+    $this->assertCount(1, $queues);
+    $this->assertNotSame($heldQueueId, $queues[0]->getId());
+    $this->assertNull($this->diContainer->get(ScheduledTasksRepository::class)->findOneById($heldTaskId));
+    $task = $queues[0]->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    $this->assertSame(ScheduledTaskEntity::STATUS_SCHEDULED, $task->getStatus());
+    $this->assertNull($task->getPauseReason());
+    $scheduledAt = $task->getScheduledAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
+    $this->assertSame($newScheduledAt, $scheduledAt->format('Y-m-d H:i:s'));
+    $reloaded = $this->entityManager->find(NewsletterEntity::class, $newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $reloaded);
+    $this->assertSame(NewsletterEntity::STATUS_SCHEDULED, $reloaded->getStatus());
+  }
+
   public function testAddInTimeZoneModeLeavesNoHeldQueueBehind(): void {
     $segment = (new SegmentFactory())->create();
     (new SubscriberFactory())->withSegments([$segment])->withTimeZone('America/New_York')->create();
