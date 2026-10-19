@@ -54,6 +54,7 @@ export const listFields: Field<FormListingItem>[] = [
     type: 'text',
     enableSorting: true,
     enableGlobalSearch: false,
+    enableHiding: false,
     // Name is covered by the search box, so don't expose a redundant filter.
     filterBy: false,
     render: ({ item }) =>

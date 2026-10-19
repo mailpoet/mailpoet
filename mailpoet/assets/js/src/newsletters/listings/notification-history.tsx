@@ -42,6 +42,7 @@ function buildFields(
       label: __('Subject', 'mailpoet'),
       enableSorting: false,
       enableGlobalSearch: true,
+      enableHiding: false,
       render: ({ item }) => {
         const subject =
           (item.queue &&

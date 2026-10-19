@@ -25,6 +25,7 @@ export function getLogFields(
       type: 'text',
       enableSorting: true,
       enableGlobalSearch: false,
+      enableHiding: false,
       elements: options.names.map((name) => ({ value: name, label: name })),
       filterBy: { operators: ['isAny'] },
       render: ({ item }) =>

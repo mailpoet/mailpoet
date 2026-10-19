@@ -84,9 +84,6 @@ function getViewFromSearch(
   const orderby = search.get('orderby');
   return {
     ...defaultView,
-    // The Name column can't be hidden, so ignore a showTitle: false saved
-    // before that; it would hide Name with no way to show it again.
-    showTitle: true,
     page: parsePositiveInt(search.get('paged')) ?? defaultView.page,
     perPage: parsePositiveInt(search.get('per_page')) ?? defaultView.perPage,
     // DataViews syncs an undefined search to '' through onChangeView on

@@ -165,6 +165,7 @@ function buildFields(
       type: 'text',
       enableSorting: true,
       enableGlobalSearch: true,
+      enableHiding: false,
       render: ({ item }) => (
         <a
           className="mailpoet-listing-title"

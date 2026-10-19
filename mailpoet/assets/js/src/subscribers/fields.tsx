@@ -164,6 +164,7 @@ export function getSubscriberFields(
       enableSorting: true,
       enableGlobalSearch: true,
       filterBy: false,
+      enableHiding: false,
       render: ({ item }) => (
         <div>
           <span className="mailpoet-listing-title-row">
