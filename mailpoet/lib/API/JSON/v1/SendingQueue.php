@@ -215,7 +215,7 @@ class SendingQueue extends APIEndpoint {
 
         $this->sendingQueuesRepository->updateCounts($sendingQueue);
         $scheduledTask->setStatus(null);
-        $scheduledTask->setScheduledAt(null);
+        $scheduledTask->setScheduledAt(Carbon::now()->millisecond(0));
 
         // set newsletter status
         $newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
