@@ -20,5 +20,6 @@ import 'logs/logs'; // side effect - renders ReactDOM to document
 import 'sending-paused-notices-fix-button'; // side effect - renders ReactDOM to document
 import 'sending-paused-notices-resume-button'; // side effect - executes on doc ready, adds events
 import 'sending-paused-notices-authorize-email'; // side effect - renders ReactDOM to document
+import 'held-campaigns-notice-app'; // side effect - renders ReactDOM to document
 import 'landingpage/landingpage'; // side effect - renders ReactDOM to document
 import 'wizard/track-wizard-loaded-via-woocommerce';
