@@ -88,7 +88,7 @@ class BasicsPageCest {
     $i->waitForText('Newsletter mailing list');
     $i->clickItemRowActionByItemName('Newsletter mailing list', 'View subscribers');
     $i->waitForText('Subscribers');
-    $i->addDataViewsFilter('Status', '', ['Unconfirmed']);
+    $i->applyDataViewsFilter('Status', ['Unconfirmed']);
     $i->waitForText(\AcceptanceTester::ADMIN_EMAIL);
     //clear checkbox to hide Select2 from next test
     $i->amOnMailPoetPage('Settings');

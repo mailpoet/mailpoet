@@ -59,14 +59,14 @@ class SubscribersListingCest {
     $i->amOnMailpoetPage('Subscribers');
     $i->waitForText('wp@example.com');
     $i->dontSeeElement('select[name=tag]');
-    $i->addDataViewsFilter('Tags', '', [$tag->getName()]);
+    $i->applyDataViewsFilter('Tags', [$tag->getName()]);
     $i->waitForText('wp@mailpoet.com');
     $i->dontSee('wp@example.com');
     $i->waitForText('My Tag');
 
     $i->wantTo('Switch the Tags filter to "Is none of"');
     $i->clearDataViewsFilters();
-    $i->addDataViewsFilter('Tags', 'Is none of', [$tag->getName()]);
+    $i->applyDataViewsFilter('Tags', [$tag->getName()], 'Is none of');
     $i->waitForText('wp@example.com');
     $i->dontSee('wp@mailpoet.com');
   }
@@ -84,14 +84,14 @@ class SubscribersListingCest {
     $i->waitForText('status-subscribed@example.com');
     $i->dontSeeElement('.mailpoet-dataviews-group-unconfirmed');
 
-    $i->addDataViewsFilter('Status', '', ['Unconfirmed']);
+    $i->applyDataViewsFilter('Status', ['Unconfirmed']);
     $i->waitForText('status-unconfirmed@example.com');
     $i->dontSee('status-subscribed@example.com');
     $i->dontSee('status-bounced@example.com');
 
     $i->wantTo('Switch the Status filter to "Is none of"');
     $i->clearDataViewsFilters();
-    $i->addDataViewsFilter('Status', 'Is none of', ['Unconfirmed']);
+    $i->applyDataViewsFilter('Status', ['Unconfirmed'], 'Is none of');
     $i->waitForText('status-subscribed@example.com');
     $i->waitForText('status-bounced@example.com');
     $i->dontSee('status-unconfirmed@example.com');
@@ -112,21 +112,21 @@ class SubscribersListingCest {
     $i->waitForText('lists-none@example.com');
     $i->dontSeeElement('select[name=segment]');
 
-    $i->addDataViewsFilter('Lists', '', ['Filter List A']);
+    $i->applyDataViewsFilter('Lists', ['Filter List A']);
     $i->waitForText('lists-a@example.com');
     $i->dontSee('lists-b@example.com');
     $i->dontSee('lists-none@example.com');
 
     $i->wantTo('Use "Is none of"');
     $i->clearDataViewsFilters();
-    $i->addDataViewsFilter('Lists', 'Is none of', ['Filter List A']);
+    $i->applyDataViewsFilter('Lists', ['Filter List A'], 'Is none of');
     $i->waitForText('lists-b@example.com');
     $i->waitForText('lists-none@example.com');
     $i->dontSee('lists-a@example.com');
 
     $i->wantTo('Pick "Subscribers without a list"');
     $i->clearDataViewsFilters();
-    $i->addDataViewsFilter('Lists', '', ['Subscribers without a list']);
+    $i->applyDataViewsFilter('Lists', ['Subscribers without a list']);
     $i->waitForText('lists-none@example.com');
     $i->dontSee('lists-a@example.com');
     $i->dontSee('lists-b@example.com');
@@ -145,13 +145,13 @@ class SubscribersListingCest {
     $i->waitForText('source-form@example.com');
     $i->dontSee('Source', '.mailpoet-subscribers-dataviews thead');
 
-    $i->addDataViewsFilter('Source', '', ['Unknown']);
+    $i->applyDataViewsFilter('Source', ['Unknown']);
     $i->waitForText('source-unknown@example.com');
     $i->dontSee('source-form@example.com');
     $i->dontSee('source-import@example.com');
 
     $i->clearDataViewsFilters();
-    $i->addDataViewsFilter('Source', 'Is none of', ['Unknown']);
+    $i->applyDataViewsFilter('Source', ['Unknown'], 'Is none of');
     $i->waitForText('source-form@example.com');
     $i->waitForText('source-import@example.com');
     $i->dontSee('source-unknown@example.com');
@@ -455,7 +455,7 @@ class SubscribersListingCest {
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
-    $i->addDataViewsFilter('Status', '', ['Unconfirmed']);
+    $i->applyDataViewsFilter('Status', ['Unconfirmed']);
     $this->selectSubscriberForBulkAction($i, $eligibleSubscriber);
     $this->selectSubscriberForBulkAction($i, $skippedSubscriber);
     $this->openBulkResendConfirmationModal($i);
@@ -509,7 +509,7 @@ class SubscribersListingCest {
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
-    $i->addDataViewsFilter('Status', '', ['Unconfirmed']);
+    $i->applyDataViewsFilter('Status', ['Unconfirmed']);
     $this->selectSubscriberForBulkAction($i, $subscriber);
     $this->openBulkResendConfirmationModal($i);
     $this->confirmBulkResendConfirmationEmailRequest($i);
@@ -579,7 +579,7 @@ class SubscribersListingCest {
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
-    $i->addDataViewsFilter('Status', '', ['Unconfirmed']);
+    $i->applyDataViewsFilter('Status', ['Unconfirmed']);
     $i->waitForText('bulk-resend-all-pages-');
     $i->click(['xpath' => '//table//thead//input[@type="checkbox"]']);
     $i->dontSee('Select all items on all pages');
@@ -660,7 +660,7 @@ class SubscribersListingCest {
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
-    $i->addDataViewsFilter('Status', '', ['Unconfirmed']);
+    $i->applyDataViewsFilter('Status', ['Unconfirmed']);
     $this->selectSubscriberForBulkAction($i, $subscriber);
     $this->openBulkResendConfirmationModal($i);
     $this->confirmBulkResendConfirmationEmailRequest($i);
@@ -702,7 +702,7 @@ class SubscribersListingCest {
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
-    $i->addDataViewsFilter('Status', '', ['Unconfirmed']);
+    $i->applyDataViewsFilter('Status', ['Unconfirmed']);
     $this->selectSubscriberForBulkAction($i, $subscriber);
     $this->openBulkResendConfirmationModal($i);
     $this->confirmBulkResendConfirmationEmailRequest($i);
@@ -753,7 +753,7 @@ class SubscribersListingCest {
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
-    $i->addDataViewsFilter('Status', '', ['Unconfirmed']);
+    $i->applyDataViewsFilter('Status', ['Unconfirmed']);
     $this->selectSubscriberForBulkAction($i, $subscriber);
     $this->openBulkResendConfirmationModal($i);
     $this->confirmBulkResendConfirmationEmailRequest($i);
@@ -781,7 +781,7 @@ class SubscribersListingCest {
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
     $i->waitForListingItemsToLoad();
-    $i->addDataViewsFilter('Status', '', ['Bounced']);
+    $i->applyDataViewsFilter('Status', ['Bounced']);
     $i->changeGroupInListingFilter('trash');
     $i->waitForText('trash-bounced@example.com');
     $i->dontSee('trash-subscribed@example.com');

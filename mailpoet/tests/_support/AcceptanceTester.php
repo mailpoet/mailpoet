@@ -1115,8 +1115,9 @@ class AcceptanceTester extends \Codeception\Actor {
    * Applies a native DataViews filter by picking the given option labels.
    *
    * @param string[] $optionLabels
+   * @param string $operator Operator label, e.g. "Is none of". Empty keeps the default.
    */
-  public function applyDataViewsFilter(string $filterName, array $optionLabels): void {
+  public function applyDataViewsFilter(string $filterName, array $optionLabels, string $operator = ''): void {
     $i = $this;
     // The "Add filter" control is icon-only until a filter is active, then it gets a text label.
     $addFilter = ['xpath' => '//button[@aria-label="Add filter" or normalize-space(.)="Add filter"]'];
@@ -1124,11 +1125,19 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->click($addFilter);
     $i->waitForText($filterName);
     $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "' . $filterName . '")]']);
+    if ($operator !== '') {
+      $operatorSelect = '.dataviews-filters__summary-operators-filter-select select';
+      $i->waitForElement($operatorSelect);
+      $i->selectOption($operatorSelect, $operator);
+    }
     $i->waitForElement('.dataviews-filters__search-widget-listitem');
     foreach ($optionLabels as $label) {
       $i->click(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][.//text()[contains(., "' . $label . '")]]']);
     }
     $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+    if ($i->executeJS('return document.querySelector(".mailpoet-dataviews") !== null;')) {
+      $i->waitForListingItemsToLoad();
+    }
   }
 
   public function changeGroupInListingFilter(string $name): void {
@@ -1151,35 +1160,6 @@ class AcceptanceTester extends \Codeception\Actor {
     }
 
     throw $lastException;
-  }
-
-  /**
-   * Add a native DataViews element filter (Status, Lists, Tags, Source, …).
-   *
-   * @param string $field Field label shown in the "Add filter" menu.
-   * @param string $operator Operator label, e.g. "Is none of". Empty keeps the default.
-   * @param string[] $values Labels of the options to pick (matched by text).
-   */
-  public function addDataViewsFilter(string $field, string $operator, array $values): void {
-    $i = $this;
-    // The first filter is added from the toolbar icon button; once a filter
-    // exists, the filter bar has its own text "Add filter" button.
-    $addFilter = ['xpath' => '(//button[@aria-label="Add filter"] | //button[contains(concat(" ", normalize-space(@class), " "), " dataviews-filters-button ")][normalize-space(.)="Add filter"])[1]'];
-    $i->waitForElementClickable($addFilter);
-    $i->click($addFilter);
-    $i->waitForElement(['xpath' => '//*[@role="menuitem"][normalize-space(.)=' . self::xpathString($field) . ']']);
-    $i->click(['xpath' => '//*[@role="menuitem"][normalize-space(.)=' . self::xpathString($field) . ']']);
-    if ($operator !== '') {
-      $operatorSelect = '.dataviews-filters__summary-operators-filter-select select';
-      $i->waitForElement($operatorSelect);
-      $i->selectOption($operatorSelect, $operator);
-    }
-    $i->waitForElement('.dataviews-filters__search-widget-listitem');
-    foreach ($values as $value) {
-      $i->click(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][contains(normalize-space(.), ' . self::xpathString($value) . ')]']);
-    }
-    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
-    $i->waitForListingItemsToLoad();
   }
 
   /**

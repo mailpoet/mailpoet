@@ -79,7 +79,7 @@ class ManageSubscribersCest {
     $subscriberEmail = 'timezonecheck@fakemail.fake';
     $this->generateSingleSubscriber($subscriberEmail, $subscriberFirstName, $subscriberLastName, $this->segment);
     $i->amOnMailPoetPage('Subscribers');
-    $i->addDataViewsFilter('Status', '', ['Subscribed']);
+    $i->applyDataViewsFilter('Status', ['Subscribed']);
     $i->waitForText($subscriberFirstName . ' ' . $subscriberLastName);
     $i->waitForText('6:00 am');
     $i->cli(['option', 'update', 'timezone_string', 'Etc/GMT+10']);
@@ -344,7 +344,7 @@ class ManageSubscribersCest {
     $i->amOnMailPoetPage('Subscribers');
 
     // Filter inactive subscribers
-    $i->addDataViewsFilter('Status', '', ['Inactive']);
+    $i->applyDataViewsFilter('Status', ['Inactive']);
     $i->seeNumberOfElements('[data-automation-id^="listing_item_"]', self::INACTIVE_SUBSCRIBERS_COUNT);
 
     // Check inactive status in subscriber detail. The listing re-renders
