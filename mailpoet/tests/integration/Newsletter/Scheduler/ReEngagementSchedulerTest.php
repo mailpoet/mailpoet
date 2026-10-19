@@ -17,7 +17,9 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\TrackingConsentController;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\Segment;
+use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -200,6 +202,38 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     $sendingQueue = $this->entityManager->getRepository(SendingQueueEntity::class)->findOneBy(['task' => $task]);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     verify($sendingQueue->getCountToProcess())->equals(1);
+  }
+
+  public function testItSkipsEmailWhileAnOverdueRunIsHeldAndSchedulesAgainOnceItIsGone() {
+    $reEngagementEmail = $this->createReEngagementEmail(5);
+    $this->createEligibleSubscriber();
+
+    $heldTask = (new ScheduledTaskFactory())->create(
+      SendingQueue::TASK_TYPE,
+      ScheduledTaskEntity::STATUS_PAUSED,
+      Carbon::now()->subHours(30)->millisecond(0)
+    );
+    $heldTask->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+    $heldQueue = (new SendingQueueFactory())->create($heldTask, $reEngagementEmail);
+    $this->entityManager->flush();
+    $this->entityManager->refresh($reEngagementEmail);
+
+    verify($this->scheduler->scheduleAll())->arrayCount(0);
+
+    $this->entityManager->remove($heldQueue);
+    $this->entityManager->remove($heldTask);
+    $this->entityManager->flush();
+
+    $scheduled = $this->scheduler->scheduleAll();
+    verify($scheduled)->arrayCount(1);
+    $scheduledAt = $scheduled[0]->getScheduledAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
+    verify($scheduledAt->getTimestamp())->equalsWithDelta(Carbon::now()->getTimestamp(), 2);
+  }
+
+  private function createEligibleSubscriber(): void {
+    $subscriber = $this->createSubscriber('eligible@example.com', Carbon::now()->subMonths(10), $this->segment);
+    $this->addSentEmailToSubscriber($this->sentStandardNewsletter, $subscriber, Carbon::now()->subMonth());
   }
 
   private function createReEngagementEmail(int $monthsAfter, string $status = NewsletterEntity::STATUS_ACTIVE) {
