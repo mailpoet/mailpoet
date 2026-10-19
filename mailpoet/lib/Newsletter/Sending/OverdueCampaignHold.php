@@ -148,13 +148,13 @@ class OverdueCampaignHold {
    * Holds a task the worker owns. Time zone campaigns are paused as a whole.
    */
   public function holdInWorker(ScheduledTaskEntity $task): void {
+    $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+    $task->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+    $this->scheduledTasksRepository->flush();
+
     $queue = $task->getSendingQueue();
     if ($queue instanceof SendingQueueEntity && $this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)) {
-      $this->timeZoneCampaignScheduler->pauseCampaign($queue, ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
-    } else {
-      $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
-      $task->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
-      $this->scheduledTasksRepository->flush();
+      $this->holdSiblingBatches($queue, $task);
     }
 
     $this->logHold($task);
@@ -186,7 +186,7 @@ class OverdueCampaignHold {
         continue;
       }
       if ($this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)) {
-        $this->timeZoneCampaignScheduler->pauseCampaign($queue, ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+        $this->holdSiblingBatches($queue, $task);
       }
       $this->logHold($task);
       $held++;
@@ -209,6 +209,18 @@ class OverdueCampaignHold {
       }
     }
     return array_values($held);
+  }
+
+  /**
+   * Each sibling goes through the same guarded claim as the first batch, so a batch a worker already started keeps running.
+   */
+  private function holdSiblingBatches(SendingQueueEntity $queue, ScheduledTaskEntity $heldTask): void {
+    foreach ($this->timeZoneCampaignScheduler->getCampaignQueues($queue) as $siblingQueue) {
+      $siblingTask = $siblingQueue->getTask();
+      if ($siblingTask instanceof ScheduledTaskEntity && $siblingTask->getId() !== $heldTask->getId()) {
+        $this->scheduledTasksRepository->claimForOverdueHold($siblingTask, true);
+      }
+    }
   }
 
   private function logHold(ScheduledTaskEntity $task): void {

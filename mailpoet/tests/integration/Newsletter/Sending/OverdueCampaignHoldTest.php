@@ -79,6 +79,46 @@ class OverdueCampaignHoldTest extends \MailPoetTest {
     $this->assertSame($running->getId(), $held[0]->getId());
   }
 
+  public function testItLeavesATimeZoneBatchThatAWorkerHasStartedRunning(): void {
+    $newsletter = (new NewsletterFactory())->withSubject('Zones')->create();
+    $overdue = $this->createCampaignTask(Carbon::now()->subHours(25), null, $newsletter, $this->getTimeZoneMeta('zones'));
+    $started = $this->createCampaignTask(Carbon::now()->subHours(1), null, $newsletter, $this->getTimeZoneMeta('zones'));
+    $started->setInProgress(true);
+    $idle = $this->createCampaignTask(Carbon::now()->addHours(2), ScheduledTaskEntity::STATUS_SCHEDULED, $newsletter, $this->getTimeZoneMeta('zones'));
+    $this->entityManager->flush();
+
+    $this->assertSame(1, $this->hold->holdDueCampaigns());
+
+    $this->entityManager->refresh($started);
+    $this->entityManager->refresh($idle);
+    $this->assertSame(ScheduledTaskEntity::STATUS_PAUSED, $overdue->getStatus());
+    $this->assertNull($started->getStatus());
+    $this->assertNull($started->getPauseReason());
+    $this->assertSame(ScheduledTaskEntity::STATUS_PAUSED, $idle->getStatus());
+    $this->assertSame(ScheduledTaskEntity::PAUSE_REASON_OVERDUE, $idle->getPauseReason());
+  }
+
+  public function testTheWorkerHoldLeavesATimeZoneSiblingThatAnotherWorkerStarted(): void {
+    $newsletter = (new NewsletterFactory())->withSubject('Zones')->create();
+    $own = $this->createCampaignTask(Carbon::now()->subHours(25), null, $newsletter, $this->getTimeZoneMeta('zones'));
+    $own->setInProgress(true);
+    $started = $this->createCampaignTask(Carbon::now()->subHours(1), null, $newsletter, $this->getTimeZoneMeta('zones'));
+    $started->setInProgress(true);
+    $idle = $this->createCampaignTask(Carbon::now()->addHours(2), ScheduledTaskEntity::STATUS_SCHEDULED, $newsletter, $this->getTimeZoneMeta('zones'));
+    $this->entityManager->flush();
+
+    $this->hold->holdInWorker($own);
+
+    $this->entityManager->refresh($started);
+    $this->entityManager->refresh($idle);
+    $this->assertSame(ScheduledTaskEntity::STATUS_PAUSED, $own->getStatus());
+    $this->assertSame(ScheduledTaskEntity::PAUSE_REASON_OVERDUE, $own->getPauseReason());
+    $this->assertNull($started->getStatus());
+    $this->assertNull($started->getPauseReason());
+    $this->assertSame(ScheduledTaskEntity::STATUS_PAUSED, $idle->getStatus());
+    $this->assertSame(ScheduledTaskEntity::PAUSE_REASON_OVERDUE, $idle->getPauseReason());
+  }
+
   public function testGetHeldExcludesSenderDomainPauses(): void {
     $overdue = $this->createCampaignTask(Carbon::now()->subHours(30), ScheduledTaskEntity::STATUS_PAUSED);
     $overdue->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);

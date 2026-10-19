@@ -161,10 +161,6 @@ class SendingQueue extends APIEndpoint {
       // check that the sending method has been configured properly by verifying that default mailer can be build
       $this->mailerFactory->getDefaultMailer();
 
-      // A held run is replaced by this send. It runs after every check that can refuse the request (a
-      // refused add deletes nothing) and before the time zone branch, which returns early.
-      $this->deleteHeldCampaignQueues($newsletter);
-
       $isScheduled = (bool)$newsletter->getOptionValue('isScheduled');
       if ($isScheduled && $this->timeZoneCampaignScheduler->isSubscriberTimeZoneMode($newsletter)) {
         $sendingQueue = $this->timeZoneCampaignScheduler->schedule($newsletter);
@@ -245,6 +241,9 @@ class SendingQueue extends APIEndpoint {
         // set newsletter status
         $newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
       }
+      // A held run is replaced by this send. It is deleted only here, after every check that can refuse the
+      // request. The time zone branch above replaces held batches itself, inside its transaction.
+      $this->deleteHeldCampaignQueues($newsletter);
       $this->scheduledTasksRepository->persist($scheduledTask);
       $this->newsletterRepository->flush();
 
@@ -345,7 +344,13 @@ class SendingQueue extends APIEndpoint {
 
         // Any explicit resume is a confirmation, so the campaign is not held again for being late.
         $isTimeZoneQueue = $this->timeZoneCampaignScheduler->isTimeZoneQueue($queue);
-        $queues = $isTimeZoneQueue ? $this->timeZoneCampaignScheduler->getCampaignQueues($queue) : [$queue];
+        if ($isTimeZoneQueue) {
+          $queues = $this->timeZoneCampaignScheduler->getCampaignQueues($queue);
+        } else {
+          $queues = $heldTasks ? array_filter(array_map(function(ScheduledTaskEntity $task) {
+            return $task->getSendingQueue();
+          }, $heldTasks)) : [$queue];
+        }
         foreach ($queues as $campaignQueue) {
           $campaignTask = $campaignQueue->getTask();
           if ($campaignTask instanceof ScheduledTaskEntity) {
@@ -356,10 +361,7 @@ class SendingQueue extends APIEndpoint {
         if ($isTimeZoneQueue) {
           $this->timeZoneCampaignScheduler->resumeCampaign($queue);
         } else {
-          $queuesToResume = $heldTasks ? array_filter(array_map(function(ScheduledTaskEntity $task) {
-            return $task->getSendingQueue();
-          }, $heldTasks)) : [$queue];
-          foreach ($queuesToResume as $queueToResume) {
+          foreach ($queues as $queueToResume) {
             $this->sendingQueuesRepository->resume($queueToResume);
           }
         }
