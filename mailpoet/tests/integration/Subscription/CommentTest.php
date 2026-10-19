@@ -23,12 +23,12 @@ class CommentTest extends \MailPoetTest {
   public function testItRendersTheDefaultLabelWhenTheSavedLabelIsEmpty() {
     $this->settings->set('subscribe.on_comment.label', '');
     verify($this->comment->extendLoggedInForm(''))
-      ->stringContainsString('Yes, please add me to your mailing list.');
+      ->stringContainsString('Yes, add me to your mailing list');
   }
 
   public function testItRendersTheDefaultLabelWhenTheSavedLabelIsWhitespace() {
     $this->settings->set('subscribe.on_comment.label', '   ');
     verify($this->comment->extendLoggedInForm(''))
-      ->stringContainsString('Yes, please add me to your mailing list.');
+      ->stringContainsString('Yes, add me to your mailing list');
   }
 }

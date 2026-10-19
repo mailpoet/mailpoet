@@ -55,7 +55,7 @@ class Registration {
   public function extendForm() {
     $label = $this->settings->get('subscribe.on_register.label');
     if (!is_string($label) || trim($label) === '') {
-      $label = __('Yes, please add me to your mailing list.', 'mailpoet');
+      $label = __('Yes, add me to your mailing list', 'mailpoet');
     }
 
     $form = '<p class="registration-form-mailpoet">
