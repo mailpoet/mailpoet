@@ -92,7 +92,7 @@ class ScheduledTasksRepository extends Repository {
   }
 
   /**
-   * Whether another issue of the same post notification is running or due, so held ones must wait.
+   * Whether another issue of the same post notification is running, or a run of it is scheduled and due, so held ones must wait.
    */
   public function hasActiveSiblingIssue(NewsletterEntity $issue): bool {
     $parent = $issue->getParent();
@@ -106,10 +106,9 @@ class ScheduledTasksRepository extends Repository {
       ->where('t.type = :type')
       ->andWhere('t.deletedAt IS NULL')
       ->andWhere('n.deletedAt IS NULL')
-      ->andWhere('n.parent = :parent')
-      ->andWhere('n.type = :historyType')
-      ->andWhere('n.id != :issueId')
-      ->andWhere('t.status IS NULL OR (t.status = :scheduled AND t.scheduledAt <= :now)')
+      ->andWhere('(n.parent = :parent AND n.type = :historyType AND n.id != :issueId AND t.status IS NULL)'
+        // A scheduled run belongs to the parent until the Scheduler turns it into an issue.
+        . ' OR (n = :parent AND t.status = :scheduled AND t.scheduledAt <= :now)')
       ->setParameter('type', SendingQueue::TASK_TYPE)
       ->setParameter('parent', $parent)
       ->setParameter('historyType', NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
@@ -156,8 +155,9 @@ class ScheduledTasksRepository extends Repository {
    * Pauses a running task as overdue unless a worker got to it first. The conditions sit in one UPDATE so
    * the decision and the write cannot be split by a worker that starts sending in between.
    * Returns false when the task was not claimed. The entity is refreshed either way.
+   * A batch that is still scheduled can be claimed as well when $includeScheduled is set.
    */
-  public function claimForOverdueHold(ScheduledTaskEntity $task): bool {
+  public function claimForOverdueHold(ScheduledTaskEntity $task, bool $includeScheduled = false): bool {
     $connection = $this->entityManager->getConnection();
     $tasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $queuesTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
@@ -169,29 +169,36 @@ class ScheduledTasksRepository extends Repository {
       if (is_array($meta)) {
         $meta[ScheduledTaskEntity::META_PAUSE_REASON] = ScheduledTaskEntity::PAUSE_REASON_OVERDUE;
         $newMeta = Type::getType(JsonType::NAME)->convertToDatabaseValue($meta, $connection->getDatabasePlatform());
+        $statusCondition = $includeScheduled ? 't.`status` IS NULL OR t.`status` = :scheduled' : 't.`status` IS NULL';
+        $params = [
+          'paused' => ScheduledTaskEntity::STATUS_PAUSED,
+          'newMeta' => $newMeta,
+          'updatedAt' => Carbon::now()->millisecond(0)->format('Y-m-d H:i:s'),
+          'id' => $task->getId(),
+          'oldMeta' => $oldMeta,
+        ];
+        $types = [
+          'paused' => ParameterType::STRING,
+          'newMeta' => ParameterType::STRING,
+          'updatedAt' => ParameterType::STRING,
+          'id' => ParameterType::INTEGER,
+          'oldMeta' => ParameterType::STRING,
+        ];
+        if ($includeScheduled) {
+          $params['scheduled'] = ScheduledTaskEntity::STATUS_SCHEDULED;
+          $types['scheduled'] = ParameterType::STRING;
+        }
         $affectedRows = $connection->executeStatement(
           "UPDATE `{$tasksTable}` t
            INNER JOIN `{$queuesTable}` q ON q.`task_id` = t.`id`
            SET t.`status` = :paused, t.`meta` = :newMeta, t.`updated_at` = :updatedAt
            WHERE t.`id` = :id
-             AND t.`status` IS NULL
+             AND ({$statusCondition})
              AND COALESCE(t.`in_progress`, 0) = 0
              AND q.`count_processed` = 0
              AND t.`meta` <=> :oldMeta",
-          [
-            'paused' => ScheduledTaskEntity::STATUS_PAUSED,
-            'newMeta' => $newMeta,
-            'updatedAt' => Carbon::now()->millisecond(0)->format('Y-m-d H:i:s'),
-            'id' => $task->getId(),
-            'oldMeta' => $oldMeta,
-          ],
-          [
-            'paused' => ParameterType::STRING,
-            'newMeta' => ParameterType::STRING,
-            'updatedAt' => ParameterType::STRING,
-            'id' => ParameterType::INTEGER,
-            'oldMeta' => ParameterType::STRING,
-          ]
+          $params,
+          $types
         );
         $claimed = $affectedRows === 1;
       }
