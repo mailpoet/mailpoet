@@ -26,6 +26,10 @@ class NonProductionSendingNotice {
     // admin-post.php is not a MailPoet page, so the handler must be registered on every request.
     $this->wp->addAction('admin_post_' . self::ACTION, [$this, 'handleAllowSending']);
 
+    if ($this->wp->isAdmin() && !$this->wp->wpDoingCron() && !$this->wp->wpDoingAjax()) {
+      $this->sendingEnvironment->clearOverrideOnProduction();
+    }
+
     if (!$shouldDisplay || $this->sendingEnvironment->isSendingAllowed()) {
       return null;
     }
@@ -38,7 +42,9 @@ class NonProductionSendingNotice {
       return;
     }
 
-    $nonce = isset($_POST['_wpnonce']) && is_string($_POST['_wpnonce']) ? sanitize_text_field(wp_unslash($_POST['_wpnonce'])) : '';
+    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized through WPFunctions below.
+    $rawNonce = isset($_POST['_wpnonce']) ? $this->wp->wpUnslash($_POST['_wpnonce']) : '';
+    $nonce = is_string($rawNonce) ? $this->wp->sanitizeTextField($rawNonce) : '';
     if (!$this->wp->wpVerifyNonce($nonce, self::ACTION)) {
       $this->wp->wpDie(esc_html__('Security check failed.', 'mailpoet'), '', ['response' => 403]);
       return;
@@ -62,7 +68,7 @@ class NonProductionSendingNotice {
       esc_html__('MailPoet isn’t sending emails because this is a %1$s site.', 'mailpoet'),
       esc_html($this->sendingEnvironment->getEnvironmentType())
     ) . '</strong> '
-      . esc_html__('Newsletters, post notifications and automation emails wait in the queue. Sign-up confirmations and test emails still go out.', 'mailpoet')
+      . esc_html__('Newsletters, post notifications and automation emails wait in the queue. Sign-up confirmations, test emails, and WordPress and WooCommerce emails sent through MailPoet still go out.', 'mailpoet')
       . '</p>';
 
     if ($this->wp->currentUserCan(AccessControl::PERMISSION_MANAGE_SETTINGS)) {

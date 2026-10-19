@@ -59,28 +59,44 @@ class SendingEnvironmentTest extends \MailPoetUnitTest {
     verify($this->createEnvironment()->isSendingAllowed())->true();
   }
 
-  public function testProductionDeletesAStoredOverride(): void {
+  public function testIsSendingAllowedNeverDeletesTheSetting(): void {
+    $this->wp->method('wpGetEnvironmentType')->willReturn('production');
+    $this->settings->method('get')->with(SendingEnvironment::SETTING_ALLOW_SENDING)->willReturn('1');
+    $this->settings->expects($this->never())->method('delete');
+
+    verify($this->createEnvironment()->isSendingAllowed())->true();
+  }
+
+  public function testClearOverrideOnProductionDeletesAStoredOverride(): void {
     $this->wp->method('wpGetEnvironmentType')->willReturn('production');
     $this->settings->method('get')->with(SendingEnvironment::SETTING_ALLOW_SENDING)->willReturn('1');
     $this->settings->expects($this->once())->method('delete')->with(SendingEnvironment::SETTING_ALLOW_SENDING);
 
-    verify($this->createEnvironment()->isSendingAllowed())->true();
+    $this->createEnvironment()->clearOverrideOnProduction();
   }
 
   /**
    * @dataProvider emptySettingProvider
    * @param mixed $setting
    */
-  public function testProductionKeepsAnEmptySetting($setting): void {
+  public function testClearOverrideOnProductionKeepsAnEmptySetting($setting): void {
     $this->wp->method('wpGetEnvironmentType')->willReturn('production');
     $this->settings->method('get')->willReturn($setting);
     $this->settings->expects($this->never())->method('delete');
 
-    verify($this->createEnvironment()->isSendingAllowed())->true();
+    $this->createEnvironment()->clearOverrideOnProduction();
   }
 
   public function emptySettingProvider(): array {
     return [[null], ['']];
+  }
+
+  public function testClearOverrideOnProductionKeepsTheSettingOnStaging(): void {
+    $this->wp->method('wpGetEnvironmentType')->willReturn('staging');
+    $this->settings->method('get')->willReturn('1');
+    $this->settings->expects($this->never())->method('delete');
+
+    $this->createEnvironment()->clearOverrideOnProduction();
   }
 
   public function testNonProductionNeverDeletesTheSetting(): void {

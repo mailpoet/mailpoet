@@ -53,15 +53,10 @@ class SendingEnvironment {
   }
 
   public function isSendingAllowed(): bool {
-    $allowedBySetting = (bool)$this->settings->get(self::SETTING_ALLOW_SENDING);
     if ($this->isProduction()) {
-      // The override only matters on non-production sites. Drop it so a site moved to production
-      // and later back to staging does not keep sending.
-      if ($allowedBySetting) {
-        $this->settings->delete(self::SETTING_ALLOW_SENDING);
-      }
       return true;
     }
+    $allowedBySetting = (bool)$this->settings->get(self::SETTING_ALLOW_SENDING);
 
     /**
      * Lets a developer allow or block queued sending on a non-production site.
@@ -74,6 +69,17 @@ class SendingEnvironment {
 
   public function isTaskTypeGated(string $type): bool {
     return in_array($type, self::GATED_TASK_TYPES, true) && !$this->isSendingAllowed();
+  }
+
+  /**
+   * The override only matters on non-production sites. Drop it so a site moved to production and
+   * later back to staging does not keep sending. Call it from admin web requests only, because the
+   * environment type can differ between web and CLI requests.
+   */
+  public function clearOverrideOnProduction(): void {
+    if ($this->isProduction() && $this->settings->get(self::SETTING_ALLOW_SENDING)) {
+      $this->settings->delete(self::SETTING_ALLOW_SENDING);
+    }
   }
 
   public function allowSending(): void {

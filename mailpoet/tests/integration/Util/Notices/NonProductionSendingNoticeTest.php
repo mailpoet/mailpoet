@@ -12,6 +12,7 @@ class NonProductionSendingNoticeTest extends \MailPoetTest {
   private $dieCalls = [];
   private $redirects = [];
   private $allowCalls = 0;
+  private $clearCalls = 0;
   private $terminated = 0;
 
   public function _before() {
@@ -20,6 +21,7 @@ class NonProductionSendingNoticeTest extends \MailPoetTest {
     $this->dieCalls = [];
     $this->redirects = [];
     $this->allowCalls = 0;
+    $this->clearCalls = 0;
     $this->terminated = 0;
     unset($_POST['_wpnonce']);
   }
@@ -40,6 +42,25 @@ class NonProductionSendingNoticeTest extends \MailPoetTest {
     verify($notice->init(false))->null();
   }
 
+  public function testItClearsTheProductionOverrideOnAdminRequests() {
+    $this->createNotice([], ['isAdmin' => true])->init(false);
+    verify($this->clearCalls)->equals(1);
+  }
+
+  /** @dataProvider nonAdminRequestProvider */
+  public function testItDoesNotClearTheProductionOverrideOutsideAdminRequests(array $wpOverrides) {
+    $this->createNotice([], $wpOverrides)->init(false);
+    verify($this->clearCalls)->equals(0);
+  }
+
+  public function nonAdminRequestProvider(): array {
+    return [
+      'front end' => [['isAdmin' => false]],
+      'admin cron' => [['isAdmin' => true, 'wpDoingCron' => true]],
+      'admin AJAX' => [['isAdmin' => true, 'wpDoingAjax' => true]],
+    ];
+  }
+
   public function testItRegistersTheHandlerEvenWhenNothingIsDisplayed() {
     $this->createNotice(['isSendingAllowed' => true])->init(false);
     verify($this->addedActions)->arrayContains('admin_post_' . NonProductionSendingNotice::ACTION);
@@ -52,7 +73,7 @@ class NonProductionSendingNoticeTest extends \MailPoetTest {
 
     $html = $this->render($result);
     verify($html)->stringContainsString('MailPoet isn’t sending emails because this is a staging site.');
-    verify($html)->stringContainsString('Sign-up confirmations and test emails still go out.');
+    verify($html)->stringContainsString('Sign-up confirmations, test emails, and WordPress and WooCommerce emails sent through MailPoet still go out.');
     verify($html)->stringContainsString('<form method="post" action="http://example.test/wp-admin/admin-post.php">');
     verify($html)->stringContainsString('<input type="hidden" name="action" value="mailpoet_allow_non_production_sending"');
     verify($html)->stringContainsString('<input type="hidden" name="_wpnonce" value="nonce-123"');
@@ -127,6 +148,9 @@ class NonProductionSendingNoticeTest extends \MailPoetTest {
     $environment['allowSending'] = function () {
       $this->allowCalls++;
     };
+    $environment['clearOverrideOnProduction'] = function () {
+      $this->clearCalls++;
+    };
     $sendingEnvironment = $this->make(SendingEnvironment::class, $environment);
 
     $wp = $this->make(WPFunctions::class, array_merge([
@@ -138,6 +162,9 @@ class NonProductionSendingNoticeTest extends \MailPoetTest {
         verify($capability)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
         return $wpOverrides['currentUserCan'] ?? false;
       },
+      'isAdmin' => $wpOverrides['isAdmin'] ?? false,
+      'wpDoingCron' => $wpOverrides['wpDoingCron'] ?? false,
+      'wpDoingAjax' => $wpOverrides['wpDoingAjax'] ?? false,
       'adminUrl' => function ($path = '') {
         return 'http://example.test/wp-admin/' . $path;
       },
