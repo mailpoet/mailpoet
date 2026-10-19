@@ -17,6 +17,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\LatestNewsletterScheduler;
 use MailPoet\Segments\SegmentsRepository;
@@ -48,6 +49,10 @@ class SendLatestNewsletterAction implements Action {
     1 * DAY_IN_SECONDS,
   ];
 
+  // While sending is paused (non-production site), poll at a steady interval
+  // without moving toward the timeout.
+  private const PAUSED_POLL_INTERVAL = HOUR_IN_SECONDS;
+  private const PAUSED_POLLS = 'paused_polls';
   private const WAIT_OPTIN = 'wait_optin';
   private const OPTIN_RETRIES = 'optin_retries';
   private const OUTCOME = 'outcome';
@@ -66,18 +71,22 @@ class SendLatestNewsletterAction implements Action {
 
   private LatestNewsletterScheduler $latestNewsletterScheduler;
 
+  private SendingEnvironment $sendingEnvironment;
+
   public function __construct(
     SubscribersRepository $subscribersRepository,
     SubscriberSegmentRepository $subscriberSegmentRepository,
     NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
-    LatestNewsletterScheduler $latestNewsletterScheduler
+    LatestNewsletterScheduler $latestNewsletterScheduler,
+    SendingEnvironment $sendingEnvironment
   ) {
     $this->subscribersRepository = $subscribersRepository;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
     $this->latestNewsletterScheduler = $latestNewsletterScheduler;
+    $this->sendingEnvironment = $sendingEnvironment;
   }
 
   public function getKey(): string {
@@ -171,7 +180,17 @@ class SendLatestNewsletterAction implements Action {
     $runNumber = $args->getRunNumber();
     $state = $state ?? $this->getRunLogData($controller);
     $optinRetryCount = $state[self::OPTIN_RETRIES] ?? 0;
-    $runNumber -= $optinRetryCount;
+    $pausedPolls = (int)($state[self::PAUSED_POLLS] ?? 0);
+
+    // Polls made while sending is paused don't count toward the timeout. The
+    // run number still advances, so they are subtracted like opt-in retries.
+    if (!$this->sendingEnvironment->isSendingAllowed()) {
+      $controller->getRunLog()->saveLogData([self::PAUSED_POLLS => $pausedPolls + 1]);
+      $controller->scheduleProgress(time() + self::PAUSED_POLL_INTERVAL);
+      return;
+    }
+
+    $runNumber -= $optinRetryCount + $pausedPolls;
     $this->rerunLater($runNumber, $controller, false);
   }
 
@@ -235,9 +254,11 @@ class SendLatestNewsletterAction implements Action {
     }
 
     $optinRetryCount = (int)($state[self::OPTIN_RETRIES] ?? 0);
-    $pollRunNumber = max(1, $args->getRunNumber() - $optinRetryCount);
+    $pausedPolls = (int)($state[self::PAUSED_POLLS] ?? 0);
+    $pollRunNumber = max(1, $args->getRunNumber() - $optinRetryCount - $pausedPolls);
     $isLastRun = $pollRunNumber >= 1 + count(self::POLL_INTERVALS);
-    if (!$isLastRun) {
+    // Never time out while sending is paused
+    if (!$isLastRun || !$this->sendingEnvironment->isSendingAllowed()) {
       $this->saveOutcome($controller, self::OUTCOME_POLLING, $newsletterId);
       return false;
     }

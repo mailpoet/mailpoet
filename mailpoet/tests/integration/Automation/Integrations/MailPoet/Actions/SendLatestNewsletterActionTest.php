@@ -24,6 +24,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\Scheduler\LatestNewsletterScheduler;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
@@ -205,6 +206,93 @@ class SendLatestNewsletterActionTest extends \MailPoetTest {
       'outcome' => 'polling',
       'newsletter_id' => $sourceNewsletter->getId(),
     ], $confirmedRunController->getRunLog()->getLog()->getData());
+  }
+
+  public function testItKeepsPollingWithoutTimingOutWhileSendingIsPaused(): void {
+    [$run, $step, $controllerFor, $argsFor] = $this->prepareScheduledNewsletter();
+
+    // 8th run would time out, but sending is paused
+    $before = time();
+    $this->getActionWithSendingAllowed(false)->run($argsFor(8), $controllerFor(8));
+
+    $expectedArgs = [['automation_run_id' => $run->getId(), 'step_id' => $step->getId(), 'run_number' => 9]];
+    $runAt = as_next_scheduled_action('mailpoet/automation/step', $expectedArgs);
+    $this->assertIsInt($runAt);
+    $this->assertGreaterThanOrEqual($before + HOUR_IN_SECONDS, $runAt);
+    $this->assertLessThanOrEqual(time() + HOUR_IN_SECONDS, $runAt);
+    $this->assertSame(1, $controllerFor(8)->getRunLog()->getLog()->getData()['paused_polls']);
+  }
+
+  public function testItDoesNotCountPausedPollsTowardTheTimeout(): void {
+    [, , $controllerFor, $argsFor] = $this->prepareScheduledNewsletter();
+
+    $this->getActionWithSendingAllowed(false)->run($argsFor(3), $controllerFor(3));
+    $this->getActionWithSendingAllowed(false)->run($argsFor(4), $controllerFor(4));
+    $this->assertSame(2, $controllerFor(4)->getRunLog()->getLog()->getData()['paused_polls']);
+
+    // Sending is allowed again. Run 9 is the 7th real check, so it keeps polling.
+    $this->getActionWithSendingAllowed(true)->run($argsFor(9), $controllerFor(9));
+
+    // Run 10 is the 8th real check, the last one.
+    $this->assertThrowsExceptionWithMessage(
+      'Email sending process timed out.',
+      function() use ($argsFor, $controllerFor) {
+        $this->getActionWithSendingAllowed(true)->run($argsFor(10), $controllerFor(10));
+      }
+    );
+  }
+
+  public function testItTimesOutOnTheLastRunWhenSendingIsAllowed(): void {
+    [, , $controllerFor, $argsFor] = $this->prepareScheduledNewsletter();
+    $this->assertThrowsExceptionWithMessage(
+      'Email sending process timed out.',
+      function() use ($argsFor, $controllerFor) {
+        $this->getActionWithSendingAllowed(true)->run($argsFor(8), $controllerFor(8));
+      }
+    );
+  }
+
+  public function testItUsesThePollIntervalOfTheEffectiveRunAfterManyPausedPolls(): void {
+    [$run, $step, $controllerFor, $argsFor] = $this->prepareScheduledNewsletter();
+
+    for ($runNumber = 2; $runNumber <= 11; $runNumber++) {
+      $this->getActionWithSendingAllowed(false)->run($argsFor($runNumber), $controllerFor($runNumber));
+    }
+    $this->assertSame(10, $controllerFor(11)->getRunLog()->getLog()->getData()['paused_polls']);
+
+    // Run 12 minus 10 paused polls is the 2nd real check, so the next one is due after 10 minutes.
+    $before = time();
+    $this->getActionWithSendingAllowed(true)->run($argsFor(12), $controllerFor(12));
+
+    $runAt = as_next_scheduled_action('mailpoet/automation/step', [['automation_run_id' => $run->getId(), 'step_id' => $step->getId(), 'run_number' => 13]]);
+    $this->assertIsInt($runAt);
+    $this->assertGreaterThanOrEqual($before + 10 * MINUTE_IN_SECONDS, $runAt);
+    $this->assertLessThanOrEqual(time() + 10 * MINUTE_IN_SECONDS, $runAt);
+  }
+
+  private function getActionWithSendingAllowed(bool $allowed): SendLatestNewsletterAction {
+    $environment = $this->createMock(SendingEnvironment::class);
+    $environment->method('isSendingAllowed')->willReturn($allowed);
+    return $this->getServiceWithOverrides(SendLatestNewsletterAction::class, ['sendingEnvironment' => $environment]);
+  }
+
+  /**
+   * Runs the first step run, which schedules the latest newsletter.
+   * Returns [run, step, controller factory by run number, args factory by run number].
+   */
+  private function prepareScheduledNewsletter(): array {
+    [$subscriber, $segment] = $this->createSubscriberAndSourceNewsletter();
+    [$automation, $run, $step, $subjects] = $this->createAutomationRunContext($subscriber, $segment);
+    [$args, $controller] = $this->createStepRun($automation, $run, $step, $subjects, 1);
+    $this->getActionWithSendingAllowed(true)->run($args, $controller);
+
+    $argsFor = function (int $runNumber) use ($automation, $run, $step, $subjects): StepRunArgs {
+      return $this->createStepRun($automation, $run, $step, $subjects, $runNumber)[0];
+    };
+    $controllerFor = function (int $runNumber) use ($automation, $run, $step, $subjects): StepRunController {
+      return $this->createStepRun($automation, $run, $step, $subjects, $runNumber)[1];
+    };
+    return [$run, $step, $controllerFor, $argsFor];
   }
 
   /** @return array{0: SubscriberEntity, 1: SegmentEntity, 2: NewsletterEntity} */
