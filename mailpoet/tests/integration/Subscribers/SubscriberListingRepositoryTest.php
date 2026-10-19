@@ -1735,6 +1735,26 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($this->repository->getCountAndAllTrashGroups(new ListingDefinition('all', $filters))['count'])->equals(1);
   }
 
+  public function testDynamicSegmentListingWorksWithOnlyFullGroupBy() {
+    $dynamic = $this->createEmailSegment('fgb-');
+    (new Subscriber())->withEmail('fgb-1@example.com')->create();
+    (new Subscriber())->withEmail('fgb-2@example.com')->create();
+    $connection = $this->entityManager->getConnection();
+    $previousMode = $connection->fetchOne('SELECT @@SESSION.sql_mode');
+    $this->assertIsString($previousMode);
+    $connection->executeStatement("SET SESSION sql_mode = CONCAT(@@SESSION.sql_mode, ',ONLY_FULL_GROUP_BY')");
+    try {
+      foreach (['created_at', 'status', 'email', 'id'] as $sortBy) {
+        foreach (['asc', 'desc'] as $order) {
+          $definition = new ListingDefinition('all', ['segment_in' => [$dynamic->getId()]], null, [], $sortBy, $order, 0, 10);
+          verify(count($this->repository->getData($definition)))->equals(2);
+        }
+      }
+    } finally {
+      $connection->executeStatement('SET SESSION sql_mode = ?', [$previousMode]);
+    }
+  }
+
   public function testSourceNotInKeepsSubscribersWithoutASource() {
     $imported = (new Subscriber())->withEmail('src-imported@example.com')->withSource(Source::IMPORTED)->create();
     $form = (new Subscriber())->withEmail('src-form@example.com')->withSource(Source::FORM)->create();

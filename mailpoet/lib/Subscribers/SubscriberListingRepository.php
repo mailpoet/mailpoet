@@ -1832,6 +1832,8 @@ class SubscriberListingRepository extends ListingRepository {
     $this->applyDbalListingConstraints($subscribersIdsQuery, $definition, false);
     $subscribersIdsQuery->orderBy($this->getDynamicSegmentSortColumn($sortBy), $sortOrder);
     if ($sortBy !== 'id') {
+      // With DISTINCT, MySQL (ONLY_FULL_GROUP_BY) requires the sort column in the select list. Ids stay first.
+      $subscribersIdsQuery->addSelect($this->getDynamicSegmentSortColumn($sortBy));
       // The page boundary is cut here, so this query needs the same id
       // tiebreaker as applySorting() for pagination to stay stable.
       $subscribersIdsQuery->addOrderBy($this->getDynamicSegmentSortColumn('id'), $sortOrder);
