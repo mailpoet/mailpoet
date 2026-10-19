@@ -55,6 +55,7 @@ export function makeDefaultState(): State {
     newUser: !!window.mailpoet_is_new_user,
     woocommerce: !!window.mailpoet_woocommerce_active,
     membersPlugin: !!window.mailpoet_members_plugin_active,
+    environmentType: window.mailpoet_environment_type || 'production',
     builtInCaptcha: window.mailpoet_built_in_captcha_supported,
   };
 

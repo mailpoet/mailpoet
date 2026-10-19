@@ -139,6 +139,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
       }),
     }),
     send_transactional_emails: disabledRadio,
+    allow_sending_in_non_production: disabledRadio,
     deactivate_subscriber_after_inactive_days: asEnum(
       ['', '90', '180', '365', '540'],
       '365',
