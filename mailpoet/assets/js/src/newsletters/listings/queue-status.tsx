@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
+import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
 import { Link } from 'react-router-dom';
 import { APIErrorsNotice } from 'notices/api-errors-notice';
@@ -14,6 +15,7 @@ import { isTimezoneCampaignQueue } from 'newsletters/timezone-campaign';
 import {
   getQueueActionLabels,
   getScheduledFor,
+  isHeldQueue,
 } from 'newsletters/listings/queue-labels';
 
 function HeldNewsletter() {
@@ -35,6 +37,7 @@ type QueueSendingProps = {
 
 function QueueSending({ newsletter }: QueueSendingProps) {
   const [paused, setPaused] = useState(newsletter.queue.status === 'paused');
+  const [resumed, setResumed] = useState(false);
   const [errors, setErrors] = useState([]);
 
   const pauseSending = async () => {
@@ -60,7 +63,11 @@ function QueueSending({ newsletter }: QueueSendingProps) {
         newsletter_id: newsletter.id,
       },
     })
-      .done(() => setPaused(false))
+      .done(() => {
+        setPaused(false);
+        setResumed(true);
+        Hooks.doAction('mailpoet.held_campaigns.refresh');
+      })
       .fail((response) => setErrors(response.errors));
   };
 
@@ -79,9 +86,10 @@ function QueueSending({ newsletter }: QueueSendingProps) {
     });
   };
 
-  const { isHeld, showPause, resumeLabel } = getQueueActionLabels({
+  const { isHeld, resumeLabel } = getQueueActionLabels({
     status: paused ? 'paused' : null,
     pause_reason: newsletter.queue.pause_reason,
+    resumed,
   });
 
   return (
@@ -100,7 +108,7 @@ function QueueSending({ newsletter }: QueueSendingProps) {
           {resumeLabel}
         </Button>
       )}
-      {!paused && showPause && (
+      {!paused && (
         <Button dimension="small" onClick={pauseSending}>
           {__('Pause', 'mailpoet')}
         </Button>
@@ -169,6 +177,11 @@ function QueueStatus({ newsletter, mailerLog }: QueueStatusProps) {
         />
       </Link>
       {isNewsletterCancelled && <CancelledNewsletter />}
+      {isMtaPaused &&
+        isHeldQueue({
+          status: newsletter.queue.status as string | null,
+          pause_reason: newsletter.queue.pause_reason,
+        }) && <HeldNewsletter />}
       {newsletter.queue.status !== 'completed' &&
         !isNewsletterCancelled &&
         !isMtaPaused && <QueueSending newsletter={newsletter} />}
