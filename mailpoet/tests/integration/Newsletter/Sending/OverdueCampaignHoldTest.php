@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Sending;
 
+use MailPoet\API\JSON\ResponseBuilders\HeldCampaignsResponseBuilder;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -119,6 +120,16 @@ class OverdueCampaignHoldTest extends \MailPoetTest {
     $this->assertSame(ScheduledTaskEntity::PAUSE_REASON_OVERDUE, $idle->getPauseReason());
   }
 
+  public function testLoadingTheHeldListDoesNotQueryPerEmail(): void {
+    $this->createHeldMixedEmails(3);
+    $few = $this->countSelectsForHeldList();
+
+    $this->createHeldMixedEmails(17);
+    $many = $this->countSelectsForHeldList();
+
+    $this->assertSame($few, $many);
+  }
+
   public function testGetHeldExcludesSenderDomainPauses(): void {
     $overdue = $this->createCampaignTask(Carbon::now()->subHours(30), ScheduledTaskEntity::STATUS_PAUSED);
     $overdue->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
@@ -146,5 +157,37 @@ class OverdueCampaignHoldTest extends \MailPoetTest {
     $queue->setMeta($queueMeta);
     $this->entityManager->flush();
     return $task;
+  }
+
+  private function createHeldMixedEmails(int $count): void {
+    for ($i = 0; $i < $count; $i++) {
+      $factory = (new NewsletterFactory())->withSubject('Held ' . $i);
+      if ($i % 3 === 1) {
+        $factory->withWpPostId((int)wp_insert_post(['post_title' => 'Campaign ' . $i, 'post_status' => 'publish']));
+      }
+      if ($i % 3 === 2) {
+        $parent = (new NewsletterFactory())->withType(NewsletterEntity::TYPE_NOTIFICATION)->withSubject('Parent ' . $i)->create();
+        $factory->withType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY)->withParent($parent);
+      }
+      $task = $this->createCampaignTask(Carbon::now()->subHours(30), ScheduledTaskEntity::STATUS_PAUSED, $factory->create());
+      $task->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+    }
+    $this->entityManager->flush();
+  }
+
+  private function countSelectsForHeldList(): int {
+    $this->entityManager->clear();
+    $builder = $this->diContainer->get(HeldCampaignsResponseBuilder::class);
+    $before = $this->getSelectCount();
+    $rows = $builder->buildAll($this->hold->getHeld());
+    $count = $this->getSelectCount() - $before;
+    $this->assertNotEmpty($rows);
+    return $count;
+  }
+
+  private function getSelectCount(): int {
+    $status = $this->entityManager->getConnection()->fetchNumeric("SHOW SESSION STATUS LIKE 'Com_select'");
+    $value = $status ? $status[1] : 0;
+    return is_numeric($value) ? (int)$value : 0;
   }
 }
