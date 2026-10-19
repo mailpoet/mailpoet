@@ -211,8 +211,12 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
     }
     $running = (new Newsletter())->withSubject('running')->withSendingQueue(['status' => null, 'count_processed' => 0])->create();
     $this->entityManager->flush();
+    $ids = array_map(fn(NewsletterEntity $newsletter) => $newsletter->getId(), array_merge(array_values($newsletters), [$running]));
+    // Start from an empty identity map so the listing query loads its own partial entities
+    $this->entityManager->clear();
+    $listed = array_map(fn($id) => $this->entityManager->getReference(NewsletterEntity::class, $id), $ids);
 
-    $response = $responseBuilder->buildForListing(array_merge(array_values($newsletters), [$running]));
+    $response = $responseBuilder->buildForListing($listed);
 
     $this->assertSame(
       [ScheduledTaskEntity::PAUSE_REASON_OVERDUE, ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN, null, null],
@@ -226,9 +230,12 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
     for ($i = 0; $i < 2; $i++) {
       $this->entityManager->persist($task = new ScheduledTaskEntity());
       $task->setType(\MailPoet\Cron\Workers\SendingQueue\SendingQueue::TASK_TYPE);
-      $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+      // Only the last batch, the one the listing loads as a partial entity, is held
+      $task->setStatus($i === 1 ? ScheduledTaskEntity::STATUS_PAUSED : ScheduledTaskEntity::STATUS_COMPLETED);
       $task->setScheduledAt(new \DateTimeImmutable('2018-10-1' . $i . ' 10:00:00'));
-      $task->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+      if ($i === 1) {
+        $task->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+      }
       $this->entityManager->persist($queue = new SendingQueueEntity());
       $queue->setNewsletter($newsletter);
       $queue->setTask($task);
@@ -242,8 +249,10 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
       ]);
     }
     $this->entityManager->flush();
+    $newsletterId = $newsletter->getId();
+    $this->entityManager->clear();
 
-    $response = $responseBuilder->buildForListing([$newsletter]);
+    $response = $responseBuilder->buildForListing([$this->entityManager->getReference(NewsletterEntity::class, $newsletterId)]);
 
     $this->assertSame(ScheduledTaskEntity::PAUSE_REASON_OVERDUE, $response[0]['queue']['pause_reason']);
   }

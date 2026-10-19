@@ -391,7 +391,7 @@ class NewslettersResponseBuilder {
     $queryBuilder = $this->entityManager->createQueryBuilder();
     $results = $queryBuilder
       ->select('PARTIAL sq.{id, createdAt, updatedAt, deletedAt, meta, newsletterRenderedSubject, countTotal, countProcessed, countToProcess}')
-      ->addSelect('PARTIAL t.{id, type, status, priority, scheduledAt, processedAt}')
+      ->addSelect('PARTIAL t.{id, type, status, priority, scheduledAt, processedAt, meta}')
       ->addSelect('IDENTITY(sq.newsletter)')
       ->from(SendingQueueEntity::class, 'sq')
       ->join('sq.task', 't')
