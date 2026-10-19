@@ -3,6 +3,8 @@ import {
   confirmCopy,
   getLateness,
   lateText,
+  markBusy,
+  clearBusy,
   nextFocusIndex,
   removeRow,
   rowActions,
@@ -159,11 +161,20 @@ describe('held campaigns notice helpers', () => {
 
   describe('rowActions', () => {
     it('offers send now, reschedule and cancel for standard emails', () => {
-      expect(rowActions(row(1))).to.deep.equal([
+      expect(
+        rowActions(row(1, { can_edit_link: 'http://x/send/1' })),
+      ).to.deep.equal(['resume', 'reschedule', 'cancel']);
+    });
+
+    it('omits reschedule when there is no link to the send page', () => {
+      expect(rowActions(row(1, { can_edit_link: null }))).to.deep.equal([
         'resume',
-        'reschedule',
         'cancel',
       ]);
+    });
+
+    it('returns no actions for a row that is gone', () => {
+      expect(rowActions(undefined)).to.deep.equal([]);
     });
 
     it('omits reschedule when the row cannot be rescheduled', () => {
@@ -175,6 +186,21 @@ describe('held campaigns notice helpers', () => {
       expect(
         rowActions(row(1, { type: 're_engagement', can_reschedule: false })),
       ).to.deep.equal(['resume', 'cancel']);
+    });
+  });
+
+  describe('busy rows', () => {
+    it('tracks each row on its own', () => {
+      let busy = markBusy({}, 1, 'resume');
+      busy = markBusy(busy, 2, 'cancel');
+      busy = clearBusy(busy, 1);
+      expect(busy).to.deep.equal({ 2: 'cancel' });
+    });
+
+    it('does not mutate the input', () => {
+      const input = markBusy({}, 1, 'resume');
+      clearBusy(input, 1);
+      expect(input).to.deep.equal({ 1: 'resume' });
     });
   });
 
