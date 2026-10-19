@@ -153,7 +153,8 @@ class Links {
    *
    * @param array<string, string> $urlsByHash The queue's stored link URLs by hash, see getUrlsByHash()
    * @param array<string, string> $parts Content keyed by PlaceholderCollector::PART_* constant
-   * @param callable(string): string $urlResolver Receives the stored link: a URL, a link shortcode or a personalization tag token
+   * @param callable(string, string): string $urlResolver Receives the stored link (a URL, a link shortcode or a
+   *   personalization tag token) and the part it is for, and returns the destination to use there
    * @return array<string, string>
    */
   public function replaceHashedLinksWithUntrackedPlaceholders(array $urlsByHash, array $parts, PlaceholderCollector $collector, callable $urlResolver): array {
@@ -167,7 +168,7 @@ class Links {
           $placeholders[$dataTag] = $collector->addHtml(OpenTracking::UNTRACKED_PIXEL_SRC, $dataTag);
           continue;
         }
-        $value = $hash !== null && isset($urlsByHash[$hash]) ? $urlResolver($urlsByHash[$hash]) : $dataTag;
+        $value = $hash !== null && isset($urlsByHash[$hash]) ? $urlResolver($urlsByHash[$hash], $part) : $dataTag;
         $placeholders[$dataTag] = $this->addLinkPlaceholder($collector, $part, $value, $dataTag);
       }
       $parts[$part] = strtr($content, $placeholders);
