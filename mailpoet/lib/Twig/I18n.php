@@ -47,12 +47,16 @@ class I18n extends AbstractExtension {
     $args = func_get_args();
     /** @var array $translations */
     $translations = array_shift($args);
+    $wp = WPFunctions::get();
+    // JSON encoding supplies the quotes and escapes backslashes, quotes and line breaks,
+    // and JSON_HEX_TAG keeps "</script>" in a translation from ending the inline script.
+    $flags = JSON_HEX_TAG | JSON_UNESCAPED_SLASHES;
     $output = [];
     foreach ($translations as $key => $translation) {
       $output[] =
-        'MailPoet.I18n.add("' . $key . '", "' . str_replace(['"', "\n", "\r"], ['\"', " ", ""], $translation ?? '') . '");';
+        'MailPoet.I18n.add(' . $wp->wpJsonEncode((string)$key, $flags) . ', ' . $wp->wpJsonEncode($translation ?? '', $flags) . ');';
     }
-    WPFunctions::get()->wpAddInlineScript('mailpoet_mailpoet', join("\n", $output));
+    $wp->wpAddInlineScript('mailpoet_mailpoet', join("\n", $output));
   }
 
   public function translate() {
