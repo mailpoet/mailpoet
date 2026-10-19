@@ -5,7 +5,10 @@ namespace MailPoet\Test\Newsletter\Sending;
 use Codeception\Stub;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\Sending\OverdueCampaignHold;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\WP\Functions as WPFunctions;
 
 class OverdueCampaignHoldTest extends \MailPoetUnitTest {
@@ -95,7 +98,7 @@ class OverdueCampaignHoldTest extends \MailPoetUnitTest {
         return $default;
       },
     ]);
-    $hold = new OverdueCampaignHold($wp);
+    $hold = $this->createHoldWithWp($wp);
     $hold->isEnabled();
     $hold->getThreshold();
     verify($received)->same([
@@ -129,6 +132,15 @@ class OverdueCampaignHoldTest extends \MailPoetUnitTest {
         return $filterValue;
       },
     ]);
-    return new OverdueCampaignHold($wp);
+    return $this->createHoldWithWp($wp);
+  }
+
+  private function createHoldWithWp(WPFunctions $wp): OverdueCampaignHold {
+    return new OverdueCampaignHold(
+      $wp,
+      Stub::makeEmpty(TimeZoneCampaignScheduler::class),
+      Stub::makeEmpty(ScheduledTasksRepository::class),
+      Stub::makeEmpty(LoggerFactory::class)
+    );
   }
 }

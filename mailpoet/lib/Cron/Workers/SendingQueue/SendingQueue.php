@@ -19,6 +19,7 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
+use MailPoet\Newsletter\Sending\OverdueCampaignHold;
 use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
@@ -111,6 +112,9 @@ class SendingQueue {
   /** @var NewsletterUrl */
   private $newsletterUrl;
 
+  /** @var OverdueCampaignHold */
+  private $overdueCampaignHold;
+
   public function __construct(
     SendingErrorHandler $errorHandler,
     SendingThrottlingHandler $throttlingHandler,
@@ -132,7 +136,8 @@ class SendingQueue {
     FeaturesController $featuresController,
     ?TimeZoneCampaignScheduler $timeZoneCampaignScheduler = null,
     $newsletterTask = false,
-    ?NewsletterUrl $newsletterUrl = null
+    ?NewsletterUrl $newsletterUrl = null,
+    ?OverdueCampaignHold $overdueCampaignHold = null
   ) {
     $this->errorHandler = $errorHandler;
     $this->throttlingHandler = $throttlingHandler;
@@ -156,6 +161,7 @@ class SendingQueue {
     $this->featuresController = $featuresController;
     $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
     $this->newsletterUrl = $newsletterUrl ?? ContainerWrapper::getInstance()->get(NewsletterUrl::class);
+    $this->overdueCampaignHold = $overdueCampaignHold ?? ContainerWrapper::getInstance()->get(OverdueCampaignHold::class);
   }
 
   public function process($timer = false) {
@@ -164,6 +170,11 @@ class SendingQueue {
     foreach ($this->scheduledTasksRepository->findRunningSendingTasks(self::TASK_BATCH_SIZE) as $task) {
       $queue = $task->getSendingQueue();
       if (!$queue) {
+        continue;
+      }
+
+      // Paused earlier in this run, e.g. together with the other batches of its time zone campaign
+      if ($task->getStatus() !== null) {
         continue;
       }
 
@@ -210,6 +221,10 @@ class SendingQueue {
     if (!$queue || !$newsletter) {
       $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
       $this->scheduledTasksRepository->flush();
+      return;
+    }
+
+    if ($this->holdIfNotSendable($task, $newsletter)) {
       return;
     }
 
@@ -748,6 +763,19 @@ class SendingQueue {
         $this->scheduledTasksRepository->flush();
       }
     }
+  }
+
+  /**
+   * Per-task checks that decide whether this task may start sending live here, before anything is rendered.
+   * Checks that apply to the whole site (e.g. paused sending on non-production sites) belong in process(),
+   * next to enforceSendingAndExecutionLimits().
+   */
+  private function holdIfNotSendable(ScheduledTaskEntity $task, NewsletterEntity $newsletter): bool {
+    if (!$this->overdueCampaignHold->shouldHold($task, $newsletter)) {
+      return false;
+    }
+    $this->overdueCampaignHold->holdInWorker($task);
+    return true;
   }
 
   private function startProgress(ScheduledTaskEntity $task): void {

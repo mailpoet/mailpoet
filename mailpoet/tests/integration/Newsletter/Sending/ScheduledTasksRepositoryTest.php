@@ -311,6 +311,171 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->assertSame($expected, $ids);
   }
 
+  public function testItFindsHeldOverdueTasks(): void {
+    $newer = $this->createHeldTask((new NewsletterFactory())->withSubject('Newer')->create(), Carbon::now()->subDays(2));
+    $older = $this->createHeldTask((new NewsletterFactory())->withSubject('Older')->create(), Carbon::now()->subDays(5));
+    $history = $this->createHeldTask((new NewsletterFactory())->withPostNotificationHistoryType()->create(), Carbon::now()->subDays(3));
+    $reengagement = $this->createHeldTask((new NewsletterFactory())->withReengagementType()->create(), Carbon::now()->subDays(4));
+    $withExtraMeta = $this->createHeldTask((new NewsletterFactory())->withSubject('Extra')->create(), Carbon::now()->subDays(1), ['other' => 'value/with/slashes']);
+
+    $senderDomain = $this->createHeldTask((new NewsletterFactory())->withSubject('Sender domain')->create(), Carbon::now()->subDays(2));
+    $senderDomain->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
+    $this->createHeldTask((new NewsletterFactory())->withSubject('No reason')->create(), Carbon::now()->subDays(2), [], null, false);
+    $this->createHeldTask((new NewsletterFactory())->withPostNotificationsType()->create(), Carbon::now()->subDays(2));
+    $this->createHeldTask((new NewsletterFactory())->withWelcomeTypeForSegment()->create(), Carbon::now()->subDays(2));
+    $this->createHeldTask((new NewsletterFactory())->withSubject('Queue replay')->create(), Carbon::now()->subDays(2), [], [NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true]);
+    $this->createHeldTask((new NewsletterFactory())->withSubject('Task replay')->create(), Carbon::now()->subDays(2), [NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true]);
+    $this->createHeldTask((new NewsletterFactory())->withSubject('Trashed')->withDeleted()->create(), Carbon::now()->subDays(2));
+    $deletedTask = $this->createHeldTask((new NewsletterFactory())->withSubject('Deleted task')->create(), Carbon::now()->subDays(2));
+    $deletedTask->setDeletedAt(Carbon::now());
+    $this->entityManager->flush();
+
+    $ids = array_map(fn(ScheduledTaskEntity $task) => $task->getId(), $this->repository->findHeldOverdue());
+    $this->assertSame(
+      [$older->getId(), $reengagement->getId(), $history->getId(), $newer->getId(), $withExtraMeta->getId()],
+      $ids
+    );
+  }
+
+  public function testItFindsHeldOverdueTasksForOneNewsletter(): void {
+    $newsletter = (new NewsletterFactory())->withSubject('Target')->create();
+    $first = $this->createHeldTask($newsletter, Carbon::now()->subDays(2));
+    $second = $this->createHeldTask($newsletter, Carbon::now()->subDays(3));
+    $second->setInProgress(true);
+    $this->createHeldTask($newsletter, Carbon::now()->subDays(2), [], null, false);
+    $this->createHeldTask((new NewsletterFactory())->withSubject('Other')->create(), Carbon::now()->subDays(2));
+    $this->entityManager->flush();
+
+    $ids = array_map(fn(ScheduledTaskEntity $task) => $task->getId(), $this->repository->findHeldOverdueForNewsletter($newsletter));
+    sort($ids);
+    $expected = [$first->getId(), $second->getId()];
+    sort($expected);
+    $this->assertSame($expected, $ids);
+  }
+
+  public function testItFindsUnconfirmedRunningCampaignTasksDueBefore(): void {
+    $cutoff = Carbon::now()->subDay();
+    $overdue = $this->createRunningCampaignTask(Carbon::now()->subDays(2));
+    $history = $this->createRunningCampaignTask(Carbon::now()->subDays(2), (new NewsletterFactory())->withPostNotificationHistoryType()->create());
+    $reengagement = $this->createRunningCampaignTask(Carbon::now()->subDays(2), (new NewsletterFactory())->withReengagementType()->create());
+    $freshFromScheduler = $this->createRunningCampaignTask(Carbon::now()->subDays(2));
+    $freshFromScheduler->setInProgress(null);
+    $withConfirmedLookalike = $this->createRunningCampaignTask(Carbon::now()->subDays(2), null, ['other' => 'overdue_send_confirmed']);
+    $legacy = $this->createRunningCampaignTask(null);
+    $legacy->setCreatedAt(Carbon::now()->subDays(2));
+    $this->entityManager->flush();
+
+    $this->createRunningCampaignTask(Carbon::now()->subHours(2)); // not due yet
+    $this->createRunningCampaignTask(Carbon::now()->subDays(2), null, [ScheduledTaskEntity::META_OVERDUE_SEND_CONFIRMED => true]);
+    $this->createRunningCampaignTask(Carbon::now()->subDays(2), null, [], 1); // already sent to someone
+    $inProgress = $this->createRunningCampaignTask(Carbon::now()->subDays(2));
+    $inProgress->setInProgress(true);
+    $this->createRunningCampaignTask(Carbon::now()->subDays(2))->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->createRunningCampaignTask(Carbon::now()->subDays(2))->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+    $this->createRunningCampaignTask(Carbon::now()->subDays(2), (new NewsletterFactory())->withWelcomeTypeForSegment()->create());
+    $this->createRunningCampaignTask(Carbon::now()->subDays(2), (new NewsletterFactory())->withPostNotificationsType()->create());
+    $this->createRunningCampaignTask(Carbon::now()->subDays(2), (new NewsletterFactory())->withSubject('Trashed')->withDeleted()->create());
+    $this->createRunningCampaignTask(Carbon::now()->subDays(2), null, [NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true]);
+    $this->createRunningCampaignTask(Carbon::now()->subDays(2), null, [], 0, [NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true]);
+    $this->createRunningCampaignTask(Carbon::now()->subDays(2))->setDeletedAt(Carbon::now());
+    $this->entityManager->flush();
+
+    $ids = array_map(fn(ScheduledTaskEntity $task) => $task->getId(), $this->repository->findUnconfirmedRunningCampaignTasksDueBefore($cutoff));
+    sort($ids);
+    $expected = array_map(fn(ScheduledTaskEntity $task) => $task->getId(), [$overdue, $history, $reengagement, $freshFromScheduler, $withConfirmedLookalike, $legacy]);
+    sort($expected);
+    $this->assertSame($expected, $ids);
+  }
+
+  public function testClaimForOverdueHoldPausesTaskWithFreshSchedulerState(): void {
+    $task = $this->createRunningCampaignTask(Carbon::now()->subDays(2), null, ['keep' => 'me']);
+    $task->setInProgress(null);
+    $this->entityManager->flush();
+
+    $this->assertTrue($this->repository->claimForOverdueHold($task));
+
+    $this->assertSame(ScheduledTaskEntity::STATUS_PAUSED, $task->getStatus());
+    $this->assertSame(ScheduledTaskEntity::PAUSE_REASON_OVERDUE, $task->getPauseReason());
+    $this->assertSame('me', ($task->getMeta() ?? [])['keep'] ?? null);
+    $this->assertSame($task->getId(), $this->repository->findHeldOverdue()[0]->getId());
+  }
+
+  public function testClaimForOverdueHoldLosesToTheWorker(): void {
+    $busy = $this->createRunningCampaignTask(Carbon::now()->subDays(2));
+    $busy->setInProgress(true);
+    $started = $this->createRunningCampaignTask(Carbon::now()->subDays(2), null, [], 1);
+    $scheduled = $this->createRunningCampaignTask(Carbon::now()->subDays(2));
+    $scheduled->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->entityManager->flush();
+
+    foreach ([$busy, $started, $scheduled] as $task) {
+      $status = $task->getStatus();
+      $this->assertFalse($this->repository->claimForOverdueHold($task));
+      $this->assertSame($status, $task->getStatus());
+      $this->assertNull($task->getPauseReason());
+    }
+  }
+
+  public function testClaimForOverdueHoldRefreshesTaskWhenItLost(): void {
+    $task = $this->createRunningCampaignTask(Carbon::now()->subDays(2));
+    $this->entityManager->getConnection()->executeStatement(
+      'UPDATE ' . $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName() . ' SET in_progress = 1 WHERE id = ' . $task->getId()
+    );
+    $this->assertNotTrue($task->getInProgress());
+
+    $this->assertFalse($this->repository->claimForOverdueHold($task));
+    $this->assertTrue($task->getInProgress());
+  }
+
+  public function testClaimForOverdueHoldHandlesMetaWrittenByNativeSql(): void {
+    $task = $this->createRunningCampaignTask(Carbon::now()->subDays(2));
+    $this->setRawMeta($task, '{"z": "café \/ x", "ratio": 1.0, "a":[1, 2]}');
+
+    $this->assertTrue($this->repository->claimForOverdueHold($task));
+
+    $raw = $this->getRawMeta($task);
+    $this->assertStringContainsString('"ratio":1.0', $raw);
+    $this->assertStringContainsString('"z":"café / x"', $raw);
+    $this->assertStringContainsString('"pause_reason":"overdue"', $raw);
+    $this->assertSame(ScheduledTaskEntity::PAUSE_REASON_OVERDUE, $this->repository->findHeldOverdue()[0]->getPauseReason());
+  }
+
+  private function createHeldTask(NewsletterEntity $newsletter, \DateTimeInterface $scheduledAt, array $extraMeta = [], ?array $queueMeta = null, bool $withReason = true): ScheduledTaskEntity {
+    $task = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_PAUSED, $scheduledAt);
+    $queue = $this->sendingQueueFactory->create($task, $newsletter);
+    $queue->setMeta($queueMeta);
+    $meta = $extraMeta;
+    if ($withReason) {
+      $meta[ScheduledTaskEntity::META_PAUSE_REASON] = ScheduledTaskEntity::PAUSE_REASON_OVERDUE;
+    }
+    $task->setMeta($meta ?: null);
+    $this->entityManager->flush();
+    return $task;
+  }
+
+  private function createRunningCampaignTask(?\DateTimeInterface $scheduledAt, ?NewsletterEntity $newsletter = null, array $meta = [], int $countProcessed = 0, ?array $queueMeta = null): ScheduledTaskEntity {
+    $task = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, null, $scheduledAt);
+    $queue = $this->sendingQueueFactory->create($task, $newsletter ?? (new NewsletterFactory())->withSubject('Running')->create());
+    $queue->setCountProcessed($countProcessed);
+    $queue->setMeta($queueMeta);
+    $task->setMeta($meta ?: null);
+    $this->entityManager->flush();
+    return $task;
+  }
+
+  private function setRawMeta(ScheduledTaskEntity $task, string $meta): void {
+    $table = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement("UPDATE $table SET meta = :meta WHERE id = :id", ['meta' => $meta, 'id' => $task->getId()]);
+    $this->entityManager->refresh($task);
+  }
+
+  private function getRawMeta(ScheduledTaskEntity $task): string {
+    $table = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $meta = $this->entityManager->getConnection()->fetchOne("SELECT meta FROM $table WHERE id = :id", ['id' => $task->getId()]);
+    $this->assertIsString($meta);
+    return $meta;
+  }
+
   private function createPausedTask(NewsletterEntity $newsletter, bool $withReason, array $extraMeta = [], ?array $queueMeta = null): ScheduledTaskEntity {
     $task = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_PAUSED);
     $queue = $this->sendingQueueFactory->create($task, $newsletter);
