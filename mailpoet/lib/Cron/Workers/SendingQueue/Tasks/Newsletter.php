@@ -196,13 +196,16 @@ class Newsletter {
    *
    * A personalization tag embedded in a stored URL (https://example.com/?ref=[acme/url]) is resolved
    * here too. On the rendered path the Personalizer does that while it runs over the restored
-   * content; on the templated path the URL leaves as a substitution value, so it has to be complete.
+   * content and writes the href through esc_url(); on the templated path the URL leaves as a
+   * substitution value, so it has to be complete and, in the HTML part, escaped the same way.
    *
+   * @param string $part The PlaceholderCollector::PART_* constant the URL is for
    * @param string $shortcodeLookupSource Content that shortcodes such as [newsletter:post_title] look their value up in
    * @param array<string, mixed>|null $personalizationContext
    */
   private function resolveUntrackedUrl(
     string $url,
+    string $part,
     string $shortcodeLookupSource,
     NewsletterEntity $newsletter,
     SubscriberEntity $subscriber,
@@ -217,7 +220,11 @@ class Newsletter {
     if ($personalizationContext === null) {
       return $url;
     }
-    return $this->personalizationTagLinkResolver->resolveEmbeddedTokens($url, $personalizationContext);
+    $resolvedUrl = $this->personalizationTagLinkResolver->resolveEmbeddedTokens($url, $personalizationContext);
+    if ($resolvedUrl === $url || $part !== PlaceholderCollector::PART_HTML) {
+      return $resolvedUrl;
+    }
+    return $this->wp->escUrl($resolvedUrl);
   }
 
   /**
@@ -585,8 +592,8 @@ class Newsletter {
       }
     } elseif ($this->trackingEnabled) {
       // Same rule as in prepareNewsletterForSending(): withdrawn consent stops the reading operation itself.
-      $resolveUntrackedUrl = function (string $url) use ($shortcodeLookupSource, $newsletter, $subscriber, $queue, $context): string {
-        return $this->resolveUntrackedUrl($url, $shortcodeLookupSource, $newsletter, $subscriber, $queue, $context);
+      $resolveUntrackedUrl = function (string $url, string $part) use ($shortcodeLookupSource, $newsletter, $subscriber, $queue, $context): string {
+        return $this->resolveUntrackedUrl($url, $part, $shortcodeLookupSource, $newsletter, $subscriber, $queue, $context);
       };
       $parts = $this->newsletterLinks->replaceHashedLinksWithUntrackedPlaceholders($this->getStoredLinkUrlsByHash($queue), $parts, $collector, $resolveUntrackedUrl);
     }

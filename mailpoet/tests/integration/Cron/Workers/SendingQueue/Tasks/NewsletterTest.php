@@ -666,6 +666,27 @@ class NewsletterTest extends \MailPoetTest {
     $this->assertSame('[Profile](https://example.com/profile?email=' . $this->subscriber->getEmail() . ')', $reconstructedText);
   }
 
+  public function testItEscapesAnUntrackedLinkWithAReplacedTagLikeTheRenderedPathInTemplatedBatch(): void {
+    $this->subscriber->setFirstName('Anna "AJ" Lee');
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+    [$newsletter, , $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink(
+      'https://example.com/profile?name=[mailpoet/subscriber-firstname]',
+      'Profile'
+    );
+
+    $templated = $this->newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $this->subscriber, $sendingQueue);
+    $rendered = $this->newsletterTask->prepareNewsletterForSending($newsletter, $this->subscriber, $sendingQueue);
+
+    // The rendered path writes the resolved href through esc_url(): spaces encoded, quotes dropped.
+    $reconstructedHtml = strtr($templated['newsletter']['body']['html'], $templated['substitutions']['html']);
+    $this->assertStringContainsString('href="https://example.com/profile?name=Anna%20AJ%20Lee"', $reconstructedHtml);
+    $this->assertSame($rendered['body']['html'], $reconstructedHtml);
+  }
+
   public function testItKeepsTemplateIdenticalWhenATagLinkResolvesForOnlySomeSubscribersInTemplatedBatch(): void {
     $newsletterTask = Stub::copy($this->newsletterTask, ['trackingEnabled' => false]);
     [$newsletter, , $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink('[acme/maybe-url]', 'Go');
