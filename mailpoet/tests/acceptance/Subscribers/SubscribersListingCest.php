@@ -1005,7 +1005,18 @@ class SubscribersListingCest {
   }
 
   private function confirmBulkResendConfirmationEmailRequest(\AcceptanceTester $i): void {
-    $i->checkOption('#bulk-resend-confirmation-checkbox-input');
+    $checkbox = '#bulk-resend-confirmation-checkbox-input';
+    $isChecked = 'return !!document.querySelector("' . $checkbox . '")?.checked;';
+    $i->waitForElementClickable($checkbox);
+    // A click during the modal's opening animation can miss the checkbox.
+    $i->waitForJS('var frame = document.querySelector(".components-modal__frame"); return !!frame && frame.getAnimations({ subtree: true }).every(function (a) { return a.playState !== "running"; });', 5);
+    $i->click($checkbox);
+    try {
+      $i->waitForJS($isChecked, 2);
+    } catch (\Exception $e) {
+      $i->click($checkbox);
+      $i->waitForJS($isChecked, 5);
+    }
     $i->waitForElementNotVisible("[data-automation-id='bulk-resend-confirmation-confirm']:disabled");
   }
 
