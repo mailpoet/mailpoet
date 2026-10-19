@@ -343,7 +343,7 @@ class NewslettersResponseBuilder {
     $countTotal = $sentCount ?? $queue->getCountTotal();
     $countProcessed = $sentCount ?? $queue->getCountProcessed();
     $countToProcess = $sentCount !== null ? 0 : $queue->getCountToProcess();
-    $pauseReason = $this->getPauseReason($queue, $task, $aggregateData !== null);
+    $pauseReason = $aggregateData ? $aggregateData['pauseReason'] : $this->getPauseReason($task);
 
     return [
       'id' => (string)$queue->getId(), // (string) for BC
@@ -366,23 +366,8 @@ class NewslettersResponseBuilder {
     ];
   }
 
-  /**
-   * Why the queue is paused: the task's own reason, or for a time zone campaign the first paused batch's reason.
-   */
-  private function getPauseReason(SendingQueueEntity $queue, ScheduledTaskEntity $task, bool $isTimeZoneCampaign): ?string {
-    $tasks = [$task];
-    if ($isTimeZoneCampaign && $this->timeZoneCampaignScheduler) {
-      $tasks = array_filter(array_map(
-        fn(SendingQueueEntity $campaignQueue) => $campaignQueue->getTask(),
-        $this->timeZoneCampaignScheduler->getCampaignQueues($queue)
-      ));
-    }
-    foreach ($tasks as $campaignTask) {
-      if ($campaignTask->getStatus() === ScheduledTaskEntity::STATUS_PAUSED) {
-        return $campaignTask->getPauseReason();
-      }
-    }
-    return null;
+  private function getPauseReason(ScheduledTaskEntity $task): ?string {
+    return $task->getStatus() === ScheduledTaskEntity::STATUS_PAUSED ? $task->getPauseReason() : null;
   }
 
   private function getBatchLatestQueuesWithTasks(array $newsletters): array {
