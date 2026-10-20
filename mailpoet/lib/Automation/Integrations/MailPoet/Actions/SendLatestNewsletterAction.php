@@ -51,7 +51,7 @@ class SendLatestNewsletterAction implements Action {
 
   // While sending is paused (non-production site), poll at a steady interval
   // without moving toward the timeout.
-  private const PAUSED_POLL_INTERVAL = HOUR_IN_SECONDS;
+  private const PAUSED_POLL_INTERVAL = 6 * HOUR_IN_SECONDS;
   private const PAUSED_POLLS = 'paused_polls';
   private const WAIT_OPTIN = 'wait_optin';
   private const OPTIN_RETRIES = 'optin_retries';
