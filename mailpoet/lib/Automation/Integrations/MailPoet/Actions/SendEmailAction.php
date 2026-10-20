@@ -298,11 +298,12 @@ class SendEmailAction implements Action {
           self::WAIT_OPTIN => 0,
           self::OPTIN_RETRIES => $args->getRunNumber(),
         ]);
+        $state[self::OPTIN_RETRIES] = $args->getRunNumber();
         $this->scheduleEmail($args, $newsletter, $subscriber);
       }
 
       // Check/sync sending status with the automation step
-      $success = $this->checkSendingStatus($args, $newsletter, $subscriber, (int)($state[self::PAUSED_POLLS] ?? 0));
+      $success = $this->checkSendingStatus($args, $newsletter, $subscriber, (int)($state[self::OPTIN_RETRIES] ?? 0) + (int)($state[self::PAUSED_POLLS] ?? 0));
       if ($success) {
         return;
       }
@@ -435,7 +436,7 @@ class SendEmailAction implements Action {
     $this->automationController->enqueueProgress($runId, $stepId);
   }
 
-  private function checkSendingStatus(StepRunArgs $args, NewsletterEntity $newsletter, SubscriberEntity $subscriber, int $pausedPolls): bool {
+  private function checkSendingStatus(StepRunArgs $args, NewsletterEntity $newsletter, SubscriberEntity $subscriber, int $skippedRuns): bool {
     $scheduledTaskSubscriber = $this->automationEmailScheduler->getScheduledTaskSubscriber($newsletter, $subscriber, $args->getAutomationRun());
     if (!$scheduledTaskSubscriber) {
       throw InvalidStateException::create()->withMessage(__('Email failed to schedule.', 'mailpoet'));
@@ -450,7 +451,7 @@ class SendEmailAction implements Action {
     }
 
     $wasSent = $scheduledTaskSubscriber->getProcessed() === ScheduledTaskSubscriberEntity::STATUS_PROCESSED;
-    $isLastRun = $args->getRunNumber() - $pausedPolls >= 1 + count(self::POLL_INTERVALS);
+    $isLastRun = $args->getRunNumber() - $skippedRuns >= 1 + count(self::POLL_INTERVALS);
 
     // email was never sent (not while sending is paused)
     if (!$wasSent && $isLastRun && $this->sendingEnvironment->isSendingAllowed()) {

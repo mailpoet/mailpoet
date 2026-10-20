@@ -491,6 +491,32 @@ class SendEmailActionTest extends \MailPoetTest {
     );
   }
 
+  public function testItDoesNotCountOptInRetriesTowardTheTimeout(): void {
+    [, , $controllerFor, $argsFor] = $this->prepareUnsentEmail();
+    $controllerFor(2)->getRunLog()->saveLogData(['optin_retries' => 3]);
+
+    // Run 10 is the 7th real check, so it keeps polling.
+    $this->getActionWithSendingAllowed(true)->run($argsFor(10), $controllerFor(10));
+
+    // Run 11 is the 8th real check, the last one.
+    $this->assertThrowsExceptionWithMessage(
+      'Email sending process timed out.',
+      function() use ($argsFor, $controllerFor) {
+        $this->getActionWithSendingAllowed(true)->run($argsFor(11), $controllerFor(11));
+      }
+    );
+  }
+
+  public function testItDoesNotTimeOutOnTheRunThatSchedulesTheEmailAfterOptIn(): void {
+    [, , $controllerFor, $argsFor] = $this->prepareUnsentEmail();
+    $controllerFor(1)->getRunLog()->saveLogData(['wait_optin' => 1]);
+
+    // The subscriber is confirmed on run 8. The email was only just scheduled, so this run is not a timeout.
+    $this->getActionWithSendingAllowed(true)->run($argsFor(8), $controllerFor(8));
+
+    $this->assertSame(8, $controllerFor(8)->getRunLog()->getLog()->getData()['optin_retries']);
+  }
+
   public function testItUsesThePollIntervalOfTheEffectiveRunAfterManyPausedPolls(): void {
     [$step, $run, $controllerFor, $argsFor] = $this->prepareUnsentEmail();
 
