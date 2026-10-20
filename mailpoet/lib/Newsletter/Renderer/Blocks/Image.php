@@ -53,6 +53,9 @@ class Image {
 
   public function adjustImageDimensions($element, $columnBaseWidth) {
     $paddedWidth = StylesHelper::$paddingWidth * 2;
+    if (!is_numeric($columnBaseWidth) || $columnBaseWidth <= 0) {
+      return $element;
+    }
     // scale image to fit column width
     if ($element['width'] > $columnBaseWidth) {
       $ratio = $element['width'] / $columnBaseWidth;
@@ -62,6 +65,7 @@ class Image {
     // resize image if the image is padded and wider than padded column width
     if (
       $element['fullWidth'] === false &&
+      $columnBaseWidth > $paddedWidth &&
       $element['width'] > ($columnBaseWidth - $paddedWidth)
     ) {
       $ratio = $element['width'] / ($columnBaseWidth - $paddedWidth);
