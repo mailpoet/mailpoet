@@ -25,11 +25,12 @@ class AddSendingKeyCest {
     $i->click('Show');
     $i->seeElement('[name="premium[premium_key]"][type="text"]');
     $i->dontSeeElement('[name="premium[premium_key]"][type="password"]');
-    $i->click('Verify');
 
     // validate key, activate MSS, install & activate Premium plugin
-    $i->waitForText('Your key is valid', 20);
-    $i->waitForText('MailPoet Sending Service is active');
+    $i->verifyKeyRetryingOnBridgeError(function () use ($i) {
+      $i->click('Verify');
+    }, 'MailPoet Sending Service is active');
+    $i->waitForText('Your key is valid');
     try {
       $i->waitForText('It’s time to set your default FROM address!', 5);
       $i->waitForText('Set one of your authorized email addresses as the default FROM email for your MailPoet emails.');
@@ -101,8 +102,12 @@ class AddSendingKeyCest {
     $i->waitForText('Activate MailPoet Sending Service');
 
     // activate MSS
-    $i->click('Activate MailPoet Sending Service');
-    $i->waitForText('MailPoet Sending Service is active');
+    $firstAttempt = true;
+    $i->verifyKeyRetryingOnBridgeError(function () use ($i, &$firstAttempt) {
+      // After a transient error the activate link is gone, and Verify turns MSS on as well
+      $i->click($firstAttempt ? 'Activate MailPoet Sending Service' : 'Verify');
+      $firstAttempt = false;
+    }, 'MailPoet Sending Service is active');
     $i->dontSee('A test email was sent to');
 
     // test modal for authorized FROM address
@@ -138,8 +143,9 @@ class AddSendingKeyCest {
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="activation_settings_tab"]');
     $i->waitForText('Your key is valid');
-    $i->click('Verify');
-    $i->waitForText('MailPoet Sending Service is active', 20);
+    $i->verifyKeyRetryingOnBridgeError(function () use ($i) {
+      $i->click('Verify');
+    }, 'MailPoet Sending Service is active');
 
     // ensure status is running
     $i->amOnMailpoetPage('Help#/systemStatus');
