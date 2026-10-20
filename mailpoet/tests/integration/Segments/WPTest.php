@@ -14,6 +14,7 @@ use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\WPUserSubscriberLink;
 use MailPoet\Subscription\Registration;
+use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WooCommerce\Helper;
@@ -388,7 +389,7 @@ class WPTest extends \MailPoetTest {
     }
   }
 
-  public function testSynchronizeUserRemovesDuplicateSubscriberOnEmailChange(): void {
+  public function testSynchronizeUserKeepsOtherSubscriberOnEmailChange(): void {
     $randomNumber = rand();
     // Create a WP user with email A
     $id = $this->insertUser($randomNumber);
@@ -400,28 +401,44 @@ class WPTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriberA);
     $this->assertSame($emailA, $subscriberA->getEmail());
 
-    // Create a second subscriber with email B (simulates WooCommerce guest checkout)
-    $emailB = 'user-sync-test-duplicate' . $randomNumber . '@example.com';
-    $this->subscriberFactory->withEmail($emailB)->create();
-    $subscriberB = $this->subscribersRepository->findOneBy(['email' => $emailB]);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriberB);
+    // Create a second, unrelated subscriber with email B, a list and a custom field value
+    $emailB = 'user-sync-test-other' . $randomNumber . '@example.com';
+    $list = $this->segmentFactory->withName('Other list ' . $randomNumber)->create();
+    $subscriberB = $this->subscriberFactory
+      ->withEmail($emailB)
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withSegments([$list])
+      ->create();
+    $subscriberBId = $subscriberB->getId();
+    (new CustomFieldFactory())->withName('Phone ' . $randomNumber)->withSubscriber($subscriberBId, '555-0100')->create();
 
-    // Change the WP user's email from A to B
+    // Change the WP user's email from A to B together with their first name
     $this->updateWPUserEmail($id, $emailB);
+    update_user_meta($id, 'first_name', 'Changed name');
     clean_user_cache($id);
+    $this->entityManager->clear();
 
-    // Synchronize should succeed without a unique constraint violation
+    // Synchronize should not throw, but should skip the email update
     $this->wpSegment->synchronizeUser($id);
 
-    // The original subscriber should now have email B
+    // The WP subscriber should still have email A and get the other changes
     $this->entityManager->clear();
     $updatedSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
-    $this->assertSame($emailB, $updatedSubscriber->getEmail());
+    $this->assertSame($emailA, $updatedSubscriber->getEmail());
+    $this->assertSame('Changed name', $updatedSubscriber->getFirstName());
 
-    // The duplicate subscriber should have been removed
-    $remainingSubscribers = $this->subscribersRepository->findBy(['email' => $emailB]);
-    $this->assertCount(1, $remainingSubscribers);
+    // The other subscriber should keep its data
+    $otherSubscriber = $this->subscribersRepository->findOneById($subscriberBId);
+    $this->assertInstanceOf(SubscriberEntity::class, $otherSubscriber);
+    $this->assertSame($emailB, $otherSubscriber->getEmail());
+    $this->assertNull($otherSubscriber->getWpUserId());
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $otherSubscriber->getStatus());
+    $this->assertSame([$list->getId()], array_map(function (SubscriberSegmentEntity $subscriberSegment) {
+      $segment = $subscriberSegment->getSegment();
+      return $segment ? $segment->getId() : null;
+    }, $otherSubscriber->getSubscriberSegments()->toArray()));
+    $this->assertCount(1, $otherSubscriber->getSubscriberCustomFields());
   }
 
   public function testSynchronizeUserSkipsEmailChangeWhenDuplicateIsWooCommerceCustomer(): void {
