@@ -519,6 +519,11 @@ class AcceptanceTester extends \Codeception\Actor {
     return $this->_waitForElement($element, $this->getDefaultTimeout($timeout));
   }
 
+  public function waitForEditorSettingsPanel(): void {
+    $this->waitForElementVisible('#mailpoet_panel');
+    $this->waitForJS('const panel = document.getElementById("mailpoet_panel"); return panel.getAnimations().length === 0 && panel.getBoundingClientRect().right <= window.innerWidth + 1;');
+  }
+
   public function waitForElementChange($element, \Closure $callback, $timeout = 30) {
     return $this->_waitForElementChange($element, $callback, $this->getDefaultTimeout($timeout));
   }

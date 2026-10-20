@@ -23,6 +23,7 @@ class EditorDividerBlockCest {
     $i->waitForElementVisible($dividerResizeHandle);
     $i->waitForElementVisible($dividerSettings);
     $i->click($dividerSettings);
+    $i->waitForEditorSettingsPanel();
     $i->waitForElementVisible($dividerSettingsAssertion);
     $i->click('Done');
   }
