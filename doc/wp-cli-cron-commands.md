@@ -121,6 +121,11 @@ the Scheduler and then the SendingQueue.
 With `--task-id`, it claims that one exact row (status `cli`, hidden from the web daemon) and runs
 just that task.
 
+On a site WordPress marks as staging, development or local, the types that send email (`sending`,
+`stats_notification`, `stats_notification_automated_emails`, `bulk_confirmation_email_resend`,
+`subscriber_limit_notification`) are refused while sending is paused. Allow sending in
+MailPoet › Settings › Advanced or with the `mailpoet_allow_sending_in_non_production` filter.
+
 The 20-second daemon execution limit is lifted by default so jobs run to completion; `--timeout`
 restores a cap.
 
@@ -167,7 +172,8 @@ command reports the existing task and does nothing unless `--force` is given.
 
 With `--run`, the task is created already claimed (status `cli`, hidden from the web daemon) and
 processed in-CLI immediately. `--run` bypasses the duplicate check (the claimed row is independent)
-and cannot be combined with `--at`/`--in`.
+and cannot be combined with `--at`/`--in`. Like `run`, `--run` refuses the types that send email while
+sending is paused on a staging, development or local site; without `--run` the task is still queued.
 
 | Argument / option       | Description                                                                                 |
 | ----------------------- | ------------------------------------------------------------------------------------------- |

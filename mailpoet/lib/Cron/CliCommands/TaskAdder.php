@@ -5,8 +5,10 @@ namespace MailPoet\Cron\CliCommands;
 use Exception;
 use InvalidArgumentException;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoetVendor\Carbon\Carbon;
+use RuntimeException;
 
 /**
  * Adds a new scheduled task for a standard cron worker, optionally claiming and running it in-process.
@@ -30,14 +32,18 @@ class TaskAdder {
 
   private ClaimedTaskRunner $claimedTaskRunner;
 
+  private SendingEnvironment $sendingEnvironment;
+
   public function __construct(
     WorkerTypesCatalog $workerTypesCatalog,
     ScheduledTasksRepository $scheduledTasksRepository,
-    ClaimedTaskRunner $claimedTaskRunner
+    ClaimedTaskRunner $claimedTaskRunner,
+    SendingEnvironment $sendingEnvironment
   ) {
     $this->workerTypesCatalog = $workerTypesCatalog;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->claimedTaskRunner = $claimedTaskRunner;
+    $this->sendingEnvironment = $sendingEnvironment;
   }
 
   /**
@@ -52,6 +58,7 @@ class TaskAdder {
     }
 
     if ($run) {
+      $this->assertSendingNotPaused($type);
       return $this->claimAndRun($type, $priorityValue);
     }
 
@@ -80,6 +87,15 @@ class TaskAdder {
       'message' => sprintf("Added task %d (%s), scheduled for %s, priority %s.", $task->getId(), $type, $scheduledAt->format('Y-m-d H:i:s'), $priority),
       'run' => null,
     ];
+  }
+
+  private function assertSendingNotPaused(string $type): void {
+    if ($this->sendingEnvironment->isTaskTypeGated($type)) {
+      throw new RuntimeException(sprintf(
+        'Sending is paused because this is a %s site. Allow sending in MailPoet › Settings › Advanced.',
+        $this->sendingEnvironment->getEnvironmentType()
+      ));
+    }
   }
 
   private function createTask(string $type, int $priority, Carbon $scheduledAt): ScheduledTaskEntity {
