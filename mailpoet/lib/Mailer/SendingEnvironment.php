@@ -17,6 +17,7 @@ use MailPoet\WP\Functions as WPFunctions;
  */
 class SendingEnvironment {
   public const SETTING_ALLOW_SENDING = 'allow_sending_in_non_production';
+  public const SETTING_ALLOW_SENDING_SITE_URL = 'allow_sending_in_non_production_site_url';
   public const FILTER_ALLOW_SENDING = 'mailpoet_allow_sending_in_non_production';
 
   /**
@@ -56,7 +57,7 @@ class SendingEnvironment {
     if ($this->isProduction()) {
       return true;
     }
-    $allowedBySetting = (bool)$this->settings->get(self::SETTING_ALLOW_SENDING);
+    $allowedBySetting = $this->isOverrideStoredForThisSite();
 
     /**
      * Lets a developer allow or block queued sending on a non-production site.
@@ -79,10 +80,37 @@ class SendingEnvironment {
   public function clearOverrideOnProduction(): void {
     if ($this->isProduction() && $this->settings->get(self::SETTING_ALLOW_SENDING)) {
       $this->settings->delete(self::SETTING_ALLOW_SENDING);
+      $this->settings->delete(self::SETTING_ALLOW_SENDING_SITE_URL);
     }
   }
 
   public function allowSending(): void {
     $this->settings->set(self::SETTING_ALLOW_SENDING, '1');
+    $this->settings->set(self::SETTING_ALLOW_SENDING_SITE_URL, $this->getNormalizedSiteUrl());
+  }
+
+  /**
+   * The setting lives in the database, so a copy of the site carries it along. It only counts on the
+   * site address it was turned on for.
+   */
+  public function isOverrideStoredForThisSite(): bool {
+    return $this->settings->get(self::SETTING_ALLOW_SENDING) === '1'
+      && $this->settings->get(self::SETTING_ALLOW_SENDING_SITE_URL) === $this->getNormalizedSiteUrl();
+  }
+
+  /**
+   * Call after the setting was saved: remember the address when it is on, forget it when it is off.
+   */
+  public function syncSiteUrlWithSetting(): void {
+    if ($this->settings->get(self::SETTING_ALLOW_SENDING) === '1') {
+      $this->settings->set(self::SETTING_ALLOW_SENDING_SITE_URL, $this->getNormalizedSiteUrl());
+    } else {
+      $this->settings->delete(self::SETTING_ALLOW_SENDING_SITE_URL);
+    }
+  }
+
+  private function getNormalizedSiteUrl(): string {
+    $parts = explode('://', strtolower(trim((string)$this->wp->homeUrl())), 2);
+    return rtrim($parts[count($parts) - 1], '/');
   }
 }

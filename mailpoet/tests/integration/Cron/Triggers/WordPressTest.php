@@ -324,7 +324,7 @@ class WordPressTest extends \MailPoetTest {
 
   public function testItExecutesForQueuesWhenSendingIsAllowedOnANonProductionSite() {
     $trigger = $this->createTriggerOnEnvironment('staging');
-    $this->settings->set(SendingEnvironment::SETTING_ALLOW_SENDING, '1');
+    $this->diContainer->get(SendingEnvironment::class)->allowSending();
     $this->addQueue(null);
     verify($trigger->checkExecutionRequirements())->true();
   }
@@ -337,7 +337,7 @@ class WordPressTest extends \MailPoetTest {
       $this->addScheduledTask($type, ScheduledTaskEntity::STATUS_SCHEDULED);
     }
     verify($trigger->checkExecutionRequirements())->false();
-    $this->settings->set(SendingEnvironment::SETTING_ALLOW_SENDING, '1');
+    $this->diContainer->get(SendingEnvironment::class)->allowSending();
     verify($trigger->checkExecutionRequirements())->true();
   }
 

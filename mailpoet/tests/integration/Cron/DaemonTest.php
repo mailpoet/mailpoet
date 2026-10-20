@@ -223,7 +223,7 @@ class DaemonTest extends \MailPoetTest {
     $cronWorkerRunner = $this->make(CronWorkerRunner::class, ['run' => null]);
     $data = ['token' => 123];
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $this->settings->set(SendingEnvironment::SETTING_ALLOW_SENDING, '1');
+    $this->diContainer->get(SendingEnvironment::class)->allowSending();
     $daemon = $this->getServiceWithOverrides(Daemon::class, [
       'cronWorkerRunner' => $cronWorkerRunner,
       'sendingEnvironment' => $this->createSendingEnvironment('staging'),

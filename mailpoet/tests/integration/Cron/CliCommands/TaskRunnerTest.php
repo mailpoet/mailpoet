@@ -386,7 +386,7 @@ class TaskRunnerTest extends \MailPoetTest {
   }
 
   public function testItRunsGatedTypesOnANonProductionSiteWhenSendingIsAllowed() {
-    $this->settings->set(SendingEnvironment::SETTING_ALLOW_SENDING, '1');
+    $this->diContainer->get(SendingEnvironment::class)->allowSending();
     $result = $this->makeTaskRunnerOnEnvironment('staging')->run(StatsNotificationsWorker::TASK_TYPE);
 
     verify($result['limit_reached'])->false();

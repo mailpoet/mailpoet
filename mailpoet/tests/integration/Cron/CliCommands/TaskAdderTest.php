@@ -197,7 +197,7 @@ class TaskAdderTest extends \MailPoetTest {
   }
 
   public function testItClaimsAndRunsAGatedTypeWhenSendingIsAllowed() {
-    $this->diContainer->get(\MailPoet\Settings\SettingsController::class)->set(SendingEnvironment::SETTING_ALLOW_SENDING, '1');
+    $this->diContainer->get(SendingEnvironment::class)->allowSending();
 
     $result = $this->makeAdderOnEnvironment('staging')->add(BulkConfirmationEmailResend::TASK_TYPE, null, null, 'low', false, true);
 

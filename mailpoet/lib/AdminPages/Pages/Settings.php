@@ -80,6 +80,9 @@ class Settings {
 
   public function render() {
     $settings = $this->settings->getAll();
+    if (!$this->sendingEnvironment->isOverrideStoredForThisSite()) {
+      $settings[SendingEnvironment::SETTING_ALLOW_SENDING] = '';
+    }
 
     $premiumKeyValid = $this->servicesChecker->isPremiumKeyValid(false);
     // force MSS key check even if the method isn't active
