@@ -20,6 +20,19 @@ overrides:
   '@wordpress/html-entities@4.22.0>@babel/runtime': 7.26.10
   '@wordpress/i18n@5.26.0>@babel/runtime': 7.26.10
   '@wordpress/icons@10.32.0>@babel/runtime': 7.26.10
+  # Keep one copy of the standalone @wordpress packages we upgraded ahead of
+  # the rest. i18n, hooks and date keep shared state, so duplicates break
+  # translations and filters. Remove once all @wordpress packages are updated.
+  '@wordpress/a11y@^4.0.0': ^5.0.0
+  '@wordpress/date@^5.0.0': ^6.0.0
+  '@wordpress/dom@^4.0.0': ^5.0.0
+  '@wordpress/escape-html@^3.0.0': ^4.0.0
+  '@wordpress/hooks@^4.0.0': ^5.0.0
+  '@wordpress/html-entities@^4.0.0': ^5.0.0
+  '@wordpress/i18n@^6.0.0': ^7.0.0
+  '@wordpress/is-shallow-equal@^5.0.0': ^6.0.0
+  '@wordpress/keycodes@^4.0.0': ^5.0.0
+  '@wordpress/url@^4.0.0': ^5.0.0
   '@wp-playground/blueprints>ajv': 8.18.0
   '@wp-playground/cli>ajv': 8.18.0
   '@wp-playground/tools>ajv': 8.18.0
