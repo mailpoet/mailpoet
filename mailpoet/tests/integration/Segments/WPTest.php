@@ -181,6 +181,30 @@ class WPTest extends \MailPoetTest {
     verify($dbSubscriber->getLastName())->equals('Name');
   }
 
+  public function testSynchronizeUsersKeepsEmailAndNamesOfSubscriberWithUnconfirmedLink(): void {
+    global $wpdb;
+    $randomNumber = rand();
+    $email = 'user-sync-test' . $randomNumber . '@example.com';
+    $subscriber = $this->subscriberFactory->withEmail($email)->create();
+    $id = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUser($id);
+    $this->connection->executeStatement(
+      "UPDATE {$wpdb->users} SET user_email = :email, display_name = 'Changed' WHERE ID = :id",
+      ['email' => 'changed-' . $email, 'id' => $id]
+    );
+    update_user_meta($id, 'first_name', 'Changed');
+    update_user_meta($id, 'last_name', 'Changed');
+
+    $this->wpSegment->synchronizeUsers();
+
+    $this->entityManager->clear();
+    $dbSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $dbSubscriber);
+    verify($dbSubscriber->getEmail())->equals($email);
+    verify($dbSubscriber->getFirstName())->equals('');
+    verify($dbSubscriber->getLastName())->equals('');
+  }
+
   public function testPasswordResetKeepsLinkUnconfirmedAfterAccountEmailChange(): void {
     $randomNumber = rand();
     $email = 'user-sync-test' . $randomNumber . '@example.com';
