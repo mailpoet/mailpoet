@@ -7,6 +7,7 @@ type Props = {
   statusData: {
     status?: string;
     sendingLimitReached?: boolean;
+    sendingPausedReason?: string | null;
     started?: number;
     sent?: number;
     retryAttempt?: number;
@@ -27,6 +28,9 @@ type Props = {
 };
 
 function getQueueStatusText(status: Props['statusData']): string {
+  if (status.sendingPausedReason) {
+    return `${MailPoet.I18n.t('paused')} – ${status.sendingPausedReason}`;
+  }
   if (status.status === 'paused') {
     return MailPoet.I18n.t('paused');
   }
