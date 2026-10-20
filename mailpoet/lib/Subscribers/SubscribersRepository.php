@@ -46,18 +46,23 @@ class SubscribersRepository extends Repository {
   /** @var SegmentsCountRecalculator */
   private $segmentsCountRecalculator;
 
+  /** @var WPUserSubscriberLink */
+  private $wpUserSubscriberLink;
+
   public function __construct(
     EntityManager $entityManager,
     SubscriberChangesNotifier $changesNotifier,
     WPFunctions $wp,
     SegmentsRepository $segmentsRepository,
-    SegmentsCountRecalculator $segmentsCountRecalculator
+    SegmentsCountRecalculator $segmentsCountRecalculator,
+    WPUserSubscriberLink $wpUserSubscriberLink
   ) {
     $this->wp = $wp;
     parent::__construct($entityManager);
     $this->changesNotifier = $changesNotifier;
     $this->segmentsRepository = $segmentsRepository;
     $this->segmentsCountRecalculator = $segmentsCountRecalculator;
+    $this->wpUserSubscriberLink = $wpUserSubscriberLink;
   }
 
   protected function getEntityClassName() {
@@ -945,6 +950,9 @@ class SubscribersRepository extends Repository {
     $wpUser = WPFunctions::get()->wpGetCurrentUser();
     if (empty($wpUser->ID)) {
       return null; // Don't look up a subscriber for guests
+    }
+    if ($this->wpUserSubscriberLink->isUnconfirmed((int)$wpUser->ID)) {
+      return null; // The user hasn't confirmed the linked subscriber's address yet
     }
     return $this->findOneBy(['wpUserId' => $wpUser->ID]);
   }

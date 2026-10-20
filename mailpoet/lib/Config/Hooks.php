@@ -16,6 +16,7 @@ use MailPoet\Segments\WPUserDeleteNotice;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\SubscriberHandler;
 use MailPoet\Subscribers\SubscriberLimitNotificationScheduler;
+use MailPoet\Subscribers\WPUserSubscriberLink;
 use MailPoet\Subscription\AdminUserSubscription;
 use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
@@ -120,6 +121,8 @@ class Hooks {
 
   private ProductCollectionEmailRendererRegistrar $productCollectionEmailRendererRegistrar;
 
+  private WPUserSubscriberLink $wpUserSubscriberLink;
+
   public function __construct(
     Form $subscriptionForm,
     Comment $subscriptionComment,
@@ -146,7 +149,8 @@ class Hooks {
     WooHelper $wooHelper,
     AdminUserSubscription $adminUserSubscription,
     CouponBlockGenerator $couponBlockGenerator,
-    ProductCollectionEmailRendererRegistrar $productCollectionEmailRendererRegistrar
+    ProductCollectionEmailRendererRegistrar $productCollectionEmailRendererRegistrar,
+    WPUserSubscriberLink $wpUserSubscriberLink
   ) {
     $this->subscriptionForm = $subscriptionForm;
     $this->subscriptionComment = $subscriptionComment;
@@ -174,6 +178,7 @@ class Hooks {
     $this->adminUserSubscription = $adminUserSubscription;
     $this->couponBlockGenerator = $couponBlockGenerator;
     $this->productCollectionEmailRendererRegistrar = $productCollectionEmailRendererRegistrar;
+    $this->wpUserSubscriberLink = $wpUserSubscriberLink;
   }
 
   public function init() {
@@ -435,6 +440,17 @@ class Hooks {
 
     // Warn on the delete-user confirmation screen that the subscriber is kept.
     $this->wpUserDeleteNotice->setupHooks();
+
+    // A password reset needs a key sent to the user's address, which confirms it.
+    $this->wp->addAction(
+      'password_reset',
+      [$this->wpUserSubscriberLink, 'confirmOnPasswordReset']
+    );
+    // So does WooCommerce's own email verification (WooCommerce 11.0+).
+    $this->wp->addAction(
+      'woocommerce_customer_email_verified',
+      [$this->wpUserSubscriberLink, 'confirmOnEmailVerified']
+    );
 
     // login
     $this->wp->addAction(

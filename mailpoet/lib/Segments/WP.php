@@ -18,6 +18,7 @@ use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SourceUrlResolver;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\WPUserSubscriberLink;
 use MailPoet\Util\DBCollationChecker;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -76,6 +77,9 @@ class WP {
   /** @var SourceUrlResolver */
   private $sourceUrlResolver;
 
+  /** @var WPUserSubscriberLink */
+  private $wpUserSubscriberLink;
+
   public function __construct(
     WPFunctions $wp,
     WelcomeScheduler $welcomeScheduler,
@@ -88,7 +92,8 @@ class WP {
     EntityManager $entityManager,
     DBCollationChecker $collationChecker,
     SegmentsCountRecalculator $segmentsCountRecalculator,
-    SourceUrlResolver $sourceUrlResolver
+    SourceUrlResolver $sourceUrlResolver,
+    WPUserSubscriberLink $wpUserSubscriberLink
   ) {
     $this->wp = $wp;
     $this->welcomeScheduler = $welcomeScheduler;
@@ -102,6 +107,7 @@ class WP {
     $this->collationChecker = $collationChecker;
     $this->segmentsCountRecalculator = $segmentsCountRecalculator;
     $this->sourceUrlResolver = $sourceUrlResolver;
+    $this->wpUserSubscriberLink = $wpUserSubscriberLink;
     $this->databaseConnection = $this->entityManager->getConnection();
     $this->subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
   }
@@ -140,6 +146,7 @@ class WP {
     $currentFilter = $this->wp->currentFilter();
     // Delete
     if (in_array($currentFilter, ['delete_user', 'deleted_user', 'remove_user_from_blog'])) {
+      $this->wpUserSubscriberLink->clear($wpUserId);
       if ($subscriber instanceof SubscriberEntity) {
         $this->unlinkSubscriberFromWpUser($subscriber, $wpUser);
       }
@@ -239,6 +246,13 @@ class WP {
     // find subscriber by email when is null
     if (is_null($subscriber)) {
       $subscriber = $this->subscribersRepository->findOneBy(['email' => $wpUser->user_email]); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $currentUserId = (int)$this->wp->getCurrentUserId();
+      if (!$subscriber instanceof SubscriberEntity) {
+        $this->wpUserSubscriberLink->clear((int)$wpUser->ID); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      } elseif ($currentUserId === 0 || $currentUserId === (int)$wpUser->ID) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        // Accounts set up by their own user (e.g. sign-up forms) haven't confirmed this address yet.
+        $this->wpUserSubscriberLink->markUnconfirmed((int)$wpUser->ID, $wpUser->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      }
     }
 
     // get first name & last name
@@ -283,6 +297,12 @@ class WP {
           $data['deleted_at'] = null;
         }
       }
+    }
+
+    // Until the account confirms the address, keep the subscriber's own details.
+    if ($subscriber instanceof SubscriberEntity && $this->wpUserSubscriberLink->isUnconfirmed($wpUserId)) {
+      $data['email'] = $subscriber->getEmail();
+      unset($data['first_name'], $data['last_name']);
     }
 
     $addingNewUserToDisabledWPSegment = $wpSegment->getDeletedAt() !== null && $currentFilter === 'user_register';

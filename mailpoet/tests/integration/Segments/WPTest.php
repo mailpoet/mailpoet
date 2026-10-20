@@ -12,6 +12,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\WPUserSubscriberLink;
 use MailPoet\Subscription\Registration;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
@@ -43,6 +44,9 @@ class WPTest extends \MailPoetTest {
   /** @var SegmentFactory */
   private $segmentFactory;
 
+  /** @var WPUserSubscriberLink */
+  private $wpUserSubscriberLink;
+
   public function _before(): void {
     parent::_before();
     require_once ABSPATH . 'wp-admin/includes/user.php';
@@ -56,6 +60,7 @@ class WPTest extends \MailPoetTest {
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->subscriberFactory = new SubscriberFactory();
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->wpUserSubscriberLink = $this->diContainer->get(WPUserSubscriberLink::class);
   }
 
   public function testSynchronizeUserKeepsStatusOfOldUser(): void {
@@ -83,6 +88,134 @@ class WPTest extends \MailPoetTest {
     $dbSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
     $this->assertInstanceOf(SubscriberEntity::class, $dbSubscriber);
     verify($dbSubscriber->getStatus())->equals($subscriber->getStatus());
+  }
+
+  public function testSynchronizeUserMarksLinkUnconfirmedWhenExistingSubscriberIsLinkedWithoutLoggedInUser(): void {
+    $randomNumber = rand();
+    $this->subscriberFactory
+      ->withEmail('user-sync-test' . $randomNumber . '@example.com')
+      ->create();
+    $id = $this->insertUser($randomNumber);
+
+    $this->wpSegment->synchronizeUser($id);
+
+    verify($this->wpUserSubscriberLink->isUnconfirmed($id))->true();
+  }
+
+  public function testSynchronizeUserDoesNotMarkLinkWhenLoggedInUserCreatesUserForExistingSubscriber(): void {
+    $randomNumber = rand();
+    $this->subscriberFactory
+      ->withEmail('user-sync-test' . $randomNumber . '@example.com')
+      ->create();
+    $id = $this->insertUser($randomNumber);
+    $admin = get_user_by('login', 'admin');
+    $this->assertInstanceOf(\WP_User::class, $admin);
+    wp_set_current_user($admin->ID);
+
+    $this->wpSegment->synchronizeUser($id);
+
+    verify($this->wpUserSubscriberLink->isUnconfirmed($id))->false();
+  }
+
+  public function testSynchronizeUserDoesNotMarkLinkWhenItCreatesTheSubscriber(): void {
+    $id = $this->insertUser(rand());
+
+    $this->wpSegment->synchronizeUser($id);
+
+    verify($this->wpUserSubscriberLink->isUnconfirmed($id))->false();
+  }
+
+  public function testPasswordResetConfirmsUnconfirmedLink(): void {
+    $randomNumber = rand();
+    $id = $this->insertUser($randomNumber);
+    $this->wpUserSubscriberLink->markUnconfirmed($id, 'user-sync-test' . $randomNumber . '@example.com');
+    $wpUser = get_userdata($id);
+    $this->assertInstanceOf(\WP_User::class, $wpUser);
+
+    do_action('password_reset', $wpUser, 'new-password');
+
+    verify($this->wpUserSubscriberLink->isUnconfirmed($id))->false();
+  }
+
+  public function testWooCommerceEmailVerificationConfirmsUnconfirmedLink(): void {
+    $randomNumber = rand();
+    $id = $this->insertUser($randomNumber);
+    $this->wpUserSubscriberLink->markUnconfirmed($id, 'user-sync-test' . $randomNumber . '@example.com');
+
+    do_action('woocommerce_customer_email_verified', $id);
+
+    verify($this->wpUserSubscriberLink->isUnconfirmed($id))->false();
+  }
+
+  public function testSynchronizeUserMarksLinkUnconfirmedWhenUserSyncsOwnAccount(): void {
+    $randomNumber = rand();
+    $this->subscriberFactory
+      ->withEmail('user-sync-test' . $randomNumber . '@example.com')
+      ->create();
+    $id = $this->insertUser($randomNumber);
+    wp_set_current_user($id);
+
+    $this->wpSegment->synchronizeUser($id);
+
+    verify($this->wpUserSubscriberLink->isUnconfirmed($id))->true();
+  }
+
+  public function testSynchronizeUserKeepsEmailAndNamesOfSubscriberWithUnconfirmedLink(): void {
+    $randomNumber = rand();
+    $email = 'user-sync-test' . $randomNumber . '@example.com';
+    $subscriber = $this->subscriberFactory
+      ->withEmail($email)
+      ->withFirstName('Original')
+      ->withLastName('Name')
+      ->create();
+    $id = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUser($id);
+
+    wp_update_user(['ID' => $id, 'user_email' => 'changed-' . $email, 'first_name' => 'Changed']);
+
+    $this->entityManager->clear();
+    $dbSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $dbSubscriber);
+    verify($dbSubscriber->getEmail())->equals($email);
+    verify($dbSubscriber->getFirstName())->equals('Original');
+    verify($dbSubscriber->getLastName())->equals('Name');
+  }
+
+  public function testPasswordResetKeepsLinkUnconfirmedAfterAccountEmailChange(): void {
+    $randomNumber = rand();
+    $email = 'user-sync-test' . $randomNumber . '@example.com';
+    $this->subscriberFactory->withEmail($email)->create();
+    $id = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUser($id);
+    wp_update_user(['ID' => $id, 'user_email' => 'changed-' . $email]);
+    $wpUser = get_userdata($id);
+    $this->assertInstanceOf(\WP_User::class, $wpUser);
+
+    do_action('password_reset', $wpUser, 'new-password');
+
+    verify($this->wpUserSubscriberLink->isUnconfirmed($id))->true();
+  }
+
+  public function testSynchronizeUserClearsMarkWhenItCreatesOwnSubscriber(): void {
+    $randomNumber = rand();
+    $id = $this->insertUser($randomNumber);
+    $this->wpUserSubscriberLink->markUnconfirmed($id, 'user-sync-test' . $randomNumber . '@example.com');
+
+    $this->wpSegment->synchronizeUser($id);
+
+    verify($this->wpUserSubscriberLink->isUnconfirmed($id))->false();
+  }
+
+  public function testRemovingUserFromSiteClearsMark(): void {
+    $randomNumber = rand();
+    $email = 'user-sync-test' . $randomNumber . '@example.com';
+    $this->subscriberFactory->withEmail($email)->create();
+    $id = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUser($id);
+
+    do_action('remove_user_from_blog', $id);
+
+    verify($this->wpUserSubscriberLink->isUnconfirmed($id))->false();
   }
 
   public function testSynchronizeUserStatusIsSubscribedForNewUserWithSignUpConfirmationDisabled(): void {

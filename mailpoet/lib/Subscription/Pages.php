@@ -25,6 +25,7 @@ use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\TrackingConsentController;
+use MailPoet\Subscribers\WPUserSubscriberLink;
 use MailPoet\Util\Headers;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Request;
@@ -111,6 +112,9 @@ class Pages {
   /*** @var TrackingConsentController */
   private $trackingConsentController;
 
+  /** @var WPUserSubscriberLink */
+  private $wpUserSubscriberLink;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
@@ -133,7 +137,8 @@ class Pages {
     SettingsController $settings,
     UnsubscribeReasonTracker $unsubscribeReasonTracker,
     Request $request,
-    TrackingConsentController $trackingConsentController
+    TrackingConsentController $trackingConsentController,
+    WPUserSubscriberLink $wpUserSubscriberLink
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
@@ -157,6 +162,7 @@ class Pages {
     $this->unsubscribeReasonTracker = $unsubscribeReasonTracker;
     $this->request = $request;
     $this->trackingConsentController = $trackingConsentController;
+    $this->wpUserSubscriberLink = $wpUserSubscriberLink;
   }
 
   public function init($action = false, $data = [], $initShortcodes = false, $initPageFilters = false) {
@@ -524,10 +530,14 @@ class Pages {
       $subscriber->setLinkToken('bfd0889dbc7f081e171fa0cee7401df2');
     } else if ($this->subscriber !== null) {
       $subscriber = $this->subscriber;
-    } else if ($this->wp->getCurrentUserId() && $this->subscribersRepository->findOneBy(['wpUserId' => $this->wp->getCurrentUserId()])) {
-      $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $this->wp->getCurrentUserId()]);
+      $this->confirmCurrentWpUserLink($subscriber);
     } else {
-      return __('Subscription management form is only available to mailing lists subscribers.', 'mailpoet');
+      $subscriber = $this->subscribersRepository->getCurrentWPUser();
+      if (!$subscriber instanceof SubscriberEntity) {
+        return $this->isCurrentWpUserLinkUnconfirmed()
+          ? $this->getUnconfirmedWpUserLinkMessage()
+          : __('Subscription management form is only available to mailing lists subscribers.', 'mailpoet');
+      }
     }
 
     // Read+absint sanitizes the values; phpcs can't see that across the conditional.
@@ -683,12 +693,33 @@ class Pages {
     );
   }
 
-  public function getManageLink($params) {
-    $subscriber = $this->subscriber;
-    if (!$subscriber && $this->subscribersRepository->findOneBy(['wpUserId' => $this->wp->getCurrentUserId()])) {
-      $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $this->wp->getCurrentUserId()]);
+  private function isCurrentWpUserLinkUnconfirmed(): bool {
+    $wpUserId = (int)$this->wp->getCurrentUserId();
+    return $wpUserId && $this->wpUserSubscriberLink->isUnconfirmed($wpUserId);
+  }
+
+  private function getUnconfirmedWpUserLinkMessage(): string {
+    return __('To manage your subscription, use the link in one of our emails.', 'mailpoet');
+  }
+
+  /**
+   * Opening the page through a link sent to the subscriber's address confirms
+   * that the logged-in user linked to this subscriber can read that address.
+   */
+  private function confirmCurrentWpUserLink(SubscriberEntity $subscriber): void {
+    $wpUserId = (int)$this->wp->getCurrentUserId();
+    if ($wpUserId && $subscriber->getWpUserId() === $wpUserId) {
+      $this->wpUserSubscriberLink->confirm($wpUserId);
     }
-    if (!$subscriber instanceof SubscriberEntity) return __('Link to subscription management page is only available to mailing lists subscribers.', 'mailpoet');
+  }
+
+  public function getManageLink($params) {
+    $subscriber = $this->subscriber ?? $this->subscribersRepository->getCurrentWPUser();
+    if (!$subscriber instanceof SubscriberEntity) {
+      return $this->isCurrentWpUserLinkUnconfirmed()
+        ? $this->getUnconfirmedWpUserLinkMessage()
+        : __('Link to subscription management page is only available to mailing lists subscribers.', 'mailpoet');
+    }
 
     // get label or display default label
     $text = isset($params['text'])
