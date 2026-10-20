@@ -220,22 +220,15 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->newsletter,
       $this->subscriber
     );
-    if ($this->isConnectionError($result)) {
+    if (!$result['response'] && $result['error']->getOperation() === MailerError::OPERATION_CONNECT) {
       sleep(5);
       $result = $this->mailer->send(
         $this->newsletter,
         $this->subscriber
       );
     }
-    if ($this->isConnectionError($result)) {
-      $this->markTestSkipped('MailPoet Sending Service unreachable: ' . $result['error']->getMessage());
-    }
     $message = isset($result['error']) ? $result['error']->getMessage() : '';
     verify($result['response'])->true($message);
-  }
-
-  private function isConnectionError(array $result): bool {
-    return !$result['response'] && $result['error']->getOperation() === MailerError::OPERATION_CONNECT;
   }
 
   public function testFormatConnectionError() {
