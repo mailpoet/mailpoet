@@ -413,6 +413,25 @@ class Functions {
     return get_userdata($userId);
   }
 
+  /**
+   * @return mixed
+   */
+  public function getUserOption(string $option, int $userId = 0) {
+    return get_user_option($option, $userId);
+  }
+
+  /**
+   * @param mixed $newValue
+   * @return int|bool
+   */
+  public function updateUserOption(int $userId, string $optionName, $newValue, bool $isGlobal = false) {
+    return update_user_option($userId, $optionName, $newValue, $isGlobal);
+  }
+
+  public function deleteUserOption(int $userId, string $optionName, bool $isGlobal = false): bool {
+    return delete_user_option($userId, $optionName, $isGlobal);
+  }
+
   public function getUserBy($field, $value) {
     return get_user_by($field, $value);
   }

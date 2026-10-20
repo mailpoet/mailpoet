@@ -33,6 +33,7 @@ use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\TrackingConsentController;
+use MailPoet\Subscribers\WPUserSubscriberLink;
 use MailPoet\Subscription\ManageSubscriptionFormRenderer;
 use MailPoet\Subscription\Pages;
 use MailPoet\Subscription\SubscriptionUrlFactory;
@@ -70,6 +71,12 @@ class PagesTest extends \MailPoetTest {
   /*** @var Links */
   private $links;
 
+  /** @var WPUserSubscriberLink */
+  private $wpUserSubscriberLink;
+
+  /** @var int[] */
+  private $wpUserIds = [];
+
   public function _before() {
     parent::_before();
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
@@ -82,6 +89,7 @@ class PagesTest extends \MailPoetTest {
     $this->subscribersRepository->flush();
     $this->linkTokens = $this->diContainer->get(LinkTokens::class);
     $this->links = $this->diContainer->get(Links::class);
+    $this->wpUserSubscriberLink = $this->diContainer->get(WPUserSubscriberLink::class);
 
     $this->testData = [
         'email' => $this->subscriber->getEmail(),
@@ -89,6 +97,15 @@ class PagesTest extends \MailPoetTest {
     ];
     $this->testData['email'] = $this->subscriber->getEmail();
     $this->testData['token'] = $this->linkTokens->getToken($this->subscriber);
+  }
+
+  public function _after() {
+    parent::_after();
+    require_once ABSPATH . 'wp-admin/includes/user.php';
+    foreach ($this->wpUserIds as $wpUserId) {
+      wp_delete_user($wpUserId);
+    }
+    $this->wpUserIds = [];
   }
 
   public function testItConfirmsSubscription() {
@@ -574,6 +591,76 @@ class PagesTest extends \MailPoetTest {
     $this->assertSame($copy, $subscriber->getTrackingConsentCopy());
   }
 
+  public function testManageContentDoesNotShowSubscriberOfUnconfirmedWpUserLink(): void {
+    $wpUserId = $this->createWpUserLinkedToSubscriber();
+    $this->wpUserSubscriberLink->markUnconfirmed($wpUserId, (string)$this->subscriber->getEmail());
+    wp_set_current_user($wpUserId);
+
+    $content = $this->getPages()->init()->getManageContent();
+
+    verify($content)->stringNotContainsString($this->testData['token']);
+    verify($content)->stringNotContainsString((string)$this->subscriber->getEmail());
+    verify($content)->stringContainsString('use the link in one of our emails');
+  }
+
+  public function testManageContentShowsSubscriberOfConfirmedWpUserLink(): void {
+    $wpUserId = $this->createWpUserLinkedToSubscriber();
+    $this->wpUserSubscriberLink->confirm($wpUserId);
+    wp_set_current_user($wpUserId);
+
+    $content = $this->getPages()->init()->getManageContent();
+
+    verify($content)->stringContainsString($this->testData['token']);
+  }
+
+  public function testManageLinkIsNotShownForUnconfirmedWpUserLink(): void {
+    $wpUserId = $this->createWpUserLinkedToSubscriber();
+    $this->wpUserSubscriberLink->markUnconfirmed($wpUserId, (string)$this->subscriber->getEmail());
+    wp_set_current_user($wpUserId);
+
+    $link = $this->getPages()->init()->getManageLink([]);
+
+    $manageUrl = $this->diContainer->get(SubscriptionUrlFactory::class)->getManageUrl($this->subscriber);
+    verify($link)->stringNotContainsString($manageUrl);
+    verify($link)->stringContainsString('use the link in one of our emails');
+  }
+
+  public function testManageLinkIsShownForConfirmedWpUserLink(): void {
+    $wpUserId = $this->createWpUserLinkedToSubscriber();
+    $this->wpUserSubscriberLink->confirm($wpUserId);
+    wp_set_current_user($wpUserId);
+
+    $link = $this->getPages()->init()->getManageLink([]);
+
+    $manageUrl = $this->diContainer->get(SubscriptionUrlFactory::class)->getManageUrl($this->subscriber);
+    verify($link)->stringContainsString($manageUrl);
+  }
+
+  public function testOpeningManagePageWithValidLinkConfirmsWpUserLink(): void {
+    $wpUserId = $this->createWpUserLinkedToSubscriber();
+    $this->wpUserSubscriberLink->markUnconfirmed($wpUserId, (string)$this->subscriber->getEmail());
+    wp_set_current_user($wpUserId);
+
+    $this->getPages()->init(Pages::ACTION_MANAGE, $this->testData)->getManageContent();
+
+    verify($this->wpUserSubscriberLink->isUnconfirmed($wpUserId))->false();
+  }
+
+  public function testOpeningManagePageOfAnotherSubscriberKeepsWpUserLinkUnconfirmed(): void {
+    $wpUserId = $this->createWpUserLinkedToSubscriber();
+    $this->wpUserSubscriberLink->markUnconfirmed($wpUserId, (string)$this->subscriber->getEmail());
+    wp_set_current_user($wpUserId);
+    $otherSubscriber = (new Subscriber())->withEmail('other-subscriber@example.com')->create();
+    $otherData = [
+      'email' => $otherSubscriber->getEmail(),
+      'token' => $this->linkTokens->getToken($otherSubscriber),
+    ];
+
+    $this->getPages()->init(Pages::ACTION_MANAGE, $otherData)->getManageContent();
+
+    verify($this->wpUserSubscriberLink->isUnconfirmed($wpUserId))->true();
+  }
+
   public function testWindowTitleCanBeCalledWithSingleArgument() {
     $pages = $this->getPages();
 
@@ -658,8 +745,18 @@ class PagesTest extends \MailPoetTest {
       $container->get(SettingsController::class),
       $container->get(UnsubscribeReasonTracker::class),
       $container->get(Request::class),
-      $container->get(TrackingConsentController::class)
+      $container->get(TrackingConsentController::class),
+      $container->get(WPUserSubscriberLink::class)
     );
+  }
+
+  private function createWpUserLinkedToSubscriber(): int {
+    $wpUserId = wp_create_user('pages-test-user', 'password', (string)$this->subscriber->getEmail());
+    $this->assertIsInt($wpUserId);
+    $this->wpUserIds[] = $wpUserId;
+    $this->entityManager->refresh($this->subscriber);
+    $this->assertSame($wpUserId, $this->subscriber->getWpUserId());
+    return $wpUserId;
   }
 
   private function createSegment(): SegmentEntity {
