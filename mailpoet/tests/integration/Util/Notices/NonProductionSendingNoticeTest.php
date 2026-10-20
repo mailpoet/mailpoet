@@ -73,7 +73,9 @@ class NonProductionSendingNoticeTest extends \MailPoetTest {
 
     $html = $this->render($result);
     verify($html)->stringContainsString('MailPoet isn’t sending emails because this is a staging site.');
-    verify($html)->stringContainsString('Sign-up confirmations, test emails, and WordPress and WooCommerce emails sent through MailPoet still go out.');
+    verify($html)->stringContainsString('Newsletters, post notifications, automation emails and bulk confirmation resends wait in the queue.');
+    verify($html)->stringContainsString('Sign-up confirmations, test emails, WordPress and WooCommerce emails, and the Premium “Send notification email” automation step still go out.');
+    verify($html)->stringContainsString('Everything waiting in the queue goes out once sending is on.');
     verify($html)->stringContainsString('<form method="post" action="http://example.test/wp-admin/admin-post.php">');
     verify($html)->stringContainsString('<input type="hidden" name="action" value="mailpoet_allow_non_production_sending"');
     verify($html)->stringContainsString('<input type="hidden" name="_wpnonce" value="nonce-123"');

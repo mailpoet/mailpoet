@@ -18,7 +18,7 @@ export function NonProductionSending() {
         description={sprintf(
           // translators: %s is the WordPress environment type, for example "staging" or "local"
           __(
-            'WordPress reports this site’s type as %s, so MailPoet doesn’t send newsletters, post notifications or automation emails. Turn this on only if this is your live site.',
+            'WordPress reports this site’s type as %s, so MailPoet doesn’t send newsletters, post notifications or automation emails. Everything waiting in the queue goes out once sending is turned on. Turn this on only if this is your live site.',
             'mailpoet',
           ),
           environmentType,

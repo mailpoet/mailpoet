@@ -68,7 +68,7 @@ class NonProductionSendingNotice {
       esc_html__('MailPoet isn’t sending emails because this is a %1$s site.', 'mailpoet'),
       esc_html($this->sendingEnvironment->getEnvironmentType())
     ) . '</strong> '
-      . esc_html__('Newsletters, post notifications and automation emails wait in the queue. Sign-up confirmations, test emails, and WordPress and WooCommerce emails sent through MailPoet still go out.', 'mailpoet')
+      . esc_html__('Newsletters, post notifications, automation emails and bulk confirmation resends wait in the queue. Sign-up confirmations, test emails, WordPress and WooCommerce emails, and the Premium “Send notification email” automation step still go out. Everything waiting in the queue goes out once sending is on.', 'mailpoet')
       . '</p>';
 
     if ($this->wp->currentUserCan(AccessControl::PERMISSION_MANAGE_SETTINGS)) {
