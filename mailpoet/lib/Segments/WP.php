@@ -535,8 +535,10 @@ class WP {
     $updateSql =
       "UPDATE IGNORE {$this->subscribersTable} s
         INNER JOIN {$wpdb->users} as wu ON s.wp_user_id = wu.id
-        SET s.email = wu.user_email";
-    $this->databaseConnection->executeStatement($updateSql);
+        {$this->getUnconfirmedLinkJoin()}
+        SET s.email = wu.user_email
+        WHERE unconfirmed_link.umeta_id IS NULL";
+    $this->databaseConnection->executeStatement($updateSql, $this->getUnconfirmedLinkParams());
 
     $selectSql =
       "SELECT wp_user_id as id, email FROM {$this->subscribersTable}
@@ -611,12 +613,14 @@ class WP {
     $sql =
       "UPDATE {$this->subscribersTable} s
         JOIN {$wpdb->usermeta} as wpum ON s.wp_user_id = wpum.user_id AND wpum.meta_key = 'first_name'
+        {$this->getUnconfirmedLinkJoin()}
         SET s.first_name = SUBSTRING(wpum.meta_value, 1, 255)
         WHERE s.first_name = ''
         AND s.wp_user_id IS NOT NULL
-        AND wpum.meta_value IS NOT NULL";
+        AND wpum.meta_value IS NOT NULL
+        AND unconfirmed_link.umeta_id IS NULL";
 
-    $this->databaseConnection->executeStatement($sql);
+    $this->databaseConnection->executeStatement($sql, $this->getUnconfirmedLinkParams());
   }
 
   private function updateLastNames(): void {
@@ -625,12 +629,14 @@ class WP {
     $sql =
       "UPDATE {$this->subscribersTable} s
         JOIN {$wpdb->usermeta} as wpum ON s.wp_user_id = wpum.user_id AND wpum.meta_key = 'last_name'
+        {$this->getUnconfirmedLinkJoin()}
         SET s.last_name = SUBSTRING(wpum.meta_value, 1, 255)
         WHERE s.last_name = ''
         AND s.wp_user_id IS NOT NULL
-        AND wpum.meta_value IS NOT NULL";
+        AND wpum.meta_value IS NOT NULL
+        AND unconfirmed_link.umeta_id IS NULL";
 
-    $this->databaseConnection->executeStatement($sql);
+    $this->databaseConnection->executeStatement($sql, $this->getUnconfirmedLinkParams());
   }
 
   private function updateFirstNameIfMissing(): void {
@@ -639,11 +645,30 @@ class WP {
     $sql =
       "UPDATE {$this->subscribersTable} s
         JOIN {$wpdb->users} wu ON s.wp_user_id = wu.id
+        {$this->getUnconfirmedLinkJoin()}
         SET s.first_name = wu.display_name
         WHERE s.first_name = ''
-        AND s.wp_user_id IS NOT NULL";
+        AND s.wp_user_id IS NOT NULL
+        AND unconfirmed_link.umeta_id IS NULL";
 
-    $this->databaseConnection->executeStatement($sql);
+    $this->databaseConnection->executeStatement($sql, $this->getUnconfirmedLinkParams());
+  }
+
+  /**
+   * Joins the users whose link to an existing subscriber isn't confirmed yet,
+   * so bulk updates can keep that subscriber's own details.
+   */
+  private function getUnconfirmedLinkJoin(): string {
+    global $wpdb;
+    return "LEFT JOIN {$wpdb->usermeta} AS unconfirmed_link
+      ON unconfirmed_link.user_id = s.wp_user_id AND unconfirmed_link.meta_key = :unconfirmedLinkMetaKey";
+  }
+
+  /**
+   * @return array{unconfirmedLinkMetaKey: string}
+   */
+  private function getUnconfirmedLinkParams(): array {
+    return ['unconfirmedLinkMetaKey' => $this->wpUserSubscriberLink->getUnconfirmedMetaKey()];
   }
 
   private function insertUsersToSegment(): void {

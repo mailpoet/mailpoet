@@ -44,6 +44,14 @@ class WPUserSubscriberLink {
     $this->clear($wpUserId);
   }
 
+  /**
+   * The user meta key the option is stored under on the current site.
+   */
+  public function getUnconfirmedMetaKey(): string {
+    global $wpdb;
+    return $wpdb->get_blog_prefix() . self::UNCONFIRMED_OPTION;
+  }
+
   public function clear(int $wpUserId): void {
     $this->wp->deleteUserOption($wpUserId, self::UNCONFIRMED_OPTION);
   }
