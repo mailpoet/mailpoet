@@ -121,6 +121,21 @@ class SendGridTest extends \MailPoetTest {
       $this->newsletter,
       $this->subscriber
     );
-    verify($result['response'])->true();
+    if ($this->isConnectionError($result)) {
+      sleep(5);
+      $result = $this->mailer->send(
+        $this->newsletter,
+        $this->subscriber
+      );
+    }
+    if ($this->isConnectionError($result)) {
+      $this->markTestSkipped('SendGrid unreachable: ' . $result['error']->getMessage());
+    }
+    $message = isset($result['error']) ? $result['error']->getMessage() : '';
+    verify($result['response'])->true($message);
+  }
+
+  private function isConnectionError(array $result): bool {
+    return !$result['response'] && $result['error']->getOperation() === MailerError::OPERATION_CONNECT;
   }
 }
