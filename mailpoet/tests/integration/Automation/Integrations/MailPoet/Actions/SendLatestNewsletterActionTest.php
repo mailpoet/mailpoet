@@ -218,8 +218,8 @@ class SendLatestNewsletterActionTest extends \MailPoetTest {
     $expectedArgs = [['automation_run_id' => $run->getId(), 'step_id' => $step->getId(), 'run_number' => 9]];
     $runAt = as_next_scheduled_action('mailpoet/automation/step', $expectedArgs);
     $this->assertIsInt($runAt);
-    $this->assertGreaterThanOrEqual($before + HOUR_IN_SECONDS, $runAt);
-    $this->assertLessThanOrEqual(time() + HOUR_IN_SECONDS, $runAt);
+    $this->assertGreaterThanOrEqual($before + 6 * HOUR_IN_SECONDS, $runAt);
+    $this->assertLessThanOrEqual(time() + 6 * HOUR_IN_SECONDS, $runAt);
     $this->assertSame(1, $controllerFor(8)->getRunLog()->getLog()->getData()['paused_polls']);
   }
 
