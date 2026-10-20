@@ -145,6 +145,14 @@ class SwitchingLanguagesCest {
     $i->waitForText('Schlagwörter');
     $i->waitForText('Unbekannt');
 
+    $i->wantTo('Check Subscribers Status filter options');
+    // Option labels carry the count, e.g. "Unbestätigt (3)".
+    $i->click('button.dataviews-filters__visibility-toggle[aria-haspopup="menu"]');
+    $i->click(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Status"]']);
+    $i->waitForElement('.dataviews-filters__search-widget-listitem');
+    $i->waitForElement(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][contains(normalize-space(.), "Unbestätigt")]'], 3);
+    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+
     $i->wantTo('Check some Lists strings');
     $i->amOnMailpoetPage('lists');
     $i->waitForText('Abonnenten');
