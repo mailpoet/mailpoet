@@ -492,6 +492,11 @@ class Initializer {
   public function afterPluginActivation() {
     if (!$this->wpFunctions->isAdmin() || !defined(self::INITIALIZED) || !$this->wpFunctions->getOption(self::PLUGIN_ACTIVATED)) return;
 
+    // Background AJAX requests (heartbeat, Action Scheduler) must not consume the flag before the redirected page load
+    if ($this->wpFunctions->wpDoingAjax()) {
+      return;
+    }
+
     $currentUrl = $this->urlHelper->getCurrentUrl();
 
     // wp automatically redirect to `wp-admin/plugins.php?activate=true&...` after plugin activation
