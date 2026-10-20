@@ -39,8 +39,7 @@ class EditorSettingsBehaviourCest {
 
     // Check settings are opened and keeps opened when clicking on the same block
     $i->click(self::ALC_OVERLAY_SELECTOR);
-    $i->waitForElementVisible(self::SETTINGS_PANEL_SELECTOR);
-    $i->wait(0.35); // CSS animation
+    $i->waitForEditorSettingsPanel();
     $i->click(self::ALC_OVERLAY_SELECTOR);
     $i->seeElement(self::SETTINGS_PANEL_SELECTOR);
 
@@ -66,8 +65,7 @@ class EditorSettingsBehaviourCest {
 
     // Check settings are closed when clicked on another block
     $i->click(self::ALC_OVERLAY_SELECTOR);
-    $i->waitForElementVisible(self::SETTINGS_PANEL_SELECTOR);
-    $i->wait(0.35); // CSS animation
+    $i->waitForEditorSettingsPanel();
     $i->scrollTo('[data-automation-id="text_block_in_editor"]');
     $i->moveMouseOver('[data-automation-id="alc_settings_done"]'); // To avoid flakyness
     $i->click(self::BUTTON_1_SELECTOR);
