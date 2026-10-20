@@ -211,11 +211,31 @@ class MailPoetAPITest extends \MailPoetTest {
 
   public function testItCanSend() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
+    $this->mailer->servicesChecker = Stub::make(
+      new ServicesChecker(),
+      ['isMailPoetAPIKeyValid' => true],
+      $this
+    );
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber
     );
-    verify($result['response'])->true();
+    if ($this->isConnectionError($result)) {
+      sleep(5);
+      $result = $this->mailer->send(
+        $this->newsletter,
+        $this->subscriber
+      );
+    }
+    if ($this->isConnectionError($result)) {
+      $this->markTestSkipped('MailPoet Sending Service unreachable: ' . $result['error']->getMessage());
+    }
+    $message = isset($result['error']) ? $result['error']->getMessage() : '';
+    verify($result['response'])->true($message);
+  }
+
+  private function isConnectionError(array $result): bool {
+    return !$result['response'] && $result['error']->getOperation() === MailerError::OPERATION_CONNECT;
   }
 
   public function testFormatConnectionError() {
