@@ -524,6 +524,42 @@ class AcceptanceTester extends \Codeception\Actor {
     $this->waitForJS('const panel = document.getElementById("mailpoet_panel"); return panel.getAnimations().length === 0 && panel.getBoundingClientRect().right <= window.innerWidth + 1;');
   }
 
+  /**
+   * Retries the key check when the Bridge fails: the transient “try again later” error, or the generic “not valid” message that replaces it once the Premium check ends.
+   * The page is read after the loading overlay is gone. Use it only with a key that is valid, because an invalid key is retried as well and then fails.
+   */
+  public function verifyKeyRetryingOnBridgeError(callable $submit, string $successText, int $timeout = 60, int $attempts = 3): void {
+    $failureTexts = ['please try again later', 'not valid for the MailPoet Sending Service'];
+    $submit();
+    $this->wait(1); // let the click handler show the loading overlay
+    $deadline = time() + $timeout;
+    for ($attempt = 1;; $attempt++) {
+      do {
+        $isLoading = (bool)$this->executeJS('const overlay = document.getElementById("mailpoet_loading"); return !!overlay && getComputedStyle(overlay).display !== "none";');
+        $bodyText = $isLoading ? '' : $this->grabTextFrom('body');
+        $pageText = is_string($bodyText) ? $bodyText : '';
+        $failed = false;
+        foreach ($failureTexts as $failureText) {
+          $failed = $failed || strpos($pageText, $failureText) !== false;
+        }
+        if ($failed) {
+          break;
+        }
+        if (strpos($pageText, $successText) !== false) {
+          return;
+        }
+        usleep(500000);
+      } while (time() < $deadline);
+
+      if (!$failed || $attempt >= $attempts) {
+        Assert::fail(sprintf('Key verification did not show “%s” (attempt %d of %d, %d s timeout).', $successText, $attempt, $attempts, $timeout));
+      }
+      $this->wait(5);
+      $submit();
+      $this->wait(1);
+    }
+  }
+
   public function waitForElementChange($element, \Closure $callback, $timeout = 30) {
     return $this->_waitForElementChange($element, $callback, $this->getDefaultTimeout($timeout));
   }
