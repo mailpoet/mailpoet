@@ -18,6 +18,7 @@ use MailPoet\Form\FormMessageController;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
@@ -74,7 +75,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
   }
 
@@ -90,6 +92,31 @@ class SettingsTest extends \MailPoetTest {
     $response = $this->endpoint->get();
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->data)->equals($this->settings->getAllDefaults());
+  }
+
+  public function testSavingAllowSendingStampsTheSiteAddress() {
+    $response = $this->endpoint->set([SendingEnvironment::SETTING_ALLOW_SENDING => '1']);
+
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($this->settings->get(SendingEnvironment::SETTING_ALLOW_SENDING_SITE_URL))
+      ->same(preg_replace('#^https?://#', '', rtrim(strtolower(home_url()), '/')));
+  }
+
+  public function testSavingAllowSendingOffClearsTheSiteAddress() {
+    $this->endpoint->set([SendingEnvironment::SETTING_ALLOW_SENDING => '1']);
+    verify($this->settings->get(SendingEnvironment::SETTING_ALLOW_SENDING_SITE_URL))->notNull();
+
+    $this->endpoint->set([SendingEnvironment::SETTING_ALLOW_SENDING => '']);
+
+    verify($this->settings->get(SendingEnvironment::SETTING_ALLOW_SENDING_SITE_URL))->null();
+  }
+
+  public function testSavingOtherSettingsLeavesTheSiteAddressAlone() {
+    $this->settings->set(SendingEnvironment::SETTING_ALLOW_SENDING_SITE_URL, 'old.example.com');
+
+    $this->endpoint->set(['some.setting.key' => false]);
+
+    verify($this->settings->get(SendingEnvironment::SETTING_ALLOW_SENDING_SITE_URL))->same('old.example.com');
   }
 
   public function testItCanSetSettings() {
@@ -118,7 +145,8 @@ class SettingsTest extends \MailPoetTest {
       $this->make(SettingsChangeHandler::class, ['updateBridge' => Expected::once()]),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
 
     $response = $this->endpoint->set(/* missing data */);
@@ -155,7 +183,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
 
     MailerLog::pauseSending(MailerLog::getMailerLog());
@@ -197,7 +226,8 @@ class SettingsTest extends \MailPoetTest {
       ]),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
 
     $response = $this->endpoint->set([
@@ -247,7 +277,8 @@ class SettingsTest extends \MailPoetTest {
       ]),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
 
     $response = $this->endpoint->set([
@@ -280,7 +311,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
 
     $response = $this->endpoint->set([
@@ -314,7 +346,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
 
     $this->settings->set('sender.address', '');
@@ -492,7 +525,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
 
     verify($this->endpoint->setKeyAndSetupMss($newKey))->instanceOf(SuccessResponse::class);
@@ -546,7 +580,8 @@ class SettingsTest extends \MailPoetTest {
       $this->make(SettingsChangeHandler::class, ['updateApiKeyState' => null]),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
   }
 
