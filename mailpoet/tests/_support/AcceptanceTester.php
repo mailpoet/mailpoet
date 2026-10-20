@@ -1121,10 +1121,29 @@ class AcceptanceTester extends \Codeception\Actor {
     $i = $this;
     // The "Add filter" control is icon-only until a filter is active, then it gets a text label.
     $addFilter = ['xpath' => '//button[@aria-label="Add filter" or normalize-space(.)="Add filter"]'];
-    $i->waitForElementClickable($addFilter);
-    $i->click($addFilter);
-    $i->waitForText($filterName);
-    $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "' . $filterName . '")]']);
+    $filterMenuItem = ['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "' . $filterName . '")]'];
+    if ($i->executeJS('return document.querySelector(".mailpoet-dataviews") !== null;')) {
+      $i->waitForListingItemsToLoad();
+    }
+    // On slow CI the menu sometimes doesn't open, or closes again, after the first click.
+    $lastException = null;
+    for ($x = 1; $x <= 3; $x++) {
+      try {
+        $i->waitForElementClickable($addFilter);
+        $i->click($addFilter);
+        $i->waitForElementVisible($filterMenuItem, 3);
+        $lastException = null;
+        break;
+      } catch (Exception $menuException) {
+        $lastException = $menuException;
+        $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+        $i->wait(0.5);
+      }
+    }
+    if ($lastException) {
+      throw $lastException;
+    }
+    $i->click($filterMenuItem);
     if ($operator !== '') {
       $operatorSelect = '.dataviews-filters__summary-operators-filter-select select';
       $i->waitForElement($operatorSelect);
