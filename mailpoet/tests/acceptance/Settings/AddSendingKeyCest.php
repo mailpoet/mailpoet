@@ -27,7 +27,9 @@ class AddSendingKeyCest {
     $i->dontSeeElement('[name="premium[premium_key]"][type="password"]');
 
     // validate key, activate MSS, install & activate Premium plugin
-    $i->verifyKeyRetryingOnBridgeError(function () use ($i) {
+    $i->verifyKeyRetryingOnBridgeError(function () use ($i, $mailPoetSendingKey) {
+      // A failed check reloads the page with an empty key field
+      $i->fillField(['name' => 'premium[premium_key]'], $mailPoetSendingKey);
       $i->click('Verify');
     }, 'MailPoet Sending Service is active');
     $i->waitForText('Your key is valid');

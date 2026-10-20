@@ -530,19 +530,25 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function verifyKeyRetryingOnBridgeError(callable $submit, string $successText, int $timeout = 60, int $attempts = 3): void {
     $failureTexts = ['please try again later', 'not valid for the MailPoet Sending Service'];
-    $submit();
-    $this->wait(1); // let the click handler show the loading overlay
-    $deadline = time() + $timeout;
+    $readPage = 'const overlay = document.getElementById("mailpoet_loading"); return {loading: !!overlay && getComputedStyle(overlay).display !== "none", text: document.body.innerText};';
     for ($attempt = 1;; $attempt++) {
+      $submit();
+      $this->wait(1); // let the click handler show the loading overlay
+      $deadline = time() + $timeout;
+      $failure = null;
       do {
-        $isLoading = (bool)$this->executeJS('const overlay = document.getElementById("mailpoet_loading"); return !!overlay && getComputedStyle(overlay).display !== "none";');
-        $bodyText = $isLoading ? '' : $this->grabTextFrom('body');
-        $pageText = is_string($bodyText) ? $bodyText : '';
-        $failed = false;
-        foreach ($failureTexts as $failureText) {
-          $failed = $failed || strpos($pageText, $failureText) !== false;
+        try {
+          $page = $this->executeJS($readPage);
+        } catch (\Exception $e) {
+          $page = null; // the settings page reloads right after a check
         }
-        if ($failed) {
+        $pageText = is_array($page) && empty($page['loading']) && is_string($page['text'] ?? null) ? $page['text'] : '';
+        foreach ($failureTexts as $failureText) {
+          if ($failure === null && strpos($pageText, $failureText) !== false) {
+            $failure = $failureText;
+          }
+        }
+        if ($failure !== null) {
           break;
         }
         if (strpos($pageText, $successText) !== false) {
@@ -551,12 +557,13 @@ class AcceptanceTester extends \Codeception\Actor {
         usleep(500000);
       } while (time() < $deadline);
 
-      if (!$failed || $attempt >= $attempts) {
-        Assert::fail(sprintf('Key verification did not show “%s” (attempt %d of %d, %d s timeout).', $successText, $attempt, $attempts, $timeout));
+      if ($failure === null) {
+        Assert::fail(sprintf('Key verification did not show “%s” within %d s (attempt %d of %d).', $successText, $timeout, $attempt, $attempts));
+      }
+      if ($attempt >= $attempts) {
+        Assert::fail(sprintf('Key check failed after %d attempts: “%s”.', $attempts, $failure));
       }
       $this->wait(5);
-      $submit();
-      $this->wait(1);
     }
   }
 
