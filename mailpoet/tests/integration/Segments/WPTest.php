@@ -420,6 +420,8 @@ class WPTest extends \MailPoetTest {
 
     // Synchronize should not throw, but should skip the email update
     $this->wpSegment->synchronizeUser($id);
+    // A failed flush on the unique email key would close the entity manager
+    $this->assertTrue($this->entityManager->isOpen());
 
     // The WP subscriber should still have email A and get the other changes
     $this->entityManager->clear();
@@ -463,6 +465,8 @@ class WPTest extends \MailPoetTest {
 
     // Synchronize should not throw, but should skip the email update
     $this->wpSegment->synchronizeUser($id);
+    // A failed flush on the unique email key would close the entity manager
+    $this->assertTrue($this->entityManager->isOpen());
 
     // The WP subscriber should still have email A (update was skipped)
     $this->entityManager->clear();
