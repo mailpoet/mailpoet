@@ -335,30 +335,17 @@ class WP {
       return;
     }
 
-    // When updating an existing subscriber's email, remove any other subscriber
-    // that already holds the new email to avoid a unique constraint violation.
-    // This can happen when a WP user registers with email A, checks out with
-    // email B (creating a second subscriber), then changes their account email
-    // from A to B.
-    // Uses bulkDelete() to properly clean up related data (segments, tags,
-    // custom fields) and to restrict deletion to safe duplicates (non-WP,
-    // non-WooCommerce subscribers).
+    // When the new email already belongs to another subscriber, keep the
+    // current email to avoid a unique constraint violation and sync the rest.
     if ($subscriber !== null && $subscriber->getEmail() !== $data['email']) {
       $existingSubscriber = $this->subscribersRepository->findOneBy(['email' => $data['email']]);
       if ($existingSubscriber !== null && $existingSubscriber->getId() !== $subscriber->getId()) {
-        $duplicateId = $existingSubscriber->getId();
-        $this->entityManager->detach($existingSubscriber);
-        $deletedCount = $this->subscribersRepository->bulkDelete([$duplicateId]);
-        if ($deletedCount === 0) {
-          // The duplicate is a WP user or WooCommerce customer and cannot be
-          // safely removed. Skip the email update to avoid a constraint violation.
-          $logger = LoggerFactory::getInstance()->getLogger();
-          $logger->warning(
-            'Cannot update subscriber email: duplicate subscriber is a WP user or WooCommerce customer. The subscriber was not updated.',
-            ['subscriber_id' => $subscriber->getId(), 'duplicate_id' => $duplicateId, 'email' => $data['email']]
-          );
-          return;
-        }
+        $logger = LoggerFactory::getInstance()->getLogger();
+        $logger->warning(
+          'Cannot update subscriber email: another subscriber already uses the new email. The subscriber kept its current email.',
+          ['subscriber_id' => $subscriber->getId(), 'existing_subscriber_id' => $existingSubscriber->getId()]
+        );
+        $data['email'] = $subscriber->getEmail();
       }
     }
 
