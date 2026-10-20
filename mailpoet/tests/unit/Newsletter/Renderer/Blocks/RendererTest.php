@@ -200,6 +200,38 @@ class RendererTest extends \MailPoetUnitTest {
     verify(count($result))->equals(1);
   }
 
+  public function testItRendersColumnsWithoutBlocksAsEmpty() {
+    $data = [
+      'type' => 'container',
+      'blocks' => [
+        ['type' => 'container'],
+        ['type' => 'container', 'blocks' => null],
+      ],
+      'styles' => ['block' => []],
+    ];
+
+    $result = $this->renderer->render($this->newsletter, $data);
+    verify($result)->equals(['', '']);
+  }
+
+  public function testItGivesEveryColumnAWidthWhenTheLayoutHasFewerColumns() {
+    $column = ['type' => 'container', 'blocks' => [['type' => 'image', 'src' => 'test.jpg']]];
+    $data = [
+      'type' => 'container',
+      'columnLayout' => '1_2',
+      'blocks' => [$column, $column, $column],
+      'styles' => ['block' => []],
+    ];
+    $widths = [];
+    $this->image->method('render')->willReturnCallback(function ($block, $columnBaseWidth) use (&$widths) {
+      $widths[] = $columnBaseWidth;
+      return '';
+    });
+
+    $this->renderer->render($this->newsletter, $data);
+    verify($widths)->equals([220, 220, 220]);
+  }
+
   public function testItEscapesTheTypeOfAnUnsupportedBlock() {
     $data = [
       'blocks' => [
