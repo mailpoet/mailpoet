@@ -1122,9 +1122,23 @@ class AcceptanceTester extends \Codeception\Actor {
     // The "Add filter" control is icon-only until a filter is active, then it gets a text label.
     $addFilter = ['xpath' => '//button[@aria-label="Add filter" or normalize-space(.)="Add filter"]'];
     $i->waitForElementClickable($addFilter);
+    // The tabs row renders after the first listing response and moves the toggle down, so a click before that misses it.
+    $i->waitForListingItemsToLoad();
     $i->click($addFilter);
-    $i->waitForText($filterName);
-    $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "' . $filterName . '")]']);
+    // Skip the WP admin bar, which has menu items of its own.
+    $menuItem = ['xpath' => '//*[@role="menuitem"][not(ancestor::*[@id="wpadminbar"])][contains(normalize-space(.), "' . $filterName . '")]'];
+    try {
+      $i->waitForElementVisible($menuItem, 3);
+    } catch (\Facebook\WebDriver\Exception\TimeoutException $e) {
+      // Safety net for a later layout shift that made the first click miss the toggle.
+      // Re-click only when no menu is open, as a second click would close it.
+      $menuOpen = $i->executeJS('return document.querySelector(\'[role="menuitem"]:not(#wpadminbar *)\') !== null;');
+      if (!$menuOpen) {
+        $i->click($addFilter);
+      }
+      $i->waitForElementVisible($menuItem);
+    }
+    $i->click($menuItem);
     if ($operator !== '') {
       $operatorSelect = '.dataviews-filters__summary-operators-filter-select select';
       $i->waitForElement($operatorSelect);
