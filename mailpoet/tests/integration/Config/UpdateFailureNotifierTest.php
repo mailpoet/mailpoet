@@ -39,6 +39,23 @@ class UpdateFailureNotifierTest extends \MailPoetTest {
     verify($html)->stringContainsString('wp mailpoet migrations run');
   }
 
+  public function testItShowsAFailureTheStoredRowsDoNotExplain(): void {
+    wp_set_current_user(1);
+    // Migration_2's row is left over from an earlier attempt; this attempt broke before reaching it
+    $failure = MigratorException::migrationClassNotFound('MailPoet\\Migrations\\App\\Migration_1');
+    $html = $this->notifier->render($failure);
+    verify($html)->stringContainsString('Migration_2 (attempts: 4)');
+    verify($html)->stringContainsString('Migration class &quot;MailPoet\\Migrations\\App\\Migration_1&quot; not found.');
+    verify($html)->stringContainsString('<summary>Full error</summary>');
+  }
+
+  public function testItDoesNotRepeatAFailureAStoredRowExplains(): void {
+    wp_set_current_user(1);
+    $html = $this->notifier->render(MigratorException::migrationFailed('Migration_2', new \Exception('Unknown column wp_mailpoet_x.y')));
+    verify($html)->stringNotContainsString('<summary>Full error</summary>');
+    verify(substr_count($html, '<details>'))->equals(1);
+  }
+
   public function testItShowsTheFailureItselfWhenNoMigrationFailed(): void {
     wp_set_current_user(1);
     $notifier = $this->createNotifier([]);

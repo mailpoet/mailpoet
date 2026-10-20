@@ -36,21 +36,28 @@ class UpdateFailureNotifier {
     }
 
     $html = '<p><strong>' . esc_html__('MailPoet database update failed.', 'mailpoet') . '</strong></p>';
-    $html .= $this->renderFailedMigrations() ?: $this->renderFailure($failure);
+    $html .= $this->renderFailedMigrations($failure);
     $html .= '<p>' . esc_html__('MailPoet retries the update on every page load. To retry it manually, run:', 'mailpoet') . ' <code>wp mailpoet migrations run</code></p>';
     $html .= '<p>' . esc_html__('Include the full error when contacting MailPoet support.', 'mailpoet') . '</p>';
     return $html;
   }
 
-  private function renderFailedMigrations(): string {
+  /**
+   * The stored rows carry the error of each failed migration. The failure that just happened
+   * is shown as well when no row explains it, e.g. the run broke before it reached the
+   * migration whose row is stored.
+   */
+  private function renderFailedMigrations(Throwable $failure): string {
     try {
       $failed = $this->migrator->getFailedMigrations();
     } catch (Throwable $e) {
       // the migrations table itself cannot be read; the original failure says more
-      return '';
+      return $this->renderFailure($failure);
     }
     $html = '';
+    $explained = false;
     foreach ($failed as $migration) {
+      $explained = $explained || strpos($failure->getMessage(), $migration['name']) !== false;
       $error = (string)$migration['error'];
       $html .= '<p>' . sprintf(
         // translators: %1$s is the migration name, %2$d how many times it was tried, %3$s the error
@@ -65,7 +72,7 @@ class UpdateFailureNotifier {
         $error
       );
     }
-    return $html;
+    return $explained ? $html : $html . $this->renderFailure($failure);
   }
 
   private function renderFailure(Throwable $failure): string {
