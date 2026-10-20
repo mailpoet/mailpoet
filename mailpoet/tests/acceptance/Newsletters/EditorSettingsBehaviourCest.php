@@ -58,7 +58,8 @@ class EditorSettingsBehaviourCest {
       return regions.length === window.alcRegionsBeforeDuplicate + 1
         && document.querySelectorAll('[data-pre-dup]').length === 0
         && Array.prototype.every.call(regions, function (region) {
-          return region.querySelector('.mailpoet_container').children.length > 0;
+          var container = region.querySelector('.mailpoet_container');
+          return container !== null && container.children.length > 0;
         })
         && (typeof jQuery === 'undefined' || jQuery.active === 0);
     JS, 20);
