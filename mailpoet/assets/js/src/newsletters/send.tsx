@@ -5,6 +5,7 @@ import { __, _x } from '@wordpress/i18n';
 import ReactStringReplace from 'react-string-replace';
 import slugify from 'slugify';
 import { addQueryArgs } from '@wordpress/url';
+import { Hooks } from 'wp-js-hooks';
 import {
   useNavigate,
   useLocation,
@@ -494,6 +495,9 @@ class NewsletterSendComponent extends Component<
       },
     })
       .done((response) => {
+        if (this.state.wasHeld) {
+          Hooks.doAction('mailpoet.held_campaigns.refresh');
+        }
         // save template in recently sent category
         this.saveTemplate(saveResponse, () => {
           if (window.mailpoet_show_congratulate_after_first_newsletter) {

@@ -33,6 +33,9 @@ use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoetVendor\Carbon\Carbon;
 
 class SendingQueue extends APIEndpoint {
+  // Lets the held emails notice tell a stale row from other refusals.
+  public const ERROR_NOT_HELD = 'not_held';
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
@@ -291,6 +294,18 @@ class SendingQueue extends APIEndpoint {
   }
 
   public function resume($data = []) {
+    return $this->resumeFromRequest(is_array($data) ? $data : [], false);
+  }
+
+  /**
+   * Like resume(), but only acts on a held email. The held notice can be stale (the email may have been
+   * rescheduled meanwhile), and a plain resume would then fall back to the newest queue.
+   */
+  public function resumeHeld($data = []) {
+    return $this->resumeFromRequest(is_array($data) ? $data : [], true);
+  }
+
+  private function resumeFromRequest(array $data, bool $heldOnly) {
     if ($this->subscribersFeature->check()) {
       return $this->errorResponse([
         APIError::FORBIDDEN => __('Subscribers limit reached.', 'mailpoet'),
@@ -307,7 +322,8 @@ class SendingQueue extends APIEndpoint {
         APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet'),
       ]);
     }
-    $failure = $this->resumeNewsletter($newsletter, $this->scheduledTasksRepository->findHeldOverdueForNewsletter($newsletter));
+    $heldTasks = $this->scheduledTasksRepository->findHeldOverdueForNewsletter($newsletter);
+    $failure = $heldOnly && !$heldTasks ? $this->notHeldFailure() : $this->resumeNewsletter($newsletter, $heldTasks);
     if ($failure) {
       return $this->errorResponse([$failure['code'] => $failure['message']], [], $failure['status']);
     }
@@ -535,12 +551,19 @@ class SendingQueue extends APIEndpoint {
   }
 
   /**
+   * @return array{code: string, message: string, status: int}
+   */
+  private function notHeldFailure(): array {
+    return ['code' => self::ERROR_NOT_HELD, 'message' => __('This email is not held.', 'mailpoet'), 'status' => Response::STATUS_BAD_REQUEST];
+  }
+
+  /**
    * @param ScheduledTaskEntity[] $heldTasks
    * @return array{code: string, message: string, status: int}|null Null when the held run was cancelled.
    */
   private function cancelHeldNewsletter(NewsletterEntity $newsletter, array $heldTasks): ?array {
     if (!$heldTasks) {
-      return ['code' => APIError::BAD_REQUEST, 'message' => __('This email is not held.', 'mailpoet'), 'status' => Response::STATUS_BAD_REQUEST];
+      return $this->notHeldFailure();
     }
 
     if ($newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY) {
