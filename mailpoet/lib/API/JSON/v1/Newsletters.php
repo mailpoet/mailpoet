@@ -317,7 +317,7 @@ class Newsletters extends APIEndpoint {
         $this->applyAutomationTemplateContent($newsletter, $templatePattern);
       } catch (Throwable $e) {
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->error(
-          'Could not apply the automation template content, so the new email was deleted: ' . $e->getMessage(),
+          'Could not apply the automation template content: ' . $e->getMessage(),
           ['newsletter_id' => $newsletter->getId(), 'pattern' => $templatePattern]
         );
         $this->newsletterDeleteController->bulkDelete([(int)$newsletter->getId()]);

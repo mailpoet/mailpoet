@@ -81,7 +81,7 @@ class StatisticsExport extends APIEndpoint {
         error_log((string)$e); // phpcs:ignore Squiz.PHP.DiscouragedFunctions
         // phpcs:enable QITStandard.PHP.DebugCode.DebugFunctionFound
       }
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_API)->warning('The campaign statistics export failed, so no export file was created.', [
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_API)->warning('Campaign statistics export failed. MailPoet could not generate the export.', [
         'exceptionMessage' => $e->getMessage(),
         'exceptionTrace' => $e->getTraceAsString(),
       ]);

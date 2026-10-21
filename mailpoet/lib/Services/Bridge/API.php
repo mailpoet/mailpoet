@@ -274,7 +274,7 @@ class API {
         'code' => $responseCode,
         'error' => $isWpError ? $result->get_error_message() : $this->wp->wpRemoteRetrieveBody($result),
       ];
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('The getBouncesReport API call to the MailPoet Sending Service failed, so MailPoet did not get the bounces report.', $logData);
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('getBouncesReport API call failed. MailPoet did not get the bounces report from the MailPoet Sending Service.', $logData);
       // The request never reached the service, so there is no status to report:
       // say so rather than describing it as "response code 0". The code stays 0
       // either way, which is what marks the failure as transient for callers.
@@ -339,7 +339,7 @@ class API {
         'code' => $code,
         'error' => $this->wp->isWpError($result) ? $result->get_error_message() : null,
       ];
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('The Stats API call to the MailPoet Sending Service failed.', $logData);
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('Stats API call failed. The statistics request to the MailPoet Sending Service did not succeed.', $logData);
     }
     return $isSuccess;
   }
@@ -378,7 +378,7 @@ class API {
         'code' => $responseCode,
         'error' => $this->wp->isWpError($result) ? $result->get_error_message() : $errorBody,
       ];
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('The CreateAuthorizedEmailAddress API call to the MailPoet Sending Service failed, so the email address was not authorized.', $logData);
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('CreateAuthorizedEmailAddress API call failed. MailPoet could not authorize the email address with the MailPoet Sending Service.', $logData);
 
       $errorResponseData = json_decode($errorBody, true);
       // translators: %d is the error code.
@@ -438,7 +438,7 @@ class API {
         'code' => $responseCode,
         'error' => is_wp_error($result) ? $result->get_error_message() : $rawResponseBody,
       ];
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('The createAuthorizedSenderDomain API call to the MailPoet Sending Service failed, so the sender domain was not added.', $logData);
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('createAuthorizedSenderDomain API call failed. MailPoet could not add the sender domain to the MailPoet Sending Service.', $logData);
 
       // translators: %d will be replaced by an error code
       $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $responseCode);
@@ -487,7 +487,7 @@ class API {
         'code' => $responseCode,
         'error' => $this->wp->isWpError($result) ? $result->get_error_message() : $rawResponseBody,
       ];
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('The verifyAuthorizedSenderDomain API call to the MailPoet Sending Service failed, so the sender domain was not verified.', $logData);
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('verifyAuthorizedSenderDomain API call failed. MailPoet could not verify the sender domain with the MailPoet Sending Service.', $logData);
 
       // translators: %d will be replaced by an error code
       $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $responseCode);
@@ -589,7 +589,7 @@ class API {
       'curl_error' => $errMsg,
       'curl_info' => $info,
     ];
-    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_MSS)->error('The connection to the MailPoet Sending Service failed, so the emails were not sent (requests-curl.failed).', $logData);
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_MSS)->error('MailPoet did not get an answer from the MailPoet Sending Service (requests-curl.failed).', $logData);
   }
 
   private function logKeyCheckError(int $code, string $keyType): void {
@@ -603,7 +603,7 @@ class API {
       'home_url' => $this->wp->homeUrl(),
       'key_type' => $keyType,
     ];
-    $this->loggerFactory->getLogger($topic)->info("MailPoet could not validate the {$keyType} key with the server. The server answered with HTTP code {$code} (key-validation.failed).", $logData);
+    $this->loggerFactory->getLogger($topic)->info("MailPoet could not validate the {$keyType} key. " . ($code > 0 ? "The server answered with HTTP code {$code}" : 'MailPoet got no response from the server') . ' (key-validation.failed).', $logData);
   }
 
   private function logInvalidDataFormat(string $method, ?string $response = null): void {
@@ -611,7 +611,7 @@ class API {
       'code' => json_last_error(),
       'response' => $response,
     ];
-    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('The ' . $method . ' API response was not in expected format, so MailPoet could not read it.', $logData);
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error($method . ' API response was not in expected format. MailPoet could not read it.', $logData);
   }
 
   /**

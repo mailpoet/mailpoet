@@ -365,7 +365,7 @@ class Newsletter {
     ) {
       // delete notification history record since it will never be sent
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-        'The post notification has no new posts to send, so it was deleted.',
+        'The post notification has no posts, so MailPoet deletes it (no posts in post notification, deleting it).',
         ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId()]
       );
       $this->newsletterDeleteController->bulkDelete([(int)$newsletter->getId()]);

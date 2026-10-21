@@ -217,7 +217,7 @@ class FirstPurchase {
     };
 
     $this->loggerFactory->getLogger(self::SLUG)->info(
-      'Email scheduled: MailPoet is scheduling the automatic email for the customer of this order.',
+      'MailPoet tried to schedule the automatic email for the customer of this order (Email scheduled).',
       [
         'order_id' => $orderId,
         'customer_email' => Helpers::maskEmail($customerEmail),

@@ -228,7 +228,7 @@ class OverdueCampaignHold {
     $referenceTime = $this->getReferenceTime($task);
     $newsletter = $queue instanceof SendingQueueEntity ? $queue->getNewsletter() : null;
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
-      'The email was held back and not sent because it is long overdue (held overdue campaign).',
+      'An overdue email was paused (held overdue campaign).',
       [
         'task_id' => $task->getId(),
         'newsletter_id' => $newsletter ? $newsletter->getId() : null,
