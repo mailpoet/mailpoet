@@ -22,6 +22,7 @@ import {
 } from './filters';
 import {
   buildLogsUrl,
+  LOGS_PAGE_SLUG,
   getDateRangeError,
   parseLogsUrlState,
   type LogsFilter,
@@ -45,6 +46,7 @@ type DownloadConfig = {
 type Props = {
   defaultFrom: string;
   downloadConfig?: DownloadConfig;
+  pageSlug?: string;
 };
 
 function buildInitialView(defaultFrom: string): View {
@@ -72,7 +74,11 @@ function filtersKey(view: View): string {
   return JSON.stringify(view.filters ?? []);
 }
 
-export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
+export function List({
+  defaultFrom,
+  downloadConfig,
+  pageSlug = LOGS_PAGE_SLUG,
+}: Props): JSX.Element {
   const initialView = useMemo(
     () => buildInitialView(defaultFrom),
     [defaultFrom],
@@ -147,9 +153,10 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
       window.location.href,
       view,
       viewFiltersToRequestFilter(view.filters),
+      pageSlug,
     );
-    window.history.replaceState({}, '', nextUrl);
-  }, [view]);
+    window.history.replaceState(window.history.state, '', nextUrl);
+  }, [view, pageSlug]);
 
   const viewFiltersKey = filtersKey(view);
   useEffect(() => {
