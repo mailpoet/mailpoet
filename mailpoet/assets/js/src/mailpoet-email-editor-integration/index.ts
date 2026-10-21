@@ -22,6 +22,7 @@ import {
   trackingOptOutValidationRule,
 } from './validate-email-content';
 import { registerCouponCodeRestrictToSubscriberExtension } from './coupon-code-restrict-to-subscriber-control';
+import { registerLatestPostsProtectedContent } from './latest-posts-protected-content-control';
 import { registerLatestPostsTemplateBlocks } from './latest-posts-template-blocks';
 import { registerOrderProductCollectionsWhenAvailable } from './order-product-collections';
 import { store as emailEditorIntegrationStore } from './store';
@@ -30,6 +31,7 @@ import { MAILPOET_EMAIL_POST_TYPE } from './constants';
 registerTranslations();
 registerCouponCodeRestrictToSubscriberExtension();
 registerLatestPostsTemplateBlocks();
+registerLatestPostsProtectedContent();
 registerOrderProductCollectionsWhenAvailable();
 
 // MailPoet's shared Modal portals into a `#mailpoet-modal` container that the
