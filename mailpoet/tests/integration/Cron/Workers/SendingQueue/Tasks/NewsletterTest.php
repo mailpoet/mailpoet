@@ -1324,6 +1324,24 @@ class NewsletterTest extends \MailPoetTest {
     }
   }
 
+  public function testItResolvesTagsEmbeddedInLinksInTextBodyForSubscriberWithoutConsent(): void {
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+    [$newsletter, , $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink(
+      'https://example.com/profile?email=[mailpoet/subscriber-email]',
+      'Profile'
+    );
+
+    $result = $this->newsletterTask->prepareNewsletterForSending($newsletter, $this->subscriber, $sendingQueue);
+
+    $this->assertSame('[Profile](https://example.com/profile?email=' . $this->subscriber->getEmail() . ')', $result['body']['text']);
+    $this->assertStringContainsString('https://example.com/profile?email=' . $this->subscriber->getEmail(), $result['body']['html']);
+    $this->assertStringNotContainsString('[mailpoet/subscriber-email]', $result['body']['html']);
+  }
+
   /**
    * Block email whose rendered body already went through link tracking: the link is a hashed
    * placeholder and its URL is stored in newsletter_links.
