@@ -2,10 +2,13 @@ import { createElement } from 'react';
 import { __ } from '@wordpress/i18n';
 import type { Action, Field } from '@wordpress/dataviews';
 import { MailPoetDate } from '../date';
+import { Tag } from '../common/tag/tag';
 import { getLogNames, type LogListingItem } from './api';
 import {
+  getLogSeverityDescription,
   getLogSeverityElements,
   getLogSeverityLabel,
+  getLogSeverityVariant,
   getLogTopicElements,
   getLogTopicLabel,
 } from './filters';
@@ -54,11 +57,16 @@ export function getLogFields(
       elements: getLogSeverityElements(),
       filterBy: { operators: ['isAny'] },
       render: ({ item }) =>
-        createElement(
-          'span',
-          null,
-          item.level === null ? '—' : getLogSeverityLabel(item.level),
-        ),
+        item.level === null
+          ? createElement('span', null, '—')
+          : createElement(
+              Tag,
+              {
+                variant: getLogSeverityVariant(item.level),
+                title: getLogSeverityDescription(item.level),
+              },
+              getLogSeverityLabel(item.level),
+            ),
     },
     {
       id: 'message',

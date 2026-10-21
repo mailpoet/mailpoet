@@ -33,7 +33,7 @@ const DEFAULT_VIEW: View = {
   perPage: 20,
   page: 1,
   sort: { field: 'created_at', direction: 'desc' },
-  fields: ['message', 'created_at'],
+  fields: ['level', 'message', 'created_at'],
   titleField: 'name',
   showTitle: true,
 };
@@ -56,7 +56,7 @@ function buildInitialView(defaultFrom: string): View {
   const hasPerPageUrlState =
     searchParams.has('per_page') || searchParams.has('limit');
   const preferredView = getDataViewsPreference(
-    'logs',
+    'logs-v2',
     DEFAULT_VIEW,
     getLogFieldDefinitions(),
   );
@@ -138,7 +138,7 @@ export function List({
   const canDownload = canDelete;
 
   const persistedViewChange = usePersistedDataViewsPreference(
-    'logs',
+    'logs-v2',
     view,
     onChangeView,
   );
