@@ -46,7 +46,7 @@ class BlockRendererHelper {
         __('Addresses in names are not permitted, please add your name instead.', 'mailpoet'),
       ];
       $rules['names'] = '[' . implode(',', array_map(function (string $errorMessage): string {
-        return $this->wp->escAttr('"' . $errorMessage . '"');
+        return '"' . $errorMessage . '"';
       }, $errorMessages)) . ']';
     }
 
@@ -89,14 +89,9 @@ class BlockRendererHelper {
       if (is_bool($value)) {
         $value = ($value) ? 'true' : 'false';
       }
-      // We need to use single quotes because we need to pass array of strings as a parameter for custom validation
-      if ($rule === 'names') {
-        $validation[] = 'data-parsley-' . $rule . '=\'' . $this->wp->wpKsesPost($value) . '\''; // The value has been escaped above.
-      } else {
-        $validation[] = 'data-parsley-' . $this->wp->escAttr($rule) . '="' . $this->wp->escAttr($this->wp->wpKsesPost($value)) . '"';
-        if ($rule === 'required') {
-          $validation[] = 'required aria-required="true"';
-        }
+      $validation[] = 'data-parsley-' . $this->wp->escAttr($rule) . '="' . $this->wp->escAttr($this->wp->wpKsesPost($value)) . '"';
+      if ($rule === 'required') {
+        $validation[] = 'required aria-required="true"';
       }
     }
     return join(' ', $validation);
