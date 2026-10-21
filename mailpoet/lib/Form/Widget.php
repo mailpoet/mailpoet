@@ -121,7 +121,7 @@ class Widget extends \WP_Widget {
    */
   public function update($newInstance, $oldInstance) {
     $instance = $oldInstance;
-    $instance['title'] = WPFunctions::get()->wpStripAllTags(is_string($newInstance['title']) ? $newInstance['title'] : '');
+    $instance['title'] = $this->wp->wpStripAllTags(is_string($newInstance['title']) ? $newInstance['title'] : '');
     $instance['form'] = is_numeric($newInstance['form']) ? (int)$newInstance['form'] : null;
     return $instance;
   }
@@ -140,7 +140,7 @@ class Widget extends \WP_Widget {
     $formEditUrl = WPFunctions::get()->adminUrl('admin.php?page=mailpoet-form-editor-template-selection');
 
     // set title
-    $title = isset($instance['title']) ? WPFunctions::get()->wpStripAllTags($instance['title']) : '';
+    $title = isset($instance['title']) ? $this->wp->wpStripAllTags($instance['title']) : '';
 
     // set form
     $selectedForm = isset($instance['form']) ? (int)($instance['form']) : 0;

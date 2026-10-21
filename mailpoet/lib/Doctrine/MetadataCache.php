@@ -24,7 +24,7 @@ class MetadataCache extends CacheProvider {
     $this->directory = rtrim($dir, '/\\');
     // Parallel processes (e.g. PHPStan workers) can create the directory between
     // the check and the call, so a failed mkdir is only an error if it is still missing.
-    if (!is_dir($this->directory) && !@mkdir($this->directory) && !is_dir($this->directory)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir -- Also runs at build time, without WordPress.
+    if (!is_dir($this->directory) && !@mkdir($this->directory) && !is_dir($this->directory)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir -- This class also runs without WordPress (build, PHPStan).
       throw new \RuntimeException("Failed to create the metadata cache directory: {$this->directory}");
     }
   }
@@ -65,7 +65,7 @@ class MetadataCache extends CacheProvider {
   }
 
   protected function doDelete($id) {
-    @unlink($this->getFilename($id)); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Also runs at build time, without WordPress.
+    @unlink($this->getFilename($id)); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- This class also runs without WordPress (build, PHPStan).
     return true;
   }
 
@@ -76,7 +76,7 @@ class MetadataCache extends CacheProvider {
     }
     foreach ($directoryContent as $filename) {
       if (is_file($filename)) {
-        @unlink($filename); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Also runs at build time, without WordPress.
+        @unlink($filename); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- This class also runs without WordPress (build, PHPStan).
       }
     }
     return true;
