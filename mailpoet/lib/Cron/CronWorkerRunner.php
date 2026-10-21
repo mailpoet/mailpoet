@@ -77,7 +77,7 @@ class CronWorkerRunner {
         /**
          * ToDo: Use \LoggerFactory::TOPIC_CRON as logger topic, once it is available
          */
-        $this->loggerFactory->getLogger()->error($e->getMessage(), ['error' => $e]);
+        $this->loggerFactory->getLogger()->error('A scheduled task failed and will be tried again later: ' . $e->getMessage(), ['error' => $e]);
         $this->cronWorkerScheduler->rescheduleProgressively($task);
       }
       throw $e;

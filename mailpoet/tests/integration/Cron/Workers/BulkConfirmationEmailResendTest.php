@@ -121,7 +121,7 @@ class BulkConfirmationEmailResendTest extends \MailPoetTest {
 
     $completionLog = $this->entityManager->getRepository(LogEntity::class)->findOneBy([
       'name' => LoggerFactory::TOPIC_CRON,
-      'message' => 'Bulk confirmation email resend completed.',
+      'message' => 'The bulk confirmation email resend finished. The counts of sent, failed and skipped emails are in the log details.',
     ]);
     $this->assertInstanceOf(LogEntity::class, $completionLog);
     $context = $completionLog->getContext();
