@@ -509,6 +509,26 @@ class WPTest extends \MailPoetTest {
     verify($wpSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
+  public function testSynchronizeUsersMarksLinkToExistingSubscriberUnconfirmed(): void {
+    $randomNumber = rand();
+    $this->subscriberFactory
+      ->withEmail('user-sync-test' . $randomNumber . '@example.com')
+      ->create();
+    $id = $this->insertUser($randomNumber);
+
+    $this->wpSegment->synchronizeUsers();
+
+    verify($this->wpUserSubscriberLink->isUnconfirmed($id))->true();
+  }
+
+  public function testSynchronizeUsersDoesNotMarkUserItCreatesSubscriberFor(): void {
+    $id = $this->insertUser(rand());
+
+    $this->wpSegment->synchronizeUsers();
+
+    verify($this->wpUserSubscriberLink->isUnconfirmed($id))->false();
+  }
+
   public function testItSynchronizeEmails(): void {
     $id = $this->insertUser();
     $this->wpSegment->synchronizeUsers();
