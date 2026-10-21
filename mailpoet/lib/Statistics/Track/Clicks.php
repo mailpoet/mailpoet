@@ -27,12 +27,14 @@ class Clicks {
   /**
    * Matches the start of a link whose destination is already fixed:
    * - "https://example.com/", "//example.com#", "whatsapp://send?": an optional URI scheme (RFC 3986),
-   *   "//", a host, and the "/", "?" or "#" that ends it;
+   *   "//", a host, and the "/", "?" or "#" that ends it; whitespace is not a host, browsers drop tabs
+   *   and line breaks before they parse a URL;
    * - "mailto:", "tel:", "sms:": schemes handed to an app, never to a web host;
-   * - "geo:0,0", "skype:echo": any other scheme except http(s) followed by anything but "/", so the
-   *   link has no host part.
+   * - "geo:0,0", "skype:echo": any other scheme except http(s) followed by anything but "/", "\" or
+   *   whitespace, so the link has no host part; browsers read "\" as "/" and drop tabs and line
+   *   breaks, so a value after one of them could add a host.
    */
-  private const FIXED_DESTINATION_PATTERN = '~^(?:(?:[a-z][a-z0-9+.-]*:)?//[^/?#\\\\]+[/?#]|(?:mailto|tel|sms):|(?!https?:)[a-z][a-z0-9+.-]*:[^/])~i';
+  private const FIXED_DESTINATION_PATTERN = '~^(?:(?:[a-z][a-z0-9+.-]*:)?//[^/?#\\\\\s]+[/?#]|(?:mailto|tel|sms):|(?!https?:)[a-z][a-z0-9+.-]*:[^/\\\\\s])~i';
 
   const REVENUE_TRACKING_COOKIE_NAME = 'mailpoet_revenue_tracking';
   const REVENUE_TRACKING_COOKIE_EXPIRY = 60 * 60 * 24 * 14;
@@ -208,10 +210,10 @@ class Clicks {
       $this->shortcodes->setSubscriber($subscriber);
       $this->shortcodes->setWpUserPreview($wpUserPreview);
       $processedUrl = $this->shortcodes->replace($url);
-      // A stored URL keeps its embedded personalization tags literal; they are resolved after the
-      // shortcodes, in the order resolveUntrackedUrl() uses at send time.
+      // Shortcodes first, then embedded personalization tags: the order the sending task uses for a
+      // link it cannot track.
       $processedUrl = $this->linkResolver->resolveEmbeddedTokensForRecipient($processedUrl, $newsletter, $subscriber, $queue, $wpUserPreview);
-      if ($processedUrl !== $url && !$this->isDestinationFixedBeforeSubstitutions($url)) {
+      if ($processedUrl !== $url && !$this->keepsStoredDestination($url, $processedUrl)) {
         return $this->validateRedirect($processedUrl);
       }
       $url = $processedUrl;
@@ -226,21 +228,20 @@ class Clicks {
 
   /**
    * Shortcode and tag values (e.g. subscriber fields) may fill in the path or query of a link, but
-   * the destination host may only come from them when it is the site's own.
+   * the destination host may only come from them when validateRedirect() accepts it (the site's
+   * own). So the URL the redirect sends has to start with the scheme and host of the stored URL. The
+   * stored URL counts as stored and in its decoded form, because the resolver rebuilds a URL from the
+   * decoded form when a tag is stored URL-encoded or as an HTML entity. The prefix comes from the
+   * stored URL alone and the sent URL is compared as it is, so a value that decodes together with
+   * stored text ("&#" plus "64;" to "@") changes the prefix and fails the check.
    */
-  private function isDestinationFixedBeforeSubstitutions(string $url): bool {
-    // The raw URL is what the redirect sends, so it must be fixed as stored: decoding first would let
-    // an encoded "%2F" pass as the path separator that fixes the host. The resolver matches tokens in
-    // the decoded URL, so the destination must be fixed there too, whatever form the bracket was
-    // stored in (literal, URL-encoded or an HTML entity).
-    return $this->isDestinationFixedBeforeFirstBracket($url)
-      && $this->isDestinationFixedBeforeFirstBracket(PersonalizationTagLinkResolver::decodeUrl($url));
-  }
-
-  private function isDestinationFixedBeforeFirstBracket(string $url): bool {
-    $bracket = strpos($url, '[');
-    $textBeforeBracket = $bracket === false ? $url : substr($url, 0, $bracket);
-    return preg_match(self::FIXED_DESTINATION_PATTERN, $textBeforeBracket) === 1;
+  private function keepsStoredDestination(string $storedUrl, string $url): bool {
+    foreach ([$storedUrl, PersonalizationTagLinkResolver::decodeUrl($storedUrl)] as $storedForm) {
+      if (preg_match(self::FIXED_DESTINATION_PATTERN, $storedForm, $destination) && strpos($url, $destination[0]) === 0) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
