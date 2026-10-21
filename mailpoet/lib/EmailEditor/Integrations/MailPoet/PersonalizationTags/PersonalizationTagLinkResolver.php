@@ -226,7 +226,7 @@ class PersonalizationTagLinkResolver {
   }
 
   /** Tokens may arrive URL-encoded ("%5B...%5D") or as HTML entities, so they are matched in the decoded form. */
-  private static function decodeUrl(string $url): string {
+  public static function decodeUrl(string $url): string {
     return html_entity_decode(urldecode($url), ENT_QUOTES, 'UTF-8');
   }
 
