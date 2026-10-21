@@ -208,7 +208,10 @@ class Clicks {
       $this->shortcodes->setSubscriber($subscriber);
       $this->shortcodes->setWpUserPreview($wpUserPreview);
       $processedUrl = $this->shortcodes->replace($url);
-      if ($processedUrl !== $url && !$this->isDestinationFixedBeforeShortcodes($url)) {
+      // A stored URL keeps its embedded personalization tags literal; they are resolved after the
+      // shortcodes, in the order resolveUntrackedUrl() uses at send time.
+      $processedUrl = $this->linkResolver->resolveEmbeddedTokensForRecipient($processedUrl, $newsletter, $subscriber, $queue, $wpUserPreview);
+      if ($processedUrl !== $url && !$this->isDestinationFixedBeforeSubstitutions($url)) {
         return $this->validateRedirect($processedUrl);
       }
       $url = $processedUrl;
@@ -222,12 +225,22 @@ class Clicks {
   }
 
   /**
-   * Shortcode values (e.g. subscriber fields) may fill in the path or query of a link, but the
-   * destination host may only come from them when it is the site's own.
+   * Shortcode and tag values (e.g. subscriber fields) may fill in the path or query of a link, but
+   * the destination host may only come from them when it is the site's own.
    */
-  private function isDestinationFixedBeforeShortcodes(string $url): bool {
-    $textBeforeShortcodes = (string)strstr($url, '[', true);
-    return preg_match(self::FIXED_DESTINATION_PATTERN, $textBeforeShortcodes) === 1;
+  private function isDestinationFixedBeforeSubstitutions(string $url): bool {
+    // The raw URL is what the redirect sends, so the check stays on it; decoding first would let an
+    // encoded "%2F" pass as the path separator that fixes the host. The cut is at the first opening
+    // bracket in any form a token may be stored in: literal, URL-encoded or as an HTML entity.
+    $cut = strlen($url);
+    foreach (['[', '%5b', '&#91;', '&#x5b;'] as $bracket) {
+      $position = stripos($url, $bracket);
+      if ($position !== false && $position < $cut) {
+        $cut = $position;
+      }
+    }
+    $textBeforeSubstitutions = substr($url, 0, $cut);
+    return preg_match(self::FIXED_DESTINATION_PATTERN, $textBeforeSubstitutions) === 1;
   }
 
   /**

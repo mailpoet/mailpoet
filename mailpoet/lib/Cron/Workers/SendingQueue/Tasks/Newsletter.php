@@ -162,10 +162,11 @@ class Newsletter {
    * tracking is on, because the click redirect is normally what resolves them. Since these
    * recipients get no redirect, they are resolved here with the same call the redirect would
    * have made. A restored URL may also carry a non-link shortcode of its own, such as
-   * `http://example.com/?email=[subscriber:email]`; Clicks::processUrl() runs a shortcode pass
-   * over those at click time, so this does the same at send time (STOMAIL-8340). Links of block
-   * emails whose URL is a personalization tag token are resolved with the resolver the redirect
-   * uses. An unresolvable token or shortcode becomes empty rather than shipping as literal text.
+   * `http://example.com/?email=[subscriber:email]`; Clicks::processUrl() runs a shortcode pass and
+   * resolves embedded personalization tags over those at click time, so this does the same at send
+   * time (STOMAIL-8340). Links of block emails whose URL is a personalization tag token are resolved
+   * with the resolver the redirect uses. An unresolvable token or shortcode becomes empty rather
+   * than shipping as literal text.
    *
    * @param array<string, mixed>|null $personalizationContext
    */

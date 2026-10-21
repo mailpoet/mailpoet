@@ -979,6 +979,55 @@ class ClicksTest extends \MailPoetTest {
     verify($link)->equals(home_url('/page/'));
   }
 
+  public function testItResolvesPersonalizationTagsEmbeddedInRegularUrls() {
+    // the host is fixed before the first bracket, so the values only fill the query, as for shortcodes
+    $link = $this->clicks->processUrl(
+      'https://example.com/?email=[mailpoet/subscriber-email]&name=[subscriber:firstname]',
+      $this->newsletter,
+      $this->subscriber,
+      $this->queue,
+      $preview = false
+    );
+    verify($link)->equals('https://example.com/?email=test@example.com&name=First');
+
+    // an unregistered tag stays literal and the URL is not touched
+    $url = 'https://example.com/?x=[acme/not-registered]';
+    verify($this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false))->equals($url);
+  }
+
+  public function testItKeepsTheDestinationOfAUrlWithAnEncodedPersonalizationTag() {
+    // the renderer may store the token URL-encoded; the host guard must still see the bracket
+    $link = $this->clicks->processUrl(
+      'https://example.com/?email=%5Bmailpoet/subscriber-email%5D',
+      $this->newsletter,
+      $this->subscriber,
+      $this->queue,
+      $preview = false
+    );
+    verify($link)->equals('https://example.com/?email=test@example.com');
+  }
+
+  public function testItRedirectsToHomeWhenEmbeddedPersonalizationTagsSetTheDestinationHost() {
+    $this->subscriber->setFirstName('https://example.org/?x=');
+    $this->entityManager->flush();
+    // a tag at the host position, and the scheme the editor forces in front of a leading tag
+    foreach (['https://[mailpoet/subscriber-firstname]/path', 'http://[mailpoet/subscriber-firstname]?utm=1'] as $url) {
+      $link = $this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false);
+      verify($link)->equals(home_url());
+    }
+  }
+
+  public function testItDoesNotTreatAnEncodedSlashAsAFixedDestination() {
+    // "https://example.com%2F" is not a host followed by a path; decoded it would look like one,
+    // while the redirect sends the raw URL, whose host is then set by the value after "@"
+    $this->subscriber->setFirstName('@example.org');
+    $this->entityManager->flush();
+    foreach (['https://example.com%2F[subscriber:firstname]', 'https://example.com%2F[mailpoet/subscriber-firstname]'] as $url) {
+      $link = $this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false);
+      verify($link)->equals(home_url());
+    }
+  }
+
   public function testItUpdatesSubscriberTimestampsForHumanAgent() {
     $now = Carbon::now();
     $wpMock = $this->createMock(WPFunctions::class);
