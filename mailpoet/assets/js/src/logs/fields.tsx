@@ -2,13 +2,8 @@ import { createElement } from 'react';
 import { __ } from '@wordpress/i18n';
 import type { Action, Field } from '@wordpress/dataviews';
 import { MailPoetDate } from '../date';
-import type { LogListingItem } from './api';
-import {
-  getLogFilterOptions,
-  getLogSeverityElements,
-  getLogSeverityLabel,
-  type LogFilterOptions,
-} from './filters';
+import { getLogNames, type LogListingItem } from './api';
+import { getLogSeverityElements, getLogSeverityLabel } from './filters';
 
 export function formatCreatedAt(createdAt: string | null): string {
   return createdAt ? MailPoetDate.full(createdAt) : '—';
@@ -16,7 +11,6 @@ export function formatCreatedAt(createdAt: string | null): string {
 
 export function getLogFields(
   expandedLogIds: Set<number>,
-  options: LogFilterOptions = getLogFilterOptions(),
 ): Field<LogListingItem>[] {
   return [
     {
@@ -26,7 +20,10 @@ export function getLogFields(
       enableSorting: true,
       enableGlobalSearch: false,
       enableHiding: false,
-      elements: options.names.map((name) => ({ value: name, label: name })),
+      getElements: () =>
+        getLogNames().then((names) =>
+          names.map((name) => ({ value: name, label: name })),
+        ),
       filterBy: { operators: ['isAny'] },
       render: ({ item }) =>
         createElement(
@@ -118,8 +115,6 @@ const EMPTY_EXPANDED_LOG_IDS = new Set<number>();
 
 // Stable field definitions for callers that only need the field schema (e.g.
 // DataViews preference validation), without per-row expand/collapse state.
-export function getLogFieldDefinitions(
-  options: LogFilterOptions = getLogFilterOptions(),
-): Field<LogListingItem>[] {
-  return getLogFields(EMPTY_EXPANDED_LOG_IDS, options);
+export function getLogFieldDefinitions(): Field<LogListingItem>[] {
+  return getLogFields(EMPTY_EXPANDED_LOG_IDS);
 }

@@ -62,6 +62,31 @@ export async function getLogs(
   return response.data;
 }
 
+let logNamesRequest: Promise<string[]> | null = null;
+
+// Loads the logger names for the Name filter. A successful request is shared
+// for the whole page load, so remounting the listing does not refetch. A
+// failure resolves to no options (the listing still works) and is not cached,
+// so the next filter open retries.
+export function getLogNames(): Promise<string[]> {
+  if (logNamesRequest === null) {
+    ensureInitialized();
+    const request = apiFetch<ApiEnvelope<{ names: string[] }>>({
+      path: '/mailpoet/v1/logs/names',
+      method: 'GET',
+    })
+      .then((response) => response.data.names)
+      .catch(() => {
+        if (logNamesRequest === request) {
+          logNamesRequest = null;
+        }
+        return [];
+      });
+    logNamesRequest = request;
+  }
+  return logNamesRequest;
+}
+
 // Deletes the logs matching the listing's current filters and search, so a
 // deletion removes exactly the rows the filtered listing shows. `all` confirms
 // the unrestricted case (no filters, no search) where every log is removed.

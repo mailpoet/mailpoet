@@ -33,25 +33,6 @@ export function getLogSeverityElements(): { value: number; label: string }[] {
   }));
 }
 
-export type LogFilterOptions = {
-  names: string[];
-};
-
-declare global {
-  interface Window {
-    mailpoet_logs_filter_options?: {
-      names?: string[];
-    };
-  }
-}
-
-export function getLogFilterOptions(): LogFilterOptions {
-  const options = window.mailpoet_logs_filter_options;
-  return {
-    names: Array.isArray(options?.names) ? options.names : [],
-  };
-}
-
 function toStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) {
     return [];

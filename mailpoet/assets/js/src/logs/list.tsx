@@ -17,7 +17,6 @@ import { DeleteLogsModal } from './delete-modal';
 import { DownloadLogsModal } from './download-modal';
 import { getLogActions, getLogFieldDefinitions, getLogFields } from './fields';
 import {
-  getLogFilterOptions,
   requestFilterToViewFilters,
   viewFiltersToRequestFilter,
 } from './filters';
@@ -169,10 +168,7 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
     });
   }, []);
 
-  const fields = useMemo(
-    () => getLogFields(expandedLogIds, getLogFilterOptions()),
-    [expandedLogIds],
-  );
+  const fields = useMemo(() => getLogFields(expandedLogIds), [expandedLogIds]);
   const actions = useMemo(
     () => getLogActions(expandedLogIds, toggleExpanded),
     [expandedLogIds, toggleExpanded],
