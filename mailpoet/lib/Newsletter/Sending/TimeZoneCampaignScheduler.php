@@ -323,9 +323,14 @@ class TimeZoneCampaignScheduler {
       $countProcessed += $campaignQueue->getCountProcessed();
       $countToProcess += $campaignQueue->getCountToProcess();
       $statuses[] = $task->getStatus();
-      if (!$hasPausedBatch && $task->getStatus() === ScheduledTaskEntity::STATUS_PAUSED) {
-        $hasPausedBatch = true;
-        $pauseReason = $task->getPauseReason();
+      if ($task->getStatus() === ScheduledTaskEntity::STATUS_PAUSED) {
+        if (!$hasPausedBatch) {
+          $hasPausedBatch = true;
+          $pauseReason = $task->getPauseReason();
+        }
+        if ($task->getPauseReason() === ScheduledTaskEntity::PAUSE_REASON_OVERDUE) {
+          $pauseReason = ScheduledTaskEntity::PAUSE_REASON_OVERDUE;
+        }
       }
       $scheduledAt = $task->getScheduledAt();
       if ($scheduledAt) {

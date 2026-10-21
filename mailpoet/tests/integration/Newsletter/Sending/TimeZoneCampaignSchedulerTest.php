@@ -332,6 +332,46 @@ class TimeZoneCampaignSchedulerTest extends \MailPoetTest {
     $assertAggregateStatus(ScheduledTaskEntity::STATUS_COMPLETED);
   }
 
+  public function testAggregatePauseReasonPrefersOverdueOverOtherReasons(): void {
+    $segment = (new SegmentFactory())->create();
+    (new SubscriberFactory())->withSegments([$segment])->withTimeZone('America/New_York')->create();
+    (new SubscriberFactory())->withSegments([$segment])->withTimeZone('Europe/Bratislava')->create();
+    $newsletter = (new NewsletterFactory())->withDefaultBody()->withSegments([$segment])->create();
+    $this->createTimeZoneScheduleOptions($newsletter, $this->getUtcDate('+3 days'), '12:00:00');
+
+    $scheduler = $this->getScheduler();
+    $scheduler->schedule($newsletter);
+
+    $queues = $this->diContainer->get(SendingQueuesRepository::class)->findBy(['newsletter' => $newsletter]);
+    $tasks = [];
+    foreach ($queues as $queue) {
+      $task = $queue->getTask();
+      $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+      $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+      $tasks[] = $task;
+    }
+
+    $assertPauseReason = function (string $expected) use ($scheduler, $queues): void {
+      $data = $scheduler->getAggregateQueueData($queues[0]);
+      $this->assertIsArray($data);
+      verify($data['pauseReason'])->equals($expected);
+    };
+
+    $tasks[0]->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
+    $tasks[1]->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
+    $this->entityManager->flush();
+    $assertPauseReason(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
+
+    $tasks[1]->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+    $this->entityManager->flush();
+    $assertPauseReason(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+
+    $tasks[0]->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+    $tasks[1]->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
+    $this->entityManager->flush();
+    $assertPauseReason(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+  }
+
   public function testPauseAndResumeAffectAllSiblings(): void {
     $segment = (new SegmentFactory())->create();
     (new SubscriberFactory())->withSegments([$segment])->withTimeZone('America/New_York')->create();
