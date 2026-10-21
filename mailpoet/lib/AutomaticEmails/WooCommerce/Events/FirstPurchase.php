@@ -134,7 +134,7 @@ class FirstPurchase {
       }
 
       $this->loggerFactory->getLogger(self::SLUG)->info(
-        'handleOrderDateShortcode called',
+        'MailPoet replaced the order date shortcode in an email (handleOrderDateShortcode called).',
         [
           'newsletter_id' => ($newsletter instanceof NewsletterEntity) ? $newsletter->getId() : null,
           'subscriber_id' => ($subscriber instanceof SubscriberEntity) ? $subscriber->getId() : null,
@@ -159,7 +159,7 @@ class FirstPurchase {
       }
 
       $this->loggerFactory->getLogger(self::SLUG)->info(
-        'handleOrderTotalShortcode called',
+        'MailPoet replaced the order total shortcode in an email (handleOrderTotalShortcode called).',
         [
           'newsletter_id' => ($newsletter instanceof NewsletterEntity) ? $newsletter->getId() : null,
           'subscriber_id' => ($subscriber instanceof SubscriberEntity) ? $subscriber->getId() : null,
@@ -217,7 +217,7 @@ class FirstPurchase {
     };
 
     $this->loggerFactory->getLogger(self::SLUG)->info(
-      'Email scheduled',
+      'Email scheduled: MailPoet is scheduling the automatic email for the customer of this order.',
       [
         'order_id' => $orderId,
         'customer_email' => Helpers::maskEmail($customerEmail),
