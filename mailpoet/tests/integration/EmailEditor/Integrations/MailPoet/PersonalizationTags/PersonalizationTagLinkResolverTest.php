@@ -142,6 +142,56 @@ class PersonalizationTagLinkResolverTest extends \MailPoetTest {
     $this->assertSame('https://example.com/plain', $this->resolver->resolveEmbeddedTokens('https://example.com/plain', $context));
   }
 
+  public function testItResolvesTokensEmbeddedInMarkdownLinkTargets(): void {
+    $this->registry->register($this->createTag(function (): string {
+      return 'https://example.com/resolved';
+    }));
+    $context = ['recipient_email' => 'recipient@example.com'];
+
+    // bracketed and URL-encoded tokens resolve; an unregistered token, a shortcode and a plain URL stay as they are
+    $text = '[Profile](https://example.com/?email=[mailpoet/subscriber-email])'
+      . ' [Enc](https://example.com/?email=%5Bmailpoet/subscriber-email%5D&go=[acme/test-url])'
+      . ' [Dead](https://example.com/?x=[acme/not-registered])'
+      . ' [Legacy](https://example.com/?e=[subscriber:email])'
+      . ' [Plain](https://example.com/plain)';
+    $this->assertSame(
+      '[Profile](https://example.com/?email=recipient@example.com)'
+      . ' [Enc](https://example.com/?email=recipient@example.com&go=https://example.com/resolved)'
+      . ' [Dead](https://example.com/?x=[acme/not-registered])'
+      . ' [Legacy](https://example.com/?e=[subscriber:email])'
+      . ' [Plain](https://example.com/plain)',
+      $this->resolver->resolveMarkdownLinks($text, $context)
+    );
+  }
+
+  public function testItInterceptsEveryRegisteredTokenEmbeddedInAMarkdownTarget(): void {
+    // registered, but resolves to nothing for this recipient
+    $this->registry->register($this->createTag(function (): string {
+      return '';
+    }));
+    $context = ['recipient_email' => 'recipient@example.com'];
+    $calls = [];
+    $interceptor = function (string $value, string $token) use (&$calls): string {
+      $calls[] = [$value, $token];
+      return '{{p' . count($calls) . '}}';
+    };
+
+    $text = '[Profile](https://example.com/?email=[mailpoet/subscriber-email]&go=[acme/test-url])'
+      . ' [Dead](https://example.com/?x=[acme/not-registered])'
+      . ' [Plain](https://example.com/plain)';
+    $this->assertSame(
+      '[Profile](https://example.com/?email={{p1}}&go={{p2}}) [Dead](https://example.com/?x=[acme/not-registered]) [Plain](https://example.com/plain)',
+      $this->resolver->resolveMarkdownLinks($text, $context, $interceptor)
+    );
+    // One call per registered token, keyed by the token, even when it resolved to nothing;
+    // unregistered tokens stay literal for every recipient. Either way the output does not
+    // depend on the recipient's data.
+    $this->assertSame([
+      ['recipient@example.com', '[mailpoet/subscriber-email]'],
+      ['', '[acme/test-url]'],
+    ], $calls);
+  }
+
   public function testItResolvesMailPoetLinkTags(): void {
     $url = $this->resolver->resolve('[mailpoet/subscription-unsubscribe-url]', $this->newsletter, $this->subscriber, $this->queue);
 
