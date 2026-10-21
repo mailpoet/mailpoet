@@ -373,7 +373,7 @@ class NewsletterStatisticsRepository extends Repository {
     $this->missingTrackingColumnLogged = true;
     try {
       LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->warning(
-        'Open and click rates use every recipient because statistics_newsletters.sent_with_tracking is missing',
+        'Open and click rates use every recipient because statistics_newsletters.sent_with_tracking is missing: ' . $e->getMessage(),
         ['error' => $e->getMessage()]
       );
     } catch (\Throwable $loggingError) {

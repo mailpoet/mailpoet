@@ -523,7 +523,7 @@ class NewslettersRepository extends Repository {
       return 0;
     }
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS, $attachProcessors = true)->info(
-      'trashing newsletters',
+      'MailPoet is moving emails to the trash (trashing newsletters).',
       ['id' => $ids]
     );
     // Fetch children id for trashing
