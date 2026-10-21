@@ -65,7 +65,7 @@ class DynamicProducts {
     wp_set_current_user(0);
 
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-      'loading dynamic products',
+      'Started loading the products for a dynamic products block (loading dynamic products).',
       [
         'args' => $query->args,
         'posts_to_exclude' => $query->postsToExclude,
@@ -81,7 +81,7 @@ class DynamicProducts {
     $this->_attachSentPostsFilter($query->newsletterId);
     $parameters = $query->getQueryParams();
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-      'getting dynamic products',
+      'Searching for the products of a dynamic products block (getting dynamic products).',
       ['parameters' => $parameters]
     );
 
@@ -180,7 +180,7 @@ class DynamicProducts {
       ];
     }
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-      'dynamic products loaded posts',
+      'The dynamic products block found these products (dynamic products loaded posts).',
       ['posts' => $postsToLog]
     );
   }

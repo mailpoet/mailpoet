@@ -87,7 +87,7 @@ class StatisticsNewslettersRepository extends Repository {
     } catch (DBALException $e) {
       try {
         LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->error(
-          'Could not mark sent statistics rows as sent without tracking',
+          'Could not mark sent statistics rows as sent without tracking: ' . $e->getMessage(),
           ['error' => $e->getMessage()]
         );
       } catch (\Throwable $loggingError) {
