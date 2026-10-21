@@ -69,6 +69,46 @@ class LogsEndpointsTest extends Test {
     $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $itemsById[(int)$logWithNullName->getId()]['created_at']);
   }
 
+  public function testGetReturnsRawMessageAndContext(): void {
+    $suffix = uniqid();
+    $context = ['task_id' => 5, 'source' => "ctx-{$suffix}"];
+    $withContext = (new LogFactory())
+      ->withName("with-context-{$suffix}")
+      ->withMessage("Task 5 failed {$suffix}")
+      ->withRawMessage('Task %d failed')
+      ->withContext($context)
+      ->create();
+    $legacy = (new LogFactory())
+      ->withName("legacy-{$suffix}")
+      ->withMessage("legacy message {$suffix}")
+      ->create();
+
+    $query = ['search' => $suffix, 'per_page' => 100];
+    $data = $this->get(self::BASE_PATH, ['query' => $query]);
+    $items = [];
+    foreach ($data['data']['items'] as $item) {
+      $items[(int)$item['id']] = $item;
+    }
+    $item = $items[(int)$withContext->getId()];
+    $this->assertSame("Task 5 failed {$suffix}", $item['message']);
+    $this->assertSame('Task %d failed', $item['raw_message']);
+    $this->assertSame($context, $item['context']);
+
+    $legacyItem = $items[(int)$legacy->getId()];
+    $this->assertSame("legacy message {$suffix}", $legacyItem['message']);
+    $this->assertNull($legacyItem['raw_message']);
+    $this->assertSame([], $legacyItem['context']);
+
+    // The decoded array cannot tell {} from [], so check the raw JSON.
+    $_SERVER['REQUEST_METHOD'] = 'GET';
+    $_GET = $query;
+    $_POST = [];
+    $GLOBALS['HTTP_RAW_POST_DATA'] = '';
+    ob_start();
+    rest_get_server()->serve_request(self::BASE_PATH);
+    $this->assertStringContainsString('"context":{}', (string)ob_get_clean());
+  }
+
   public function testGetSearchesNameAndMessageWithLiteralWildcards(): void {
     $suffix = uniqid();
     $percent = (new LogFactory())->withName("literal%{$suffix}")->withMessage('plain')->create();

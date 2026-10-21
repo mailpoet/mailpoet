@@ -74,6 +74,8 @@ class LogsListingEndpoint extends AbstractListingEndpoint {
       'name' => $log->getName() ?? '',
       'level' => $log->getLevel(),
       'message' => $log->getMessage() ?? '',
+      'raw_message' => $log->getRawMessage(),
+      'context' => (object)$log->getContext(),
       'created_at' => $createdAt ? $createdAt->format('Y-m-d H:i:s') : null,
     ];
   }
