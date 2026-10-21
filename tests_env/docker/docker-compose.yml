@@ -135,7 +135,8 @@ services:
       - DBUS_SESSION_BUS_ADDRESS=/dev/null
     tmpfs:
       - /dev/shm:rw,nosuid,nodev,exec,size=2g,mode=1777
-    image: selenium/standalone-chrome:155.0-20261010
+    image: selenium/standalone-chrome:120.0-20261010
+    platform: linux/amd64 # The image has no arm64 build; Apple silicon runs it emulated.
     ports:
       - 4444
       - ${CHROME_VNC_PORT:-5900}:5900
