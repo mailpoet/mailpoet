@@ -98,7 +98,7 @@ function renderLogDetails(item: LogListingItem): ReactNode {
       ? createElement(
           'div',
           null,
-          createElement('strong', null, __('Full log line', 'mailpoet')),
+          createElement('strong', null, 'Full log line'),
           createElement('pre', null, item.message),
         )
       : null,
