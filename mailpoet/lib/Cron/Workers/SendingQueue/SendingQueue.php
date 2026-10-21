@@ -255,7 +255,7 @@ class SendingQueue {
     // Pause task in case some of related segments was deleted or trashed
     if ($newsletterSegmentsIds && !$this->checkDeletedSegments($segmentIdsToCheck)) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
-        'The sending task was paused because one of its lists was deleted or trashed.',
+        'The sending task was paused because one of its lists was deleted or trashed (pause task in sending queue due deleted or trashed segment).',
         ['task_id' => $task->getId()]
       );
       $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
@@ -271,7 +271,7 @@ class SendingQueue {
       && !$this->authorizedEmailsController->isSenderAddressValid($newsletter, 'recheck')
     ) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
-        'The sending task was paused because the sender domain does not meet the sending requirements.',
+        'The sending task was paused because the sender domain does not meet the sending requirements (pause task in sending queue due to sender domain requirements).',
         ['task_id' => $task->getId()]
       );
       $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
@@ -289,7 +289,7 @@ class SendingQueue {
     // At the same time we want to keep a record abut processing them
     if ($subscriberBatches->count() === 0 && !in_array($newsletter->getType(), NewsletterEntity::CAMPAIGN_TYPES, true)) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
-        'The sending task has no subscribers left to send to.',
+        'The sending task has no subscribers left to send to (no subscribers to process).',
         ['task_id' => $task->getId()]
       );
       $this->scheduledTasksRepository->invalidateTask($task);
@@ -298,7 +298,7 @@ class SendingQueue {
     /** @var int[] $subscribersToProcessIds - it's required for PHPStan */
     foreach ($subscriberBatches as $subscribersToProcessIds) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
-        'Started sending to a batch of subscribers.',
+        'Started sending to a batch of subscribers (subscriber batch processing).',
         ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId(), 'subscriber_batch_count' => count($subscribersToProcessIds)]
       );
       if (!empty($newsletterSegmentsIds[0])) {
@@ -307,7 +307,7 @@ class SendingQueue {
           $foundSubscribersIds = $this->subscribersFinder->findSubscribersInSegments($subscribersToProcessIds, $newsletterSegmentsIds, $filterSegmentId);
         } catch (InvalidStateException $exception) {
           $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
-            'The sending task was paused because MailPoet could not find its subscribers: ' . $exception->getMessage(),
+            'The sending task was paused because MailPoet could not find its subscribers (paused task in sending queue due to problem finding subscribers): ' . $exception->getMessage(),
             ['task_id' => $task->getId()]
           );
           $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
@@ -440,7 +440,7 @@ class SendingQueue {
       } else {
         $this->sendingQueuesRepository->pause($queue);
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->error(
-          'The email was not sent because it is damaged (corrupt newsletter).',
+          'The email was not sent because it is damaged (Can\'t send corrupt newsletter).',
           ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId()]
         );
         return;
@@ -736,7 +736,7 @@ class SendingQueue {
         $this->wp->doAction('mailpoet_automation_email_sent', $task->getMeta()['automation']);
       } catch (Throwable $e) {
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->error(
-          'An error happened in the code that runs after an automation email is sent (mailpoet_automation_email_sent action).',
+          'An error happened in the code that runs after an automation email is sent (Error while executing "mailpoet_automation_email_sent action" hook).',
           ['task_id' => $task->getId(), 'error' => $e->getMessage()]
         );
       }
@@ -841,7 +841,7 @@ class SendingQueue {
     ];
     if (in_array($task->getStatus(), $unexpectedStates)) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->error(
-        'Sending task reached end of processing in an unexpected state, so it was not completed.',
+        'The sending task finished in an unexpected state and was left as it is (Sending task reached end of processing in sending queue worker in an unexpected state.).',
         ['task_id' => $task->getId(), 'status' => $task->getStatus()]
       );
       return;
@@ -861,7 +861,7 @@ class SendingQueue {
     // Task is completed let's do all the stuff for the completed task
     if ($task->getStatus() === ScheduledTaskEntity::STATUS_COMPLETED) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
-        'The email was sent to all its subscribers (completed newsletter sending).',
+        'The sending task finished (completed newsletter sending).',
         ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId()]
       );
       $queue = $task->getSendingQueue();

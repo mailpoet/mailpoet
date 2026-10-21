@@ -40,7 +40,7 @@ class Posts {
     $parent = $newsletter->getParent(); // parent post notification
     if (!$parent instanceof NewsletterEntity) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-        'The post notification was not sent because its parent post was not found.',
+        'The parent post notification was not found, so the posts could not be extracted and saved (parent post has not been found).',
         ['newsletter_id' => $newsletter->getId()]
       );
       return false;

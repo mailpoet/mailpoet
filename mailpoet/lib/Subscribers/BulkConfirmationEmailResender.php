@@ -21,7 +21,7 @@ class BulkConfirmationEmailResender {
   public const RECENT_CONFIRMATION_RESEND_INTERVAL_DAYS = 7;
   public const BULK_CONFIRMATION_MAX_SUBSCRIBER_AGE_DAYS = 90;
 
-  private const AUDIT_LOG_MESSAGE_QUEUED = 'The bulk confirmation email resend was queued. The emails are sent in the background.';
+  private const AUDIT_LOG_MESSAGE_QUEUED = 'The bulk confirmation email resend was requested. The counts of queued and skipped subscribers are in the log details (Bulk confirmation email resend queued.).';
   private const LOG_LEVEL_INFO = 200;
 
   /** @var WPFunctions */

@@ -80,7 +80,7 @@ class SendingThrottlingHandler {
       $throttlingSettings = $this->loadSettings();
       $throttlingSettings['batch_size'] = $batchSize;
       unset($throttlingSettings['success_count']);
-      $this->logger->error("MailPoet throttling: sending is slowed down. The batch size was decreased to {$batchSize} emails (decrease batch_size to: {$batchSize}).");
+      $this->logger->error("MailPoet throttling: the batch size is decreased to {$batchSize} emails (MailPoet throttling: decrease batch_size to: {$batchSize}).");
       $this->saveSettings($throttlingSettings);
     }
 
@@ -102,16 +102,16 @@ class SendingThrottlingHandler {
     }
     if ($this->useTemplatedSending && $sendDurationSeconds !== null && $sendDurationSeconds >= self::TEMPLATED_SLOW_REQUEST_SECONDS) {
       unset($throttlingSettings['success_count']);
-      $this->logger->info(sprintf('MailPoet throttling: the templated sending request took %.1f s, so the batch size stays at %d emails (keeping batch_size at).', $sendDurationSeconds, $throttlingSettings['batch_size']));
+      $this->logger->info(sprintf('MailPoet throttling: the templated sending request took %.1f s, so the batch size stays at %d emails (MailPoet throttling: templated request took %.1f s, keeping batch_size at: %d).', $sendDurationSeconds, $throttlingSettings['batch_size'], $sendDurationSeconds, $throttlingSettings['batch_size']));
       $this->saveSettings($throttlingSettings);
       return;
     }
     $throttlingSettings['success_count'] = isset($throttlingSettings['success_count']) ? ++$throttlingSettings['success_count'] : 1;
-    $this->logger->info("MailPoet throttling: the last batch was sent without errors. The count of successful batches is now {$throttlingSettings['success_count']} (increase success_count to: {$throttlingSettings['success_count']}).");
+    $this->logger->info("MailPoet throttling: the last batch finished. The success count is now {$throttlingSettings['success_count']} (MailPoet throttling: increase success_count to: {$throttlingSettings['success_count']}).");
     if ($throttlingSettings['success_count'] >= self::SUCCESS_THRESHOLD_TO_INCREASE) {
       unset($throttlingSettings['success_count']);
       $throttlingSettings['batch_size'] = min($this->getMaxBatchSize(), $throttlingSettings['batch_size'] * 2);
-      $this->logger->info("MailPoet throttling: sending is speeding up. The batch size was increased to {$throttlingSettings['batch_size']} emails (increase batch_size to: {$throttlingSettings['batch_size']}).");
+      $this->logger->info("MailPoet throttling: sending may speed up. The batch size is now {$throttlingSettings['batch_size']} emails (MailPoet throttling: increase batch_size to: {$throttlingSettings['batch_size']}).");
       // A templated batch keeps its size stored once at the ceiling, or it would restart small.
       if (!$this->useTemplatedSending && $this->getMaxBatchSize() === $throttlingSettings['batch_size']) {
         unset($throttlingSettings['batch_size']);

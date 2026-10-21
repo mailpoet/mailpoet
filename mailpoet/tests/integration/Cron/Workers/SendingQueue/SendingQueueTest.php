@@ -2197,7 +2197,7 @@ class SendingQueueTest extends \MailPoetTest {
     $log = $logs[0] ?? null;
     $this->assertInstanceOf(LogEntity::class, $log);
     verify($log->getLevel())->equals(Logger::ERROR);
-    verify($log->getMessage())->stringContainsString('Sending task reached end of processing in an unexpected state, so it was not completed.');
+    verify($log->getMessage())->stringContainsString('The sending task finished in an unexpected state and was left as it is (Sending task reached end of processing in sending queue worker in an unexpected state.).');
     verify($log->getMessage())->stringContainsString('"task_id":' . $task->getId());
   }
 
