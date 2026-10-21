@@ -43,7 +43,7 @@ class LogsPageDataTest extends \MailPoetUnitTest {
     $data = (new LogsPageData($this->wp))->get();
     verify($data['download'])->same([
       'action_url' => 'https://example.com/wp-admin/admin-post.php',
-      'nonce' => LogsDownload::createNonce($this->wp),
+      'nonce' => 'nonce-mailpoet_download_logs_nonce',
     ]);
     verify($data['download']['nonce'])->notSame('nonce-wp_rest');
   }
