@@ -13,4 +13,20 @@ class BlockRendererHelperTest extends \MailPoetTest {
     $escaped = $rendererHelper->escapeShortCodes($text);
     verify($escaped)->equals('&#91;mailpoet_subscribers_count&#93; &#91;gallery attr="attr"&#93;inside&#91;/gallery&#93;[unknown]');
   }
+
+  public function testItKeepsNameValidationMessagesWithApostrophesInOneAttribute() {
+    $translate = function (string $translation, string $text): string {
+      return $text === 'Please specify a valid name.' ? "Merci d'indiquer un nom valide." : $translation;
+    };
+    add_filter('gettext', $translate, 10, 2);
+    try {
+      $rendererHelper = $this->diContainer->get(BlockRendererHelper::class);
+      $validation = $rendererHelper->getInputValidation(['id' => 'first_name', 'type' => 'text', 'params' => []]);
+    } finally {
+      remove_filter('gettext', $translate, 10);
+    }
+    $this->assertHtmlHasTag('<input ' . $validation . '>', 'input', [
+      'data-parsley-names' => '["Merci d\'indiquer un nom valide.","Addresses in names are not permitted, please add your name instead."]',
+    ]);
+  }
 }
