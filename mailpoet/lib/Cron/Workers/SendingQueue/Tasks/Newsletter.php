@@ -163,12 +163,12 @@ class Newsletter {
    * recipients get no redirect, they are resolved here with the same call the redirect would
    * have made. A restored URL may also carry a non-link shortcode of its own, such as
    * `http://example.com/?email=[subscriber:email]`, or a personalization tag embedded the same way.
-   * Clicks::processUrl() runs a shortcode pass and resolves embedded tags at click time; here the
-   * shortcode pass runs at send time (STOMAIL-8340), and the tags are resolved further down
-   * prepareNewsletterForSending() by the Personalizer (HTML) and resolveMarkdownLinks() (text).
-   * Links of block emails whose URL is a personalization tag token are resolved with the resolver
-   * the redirect uses. An unresolvable token or shortcode becomes empty rather than shipping as
-   * literal text.
+   * The click redirect resolves both; for these recipients the shortcodes are resolved here
+   * (STOMAIL-8340) and the embedded tags later, by the Personalizer in the HTML part and by
+   * resolveMarkdownLinks() in the text part. Links of block emails whose URL is a personalization
+   * tag token are resolved with the resolver the redirect uses. A token link or shortcode that
+   * cannot be resolved becomes empty rather than shipping as literal text; an embedded tag that
+   * cannot be resolved stays literal.
    *
    * @param array<string, mixed>|null $personalizationContext
    */
@@ -540,7 +540,7 @@ class Newsletter {
       $subject = $this->personalizer->personalize_content($subject, Personalizer::RENDERING_CONTEXT_TEXT);
       $html = $this->personalizer->personalize_content($html, Personalizer::RENDERING_CONTEXT_HTML);
       $text = $this->personalizer->personalize_content($text, Personalizer::RENDERING_CONTEXT_TEXT);
-      // The Personalizer leaves markdown link targets alone: token links that were not hashed (tracking
+      // The Personalizer does not touch markdown link targets: token links that were not hashed (tracking
       // disabled) and tags embedded in restored links (no consent) are still literal in the text body.
       $text = $this->personalizationTagLinkResolver->resolveMarkdownLinks($text, $context);
       $html = $this->applyDeprecatedAutomationPersonalizationFilter(self::AUTOMATION_EMAIL_PERSONALIZE_HTML_AFTER_FILTER, $html, $context);
@@ -608,7 +608,7 @@ class Newsletter {
       foreach ($parts as $part => $content) {
         $parts[$part] = $this->templatePersonalizer->personalize($content, $context, $collector, $part);
       }
-      // The Personalizer leaves markdown link targets alone: token links and embedded tags that were not
+      // The Personalizer does not touch markdown link targets: token links and embedded tags that were not
       // hashed (tracking disabled) are still literal in the text body.
       $parts[PlaceholderCollector::PART_TEXT] = $this->personalizationTagLinkResolver->resolveMarkdownLinks(
         $parts[PlaceholderCollector::PART_TEXT],
