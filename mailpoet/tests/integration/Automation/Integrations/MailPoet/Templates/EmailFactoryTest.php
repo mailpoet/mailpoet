@@ -433,7 +433,9 @@ class EmailFactoryTest extends MailPoetTest {
 
     // Replace the repository in the email factory with our mock
     $reflectionProperty = new \ReflectionProperty(EmailFactory::class, 'newslettersRepository');
-    $reflectionProperty->setAccessible(true);
+    if (PHP_VERSION_ID < 80100) {
+      $reflectionProperty->setAccessible(true);
+    }
     $originalRepository = $reflectionProperty->getValue($this->emailFactory);
     $reflectionProperty->setValue($this->emailFactory, $repositoryMock);
 

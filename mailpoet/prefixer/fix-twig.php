@@ -4,75 +4,42 @@ set_error_handler(function ($severity, $message, $file, $line) {
   throw new ErrorException($message, 0, $severity, $file, $line);
 });
 
-$replacements = [
-  [
-    'file' => '../vendor-prefixed/twig/twig/src/Token.php',
-    'find' => [
-      '\'Twig\\\\Token::\'',
-    ],
-    'replace' => [
-      '\'MailPoetVendor\\\\Twig\\\\Token::\'',
-    ],
-  ],
-  [
-    'file' => '../vendor-prefixed/twig/twig/src/Profiler/Node/EnterProfileNode.php',
-    'find' => [
-      '\\\\Twig\\\\Profiler\\\\Profile',
-    ],
-    'replace' => [
-      '\\\\MailPoetVendor\\\\Twig\\\\Profiler\\\\Profile',
-    ],
-  ],
-  [
-    'file' => '../vendor-prefixed/twig/twig/src/Node/ModuleNode.php',
-    'find' => [
-      '"use Twig\\\\Environment;',
-      '"use Twig\\\\Markup;',
-      '"use Twig\\\\Source;',
-      '"use Twig\\\\Template;',
-      '"use Twig\\\\Error\\\\LoaderError;',
-      '"use Twig\\\\Error\\\\RuntimeError;',
-      '"use Twig\\\\Sandbox\\\\SecurityError;',
-      '"use Twig\\\\Sandbox\\\\SecurityNotAllowedTagError;',
-      '"use Twig\\\\Sandbox\\\\SecurityNotAllowedFilterError;',
-      '"use Twig\\\\Sandbox\\\\SecurityNotAllowedFunctionError;',
-      '"use Twig\\\\Extension\\\\SandboxExtension;',
-      '"use Twig\\\\Extension\\\\CoreExtension;',
-    ],
-    'replace' => [
-      '"use MailPoetVendor\\\\Twig\\\\Environment;',
-      '"use MailPoetVendor\\\\Twig\\\\Markup;',
-      '"use MailPoetVendor\\\\Twig\\\\Source;',
-      '"use MailPoetVendor\\\\Twig\\\\Template;',
-      '"use MailPoetVendor\\\\Twig\\\\Error\\\\LoaderError;',
-      '"use MailPoetVendor\\\\Twig\\\\Error\\\\RuntimeError;',
-      '"use MailPoetVendor\\\\Twig\\\\Sandbox\\\\SecurityError;',
-      '"use MailPoetVendor\\\\Twig\\\\Sandbox\\\\SecurityNotAllowedTagError;',
-      '"use MailPoetVendor\\\\Twig\\\\Sandbox\\\\SecurityNotAllowedFilterError;',
-      '"use MailPoetVendor\\\\Twig\\\\Sandbox\\\\SecurityNotAllowedFunctionError;',
-      '"use MailPoetVendor\\\\Twig\\\\Extension\\\\SandboxExtension;',
-      '"use MailPoetVendor\\\\Twig\\\\Extension\\\\CoreExtension;',
-    ],
-  ],
-  [
-    'file' => '../vendor-prefixed/twig/twig/src/Node/CaptureNode.php',
-    'find' => [
-      '\'\\\\Twig\\\\Extension\\\\CoreExtension',
-    ],
-    'replace' => [
-      '\'\\\\MailPoetVendor\\\\Twig\\\\Extension\\\\CoreExtension',
-    ],
-  ],
+require_once __DIR__ . '/replace-in-file.php';
+
+$twigSrc = __DIR__ . '/../vendor-prefixed/twig/twig/src/';
+
+replaceInFile(
+  $twigSrc . 'Token.php',
+  ['\'Twig\\\\Token::\'', '\'Twig\\Token::\''],
+  ['\'MailPoetVendor\\\\Twig\\\\Token::\'', '\'MailPoetVendor\\Twig\\Token::\'']
+);
+replaceInFile(
+  $twigSrc . 'Profiler/Node/EnterProfileNode.php',
+  ['\\\\Twig\\\\Profiler\\\\Profile', '\\Twig\\Profiler\\Profile'],
+  ['\\\\MailPoetVendor\\\\Twig\\\\Profiler\\\\Profile', '\\MailPoetVendor\\Twig\\Profiler\\Profile']
+);
+replaceInFile(
+  $twigSrc . 'Node/CaptureNode.php',
+  ['\'\\\\Twig\\\\Extension\\\\CoreExtension', '\'\\Twig\\Extension\\CoreExtension'],
+  ['\'\\\\MailPoetVendor\\\\Twig\\\\Extension\\\\CoreExtension', '\'\\MailPoetVendor\\Twig\\Extension\\CoreExtension']
+);
+
+$moduleNodeClasses = [
+  'Environment',
+  'Markup',
+  'Source',
+  'Template',
+  'Error\\\\LoaderError',
+  'Error\\\\RuntimeError',
+  'Sandbox\\\\SecurityError',
+  'Sandbox\\\\SecurityNotAllowedTagError',
+  'Sandbox\\\\SecurityNotAllowedFilterError',
+  'Sandbox\\\\SecurityNotAllowedFunctionError',
+  'Extension\\\\SandboxExtension',
+  'Extension\\\\CoreExtension',
 ];
-
-function replaceInFile($file, $find, $replace) {
-  $data = file_get_contents($file);
-  $data = str_replace($find, $replace, $data);
-  file_put_contents($file, $data);
-}
-
-foreach ($replacements as $singleFile) {
-  replaceInFile($singleFile['file'], $singleFile['find'], $singleFile['replace']);
+foreach ($moduleNodeClasses as $class) {
+  replaceInFile($twigSrc . 'Node/ModuleNode.php', ["\"use Twig\\\\$class;"], "\"use MailPoetVendor\\\\Twig\\\\$class;");
 }
 
 // Remove unwanted class aliases in lib/Twig
@@ -86,5 +53,5 @@ foreach (new RecursiveIteratorIterator($it) as $file) {
   if (substr($file, -3) !== 'php') {
     continue;
   }
-  replaceInFile($file, '#[\Twig\Attribute\YieldReady]', '#[YieldReady]');
+  file_put_contents($file, str_replace('#[\Twig\Attribute\YieldReady]', '#[YieldReady]', file_get_contents($file)));
 }

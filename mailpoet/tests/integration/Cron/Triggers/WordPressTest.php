@@ -20,10 +20,12 @@ use MailPoet\Cron\Workers\SubscribersStatsReport;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Cron\Workers\WooCommercePastOrders;
 use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
+use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
@@ -311,6 +313,47 @@ class WordPressTest extends \MailPoetTest {
       MailerLog::SETTING_NAME,
       $mtaLog
     );
+  }
+
+  public function testItDoesNotExecuteForQueuesWhenSendingIsPaused() {
+    $trigger = $this->createTriggerOnEnvironment('staging');
+    $this->addQueue(null);
+    $this->addQueue(SendingQueueEntity::STATUS_SCHEDULED);
+    verify($trigger->checkExecutionRequirements())->false();
+  }
+
+  public function testItExecutesForQueuesWhenSendingIsAllowedOnANonProductionSite() {
+    $trigger = $this->createTriggerOnEnvironment('staging');
+    $this->diContainer->get(SendingEnvironment::class)->allowSending();
+    $this->addQueue(null);
+    verify($trigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItDoesNotExecuteForDueSendingWorkersWhenSendingIsPaused() {
+    $trigger = $this->createTriggerOnEnvironment('staging');
+    $types = array_intersect(SendingEnvironment::GATED_TASK_TYPES, WorkersFactory::SIMPLE_WORKER_TYPES);
+    verify($types)->notEmpty();
+    foreach ($types as $type) {
+      $this->addScheduledTask($type, ScheduledTaskEntity::STATUS_SCHEDULED);
+    }
+    verify($trigger->checkExecutionRequirements())->false();
+    $this->diContainer->get(SendingEnvironment::class)->allowSending();
+    verify($trigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItStillExecutesForOtherDueWorkersWhenSendingIsPaused() {
+    $trigger = $this->createTriggerOnEnvironment('staging');
+    $this->addScheduledTask(StatsNotificationsWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->addScheduledTask(AuthorizedSendingEmailsCheck::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($trigger->checkExecutionRequirements())->true();
+  }
+
+  private function createTriggerOnEnvironment(string $environmentType): WordPress {
+    $sendingEnvironment = new SendingEnvironment(
+      $this->settings,
+      $this->make(WPFunctions::class, ['wpGetEnvironmentType' => $environmentType])
+    );
+    return $this->getServiceWithOverrides(WordPress::class, ['sendingEnvironment' => $sendingEnvironment]);
   }
 
   private function addQueue($status): SendingQueueEntity {

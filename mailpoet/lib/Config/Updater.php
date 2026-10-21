@@ -39,7 +39,7 @@ class Updater {
 
     $latestVersion = $this->getLatestVersion();
 
-    if (!isset($latestVersion->new_version)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if (!$latestVersion instanceof \stdClass || !isset($latestVersion->new_version)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       return $updateTransient; // no latest version found.
     }
 
@@ -47,9 +47,11 @@ class Updater {
       unset($updateTransient->response[$this->plugin]); // remove the cached version from the transient.
     }
 
-    if (!$this->shouldShowUpdateNotice($latestVersion->new_version)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      return $updateTransient; // skip update notice.
+    if (empty($this->currentFreeVersion)) {
+      return $updateTransient;
     }
+
+    $latestVersion = $this->getCompatibleVersion($latestVersion);
 
     if (version_compare((string)$this->version, $latestVersion->new_version, '<')) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $updateTransient->response[$this->plugin] = $latestVersion;
@@ -90,12 +92,18 @@ class Updater {
     return version_compare($currentMainVersion, $requiredMainVersion, '>=');
   }
 
-  public function shouldShowUpdateNotice($premiumLatestVersion): bool {
-    // Compare against the free version that's actually installed, not one that's
-    // merely available. Since wordpress.org now holds new releases for up to 24h
-    // before distributing them (https://wordpress.org/news/2026/06/pts/), the free
-    // update can lag behind Premium. Gating on the installed version keeps Premium
-    // from jumping ahead and disabling itself.
-    return $this->isVersionCompatible($premiumLatestVersion, $this->currentFreeVersion);
+  public function getCompatibleVersion(\stdClass $latest): \stdClass {
+    // wordpress.org holds new free releases for up to 24h (https://wordpress.org/news/2026/06/pts/),
+    // so clamp to the installed free version to keep Premium from getting ahead of it.
+    if ($this->isVersionCompatible($latest->new_version, $this->currentFreeVersion)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      return $latest;
+    }
+
+    $compatible = clone $latest;
+    $compatible->new_version = Installer::getMinorVersionZero((string)$this->currentFreeVersion); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $compatible->package = empty($latest->package)
+      ? ''
+      : Installer::buildDownloadUrlForVersion($compatible->new_version); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    return $compatible;
   }
 }

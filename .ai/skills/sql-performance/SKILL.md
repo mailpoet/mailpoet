@@ -1,6 +1,6 @@
 ---
 name: sql-performance
-description: Use when adding or changing SQL queries, joins, WHERE/ORDER BY clauses, listing/search/filter queries, statistics aggregation, segment computation, or any query whose cost grows with the number of subscribers, sent emails, or open/click stats.
+description: Use when adding or changing SQL queries, joins, WHERE/ORDER BY clauses, listing/search/filter queries, statistics aggregation, segment computation, or any query whose cost grows with the number of subscribers, sent emails, or open/click stats. Triggers on "add a query", "add a search filter", "why is this listing slow".
 ---
 
 # SQL Performance & Scalability
@@ -31,11 +31,11 @@ When adding or changing a query:
 3. Paginate or `LIMIT` anything that scans a growing table.
 4. Push aggregation into SQL backed by an index instead of loading rows into PHP.
 5. If a new access path needs an index, add it via a migration (`pnpm migrations:new db`, see `lib/Migrations/Db/`).
-6. When unsure about a query's plan, run `EXPLAIN` against a realistic dataset.
+6. When unsure about a query’s plan, run `EXPLAIN` against a realistic dataset.
 
 ## Pushing back on non-scalable proposals
 
-If a human — or your own first instinct — proposes a query that will not scale, say so before implementing it: name the failure mode, estimate the cost at scale, and offer the scalable alternative. If the tradeoff is accepted intentionally (e.g. "just do it"), proceed — but leave the reasoning visible.
+If a human — or your own first instinct — proposes a query that will not scale, say so before implementing it: name the failure mode, estimate the cost at scale, and offer the scalable alternative. If the tradeoff is accepted intentionally (e.g. “just do it”), proceed — but leave the reasoning visible.
 
 ## Local examples
 

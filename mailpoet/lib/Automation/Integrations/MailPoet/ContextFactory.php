@@ -68,6 +68,7 @@ class ContextFactory {
       'block_email_editor_enabled' => $blockEmailEditorEnabled,
       'editor_choice_modal_enabled' => $blockEmailEditorEnabled && (bool)$showEditorChoiceModal,
       'last_email_editor_choice' => $this->userFlagsController->get('last_email_editor_choice'),
+      'has_remembered_email_editor_choice' => (bool)$rememberEditorChoice,
     ];
 
     if ($this->isMSSEnabled()) {

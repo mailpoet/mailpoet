@@ -2,9 +2,13 @@
 
 namespace MailPoet\Test\EmailEditor\Integrations\MailPoet\PersonalizationTags;
 
+use MailPoet\Config\Populator;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Subscriber;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Settings\MailPoetPageResolver;
+use MailPoet\Settings\Pages;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
@@ -186,5 +190,39 @@ class SubscriberTest extends \MailPoetTest {
     );
 
     $this->assertSame('Tom & Jerry', $result);
+  }
+
+  public function testItReturnsActivationLinkWhenNoMailPoetPageExists(): void {
+    $settings = $this->diContainer->get(SettingsController::class);
+    $resolver = $this->diContainer->get(MailPoetPageResolver::class);
+    $statuses = ['publish', 'draft', 'pending', 'private', 'future', 'trash'];
+    $query = ['post_type' => 'mailpoet_page', 'post_status' => $statuses, 'numberposts' => -1];
+    $snapshot = [];
+    foreach (get_posts($query) as $page) {
+      $snapshot[(int)$page->ID] = ['status' => $page->post_status, 'name' => $page->post_name]; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    }
+    try {
+      foreach (array_keys($snapshot) as $id) {
+        wp_delete_post($id, true);
+      }
+      $settings->set('subscription.pages.confirmation', 999999);
+      $resolver->resetCache();
+      $subscriber = (new SubscriberFactory())->create();
+
+      $result = $this->subscriber->getActivationLink(['recipient_email' => $subscriber->getEmail()]);
+
+      $this->assertStringStartsWith(home_url('/'), $result);
+      $this->assertStringContainsString('action=confirm', $result);
+    } finally {
+      foreach (get_posts($query) as $page) {
+        wp_delete_post((int)$page->ID, true);
+      }
+      foreach ($snapshot as $data) {
+        Pages::createMailPoetPage((string)preg_replace('/__trashed$/', '', $data['name']));
+      }
+      $this->diContainer->get(Populator::class)->up();
+      $settings->resetCache();
+      $resolver->resetCache();
+    }
   }
 }

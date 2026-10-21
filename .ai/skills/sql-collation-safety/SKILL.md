@@ -1,6 +1,6 @@
 ---
 name: sql-collation-safety
-description: Use when adding or changing SQL joins, WHERE comparisons, temporary tables, segment filters, subscriber synchronization, or WooCommerce queries that compare text columns across WordPress, WooCommerce, and MailPoet tables.
+description: Use when adding or changing SQL joins, WHERE comparisons, temporary tables, segment filters, subscriber synchronization, or WooCommerce queries that compare text columns across WordPress, WooCommerce, and MailPoet tables. Triggers on "Illegal mix of collations", "join WordPress users to subscribers".
 ---
 
 # SQL Collation Safety

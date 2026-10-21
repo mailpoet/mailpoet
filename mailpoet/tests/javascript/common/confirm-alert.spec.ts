@@ -22,6 +22,8 @@ type ConfirmAlertModule = {
 
 type PopupOptions = {
   initialFocus?: string;
+  renderer?: string;
+  template?: string;
   returnFocus?: string | (() => Element | null);
   onInit?: () => void;
 };
@@ -146,6 +148,21 @@ describe('confirmAlert', function confirmAlertSuite() {
 
     expect(lastPopupOptions && lastPopupOptions.returnFocus).to.equal(
       returnFocus,
+    );
+  });
+
+  // modal.js compiles popup templates with Handlebars unless the renderer is 'html'
+  // (see modal.spec.ts). The template here is already rendered HTML, so braces in
+  // a message, e.g. in a template name or email subject, must stay as they are.
+  it('asks the popup to show the rendered template as it is', () => {
+    confirmAlertModule.confirmAlert({
+      message: 'Delete the template named "Sale {{#if}}"?',
+      onConfirm: () => undefined,
+    });
+
+    expect(lastPopupOptions && lastPopupOptions.renderer).to.equal('html');
+    expect(lastPopupOptions && lastPopupOptions.template).to.contain(
+      'Sale {{#if}}',
     );
   });
 

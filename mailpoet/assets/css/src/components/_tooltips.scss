@@ -1,3 +1,6 @@
+@use '../settings/colors' as *;
+@use '../settings/grid' as *;
+
 .mailpoet-tooltip {
   background-color: #fafbfe;
   border-color: #e5e9f8;

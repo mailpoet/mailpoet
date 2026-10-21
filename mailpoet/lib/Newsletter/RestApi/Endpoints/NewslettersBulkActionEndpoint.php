@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\RestApi\Endpoints;
 
 use MailPoet\API\REST\ApiException;
 use MailPoet\API\REST\Endpoint;
+use MailPoet\API\REST\ListingRequestValidationTrait;
 use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\Config\AccessControl;
@@ -14,6 +15,7 @@ use MailPoet\Listing\ListingDefinition;
 use MailPoet\Newsletter\BulkActionController;
 use MailPoet\Newsletter\BulkActionException;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
+use MailPoet\Newsletter\RestApi\NewslettersFilterValidationTrait;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Statistics\Export\StatisticsExporter;
 use MailPoet\Util\License\Features\CapabilitiesManager;
@@ -30,6 +32,9 @@ use MailPoetVendor\Carbon\Carbon;
  * capability instead of the bulk dispatcher's plain list of supported actions.
  */
 class NewslettersBulkActionEndpoint extends Endpoint {
+  use ListingRequestValidationTrait;
+  use NewslettersFilterValidationTrait;
+
   public const ACTION_EXPORT_STATS = 'export_stats';
 
   /** @var ListingHandler */
@@ -168,6 +173,10 @@ class NewslettersBulkActionEndpoint extends Endpoint {
     ]);
   }
 
+  protected function getListingValidationErrorPrefix(): string {
+    return 'newsletters';
+  }
+
   /**
    * @return int[]
    */
@@ -185,10 +194,13 @@ class NewslettersBulkActionEndpoint extends Endpoint {
     $groupParam = $request->getParam('group');
     $typeParam = $request->getParam('type');
     $parentIdParam = $request->getParam('parent_id');
+    $type = $this->validateScopeType($typeParam, $request->getParam('select_all') === true);
+    $group = $this->validateScopeGroup($groupParam, $type, $request->getParam('select_all') === true);
+    $this->validateNewslettersFilters($filter, $typeParam);
 
     $params = [];
-    if (is_string($typeParam) && in_array($typeParam, NewslettersListingEndpoint::SUPPORTED_TYPES, true)) {
-      $params['type'] = $typeParam;
+    if ($type !== null) {
+      $params['type'] = $type;
     }
     if (is_numeric($parentIdParam)) {
       $params['parentId'] = (int)$parentIdParam;
@@ -200,11 +212,56 @@ class NewslettersBulkActionEndpoint extends Endpoint {
       'sort_by' => 'id',
       'sort_order' => 'desc',
       'search' => is_string($searchParam) ? $searchParam : null,
-      'group' => is_string($groupParam) ? $groupParam : null,
+      'group' => $group,
       'filter' => is_array($filter) ? $filter : [],
       'selection' => $selection,
       'params' => $params,
     ]);
+  }
+
+  /**
+   * “Select all” must act on the listing the user saw, so it needs a supported type.
+   *
+   * @param mixed $type
+   */
+  private function validateScopeType($type, bool $selectAll): ?string {
+    if ($type === null || $type === '') {
+      if ($selectAll) {
+        throw $this->listingValidationError(__('A supported email type is required.', 'mailpoet'), 'type');
+      }
+      return null;
+    }
+    if (!is_string($type) || !in_array($type, NewslettersListingEndpoint::SUPPORTED_TYPES, true)) {
+      throw $this->listingValidationError(__('Unsupported email type.', 'mailpoet'), 'type');
+    }
+    return $type;
+  }
+
+  /**
+   * “Select all” needs the group the user saw. Other requests fall back to the listing’s
+   * default group, so trashed emails stay out of a request without one.
+   *
+   * @param mixed $group
+   */
+  private function validateScopeGroup($group, ?string $type, bool $selectAll): string {
+    if ($group === null || $group === '') {
+      if ($selectAll) {
+        throw $this->listingValidationError(__('A listing group is required.', 'mailpoet'), 'group');
+      }
+      return 'all';
+    }
+    $allowed = NewsletterListingRepository::getSupportedGroupsForType($type);
+    if (!is_string($group) || !in_array($group, $allowed, true)) {
+      throw $this->listingValidationError(
+        sprintf(
+          // translators: %s is a comma-separated list of allowed listing groups.
+          __('Unsupported group. Allowed values are: %s.', 'mailpoet'),
+          implode(', ', $allowed)
+        ),
+        'group'
+      );
+    }
+    return $group;
   }
 
   /**

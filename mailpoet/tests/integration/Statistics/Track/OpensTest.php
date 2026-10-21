@@ -213,7 +213,7 @@ class OpensTest extends \MailPoetTest {
     verify($userAgents)->arrayCount(1);
   }
 
-  public function testItOverridesOldUserAgent() {
+  public function testItKeepsHumanUserAgentOnRepeatedOpens() {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(StatisticsNewslettersRepository::class),
@@ -227,13 +227,32 @@ class OpensTest extends \MailPoetTest {
     $opens->track($this->trackData);
     $this->trackData->userAgent = 'User agent3';
     $opens->track($this->trackData);
-    verify(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $opens = $this->statisticsOpensRepository->findAll();
     verify($opens)->arrayCount(1);
     $open = $opens[0];
     $userAgent = $open->getUserAgent();
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
-    verify($userAgent->getUserAgent())->equals('User agent3');
+    verify($userAgent->getUserAgent())->equals('User agent2');
+    $uaRepository = $this->diContainer->get(UserAgentsRepository::class);
+    verify($uaRepository->findAll())->arrayCount(1);
+  }
+
+  public function testItDoesNotStoreMachineUserAgentsOnRepeatedOpens() {
+    $opens = Stub::construct($this->opens, [
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(StatisticsNewslettersRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConsentController::class),
+    ], [
+      'returnResponse' => null,
+    ], $this);
+    $this->trackData->userAgent = 'User agent';
+    $opens->track($this->trackData);
+    $this->trackData->userAgent = UserAgentEntity::MACHINE_USER_AGENTS[0];
+    $opens->track($this->trackData);
+    $uaRepository = $this->diContainer->get(UserAgentsRepository::class);
+    verify($uaRepository->findBy(['userAgent' => UserAgentEntity::MACHINE_USER_AGENTS[0]]))->arrayCount(0);
   }
 
   public function testItDoesNotOverrideHumanUserAgentWithMachine(): void {
@@ -349,7 +368,7 @@ class OpensTest extends \MailPoetTest {
     verify($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
   }
 
-  public function testItOverridesUnknownUserAgentWithHuman(): void {
+  public function testItDoesNotOverrideUnknownUserAgentWithHuman(): void {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(StatisticsNewslettersRepository::class),
@@ -370,19 +389,17 @@ class OpensTest extends \MailPoetTest {
     verify($openEntity->getUserAgent())->null();
     verify($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     // Track Human User Agent
-    $humanUserAgentName = 'User Agent';
-    $this->trackData->userAgent = $humanUserAgentName;
+    $this->trackData->userAgent = 'User Agent';
     $opens->track($this->trackData);
     verify(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
     verify($openEntities)->arrayCount(1);
     $openEntity = reset($openEntities);
     $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
-    $userAgent = $openEntity->getUserAgent();
-    $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
-    verify($userAgent->getUserAgent())->equals($humanUserAgentName);
-    verify($userAgent->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    verify($openEntity->getUserAgent())->null();
     verify($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    $uaRepository = $this->diContainer->get(UserAgentsRepository::class);
+    verify($uaRepository->findAll())->arrayCount(0);
   }
 
   public function testItReactivatesInactiveSubscriberOnOpen() {

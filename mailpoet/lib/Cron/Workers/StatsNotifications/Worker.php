@@ -18,7 +18,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoet\WPCOM\DotcomHelperFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -64,9 +63,6 @@ class Worker {
   /** @var ServicesChecker */
   private $servicesChecker;
 
-  /** @var DotcomHelperFunctions */
-  private $dotcomHelperFunctions;
-
   private PersonalizationTagLinkResolver $personalizationTagLinkResolver;
 
   public function __construct(
@@ -82,7 +78,6 @@ class Worker {
     SubscribersFeature $subscribersFeature,
     SubscribersRepository $subscribersRepository,
     ServicesChecker $servicesChecker,
-    DotcomHelperFunctions $dotcomHelperFunctions,
     PersonalizationTagLinkResolver $personalizationTagLinkResolver
   ) {
     $this->renderer = $renderer;
@@ -97,7 +92,6 @@ class Worker {
     $this->subscribersFeature = $subscribersFeature;
     $this->subscribersRepository = $subscribersRepository;
     $this->servicesChecker = $servicesChecker;
-    $this->dotcomHelperFunctions = $dotcomHelperFunctions;
     $this->personalizationTagLinkResolver = $personalizationTagLinkResolver;
   }
 
@@ -112,7 +106,7 @@ class Worker {
         $extraParams = [
           'meta' => $this->mailerMetaInfo->getStatsNotificationMetaInfo(),
         ];
-        $this->mailerFactory->getDefaultMailer()->send($this->constructNewsletter($statsNotificationEntity, $settings), $settings['address'], $extraParams);
+        $this->mailerFactory->getDefaultMailer()->send($this->constructNewsletter($statsNotificationEntity), $settings['address'], $extraParams);
       } catch (\Exception $e) {
         if (WP_DEBUG) {
           throw $e;
@@ -127,7 +121,7 @@ class Worker {
     }
   }
 
-  private function constructNewsletter(StatsNotificationEntity $statsNotificationEntity, array $settings) {
+  private function constructNewsletter(StatsNotificationEntity $statsNotificationEntity) {
     $newsletter = $statsNotificationEntity->getNewsletter();
     if (!$newsletter instanceof NewsletterEntity) {
       throw new \RuntimeException('Missing newsletter entity for statistic notification.');
@@ -137,15 +131,10 @@ class Worker {
     if (!$sendingQueue instanceof SendingQueueEntity) {
       throw new \RuntimeException('Missing sending queue entity for statistic notification.');
     }
-    $context = $this->prepareContext($newsletter, $sendingQueue, $link, $settings);
+    $context = $this->prepareContext($newsletter, $sendingQueue, $link);
     $subject = $sendingQueue->getNewsletterRenderedSubject();
-    if ($this->dotcomHelperFunctions->isGarden()) {
-      // translators: %s is the name of the email campaign.
-      $emailSubject = sprintf(__('Campaign performance summary: %s', 'mailpoet'), $subject);
-    } else {
-      // translators: %s is the subject of the email.
-      $emailSubject = sprintf(_x('Stats for email %s', 'title of an automatic email containing statistics (newsletter open rate, click rate, etc)', 'mailpoet'), $subject);
-    }
+    // translators: %s is the subject of the email.
+    $emailSubject = sprintf(_x('Stats for email %s', 'title of an automatic email containing statistics (newsletter open rate, click rate, etc)', 'mailpoet'), $subject);
     return [
       'subject' => $emailSubject,
       'body' => [
@@ -155,7 +144,7 @@ class Worker {
     ];
   }
 
-  private function prepareContext(NewsletterEntity $newsletter, SendingQueueEntity $sendingQueue, ?NewsletterLinkEntity $link = null, array $settings = []) {
+  private function prepareContext(NewsletterEntity $newsletter, SendingQueueEntity $sendingQueue, ?NewsletterLinkEntity $link = null) {
     $statistics = $this->newsletterStatisticsRepository->getStatistics($newsletter);
     $totalSentCount = $statistics->getTotalSentCount() ?: 1;
     // Opens and clicks over the recipients sent with tracking; unsubscribes and bounces over
@@ -215,25 +204,7 @@ class Worker {
         ?? $this->personalizationTagLinkResolver->getDisplayName($link->getUrl())
         ?? $link->getUrl();
     }
-    $context['blogName'] = WPFunctions::get()->getBloginfo('name');
-    $context['recipientFirstName'] = $this->getRecipientFirstName($settings['address'] ?? '');
     return $context;
-  }
-
-  private function getRecipientFirstName(string $email): string {
-    if (empty($email)) {
-      return '';
-    }
-    $user = WPFunctions::get()->getUserBy('email', $email);
-    if (!$user) {
-      return '';
-    }
-    $firstName = $user->first_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    if (!empty($firstName)) {
-      return $firstName;
-    }
-    $displayName = $user->display_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    return !empty($displayName) ? $displayName : '';
   }
 
   private function markTaskAsFinished(ScheduledTaskEntity $task) {

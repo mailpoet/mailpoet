@@ -27,4 +27,5 @@ class InvalidFilterException extends InvalidStateException {
   const TOO_MANY_GROUPS = 20;
   const TOO_MANY_FILTERS_PER_GROUP = 21;
   const INVALID_OUTER_CONNECTOR = 22;
+  const MULTIPLE_FILTERS_REQUIRE_PREMIUM = 23;
 };

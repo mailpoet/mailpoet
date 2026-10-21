@@ -62,7 +62,7 @@ class ReEngagementScheduler {
 
   private function scheduleForEmail(NewsletterEntity $newsletter): ?ScheduledTaskEntity {
     $scheduledOrRunning = $this->scheduledTasksRepository->findByScheduledAndRunningForNewsletter($newsletter);
-    if ($scheduledOrRunning) {
+    if ($scheduledOrRunning || $this->scheduledTasksRepository->findHeldOverdueForNewsletter($newsletter)) {
       return null;
     }
     $intervalUnit = $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE);

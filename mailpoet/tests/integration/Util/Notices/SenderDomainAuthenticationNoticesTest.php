@@ -2,9 +2,14 @@
 
 namespace integration\Util\Notices;
 
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Services\AuthorizedSenderDomainController;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\FreeDomains;
+use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\Util\Notices\SenderDomainAuthenticationNotices;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SenderDomainAuthenticationNoticesTest extends \MailPoetTest {
   /** @var SenderDomainAuthenticationNotices */
@@ -26,6 +31,17 @@ class SenderDomainAuthenticationNoticesTest extends \MailPoetTest {
     $this->authorizedSenderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
     $this->lowerLimit = AuthorizedSenderDomainController::LOWER_LIMIT;
     $this->upperLimit = AuthorizedSenderDomainController::UPPER_LIMIT;
+    $this->deleteSenderDomainTransients();
+  }
+
+  public function _after() {
+    $this->deleteSenderDomainTransients();
+    parent::_after();
+  }
+
+  private function deleteSenderDomainTransients(): void {
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
   }
 
   public function testItCanGetDefaultFromAddress(): void {
@@ -137,5 +153,37 @@ class SenderDomainAuthenticationNoticesTest extends \MailPoetTest {
     $message = $this->notice->getNoticeContentForBrandedDomainUsers(true, $this->upperLimit);
     $this->assertStringContainsString('Authenticate your sender domain to improve email delivery rates.', $message);
     $this->assertStringContainsString('Authenticate domain', $message);
+  }
+
+  public function testItCallsBridgeOnceWhenSenderDomainListIsEmpty(): void {
+    $bridgeCalls = 0;
+    $wp = new WPFunctions();
+    $this->settings->set(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME, 'MANUAL');
+    $bridgeMock = $this->make(Bridge::class, [
+      'isMailpoetSendingServiceEnabled' => true,
+      'getRawSenderDomainData' => function () use (&$bridgeCalls) {
+        $bridgeCalls++;
+        return [];
+      },
+    ]);
+    $controller = new AuthorizedSenderDomainController(
+      $bridgeMock,
+      $this->diContainer->get(NewsletterStatisticsRepository::class),
+      $this->settings,
+      $this->diContainer->get(Subscribers::class),
+      $wp
+    );
+    $notice = new SenderDomainAuthenticationNotices(
+      $this->settings,
+      $this->diContainer->get(Subscribers::class),
+      new FreeDomains(),
+      $controller,
+      $bridgeMock
+    );
+
+    $notice->init(true);
+    $notice->init(true);
+    $this->assertTrue($controller->isCacheAvailable());
+    $this->assertSame(1, $bridgeCalls);
   }
 }

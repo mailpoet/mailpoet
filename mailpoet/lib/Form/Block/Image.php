@@ -39,13 +39,16 @@ class Image {
       $attributes[] = 'class="wp-image-' . $this->wp->escAttr($params['id']) . '"';
       $attributes[] = 'srcset="' . $this->wp->wpGetAttachmentImageSrcset(intval($params['id']), $params['size_slug']) . '"';
     }
-    if ($params['width']) {
-      $attributes[] = 'width=' . intval($params['width']);
-      $styles[] = 'width: ' . intval($params['width']) . 'px';
+    // Sizes are pixels with or without the unit; the editor saves "auto" for the side it scales by aspect ratio
+    $width = intval($params['width']);
+    if ($width > 0) {
+      $attributes[] = 'width=' . $width;
+      $styles[] = 'width: ' . $width . 'px';
     }
-    if ($params['height']) {
-      $attributes[] = 'height=' . intval($params['height']);
-      $styles[] = 'height: ' . intval($params['height']) . 'px';
+    $height = intval($params['height']);
+    if ($height > 0) {
+      $attributes[] = 'height=' . $height;
+      $styles[] = 'height: ' . $height . 'px';
     }
     if ($styles) {
       $attributes[] = 'style="' . $this->wp->escAttr(implode(';', $styles)) . '"';

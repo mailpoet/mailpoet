@@ -1,3 +1,6 @@
+@use '../settings/colors' as *;
+@use '../settings/typography' as *;
+
 .mailpoet-tags {
   align-items: center;
   display: inline-flex;

@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
+use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Renderer {
@@ -81,7 +82,7 @@ class Renderer {
     $columnContent = [];
 
     foreach ($data['blocks'] as $index => $columnBlocks) {
-      $renderedBlockElement = $this->renderBlocksInColumn($newsletter, $columnBlocks, $columnWidths[$index], $isRtl);
+      $renderedBlockElement = $this->renderBlocksInColumn($newsletter, $columnBlocks, $columnWidths[$index] ?? null, $isRtl);
       $columnContent[] = $renderedBlockElement;
     }
 
@@ -89,9 +90,15 @@ class Renderer {
   }
 
   private function renderBlocksInColumn(NewsletterEntity $newsletter, $block, $columnBaseWidth, bool $isRtl = false) {
+    if (!isset($block['blocks']) || !is_array($block['blocks'])) {
+      return '';
+    }
     $blockContent = '';
     $_this = $this;
     array_map(function($block) use (&$blockContent, $columnBaseWidth, $newsletter, $_this, $isRtl) {
+      if (!is_array($block)) {
+        return;
+      }
       $renderedBlockElement = $_this->createElementFromBlockType($newsletter, $block, $columnBaseWidth, $isRtl);
       if (isset($block['blocks'])) {
         $renderedBlockElement = $_this->renderBlocksInColumn($newsletter, $block, $columnBaseWidth, $isRtl);
@@ -136,7 +143,7 @@ class Renderer {
       case Coupon::TYPE:
         return $this->coupon->render($block, $columnBaseWidth);
     }
-    return "<!-- Skipped unsupported block type: {$block['type']} -->";
+    return '<!-- Skipped unsupported block type: ' . EHelper::escapeHtmlText($block['type']) . ' -->';
   }
 
   public function processAutomatedLatestContent(NewsletterEntity $newsletter, $args, $columnBaseWidth, bool $isRtl = false) {

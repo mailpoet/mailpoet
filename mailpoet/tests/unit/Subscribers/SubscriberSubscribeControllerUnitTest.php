@@ -25,6 +25,8 @@ use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
+  const SESSION_ID = 'abcd1234abcd1234abcd1234abcd1234';
+
   public function testErrorGetsThrownWhenEmailFieldIsNotObfuscated() {
     $captchaSession = Stub::makeEmpty(CaptchaSession::class);
     $subscriberActions = Stub::makeEmpty(
@@ -39,7 +41,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $fieldNameObfuscator = Stub::makeEmpty(FieldNameObfuscator::class);
     $requiredCustomFieldValidator = Stub::makeEmpty(RequiredCustomFieldValidator::class);
     $settings = Stub::makeEmpty(SettingsController::class);
-    $form = Stub::makeEmpty(FormEntity::class);
+    $form = Stub::makeEmpty(FormEntity::class, ['getStatus' => FormEntity::STATUS_ENABLED]);
     $tagRepository = Stub::makeEmpty(TagRepository::class);
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
     $builtInCaptchaValidator = Stub::makeEmpty(CaptchaValidator::class);
@@ -129,6 +131,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getSettingsSegmentIds' => function() use ($segmentIds): array {
           return $segmentIds;
         },
@@ -214,6 +217,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getSettingsSegmentIds' => function() use ($segmentIds): array {
           return $segmentIds;
         },
@@ -277,10 +281,12 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
 
   public function testBuiltInValidatorFails() {
 
-    $captchaSessionId = 'captcha_session_id';
+    $captchaSessionId = self::SESSION_ID;
     $captchaSession = Stub::makeEmpty(
       CaptchaSession::class,
       [
+        'isValidId' => true,
+        'exists' => true,
         'init' => function($receivedSessionId) use ($captchaSessionId) {
           verify($receivedSessionId)->equals($captchaSessionId);
         },
@@ -330,6 +336,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getSettingsSegmentIds' => function() use ($segmentIds): array {
           return $segmentIds;
         },
@@ -406,11 +413,13 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
 
   public function testRecaptchaValidatorFails() {
 
-    $captchaSessionId = 'captcha_session_id';
+    $captchaSessionId = self::SESSION_ID;
 
     $captchaSession = Stub::makeEmpty(
       CaptchaSession::class,
       [
+        'isValidId' => true,
+        'exists' => true,
         'getCaptchaHash' => ['phrase' => 'a_string_that_does_not_match'],
         'init' => function($receivedSessionId) use ($captchaSessionId) {
           verify($receivedSessionId)->equals($captchaSessionId);
@@ -463,6 +472,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getSettingsSegmentIds' => function() use ($segmentIds): array {
           return $segmentIds;
         },
@@ -552,6 +562,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getSettingsSegmentIds' => function() use ($segmentIds): array {
           return $segmentIds;
         },
@@ -608,6 +619,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getSettingsSegmentIds' => function() use ($segmentIds): array {
           return $segmentIds;
         },
@@ -657,12 +669,14 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
 
   public function testSubscribeSuccess() {
 
-    $captchaSessionId = 'captcha_session_id';
+    $captchaSessionId = self::SESSION_ID;
     $captcha = 'captcha';
 
     $captchaSession = Stub::makeEmpty(
       CaptchaSession::class,
       [
+        'isValidId' => true,
+        'exists' => true,
         'getCaptchaHash' => $captcha,
         'init' => function($receivedSessionId) use ($captchaSessionId) {
           verify($receivedSessionId)->equals($captchaSessionId);
@@ -681,6 +695,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getSettingsSegmentIds' => function() use ($segmentIds): array {
           return $segmentIds;
         },
@@ -761,7 +776,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $builtInCaptchaValidator = Stub::make(
       CaptchaValidator::class,
       [
-        'validate' => function($data) use ($captcha) {
+        'validate' => Expected::never(),
+        'validateChallenge' => function($data) use ($captcha) {
           verify($data['captcha'])->equals($captcha);
           return true;
         },
@@ -804,6 +820,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSettingsSegmentIds' => function(): array { return [1];
         },
@@ -892,6 +909,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSettingsSegmentIds' => function(): array { return [1];
         },
@@ -974,10 +992,11 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
   public function testBuiltInCaptchaEscalatesWhenSignalsLookBotLike() {
     // Built-in CAPTCHA + correct answer, but behavioral signals look bot-like:
     // we must re-issue a fresh challenge rather than subscribe.
-    $captchaSessionId = 'sess';
+    $captchaSessionId = self::SESSION_ID;
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSettingsSegmentIds' => function(): array { return [1];
         },
@@ -1009,6 +1028,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $captchaSession = Stub::makeEmpty(
       CaptchaSession::class,
       [
+        'isValidId' => true,
+        'exists' => true,
         'getFormData' => function() { return ['form_id' => 1];
         },
       ]
@@ -1024,7 +1045,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $builtInCaptchaValidator = Stub::make(
       CaptchaValidator::class,
       [
-        'validate' => Expected::once(true),
+        'validate' => Expected::never(),
+        'validateChallenge' => Expected::once(true),
         'isUserExemptFromCaptcha' => false,
         'getInlineCaptchaChallenge' => Expected::once(function($formData) use ($challengeMeta, &$capturedStash) {
           $capturedStash = $formData;
@@ -1080,11 +1102,12 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
   }
 
   public function testBuiltInCaptchaPassesWhenSignalsLookHuman() {
-    $captchaSessionId = 'sess';
+    $captchaSessionId = self::SESSION_ID;
     $subscriber = Stub::makeEmpty(SubscriberEntity::class);
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSettingsSegmentIds' => function(): array { return [1];
         },
@@ -1118,6 +1141,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $captchaSession = Stub::makeEmpty(
       CaptchaSession::class,
       [
+        'isValidId' => true,
+        'exists' => true,
         'getFormData' => function() { return ['form_id' => 1];
         },
       ]
@@ -1125,7 +1150,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $builtInCaptchaValidator = Stub::make(
       CaptchaValidator::class,
       [
-        'validate' => Expected::once(true),
+        'validate' => Expected::never(),
+        'validateChallenge' => Expected::once(true),
         'isUserExemptFromCaptcha' => Expected::once(false),
         'getInlineCaptchaChallenge' => Expected::never(),
       ],
@@ -1178,11 +1204,12 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
   public function testBuiltInCaptchaSkipsSignalCheckForExemptUsers() {
     // Admin / editor: exempt from CAPTCHA, must also be exempt from the
     // behavioral check so they aren't bounced when JS hasn't accumulated signals.
-    $captchaSessionId = 'sess';
+    $captchaSessionId = self::SESSION_ID;
     $subscriber = Stub::makeEmpty(SubscriberEntity::class);
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSettingsSegmentIds' => function(): array { return [1];
         },
@@ -1216,6 +1243,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $captchaSession = Stub::makeEmpty(
       CaptchaSession::class,
       [
+        'isValidId' => true,
+        'exists' => true,
         'getFormData' => function() { return ['form_id' => 1];
         },
       ]
@@ -1223,7 +1252,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $builtInCaptchaValidator = Stub::make(
       CaptchaValidator::class,
       [
-        'validate' => Expected::once(true),
+        'validate' => Expected::never(),
+        'validateChallenge' => Expected::once(true),
         'isUserExemptFromCaptcha' => Expected::once(true),
         'getInlineCaptchaChallenge' => Expected::never(),
       ],
@@ -1276,12 +1306,13 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     // initCaptcha restores the stashed payload on resubmit, but the freshest
     // behavioral_signals from the current request must win so the user isn't
     // re-evaluated on the snapshot that triggered the original challenge.
-    $captchaSessionId = 'sess';
+    $captchaSessionId = self::SESSION_ID;
     $stashedSignals = ['time_ms' => 50, 'mm_count' => 0, 'kd_count' => 0, 'focus_count' => 0];
     $freshSignals = ['time_ms' => 10000, 'mm_count' => 20, 'kd_count' => 10, 'focus_count' => 2];
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSettingsSegmentIds' => function(): array { return [1];
         },
@@ -1315,6 +1346,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $captchaSession = Stub::makeEmpty(
       CaptchaSession::class,
       [
+        'isValidId' => true,
+        'exists' => true,
         'getFormData' => function() use ($stashedSignals) {
           return ['form_id' => 1, BehavioralSignals::FIELD_NAME => $stashedSignals];
         },
@@ -1334,7 +1367,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $builtInCaptchaValidator = Stub::make(
       CaptchaValidator::class,
       [
-        'validate' => Expected::once(true),
+        'validate' => Expected::never(),
+        'validateChallenge' => Expected::once(true),
         'isUserExemptFromCaptcha' => false,
         'getInlineCaptchaChallenge' => Expected::never(),
       ],
@@ -1388,6 +1422,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSegmentBlocksSegmentIds' => function(): array { return [1, 2];
         },
@@ -1423,6 +1458,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $captchaSession = Stub::makeEmpty(
       CaptchaSession::class,
       [
+        'isValidId' => true,
+        'exists' => true,
         'getFormData' => function() { return ['form_id' => 1, 'segments' => [1]];
         },
       ]
@@ -1476,7 +1513,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
 
     $result = $testee->subscribe([
       'form_id' => 1,
-      'captcha_session_id' => 'sess',
+      'captcha_session_id' => self::SESSION_ID,
       'captcha' => 'ABCDEF',
     ]);
     verify($result)->equals([]);
@@ -1490,6 +1527,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSettingsSegmentIds' => function(): array { return [1];
         },
@@ -1519,6 +1557,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $captchaSession = Stub::makeEmpty(
       CaptchaSession::class,
       [
+        'isValidId' => true,
+        'exists' => true,
         'getFormData' => function() { return ['form_id' => 1];
         },
       ]
@@ -1575,7 +1615,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
 
     $result = $testee->subscribe([
       'form_id' => 1,
-      'captcha_session_id' => 'sess',
+      'captcha_session_id' => self::SESSION_ID,
       'captcha' => 'ABCDEF',
     ]);
     verify($result['show_captcha'])->true();
@@ -1593,6 +1633,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(
       FormEntity::class,
       [
+        'getStatus' => FormEntity::STATUS_ENABLED,
         'getId' => 1,
         'getSettingsSegmentIds' => function(): array { return [1];
         },
@@ -1626,6 +1667,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $captchaSession = Stub::makeEmpty(
       CaptchaSession::class,
       [
+        'isValidId' => true,
+        'exists' => true,
         'getFormData' => function() use ($stashedSignals) {
           return ['form_id' => 1, BehavioralSignals::FIELD_NAME => $stashedSignals];
         },
@@ -1684,11 +1727,141 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
 
     $result = $testee->subscribe([
       'form_id' => 1,
-      'captcha_session_id' => 'sess',
+      'captcha_session_id' => self::SESSION_ID,
       'captcha' => 'ABCDEF',
       BehavioralSignals::FIELD_NAME => $freshSignals,
     ]);
     verify($result)->equals([]);
     verify($capturedSignals)->equals($freshSignals);
+  }
+
+  /**
+   * Runs one subscription and returns what the controller asked the signal check for.
+   *
+   * @param array<string,mixed> $payload
+   * @param array<string,mixed> $validatorExpectations
+   * @param callable|bool $sessionExists
+   * @return bool|null Whether the render stamp was required; null when signals were not checked.
+   */
+  private function subscribeAndCaptureStampRequirement(?string $captchaType, array $payload, array $validatorExpectations, $sessionExists = true): ?bool {
+    $form = Stub::makeEmpty(
+      FormEntity::class,
+      [
+        'getStatus' => FormEntity::STATUS_ENABLED,
+        'getId' => 1,
+        'getSettingsSegmentIds' => function(): array { return [1];
+        },
+        'getBlocksByTypes' => function(): array { return [];
+        },
+        'getSettings' => function(): array { return [];
+        },
+      ]
+    );
+    $captured = null;
+    $behavioralSignals = Stub::make(
+      BehavioralSignals::class,
+      [
+        'looksHuman' => function($data, $requireStamp = true) use (&$captured) {
+          $captured = $requireStamp;
+          return true;
+        },
+      ],
+      $this
+    );
+    $subscriber = Stub::makeEmpty(SubscriberEntity::class);
+    $testee = new SubscriberSubscribeController(
+      Stub::makeEmpty(CaptchaSession::class, [
+        'isValidId' => true,
+        'exists' => $sessionExists,
+        'generateSessionId' => self::SESSION_ID,
+        'getFormData' => function() { return ['form_id' => 1];
+        },
+      ]),
+      Stub::makeEmpty(SubscriberActions::class, [
+        'subscribe' => function() use ($subscriber) {
+          return [$subscriber, ['confirmationEmailResult' => true]];
+        },
+      ]),
+      Stub::makeEmpty(SubscribersFinder::class),
+      Stub::makeEmpty(SubscriptionThrottling::class),
+      Stub::makeEmpty(FieldNameObfuscator::class, [
+        'deobfuscateFormPayload' => function($data) { return $data;
+        },
+      ]),
+      Stub::makeEmpty(RequiredCustomFieldValidator::class),
+      Stub::makeEmpty(SettingsController::class, [
+        'get' => function() use ($captchaType) { return ['type' => $captchaType];
+        },
+      ]),
+      Stub::makeEmpty(FormsRepository::class, [
+        'findOneById' => function() use ($form): FormEntity { return $form;
+        },
+      ]),
+      Stub::makeEmpty(StatisticsFormsRepository::class),
+      Stub::makeEmpty(TagRepository::class),
+      Stub::makeEmpty(SubscriberTagRepository::class),
+      Stub::makeEmpty(WPFunctions::class),
+      Stub::make(
+        CaptchaValidator::class,
+        array_merge(['isUserExemptFromCaptcha' => false, 'getInlineCaptchaChallenge' => Expected::never()], $validatorExpectations),
+        $this
+      ),
+      Stub::makeEmpty(RecaptchaValidator::class),
+      Stub::makeEmpty(TurnstileValidator::class),
+      $behavioralSignals,
+      Stub::makeEmpty(TrackingConsentCapture::class)
+    );
+    $testee->subscribe(array_merge(['form_id' => 1], $payload));
+    return $captured;
+  }
+
+  public function testBuiltInCaptchaWaivesRenderStampAfterVerifyingAnAnswer() {
+    $requireStamp = $this->subscribeAndCaptureStampRequirement(
+      CaptchaConstants::TYPE_BUILTIN,
+      ['captcha_session_id' => self::SESSION_ID, 'captcha' => 'ABCDEF'],
+      ['validate' => Expected::never(), 'validateChallenge' => Expected::once(true)]
+    );
+    verify($requireStamp)->false();
+  }
+
+  public function testBuiltInCaptchaRequiresRenderStampWhenNoAnswerWasSent() {
+    $requireStamp = $this->subscribeAndCaptureStampRequirement(
+      CaptchaConstants::TYPE_BUILTIN,
+      [],
+      ['validate' => Expected::once(true), 'validateChallenge' => Expected::never()]
+    );
+    verify($requireStamp)->true();
+  }
+
+  public function testBuiltInCaptchaRequiresRenderStampWhenTheSessionExpiredBeforeTheAnswerWasChecked() {
+    $calls = 0;
+    $requireStamp = $this->subscribeAndCaptureStampRequirement(
+      CaptchaConstants::TYPE_BUILTIN,
+      ['captcha_session_id' => self::SESSION_ID, 'captcha' => 'ABCDEF'],
+      ['validate' => Expected::once(true), 'validateChallenge' => Expected::never()],
+      function() use (&$calls) {
+        $calls++;
+        return $calls === 1;
+      }
+    );
+    verify($requireStamp)->true();
+  }
+
+  public function testBehavioralBaselineWaivesRenderStampAfterVerifyingAnAnswer() {
+    $requireStamp = $this->subscribeAndCaptureStampRequirement(
+      null,
+      ['captcha_session_id' => self::SESSION_ID, 'captcha' => 'ABCDEF'],
+      ['validate' => Expected::never(), 'validateChallenge' => Expected::once(true)]
+    );
+    verify($requireStamp)->false();
+  }
+
+  public function testBehavioralBaselineRequiresRenderStampWhenNoChallengeWasAnswered() {
+    $requireStamp = $this->subscribeAndCaptureStampRequirement(
+      null,
+      [],
+      ['validate' => Expected::never(), 'validateChallenge' => Expected::never()]
+    );
+    verify($requireStamp)->true();
   }
 }

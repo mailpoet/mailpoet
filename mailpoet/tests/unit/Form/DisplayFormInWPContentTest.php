@@ -2,6 +2,7 @@
 
 namespace MailPoet\Form;
 
+use MailPoet\Captcha\FormRenderStamp;
 use MailPoet\Config\Renderer as TemplateRenderer;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -68,6 +69,8 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->subscribersRepository = $this->createMock(SubscribersRepository::class);
     $this->subscriberSubscribeController = $this->createMock(SubscriberSubscribeController::class);
     $this->woocommerceHelper = $this->createMock(WCHelper::class);
+    $formRenderStamp = $this->createMock(FormRenderStamp::class);
+    $formRenderStamp->expects($this->any())->method('issue')->willReturn('1700000000.signature');
     $this->hook = new DisplayFormInWPContent(
       $this->wp,
       $this->repository,
@@ -76,7 +79,8 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       $this->templateRenderer,
       $this->subscriberSubscribeController,
       $this->subscribersRepository,
-      $this->woocommerceHelper
+      $this->woocommerceHelper,
+      $formRenderStamp
     );
   }
 
@@ -97,6 +101,30 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $result = $this->hook->contentDisplay('content');
     verify($result)->notEquals('content');
     verify($result)->stringEndsWith($renderedForm);
+  }
+
+  public function testRenderedFormCarriesRenderStamp(): void {
+    $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->templateRenderer
+      ->expects($this->once())
+      ->method('render')
+      ->with(
+        'form/front_end_form.html',
+        $this->callback(function(array $templateData) {
+          return ($templateData['form_stamp'] ?? null) === '1700000000.signature';
+        })
+      )
+      ->willReturn('<form></form>');
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => ['below_posts' => ['enabled' => '1', 'pages' => ['all' => ''], 'posts' => ['all' => '1']],],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+    $this->hook->contentDisplay('content');
   }
 
   public function testItOnlyDisplaysOncePerRequest(): void {

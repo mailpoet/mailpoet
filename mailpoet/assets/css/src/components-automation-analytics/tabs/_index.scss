@@ -1,5 +1,5 @@
-@import 'general';
-@import 'email';
-@import 'orders';
-@import 'automation_flow';
-@import 'subscribers';
+@use 'general' as *;
+@use 'email' as *;
+@use 'orders' as *;
+@use 'automation_flow' as *;
+@use 'subscribers' as *;

@@ -1,3 +1,9 @@
+@use '../mixins/breakpoints' as *;
+@use '../settings/colors' as *;
+@use '../settings/form' as *;
+@use '../settings/grid' as *;
+@use '../settings/typography' as *;
+
 .mailpoet-stats-page {
   color: $color-tertiary;
   font-size: $font-size-small;

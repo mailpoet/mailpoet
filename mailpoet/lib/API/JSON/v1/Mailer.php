@@ -93,12 +93,12 @@ class Mailer extends APIEndpoint {
   }
 
   public function getAuthorizedEmailAddresses() {
-    $authorizedEmails = $this->authorizedEmailsController->getAuthorizedEmailAddresses();
+    $authorizedEmails = $this->authorizedEmailsController->getAuthorizedEmailAddressesIgnoringCache();
     return $this->successResponse($authorizedEmails);
   }
 
   public function getVerifiedSenderDomains() {
-    $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomains();
+    $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache();
     return $this->successResponse($verifiedDomains);
   }
 }

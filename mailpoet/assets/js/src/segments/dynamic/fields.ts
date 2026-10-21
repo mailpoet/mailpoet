@@ -38,6 +38,7 @@ export const dynamicSegmentFields: Field<DynamicSegmentListingItem>[] = [
     type: 'text',
     enableSorting: true,
     enableGlobalSearch: true,
+    enableHiding: false,
     filterBy: false,
     render: ({ item }) =>
       createElement(

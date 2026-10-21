@@ -11,6 +11,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
   type SetStateAction,
@@ -21,13 +22,14 @@ import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { MailerError } from 'notices/mailer-error';
 import {
+  filterToExtraParams,
   getDataViewsPreference,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
+  useShowFiltersWhenActive,
   type ListingGroup,
   type ListingQueryParams,
 } from 'common/dataviews';
-import { Select } from 'common/form/select/select';
 import { pollExportStatus } from 'newsletters/statistics-export/poll-export-status';
 import {
   bulkAction,
@@ -43,6 +45,16 @@ import {
 } from '../api';
 import { checkCronStatus, checkMailerStatus } from './utils.jsx';
 import { buildHash, parseHash } from './hash-state';
+import {
+  getAllowedStatuses,
+  hashFilterToRequestFilter,
+  requestFilterToHashFilter,
+  requestFilterToViewFilters,
+  sanitizeSort,
+  viewFiltersToRequestFilter,
+} from './filters';
+import { pruneUnknownIds, shouldPruneAfterResponse } from './filter-sync';
+import { applyFilterConfig, buildSegmentElements } from './listing-fields';
 
 const listingPerPage = Number(window.mailpoet_listing_per_page);
 
@@ -52,27 +64,7 @@ function formatCount(count: number): string {
   return count.toLocaleString();
 }
 
-const DEFAULT_GROUPS = ['all', 'trash'] as const;
-export const STANDARD_NEWSLETTER_GROUPS = [
-  'all',
-  'draft',
-  'scheduled',
-  'sending',
-  'sent',
-  'trash',
-] as const;
-export const ACTIVATION_NEWSLETTER_GROUPS = [
-  'all',
-  'active',
-  'draft',
-  'trash',
-] as const;
-export const NOTIFICATION_HISTORY_GROUPS = [
-  'all',
-  'sending',
-  'sent',
-  'trash',
-] as const;
+const SUPPORTED_GROUPS = ['all', 'trash'];
 
 export type NewsletterMailerLog = {
   status: string;
@@ -103,7 +95,6 @@ export type NewslettersListingProps = {
   defaultSort: { field: string; direction: 'asc' | 'desc' };
   emptyState?: (count: number) => ReactNode;
   supportsExportStats?: boolean;
-  supportedGroups?: readonly string[];
   // Optional custom row id resolver (defaults to item.id).
   getItemId?: (item: NewsletterListingItem) => string;
   // Called whenever the listing data reloads, so callers can reconcile
@@ -207,25 +198,37 @@ export function NewslettersListing({
   defaultSort,
   emptyState,
   supportsExportStats = false,
-  supportedGroups = DEFAULT_GROUPS,
   getItemId,
   onItemsLoaded,
 }: NewslettersListingProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const allowedStatuses = useMemo(() => getAllowedStatuses(type), [type]);
+  const legacyGroupFilter = useMemo(
+    () => ({ key: 'status', values: allowedStatuses }),
+    [allowedStatuses],
+  );
   const hashState = useMemo(
-    () => parseHash(window.location.hash, baseUrl, [...supportedGroups]),
-    [baseUrl, supportedGroups],
+    () =>
+      parseHash(
+        window.location.hash,
+        baseUrl,
+        SUPPORTED_GROUPS,
+        legacyGroupFilter,
+      ),
+    [baseUrl, legacyGroupFilter],
   );
   const [group, setGroup] = useState<Group>(hashState.group ?? 'all');
-  const [filter, setFilter] = useState<Record<string, string>>(
-    hashState.filter ?? {},
-  );
   const [selection, setSelection] = useState<string[]>([]);
   const [mailerExtras, setMailerExtras] = useState<{
     method: string | null;
     log: NewsletterMailerLog;
   }>({ method: null, log: { status: '' } });
+
+  const sortableFieldIds = useMemo(
+    () => fields.filter((field) => field.enableSorting).map(({ id }) => id),
+    [fields],
+  );
 
   const [defaultViewBase] = useState<View>(() => ({
     type: 'table',
@@ -251,14 +254,21 @@ export function NewslettersListing({
       perPage: hashState.perPage ?? preferredView.perPage,
       page: hashState.page ?? 1,
       search: hashState.search,
-      sort: {
-        field:
-          hashState.orderby ?? preferredView.sort?.field ?? defaultSort.field,
-        direction:
-          hashState.order ??
-          preferredView.sort?.direction ??
-          defaultSort.direction,
-      },
+      sort: sanitizeSort(
+        {
+          field:
+            hashState.orderby ?? preferredView.sort?.field ?? defaultSort.field,
+          direction:
+            hashState.order ??
+            preferredView.sort?.direction ??
+            defaultSort.direction,
+        },
+        sortableFieldIds,
+        defaultSort,
+      ),
+      filters: requestFilterToViewFilters(
+        hashFilterToRequestFilter(hashState.filter ?? {}, allowedStatuses),
+      ),
     };
   });
 
@@ -267,13 +277,18 @@ export function NewslettersListing({
       const listingParams: NewslettersListingParams = {
         ...params,
         group,
-        filter,
         type,
       };
       if (parentId !== undefined) listingParams.parent_id = parentId;
       return getNewsletters(listingParams, signal);
     },
-    [filter, group, parentId, type],
+    [group, parentId, type],
+  );
+
+  const toRequestFilter = useCallback(
+    (viewFilters: View['filters']) =>
+      viewFiltersToRequestFilter(viewFilters, allowedStatuses),
+    [allowedStatuses],
   );
 
   const {
@@ -284,6 +299,7 @@ export function NewslettersListing({
     meta,
     filters,
     groups,
+    responseVersion,
     isLoading,
     error: loadError,
     clearError: clearLoadError,
@@ -291,7 +307,20 @@ export function NewslettersListing({
   } = useDataViewsQuery<NewsletterListingItem>({
     initialView,
     load,
+    extraParams: (currentView) =>
+      filterToExtraParams(toRequestFilter(currentView.filters)),
   });
+
+  const requestFilter = useMemo(
+    () => toRequestFilter(view.filters),
+    [toRequestFilter, view.filters],
+  );
+
+  const pruneArmedAfterRef = useRef(0);
+  const responseVersionRef = useRef(responseVersion);
+  responseVersionRef.current = responseVersion;
+  const viewRef = useRef(view);
+  viewRef.current = view;
 
   // Mailer + cron envelope info is dispatched through `checkMailerStatus` /
   // `checkCronStatus` every time the listing reloads. The REST endpoint
@@ -330,11 +359,17 @@ export function NewslettersListing({
     // (not the hardcoded ones, not a mount-time snapshot), so reloading a URL
     // without explicit params resolves to the same view it was written from.
     const preferredView = getPreferredView();
-    const hash = buildHash(baseUrl, group, view, filter, {
-      sort: preferredView.sort?.field ?? defaultSort.field,
-      order: preferredView.sort?.direction ?? defaultSort.direction,
-      perPage: preferredView.perPage ?? listingPerPage,
-    });
+    const hash = buildHash(
+      baseUrl,
+      group,
+      view,
+      requestFilterToHashFilter(requestFilter),
+      {
+        sort: preferredView.sort?.field ?? defaultSort.field,
+        order: preferredView.sort?.direction ?? defaultSort.direction,
+        perPage: preferredView.perPage ?? listingPerPage,
+      },
+    );
     if (window.location.hash !== hash) {
       window.history.replaceState(null, '', hash);
     }
@@ -342,21 +377,24 @@ export function NewslettersListing({
     baseUrl,
     defaultSort.direction,
     defaultSort.field,
-    filter,
     getPreferredView,
     group,
+    requestFilter,
     view,
   ]);
 
   useEffect(() => {
     const applyHash = (): void => {
-      const next = parseHash(window.location.hash, baseUrl, [
-        ...supportedGroups,
-      ]);
+      const next = parseHash(
+        window.location.hash,
+        baseUrl,
+        SUPPORTED_GROUPS,
+        legacyGroupFilter,
+      );
       setGroup(next.group ?? 'all');
-      setFilter(next.filter ?? {});
       setSelection([]);
       clearLoadError();
+      pruneArmedAfterRef.current = responseVersionRef.current;
       // Fill hash segments the URL omits from the preference-merged defaults
       // (not the in-memory view) so back/forward resolves a URL exactly like
       // reopening it.
@@ -366,36 +404,46 @@ export function NewslettersListing({
         page: next.page ?? 1,
         perPage: next.perPage ?? preferredView.perPage,
         search: next.search ?? '',
-        sort: {
-          field: next.orderby ?? preferredView.sort?.field ?? defaultSort.field,
-          direction:
-            next.order ??
-            preferredView.sort?.direction ??
-            defaultSort.direction,
-        },
+        sort: sanitizeSort(
+          {
+            field:
+              next.orderby ?? preferredView.sort?.field ?? defaultSort.field,
+            direction:
+              next.order ??
+              preferredView.sort?.direction ??
+              defaultSort.direction,
+          },
+          sortableFieldIds,
+          { field: defaultSort.field, direction: defaultSort.direction },
+        ),
+        filters: requestFilterToViewFilters(
+          hashFilterToRequestFilter(next.filter ?? {}, allowedStatuses),
+        ),
       }));
     };
     window.addEventListener('hashchange', applyHash);
     return () => window.removeEventListener('hashchange', applyHash);
   }, [
+    allowedStatuses,
     baseUrl,
     clearLoadError,
     defaultSort.direction,
     defaultSort.field,
     getPreferredView,
+    legacyGroupFilter,
     setView,
-    supportedGroups,
+    sortableFieldIds,
   ]);
 
   const listingParams = useMemo<NewslettersBulkScope>(
     () => ({
       type,
       group,
-      filter,
+      filter: requestFilter,
       search: view.search ?? '',
       parent_id: parentId,
     }),
-    [filter, group, parentId, type, view.search],
+    [group, parentId, requestFilter, type, view.search],
   );
 
   const handleApiError = useCallback((error: NewsletterApiError) => {
@@ -482,32 +530,15 @@ export function NewslettersListing({
     [clearLoadError, group, setView],
   );
 
-  const handleFilterSelect = useCallback(
-    (name: string, value: string): void => {
-      setFilter((current) => {
-        const next = { ...current };
-        if (value) next[name] = value;
-        else delete next[name];
-        return next;
-      });
-      setSelection([]);
-      setView((currentView) => ({ ...currentView, page: 1 }));
-    },
-    [setView],
-  );
-
   const groupCounts = useMemo(() => {
     const counts: Record<string, number | null> = { all: null, trash: null };
-    supportedGroups.forEach((g) => {
-      counts[g] = null;
-    });
     (groups ?? []).forEach((entry: ListingGroup) => {
       if (entry.name in counts) {
         counts[entry.name] = entry.count;
       }
     });
     return counts;
-  }, [groups, supportedGroups]);
+  }, [groups]);
 
   // If the user is in trash with no items and no filters/search active, bounce
   // them back to All.
@@ -518,18 +549,18 @@ export function NewslettersListing({
       !loadError &&
       groupCounts.trash === 0 &&
       !view.search &&
-      Object.keys(filter).length === 0
+      Object.keys(requestFilter).length === 0
     ) {
       setGroup('all');
       setSelection([]);
       setView((currentView) => ({ ...currentView, page: 1 }));
     }
   }, [
-    filter,
     group,
     groupCounts.trash,
     isLoading,
     loadError,
+    requestFilter,
     setView,
     view.search,
   ]);
@@ -628,14 +659,61 @@ export function NewslettersListing({
     );
   }, [executeBulkAction, parentId, type]);
 
-  const availableFilters = useMemo(
-    () =>
-      Object.keys(filters).filter((name) => {
-        const opts = filters[name] ?? [];
-        return !(opts.length === 0 || (opts.length === 1 && !opts[0].value));
-      }),
-    [filters],
+  // Memoise on the option content so a reload that returns the same lists
+  // does not hand DataViews a new field set.
+  const segmentOptions = filters.segment;
+  const segmentElementsKey = JSON.stringify(segmentOptions ?? []);
+  const segmentElements = useMemo(
+    () => buildSegmentElements(segmentOptions),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [segmentElementsKey],
   );
+
+  // Status labels carry the global per-status counts from the latest response.
+  const [statusLabels, setStatusLabels] = useState<Record<string, string>>({});
+  useEffect(() => {
+    const next = (filters.status ?? []).reduce<Record<string, string>>(
+      (labels, option) =>
+        option.value
+          ? { ...labels, [String(option.value)]: option.label }
+          : labels,
+      {},
+    );
+    if (Object.keys(next).length === 0) return;
+    setStatusLabels((current) =>
+      JSON.stringify(current) === JSON.stringify(next) ? current : next,
+    );
+  }, [filters.status]);
+
+  const listingFields = useMemo(
+    () => applyFilterConfig(fields, { segmentElements, statusLabels }),
+    [fields, segmentElements, statusLabels],
+  );
+
+  const dataViewsRef = useRef<HTMLDivElement>(null);
+  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
+
+  // List ids from the URL that are no longer selectable (a deleted list) are
+  // dropped once a listing response has arrived, because the options are only
+  // known from it.
+  useEffect(() => {
+    if (
+      !shouldPruneAfterResponse(responseVersion, pruneArmedAfterRef.current)
+    ) {
+      return;
+    }
+    pruneArmedAfterRef.current = Infinity;
+    const pruned = pruneUnknownIds(toRequestFilter(viewRef.current.filters), {
+      segments: segmentElements.map((element) => element.value),
+    });
+    if (!pruned) return;
+    setSelection([]);
+    setView((currentView) => ({
+      ...currentView,
+      filters: requestFilterToViewFilters(pruned),
+      page: 1,
+    }));
+  }, [responseVersion, segmentElements, setView, toRequestFilter]);
 
   // The `all` group already aggregates every non-trash status, so summing all
   // groups would double-count. The listing is empty only when both `all` and
@@ -704,12 +782,13 @@ export function NewslettersListing({
       </div>
 
       <div
+        ref={dataViewsRef}
         className="mailpoet-dataviews mailpoet-newsletters-dataviews mailpoet-listing"
         data-automation-id={`newsletters_listing_${type}`}
       >
         <DataViews<NewsletterListingItem>
           data={items}
-          fields={fields}
+          fields={listingFields}
           view={view}
           onChangeView={persistedViewChange}
           actions={actions}
@@ -721,7 +800,7 @@ export function NewslettersListing({
           isLoading={isLoading}
           empty={
             <p>
-              {view.search
+              {view.search || Object.keys(requestFilter).length > 0
                 ? __('No emails found.', 'mailpoet')
                 : __(
                     "Nothing here yet! But, don't fret - there's no reason to get upset. Pretty soon, you’ll be sending emails faster than a turbo-jet.",
@@ -732,46 +811,22 @@ export function NewslettersListing({
         >
           <div className="mailpoet-dataviews__toolbar mailpoet-newsletters-dataviews__toolbar">
             <DataViews.Search label={__('Search', 'mailpoet')} />
-            {(availableFilters.length > 0 || group === 'trash') && (
-              <div className="mailpoet-listing-filters">
-                {availableFilters.map((name) => (
-                  <Select
-                    isMinWidth
-                    dimension="small"
-                    key={`filter-${name}`}
-                    name={name}
-                    value={filter[name] ?? ''}
-                    automationId={`listing_filter_${name}`}
-                    onChange={(event) =>
-                      handleFilterSelect(name, event.currentTarget.value)
-                    }
-                  >
-                    {filters[name].map((option) => (
-                      <option
-                        value={option.value}
-                        key={`filter-option-${option.value}`}
-                      >
-                        {option.label}
-                      </option>
-                    ))}
-                  </Select>
-                ))}
-                {group === 'trash' && (
-                  <Button
-                    variant="secondary"
-                    size="compact"
-                    data-automation-id="empty_trash"
-                    onClick={handleEmptyTrash}
-                  >
-                    {__('Empty Trash', 'mailpoet')}
-                  </Button>
-                )}
-              </div>
+            <DataViews.FiltersToggle />
+            {group === 'trash' && (
+              <Button
+                variant="secondary"
+                size="compact"
+                data-automation-id="empty_trash"
+                onClick={handleEmptyTrash}
+              >
+                {__('Empty Trash', 'mailpoet')}
+              </Button>
             )}
             <div className="mailpoet-dataviews__toolbar-end">
               <DataViews.ViewConfig />
             </div>
           </div>
+          <DataViews.FiltersToggled className="mailpoet-dataviews__filters" />
           <DataViews.Layout />
           <DataViews.Footer />
         </DataViews>

@@ -46,6 +46,7 @@ export function* saveSettings() {
     return { type: 'SAVE_FAILED', error };
   }
   yield { type: 'TRACK_SETTINGS_SAVED' };
+  yield { type: 'REFRESH_HELD_CAMPAIGNS' };
   yield updateKeyActivationState({
     congratulatoryMssEmailSentTo: null,
     fromAddressModalCanBeShown: false,

@@ -1,4 +1,5 @@
 import { MailPoetI18n as I18n } from './i18n';
+import { filterMessageHtml } from './common/functions/filter-message-html';
 import jQuery from 'jquery'; // eslint-disable-line func-names
 
 /*= ==========================================================================================
@@ -106,7 +107,7 @@ export const MailPoetNotice = {
     var el = element || this.element;
 
     // let's sugar coat the message with a fancy <p>
-    formattedMessage = '<p>' + formattedMessage + '</p>';
+    formattedMessage = '<p>' + filterMessageHtml(formattedMessage) + '</p>';
     // set message
     return el.html(formattedMessage);
   },

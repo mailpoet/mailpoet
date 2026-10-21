@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 // General colors
 $color-placeholder-select2: #999; /* default Select2 placeholder color for single dropdown */
 $color-transparent: rgba(#fff, 0);
@@ -23,14 +25,23 @@ $color-primary-text: #656565;
 $color-secondary: var(--wp-admin-theme-color);
 $color-secondary-hover: var(--wp-admin-theme-color-darker-20);
 $color-secondary-middle: #f5a278;
-$color-secondary-middle-hover: darken($color-secondary-middle, 10%);
+$color-secondary-middle-hover: color.adjust(
+  $color-secondary-middle,
+  $lightness: -10%
+);
 $color-secondary-light: #ffe0d0;
-$color-secondary-light-hover: darken($color-secondary-light, 10%);
+$color-secondary-light-hover: color.adjust(
+  $color-secondary-light,
+  $lightness: -10%
+);
 $color-tertiary: $color-wordpress-heading;
-$color-tertiary-hover: darken($color-tertiary, 10%);
+$color-tertiary-hover: color.adjust($color-tertiary, $lightness: -10%);
 $color-tertiary-light: #dcdcde;
 $color-grey-0: #f6f7f7;
-$color-tertiary-light-hover: darken($color-tertiary-light, 10%);
+$color-tertiary-light-hover: color.adjust(
+  $color-tertiary-light,
+  $lightness: -10%
+);
 $color-tertiary-light-focus: #777;
 $color-tertiary-light-background: rgba($color-tertiary-light, 0.3);
 $color-destructive: #b52727;
@@ -39,9 +50,9 @@ $color-destructive-hover: #a02222;
 // Typography colors
 $color-heading: $color-wordpress-heading;
 $color-text: $color-wordpress-text;
-$color-text-hover: darken($color-text, 10%);
+$color-text-hover: color.adjust($color-text, $lightness: -10%);
 $color-text-light: #757575;
-$color-text-light-hover: darken($color-text-light, 10%);
+$color-text-light-hover: color.adjust($color-text-light, $lightness: -10%);
 $color-text-dark: #2c3338;
 
 // Form colors

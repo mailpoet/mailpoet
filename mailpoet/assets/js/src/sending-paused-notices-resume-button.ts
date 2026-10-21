@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import jQuery from 'jquery';
+import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
 import { extractEmailDomain } from 'common/functions';
 
@@ -52,6 +53,7 @@ const resumeMailerSending = () => {
   })
     .done(() => {
       MailPoet.Notice.success(__('Sending has been resumed.', 'mailpoet'));
+      Hooks.doAction('mailpoet.held_campaigns.refresh');
     })
     .fail((response: ErrorResponse) => {
       if (response.errors.length > 0) {

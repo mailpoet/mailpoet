@@ -26,6 +26,7 @@ class ConfirmTitleAlignmentSettingsInALCBlockCest {
     $i->moveMouseOver('[data-automation-id="alc_posts"]');
     $i->waitForElementVisible('[data-automation-id="settings_tool"]');
     $i->click('[data-automation-id="settings_tool"]');
+    $i->waitForEditorSettingsPanel();
     $i->waitForElementVisible('[data-automation-id="display_options"]');
     //display only the post we created
     $i->fillField('[data-automation-id="show_max_posts"]', '1');

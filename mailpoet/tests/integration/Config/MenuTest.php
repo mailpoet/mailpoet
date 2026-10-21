@@ -200,7 +200,9 @@ class MenuTest extends \MailPoetTest {
     );
 
     $servicesCheckerProperty = new \ReflectionProperty(Menu::class, 'servicesChecker');
-    $servicesCheckerProperty->setAccessible(true);
+    if (PHP_VERSION_ID < 80100) {
+      $servicesCheckerProperty->setAccessible(true);
+    }
     $previousChecker = $servicesCheckerProperty->getValue($menu);
     $servicesCheckerProperty->setValue($menu, $checker);
 
@@ -403,7 +405,9 @@ class MenuTest extends \MailPoetTest {
 
     $menu = $this->diContainer->get(Menu::class);
     $emailEditorProperty = new \ReflectionProperty(Menu::class, 'emailEditor');
-    $emailEditorProperty->setAccessible(true);
+    if (PHP_VERSION_ID < 80100) {
+      $emailEditorProperty->setAccessible(true);
+    }
     $previousEmailEditor = $emailEditorProperty->getValue($menu);
 
     try {

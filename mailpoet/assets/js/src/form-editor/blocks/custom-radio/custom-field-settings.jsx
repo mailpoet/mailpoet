@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { reduce, isEmpty, isEqualWith } from 'lodash';
 
 import { MailPoet } from 'mailpoet';
-import { CustomFieldDelete } from '../custom-field-delete.jsx';
+import { CustomFieldDelete } from '../custom-field-delete';
 import { Preview } from './settings-preview.jsx';
 
 function CustomFieldSettings({

@@ -4,23 +4,38 @@ namespace MailPoet\Captcha;
 
 use MailPoet\Router\Endpoints\Captcha as CaptchaEndpoint;
 use MailPoet\Router\Router;
-use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\MailPoetPageResolver;
+use MailPoet\Settings\Pages;
+use MailPoet\WooCommerce\Helper as WooHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CaptchaUrlFactory {
   private WPFunctions $wp;
-  private SettingsController $settings;
+  private MailPoetPageResolver $pageResolver;
+  private WooHelper $wooHelper;
 
   const REFERER_MP_FORM = 'mp_form';
   const REFERER_WP_FORM = 'wp_register_form';
   const REFERER_WC_FORM = 'wc_register_form';
 
+  const ERROR_LIMIT = 'limit';
+  const ERROR_INVALID = 'invalid';
+
   public function __construct(
     WPFunctions $wp,
-    SettingsController $settings
+    MailPoetPageResolver $pageResolver,
+    WooHelper $wooHelper
   ) {
     $this->wp = $wp;
-    $this->settings = $settings;
+    $this->pageResolver = $pageResolver;
+    $this->wooHelper = $wooHelper;
+  }
+
+  public function getRegistrationUrl(string $referrer): string {
+    if ($referrer === self::REFERER_WC_FORM) {
+      return $this->wooHelper->wcGetPagePermalink('myaccount') ?: $this->wp->homeUrl();
+    }
+    return (string)$this->wp->wpRegistrationUrl();
   }
 
   public function getCaptchaUrl(array $data) {
@@ -57,11 +72,10 @@ class CaptchaUrlFactory {
 
   public function getCaptchaPreviewUrl($post = null) {
     if ($post === null) {
-      $post = $this->wp->getPost($this->settings->get('subscription.pages.captcha'));
+      $post = $this->getCaptchaPage();
     }
-    if ($post === null) return;
 
-    $url = $this->wp->getPermalink($post);
+    $url = $this->getBaseUrl($post);
 
     // Use preview session ID for preview
     $data = [
@@ -77,9 +91,9 @@ class CaptchaUrlFactory {
       'data=' . Router::encodeRequestData($data),
     ];
 
-    $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
+    $url .= ($this->wp->wpParseUrl($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
 
-    $urlParams = parse_url($url);
+    $urlParams = $this->wp->wpParseUrl($url);
     if (!is_array($urlParams) || empty($urlParams['scheme'])) {
       $url = $this->wp->getBloginfo('url') . $url;
     }
@@ -88,8 +102,7 @@ class CaptchaUrlFactory {
   }
 
   private function getUrl(string $action, array $data) {
-    $post = $this->wp->getPost($this->settings->get('subscription.pages.captcha'));
-    $url = $this->wp->getPermalink($post);
+    $url = $this->getBaseUrl($this->getCaptchaPage());
 
     $params = [
       Router::NAME,
@@ -98,7 +111,15 @@ class CaptchaUrlFactory {
       'data=' . Router::encodeRequestData($data),
     ];
 
-    $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
+    $url .= ($this->wp->wpParseUrl($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
     return $url;
+  }
+
+  private function getCaptchaPage(): ?\WP_Post {
+    return $this->pageResolver->getPage('subscription.pages.captcha', Pages::PAGE_CAPTCHA);
+  }
+
+  private function getBaseUrl(?\WP_Post $post): string {
+    return $this->pageResolver->getPermalinkOrHome($post);
   }
 }

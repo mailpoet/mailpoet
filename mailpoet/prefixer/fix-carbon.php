@@ -5,6 +5,8 @@ set_error_handler(function ($severity, $message, $file, $line) {
   throw new ErrorException($message, 0, $severity, $file, $line);
 });
 
+require_once __DIR__ . '/replace-in-file.php';
+
 // Remove all locales except default english
 // We don't use Carbon translate capabilities so we keep only default english locale to reduce size of the library
 exec('find ' . __DIR__ . "/../vendor-prefixed/nesbot/carbon/src/Carbon/Lang -type f -not -name 'en.php' -delete");
@@ -20,50 +22,17 @@ LANGUGES;
 file_put_contents(__DIR__ . '/../vendor-prefixed/nesbot/carbon/src/Carbon/List/languages.php', $langList);
 
 // @mixin annotation causes an error in Doctrine Annotations
-$replacements = [
-  [
-    'file' => '../vendor-prefixed/nesbot/carbon/src/Carbon/Carbon.php',
-    'find' => [
-      '@mixin DeprecatedProperties',
-    ],
-    'replace' => [
-      '',
-    ],
-  ],
-  [
-    'file' => '../vendor-prefixed/nesbot/carbon/src/Carbon/CarbonImmutable.php',
-    'find' => [
-      '@mixin DeprecatedProperties',
-    ],
-    'replace' => [
-      '',
-    ],
-  ],
-  [
-    'file' => '../vendor-prefixed/nesbot/carbon/src/Carbon/Traits/Date.php',
-    'find' => [
-      '@mixin DeprecatedProperties',
-    ],
-    'replace' => [
-      '',
-    ],
-  ],
-  [
-    'file' => '../vendor-prefixed/nesbot/carbon/src/Carbon/Traits/Timestamp.php',
-    'find' => [
-      'public static function createFromTimestamp($timestamp, $tz = null)',
-    ],
-    'replace' => [
-      '#[\ReturnTypeWillChange]' . PHP_EOL . 'public static function createFromTimestamp($timestamp, $tz = null)',
-    ],
-  ],
-];
-
-foreach ($replacements as $singleFile) {
-  $data = file_get_contents($singleFile['file']);
-  $data = str_replace($singleFile['find'], $singleFile['replace'], $data);
-  file_put_contents($singleFile['file'], $data);
+foreach (['Carbon.php', 'CarbonImmutable.php', 'Traits/Date.php'] as $carbonFile) {
+  replaceInFile(__DIR__ . '/../vendor-prefixed/nesbot/carbon/src/Carbon/' . $carbonFile, ['@mixin DeprecatedProperties'], '');
 }
+
+// setAccessible() is deprecated in PHP 8.5 and has no effect since PHP 8.1
+// The spaces keep the replacement from containing its own find string
+replaceInFile(
+  __DIR__ . '/../vendor-prefixed/nesbot/carbon/src/Carbon/Traits/Mixin.php',
+  ['$method->setAccessible(\true);'],
+  'if (PHP_VERSION_ID < 80100) { $method->setAccessible( \true ); }'
+);
 
 // cleanup file types by extension
 exec('find ' . __DIR__ . "/../vendor-prefixed/nesbot/carbon -type f -name '*.xml' -delete");

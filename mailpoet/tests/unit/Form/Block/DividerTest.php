@@ -71,4 +71,21 @@ class DividerTest extends \MailPoetUnitTest {
     verify($result)->stringContainsString("border-top-color: red;");
     verify($result)->stringContainsString("width: 50%");
   }
+
+  public function testItRendersDefaultsForStyleValuesThatAreNotValid() {
+    $block = $this->block;
+    $block['params'] = [
+      'style' => 'solid;x-style:1',
+      'color' => 'red;x-color:1',
+      'divider_width' => '50;x-width:1',
+      'divider_height' => '2;x-height:1',
+      'height' => '10;x-spacer:1',
+    ];
+    $result = $this->divider->render($block);
+    verify($result)->stringNotContainsString('x-');
+    verify($result)->stringContainsString('border-top-style: solid;');
+    verify($result)->stringContainsString('border-top-color: black;');
+    verify($result)->stringContainsString('width: 100%');
+    verify($result)->stringContainsString("style='height: 1px;'");
+  }
 }

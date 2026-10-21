@@ -27,21 +27,33 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Features\FeatureFlagsController;
+use MailPoet\Features\FeaturesController;
+use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\SubscriberError;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
+use MailPoet\Newsletter\Sending\OverdueCampaignHold;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Sending\TemplateBatch;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
+use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Services\AuthorizedSenderDomainController;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsNewslettersRepository;
@@ -54,6 +66,7 @@ use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -116,6 +129,12 @@ class SendingQueueTest extends \MailPoetTest {
   /** @var AuthorizedEmailsController */
   private $authorizedEmailsController;
 
+  /** @var FeatureFlagsController */
+  private $featureFlagsController;
+
+  /** @var FeaturesController */
+  private $featuresController;
+
   public function _before() {
     parent::_before();
     $wpUsers = get_users();
@@ -167,7 +186,14 @@ class SendingQueueTest extends \MailPoetTest {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->statisticsNewslettersRepository = $this->diContainer->get(StatisticsNewslettersRepository::class);
+    $this->featureFlagsController = $this->diContainer->get(FeatureFlagsController::class);
+    $this->featuresController = $this->diContainer->get(FeaturesController::class);
     $this->sendingQueueWorker = $this->getSendingQueueWorker();
+  }
+
+  public function _after() {
+    $this->disableMssTemplatedSending();
+    parent::_after();
   }
 
   private function getDirectUnsubscribeURL() {
@@ -227,7 +253,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
     try {
       $sendingQueueWorker->process();
@@ -266,7 +293,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
     $sendingQueueWorker->sendNewsletters(
       $this->scheduledTask,
@@ -317,7 +345,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
     $sendingQueueWorker->sendNewsletters(
       $this->scheduledTask,
@@ -361,7 +390,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
     $sendingQueueWorker->process();
   }
@@ -533,8 +563,14 @@ class SendingQueueTest extends \MailPoetTest {
         [
           'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber) {
             // newsletter body should not be empty
-            verify(!empty($newsletter[0]['body']['html']))->true();
-            verify(!empty($newsletter[0]['body']['text']))->true();
+            $this->assertIsArray($newsletter);
+            $this->assertCount(1, $newsletter);
+            $firstNewsletter = $newsletter[0] ?? null;
+            $this->assertIsArray($firstNewsletter);
+            $firstNewsletterBody = $firstNewsletter['body'] ?? null;
+            $this->assertIsArray($firstNewsletterBody);
+            verify(!empty($firstNewsletterBody['html']))->true();
+            verify(!empty($firstNewsletterBody['text']))->true();
             return $this->mailerTaskDummyResponse;
           }),
           'getProcessingMethod' => Expected::exactly(1, function() {
@@ -576,6 +612,345 @@ class SendingQueueTest extends \MailPoetTest {
       'queue' => $this->sendingQueue,
     ]);
     verify($statistics)->notEquals(false);
+  }
+
+  public function testItCanProcessSubscribersInTemplatedBulk(): void {
+    $this->enableMssTemplatedSending();
+
+    $subscriber2 = $this->createSubscriber('jane@doe.com', 'Jane', 'Doe', [$this->segment]);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [
+      $this->subscriber->getId(),
+      $subscriber2->getId(),
+    ]);
+    $this->sendingQueue->setNewsletterRenderedSubject('Newsletter for [subscriber:firstname]');
+    $this->sendingQueue->setNewsletterRenderedBody([
+      'html' => '<p>Hello [subscriber:firstname]</p>',
+      'text' => 'Hello [subscriber:firstname]',
+    ]);
+    $this->entityManager->flush();
+
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber, $extraParams) {
+            verify($newsletter)->instanceOf(TemplateBatch::class);
+            $template = $newsletter->getTemplate();
+            $substitutions = $newsletter->getSubstitutions();
+            verify($template['body']['html'])->stringContainsString('{{mailpoet_mss_');
+            $this->assertCount(2, $substitutions);
+            $this->assertNotSame($substitutions[0], $substitutions[1]);
+            $this->assertSame('Newsletter for John', strtr($template['subject'], $substitutions[0]['subject']));
+            $this->assertSame('Newsletter for Jane', strtr($template['subject'], $substitutions[1]['subject']));
+            $this->assertStringContainsString('Hello John', strtr($template['body']['html'], $substitutions[0]['html']));
+            $this->assertStringContainsString('Hello Jane', strtr($template['body']['html'], $substitutions[1]['html']));
+            $this->assertStringContainsString('Hello John', strtr($template['body']['text'], $substitutions[0]['text']));
+            $this->assertStringContainsString('Hello Jane', strtr($template['body']['text'], $substitutions[1]['text']));
+            verify($subscriber)->arrayCount(2);
+            verify($extraParams['unsubscribe_url'])->notEmpty();
+            return $this->mailerTaskDummyResponse;
+          }),
+          'getProcessingMethod' => Expected::exactly(1, function() {
+            return 'bulk';
+          }),
+        ]
+      )
+    );
+
+    $sendingQueueWorker->process();
+
+    verify($this->sendingThrottlingHandler->getBatchSize())->equals(SendingThrottlingHandler::TEMPLATED_INITIAL_BATCH_SIZE);
+  }
+
+  public function testItFallsBackToStandardSendingWhenTemplatedBatchTemplatesDiverge(): void {
+    $this->enableMssTemplatedSending();
+
+    $subscriber2 = $this->createSubscriber('jane@doe.com', 'Jane', 'Doe', [$this->segment]);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [
+      $this->subscriber->getId(),
+      $subscriber2->getId(),
+    ]);
+
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          // Only the second, standard run sends: one rendered email per subscriber.
+          'sendBulk' => Expected::once(function($newsletters, $subscribers) {
+            verify($newsletters)->isArray();
+            verify($newsletters)->arrayCount(2);
+            verify($subscribers)->arrayCount(2);
+            return $this->mailerTaskDummyResponse;
+          }),
+          'prepareSubscriberForSending' => function($subscriber) {
+            return $subscriber->getEmail();
+          },
+        ]
+      )
+    );
+    $renderedNewsletter = ['id' => $this->newsletter->getId(), 'subject' => 'Subject', 'body' => ['html' => '', 'text' => '']];
+    // Each subscriber produces a different template, which must abort the templated batch.
+    $sendingQueueWorker->newsletterTask = $this->make(NewsletterTask::class, [
+      'prepareNewsletterForTemplatedSending' => function($newsletter, $subscriber) {
+        return [
+          'newsletter' => ['id' => $newsletter->getId(), 'subject' => 'Subject for ' . $subscriber->getId(), 'body' => ['html' => '', 'text' => '']],
+          'substitutions' => ['subject' => [], 'html' => [], 'text' => []],
+        ];
+      },
+      'prepareNewsletterForSending' => $renderedNewsletter,
+      'isSentWithTracking' => false,
+    ]);
+
+    try {
+      $sendingQueueWorker->processQueue($this->scheduledTask, $this->newsletter, [$this->subscriber, $subscriber2], 1000000000000000000, 'bulk');
+      $this->fail('Templated batch mismatch did not throw.');
+    } catch (InvalidStateException $exception) {
+      verify($exception->getMessage())->stringContainsString('produced a different email template (subject)');
+    }
+
+    // The queue is not paused; it only loses templated sending.
+    $this->entityManager->refresh($this->scheduledTask);
+    $this->entityManager->refresh($this->sendingQueue);
+    verify($this->scheduledTask->getStatus())->notEquals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($this->sendingQueue->getMeta()[SendingQueueEntity::META_TEMPLATED_SENDING_DISABLED] ?? null)->true();
+    verify($this->sendingQueue->getCountProcessed())->equals(0);
+
+    // The next run sends the same subscribers in the standard way.
+    $sendingQueueWorker->processQueue($this->scheduledTask, $this->newsletter, [$this->subscriber, $subscriber2], 1000000000000000000, 'bulk');
+    $this->entityManager->refresh($this->sendingQueue);
+    verify($this->sendingQueue->getCountProcessed())->equals(2);
+  }
+
+  public function testItCanProcessAutomationSubscribersInTemplatedBulkWithoutDeprecatedFilters(): void {
+    $this->enableMssTemplatedSending();
+
+    $postId = $this->wp->wpInsertPost([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'private',
+      'post_title' => 'Automation email',
+      'post_content' => '<!-- wp:paragraph --><p>Automation email</p><!-- /wp:paragraph -->',
+    ]);
+    $this->assertIsInt($postId);
+    $this->assertGreaterThan(0, $postId);
+
+    $subscriber2 = $this->createSubscriber('jane@doe.com', 'Jane', 'Doe', [$this->segment]);
+    $newsletter = (new NewsletterFactory())
+      ->withAutomationType()
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withWpPostId($postId)
+      ->create();
+    $sendingQueue = $this->createQueueWithTask($newsletter);
+    $sendingQueue->setNewsletterRenderedSubject('Newsletter for [subscriber:firstname]');
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<p>Hello [subscriber:firstname]</p>',
+      'text' => 'Hello [subscriber:firstname]',
+    ]);
+    $scheduledTask = $sendingQueue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($scheduledTask, [
+      $this->subscriber->getId(),
+      $subscriber2->getId(),
+    ]);
+    $this->entityManager->flush();
+
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber, $extraParams) {
+            verify($newsletter)->instanceOf(TemplateBatch::class);
+            $template = $newsletter->getTemplate();
+            $substitutions = $newsletter->getSubstitutions();
+            verify($template['body']['html'])->stringContainsString('{{mailpoet_mss_');
+            $this->assertCount(2, $substitutions);
+            $this->assertNotSame($substitutions[0], $substitutions[1]);
+            $this->assertSame('Newsletter for John', strtr($template['subject'], $substitutions[0]['subject']));
+            $this->assertSame('Newsletter for Jane', strtr($template['subject'], $substitutions[1]['subject']));
+            $this->assertStringContainsString('Hello John', strtr($template['body']['html'], $substitutions[0]['html']));
+            $this->assertStringContainsString('Hello Jane', strtr($template['body']['html'], $substitutions[1]['html']));
+            $this->assertStringContainsString('Hello John', strtr($template['body']['text'], $substitutions[0]['text']));
+            $this->assertStringContainsString('Hello Jane', strtr($template['body']['text'], $substitutions[1]['text']));
+            verify($subscriber)->arrayCount(2);
+            verify($extraParams['unsubscribe_url'])->notEmpty();
+            return $this->mailerTaskDummyResponse;
+          }),
+          'getProcessingMethod' => Expected::exactly(1, function() {
+            return 'bulk';
+          }),
+        ]
+      )
+    );
+
+    $sendingQueueWorker->processQueue($scheduledTask, $newsletter, [$this->subscriber, $subscriber2], 1000000000000000000);
+  }
+
+  public function testItUsesRenderedBulkWhenDeprecatedAutomationPersonalizationFiltersAreRegistered(): void {
+    $this->enableMssTemplatedSending();
+
+    $postId = $this->wp->wpInsertPost([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'private',
+      'post_title' => 'Automation email',
+      'post_content' => '<!-- wp:paragraph --><p>Automation email</p><!-- /wp:paragraph -->',
+    ]);
+    $this->assertIsInt($postId);
+    $this->assertGreaterThan(0, $postId);
+
+    $subscriber2 = $this->createSubscriber('jane@doe.com', 'Jane', 'Doe', [$this->segment]);
+    $newsletter = (new NewsletterFactory())
+      ->withAutomationType()
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withWpPostId($postId)
+      ->create();
+    $sendingQueue = $this->createQueueWithTask($newsletter);
+    $sendingQueue->setNewsletterRenderedSubject('Newsletter for [subscriber:firstname]');
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<p>Hello [subscriber:firstname]</p>',
+      'text' => 'Hello [subscriber:firstname]',
+    ]);
+    $scheduledTask = $sendingQueue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($scheduledTask, [
+      $this->subscriber->getId(),
+      $subscriber2->getId(),
+    ]);
+    $this->entityManager->flush();
+
+    $htmlFilter = function(string $html, array $context): string {
+      return $html . '<p>Legacy HTML for ' . $context['recipient_email'] . '</p>';
+    };
+    $textFilter = function(string $text, array $context): string {
+      return $text . "\nLegacy text for " . $context['recipient_email'];
+    };
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber) {
+            $this->assertIsArray($newsletter);
+            $this->assertCount(2, $newsletter);
+            $firstNewsletter = $newsletter[0] ?? null;
+            $secondNewsletter = $newsletter[1] ?? null;
+            $this->assertIsArray($firstNewsletter);
+            $this->assertIsArray($secondNewsletter);
+            $firstNewsletterBody = $firstNewsletter['body'] ?? null;
+            $secondNewsletterBody = $secondNewsletter['body'] ?? null;
+            $this->assertIsArray($firstNewsletterBody);
+            $this->assertIsArray($secondNewsletterBody);
+            $this->assertSame('Newsletter for John', $firstNewsletter['subject']);
+            $this->assertSame('Newsletter for Jane', $secondNewsletter['subject']);
+            $this->assertSame('<p>Hello John</p><p>Legacy HTML for john@doe.com</p>', $firstNewsletterBody['html']);
+            $this->assertSame('<p>Hello Jane</p><p>Legacy HTML for jane@doe.com</p>', $secondNewsletterBody['html']);
+            $this->assertSame("Hello John\nLegacy text for john@doe.com", $firstNewsletterBody['text']);
+            $this->assertSame("Hello Jane\nLegacy text for jane@doe.com", $secondNewsletterBody['text']);
+            verify($subscriber)->arrayCount(2);
+            return $this->mailerTaskDummyResponse;
+          }),
+          'getProcessingMethod' => Expected::exactly(1, function() {
+            return 'bulk';
+          }),
+        ]
+      )
+    );
+    $wp = Stub::make(new WPFunctions, [
+      'deprecatedHook' => Expected::exactly(4, function() {
+      }),
+    ]);
+    $sendingQueueWorker->newsletterTask = new NewsletterTask($wp);
+
+    try {
+      add_filter('mailpoet_automation_email_personalize_html_after', $htmlFilter, 0, 2);
+      add_filter('mailpoet_automation_email_personalize_text_after', $textFilter, 0, 2);
+
+      $sendingQueueWorker->processQueue($scheduledTask, $newsletter, [$this->subscriber, $subscriber2], 1000000000000000000);
+    } finally {
+      remove_filter('mailpoet_automation_email_personalize_html_after', $htmlFilter, 0);
+      remove_filter('mailpoet_automation_email_personalize_text_after', $textFilter, 0);
+    }
+  }
+
+  public function testItFallsBackToDefaultBatchSizeWhenDeprecatedAutomationPersonalizationFiltersAreRegistered(): void {
+    $this->enableMssTemplatedSending();
+
+    // Pause the default standard-newsletter task so process() only picks up the automation task below.
+    $this->scheduledTask->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+    $this->entityManager->flush();
+
+    $postId = $this->wp->wpInsertPost([
+      'post_type' => 'mailpoet_email',
+      'post_status' => 'private',
+      'post_title' => 'Automation email',
+      'post_content' => '<!-- wp:paragraph --><p>Automation email</p><!-- /wp:paragraph -->',
+    ]);
+    $this->assertIsInt($postId);
+
+    $newsletter = (new NewsletterFactory())
+      ->withAutomationType()
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withWpPostId($postId)
+      ->create();
+    $sendingQueue = $this->createQueueWithTask($newsletter);
+    $sendingQueue->setNewsletterRenderedSubject('Newsletter for [subscriber:firstname]');
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<p>Hello [subscriber:firstname]</p>',
+      'text' => 'Hello [subscriber:firstname]',
+    ]);
+    $scheduledTask = $sendingQueue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($scheduledTask, [$this->subscriber->getId()]);
+    $this->entityManager->flush();
+
+    // Spy on the batch-size decision: with deprecated filters registered, the send falls back to the
+    // old per-subscriber path, so the batch size must be told NOT to use templated (fast) sending.
+    $this->sendingThrottlingHandler = $this->construct(
+      SendingThrottlingHandler::class,
+      [$this->loggerFactory, $this->diContainer->get(SettingsController::class), $this->wp],
+      [
+        'setUseTemplatedSending' => Expected::once(function($useTemplatedSending) {
+          verify($useTemplatedSending)->false();
+        }),
+      ]
+    );
+
+    $htmlFilter = function(string $html, array $context): string {
+      return $html;
+    };
+    $textFilter = function(string $text, array $context): string {
+      return $text;
+    };
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'sendBulk' => function() {
+            return $this->mailerTaskDummyResponse;
+          },
+          'getProcessingMethod' => function() {
+            return 'bulk';
+          },
+        ]
+      )
+    );
+    $wp = Stub::make(new WPFunctions, [
+      'deprecatedHook' => function() {
+      },
+    ]);
+    $sendingQueueWorker->newsletterTask = new NewsletterTask($wp);
+
+    try {
+      add_filter('mailpoet_automation_email_personalize_html_after', $htmlFilter, 0, 2);
+      add_filter('mailpoet_automation_email_personalize_text_after', $textFilter, 0, 2);
+
+      $sendingQueueWorker->process();
+    } finally {
+      remove_filter('mailpoet_automation_email_personalize_html_after', $htmlFilter, 0);
+      remove_filter('mailpoet_automation_email_personalize_text_after', $textFilter, 0);
+    }
   }
 
   public function testItProcessesStandardNewsletters() {
@@ -669,7 +1044,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
 
     $sendingQueueWorker->sendNewsletters(
@@ -1385,7 +1761,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $this->authorizedEmailsController
+      $this->authorizedEmailsController,
+      $this->featuresController
     );
     try {
       $sendingQueueWorker->sendNewsletters(
@@ -1518,9 +1895,15 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItPausesSendingTaskWhenSenderAddressDoesNotMeetRequirements() {
+    $contexts = [];
     $authorizedEmailControllerMock = $this->make(
       AuthorizedEmailsController::class,
-      ['isSenderAddressValid' => false]
+      [
+        'isSenderAddressValid' => function ($newsletter, $context = 'activation') use (&$contexts) {
+          $contexts[] = $context;
+          return false;
+        },
+      ]
     );
     $this->newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
     $this->entityManager->flush();
@@ -1530,8 +1913,117 @@ class SendingQueueTest extends \MailPoetTest {
 
     $this->entityManager->refresh($this->scheduledTask);
     $this->entityManager->refresh($this->newsletter);
+    verify($contexts)->same(['sending', 'recheck']);
     verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($this->scheduledTask->getPauseReason())->same(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
     verify($this->newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+  }
+
+  public function testItDoesNotPauseSendingTaskWhenFreshSenderCheckPasses() {
+    $contexts = [];
+    $authorizedEmailControllerMock = $this->make(
+      AuthorizedEmailsController::class,
+      [
+        'isSenderAddressValid' => function ($newsletter, $context = 'activation') use (&$contexts) {
+          $contexts[] = $context;
+          return $context === 'recheck';
+        },
+      ]
+    );
+    $this->newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $this->entityManager->flush();
+
+    $mailerMock = $this->construct(
+      MailerTask::class,
+      [$this->diContainer->get(MailerFactory::class)],
+      ['send' => Expected::once($this->mailerTaskDummyResponse)]
+    );
+    $sendingQueueWorker = $this->getSendingQueueWorker($mailerMock, $authorizedEmailControllerMock);
+    $sendingQueueWorker->process();
+
+    $this->entityManager->refresh($this->scheduledTask);
+    verify($contexts)->same(['sending', 'recheck']);
+    verify($this->scheduledTask->getStatus())->notEquals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($this->scheduledTask->getPauseReason())->null();
+  }
+
+  public function testItDoesNotRequestFreshSenderCheckWhenCachedCheckPasses() {
+    $contexts = [];
+    $authorizedEmailControllerMock = $this->make(
+      AuthorizedEmailsController::class,
+      [
+        'isSenderAddressValid' => function ($newsletter, $context = 'activation') use (&$contexts) {
+          $contexts[] = $context;
+          return true;
+        },
+      ]
+    );
+    $this->newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $this->entityManager->flush();
+
+    $mailerMock = $this->construct(
+      MailerTask::class,
+      [$this->diContainer->get(MailerFactory::class)],
+      ['send' => Expected::once($this->mailerTaskDummyResponse)]
+    );
+    $sendingQueueWorker = $this->getSendingQueueWorker($mailerMock, $authorizedEmailControllerMock);
+    $sendingQueueWorker->process();
+
+    verify($contexts)->same(['sending']);
+  }
+
+  public function testItBacksOffFromTheShopWhenSenderDomainsCannotBeLoaded() {
+    $this->settings->set('mta', ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => 'key']);
+    $this->settings->set(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME, null);
+    set_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY, AuthorizedSenderDomainController::UPPER_LIMIT + 1);
+    set_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY, []);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
+
+    $bridgeCalls = 0;
+    $bridge = $this->make(Bridge::class, [
+      'getRawSenderDomainData' => function () use (&$bridgeCalls) {
+        $bridgeCalls++;
+        return null;
+      },
+    ]);
+    $senderDomainController = new AuthorizedSenderDomainController(
+      $bridge,
+      $this->diContainer->get(NewsletterStatisticsRepository::class),
+      $this->settings,
+      $this->diContainer->get(Subscribers::class),
+      $this->wp
+    );
+    $authorizedEmailsController = new AuthorizedEmailsController(
+      $this->settings,
+      $bridge,
+      $this->newslettersRepository,
+      $senderDomainController,
+      $this->wp
+    );
+    $this->newsletter->setSenderAddress('contact@unverified.com');
+    $this->newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $this->entityManager->flush();
+
+    $mailerMock = $this->construct(
+      MailerTask::class,
+      [$this->diContainer->get(MailerFactory::class)],
+      ['send' => $this->mailerTaskDummyResponse, 'sendBulk' => $this->mailerTaskDummyResponse]
+    );
+    $this->getSendingQueueWorker($mailerMock, $authorizedEmailsController)->process();
+
+    $this->entityManager->refresh($this->scheduledTask);
+    $this->scheduledTask->setStatus(null);
+    $this->newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $this->entityManager->flush();
+    $this->getSendingQueueWorker($mailerMock, $authorizedEmailsController)->process();
+
+    $this->entityManager->refresh($this->scheduledTask);
+    delete_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
+    verify($bridgeCalls)->same(1);
+    verify($this->scheduledTask->getStatus())->notEquals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($this->scheduledTask->getPauseReason())->null();
   }
 
   public function testItGeneratesPartOfAnMD5CampaignIdStoredAsSendingQueueMeta() {
@@ -1605,6 +2097,27 @@ class SendingQueueTest extends \MailPoetTest {
     );
     $sendingQueueWorker->process();
     verify($mailerTaskExtraParams['meta']['tracking_consent'])->equals(SubscriberEntity::TRACKING_CONSENT_DENIED);
+  }
+
+  public function testItPassesAnonymousPreviewUrlToMailerViaExtraParamsMeta() {
+    $mailerTaskExtraParams = [];
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'send' => Expected::exactly(1, function($newsletter, $subscriber, $extraParams = []) use (&$mailerTaskExtraParams) {
+            $mailerTaskExtraParams = $extraParams;
+            return $this->mailerTaskDummyResponse;
+          }),
+        ]
+      )
+    );
+    $sendingQueueWorker->process();
+    $expected = $this->diContainer->get(NewsletterUrl::class)
+      ->getViewInBrowserUrl($this->newsletter, null, $this->sendingQueue, false);
+    verify($mailerTaskExtraParams['meta']['preview_url'])->equals($expected);
+    verify($mailerTaskExtraParams['meta']['preview_url'])->stringNotContainsString((string)$this->subscriber->getEmail());
   }
 
   public function testCampaignIdsAreTheSameForDifferentSubscribers() {
@@ -1908,6 +2421,301 @@ class SendingQueueTest extends \MailPoetTest {
     $this->entityManager->flush();
   }
 
+  public function testItHoldsStandardNewsletterOverdueByMoreThanThreshold() {
+    $this->makeTaskDueHoursAgo(25);
+
+    $this->getWorkerExpectingSends(0)->process();
+
+    $this->assertTaskHeld($this->scheduledTask);
+    verify($this->scheduledTask->getInProgress())->false();
+    verify($this->sendingQueue->getNewsletterRenderedBody())->null();
+    verify($this->sendingQueue->getCountProcessed())->equals(0);
+  }
+
+  public function testItSendsNewsletterOverdueByLessThanThreshold() {
+    $this->makeTaskDueHoursAgo(23);
+
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+  }
+
+  public function testItDoesNotTouchOverdueTaskThatIsStillScheduled() {
+    $this->makeTaskDueHoursAgo(25);
+    $this->scheduledTask->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->entityManager->flush();
+
+    $this->getWorkerExpectingSends(0)->process();
+
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($this->scheduledTask->getPauseReason())->null();
+  }
+
+  public function testItDoesNotHoldCampaignThatAlreadySentToSomeone() {
+    $this->makeTaskDueHoursAgo(25);
+    $this->sendingQueue->setCountProcessed(1);
+    $this->entityManager->flush();
+
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getPauseReason())->null();
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+  }
+
+  public function testItSendsConfirmedOverdueCampaign() {
+    $this->makeTaskDueHoursAgo(25);
+    $this->scheduledTask->setOverdueSendConfirmed(true);
+    $this->entityManager->flush();
+
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+    verify($this->scheduledTask->isOverdueSendConfirmed())->true();
+  }
+
+  public function testItSendsHeldCampaignOnceItIsConfirmedAndResumed() {
+    $this->makeTaskDueHoursAgo(25);
+    $this->getWorkerExpectingSends(0)->process();
+    $this->assertTaskHeld($this->scheduledTask);
+
+    $this->scheduledTask->setOverdueSendConfirmed(true);
+    $this->scheduledTask->setStatus(null);
+    $this->entityManager->flush();
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+    verify($this->scheduledTask->isOverdueSendConfirmed())->true();
+  }
+
+  public function testItDoesNotHoldLatestNewsletterReplay() {
+    $this->makeTaskDueHoursAgo(25);
+    $this->sendingQueue->setMeta([NewsletterReplayMetadata::LATEST_NEWSLETTER_REPLAY => true]);
+    $this->entityManager->flush();
+
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getPauseReason())->null();
+  }
+
+  public function testItDoesNotHoldWelcomeEmail() {
+    $this->newsletter->setType(NewsletterEntity::TYPE_WELCOME);
+    $this->newsletter->getNewsletterSegments()->clear();
+    $this->makeTaskDueHoursAgo(25);
+
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getPauseReason())->null();
+  }
+
+  public function testItHoldsPostNotificationHistoryBeforeAllocatingPosts() {
+    $parent = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, 'Post Notification', NewsletterEntity::STATUS_ACTIVE);
+    $this->newsletter->setType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+    $this->newsletter->setParent($parent);
+    $this->makeTaskDueHoursAgo(25);
+
+    $this->getWorkerExpectingSends(0)->process();
+
+    $this->assertTaskHeld($this->scheduledTask);
+    verify($this->sendingQueue->getNewsletterRenderedBody())->null();
+    $postsTable = $this->entityManager->getClassMetadata(\MailPoet\Entities\NewsletterPostEntity::class)->getTableName();
+    verify($this->entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM $postsTable"))->equals(0);
+  }
+
+  public function testItHoldsReEngagementEmail() {
+    $this->newsletter->setType(NewsletterEntity::TYPE_RE_ENGAGEMENT);
+    $this->makeTaskDueHoursAgo(25);
+
+    $this->getWorkerExpectingSends(0)->process();
+
+    $this->assertTaskHeld($this->scheduledTask);
+  }
+
+  public function testItHoldsLegacyTaskWithoutScheduledTimeByCreationTime() {
+    $this->scheduledTask->setScheduledAt(null);
+    $this->scheduledTask->setCreatedAt(Carbon::now()->subDays(2));
+    $this->entityManager->flush();
+
+    $this->getWorkerExpectingSends(0)->process();
+
+    $this->assertTaskHeld($this->scheduledTask);
+  }
+
+  public function testItDoesNotHoldWhenTheHoldIsFilteredOff() {
+    $this->makeTaskDueHoursAgo(25);
+    $callback = '__return_false';
+    add_filter('mailpoet_hold_overdue_campaigns', $callback);
+    try {
+      $this->getWorkerExpectingSends(1)->process();
+    } finally {
+      remove_filter('mailpoet_hold_overdue_campaigns', $callback);
+    }
+
+    verify($this->scheduledTask->getPauseReason())->null();
+  }
+
+  public function testItDoesNotHoldWhenThresholdIsZero() {
+    $this->makeTaskDueHoursAgo(25);
+    $callback = '__return_zero';
+    add_filter('mailpoet_overdue_campaign_threshold', $callback);
+    try {
+      $this->getWorkerExpectingSends(1)->process();
+    } finally {
+      remove_filter('mailpoet_overdue_campaign_threshold', $callback);
+    }
+
+    verify($this->scheduledTask->getPauseReason())->null();
+  }
+
+  public function testItUsesTheFilteredThreshold() {
+    $this->makeTaskDueHoursAgo(2);
+    $callback = function() {
+      return 3600;
+    };
+    add_filter('mailpoet_overdue_campaign_threshold', $callback);
+    try {
+      $this->getWorkerExpectingSends(0)->process();
+    } finally {
+      remove_filter('mailpoet_overdue_campaign_threshold', $callback);
+    }
+
+    $this->assertTaskHeld($this->scheduledTask);
+  }
+
+  public function testItHoldsWholeTimeZoneCampaignWhenAnotherBatchIsOverdue() {
+    $campaignId = 'campaign-1';
+    $this->makeTaskDueHoursAgo(25);
+    $this->sendingQueue->setMeta($this->getTimeZoneMeta($campaignId));
+    $second = $this->addTimeZoneBatch($campaignId, Carbon::now()->subHours(23));
+    // The worker reaches the batch that is not yet 24 hours late first
+    $this->setTaskUpdatedAt($this->scheduledTask, Carbon::now()->subMinutes(5));
+    $this->setTaskUpdatedAt($this->getBatchTask($second), Carbon::now()->subMinutes(10));
+
+    $this->getWorkerExpectingSends(0)->process();
+
+    $this->assertTaskHeld($this->scheduledTask);
+    $this->assertTaskHeld($this->getBatchTask($second));
+    // The batch that was held together with the first one is not rendered afterwards
+    verify($this->sendingQueue->getNewsletterRenderedBody())->null();
+  }
+
+  public function testItHoldsFutureTimeZoneBatchesWithTheRunningOne() {
+    $campaignId = 'campaign-2';
+    $this->makeTaskDueHoursAgo(25);
+    $this->sendingQueue->setMeta($this->getTimeZoneMeta($campaignId));
+    $future1 = $this->addTimeZoneBatch($campaignId, Carbon::now()->addHours(2), ScheduledTaskEntity::STATUS_SCHEDULED);
+    $future2 = $this->addTimeZoneBatch($campaignId, Carbon::now()->addHours(5), ScheduledTaskEntity::STATUS_SCHEDULED);
+
+    $this->getWorkerExpectingSends(0)->process();
+
+    $this->assertTaskHeld($this->scheduledTask);
+    $this->assertTaskHeld($this->getBatchTask($future1));
+    $this->assertTaskHeld($this->getBatchTask($future2));
+
+    $this->diContainer->get(TimeZoneCampaignScheduler::class)->resumeCampaign($this->sendingQueue);
+
+    verify($this->scheduledTask->getStatus())->null();
+    verify($this->scheduledTask->getPauseReason())->null();
+    verify($this->getBatchTask($future1)->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($this->getBatchTask($future1)->getPauseReason())->null();
+    verify($this->getBatchTask($future2)->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+  }
+
+  public function testItDoesNotHoldTimeZoneCampaignThatAlreadyStarted() {
+    $campaignId = 'campaign-3';
+    $this->makeTaskDueHoursAgo(25);
+    $this->sendingQueue->setMeta($this->getTimeZoneMeta($campaignId));
+    $this->addTimeZoneBatch($campaignId, Carbon::now()->subHours(30), ScheduledTaskEntity::STATUS_COMPLETED, 1);
+
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getPauseReason())->null();
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+  }
+
+  public function testItDoesNotHoldTimeZoneCampaignWithBatchSendingRightNow() {
+    $campaignId = 'campaign-3b';
+    $this->makeTaskDueHoursAgo(25);
+    $this->sendingQueue->setMeta($this->getTimeZoneMeta($campaignId));
+    $midSendBatch = $this->addTimeZoneBatch($campaignId, Carbon::now()->addHours(1), null, 1);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($this->getBatchTask($midSendBatch), []);
+
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getPauseReason())->null();
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+  }
+
+  public function testItSendsConfirmedTimeZoneBatch() {
+    $campaignId = 'campaign-4';
+    $this->makeTaskDueHoursAgo(25);
+    $this->scheduledTask->setOverdueSendConfirmed(true);
+    $this->sendingQueue->setMeta($this->getTimeZoneMeta($campaignId));
+    $this->addTimeZoneBatch($campaignId, Carbon::now()->addHours(3), ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->entityManager->flush();
+
+    $this->getWorkerExpectingSends(1)->process();
+
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+  }
+
+  private function getWorkerExpectingSends(int $sends): SendingQueueWorker {
+    return $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        ['send' => $sends === 0 ? Expected::never() : Expected::exactly($sends, function() {
+          return $this->mailerTaskDummyResponse;
+        })]
+      )
+    );
+  }
+
+  private function makeTaskDueHoursAgo(int $hours): void {
+    $this->scheduledTask->setScheduledAt(Carbon::now()->subHours($hours));
+    $this->entityManager->flush();
+  }
+
+  private function assertTaskHeld(ScheduledTaskEntity $task): void {
+    $this->entityManager->refresh($task);
+    verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($task->getPauseReason())->equals(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+    verify((bool)$task->getInProgress())->false();
+  }
+
+  private function getTimeZoneMeta(string $campaignId): array {
+    return [
+      TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+      TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => $campaignId,
+    ];
+  }
+
+  private function addTimeZoneBatch(string $campaignId, \DateTimeInterface $scheduledAt, ?string $status = null, int $countProcessed = 0): SendingQueueEntity {
+    $queue = $this->createQueueWithTask($this->newsletter, $status);
+    $task = $queue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    $task->setScheduledAt($scheduledAt);
+    $queue->setMeta($this->getTimeZoneMeta($campaignId));
+    $queue->setCountProcessed($countProcessed);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($task, [$this->subscriber->getId()]);
+    $this->entityManager->flush();
+    return $queue;
+  }
+
+  private function getBatchTask(SendingQueueEntity $queue): ScheduledTaskEntity {
+    $task = $queue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    return $task;
+  }
+
+  private function setTaskUpdatedAt(ScheduledTaskEntity $task, \DateTimeInterface $updatedAt): void {
+    $table = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE $table SET updated_at = :updatedAt WHERE id = :id",
+      ['updatedAt' => $updatedAt->format('Y-m-d H:i:s'), 'id' => $task->getId()]
+    );
+    $this->entityManager->refresh($task);
+  }
+
   private function createQueueWithTask(NewsletterEntity $newsletter, $status = null, $body = null): SendingQueueEntity {
     $task = new ScheduledTaskEntity();
     $task->setType(SendingQueueWorker::TASK_TYPE);
@@ -1947,7 +2755,22 @@ class SendingQueueTest extends \MailPoetTest {
       $this->entityManager,
       $this->statisticsNewslettersRepository,
       $authorizedEmailControllerMock ?? $this->authorizedEmailsController,
+      $this->featuresController,
+      $this->diContainer->get(TimeZoneCampaignScheduler::class),
+      false,
+      null,
+      $this->diContainer->get(OverdueCampaignHold::class)
     );
+  }
+
+  private function enableMssTemplatedSending(): void {
+    $this->featureFlagsController->set(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING, true);
+    $this->featuresController->resetCache();
+  }
+
+  private function disableMssTemplatedSending(): void {
+    $this->featureFlagsController->set(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING, false);
+    $this->featuresController->resetCache();
   }
 
   private function createListWithSubscriber(): array {

@@ -22,6 +22,7 @@ class AuthorizedEmailsController {
   const AUTHORIZED_EMAIL_ERROR_PENDING_CONFIRMATION = 'Email address is pending confirmation';
 
   const AUTHORIZED_EMAILS_KEY = 'mailpoet_authorized_email_addresses';
+  const AUTHORIZED_EMAILS_RELOAD_FAILED_KEY = 'mailpoet_authorized_email_addresses_reload_failed';
 
   /** @var Bridge */
   private $bridge;
@@ -68,7 +69,7 @@ class AuthorizedEmailsController {
       return;
     }
 
-    $authorizedEmails = $this->getAuthorizedEmailAddresses() ?: [];
+    $authorizedEmails = $this->getAuthorizedEmailAddressesIgnoringCache();
     $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache();
     $isAuthorized = $this->validateAuthorizedEmail($authorizedEmails, $address);
 
@@ -92,23 +93,53 @@ class AuthorizedEmailsController {
   }
 
   public function getAuthorizedEmailAddresses(string $type = 'authorized'): array {
-    $data = $this->bridge->getAuthorizedEmailAddresses();
-    if (empty($data)) {
-      // API is potentially down, fallback to cache
-      $data = $this->wp->getTransient(self::AUTHORIZED_EMAILS_KEY);
-    } else {
-      $this->wp->setTransient(self::AUTHORIZED_EMAILS_KEY, $data, WEEK_IN_SECONDS);
+    return $this->pickType($this->getAllEmailData(true), $type);
+  }
+
+  public function getAuthorizedEmailAddressesIgnoringCache(string $type = 'authorized'): array {
+    return $this->pickType($this->getAllEmailData(false), $type);
+  }
+
+  public function clearCache(): void {
+    $this->wp->deleteTransient(self::AUTHORIZED_EMAILS_KEY);
+    $this->wp->deleteTransient(self::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY);
+  }
+
+  private function getAllEmailData(bool $useCache): array {
+    if ($useCache) {
+      $cached = $this->wp->getTransient(self::AUTHORIZED_EMAILS_KEY);
+      $cached = is_array($cached) ? $cached : null;
+      // A pending address can be confirmed at any time, so it forces a fresh read.
+      if ($cached !== null && empty($cached[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_PENDING])) {
+        return $cached;
+      }
+      if ($this->wp->getTransient(self::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY)) {
+        return $cached ?? [];
+      }
     }
 
-    if ($data && $type === self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL) {
+    $data = $this->bridge->getAuthorizedEmailAddresses();
+    if (is_array($data)) {
+      $this->wp->deleteTransient(self::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY);
+      $this->wp->setTransient(self::AUTHORIZED_EMAILS_KEY, $data, WEEK_IN_SECONDS);
       return $data;
     }
 
+    $this->wp->setTransient(self::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY, 1, 5 * 60);
+    // API is potentially down, fallback to cache
+    $cached = $this->wp->getTransient(self::AUTHORIZED_EMAILS_KEY);
+    return is_array($cached) ? $cached : [];
+  }
+
+  private function pickType(array $data, string $type): array {
+    if ($type === self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL) {
+      return $data;
+    }
     return $data[$type] ?? [];
   }
 
   public function createAuthorizedEmailAddress(string $email): array {
-    $allEmails = $this->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL);
+    $allEmails = $this->getAuthorizedEmailAddressesIgnoringCache(self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL);
 
     $authorizedEmails = isset($allEmails[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_AUTHORIZED]) ? $allEmails[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_AUTHORIZED] : [];
     $isAuthorized = $this->validateAuthorizedEmail($authorizedEmails, $email);
@@ -129,11 +160,12 @@ class AuthorizedEmailsController {
       throw new \InvalidArgumentException($response['message']);
     }
 
+    $this->getAuthorizedEmailAddressesIgnoringCache();
     return $response;
   }
 
   public function isEmailAddressAuthorized(string $email): bool {
-    $authorizedEmails = $this->getAuthorizedEmailAddresses() ?: [];
+    $authorizedEmails = $this->getAuthorizedEmailAddressesIgnoringCache();
     return $this->validateAuthorizedEmail($authorizedEmails, $email);
   }
 
@@ -151,7 +183,7 @@ class AuthorizedEmailsController {
       return null;
     }
 
-    $authorizedEmails = $this->getAuthorizedEmailAddresses();
+    $authorizedEmails = $this->getAuthorizedEmailAddressesIgnoringCache();
     // Keep previous check result for an invalid response from API
     if (!$authorizedEmails) {
       return null;
@@ -189,25 +221,43 @@ class AuthorizedEmailsController {
     }
   }
 
-  public function isSenderAddressValid(NewsletterEntity $newsletter, string $context = 'activation'): bool {
+  /**
+   * Contexts:
+   * - 'activation': new campaign, fresh domain data, no allowance when the Bridge returns nothing.
+   * - 'sending': existing campaign, cached domain data; allowed when the list is empty and there is no cache.
+   * - 'resume': existing campaign, fresh domain data requested by a user action (always asks the Bridge); allowed when the reload failed.
+   * - 'recheck': like 'resume' for background work; skips the Bridge for a few minutes after a failed reload.
+   * When the Bridge has no data the Sending Service decides.
+   *
+   * $requireVerifiedDomain only affects the 'resume' context. It skips the subscriber count requirement,
+   * because the Sending Service may have paused the campaign using its own subscriber count.
+   */
+  public function isSenderAddressValid(NewsletterEntity $newsletter, string $context = 'activation', bool $requireVerifiedDomain = false): bool {
     if (!in_array($newsletter->getType(), NewsletterEntity::CAMPAIGN_TYPES)) {
       return true;
     }
 
-    $isAuthorizedDomainRequired = $context === 'activation'
-      ? $this->senderDomainController->isAuthorizedDomainRequiredForNewCampaigns()
-      : $this->senderDomainController->isAuthorizedDomainRequiredForExistingCampaigns();
+    if ($context === 'activation') {
+      $isAuthorizedDomainRequired = $this->senderDomainController->isAuthorizedDomainRequiredForNewCampaigns();
+    } elseif ($context === 'resume' && $requireVerifiedDomain) {
+      $isAuthorizedDomainRequired = !$this->senderDomainController->shouldSkipAuthorization()
+        && $this->settings->get('mta.method') === Mailer::METHOD_MAILPOET;
+    } else {
+      $isAuthorizedDomainRequired = $this->senderDomainController->isAuthorizedDomainRequiredForExistingCampaigns();
+    }
 
     if (!$isAuthorizedDomainRequired) {
       return true;
     }
 
-    $verifiedDomains = $context === 'activation'
-      ? $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache()
-      : $this->senderDomainController->getVerifiedSenderDomains();
+    $verifiedDomains = $context === 'sending'
+      ? $this->senderDomainController->getVerifiedSenderDomains()
+      : $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache($context === 'recheck');
 
-    // The shop is not returning data, so we allow sending and let the Sending Service block the campaign if needed.
     if ($context === 'sending' && empty($verifiedDomains) && !$this->senderDomainController->isCacheAvailable()) {
+      return true;
+    }
+    if (in_array($context, ['resume', 'recheck'], true) && $this->senderDomainController->isLastReloadFailed()) {
       return true;
     }
 

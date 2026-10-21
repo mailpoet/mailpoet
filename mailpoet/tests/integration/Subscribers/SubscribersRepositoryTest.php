@@ -950,6 +950,44 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $wp->removeAllActions('mailpoet_subscriber_tag_removed');
   }
 
+  public function testGetCurrentWPUserIgnoresSubscriberOfUnconfirmedWpUserLink(): void {
+    $wpUserId = $this->createWpUser('unconfirmed-link@example.com');
+    try {
+      $this->diContainer->get(WPUserSubscriberLink::class)->markUnconfirmed($wpUserId, 'unconfirmed-link@example.com');
+      wp_set_current_user($wpUserId);
+
+      verify($this->repository->getCurrentWPUser())->null();
+    } finally {
+      $this->deleteWpUser($wpUserId);
+    }
+  }
+
+  public function testGetCurrentWPUserReturnsSubscriberOfConfirmedWpUserLink(): void {
+    $wpUserId = $this->createWpUser('confirmed-link@example.com');
+    try {
+      wp_set_current_user($wpUserId);
+
+      $subscriber = $this->repository->getCurrentWPUser();
+
+      $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+      verify($subscriber->getWpUserId())->equals($wpUserId);
+    } finally {
+      $this->deleteWpUser($wpUserId);
+    }
+  }
+
+  private function createWpUser(string $email): int {
+    $wpUserId = wp_create_user($email, 'password', $email);
+    $this->assertIsInt($wpUserId);
+    return $wpUserId;
+  }
+
+  private function deleteWpUser(int $wpUserId): void {
+    require_once ABSPATH . 'wp-admin/includes/user.php';
+    require_once ABSPATH . 'wp-admin/includes/ms.php';
+    is_multisite() ? wpmu_delete_user($wpUserId) : wp_delete_user($wpUserId);
+  }
+
   private function createSubscriber(string $email, ?DateTimeImmutable $deletedAt = null): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);

@@ -21,6 +21,8 @@ pnpm test:integration:premium --file=tests/integration/<Path>Test.php          #
 
 That covers ~90% of typical traffic. The rest of this skill handles the long tail.
 
+The shared script names used across our repos are aliases: `pnpm test:php` runs `test:unit`, `pnpm test:js` runs `test:javascript`, `pnpm test:e2e` runs `test:acceptance`.
+
 ## Quick reference
 
 | Suite             | Whole suite                                  | Single file                                                     | Runs in | Plugin    | Typical time on M1                 |
@@ -34,7 +36,7 @@ That covers ~90% of typical traffic. The rest of this skill handles the long tai
 
 Times are rough; first run on a cold Docker stack pays an extra 1–2min for container build/pull.
 
-**Premium variants:** replace `test:integration` / `test:acceptance` with `test:integration:premium` / `test:acceptance:premium`. Premium has no unit suite. Paths are relative to whichever plugin is being tested.
+Premium variants: see [Premium](#premium).
 
 **Single test method** (unit, integration, acceptance): append `:methodName` to the file path.
 
@@ -45,25 +47,7 @@ pnpm test:acceptance --file=tests/acceptance/Misc/WordPressSiteEditorCest.php:ed
 
 ## Flags
 
-`pnpm` forwards extra args transparently — `pnpm test:integration --file=X --debug` ends up as `cd mailpoet && ./do test:integration --skip-deps --file=X --debug`. Every flag below works through the `pnpm` wrapper.
-
-Source of truth: `mailpoet/RoboFile.php` (search for `public function test*`).
-
-- `--file=<path>[:method]` — all suites. Run a single file, or one method within it.
-- `--debug` — unit, integration (incl. woo/base variants). Codeception verbose mode: full stack traces, per-step output. Not on acceptance.
-- `--group=<name>` — integration, acceptance (incl. multisite). Filter to tests tagged `@group <name>` (e.g. `woo`, `failed`).
-- `--skip-group=<name>` — integration only. Exclude a group.
-- `--multisite` — integration (incl. woo/base). Acceptance has its own task (`./do test:acceptance-multisite`). Vestigial on unit — accepted by the signature but the suite never boots WP, so it has no effect.
-- `--stop-on-fail` — integration only. Halt on the first failure.
-- `--skip-plugins` — integration, acceptance. Don't load extra plugins (WC, etc.).
-- `--enable-hpos` / `--disable-hpos` / `--enable-hpos-sync` — integration (incl. variants), acceptance (incl. multisite). Toggle WooCommerce High-Performance Order Storage for the run. Use when your change touches WC order data paths.
-- `--blockbased-theme` — acceptance only, free plugin only. Activates Twenty Twenty-Four (a block theme) instead of Twenty Twenty-One, as CI's `acceptance_tests_blockbased_theme` job does.
-- `--wordpress-version=<ver>` — integration, acceptance. Run against a specific WP version, including beta/RC — see [[mailpoet-beta-compat-test]].
-- `--timeout=<seconds>` — acceptance, acceptance-multisite. Per-test timeout override.
-- `--skip-deps` — integration, acceptance (incl. multisite). Skip in-container `composer install`. The `pnpm test:integration` / `:acceptance` wrappers (and their premium variants) pass this by default.
-- `--xml[=path]` — all suites. Write JUnit XML output. Used by CI; rarely needed locally.
-
-When the wrapper isn't enough — direct Codeception access, artifact inspection, or DB poking — shell in (see "Shelling in" below).
+`pnpm` forwards extra args, so every flag works through the wrapper: `--file=<path>[:method]`, `--debug`, `--group` / `--skip-group`, `--multisite`, `--stop-on-fail`, `--skip-plugins`, the HPOS toggles, `--blockbased-theme`, `--wordpress-version`, `--timeout`, `--skip-deps` and `--xml`. Which suite takes which flag: [flags.md](flags.md).
 
 ## Suite essentials
 
@@ -80,7 +64,7 @@ Real WP + DB, Docker-backed. The default integration run loads WooCommerce; two 
 
 Pick `test:woo-integration` when iterating on WC integration code; pick `test:base-integration` when you suspect WC is contaminating an otherwise WC-independent test. Otherwise stick to the default.
 
-Multisite: `pnpm test:integration --multisite`. Re-run failed: `cd mailpoet && ./do test:failed-integration`.
+Multisite: `pnpm test:integration --multisite`. Re-run failed: `pnpm test:integration --group=failed` (runs in Docker like any integration run).
 
 ### Acceptance — `pnpm test:acceptance`
 
@@ -94,7 +78,7 @@ Selenium + Chrome in Docker. The slowest suite by a wide margin. Target the file
 
 Mocha + Chai + Sinon, host-side, free only. The wrapper has no `--file` flag — it runs the whole `mailpoet/tests/javascript/` tree.
 
-To focus on a single spec, either add `describe.only(...)` or `it.only(...)` to the spec and re-run (don't commit the `.only`), or invoke Mocha directly:
+To focus on a single spec, either add `describe.only(...)` or `it.only(...)` to the spec and re-run (don’t commit the `.only`), or invoke Mocha directly:
 
 ```bash
 cd mailpoet
@@ -107,7 +91,7 @@ cd mailpoet
   --extension spec.ts --recursive tests/javascript --grep "my describe block"
 ```
 
-Add `--inspect-brk` to the same command and attach Node DevTools (`chrome://inspect`) or a VS Code "Node: Attach" config to debug.
+Add `--inspect-brk` to the same command and attach Node DevTools (`chrome://inspect`) or a VS Code “Node: Attach” config to debug.
 
 **Stale `assets/dist/`:** a handful of specs import from compiled output. If a test reports `X is not a function` against code that obviously exports `X`, run `pnpm compile:js` and retry before going hunting.
 
@@ -115,26 +99,11 @@ Add `--inspect-brk` to the same command and attach Node DevTools (`chrome://insp
 
 Mocha suite covering the Backbone newsletter editor under `mailpoet/tests/javascript-newsletter-editor/`. Free plugin only.
 
-**Do not add new tests here.** The Backbone editor is being replaced by the block-based editor at `mailpoet/assets/js/src/mailpoet-email-editor-integration/`. Run this suite only when you've actually modified the legacy editor — otherwise it's slow noise.
+**Do not add new tests here.** The Backbone editor is being replaced by the block-based editor at `mailpoet/assets/js/src/mailpoet-email-editor-integration/`. Run this suite only when you’ve actually modified the legacy editor — otherwise it’s slow noise.
 
 ### Performance — `cd mailpoet && ./do test:performance`
 
-k6 + Playwright, Docker-backed. Free plugin only. Runs against a live MailPoet instance you supply (the test is the load generator, not a fixture). Three-step lifecycle:
-
-```bash
-cd mailpoet
-./do test:performance-setup                                       # one-time prep (seed data, etc.)
-./do test:performance --url=<wp-url> --us=<user> --pw=<pass>      # actual run
-./do test:performance-clean                                       # tear down test data
-```
-
-Optional flags on `test:performance`:
-
-- `--head` — run the Playwright browser headed (default headless).
-- `--scenario=<name>` — restrict to one scenario from `mailpoet/tests/performance/scenarios.js`.
-- Positional `<path>` (before `--`) — point at a different scenarios file.
-
-Cloud mode kicks in automatically when `K6_CLOUD_TOKEN` is set; results upload to k6 Cloud instead of printing locally. Full signature: `testPerformance` in `mailpoet/RoboFile.php`.
+k6 + Playwright load tests against a live MailPoet instance you supply. Free plugin only. Setup, flags and cloud mode: [performance.md](performance.md).
 
 ## Shelling in
 
@@ -146,34 +115,24 @@ cd /wp-core/wp-content/plugins/mailpoet                     # or mailpoet-premiu
 
 Useful when:
 
-- Running Codeception directly (`../tests_env/vendor/bin/codecept ...`) — e.g. for a flag the Robo wrapper doesn't expose.
+- Running Codeception directly (`../tests_env/vendor/bin/codecept ...`) — e.g. for a flag the Robo wrapper doesn’t expose.
 - Inspecting DB state mid-debug via `wp db query "..."` against the test database.
 - Iterating on the test runner itself.
 
 ### The `--skip-deps` footgun
 
-When invoking `./do test:*` inside the container, **always pass `--skip-deps`**. Without it the prefixer runs again on PHP 8.4 and can wipe `mailpoet/vendor-prefixed/`. Recovery: `pnpm bootstrap`.
+When invoking `./do test:*` inside the container, **always pass `--skip-deps`**. Without it the prefixer runs again on PHP 8.4+ and can wipe `mailpoet/vendor-prefixed/`. Recovery: `pnpm bootstrap`.
 
-This is why the host-side `pnpm test:integration` / `pnpm test:acceptance` (and their `:premium` variants) pass `--skip-deps` automatically. `pnpm test:unit` and `pnpm test:javascript` don't need it — they don't run in Docker. Use `pnpm test:install-deps` only when you actually want to refresh the container's deps (e.g. after a `composer.json` bump).
+This is why the host-side `pnpm test:integration` / `pnpm test:acceptance` (and their `:premium` variants) pass `--skip-deps` automatically. `pnpm test:unit` and `pnpm test:javascript` don’t need it — they don’t run in Docker. Use `pnpm test:install-deps` only when you actually want to refresh the container’s deps (e.g. after a `composer.json` bump).
 
 ## Common failure modes
 
-| Symptom                                                 | Likely cause / fix                                                                                                                                                                        |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| "Cannot connect to the Docker daemon" on a Docker suite | Docker Desktop / OrbStack isn't running. Start it, then re-run.                                                                                                                           |
-| First integration/acceptance run takes minutes to start | First-time container build/pull. Tail the test stack from the repo root: `docker compose -f tests_env/docker/docker-compose.yml logs -f` (not `pnpm env:logs` — that's the wp-env stack). |
-| `vendor-prefixed/` disappeared after a test run         | Ran `./do test:*` without `--skip-deps` on PHP 8.4. Recover with `pnpm bootstrap`.                                                                                                        |
-| Acceptance run starts but every test fails at login     | Test WordPress site is in a broken state. `cd mailpoet && ./do reset:test-docker` drops the test volumes (keeps images) and rebuilds.                                                     |
-| Docker is genuinely confused (zombies, weird state)     | `cd mailpoet && ./do delete:docker` does the harder reset: stops containers, drops volumes, **removes images** (next run will re-pull/build, ~1–2min). Does not touch the wp-env stack.   |
-| JS test errors with `X is not a function` for real code | `assets/dist/` is stale. Run `pnpm compile:js` and re-run.                                                                                                                                |
-| WC-related integration failures (orders, HPOS)          | Toggle HPOS for the run: `--enable-hpos`, `--disable-hpos`, or `--enable-hpos-sync`.                                                                                                      |
-| "Unknown option --file" or similar                      | Wrong wrapper for the suite (e.g. JavaScript has no `--file`). Check the Quick Reference.                                                                                                 |
-| Test passes locally but failed on CI                    | Hand off to [[debugging-failed-tests]] with the CI job URL, branch name, failing test path, and any WP/WC version overrides the CI run used.                                              |
-
-### Interrupting a long run
-
-Ctrl-C is fine, but it can leave Selenium / Chrome containers running for an acceptance run. They usually self-correct on the next invocation; if things look off, `./do reset:test-docker` is the soft reset and `./do delete:docker` is the hard one.
+Docker not running, a slow first run, a missing `vendor-prefixed/`, login failures, stale `assets/dist/`, HPOS-related failures and stuck containers: see [failure-modes.md](failure-modes.md) before re-running.
 
 ## Verification
 
-Read the final pass/fail summary line before reporting a run as green. "No output" or "command returned" is not evidence — look for `OK (N tests, M assertions)` (PHPUnit/Codeception) or the equivalent green line. For finishing-a-branch workflows, the canonical pre-push gate is `pnpm qa` plus the suite(s) touched by your change.
+Read the final pass/fail summary line before reporting a run as green. “No output” or “command returned” is not evidence — look for `OK (N tests, M assertions)` (PHPUnit/Codeception) or the equivalent green line. For finishing-a-branch workflows, the canonical pre-push gate is `pnpm qa` plus the suite(s) touched by your change.
+
+## Premium
+
+From the repo root, replace `test:integration` / `test:acceptance` with `test:integration:premium` / `test:acceptance:premium`. Premium has no unit or JavaScript suite. Paths are relative to whichever plugin is being tested. Inside `mailpoet-premium/`, `pnpm test:php` runs the integration suite, so it needs the `tests_env/` Docker stack.

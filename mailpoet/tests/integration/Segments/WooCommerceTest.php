@@ -13,6 +13,7 @@ use MailPoet\Subscribers\SegmentsCountRecalculator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\WPUserSubscriberLink;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -77,6 +78,26 @@ class WooCommerceTest extends \MailPoetTest {
     verify($subscriber->getIsWoocommerceUser())->equals(true);
     verify($subscriber->getSource())->equals(Source::WOOCOMMERCE_USER);
     verify($subscriber->getDeletedAt())->equals(null);
+  }
+
+  public function testItKeepsNamesOfSubscriberWithUnconfirmedLinkWhenSynchronizingCustomer(): void {
+    $user = $this->insertRegisteredCustomerWithOrder(null, ['first_name' => 'Test First', 'last_name' => 'Test Last']);
+    $this->createSubscriber(
+      'Mike',
+      'Mike',
+      $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      SubscriberEntity::STATUS_SUBSCRIBED,
+      $user->ID,
+      Source::WORDPRESS_USER
+    );
+    $this->diContainer->get(WPUserSubscriberLink::class)->markUnconfirmed($user->ID, $user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
+    $this->wooCommerceSegment->synchronizeRegisteredCustomer($user->ID, 'woocommerce_update_customer');
+
+    $subscriber = $this->findWCSubscriberByWpUserId($user->ID);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getFirstName())->equals('Mike');
+    verify($subscriber->getLastName())->equals('Mike');
   }
 
   public function testItSynchronizesUpdatedRegisteredCustomer(): void {
@@ -872,7 +893,8 @@ class WooCommerceTest extends \MailPoetTest {
       $this->entityManager->getConnection(),
       $this->createMock(\MailPoet\Config\SubscriberChangesNotifier::class),
       $this->diContainer->get(\MailPoet\Services\Validator::class),
-      $this->diContainer->get(\MailPoet\Subscribers\SegmentsCountRecalculator::class)
+      $this->diContainer->get(\MailPoet\Subscribers\SegmentsCountRecalculator::class),
+      $this->diContainer->get(\MailPoet\Subscribers\WPUserSubscriberLink::class)
     );
 
     $guest = $this->insertGuestCustomer();

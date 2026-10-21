@@ -52,13 +52,20 @@ class ApiDataSanitizerTest extends \MailPoetTest {
     $paragraph = $result[0];
     $nestedHeading = $result[1]['body'][0];
     $nestedCheckbox = $result[1]['body'][1];
-    verify($paragraph['params']['content'])->equals('alert(1);Paragraph');
+    $this->assertScriptRemoved('alert(1);', 'Paragraph', $paragraph['params']['content']);
     verify($paragraph['params']['align'])->equals('left');
     verify($paragraph['id'])->equals('paragraphinvalid');
-    verify($nestedHeading['params']['content'])->equals('alert(2);Heading');
+    $this->assertScriptRemoved('alert(2);', 'Heading', $nestedHeading['params']['content']);
     verify($nestedHeading['params']['align'])->equals('right');
     verify($nestedHeading['id'])->equals('headinginvalid');
-    verify($nestedCheckbox['params']['values'][0]['value'])->equals('alert(3);Checkbox');
+    $this->assertScriptRemoved('alert(3);', 'Checkbox', $nestedCheckbox['params']['values'][0]['value']);
     verify($nestedCheckbox['params']['label'])->equals('Label');
+  }
+
+  /**
+   * WordPress 7.2 drops the text inside a removed script element; older versions keep it as text.
+   */
+  private function assertScriptRemoved(string $scriptText, string $expectedText, string $sanitized): void {
+    $this->assertContains($sanitized, [$expectedText, $scriptText . $expectedText]);
   }
 }

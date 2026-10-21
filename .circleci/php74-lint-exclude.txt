@@ -1,0 +1,22 @@
+# Files in the release zip that do not parse on PHP 7.4 by design.
+# Paths are relative to the plugin root. Lines starting with # are comments.
+# The lint job fails if a listed file is no longer in the zip, so remove stale entries.
+
+# Only loaded when PHP_VERSION_ID >= 80000 (CacheAdapter::getItem checks it).
+vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/Psr6/TypedCacheItem.php
+
+# PHP 8 attribute classes. They are only read through Reflection::getAttributes(), which exists on PHP 8+.
+vendor-prefixed/symfony/dependency-injection/Attribute/AsTaggedItem.php
+vendor-prefixed/symfony/dependency-injection/Attribute/Autoconfigure.php
+vendor-prefixed/symfony/dependency-injection/Attribute/AutoconfigureTag.php
+vendor-prefixed/symfony/dependency-injection/Attribute/TaggedIterator.php
+vendor-prefixed/symfony/dependency-injection/Attribute/TaggedLocator.php
+vendor-prefixed/symfony/dependency-injection/Attribute/When.php
+# Only used inside the PHP_VERSION_ID >= 80000 branch of ServiceSubscriberTrait.
+vendor-prefixed/symfony/service-contracts/Attribute/SubscribedService.php
+
+# Polyfill bootstrap.php requires bootstrap80.php only when PHP_VERSION_ID >= 80000.
+vendor-prefixed/symfony/polyfill-iconv/bootstrap80.php
+vendor-prefixed/symfony/polyfill-intl-idn/bootstrap80.php
+vendor-prefixed/symfony/polyfill-intl-normalizer/bootstrap80.php
+vendor-prefixed/symfony/polyfill-mbstring/bootstrap80.php

@@ -23,6 +23,7 @@ import {
   SCHEDULE_MODE_WEBSITE_TIME,
   SUBSCRIBER_TIMEZONE_LEAD_TIME_HOURS,
   ScheduleMode,
+  getDefaultScheduledAt,
   getScheduleMode,
   getScheduleModeOptionChanges,
 } from 'common/newsletter-schedule-mode';
@@ -31,10 +32,6 @@ import { LockedBadge } from 'common/premium-modal/locked-badge';
 import { Field } from 'form/types';
 import { SendToFieldWithCount } from './send-to-field';
 
-const tomorrowLocalDateTime = `${window.mailpoet_tomorrow_date} 08:00:00`;
-const tomorrowDateTime = MailPoet.Date.toGmtDatetimeString(
-  tomorrowLocalDateTime,
-);
 const timeOfDayItems = window.mailpoet_schedule_time_of_day as unknown as {
   [key: string]: string;
 };
@@ -60,15 +57,18 @@ class StandardScheduling extends Component<
   StandardSchedulingProps,
   StandardSchedulingState
 > {
+  tomorrowDateTime: string;
+
   constructor(props: StandardSchedulingProps) {
     super(props);
     this.state = { showPremiumModal: false };
+    this.tomorrowDateTime = getDefaultScheduledAt();
   }
 
   getCurrentValue = (): Partial<NewsLetter['options']> => {
     const schedulingOptions = {
       isScheduled: '0',
-      scheduledAt: tomorrowDateTime,
+      scheduledAt: this.tomorrowDateTime,
     };
 
     return {
@@ -249,7 +249,7 @@ class StandardScheduling extends Component<
             onChange={this.handleValueChange}
             disabled={this.props.field.disabled}
             dateValidation={this.getDateValidation()}
-            defaultDateTime={tomorrowDateTime}
+            defaultDateTime={this.tomorrowDateTime}
             timeOfDayItems={timeOfDayItems}
             dateDisplayFormat={dateDisplayFormat}
             dateStorageFormat={dateStorageFormat}

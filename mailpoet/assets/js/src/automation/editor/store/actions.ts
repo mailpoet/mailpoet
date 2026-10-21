@@ -243,21 +243,10 @@ export function* trash(onTrashed: () => void = undefined) {
   onTrashed?.();
 
   if (data?.data?.status === AutomationStatus.TRASH) {
-    if (window.parent && window.parent !== window) {
-      window.parent.postMessage(
-        {
-          type: 'mailpoet-navigate-to-automation-listing',
-          notice: LISTING_NOTICES.automationDeleted,
-          'notice-args': [automation.name],
-        },
-        window.location.origin,
-      );
-    } else {
-      window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
-        notice: LISTING_NOTICES.automationDeleted,
-        'notice-args': [automation.name],
-      });
-    }
+    window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
+      notice: LISTING_NOTICES.automationDeleted,
+      'notice-args': [automation.name],
+    });
   }
 
   return {
@@ -326,11 +315,4 @@ export function alterContext(context: string, key: string, value: unknown) {
     key,
     value,
   };
-}
-
-export function setFullscreenForced(value: boolean) {
-  return {
-    type: 'SET_FULLSCREEN_FORCED',
-    value,
-  } as const;
 }

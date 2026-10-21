@@ -8,7 +8,7 @@ import {
 import PropTypes from 'prop-types';
 
 import { MailPoet } from 'mailpoet';
-import { CustomFieldDelete } from '../custom-field-delete.jsx';
+import { CustomFieldDelete } from '../custom-field-delete';
 
 function CustomFieldSettings({
   dateSettings,

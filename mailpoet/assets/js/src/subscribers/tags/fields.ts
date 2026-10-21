@@ -1,8 +1,8 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { dateI18n } from '@wordpress/date';
 import { createElement } from 'react';
 import type { Field } from '@wordpress/dataviews';
 import type { SubscriberCountBucket, Tag } from './types';
+import { MailPoetDate } from '../../date';
 import { getSubscribersListingUrl } from './api';
 
 const baseListFields: Field<Tag>[] = [
@@ -11,6 +11,7 @@ const baseListFields: Field<Tag>[] = [
     label: __('Name', 'mailpoet'),
     type: 'text',
     enableGlobalSearch: true,
+    enableHiding: false,
     enableSorting: true,
     filterBy: false,
   },
@@ -50,7 +51,9 @@ const baseListFields: Field<Tag>[] = [
       createElement(
         'span',
         null,
-        item.created_at ? dateI18n('M j, Y', item.created_at, undefined) : '',
+        item.created_at
+          ? MailPoetDate.format(item.created_at, { format: 'M j, Y' })
+          : '',
       ),
   },
 ];

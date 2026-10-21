@@ -93,8 +93,8 @@ const baseConfig = {
     minimizer: [
       new WebpackTerserPlugin({
         terserOptions: {
-          // preserve identifier names for easier debugging & support
-          mangle: false,
+          // Keep i18n function names so `wp i18n make-pot` still finds the strings.
+          mangle: { reserved: ['__', '_n', '_nx', '_x'] },
         },
         parallel: false,
       }),
@@ -260,8 +260,6 @@ const adminConfig = {
     automation_analytics:
       'automation/integrations/mailpoet/analytics/index.tsx',
     automation_templates: 'automation/templates/index.tsx',
-    automation_preview_embed: 'automation/preview-embed.tsx',
-    automation_flow_embed: 'automation/flow-embed.tsx',
     newsletter_editor: 'newsletter-editor/webpack-index.jsx',
     settings: 'settings/index.tsx',
     tags: 'subscribers/tags/index.tsx',
@@ -272,16 +270,29 @@ const adminConfig = {
     new webpack.IgnorePlugin({
       resourceRegExp: /^@wordpress\/vips\/worker$/,
     }),
+    // Nothing switches moment’s locale, so skip its ~200 KB of bundled locales.
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
+    }),
 
     new WebpackCopyPlugin({
+      // Mark copied files as minimized so webpack's default CSS minimizer
+      // ships them as their packages built them instead of re-minifying.
       patterns: [
         {
           from: 'node_modules/tinymce/skins/ui/oxide',
           to: 'skins/ui/oxide',
+          // TinyMCE switches to the .min.css files when any part of the page
+          // script URL contains ".min" (e.g. a domain like mindvalley.com),
+          // so both CSS variants ship. The .js files are never loaded.
+          globOptions: { ignore: ['**/*.js'] },
+          info: { minimized: true },
         },
         {
           from: 'node_modules/@woocommerce/email-editor/build-style',
           to: 'email-editor/style',
+          info: { minimized: true },
         },
       ],
     }),
@@ -308,22 +319,8 @@ const adminConfig = {
 };
 
 function requestToFormEditorExternal(request) {
-  if (request === 'react-dom/client') {
-    return 'ReactDOM';
-  }
   if (request.startsWith('@wordpress/') && request.split('/').length > 2) {
     return false;
-  }
-  // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
-  // packages, for that handling to kick in, we must not return anything from
-  // function.
-  /* eslint-disable-next-line consistent-return, no-useless-return */
-  return;
-}
-
-function requestToFormEditorHandle(request) {
-  if (request === 'react-dom/client') {
-    return 'react-dom';
   }
   // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
   // packages, for that handling to kick in, we must not return anything from
@@ -342,7 +339,6 @@ const formEditorConfig = {
     new DependencyExtractionWebpackPlugin({
       outputFormat: 'json',
       requestToExternal: requestToFormEditorExternal,
-      requestToHandle: requestToFormEditorHandle,
     }),
   ],
 };
@@ -361,8 +357,9 @@ const publicConfig = {
     // by the legacy form editor hardcode dist/js/public.js on third-party
     // sites. Such snippets can no longer be generated since MailPoet 3.45.0
     // (Feb 2020), when the legacy form editor was removed, but old copies
-    // may still be live. Nothing in the plugin itself loads this file.
-    public: 'webpack-public-index.jsx',
+    // may still be live. This file is now a small loader that pulls in
+    // public.min.js for those snippets. Nothing in the plugin loads it.
+    public: 'public-loader.ts',
   },
   plugins: [
     ...baseConfig.plugins,
@@ -411,6 +408,8 @@ const testConfig = {
       'blocks/social.spec.js',
       'blocks/spacer.spec.js',
       'blocks/text.spec.js',
+
+      'tinymce/mailpoet-shortcodes.spec.js',
     ],
   },
   module: {
@@ -578,7 +577,6 @@ const emailEditorBlocks = Object.assign({}, wpScriptConfig, {
       '/assets/js/src/mailpoet-custom-email-editor-blocks/powered-by-mailpoet/block.tsx',
     'latest-posts-block':
       '/assets/js/src/mailpoet-custom-email-editor-blocks/latest-posts/index.tsx',
-    mailpoet: '/assets/js/src/mailpoet.ts',
   },
   output: {
     filename: '[name].js',
@@ -652,27 +650,20 @@ const emailEditorIntegration = Object.assign({}, wpScriptConfig, {
   resolve: {
     ...wpScriptConfig.resolve,
     modules: ['node_modules', 'assets/js/src'],
+    alias: {
+      ...(wpScriptConfig.resolve.alias || {}),
+      // `require()` resolves the package to its CommonJS build, which bundles
+      // a second copy of its dependencies next to the ES module imports. The
+      // exports map blocks deep imports, so point at the file; `$` keeps the
+      // match exact.
+      '@woocommerce/email-editor$': path.resolve(
+        __dirname,
+        'node_modules/@woocommerce/email-editor/build-module/index.js',
+      ),
+    },
   },
   plugins: [
-    // Filter out the default DependencyExtractionWebpackPlugin
-    ...wpScriptConfig.plugins.filter(
-      (plugin) =>
-        plugin.constructor.name !== 'DependencyExtractionWebpackPlugin',
-    ),
-    // Add our custom DependencyExtractionWebpackPlugin that forces bundling of
-    // @wordpress/global-styles-engine and @wordpress/ui (the latter is not
-    // registered as a `wp-ui` script in WordPress, so it must be bundled).
-    new DependencyExtractionWebpackPlugin({
-      requestToExternal: (request) => {
-        if (
-          request === '@wordpress/global-styles-engine' ||
-          request === '@wordpress/ui'
-        ) {
-          return false;
-        }
-        return;
-      },
-    }),
+    ...wpScriptConfig.plugins,
     // Substitute the `__i18n_text_domain__` identifier used by the
     // @woocommerce/email-editor package so its translation strings extract
     // and translate under the MailPoet text domain instead of `woocommerce`.

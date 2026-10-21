@@ -2,13 +2,32 @@
 
 namespace MailPoet\Cron;
 
+use MailPoet\Cron\Workers\BulkConfirmationEmailResend;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
+use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails as StatsNotificationsAutomatedEmails;
+use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
+use MailPoet\Cron\Workers\SubscriberLimitNotificationWorker;
 use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Mailer\SendingLimitReachedException;
 use MailPoet\Util\Helpers;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Daemon {
+  /**
+   * Factory methods of the workers that send email, mapped to their task type in
+   * SendingEnvironment::GATED_TASK_TYPES. They are skipped when sending is paused.
+   */
+  public const GATED_WORKERS = [
+    'createStatsNotificationsWorker' => StatsNotificationsWorker::TASK_TYPE,
+    'createScheduleWorker' => 'schedule',
+    'createQueueWorker' => SendingQueue::TASK_TYPE,
+    'createStatsNotificationsWorkerForAutomatedEmails' => StatsNotificationsAutomatedEmails::TASK_TYPE,
+    'createBulkConfirmationEmailResendWorker' => BulkConfirmationEmailResend::TASK_TYPE,
+    'createSubscriberLimitNotificationWorker' => SubscriberLimitNotificationWorker::TASK_TYPE,
+  ];
+
   public $timer;
 
   /** @var CronHelper */
@@ -26,12 +45,15 @@ class Daemon {
   /** @var LoggerFactory  */
   private $loggerFactory;
 
+  private SendingEnvironment $sendingEnvironment;
+
   public function __construct(
     CronHelper $cronHelper,
     CronWorkerRunner $cronWorkerRunner,
     EntityManager $entityManager,
     WorkersFactory $workersFactory,
-    LoggerFactory $loggerFactory
+    LoggerFactory $loggerFactory,
+    SendingEnvironment $sendingEnvironment
   ) {
     $this->timer = microtime(true);
     $this->workersFactory = $workersFactory;
@@ -39,6 +61,7 @@ class Daemon {
     $this->entityManager = $entityManager;
     $this->cronHelper = $cronHelper;
     $this->loggerFactory = $loggerFactory;
+    $this->sendingEnvironment = $sendingEnvironment;
   }
 
   public function run($settingsDaemonData) {
@@ -46,10 +69,15 @@ class Daemon {
     $this->cronHelper->saveDaemon($settingsDaemonData);
 
     $errors = [];
+    $sendingAllowed = $this->sendingEnvironment->isSendingAllowed();
     foreach ($this->getWorkers() as $factoryMethod => $createWorker) {
       if (wp_is_maintenance_mode()) {
         // stop execution when in maintenance mode
         break;
+      }
+
+      if (!$sendingAllowed && isset(self::GATED_WORKERS[$factoryMethod])) {
+        continue;
       }
 
       $workerName = $factoryMethod;

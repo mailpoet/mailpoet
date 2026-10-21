@@ -293,7 +293,7 @@ class TimeZoneCampaignScheduler {
   }
 
   /**
-   * @return array{status:?string,scheduledAt:\DateTimeInterface|null,processedAt:\DateTimeInterface|null,countTotal:int,countProcessed:int,countToProcess:int,meta:array<string,mixed>}|null
+   * @return array{status:?string,scheduledAt:\DateTimeInterface|null,processedAt:\DateTimeInterface|null,countTotal:int,countProcessed:int,countToProcess:int,pauseReason:?string,meta:array<string,mixed>}|null
    */
   public function getAggregateQueueData(SendingQueueEntity $queue): ?array {
     if (!$this->isTimeZoneQueue($queue)) {
@@ -310,6 +310,8 @@ class TimeZoneCampaignScheduler {
     $lastProcessedAt = null;
     $breakdown = [];
     $statuses = [];
+    $pauseReason = null;
+    $hasPausedBatch = false;
     $meta = $queue->getMeta() ?? [];
 
     foreach ($queues as $campaignQueue) {
@@ -321,6 +323,10 @@ class TimeZoneCampaignScheduler {
       $countProcessed += $campaignQueue->getCountProcessed();
       $countToProcess += $campaignQueue->getCountToProcess();
       $statuses[] = $task->getStatus();
+      if (!$hasPausedBatch && $task->getStatus() === ScheduledTaskEntity::STATUS_PAUSED) {
+        $hasPausedBatch = true;
+        $pauseReason = $task->getPauseReason();
+      }
       $scheduledAt = $task->getScheduledAt();
       if ($scheduledAt) {
         $firstScheduledAt = $this->minDate($firstScheduledAt, $scheduledAt);
@@ -358,6 +364,7 @@ class TimeZoneCampaignScheduler {
       'countTotal' => $countTotal,
       'countProcessed' => $countProcessed,
       'countToProcess' => $countToProcess,
+      'pauseReason' => $pauseReason,
       'meta' => $meta,
     ];
   }
@@ -496,7 +503,7 @@ class TimeZoneCampaignScheduler {
   public function deleteReplaceableScheduledQueues(NewsletterEntity $newsletter): void {
     foreach ($this->getQueuesForNewsletter($newsletter) as $queue) {
       if ($this->isReplaceableScheduledQueue($queue)) {
-        $this->deleteQueue($queue);
+        $this->deleteCampaignQueue($queue);
       }
     }
     $this->entityManager->flush();
@@ -504,7 +511,7 @@ class TimeZoneCampaignScheduler {
 
   public function deleteScheduledCampaignQueues(NewsletterEntity $newsletter): void {
     foreach ($this->getTimeZoneQueuesForNewsletter($newsletter) as $queue) {
-      $this->deleteQueue($queue);
+      $this->deleteCampaignQueue($queue);
     }
     $this->entityManager->flush();
   }
@@ -543,7 +550,7 @@ class TimeZoneCampaignScheduler {
       );
   }
 
-  private function deleteQueue(SendingQueueEntity $queue): void {
+  public function deleteCampaignQueue(SendingQueueEntity $queue): void {
     $task = $queue->getTask();
     if ($task instanceof ScheduledTaskEntity) {
       $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($task);

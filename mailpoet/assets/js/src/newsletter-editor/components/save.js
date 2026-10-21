@@ -6,7 +6,9 @@ import Marionette from 'backbone.marionette';
 import $ from 'jquery';
 import Blob from 'blob';
 import FileSaver from 'file-saver';
-import { isTruthy, fromNewsletter } from 'common';
+import { isTruthy } from 'common';
+import { fromNewsletter } from 'common/thumbnail';
+import { filterMessageHtml } from 'common/functions/filter-message-html';
 import _ from 'underscore';
 import { __, _x } from '@wordpress/i18n';
 import SuperModel from 'backbone.supermodel/build/backbone.supermodel';
@@ -405,13 +407,16 @@ Module.SaveView = Marionette.View.extend({
       window.location.href = goToUrl;
     });
   },
-  addTrackingOptOutLink: function () {
+  addTrackingOptOutLink: function (event) {
     var linkHtml;
     var footers;
     var footer;
     var FooterModel;
     var footerBlock;
     var ContainerModel;
+    if (event) {
+      event.preventDefault();
+    }
     linkHtml =
       '<a href="[link:subscription_tracking_opt_out_url]">' +
       __('Opt out of tracking', 'mailpoet') +
@@ -515,7 +520,7 @@ Module.SaveView = Marionette.View.extend({
           'Your tracking settings ask every subscriber for consent, so this email needs a tracking opt-out link.',
           'mailpoet',
         ) +
-          ' <a href="javascript:;" class="mailpoet_add_tracking_opt_out_link">' +
+          ' <a href="#" class="mailpoet_add_tracking_opt_out_link">' +
           _x(
             'Click here to add it',
             'Link inside an error message that adds the tracking opt-out link to the email',
@@ -584,7 +589,7 @@ Module.SaveView = Marionette.View.extend({
   },
   showError: function (message) {
     var $el = this.$('.mailpoet_save_error');
-    $el.html(message.replace(/\. /g, '.<br>'));
+    $el.html(filterMessageHtml(message.replace(/\. /g, '.<br>')));
     $el.removeClass('mailpoet_hidden');
   },
   hideError: function () {
@@ -891,7 +896,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
             }
             document.getElementById(
               'mailpoet_preview_sending_error',
-            ).innerHTML = errorHtml;
+            ).innerHTML = filterMessageHtml(errorHtml);
           });
       });
     return undefined;
@@ -919,7 +924,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
         if (response.errors && Array.isArray(response.errors)) {
           const messages = response.errors.map((e) => e.message);
           const errorEl = document.querySelector('.pendindig_approval_error');
-          errorEl.innerHTML = messages.join('\n');
+          errorEl.innerHTML = filterMessageHtml(messages.join('\n'));
         }
       });
   },

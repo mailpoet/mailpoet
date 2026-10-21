@@ -30,6 +30,16 @@ class ImageTest extends \MailPoetUnitTest {
     verify($output)->equals($expectedResult);
   }
 
+  public function testItKeepsTheImageWidthWhenTheColumnHasNoWidth() {
+    $output = (new Image)->render($this->block, null);
+    verify($output)->stringContainsString('width="310"');
+  }
+
+  public function testItDoesNotShrinkThePaddedImageBelowZero() {
+    $output = (new Image)->render($this->block, 20);
+    verify($output)->stringContainsString('width="20"');
+  }
+
   public function testItRendersWithoutLink() {
     $this->block['link'] = null;
     $output = (new Image)->render($this->block, 200);

@@ -238,6 +238,7 @@ export interface SubscriberCount {
   count?: number;
   loading?: boolean;
   errors?: string[];
+  rejectionMessages?: string[];
 }
 
 export type OnFilterChange = (value: AnyFormItem, filterIndex: number) => void;

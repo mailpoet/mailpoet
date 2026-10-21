@@ -2,6 +2,7 @@
 import jQuery from 'jquery';
 import Handlebars from 'handlebars';
 import { __ } from '@wordpress/i18n';
+import { filterMessageHtml } from './common/functions/filter-message-html';
 
 var closeModalImage =
   '<svg viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">' +
@@ -165,7 +166,9 @@ export const MailPoetModal = {
           'mailpoet_popup_has_title',
           Boolean(this.options.title),
         );
-        jQuery('#mailpoet_popup_title h2').html(this.options.title);
+        jQuery('#mailpoet_popup_title h2').html(
+          filterMessageHtml(this.options.title || ''),
+        );
 
         // accessibility: dialog role and label
         $accessiblePopup = jQuery('#mailpoet_popup');

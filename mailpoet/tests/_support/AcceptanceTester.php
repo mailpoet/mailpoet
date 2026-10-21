@@ -91,6 +91,11 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->amOnPage('/wp-login.php?action=logout');
     $i->click('log out');
     $i->waitForText('You are now logged out.');
+    // a WooCommerce session cookie restored from the login snapshot survives the logout and empties the guest cart
+    $wooSessionCookies = $i->grabCookiesWithPattern('/^wp_woocommerce_session_[a-z0-9]{32}$/') ?: [];
+    foreach ($wooSessionCookies as $cookie) {
+      $i->resetCookie($cookie->getName());
+    }
     $i->deleteSessionSnapshot('login');
   }
 
@@ -514,6 +519,54 @@ class AcceptanceTester extends \Codeception\Actor {
     return $this->_waitForElement($element, $this->getDefaultTimeout($timeout));
   }
 
+  public function waitForEditorSettingsPanel(): void {
+    $this->waitForElementVisible('#mailpoet_panel');
+    $this->waitForJS('const panel = document.getElementById("mailpoet_panel"); return panel.getAnimations().length === 0 && panel.getBoundingClientRect().right <= window.innerWidth + 1;');
+  }
+
+  /**
+   * Retries the key check when the Bridge fails: the transient “try again later” error, or the generic “not valid” message that replaces it once the Premium check ends.
+   * The page is read after the loading overlay is gone. Use it only with a key that is valid, because an invalid key is retried as well and then fails.
+   */
+  public function verifyKeyRetryingOnBridgeError(callable $submit, string $successText, int $timeout = 60, int $attempts = 3): void {
+    $failureTexts = ['please try again later', 'not valid for the MailPoet Sending Service'];
+    $readPage = 'const overlay = document.getElementById("mailpoet_loading"); return {loading: !!overlay && getComputedStyle(overlay).display !== "none", text: document.body.innerText};';
+    for ($attempt = 1;; $attempt++) {
+      $submit();
+      $this->wait(1); // let the click handler show the loading overlay
+      $deadline = time() + $timeout;
+      $failure = null;
+      do {
+        try {
+          $page = $this->executeJS($readPage);
+        } catch (\Exception $e) {
+          $page = null; // the settings page reloads right after a check
+        }
+        $pageText = is_array($page) && empty($page['loading']) && is_string($page['text'] ?? null) ? $page['text'] : '';
+        foreach ($failureTexts as $failureText) {
+          if ($failure === null && strpos($pageText, $failureText) !== false) {
+            $failure = $failureText;
+          }
+        }
+        if ($failure !== null) {
+          break;
+        }
+        if (strpos($pageText, $successText) !== false) {
+          return;
+        }
+        usleep(500000);
+      } while (time() < $deadline);
+
+      if ($failure === null) {
+        Assert::fail(sprintf('Key verification did not show “%s” within %d s (attempt %d of %d).', $successText, $timeout, $attempt, $attempts));
+      }
+      if ($attempt >= $attempts) {
+        Assert::fail(sprintf('Key check failed after %d attempts: “%s”.', $attempts, $failure));
+      }
+      $this->wait(5);
+    }
+  }
+
   public function waitForElementChange($element, \Closure $callback, $timeout = 30) {
     return $this->_waitForElementChange($element, $callback, $this->getDefaultTimeout($timeout));
   }
@@ -532,6 +585,21 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function waitForJS($script, $timeout = 5) {
     return $this->_waitForJS($script, $this->getDefaultTimeout($timeout));
+  }
+
+  /**
+   * The browser reports the hash percent-encoded, so compare the decoded value.
+   */
+  public function waitForHashContaining(string $fragment, int $timeout = 10): void {
+    $this->waitForJS('return decodeURIComponent(window.location.hash).indexOf(' . json_encode($fragment) . ') !== -1;', $timeout);
+  }
+
+  /**
+   * Waits for `key=value` as a whole entry of the hash filter, so `segment=1` does not match `segment=12`.
+   */
+  public function waitForHashFilterValue(string $key, string $value, int $timeout = 10): void {
+    $pattern = '[\\[&,]' . preg_quote($key, '/') . '=' . preg_quote($value, '/') . '(?=[&,\\]]|$)';
+    $this->waitForJS('return new RegExp(' . json_encode($pattern) . ').test(decodeURIComponent(window.location.hash));', $timeout);
   }
 
   public function waitForText($text, $timeout = 10, $selector = null) {
@@ -1091,6 +1159,49 @@ class AcceptanceTester extends \Codeception\Actor {
     return (bool)getenv('ENABLE_COT');
   }
 
+  /**
+   * Applies a native DataViews filter by picking the given option labels.
+   *
+   * @param string[] $optionLabels
+   * @param string $operator Operator label, e.g. "Is none of". Empty keeps the default.
+   */
+  public function applyDataViewsFilter(string $filterName, array $optionLabels, string $operator = ''): void {
+    $i = $this;
+    // The "Add filter" control is icon-only until a filter is active, then it gets a text label.
+    $addFilter = ['xpath' => '//button[@aria-label="Add filter" or normalize-space(.)="Add filter"]'];
+    $i->waitForElementClickable($addFilter);
+    // The tabs row renders after the first listing response and moves the toggle down, so a click before that misses it.
+    $i->waitForListingItemsToLoad();
+    $i->click($addFilter);
+    // Skip the WP admin bar, which has menu items of its own.
+    $menuItem = ['xpath' => '//*[@role="menuitem"][not(ancestor::*[@id="wpadminbar"])][contains(normalize-space(.), "' . $filterName . '")]'];
+    try {
+      $i->waitForElementVisible($menuItem, 3);
+    } catch (\Facebook\WebDriver\Exception\TimeoutException $e) {
+      // Safety net for a later layout shift that made the first click miss the toggle.
+      // Re-click only when no menu is open, as a second click would close it.
+      $menuOpen = $i->executeJS('return document.querySelector(\'[role="menuitem"]:not(#wpadminbar *)\') !== null;');
+      if (!$menuOpen) {
+        $i->click($addFilter);
+      }
+      $i->waitForElementVisible($menuItem);
+    }
+    $i->click($menuItem);
+    if ($operator !== '') {
+      $operatorSelect = '.dataviews-filters__summary-operators-filter-select select';
+      $i->waitForElement($operatorSelect);
+      $i->selectOption($operatorSelect, $operator);
+    }
+    $i->waitForElement('.dataviews-filters__search-widget-listitem');
+    foreach ($optionLabels as $label) {
+      $i->click(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][.//text()[contains(., "' . $label . '")]]']);
+    }
+    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+    if ($i->executeJS('return document.querySelector(".mailpoet-dataviews") !== null;')) {
+      $i->waitForListingItemsToLoad();
+    }
+  }
+
   public function changeGroupInListingFilter(string $name): void {
     $i = $this;
     $dataViewsSelector = '.mailpoet-dataviews-group-' . $name;
@@ -1111,6 +1222,35 @@ class AcceptanceTester extends \Codeception\Actor {
     }
 
     throw $lastException;
+  }
+
+  /**
+   * Remove every active DataViews filter via the chips' remove buttons.
+   */
+  public function clearDataViewsFilters(): void {
+    $i = $this;
+    for ($x = 0; $x < 10; $x++) {
+      $count = $i->executeJS('return document.querySelectorAll(".dataviews-filters__summary-chip-remove").length;');
+      if (!$count) {
+        break;
+      }
+      $i->executeJS('document.querySelector(".dataviews-filters__summary-chip-remove").click();');
+      $i->wait(0.5);
+    }
+    $i->waitForListingItemsToLoad();
+  }
+
+  /**
+   * Assert that an active DataViews filter chip contains the given text.
+   */
+  public function waitForDataViewsFilterChip(string $text): void {
+    $this->waitForJS(
+      'return Array.from(document.querySelectorAll(".dataviews-filters__summary-chip")).some(function (chip) { return chip.textContent.indexOf(' . json_encode($text) . ') !== -1; });',
+      10
+    );
+    // The chip is drawn from the URL before the first response, while the empty
+    // state is already showing, so also wait for the listing to settle.
+    $this->waitForListingItemsToLoad();
   }
 
   /**

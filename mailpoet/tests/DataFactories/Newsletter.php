@@ -101,6 +101,11 @@ class Newsletter {
     return $this;
   }
 
+  public function withSentAt(\DateTimeInterface $sentAt) {
+    $this->data['sent_at'] = $sentAt;
+    return $this;
+  }
+
   public function withActiveStatus() {
     $this->data['status'] = NewsletterEntity::STATUS_ACTIVE;
     return $this;
@@ -363,7 +368,7 @@ class Newsletter {
 
   public function withDefaultSegments() {
     $defaultSegment = (new Segment())->withType(SegmentEntity::TYPE_DEFAULT)->create();
-    $this->segments[$defaultSegment->getId()] = $defaultSegment;
+    $this->segments[] = $defaultSegment;
     return $this;
   }
 
@@ -373,9 +378,14 @@ class Newsletter {
    */
   public function withSegments(array $segments) {
     foreach ($segments as $segment) {
-      $this->segments[$segment->getId()] = $segment;
+      $this->segments[] = $segment;
     }
     return $this;
+  }
+
+  private function getSegmentKey(SegmentEntity $segment): string {
+    // Saved segments are deduplicated by ID; unsaved ones have no ID yet
+    return $segment->getId() !== null ? 'id-' . $segment->getId() : 'object-' . spl_object_id($segment);
   }
 
   public function withSendingQueue(array $options = []) {
@@ -447,7 +457,11 @@ class Newsletter {
 
     $this->newsletterOptionFactory->createMultipleOptions($newsletter, $this->options);
 
+    $segments = [];
     foreach ($this->segments as $segment) {
+      $segments[$this->getSegmentKey($segment)] = $segment;
+    }
+    foreach ($segments as $segment) {
       $newsletterSegment = new NewsletterSegmentEntity($newsletter, $segment);
       $newsletter->getNewsletterSegments()->add($newsletterSegment);
       $entityManager->persist($newsletterSegment);
@@ -510,6 +524,7 @@ class Newsletter {
     $newsletter->setHash(Security::generateHash());
     if (isset($this->data['parent'])) $newsletter->setParent($this->data['parent']);
     if (isset($this->data['deleted_at'])) $newsletter->setDeletedAt($this->data['deleted_at']);
+    if (isset($this->data['sent_at'])) $newsletter->setSentAt($this->data['sent_at']);
     if (isset($this->data['ga_campaign'])) $newsletter->setGaCampaign($this->data['ga_campaign']);
     $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
     if (isset($this->data['wp_post_id'])) {

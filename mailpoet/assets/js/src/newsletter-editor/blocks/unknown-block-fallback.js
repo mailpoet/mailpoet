@@ -19,9 +19,9 @@ Module.BlockView = base.BlockView.extend({
         duplicate: false,
       },
     });
-    setImmediate(() => {
+    setTimeout(() => {
       this.showChildView('toolsRegion', this.toolsView);
-    });
+    }, 0);
   },
   templateContext() {
     return {

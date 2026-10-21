@@ -1,3 +1,7 @@
+@use '../settings/form-editor' as *;
+@use '../settings/grid' as *;
+@use '../settings/typography' as *;
+
 .form-placement-option-list {
   display: grid;
   grid-gap: $grid-gap;

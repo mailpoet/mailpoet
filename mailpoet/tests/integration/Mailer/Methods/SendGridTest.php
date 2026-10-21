@@ -121,6 +121,14 @@ class SendGridTest extends \MailPoetTest {
       $this->newsletter,
       $this->subscriber
     );
-    verify($result['response'])->true();
+    if (!$result['response'] && $result['error']->getOperation() === MailerError::OPERATION_CONNECT) {
+      sleep(5);
+      $result = $this->mailer->send(
+        $this->newsletter,
+        $this->subscriber
+      );
+    }
+    $message = isset($result['error']) ? $result['error']->getMessage() : '';
+    verify($result['response'])->true($message);
   }
 }

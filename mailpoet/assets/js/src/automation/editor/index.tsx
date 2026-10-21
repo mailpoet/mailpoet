@@ -15,7 +15,7 @@ import {
 import '@wordpress/viewport';
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 import { __, setLocaleData } from '@wordpress/i18n';
-import { addQueryArgs, getQueryArg } from '@wordpress/url';
+import { addQueryArgs } from '@wordpress/url';
 import { registerTranslations } from 'common';
 import { Header } from './components/header';
 import { InserterSidebar } from './components/inserter-sidebar';
@@ -155,16 +155,6 @@ window.addEventListener('DOMContentLoaded', () => {
     storeName,
     sidebarActiveByDefault ? automationSidebarKey : undefined,
   );
-
-  // Enable fullscreen mode when GET parameter is present
-  const fullscreenParam = getQueryArg(window.location.href, 'fullscreen');
-  const isFullscreenForced =
-    fullscreenParam === 'true' || fullscreenParam === '1';
-  if (isFullscreenForced) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- string-based dispatch returns any
-    void dispatch('core/preferences').set(storeName, 'fullscreenMode', true);
-    void dispatch(storeName).setFullscreenForced(true);
-  }
 
   const container = document.getElementById('mailpoet_automation_editor');
   if (container) {

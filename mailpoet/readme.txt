@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 7.0
 Tested up to: 7.1
-Stable tag: 5.40.0
+Stable tag: 5.43.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,11 +227,30 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.40.0 - 2026-09-29 =
-* Added: "Only subscribers we can track" option on engagement segment filters, so segments like "did not open" leave out subscribers whose opens are not recorded;
-* Improved: PHP upgrade notice, which now tells sites on PHP 8.0 and older that MailPoet will require PHP 8.1 from February 2027;
-* Fixed: Engagement score shows as unknown for subscribers who cannot be tracked, instead of dropping toward 0%;
-* Fixed: Automated Latest Content, Posts, and Products blocks now hide the content of password-protected posts;
-* Fixed: Post titles and site names render as plain text in emails, and the Latest Posts block previews posts as read-only text.
+= 5.43.0 - 2026-10-19 =
+* Added: Date created and Last modified sort options to the Newsletters list;
+* Improved: Recorded the plugin behind API subscriber signups and the URL a subscriber was created from;
+* Improved: Handling of link and style values in newsletters and forms;
+* Improved: Display of names and subjects in admin notices, dialogs and subscription form messages;
+* Improved: Download size of the plugin, now about a quarter smaller;
+* Improved: Filtering and sorting on the Emails and sending status pages, with filters for status, list and sent date;
+* Improved: Email subject and preview text are now at the top of the Settings panel in the block email editor, and a new email's name follows its subject until you rename it;
+* Improved: Handling of links in sending error notices;
+* Changed: Campaigns on sites with more than 200 subscribers whose From address is not on an authenticated domain are now paused before sending, and a notice lists the paused campaigns with the steps to resume them;
+* Fixed: Slow loading of the Emails, Automations, and Settings pages when the MailPoet Sending Service account has no authorized sender domain;
+* Fixed: Custom fields used in segments could be permanently deleted, which changed who the segments include;
+* Fixed: Custom CSS selectors with a comma inside, such as :not(.a, .b), in forms;
+* Fixed: Error when logging data that contains invalid characters;
+* Fixed: Missing tooltip and screen reader label on the Insert shortcode button in the classic newsletter editor;
+* Fixed: Horizontal scrollbar on the Automations page;
+* Fixed: Last modified date not changing when only the content of an email made in the new email editor is edited;
+* Fixed: Browser Back button not leaving the Emails, Settings, Help, Import and welcome wizard pages on the first press;
+* Fixed: Back button needing two presses to leave the Automations and automation analytics pages;
+* Fixed: Duplicate automations created by clicking Start building again while the automation editor was loading;
+* Fixed: Subscribe checkbox label in comment and registration forms refilling as soon as it was cleared in Settings, and showing no text when saved blank;
+* Fixed: Date filters on the Forms, Lists, Segments, Tags and Logs pages matching UTC days instead of the site’s time zone;
+* Fixed: Blank page instead of the automation editor when opening an automation email’s send page from an admin notice;
+* Fixed: Browser console warnings shown on every MailPoet admin page;
+* Fixed: PHP warning in the logs for sign-up forms that use columns.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

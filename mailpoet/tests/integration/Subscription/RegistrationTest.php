@@ -3,15 +3,33 @@
 namespace MailPoet\Subscription;
 
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 
 class RegistrationTest extends \MailPoetTest {
   private Registration $registration;
   private SubscribersRepository $subscribersRepository;
+  private SettingsController $settings;
 
   public function _before() {
     $this->registration = $this->diContainer->get(Registration::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->settings = $this->diContainer->get(SettingsController::class);
+  }
+
+  public function testItRendersTheSavedLabel() {
+    $this->settings->set('subscribe.on_register.label', 'Join our list');
+    verify($this->renderForm())->stringContainsString('Join our list');
+  }
+
+  public function testItRendersTheDefaultLabelWhenTheSavedLabelIsEmpty() {
+    $this->settings->set('subscribe.on_register.label', '');
+    verify($this->renderForm())->stringContainsString('Yes, add me to your mailing list');
+  }
+
+  public function testItRendersTheDefaultLabelWhenTheSavedLabelIsWhitespace() {
+    $this->settings->set('subscribe.on_register.label', '   ');
+    verify($this->renderForm())->stringContainsString('Yes, add me to your mailing list');
   }
 
   public function testItAddsSubscriber() {
@@ -57,5 +75,11 @@ class RegistrationTest extends \MailPoetTest {
     $initialCount = count($this->subscribersRepository->findAll());
     $this->registration->onMultiSiteRegister($result);
     verify($initialCount)->equals(count($this->subscribersRepository->findAll()));
+  }
+
+  private function renderForm(): string {
+    ob_start();
+    $this->registration->extendForm();
+    return (string)ob_get_clean();
   }
 }

@@ -32,7 +32,13 @@ class CaptchaFormRenderer {
   /** @var Styles */
   private $styles;
 
+  /** @var CaptchaHooks */
+  private $captchaHooks;
+
   private $wp;
+
+  /** @var array<string, string> */
+  private $renderedForms = [];
 
   public function __construct(
     UrlHelper $urlHelper,
@@ -42,6 +48,7 @@ class CaptchaFormRenderer {
     FormsRepository $formsRepository,
     FormRenderer $formRenderer,
     Styles $styles,
+    CaptchaHooks $captchaHooks,
     WPFunctions $wp
   ) {
     $this->urlHelper = $urlHelper;
@@ -51,6 +58,7 @@ class CaptchaFormRenderer {
     $this->formRenderer = $formRenderer;
     $this->formsRepository = $formsRepository;
     $this->styles = $styles;
+    $this->captchaHooks = $captchaHooks;
     $this->wp = $wp;
   }
 
@@ -59,20 +67,43 @@ class CaptchaFormRenderer {
       ? $data['captcha_session_id']
       : null;
 
+    $ref = $data['referrer_form'] ?? null;
     if (!$sessionId) {
+      return $this->renderRegisterError($data, $ref);
+    }
+
+    if ($ref === CaptchaUrlFactory::REFERER_MP_FORM) {
+      return $this->renderFormInSubscriptionForm($sessionId);
+    }
+
+    if (!$this->captchaHooks->isEnabled()) {
       return false;
     }
 
-    $ref = $data['referrer_form'] ?? null;
-    if ($ref === CaptchaUrlFactory::REFERER_MP_FORM) {
-      return $this->renderFormInSubscriptionForm($sessionId);
-    } elseif ($ref === CaptchaUrlFactory::REFERER_WP_FORM) {
-      return $this->renderFormInWPRegisterForm($data, 'wp-submit');
+    if ($ref === CaptchaUrlFactory::REFERER_WP_FORM) {
+      return $this->renderFormInWPRegisterForm($sessionId, $ref, 'wp-submit');
     } elseif ($ref === CaptchaUrlFactory::REFERER_WC_FORM) {
-      return $this->renderFormInWPRegisterForm($data, 'register');
+      return $this->renderFormInWPRegisterForm($sessionId, $ref, 'register');
     }
 
     return false;
+  }
+
+  /**
+   * Only the referrer type and a known error code choose what is shown. No other request value is rendered.
+   *
+   * @param mixed $referrer
+   */
+  private function renderRegisterError(array $data, $referrer) {
+    $isRegisterForm = in_array($referrer, [CaptchaUrlFactory::REFERER_WP_FORM, CaptchaUrlFactory::REFERER_WC_FORM], true);
+    if (!$isRegisterForm || !isset($data['error']) || !$this->captchaHooks->isEnabled()) {
+      return false;
+    }
+
+    $message = $data['error'] === CaptchaUrlFactory::ERROR_LIMIT
+      ? (new CaptchaSessionLimitException())->getMessage()
+      : __('Please go back to the registration form and try again.', 'mailpoet');
+    return $this->renderBackLink($referrer, $message, null);
   }
 
   private function renderFormInSubscriptionForm($sessionId) {
@@ -118,28 +149,102 @@ class CaptchaFormRenderer {
     $styles = $this->styles->renderFormMessageStyles($formModel, '#mailpoet_captcha_form');
     $styles = '<style>' . $styles . '</style>';
 
+    if ($this->captchaSession->exists($sessionId) && $this->captchaPhrase->getPhrase($sessionId) === null) {
+      try {
+        $this->captchaSession->registerNewSession();
+      } catch (CaptchaSessionLimitException $e) {
+        return '<p>' . $this->wp->escHtml($e->getMessage()) . '</p>';
+      }
+    }
+
     return $this->renderForm($sessionId, $hiddenFields, $actionUrl, $submitLabel, $afterSubmitElement, $styles);
   }
 
-  private function renderFormInWPRegisterForm(array $data, string $submitLabelKey) {
-    $sessionId = $data['captcha_session_id'];
+  private function renderFormInWPRegisterForm(string $sessionId, string $referrer, string $submitLabelKey) {
+    if (isset($this->renderedForms[$sessionId])) {
+      return $this->renderedForms[$sessionId];
+    }
 
-    unset($data['captcha_session_id']);
+    // The form fields come only from the server-side stash. Request data is never rendered.
+    $stash = $this->captchaSession->getFormData($sessionId);
+    if (!is_array($stash) || ($stash['referrer_form'] ?? null) !== $referrer) {
+      return $this->renderBackLink($referrer, __('This CAPTCHA page has expired. Go back to the registration form to try again.', 'mailpoet'), null);
+    }
+
+    if (!empty($stash['rendered'])) {
+      return $this->renderBackLink($referrer, __('This CAPTCHA page has already been used. Go back to the registration form to try again.', 'mailpoet'), $stash['action_url'] ?? null);
+    }
+
+    $actionUrl = $this->getRegisterFormActionUrl($referrer, $stash['referrer_form_url'] ?? null);
+
     // The 'name' attr is required in this format for the refresh button to work
     $hiddenFields = '<input type="hidden" name="data[captcha_session_id]" value="' . $this->wp->escAttr($sessionId) . '" />';
 
-    $actionUrl = $data['referrer_form_url'];
-    unset($data['referrer_form_url']);
+    $submitLabel = isset($stash[$submitLabelKey]) && is_scalar($stash[$submitLabelKey])
+      ? (string)$stash[$submitLabelKey]
+      : __('Register', 'mailpoet');
 
-    unset($data['referrer_form']);
-    foreach ($data as $key => $value) {
-      if (!is_scalar($value)) continue;
+    $excluded = ['captcha_session_id', 'referrer_form', 'referrer_form_url', 'rendered', 'action_url'];
+    foreach ($stash as $key => $value) {
+      if (!is_scalar($value) || in_array($key, $excluded, true)) continue;
       $hiddenFields .= '<input type="hidden" name="' . $this->wp->escAttr($key) . '" value="' . $this->wp->escAttr($value) . '" />';
     }
 
-    $submitLabel = $data[$submitLabelKey] ?? esc_attr_e('Register'); // phpcs:ignore WordPress.WP.I18n.MissingArgDomain
+    $html = $this->renderForm($sessionId, $hiddenFields, $actionUrl, $submitLabel);
+    if ($html === false) {
+      return false;
+    }
 
-    return $this->renderForm($sessionId, $hiddenFields, $actionUrl, $submitLabel);
+    // The fields are shown once. Replacing the stash drops them (including any password)
+    // and keeps the session alive for the image, audio and refresh requests.
+    $this->captchaSession->setFormData($sessionId, [
+      'referrer_form' => $referrer,
+      'action_url' => $actionUrl,
+      'rendered' => true,
+    ]);
+    $this->renderedForms[$sessionId] = $html;
+    return $html;
+  }
+
+  /**
+   * @param mixed $candidateUrl
+   */
+  private function renderBackLink(string $referrer, string $message, $candidateUrl): string {
+    $actionUrl = $this->getRegisterFormActionUrl($referrer, $candidateUrl);
+    return '<p><a href="' . $this->wp->escUrl($actionUrl) . '">' . $this->wp->escHtml($message) . '</a></p>';
+  }
+
+  /**
+   * The URL the register form is submitted to. Only a URL with the site's own scheme, host and port is used.
+   *
+   * @param mixed $candidate
+   */
+  private function getRegisterFormActionUrl(string $referrer, $candidate): string {
+    $validated = is_string($candidate) ? (string)$this->wp->wpValidateRedirect($candidate, '') : '';
+    if ($validated !== '') {
+      if (!$this->wp->wpParseUrl($validated, PHP_URL_HOST)) {
+        if (strpos($validated, '/') === 0 && strpos($validated, '//') !== 0) {
+          return $validated;
+        }
+      } elseif ($this->getOrigin($validated) === $this->getOrigin($this->wp->homeUrl())) {
+        return $validated;
+      }
+    }
+
+    return $this->captchaUrlFactory->getRegistrationUrl($referrer);
+  }
+
+  /**
+   * Scheme, host and port in lower case, with the default port filled in.
+   */
+  private function getOrigin(string $url): ?string {
+    $parts = $this->wp->wpParseUrl($url);
+    if (!is_array($parts) || !isset($parts['scheme'], $parts['host'])) {
+      return null;
+    }
+    $scheme = strtolower((string)$parts['scheme']);
+    $port = isset($parts['port']) ? (int)$parts['port'] : ($scheme === 'https' ? 443 : 80);
+    return $scheme . '://' . strtolower((string)$parts['host']) . ':' . $port;
   }
 
   private function renderForm(
@@ -150,6 +255,9 @@ class CaptchaFormRenderer {
     $afterSubmitElement = null,
     $styles = null
   ) {
+    if (!$this->captchaSession->exists($sessionId)) {
+      return false;
+    }
     $this->captchaPhrase->createPhrase($sessionId);
 
     $fields = [
@@ -191,7 +299,7 @@ class CaptchaFormRenderer {
     $width = CaptchaRenderer::DEFAULT_WIDTH;
     $height = CaptchaRenderer::DEFAULT_HEIGHT;
     $captchaUrl = $this->captchaUrlFactory->getCaptchaImageUrl($sessionId);
-    $mp3CaptchaUrl = $this->captchaUrlFactory->getCaptchaAudioUrl($sessionId);
+    $audioCaptchaUrl = $this->captchaUrlFactory->getCaptchaAudioUrl($sessionId);
     $reloadIcon = Env::$assetsUrl . '/img/icons/image-rotate.svg';
     $playIcon = Env::$assetsUrl . '/img/icons/controls-volumeon.svg';
 
@@ -201,8 +309,8 @@ class CaptchaFormRenderer {
     $formHtml .= '</p>';
     $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_update" title="' . esc_attr(__('Reload CAPTCHA', 'mailpoet')) . '"><img src="' . $this->wp->escUrl($reloadIcon) . '" alt="" /></button>';
     $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_audio" title="' . esc_attr(__('Play CAPTCHA', 'mailpoet')) . '"><img src="' . $this->wp->escUrl($playIcon) . '" alt="" /></button>';
-    $formHtml .= '<audio class="mailpoet_captcha_player">';
-    $formHtml .= '<source src="' . $this->wp->escUrl($mp3CaptchaUrl) . '" type="audio/mpeg">';
+    $formHtml .= '<audio class="mailpoet_captcha_player" preload="none">';
+    $formHtml .= '<source src="' . $this->wp->escUrl($audioCaptchaUrl) . '" type="audio/wav">';
     $formHtml .= '</audio>';
 
     $formHtml .= $this->formRenderer->renderBlocks($form, [], null, $honeypot = false);

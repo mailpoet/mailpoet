@@ -55,6 +55,7 @@ export function makeDefaultState(): State {
     newUser: !!window.mailpoet_is_new_user,
     woocommerce: !!window.mailpoet_woocommerce_active,
     membersPlugin: !!window.mailpoet_members_plugin_active,
+    environmentType: window.mailpoet_environment_type || 'production',
     builtInCaptcha: window.mailpoet_built_in_captcha_supported,
   };
 
@@ -89,7 +90,6 @@ export function makeDefaultState(): State {
     key: data.premium.premium_key || data.mta.mailpoet_api_key,
     inProgress: false,
     congratulatoryMssEmailSentTo: null,
-    downloadUrl: window.mailpoet_premium_plugin_download_url,
     activationUrl: window.mailpoet_premium_plugin_activation_url,
   };
   const testEmail = {

@@ -72,6 +72,7 @@ class SubscribersResponseBuilder {
       'last_name' => $subscriber->getLastName(),
       'subscriptions' => $this->buildSubscriptions($subscriber),
       'status' => $subscriber->getStatus(),
+      'source' => $subscriber->getSource(),
       'count_confirmations' => $subscriber->getConfirmationsCount(),
       'wp_user_id' => $subscriber->getWpUserId(),
       'is_woocommerce_user' => $subscriber->getIsWoocommerceUser(),

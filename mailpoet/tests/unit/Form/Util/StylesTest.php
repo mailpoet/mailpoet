@@ -30,6 +30,22 @@ class StylesTest extends \MailPoetUnitTest {
     verify($extractedAndPrefixedStyles)->equals($expectedResult);
   }
 
+  public function testItKeepsEscapedLessThanSignEscapedInPrefixedStyles() {
+    $stylesheet = '#x { background: url("\3c x\3e"); } .a > .b { margin: 0; }';
+    $prefixedStyles = $this->styles->prefixStyles($stylesheet, 'mailpoet');
+    verify($prefixedStyles)->stringNotContainsString('<');
+    verify($prefixedStyles)->stringContainsString('mailpoet .a > .b { margin: 0; }');
+  }
+
+  public function testItPrefixesSelectorsThatContainCommas() {
+    $stylesheet = '.a:not(.b, .c) { color: red; } input[placeholder="x, y"] { margin: 0; }';
+    $prefixedStyles = $this->styles->prefixStyles($stylesheet, 'mailpoet');
+    verify($prefixedStyles)->equals(
+      'mailpoet .a:not(.b, .c) { color: red; }' . PHP_EOL
+      . 'mailpoet input[placeholder="x, y"] { margin: 0; }'
+    );
+  }
+
   public function testItShouldNotRenderStylesForFormWithoutSettings() {
     $form = Fixtures::get('simple_form_body');
     $styles = $this->styles->renderFormSettingsStyles($this->createForm($form), '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
@@ -157,6 +173,85 @@ class StylesTest extends \MailPoetUnitTest {
 
     $styles = $this->styles->renderFormMessageStyles($this->createForm($form), '#prefix');
     verify($styles)->stringContainsString('#prefix .mailpoet_validate_success {color: xxx}');
+  }
+
+  public function testItSkipsMessageColorsThatAreNotColorValues() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = [
+      'success_validation_color' => 'green;} body {display:none',
+      'error_validation_color' => 'red}<x>',
+    ];
+    $styles = $this->styles->renderFormMessageStyles($this->createForm($form), '#prefix');
+    verify($styles)->stringNotContainsString('<');
+    verify($styles)->stringNotContainsString('display');
+    verify($styles)->stringNotContainsString('mailpoet_validate_success');
+    verify($styles)->stringNotContainsString('mailpoet_validate_error');
+  }
+
+  public function testItRendersMessageColorsInCommonColorFormats() {
+    $colors = ['#00d084', 'rgb(0, 208, 132)', 'rgba(0, 208, 132, 0.5)', 'hsl(155, 100%, 41%)', 'var(--wp--preset--color--vivid-red)', 'red', 'rgb(0 208 132 / 50%)', 'var(--brand_color)'];
+    foreach ($colors as $color) {
+      $form = Fixtures::get('simple_form_body');
+      $form['settings'] = ['success_validation_color' => $color, 'error_validation_color' => $color];
+      $styles = $this->styles->renderFormMessageStyles($this->createForm($form), '#prefix');
+      verify($styles)->stringContainsString("#prefix .mailpoet_validate_success {color: $color}");
+      verify($styles)->stringContainsString("#prefix .mailpoet_validate_error {color: $color}");
+    }
+  }
+
+  public function testItSkipsFormStyleSettingsThatCouldEndTheRule() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = [
+      'border_size' => '1',
+      'border_color' => 'red}body{x:border_color',
+      'border_radius' => '2}body{x:border_radius',
+      'backgroundColor' => 'red}body{x:backgroundColor',
+      'gradient' => 'red;x:gradient',
+      'fontColor' => 'red}body{x:fontColor',
+      'alignment' => 'left;x:alignment',
+      'form_padding' => '1}body{x:form_padding',
+      'form_placement' => [
+        FormEntity::DISPLAY_TYPE_POPUP => ['styles' => ['width' => ['value' => '10}body{x:width', 'unit' => 'pixel']]],
+      ],
+    ];
+    $form = $this->createForm($form);
+
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
+    $popupStyles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_POPUP);
+
+    verify($styles)->stringNotContainsString('x:');
+    verify($popupStyles)->stringNotContainsString('x:');
+    verify($styles)->stringNotContainsString('border:');
+    verify($styles)->stringNotContainsString('text-align:');
+    verify($popupStyles)->stringContainsString('width: 560px');
+  }
+
+  public function testItKeepsBackgroundImageUrlInsideUrlFunction() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['background_image_url' => 'https://example.com/bg.png);color:red'];
+    $styles = $this->styles->renderFormSettingsStyles($this->createForm($form), '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
+    verify($styles)->stringContainsString('background: url(https://example.com/bg.png%29%3Bcolor:red) center / cover no-repeat');
+  }
+
+  public function testItRendersCommonFormStyleSettings() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = [
+      'border_size' => '1',
+      'border_color' => '#313131',
+      'border_radius' => '4',
+      'background_image_url' => 'https://example.com/wp-content/uploads/form-bg@2x.jpg',
+      'gradient' => 'linear-gradient(180deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%)',
+      'fontColor' => 'var(--wp--preset--color--black)',
+      'alignment' => 'center',
+      'form_padding' => '20',
+    ];
+    $styles = $this->styles->renderFormSettingsStyles($this->createForm($form), '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
+    verify($styles)->stringContainsString(
+      '#prefix{border: 1px solid #313131;border-radius: 4px;'
+      . 'background: url(https://example.com/wp-content/uploads/form-bg@2x.jpg) center / cover no-repeat, linear-gradient(180deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);'
+      . 'color: var(--wp--preset--color--black);text-align: center;}'
+    );
+    verify($styles)->stringContainsString('#prefix form.mailpoet_form {padding: 20px;}');
   }
 
   public function testItRendersWidthCssForBellowPost() {

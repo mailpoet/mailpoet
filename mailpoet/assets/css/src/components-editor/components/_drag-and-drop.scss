@@ -1,4 +1,8 @@
 @use 'sass:math';
+@use '../../mixins/animations' as *;
+@use '../../settings/colors' as *;
+@use '../../settings/editor' as *;
+@use '../../settings/grid' as *;
 
 .mailpoet_drop_marker {
   background-color: $color-primary;

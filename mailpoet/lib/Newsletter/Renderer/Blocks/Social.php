@@ -21,7 +21,7 @@ class Social {
         $link = is_string($icon['link'] ?? null) ? $icon['link'] : '';
         $image = is_string($icon['image']) ? $icon['image'] : '';
         $iconType = is_string($icon['iconType'] ?? null) ? $icon['iconType'] : '';
-        $style = 'width:' . $widthRaw . ';height:' . $heightRaw . ';-ms-interpolation-mode:bicubic;border:0;display:inline;outline:none;';
+        $style = 'width:' . $width . 'px;height:' . $height . 'px;-ms-interpolation-mode:bicubic;border:0;display:inline;outline:none;';
         $iconsBlock .= '<a href="' . EHelper::escapeHtmlLinkAttr($link) . '" style="text-decoration:none!important;"
         ><img
           src="' . EHelper::escapeHtmlLinkAttr($image) . '"

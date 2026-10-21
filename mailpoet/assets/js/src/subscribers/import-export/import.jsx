@@ -10,6 +10,7 @@ import {
   restoreStrippedLocationHash,
   ErrorBoundary,
 } from 'common';
+import { ROUTER_FUTURE_FLAGS } from 'common/router-future-flags';
 import { StepMethodSelection } from './import/step-method-selection.jsx';
 import { StepInputValidation } from './import/step-input-validation';
 import { StepDataManipulation } from './import/step-data-manipulation.jsx';
@@ -27,7 +28,7 @@ function ImportSubscribers() {
   const contextValue = useGlobalContextValue(window);
   return (
     <GlobalContext.Provider value={contextValue}>
-      <HashRouter>
+      <HashRouter future={ROUTER_FUTURE_FLAGS}>
         <Notices />
         <ScrollToTop>
           <Routes>
@@ -87,7 +88,10 @@ function ImportSubscribers() {
                 />
               }
             />
-            <Route path="*" element={<Navigate to="/step_clean_list" />} />
+            <Route
+              path="*"
+              element={<Navigate to="/step_clean_list" replace />}
+            />
           </Routes>
         </ScrollToTop>
       </HashRouter>

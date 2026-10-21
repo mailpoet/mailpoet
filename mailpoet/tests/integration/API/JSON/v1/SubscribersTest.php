@@ -493,7 +493,7 @@ class SubscribersTest extends \MailPoetTest {
       ->withCountConfirmations(1)
       ->create();
     $captchaValue = ['phrase' => 'ihG5W'];
-    $captchaSessionId = 'abcdfgh';
+    $captchaSessionId = 'abcdfgh1abcdfgh1abcdfgh1abcdfgh1';
     $this->captchaSession->setCaptchaHash($captchaSessionId, $captchaValue);
     $response = $this->endpoint->subscribe([
       $this->obfuscatedEmail => $email,

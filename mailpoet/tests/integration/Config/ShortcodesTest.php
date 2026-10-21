@@ -11,6 +11,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\Newsletter\Url;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\WPUserSubscriberLink;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
@@ -137,6 +138,52 @@ class ShortcodesTest extends \MailPoetTest {
     verify($result)->stringContainsString('<a ');
     verify($result)->stringContainsString('endpoint=view_in_browser');
     verify($result)->stringNotContainsString($this->newsletterUrl->getPublicShareUrl($newsletter));
+  }
+
+  public function testArchiveLinksDoNotCarrySubscriberOfUnconfirmedWpUserLink(): void {
+    $newsletter = (new NewsletterFactory())
+      ->withSubject('Private subject')
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withSentStatus()
+      ->withSendingQueue()
+      ->withOptions([
+        NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY => ShareVisibility::VISIBILITY_PRIVATE,
+      ])
+      ->create();
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $wpUserId = wp_create_user('archive-link-user', 'password', 'archive-link-user@example.com');
+    $this->assertIsInt($wpUserId);
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $wpUserId]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->diContainer->get(WPUserSubscriberLink::class)->markUnconfirmed($wpUserId, 'archive-link-user@example.com');
+    wp_set_current_user($wpUserId);
+    $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
+    WordPress::interceptFunction('apply_filters', function() use($shortcodes) {
+      /** @var array{0: string, 1:NewsletterEntity, 2:SubscriberEntity|null, 3:SendingQueueEntity|null} $args */
+      $args = func_get_args();
+      $filterName = array_shift($args);
+      switch ($filterName) {
+        case 'mailpoet_archive_email_processed_date':
+          return $shortcodes->renderArchiveDate($args[0]);
+        case 'mailpoet_archive_email_subject_line':
+          return $shortcodes->renderArchiveSubject($args[0], $args[1], $args[2]);
+      }
+      return '';
+    });
+
+    try {
+      $result = $shortcodes->getArchive();
+    } finally {
+      WordPress::releaseFunction('apply_filters');
+      require_once ABSPATH . 'wp-admin/includes/user.php';
+      require_once ABSPATH . 'wp-admin/includes/ms.php';
+      is_multisite() ? wpmu_delete_user($wpUserId) : wp_delete_user($wpUserId);
+    }
+
+    $wp = WPFunctions::get();
+    verify($result)->stringContainsString($wp->escUrl($this->newsletterUrl->getViewInBrowserUrl($newsletter, null, $queue)));
+    verify($result)->stringNotContainsString($wp->escUrl($this->newsletterUrl->getViewInBrowserUrl($newsletter, $subscriber, $queue)));
   }
 
   public function testArchiveAcceptsStartDate() {

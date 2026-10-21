@@ -620,6 +620,61 @@ class RendererTest extends \MailPoetTest {
     verify($subject)->equals($this->newsletter->getSubject());
   }
 
+  public function testItRendersOnlyValidStoredBlockStyles(): void {
+    $body = $this->newsletter->getBody();
+    $this->assertIsArray($body);
+    $button = [
+      'type' => 'button',
+      'text' => 'Button',
+      'url' => 'https://example.com',
+      'styles' => [
+        'block' => [
+          'backgroundColor' => '#252525;x-button:1',
+          'borderColor' => '#363636',
+          'borderWidth' => '1px',
+          'borderRadius' => '5px',
+          'borderStyle' => 'solid',
+          'width' => '180px',
+          'lineHeight' => '40px',
+          'fontColor' => ['#ffffff;x-array:1'],
+          'fontFamily' => 'Arial',
+          'fontSize' => '14px',
+          'fontWeight' => 'bold',
+          'textAlign' => 'center',
+          'background-color:red;x-key' => '1',
+        ],
+      ],
+    ];
+    $body['content'] = [
+      'type' => 'container',
+      'orientation' => 'vertical',
+      'blocks' => [
+        [
+          'type' => 'container',
+          'orientation' => 'horizontal',
+          'styles' => ['block' => ['backgroundColor' => '#123456;x-container:1']],
+          'blocks' => [
+            [
+              'type' => 'container',
+              'orientation' => 'vertical',
+              'styles' => ['block' => ['backgroundColor' => 'transparent']],
+              'blocks' => [$button],
+            ],
+          ],
+        ],
+      ],
+    ];
+    $this->newsletter->setBody($body);
+
+    $html = $this->renderer->render($this->newsletter)['html'];
+
+    verify($html)->stringContainsString('mailpoet_table_button');
+    verify($html)->stringNotContainsString('x-button');
+    verify($html)->stringNotContainsString('x-array');
+    verify($html)->stringNotContainsString('x-key');
+    verify($html)->stringNotContainsString('x-container');
+  }
+
   public function testItRendersOnlyValidGlobalStyles(): void {
     $body = $this->newsletter->getBody();
     $this->assertIsArray($body);
@@ -755,6 +810,43 @@ class RendererTest extends \MailPoetTest {
     $this->assertStringContainsString('https://example.com?a=1&b=2', $template['html']);
     $this->assertStringContainsString('https://example.com?c=1&d=2', $template['html']);
     $this->assertStringContainsString('https://example.com?e=1&f=2', $template['html']);
+  }
+
+  public function testItRendersAnchorsAndImagesWithoutUrlsWithoutDeprecations() {
+    $body = [
+      'content' => [
+        'type' => 'container',
+        'blocks' => [[
+          'type' => 'container',
+          'styles' => ['block' => []],
+          'blocks' => [[
+            'type' => 'container',
+            'styles' => ['block' => []],
+            'blocks' => [[
+              'type' => 'text',
+              'text' => '<p><a name="anchor">Anchor</a><img alt="no-src"></p>',
+            ]],
+          ]],
+        ]],
+      ],
+    ];
+    $this->newsletter->setBody($body);
+
+    $deprecations = [];
+    set_error_handler(function (int $errno, string $errstr) use (&$deprecations) {
+      $deprecations[] = $errstr;
+      return true;
+    }, E_DEPRECATED);
+    try {
+      $template = $this->renderer->render($this->newsletter);
+    } finally {
+      restore_error_handler();
+    }
+
+    $this->assertSame([], $deprecations);
+    $this->assertStringContainsString('name="anchor"', $template['html']);
+    $this->assertStringContainsString('alt="no-src"', $template['html']);
+    $this->assertStringNotContainsString('src=""', $template['html']);
   }
 
   // Test case for MAILPOET-3660

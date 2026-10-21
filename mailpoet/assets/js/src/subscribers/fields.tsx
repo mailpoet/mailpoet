@@ -6,8 +6,27 @@ import { SegmentTags, SubscriberTags } from 'common';
 import { Badge } from 'common/listings/newsletter-stats/badge';
 import { ListingsEngagementScore } from './listings-engagement-score';
 import type { Segment, Subscriber } from './api';
+import { SUBSCRIBER_SOURCES, SUBSCRIBER_STATUSES } from './filters';
 
-const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
+export type FieldElement = { value: string; label: string };
+
+export type SubscriberFieldOptions = {
+  segments: FieldElement[];
+  tags: FieldElement[];
+  // Status labels from the listing response; they carry the global count.
+  statusLabels?: Record<string, string>;
+  // Defaults to the site's email tracking setting.
+  trackingEnabled?: boolean;
+};
+
+type FilterBy = Exclude<Field<Subscriber>['filterBy'], false | undefined>;
+
+const SET_OPERATORS: FilterBy = { operators: ['isAny', 'isNone'] };
+// DataViews opens a new filter on the first operator; `between` has range
+// presets (last 7 days, month to date…), unlike `on`, which picks a single day.
+const DATE_OPERATORS: FilterBy = {
+  operators: ['between', 'on', 'before', 'after'],
+};
 
 // Mirrors SubscribersRepository::bulkDelete: subscribers linked to a WordPress
 // user or WooCommerce customer are never permanently deleted.
@@ -16,6 +35,29 @@ function isDeletable(subscriber: Subscriber): boolean {
     Number(subscriber.wp_user_id) === 0 &&
     Number(subscriber.is_woocommerce_user) === 0
   );
+}
+
+export function sourceLabel(source: string): string {
+  switch (source) {
+    case 'form':
+      return __('MailPoet subscription form', 'mailpoet');
+    case 'imported':
+      return __('Import', 'mailpoet');
+    case 'administrator':
+      return __('Admin', 'mailpoet');
+    case 'api':
+      return __('API', 'mailpoet');
+    case 'wordpress_user':
+      return __('WordPress user sync', 'mailpoet');
+    case 'wordpress_user_deleted':
+      return __('WordPress user (deleted)', 'mailpoet');
+    case 'woocommerce_user':
+      return __('WooCommerce customer sync', 'mailpoet');
+    case 'woocommerce_checkout':
+      return __('WooCommerce checkout', 'mailpoet');
+    default:
+      return __('Unknown', 'mailpoet');
+  }
 }
 
 function statusLabel(status: string): string {
@@ -36,20 +78,28 @@ function statusLabel(status: string): string {
 }
 
 // `window.mailpoet_segments` is page-bootstrap data that does not change while
-// the listing is mounted, so we can build the lookup index once at module load
+// the listing is mounted, so the lookup index is built once, on first use,
 // instead of paying a linear scan per row × per subscription on every render.
-const segmentsById = new Map<string, Segment>(
-  (window.mailpoet_segments ?? []).map((segment: Segment) => [
-    String(segment.id),
-    segment,
-  ]),
-);
+let segmentsById: Map<string, Segment> | null = null;
+
+function getSegmentsById(): Map<string, Segment> {
+  if (!segmentsById) {
+    segmentsById = new Map<string, Segment>(
+      (window.mailpoet_segments ?? []).map((segment: Segment) => [
+        String(segment.id),
+        segment,
+      ]),
+    );
+  }
+  return segmentsById;
+}
 
 function subscribedSegments(subscriber: Subscriber): Segment[] {
+  const segmentIndex = getSegmentsById();
   return subscriber.subscriptions.reduce<Segment[]>(
     (segments, subscription) => {
       if (subscription.status !== 'subscribed') return segments;
-      const segment = segmentsById.get(String(subscription.segment_id));
+      const segment = segmentIndex.get(String(subscription.segment_id));
       if (segment) segments.push(segment);
       return segments;
     },
@@ -70,15 +120,24 @@ function dateTime(value: string | null): JSX.Element | null {
 
 export function getSubscriberFields(
   getBackUrl: () => string,
-  group?: string,
+  group: string | undefined,
+  options: SubscriberFieldOptions,
 ): Field<Subscriber>[] {
-  const statisticsFields: Field<Subscriber>[] = mailpoetTrackingEnabled
+  const trackingEnabled =
+    options.trackingEnabled ??
+    MailPoet.trackingConfig?.emailTrackingEnabled ??
+    false;
+
+  const statisticsFields: Field<Subscriber>[] = trackingEnabled
     ? [
         {
           id: 'statistics',
           label: __('Score', 'mailpoet'),
-          enableSorting: false,
+          type: 'integer',
+          enableSorting: true,
           enableGlobalSearch: false,
+          filterBy: { operators: ['greaterThan', 'lessThan', 'between'] },
+          getValue: ({ item }) => item.engagement_score,
           render: ({ item }) => (
             <div className="mailpoet-listing-stats">
               <Link
@@ -97,13 +156,15 @@ export function getSubscriberFields(
       ]
     : [];
 
-  const fields: Field<Subscriber>[] = [
+  return [
     {
       id: 'email',
       label: __('Subscriber', 'mailpoet'),
       type: 'text',
-      enableSorting: false,
+      enableSorting: true,
       enableGlobalSearch: true,
+      filterBy: false,
+      enableHiding: false,
       render: ({ item }) => (
         <div>
           <span className="mailpoet-listing-title-row">
@@ -138,15 +199,25 @@ export function getSubscriberFields(
       id: 'status',
       label: __('Status', 'mailpoet'),
       type: 'text',
-      enableSorting: false,
+      enableSorting: true,
       enableGlobalSearch: false,
+      elements: SUBSCRIBER_STATUSES.map((status) => ({
+        value: status,
+        label: options.statusLabels?.[status] ?? statusLabel(status),
+      })),
+      filterBy: SET_OPERATORS,
       render: ({ item }) => <span>{statusLabel(item.status)}</span>,
     },
     {
       id: 'segments',
       label: __('Lists', 'mailpoet'),
+      type: 'array',
       enableSorting: false,
       enableGlobalSearch: false,
+      elements: options.segments,
+      filterBy: SET_OPERATORS,
+      getValue: ({ item }) =>
+        subscribedSegments(item).map((segment) => String(segment.id)),
       render: ({ item }) => (
         <SegmentTags segments={subscribedSegments(item)} dimension="large" />
       ),
@@ -154,8 +225,12 @@ export function getSubscriberFields(
     {
       id: 'tags',
       label: __('Tags', 'mailpoet'),
+      type: 'array',
       enableSorting: false,
       enableGlobalSearch: false,
+      elements: options.tags,
+      filterBy: SET_OPERATORS,
+      getValue: ({ item }) => item.tags.map((tag) => String(tag.tag_id)),
       render: ({ item }) => (
         <SubscriberTags
           subscribers={item.tags}
@@ -164,28 +239,52 @@ export function getSubscriberFields(
         />
       ),
     },
+    {
+      id: 'source',
+      label: __('Source', 'mailpoet'),
+      type: 'text',
+      enableSorting: false,
+      enableGlobalSearch: false,
+      elements: SUBSCRIBER_SOURCES.map((source) => ({
+        value: source,
+        label: sourceLabel(source),
+      })),
+      filterBy: SET_OPERATORS,
+      render: ({ item }) => (
+        <span>{item.source ? sourceLabel(item.source) : '–'}</span>
+      ),
+    },
     ...statisticsFields,
     {
       id: 'last_subscribed_at',
       label: __('Subscribed on', 'mailpoet'),
-      type: 'datetime',
-      enableSorting: false,
+      type: 'date',
+      enableSorting: true,
       enableGlobalSearch: false,
+      filterBy: DATE_OPERATORS,
       render: ({ item }) => <span>{dateTime(item.last_subscribed_at)}</span>,
     },
     {
       id: 'created_at',
       label: __('Created on', 'mailpoet'),
-      type: 'datetime',
+      type: 'date',
       enableSorting: true,
       enableGlobalSearch: false,
+      filterBy: DATE_OPERATORS,
       render: ({ item }) => <span>{dateTime(item.created_at)}</span>,
     },
   ];
+}
 
-  // This listing filters through its own toolbar (segments, tags, status, …),
-  // so DataViews' built-in per-column filters are unused. Every field type
-  // defaults to a non-empty operator set, which would otherwise surface a dead
-  // "Add filter" entry in each column header menu; disable it explicitly.
-  return fields.map((field) => ({ ...field, filterBy: false }));
+export function getSubscriberSortableFieldIds(
+  trackingEnabled: boolean = MailPoet.trackingConfig?.emailTrackingEnabled ??
+    false,
+): string[] {
+  return getSubscriberFields(() => '', undefined, {
+    segments: [],
+    tags: [],
+    trackingEnabled,
+  })
+    .filter((field) => field.enableSorting)
+    .map((field) => field.id);
 }

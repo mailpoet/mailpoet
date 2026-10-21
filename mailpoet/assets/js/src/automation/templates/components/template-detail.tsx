@@ -4,6 +4,7 @@ import {
   MouseEventHandler,
   ReactNode,
   useCallback,
+  useEffect,
   useState,
 } from 'react';
 import apiFetch from '@wordpress/api-fetch';
@@ -30,6 +31,10 @@ const getCategory = (template: AutomationTemplate): string =>
   automationTemplateCategories.find(({ slug }) => slug === template.category)
     ?.name ?? __('Uncategorized', 'mailpoet');
 
+// automations created (or being created) on this page by template slug,
+// kept after the modal closes
+const createdIds: Record<string, Promise<string>> = {};
+
 const useCreateFromTemplate = () => {
   const [state, setState] = useState({
     data: undefined,
@@ -41,21 +46,33 @@ const useCreateFromTemplate = () => {
   const create = useCallback(async (slug: string) => {
     setState((prevState) => ({ ...prevState, loading: true }));
     try {
-      const data = await apiFetch<{ data: { id: string } }>({
-        path: `/automations/create-from-template`,
-        method: 'POST',
-        data: { slug },
-      });
-      MailPoet.trackEvent('Automations > Template selected', {
-        'Automation slug': slug,
-      });
+      // open the automation created earlier instead of creating another one
+      const isNew = createdIds[slug] === undefined;
+      if (isNew) {
+        createdIds[slug] = apiFetch<{ data: { id: string } }>({
+          path: `/automations/create-from-template`,
+          method: 'POST',
+          data: { slug },
+        })
+          .then(({ data }) => data.id)
+          .catch((error) => {
+            // allow retrying after a failed create
+            delete createdIds[slug];
+            throw error;
+          });
+      }
+      const id = await createdIds[slug];
+      if (isNew) {
+        MailPoet.trackEvent('Automations > Template selected', {
+          'Automation slug': slug,
+        });
+      }
+      // keep loading while the editor opens, so the automation can't be created again
       window.location.href = addQueryArgs(MailPoet.urls.automationEditor, {
-        id: data.data.id,
+        id,
       });
     } catch (error) {
-      setState((prevState) => ({ ...prevState, error }));
-    } finally {
-      setState((prevState) => ({ ...prevState, loading: false }));
+      setState((prevState) => ({ ...prevState, error, loading: false }));
     }
   }, []);
 
@@ -65,14 +82,31 @@ const useCreateFromTemplate = () => {
 type Props = {
   template: AutomationTemplate;
   onRequestClose: React.ComponentProps<typeof Modal>['onRequestClose'];
-  onPreviousClick?: MouseEventHandler<HTMLButtonElement>;
-  onNextClick?: MouseEventHandler<HTMLButtonElement>;
+  onPreviousClick?: () => void;
+  onNextClick?: () => void;
 };
 
 export const TemplateDetail = forwardRef<HTMLDivElement, Props>(
   ({ template, onRequestClose, onPreviousClick, onNextClick }, ref) => {
     const [createAutomationFromTemplate, { loading, error, resetError }] =
       useCreateFromTemplate();
+
+    useEffect(() => {
+      if (loading) {
+        return undefined;
+      }
+      // handle previous/next via keyboard keys
+      const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'ArrowLeft') {
+          onPreviousClick?.();
+        }
+        if (event.key === 'ArrowRight') {
+          onNextClick?.();
+        }
+      };
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [loading, onPreviousClick, onNextClick]);
 
     return (
       <Modal
@@ -124,7 +158,6 @@ export const TemplateDetail = forwardRef<HTMLDivElement, Props>(
               <Button
                 variant="tertiary"
                 onClick={onRequestClose as MouseEventHandler}
-                disabled={loading}
               >
                 {__('Cancel', 'mailpoet')}
               </Button>
@@ -133,8 +166,11 @@ export const TemplateDetail = forwardRef<HTMLDivElement, Props>(
                 onClick={() => void createAutomationFromTemplate(template.slug)}
                 isBusy={loading}
                 disabled={loading}
+                accessibleWhenDisabled
               >
-                {__('Start building', 'mailpoet')}
+                {loading
+                  ? __('Creating automation…', 'mailpoet')
+                  : __('Start building', 'mailpoet')}
               </Button>
             </div>
           </div>

@@ -18,11 +18,11 @@ Nightly CircleCI runs target the latest WordPress and WooCommerce betas / releas
 
 ## Fix direction (priority order)
 
-1. **Adapt our code or our test** to the new behaviour if it's a legitimate change (deprecation, new signature, intentional behaviour change). Default and preferred.
-2. **Plugin-side workaround** if the change looks like an unintentional upstream regression but adapting cleanly isn't feasible. Guard the workaround with a version check (`version_compare()`, or feature detection) so it activates only on affected versions — **never** branch on "is this a beta."
+1. **Adapt our code or our test** to the new behaviour if it’s a legitimate change (deprecation, new signature, intentional behaviour change). Default and preferred.
+2. **Plugin-side workaround** if the change looks like an unintentional upstream regression but adapting cleanly isn’t feasible. Guard the workaround with a version check (`version_compare()`, or feature detection) so it activates only on affected versions — **never** branch on “is this a beta.”
 
 The default fix target is still our plugin or our test, not the upstream beta.
 
 ## Related
 
-- [[mailpoet-beta-compat-test]] — broader compatibility-testing flow when a new beta/RC ships.
+- [[beta-compat-test]] — broader compatibility-testing flow when a new beta/RC ships.

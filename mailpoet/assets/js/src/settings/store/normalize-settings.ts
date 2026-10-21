@@ -10,6 +10,13 @@ function asString(defaultValue: string) {
   };
 }
 
+function asNonBlankString(defaultValue: string) {
+  return (value: unknown): string => {
+    const result = asString(defaultValue)(value);
+    return result.trim() === '' ? defaultValue : result;
+  };
+}
+
 function asStringArray(defaultValue: string[]) {
   return (value: unknown): string[] => {
     if (!_.isArray(value)) return defaultValue;
@@ -79,12 +86,12 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
     subscribe: asObject({
       on_comment: asObject({
         enabled: disabledCheckbox,
-        label: asString(t('yesAddMe')),
+        label: asNonBlankString(t('yesAddMe')),
         segments: emptyArray,
       }),
       on_register: asObject({
         enabled: disabledCheckbox,
-        label: asString(t('yesAddMe')),
+        label: asNonBlankString(t('yesAddMe')),
         segments: emptyArray,
       }),
     }),
@@ -132,6 +139,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
       }),
     }),
     send_transactional_emails: disabledRadio,
+    allow_sending_in_non_production: disabledRadio,
     deactivate_subscriber_after_inactive_days: asEnum(
       ['', '90', '180', '365', '540'],
       '365',

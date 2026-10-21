@@ -15,6 +15,8 @@ class CdnAssetUrl {
 
   public function generateCdnUrl($path) {
     $useCdn = defined('MAILPOET_USE_CDN') ? MAILPOET_USE_CDN : true;
+    // Encode each segment: the CDN serves SVN, which reads a raw "@" in a file name as a peg revision
+    $path = implode('/', array_map('rawurlencode', explode('/', $path)));
     return ($useCdn ? self::CDN_URL : $this->baseUrl . '/plugin_repository/') . "assets/$path";
   }
 }

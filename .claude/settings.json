@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm qa:*)",
+      "Bash(pnpm run qa:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm run lint:*)",
+      "Bash(pnpm lint:php:*)",
+      "Bash(pnpm run lint:php:*)",
+      "Bash(pnpm lint:phpstan:*)",
+      "Bash(pnpm run lint:phpstan:*)",
+      "Bash(pnpm lint:js:*)",
+      "Bash(pnpm run lint:js:*)",
+      "Bash(pnpm lint:css:*)",
+      "Bash(pnpm run lint:css:*)",
+      "Bash(pnpm format:*)",
+      "Bash(pnpm run format:*)",
+      "Bash(pnpm test:php:*)",
+      "Bash(pnpm run test:php:*)",
+      "Bash(pnpm test:js:*)",
+      "Bash(pnpm run test:js:*)",
+      "Bash(pnpm test:e2e:*)",
+      "Bash(pnpm run test:e2e:*)",
+      "Bash(pnpm env:start:*)",
+      "Bash(pnpm run env:start:*)",
+      "Bash(pnpm env:stop:*)",
+      "Bash(pnpm run env:stop:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm run build:*)"
+    ]
+  }
+}

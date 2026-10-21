@@ -1,3 +1,6 @@
+@use '../mixins/full-width-background' as *;
+@use '../settings/colors' as *;
+
 .mailpoet-congratulate {
   @include full-width-background(
     linear-gradient(to top, $color-white, $color-secondary-light)

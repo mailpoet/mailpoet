@@ -1,3 +1,6 @@
+@use '../settings/grid' as *;
+@use '../settings/typography' as *;
+
 #mailpoet-export,
 #import_container {
   margin-top: $grid-gap-half;

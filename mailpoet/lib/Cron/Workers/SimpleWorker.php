@@ -70,7 +70,7 @@ abstract class SimpleWorker implements CronWorkerInterface {
   public function getNextRunDate() {
     // random day of the next week
     $date = Carbon::now()->millisecond(0);
-    $date->setISODate((int)$date->format('o'), ((int)$date->format('W')) + 1, mt_rand(1, 7));
+    $date->setISODate((int)$date->format('o'), ((int)$date->format('W')) + 1, random_int(1, 7));
     $date->startOfDay();
     return $date;
   }

@@ -70,11 +70,9 @@ class Emoji {
 
     $matches = [];
     if (preg_match_all($regex, $content, $matches)) {
-      if (!empty($matches[1])) {
-        foreach ($matches[1] as $emoji) {
-          $entity = html_entity_decode($emoji, ENT_COMPAT, 'UTF-8');
-          $content = str_replace($emoji, $entity, $content);
-        }
+      foreach ($matches[1] as $emoji) {
+        $entity = html_entity_decode($emoji, ENT_COMPAT, 'UTF-8');
+        $content = str_replace($emoji, $entity, $content);
       }
     }
 

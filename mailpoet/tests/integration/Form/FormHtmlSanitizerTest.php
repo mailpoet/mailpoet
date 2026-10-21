@@ -13,16 +13,16 @@ class FormHtmlSanitizerTest extends \MailPoetTest {
   }
 
   public function testItKeepsAllowedTags() {
-    verify($this->sanitizer->sanitize(''))->equals('');
-    verify($this->sanitizer->sanitize('<span style="font-family: BioRhyme">Style</span>'))->equals('<span style="font-family: BioRhyme">Style</span>');
-    verify($this->sanitizer->sanitize('<span data-font="BioRhyme">DataFont</span>'))->equals('<span data-font="BioRhyme">DataFont</span>');
-    verify($this->sanitizer->sanitize('<span class="my-class">Class</span>'))->equals('<span class="my-class">Class</span>');
-    verify($this->sanitizer->sanitize('Text <span>👋</span> around'))->equals('Text <span>👋</span> around');
-    verify($this->sanitizer->sanitize('<strong>Strong</strong><em>Em</em><br />'))->equals('<strong>Strong</strong><em>Em</em><br />');
-    verify($this->sanitizer->sanitize('<sub>Strong</sub><sup>Em</sup><s>s</s><kbd>kbd</kbd>'))->equals('<sub>Strong</sub><sup>Em</sup><s>s</s><kbd>kbd</kbd>');
-    verify($this->sanitizer->sanitize('<code>Code</code>'))->equals('<code>Code</code>');
-    verify($this->sanitizer->sanitize('<a href="http://example.com/" data-type="post" data-id="1" target="_blank" rel="noreferrer">link</a>'))->equals('<a href="http://example.com/" data-type="post" data-id="1" target="_blank" rel="noreferrer">link</a>');
-    verify($this->sanitizer->sanitize('<img class="wp-image-55" style="width: 150px;height: 1px" src="http://test.com/logo-1.jpg" alt="alt text">'))->equals('<img class="wp-image-55" style="width: 150px;height: 1px" src="http://test.com/logo-1.jpg" alt="alt text">');
+    $this->assertSameHtml('', $this->sanitizer->sanitize(''));
+    $this->assertSameHtml('<span style="font-family: BioRhyme">Style</span>', $this->sanitizer->sanitize('<span style="font-family: BioRhyme">Style</span>'));
+    $this->assertSameHtml('<span data-font="BioRhyme">DataFont</span>', $this->sanitizer->sanitize('<span data-font="BioRhyme">DataFont</span>'));
+    $this->assertSameHtml('<span class="my-class">Class</span>', $this->sanitizer->sanitize('<span class="my-class">Class</span>'));
+    $this->assertSameHtml('Text <span>👋</span> around', $this->sanitizer->sanitize('Text <span>👋</span> around'));
+    $this->assertSameHtml('<strong>Strong</strong><em>Em</em><br />', $this->sanitizer->sanitize('<strong>Strong</strong><em>Em</em><br />'));
+    $this->assertSameHtml('<sub>Strong</sub><sup>Em</sup><s>s</s><kbd>kbd</kbd>', $this->sanitizer->sanitize('<sub>Strong</sub><sup>Em</sup><s>s</s><kbd>kbd</kbd>'));
+    $this->assertSameHtml('<code>Code</code>', $this->sanitizer->sanitize('<code>Code</code>'));
+    $this->assertSameHtml('<a href="http://example.com/" data-type="post" data-id="1" target="_blank" rel="noreferrer">link</a>', $this->sanitizer->sanitize('<a href="http://example.com/" data-type="post" data-id="1" target="_blank" rel="noreferrer">link</a>'));
+    $this->assertSameHtml('<img class="wp-image-55" style="width: 150px;height: 1px" src="http://test.com/logo-1.jpg" alt="alt text">', $this->sanitizer->sanitize('<img class="wp-image-55" style="width: 150px;height: 1px" src="http://test.com/logo-1.jpg" alt="alt text">'));
   }
 
   public function testItKeepsMathFormatting() {
@@ -41,13 +41,13 @@ class FormHtmlSanitizerTest extends \MailPoetTest {
       '</span>',
     ]);
 
-    verify($this->sanitizer->sanitize($input))->equals($expected);
+    $this->assertSameHtml($expected, $this->sanitizer->sanitize($input));
   }
 
   public function testItRemovesUnwantedHtml() {
-    verify($this->sanitizer->sanitize('<script>'))->equals('');
-    verify($this->sanitizer->sanitize('<span>Hello<img src="http://nonsense" onerror="alert(1)"/></span>'))->equals('<span>Hello<img src="http://nonsense" /></span>');
-    verify($this->sanitizer->sanitize('<a href="#" onclick="alert(1)">click me</a>'))->equals('<a href="#">click me</a>');
-    verify($this->sanitizer->sanitize('<a href="javascript:alert(1)">click me</a>'))->equals('<a href="alert(1)">click me</a>');
+    $this->assertSameHtml('', $this->sanitizer->sanitize('<script>'));
+    $this->assertSameHtml('<span>Hello<img src="http://nonsense" /></span>', $this->sanitizer->sanitize('<span>Hello<img src="http://nonsense" onerror="alert(1)"/></span>'));
+    $this->assertSameHtml('<a href="#">click me</a>', $this->sanitizer->sanitize('<a href="#" onclick="alert(1)">click me</a>'));
+    $this->assertSameHtml('<a href="alert(1)">click me</a>', $this->sanitizer->sanitize('<a href="javascript:alert(1)">click me</a>'));
   }
 }

@@ -124,6 +124,44 @@ class AssetsControllerTest extends \MailPoetUnitTest {
     $this->assertSame('mailpoet-version', $result['enqueuedScripts'][1][3]);
   }
 
+  /**
+   * @dataProvider woocommerceComponentsStyleUsers
+   */
+  public function testItEnqueuesSharedWooCommerceComponentsStyleAsDependency(string $method, string $handle): void {
+    $renderer = $this->createMock(Renderer::class);
+    $renderer->method('getCssAsset')->willReturnArgument(0);
+    $wp = $this->createMock(WPFunctions::class);
+    $enqueuedStyles = [];
+    $wp->method('wpEnqueueStyle')
+      ->willReturnCallback(function (string $handle, string $src = '', array $deps = []) use (&$enqueuedStyles): void {
+        $enqueuedStyles[] = [$handle, $src, $deps];
+      });
+
+    (new AssetsController($renderer, $wp))->$method();
+
+    $handles = array_column($enqueuedStyles, 0);
+    $sharedIndex = array_search('mailpoet_woocommerce_components', $handles, true);
+    $ownIndex = array_search($handle, $handles, true);
+    $this->assertNotFalse($sharedIndex);
+    $this->assertNotFalse($ownIndex);
+    $this->assertLessThan($ownIndex, $sharedIndex);
+    $this->assertStringEndsWith('/mailpoet-woocommerce-components.css', $enqueuedStyles[$sharedIndex][1]);
+    $this->assertSame(['mailpoet_woocommerce_components'], $enqueuedStyles[$ownIndex][2]);
+  }
+
+  /**
+   * @return array<string, array{string, string}>
+   */
+  public function woocommerceComponentsStyleUsers(): array {
+    return [
+      'dynamic segments' => ['setupDynamicSegmentsDependencies', 'mailpoet_templates'],
+      'automation listing' => ['setupAutomationListingDependencies', 'mailpoet_automation'],
+      'automation templates' => ['setupAutomationTemplatesDependencies', 'mailpoet_automation_templates'],
+      'automation editor' => ['setupAutomationEditorDependencies', 'mailpoet_automation_editor'],
+      'automation analytics' => ['setupAutomationAnalyticsDependencies', 'mailpoet_automation_analytics'],
+    ];
+  }
+
   public function _after() {
     Env::$assetsPath = $this->assetsPath;
     Env::$assetsUrl = $this->assetsUrl;

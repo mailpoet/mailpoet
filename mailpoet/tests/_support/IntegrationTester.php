@@ -59,6 +59,9 @@ class IntegrationTester extends \Codeception\Actor {
 
   private $posts = [];
 
+  /** @var string|null */
+  private $originalBlogname = null;
+
   public function __construct(
     Scenario $scenario
   ) {
@@ -506,7 +509,24 @@ class IntegrationTester extends \Codeception\Actor {
     }
   }
 
+  public function setBlogname(string $blogname): void {
+    if ($this->originalBlogname === null) {
+      $originalBlogname = get_option('blogname');
+      $this->originalBlogname = is_string($originalBlogname) ? $originalBlogname : '';
+    }
+    update_option('blogname', $blogname);
+  }
+
+  private function restoreBlogname(): void {
+    if ($this->originalBlogname === null) {
+      return;
+    }
+    update_option('blogname', $this->originalBlogname);
+    $this->originalBlogname = null;
+  }
+
   public function cleanup() {
+    $this->restoreBlogname();
     $this->deleteWordPressTerms();
     $this->deleteCreatedUsers();
     $this->deleteCreatedComments();

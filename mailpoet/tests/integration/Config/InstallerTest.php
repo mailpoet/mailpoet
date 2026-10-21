@@ -52,6 +52,17 @@ class InstallerTest extends \MailPoetTest {
     verify($url)->stringNotContainsString('premium-key');
   }
 
+  public function testItBuildsDownloadUrlForGivenVersion() {
+    verify(Installer::buildDownloadUrlForVersion('5.39.0'))
+      ->equals('https://release.mailpoet.com/downloads/mailpoet-premium/5.39.0/mailpoet-premium.zip');
+  }
+
+  public function testItConvertsVersionToMinorVersionZero() {
+    verify(Installer::getMinorVersionZero('5.39.2'))->equals('5.39.0');
+    verify(Installer::getMinorVersionZero('5.39'))->equals('5.39.0');
+    verify(Installer::getMinorVersionZero('5'))->equals('5.0.0');
+  }
+
   public function testItAuthenticatesTheDownloadRequestAsPostInsteadOfPuttingTheKeyInTheUrl() {
     $key = 'premium-key';
     $this->diContainer->get(SettingsController::class)->set(Bridge::PREMIUM_KEY_SETTING_NAME, $key);

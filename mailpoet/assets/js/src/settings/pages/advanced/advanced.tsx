@@ -1,6 +1,7 @@
 import { SaveButton } from 'settings/components';
 import { useSetting } from 'settings/store/hooks';
 import { TaskScheduler } from './task-scheduler';
+import { NonProductionSending } from './non-production-sending';
 import { Roles } from './roles';
 import { EngagementTracking } from './engagement-tracking';
 import { SubscriberChoice } from './subscriber-choice';
@@ -28,6 +29,7 @@ export function Advanced() {
     <div className="mailpoet-settings-grid">
       <BounceAddress />
       <TaskScheduler />
+      <NonProductionSending />
       <Roles />
       <EngagementTracking />
       <SubscriberChoice />

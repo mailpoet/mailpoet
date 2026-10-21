@@ -14,6 +14,14 @@ class EditorSettingsBehaviourCest {
   const HIGHLIGHTED_BUTTON_SELECTOR = '.mailpoet_highlight > .mailpoet_content > .mailpoet_editor_button';
   const HIGHLIGHTED_ALC_SELECTOR = '.mailpoet_highlight .mailpoet_automated_latest_content_block_posts';
   const SETTINGS_PANEL_SELECTOR = '#mailpoet_panel';
+  const ALC_POSTS_RENDERED_JS = <<<'JS'
+    var regions = document.querySelectorAll('.mailpoet_automated_latest_content_block_posts');
+    return regions.length > 0
+      && Array.prototype.every.call(regions, function (region) {
+        return region.querySelector('.mailpoet_container > .mailpoet_block') !== null;
+      })
+      && (typeof jQuery === 'undefined' || jQuery.active === 0);
+    JS;
 
   public function testSettingsBehaviour(\AcceptanceTester $i) {
     $i->wantTo('Test settings behaviour');
@@ -31,20 +39,34 @@ class EditorSettingsBehaviourCest {
 
     // Check settings are opened and keeps opened when clicking on the same block
     $i->click(self::ALC_OVERLAY_SELECTOR);
-    $i->waitForElementVisible(self::SETTINGS_PANEL_SELECTOR);
-    $i->wait(0.35); // CSS animation
+    $i->waitForEditorSettingsPanel();
     $i->click(self::ALC_OVERLAY_SELECTOR);
     $i->seeElement(self::SETTINGS_PANEL_SELECTOR);
 
     // Check settings are closed when block is duplicated
+    $i->waitForJS(self::ALC_POSTS_RENDERED_JS, 20);
+    $i->executeJS(<<<'JS'
+      document.querySelectorAll('.mailpoet_automated_latest_content_block_posts .mailpoet_container > *')
+        .forEach(function (node) { node.dataset.preDup = '1'; });
+      window.alcRegionsBeforeDuplicate = document.querySelectorAll('.mailpoet_automated_latest_content_block_posts').length;
+    JS);
     $i->click(self::DUPLICATE_BUTTON_SELECTOR);
     $i->waitForElementNotVisible(self::SETTINGS_PANEL_SELECTOR);
-    $i->wait(1); // Wait for ALC blocks to reorder themselves
+    // The duplicate triggers a debounced refresh that rebuilds the posts of all ALC blocks
+    $i->waitForJS(<<<'JS'
+      var regions = document.querySelectorAll('.mailpoet_automated_latest_content_block_posts');
+      return regions.length === window.alcRegionsBeforeDuplicate + 1
+        && document.querySelectorAll('[data-pre-dup]').length === 0
+        && Array.prototype.every.call(regions, function (region) {
+          var container = region.querySelector('.mailpoet_container');
+          return container !== null && container.children.length > 0;
+        })
+        && (typeof jQuery === 'undefined' || jQuery.active === 0);
+    JS, 20);
 
     // Check settings are closed when clicked on another block
     $i->click(self::ALC_OVERLAY_SELECTOR);
-    $i->waitForElementVisible(self::SETTINGS_PANEL_SELECTOR);
-    $i->wait(0.35); // CSS animation
+    $i->waitForEditorSettingsPanel();
     $i->scrollTo('[data-automation-id="text_block_in_editor"]');
     $i->moveMouseOver('[data-automation-id="alc_settings_done"]'); // To avoid flakyness
     $i->click(self::BUTTON_1_SELECTOR);

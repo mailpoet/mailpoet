@@ -70,20 +70,20 @@ class SendPreviewController {
 
   public function sendPreview(NewsletterEntity $newsletter, string $emailAddress) {
     $renderedNewsletter = $this->renderer->renderAsPreview($newsletter);
-    $divider = '***MailPoet***';
-    $dataForShortcodes = array_merge(
-      [$newsletter->getSubject()],
-      $renderedNewsletter
-    );
-
-    $body = implode($divider, $dataForShortcodes);
-
     $subscriber = $this->subscribersRepository->getCurrentWPUser();
     $this->shortcodes->setNewsletter($newsletter);
     if ($subscriber instanceof SubscriberEntity) {
       $this->shortcodes->setSubscriber($subscriber);
     }
     $this->shortcodes->setWpUserPreview(true);
+
+    $divider = '***MailPoet***';
+    $dataForShortcodes = array_merge(
+      [$this->shortcodes->replace($newsletter->getSubject(), $renderedNewsletter['html'], null, $isPlainText = true)],
+      $renderedNewsletter
+    );
+
+    $body = implode($divider, $dataForShortcodes);
 
     [
       $renderedNewsletter['subject'],

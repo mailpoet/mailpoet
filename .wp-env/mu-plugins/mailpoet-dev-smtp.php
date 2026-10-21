@@ -21,3 +21,7 @@ add_filter('wp_mail_from', function ($from) {
     }
     return $from;
 });
+
+// wp-env reports the site as `local`, and MailPoet pauses queued sending on
+// non-production sites. Allow sending so the dev site keeps delivering to the catcher.
+add_filter('mailpoet_allow_sending_in_non_production', '__return_true');

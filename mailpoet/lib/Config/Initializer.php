@@ -31,6 +31,7 @@ use MailPoet\PostEditorBlocks\PostEditorBlock;
 use MailPoet\PostEditorBlocks\WooCommerceBlocksIntegration;
 use MailPoet\Router;
 use MailPoet\Segments\RestApi\Api as SegmentsRestApi;
+use MailPoet\Settings\MailPoetPageResolver;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\SubscriberActivityTracker;
 use MailPoet\Subscribers\ImportExport\Import\Cli as ImportCli;
@@ -179,6 +180,8 @@ class Initializer {
 
   private Email_Editor_Logger $emailEditorLogger;
 
+  private MailPoetPageResolver $mailPoetPageResolver;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   const PLUGIN_ACTIVATED = 'mailpoet_plugin_activated';
@@ -225,7 +228,8 @@ class Initializer {
     SubscribersRestApi $subscribersRestApi,
     NewslettersRestApi $newslettersRestApi,
     LogsDownload $logsDownload,
-    PublicEmailRoute $publicEmailRoute
+    PublicEmailRoute $publicEmailRoute,
+    MailPoetPageResolver $mailPoetPageResolver
   ) {
     $this->rendererFactory = $rendererFactory;
     $this->accessControl = $accessControl;
@@ -269,6 +273,7 @@ class Initializer {
     $this->newslettersRestApi = $newslettersRestApi;
     $this->logsDownload = $logsDownload;
     $this->publicEmailRoute = $publicEmailRoute;
+    $this->mailPoetPageResolver = $mailPoetPageResolver;
 
     $emailEditorContainer = Email_Editor_Container::container();
     $this->emailEditorBootstrap = $emailEditorContainer->get(EmailEditorBootstrap::class);
@@ -357,11 +362,6 @@ class Initializer {
       'setupEmailEditorIntegrations',
     ]);
 
-    $this->wpFunctions->addAction('woocommerce_init', [
-      $this,
-      'setupMarketingConfirmationEmail',
-    ]);
-
     WPFunctions::get()->addAction(AutomationHooks::INITIALIZE, [
       $this->automationMailPoetIntegration,
       'register',
@@ -436,6 +436,8 @@ class Initializer {
       $this->setupConflictResolver();
 
       $this->setupPages();
+      $this->wpFunctions->addAction('admin_init', [$this->mailPoetPageResolver, 'maybeRepairPages']);
+      $this->mailPoetPageResolver->registerPageChangeHooks();
 
       $this->setupPermanentNotices();
       $this->setupAutomaticEmails();
@@ -489,6 +491,11 @@ class Initializer {
    */
   public function afterPluginActivation() {
     if (!$this->wpFunctions->isAdmin() || !defined(self::INITIALIZED) || !$this->wpFunctions->getOption(self::PLUGIN_ACTIVATED)) return;
+
+    // Background AJAX requests (heartbeat, Action Scheduler) must not consume the flag before the redirected page load
+    if ($this->wpFunctions->wpDoingAjax()) {
+      return;
+    }
 
     $currentUrl = $this->urlHelper->getCurrentUrl();
 
@@ -669,14 +676,6 @@ class Initializer {
     if ($wcEnabled && $optInEnabled) {
       $this->wcTransactionalEmails->overrideStylesForWooEmails();
       $this->wcTransactionalEmails->useTemplateForWoocommerceEmails();
-    }
-  }
-
-  public function setupMarketingConfirmationEmail() {
-    $wcEnabled = $this->wcHelper->isWooCommerceActive();
-    if ($wcEnabled) {
-      $emails = new \MailPoet\WooCommerce\Emails();
-      $emails->init();
     }
   }
 

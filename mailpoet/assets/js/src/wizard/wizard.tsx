@@ -3,6 +3,7 @@ import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { initStore as initSettingsStore } from 'settings/store';
+import { ROUTER_FUTURE_FLAGS } from 'common/router-future-flags';
 import { WooCommerceController } from './woocommerce-controller';
 import {
   registerTranslations,
@@ -26,12 +27,12 @@ function App(): JSX.Element {
   const contextValue = useGlobalContextValue(window);
   return (
     <GlobalContext.Provider value={contextValue}>
-      <HashRouter>
+      <HashRouter future={ROUTER_FUTURE_FLAGS}>
         <Notices />
         <Routes>
           <Route path="/steps/:step/*" element={<WizardWithBoundary />} />
           <Route path="/woocommerce" element={<WooCommerceWithBoundary />} />
-          <Route path="*" element={<Navigate to={basePath} />} />
+          <Route path="*" element={<Navigate to={basePath} replace />} />
         </Routes>
       </HashRouter>
     </GlobalContext.Provider>

@@ -1,5 +1,6 @@
 {
   "minimum-stability": "dev",
+  "prefer-stable": true,
   "require-dev": {
     "codeception/codeception": "4.2.2",
     "codeception/module-asserts": "^1.3",
@@ -8,8 +9,8 @@
     "codeception/module-webdriver": "^1.4",
     "codeception/verify": "^2.1",
     "lucatume/wp-browser": "3.2.1",
-    "phpunit/phpunit": "9.6.33",
-    "vlucas/phpdotenv": "v5.6.0"
+    "phpunit/phpunit": "9.6.38",
+    "vlucas/phpdotenv": "v5.7.0"
   },
   "config": {
     "platform": {
@@ -22,12 +23,14 @@
       "php ./tasks/fix-php82-codeception.php",
       "php ./tasks/fix-php83-codeception.php",
       "php ./tasks/fix-php84-e-strict-codeception.php",
+      "php ./tasks/fix-php85-codeception.php",
       "php ./tasks/FixPhp84Deprecations.php"
     ],
     "post-update-cmd": [
       "php ./tasks/fix-php82-codeception.php",
       "php ./tasks/fix-php83-codeception.php",
       "php ./tasks/fix-php84-e-strict-codeception.php",
+      "php ./tasks/fix-php85-codeception.php",
       "php ./tasks/FixPhp84Deprecations.php"
     ]
   }

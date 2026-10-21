@@ -15,6 +15,7 @@ parameters:
     - ../../tests/_support/_generated/IntegrationTesterActions.php
     - ../../tests/_support/_generated/UnitTesterActions.php
     - ../../tasks/Php84DeprecationsFix.php
+    - ../../tasks/StripWhitespaces.php
   scanDirectories:
     - ../../tests/_support
     - ../../tests/acceptance
@@ -33,16 +34,6 @@ parameters:
   ignoreErrors:
     - identifier: missingType.iterableValue
     - identifier: missingType.generics
-    # PHPStan 2.x emits unresolvableReturnType during template substitution
-    # before our CodeceptionExtension can resolve Codeception\Stub's
-    # @return MockObject & RealInstanceType into a concrete type. We accept
-    # this for Codeception-only call sites; non-Codeception cases stay strict.
-    -
-      identifier: staticMethod.unresolvableReturnType
-      message: '#Codeception\\Stub::#'
-    -
-      identifier: method.unresolvableReturnType
-      message: '#Codeception\\Test\\Unit::#'
     - '#Function members_register_.+ not found#'
     - '#Argument of an invalid type MailPoetVendor\\pQuery\\IQuery supplied for foreach, only iterables are supported#'
 

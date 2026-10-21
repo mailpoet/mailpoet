@@ -24,6 +24,7 @@ export type Context = {
   block_email_editor_enabled?: boolean;
   editor_choice_modal_enabled?: boolean;
   last_email_editor_choice?: 'classic' | 'block' | null;
+  has_remembered_email_editor_choice?: boolean;
 };
 
 export const getContext = (): Context =>

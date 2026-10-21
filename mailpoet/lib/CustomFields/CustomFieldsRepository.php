@@ -141,28 +141,67 @@ class CustomFieldsRepository extends Repository {
 
   /**
    * Permanently deletes trashed custom fields and removes references from
-   * subscriber values, forms, and dynamic segments.
+   * subscriber values and forms. Custom fields used in dynamic segments are kept.
    *
    * @param array<int|null> $ids
-   * @return int Number of custom fields deleted.
+   * @return array{count: int, kept: array<int, array{id: int, name: string, segments: array<int, array{id: int, name: string, trashed: bool}>}>}
    */
-  public function bulkDelete(array $ids): int {
+  public function bulkDelete(array $ids): array {
     $ids = $this->normalizeIds($ids);
     if (!$ids) {
-      return 0;
+      return ['count' => 0, 'kept' => []];
     }
-    $ids = $this->findTrashedIds($ids);
-    return $this->deleteTrashedByIds($ids);
+    return $this->deleteUnusedByIds($this->findTrashedIds($ids));
   }
 
-  public function emptyTrash(): int {
-    return $this->deleteTrashedByIds($this->findTrashedIds());
+  /**
+   * @return array{count: int, kept: array<int, array{id: int, name: string, segments: array<int, array{id: int, name: string, trashed: bool}>}>}
+   */
+  public function emptyTrash(): array {
+    return $this->deleteUnusedByIds($this->findTrashedIds());
+  }
+
+  /**
+   * Permanently deletes a custom field whether or not it is in the trash and
+   * removes references from subscriber values, forms, and dynamic segments.
+   */
+  public function deletePermanently(int $id): int {
+    return $this->deleteByIds([$id]);
+  }
+
+  /**
+   * @param int[] $ids
+   * @return array{count: int, kept: array<int, array{id: int, name: string, segments: array<int, array{id: int, name: string, trashed: bool}>}>}
+   */
+  private function deleteUnusedByIds(array $ids): array {
+    $segmentsById = array_filter($this->getDynamicSegmentsByCustomFieldIds($ids));
+    $kept = [];
+    if ($segmentsById) {
+      foreach ($this->findBy(['id' => array_keys($segmentsById)], ['id' => 'ASC']) as $customField) {
+        $id = (int)$customField->getId();
+        $kept[] = [
+          'id' => $id,
+          'name' => $customField->getName(),
+          'segments' => array_values(array_map(function (SegmentEntity $segment): array {
+            return [
+              'id' => (int)$segment->getId(),
+              'name' => $segment->getName(),
+              'trashed' => $segment->getDeletedAt() !== null,
+            ];
+          }, $segmentsById[$id])),
+        ];
+      }
+    }
+    return [
+      'count' => $this->deleteByIds(array_values(array_diff($ids, array_keys($segmentsById)))),
+      'kept' => $kept,
+    ];
   }
 
   /**
    * @param int[] $ids
    */
-  private function deleteTrashedByIds(array $ids): int {
+  private function deleteByIds(array $ids): int {
     if (!$ids) {
       return 0;
     }
@@ -492,24 +531,49 @@ class CustomFieldsRepository extends Repository {
   }
 
   /**
+   * @return string[] Quoted names of dynamic segments that filter by the custom field, for messages.
+   */
+  public function getDynamicSegmentNamesUsingCustomField(int $customFieldId): array {
+    $segments = $this->getDynamicSegmentsByCustomFieldIds([$customFieldId])[$customFieldId];
+    return array_values(array_map(function (SegmentEntity $segment): string {
+      $name = '"' . $segment->getName() . '"';
+      if (!$segment->getDeletedAt()) {
+        return $name;
+      }
+      // translators: %s is the name of a segment.
+      return sprintf(__('%s (in the trash)', 'mailpoet'), $name);
+    }, $segments));
+  }
+
+  /**
    * @param int[] $customFieldIds
    * @return array<int, int>
    */
   private function getDynamicSegmentCountsByCustomFieldIds(array $customFieldIds): array {
+    return array_map('count', $this->getDynamicSegmentsByCustomFieldIds($customFieldIds));
+  }
+
+  /**
+   * Segments in the trash are included, so restoring them keeps their filters.
+   *
+   * @param int[] $customFieldIds
+   * @return array<int, array<int, SegmentEntity>> Segments keyed by custom field ID, then by segment ID.
+   */
+  private function getDynamicSegmentsByCustomFieldIds(array $customFieldIds): array {
     if (!$customFieldIds) {
       return [];
     }
 
     $customFieldIdsLookup = array_flip($customFieldIds);
-    $segmentIdsByCustomFieldId = array_fill_keys($customFieldIds, []);
+    $segmentsByCustomFieldId = array_fill_keys($customFieldIds, []);
     /** @var DynamicSegmentFilterEntity[] $filters */
     $filters = $this->entityManager->createQueryBuilder()
       ->select('dsf')
       ->from(DynamicSegmentFilterEntity::class, 'dsf')
       ->join('dsf.segment', 's')
-      ->where('s.deletedAt IS NULL')
-      ->andWhere('dsf.filterData.action = :action')
+      ->where('dsf.filterData.action = :action')
       ->setParameter('action', MailPoetCustomFields::TYPE)
+      ->orderBy('s.id', 'ASC')
       ->getQuery()
       ->getResult();
 
@@ -526,13 +590,8 @@ class CustomFieldsRepository extends Repository {
       if (!$segment instanceof SegmentEntity) {
         continue;
       }
-      $segmentIdsByCustomFieldId[$customFieldId][(int)$segment->getId()] = true;
+      $segmentsByCustomFieldId[$customFieldId][(int)$segment->getId()] = $segment;
     }
-
-    $counts = [];
-    foreach ($segmentIdsByCustomFieldId as $customFieldId => $segmentIds) {
-      $counts[$customFieldId] = count($segmentIds);
-    }
-    return $counts;
+    return $segmentsByCustomFieldId;
   }
 }

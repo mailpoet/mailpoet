@@ -11,6 +11,7 @@ export {
   persistDataViewsPreference,
   usePersistedDataViewsPreference,
 } from './preferences';
+export { useShowFiltersWhenActive } from './use-show-filters-when-active';
 export {
   buildRestApiPath,
   configureRestApi,
@@ -22,8 +23,10 @@ export type { RestApiConfig, RestApiError } from './rest-listing';
 export {
   dateRangeFromFilter,
   filterToExtraParams,
+  hasOnlyDigits,
   isStrictDateString,
   normalizeYmd,
+  shiftYmd,
   type FilterList,
 } from './filters';
 export type {

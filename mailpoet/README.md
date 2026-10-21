@@ -72,7 +72,7 @@ pnpm compile
 
 Use `pnpm` scripts for the common workflow commands. They wrap the plugin-level Robo tasks where needed and can be run from the repo root or from this plugin directory.
 
-At the repo root there are also `pnpm` scripts (`pnpm env:start`, `pnpm test:integration`, `pnpm migrations:*`, …) that orchestrate the wp-env container and route WordPress-runtime tasks into it. See the [monorepo README](../README.md) for the full list.
+At the repo root there are also `pnpm` scripts (`pnpm env:start`, `pnpm test:integration`, `pnpm migrations:*`, …) that orchestrate the wp-env container and route WordPress-runtime tasks into it. The root also has the script names shared with our other plugins (`lint`, `format`, `test:php`, `test:js`, `test:e2e`). See the [monorepo README](../README.md) for the full list.
 
 Use `./do` directly only for Robo helpers that do not have a `pnpm` wrapper yet. Those are listed separately below.
 
@@ -96,9 +96,10 @@ $ pnpm test:unit [--file=...] [--debug]
   # runs the PHP unit tests.
   # if --file specified then only tests on that file are executed.
   # if --debug then tests are executed in debugging mode.
-$ pnpm test:integration [--file=...] [--multisite] [--debug]
+$ pnpm test:integration [--file=...] [--group=...] [--multisite] [--debug]
   # runs the PHP integration tests.
   # if --file specified then only tests on that file are executed.
+  # if --group specified then only tests in that group are executed (--group=failed reruns the last failures).
   # if --multisite then tests are executed in a multisite wordpress setup.
   # if --debug then tests are executed in debugging mode.
 $ pnpm test:javascript            # run the JS tests.
@@ -123,7 +124,6 @@ Robo-only helpers with no `pnpm` wrapper yet:
 ```bash
 $ ./do update              # update PHP and JS dependencies
 $ ./do test:failed-unit           # run the last failing unit test.
-$ ./do test:failed-integration    # run the last failing integration test.
 $ ./do test:acceptance-multisite [--file=...] [--skip-deps]
   # same as test:acceptance but runs into a multisite wordpress setup.
 $ ./do download:woo-commerce-zip [<tag>]

@@ -37,6 +37,7 @@ import { ListingHeading } from 'newsletters/listings/heading';
 import { ListingHeadingDisplay } from 'newsletters/listings/heading-display.jsx';
 import { TransactionalEmailsProposeOptInNotice } from 'notices/transactional-emails-propose-opt-in-notice';
 import { MssAccessNotices } from 'notices/mss-access-notices';
+import { ROUTER_FUTURE_FLAGS } from 'common/router-future-flags';
 import { CampaignStatsPage } from './campaign-stats/page';
 import { CorruptEmailNotice } from '../notices/corrupt-email-notice';
 import { LegacyAutomaticEmailsNotice } from '../notices/legacy-automatic-emails-notice';
@@ -197,7 +198,7 @@ const routes: RouteConfig[] = [
 function App() {
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
-      <HashRouter>
+      <HashRouter future={ROUTER_FUTURE_FLAGS}>
         <GlobalNotices />
         <Notices />
         <ErrorBoundary>
@@ -220,6 +221,7 @@ function App() {
                 to={
                   window.mailpoet_newsletters_count === 0 ? '/new' : '/standard'
                 }
+                replace
               />
             }
           />

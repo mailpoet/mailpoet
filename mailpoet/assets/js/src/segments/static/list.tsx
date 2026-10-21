@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
   __experimentalConfirmDialog as ConfirmDialog,
@@ -15,6 +15,7 @@ import {
   useDataViewsQuery,
   filterToExtraParams,
   type ListingQueryParams,
+  useShowFiltersWhenActive,
 } from 'common/dataviews';
 import { ListHeading } from 'segments/static/heading';
 import {
@@ -300,6 +301,8 @@ function SegmentListComponent(): JSX.Element {
     extraParams: (currentView) =>
       filterToExtraParams(viewFiltersToRequestFilter(currentView.filters)),
   });
+  const dataViewsRef = useRef<HTMLDivElement>(null);
+  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
   const handleViewChange = usePersistedDataViewsPreference(
     'static-segments',
     view,
@@ -392,11 +395,11 @@ function SegmentListComponent(): JSX.Element {
             segment.type === 'woocommerce_users'
               ? MailPoet.I18n.t('listSynchronizationWasScheduled').replace(
                   '%1$s',
-                  segment.name,
+                  escapeHTML(segment.name),
                 )
               : MailPoet.I18n.t('listSynchronized').replace(
                   '%1$s',
-                  segment.name,
+                  escapeHTML(segment.name),
                 );
           MailPoet.Modal.loading(false);
           MailPoet.Notice.success(message);
@@ -622,6 +625,7 @@ function SegmentListComponent(): JSX.Element {
       >
         {() => (
           <div
+            ref={dataViewsRef}
             className="mailpoet-dataviews mailpoet-segments-dataviews mailpoet-segments-listing"
             data-automation-id="segments_listing"
           >
@@ -647,7 +651,7 @@ function SegmentListComponent(): JSX.Element {
                   <DataViews.ViewConfig />
                 </div>
               </div>
-              <DataViews.Filters />
+              <DataViews.FiltersToggled className="mailpoet-dataviews__filters" />
               {group === 'trash' && (groupCounts.trash ?? 0) > 0 && (
                 <div className="mailpoet-segments-dataviews__toolbar">
                   <button

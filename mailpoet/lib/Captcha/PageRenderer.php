@@ -72,6 +72,10 @@ class PageRenderer {
   }
 
   public function setPageContent($pageContent) {
+    if (strpos($pageContent, '[mailpoet_page]') === false) {
+      return $pageContent;
+    }
+
     $this->assetsController->setupFrontEndDependencies();
 
     // For preview, show a placeholder message since we don't have a real captcha session
@@ -83,7 +87,7 @@ class PageRenderer {
     } else {
       $content = $this->formRenderer->render($this->data);
       if (!$content) {
-        return false;
+        return str_replace('[mailpoet_page]', '', $pageContent);
       }
     }
 

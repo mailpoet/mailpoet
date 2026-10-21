@@ -22,7 +22,6 @@ use MailPoet\Test\DataFactories\StatisticsClicks as StatisticsClicksFactory;
 use MailPoet\Test\DataFactories\StatisticsNewsletters as StatisticsNewslettersFactory;
 use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
-use MailPoet\WPCOM\DotcomHelperFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -70,7 +69,6 @@ class AutomatedEmailsTest extends \MailPoetTest {
       $this->diContainer->get(NewsletterStatisticsRepository::class),
       new MetaInfo,
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(DotcomHelperFunctions::class),
       $this->diContainer->get(AutomationStorage::class)
     );
     $this->cronWorkerRunner = Stub::copy($this->diContainer->get(CronWorkerRunner::class), [

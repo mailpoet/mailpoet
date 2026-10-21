@@ -58,9 +58,11 @@ class ReceivePostNotificationCest {
     $classMetadata = $entityManager->getClassMetadata(SendingQueueEntity::class);
     $sendingQueueTable = $classMetadata->getTableName();
 
+    // One hour back is due, but inside the overdue threshold that holds older campaigns
+    $pastDate = (new \DateTime())->modify('-1 hour')->format('Y-m-d H:i:s');
     $sql = 'UPDATE `' . $scheduledTaskTable . '` t '
       . ' JOIN `' . $sendingQueueTable . '` q ON t.`id` = q.`task_id` '
-      . " SET t.scheduled_at= '2016-01-01 01:02:03', t.updated_at='2016-01-01 01:02:03' "
+      . " SET t.scheduled_at = '" . $pastDate . "', t.updated_at = '" . $pastDate . "' "
       . ' WHERE q.newsletter_id=' . $newsletter->getId();
 
     $stmt = $entityManager->getConnection()->prepare($sql);

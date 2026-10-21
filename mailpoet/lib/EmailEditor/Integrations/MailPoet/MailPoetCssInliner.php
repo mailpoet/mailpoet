@@ -9,6 +9,9 @@ class MailPoetCssInliner implements Css_Inliner {
   private CssInliner $inliner;
 
   public function from_html(string $unprocessed_html): self { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- we need to match the interface
+    if ($unprocessed_html === '') {
+      throw new \InvalidArgumentException('The provided HTML must not be empty.');
+    }
     $that = new self();
     $that->inliner = CssInliner::fromHtml($unprocessed_html);
     /** @phpstan-ignore-next-line return.type - Interface has static in PHP docs but it goes against coding standards in this repo */
@@ -25,7 +28,7 @@ class MailPoetCssInliner implements Css_Inliner {
 
   public function render(): string {
     if (!isset($this->inliner)) {
-      throw new \LogicException('You must call from_html before calling inline_css');
+      throw new \LogicException('You must call from_html before calling render');
     }
     return $this->inliner->render();
   }

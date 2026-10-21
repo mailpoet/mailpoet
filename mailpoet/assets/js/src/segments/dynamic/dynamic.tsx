@@ -16,6 +16,7 @@ import * as ROUTES from 'segments/routes';
 import { createStore, storeName } from 'segments/dynamic/store';
 import { useEffect, useRef } from 'react';
 import { useDispatch } from '@wordpress/data';
+import { ROUTER_FUTURE_FLAGS } from 'common/router-future-flags';
 
 const container = document.getElementById('dynamic_segments_container');
 
@@ -40,7 +41,7 @@ const ListWithBoundary = withBoundary(DynamicSegmentList);
 function App(): JSX.Element {
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
-      <HashRouter>
+      <HashRouter future={ROUTER_FUTURE_FLAGS}>
         <HistoryListener />
         <GlobalNotices />
         <Notices />

@@ -9,11 +9,13 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -31,6 +33,20 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     parent::_before();
     $this->settings = SettingsController::getInstance();
     $this->newsletterFactory = new NewsletterFactory();
+    delete_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY);
+    delete_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
+    delete_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY);
+  }
+
+  public function _after() {
+    parent::_after();
+    delete_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY);
+    delete_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
+    delete_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY);
   }
 
   public function testItResetsAuthorisedEmailsErrorIfMssIsNotActive() {
@@ -412,6 +428,259 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     verify($controller->isSenderAddressValid($newsletter, 'sending'))->true();
   }
 
+  /**
+   * @param string $senderAddress
+   * @param array<string, mixed> $overrides
+   */
+  private function isSenderAddressValidWithMock(string $context, string $senderAddress, array $overrides, bool $requireVerifiedDomain = false, string $mtaMethod = Mailer::METHOD_MAILPOET): bool {
+    $this->settings->set('mta.method', $mtaMethod);
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, $overrides);
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+    $newsletter->setSenderAddress($senderAddress);
+    $controller = $this->getControllerWithCustomMocks(['AuthorizedSenderDomainController' => $senderDomainMock]);
+    return $controller->isSenderAddressValid($newsletter, $context, $requireVerifiedDomain);
+  }
+
+  public function testForcedResumeRejectsUnverifiedDomainForSmallSender() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@unauthorized.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => false,
+      'shouldSkipAuthorization' => false,
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once(['email.com']),
+      'isLastReloadFailed' => false,
+    ], true);
+    verify($result)->false();
+  }
+
+  public function testForcedResumeAcceptsVerifiedDomain() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@email.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => false,
+      'shouldSkipAuthorization' => false,
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once(['email.com']),
+      'isLastReloadFailed' => false,
+    ], true);
+    verify($result)->true();
+  }
+
+  public function testForcedResumeIsValidWhenSendingMethodIsNotMailPoet() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@unauthorized.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => false,
+      'shouldSkipAuthorization' => false,
+      'getVerifiedSenderDomainsIgnoringCache' => ['email.com'],
+      'isLastReloadFailed' => false,
+    ], true, Mailer::METHOD_AMAZONSES);
+    verify($result)->true();
+  }
+
+  public function testForcedResumeIsValidWhenAuthorizationIsSkipped() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@unauthorized.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => false,
+      'shouldSkipAuthorization' => true,
+      'getVerifiedSenderDomainsIgnoringCache' => ['email.com'],
+      'isLastReloadFailed' => false,
+    ], true);
+    verify($result)->true();
+  }
+
+  public function testForcedResumeIsValidWhenReloadFailed() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@unauthorized.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => false,
+      'shouldSkipAuthorization' => false,
+      'getVerifiedSenderDomainsIgnoringCache' => [],
+      'isLastReloadFailed' => true,
+    ], true);
+    verify($result)->true();
+  }
+
+  public function testSenderAddressIsValidForResumeIfAuthorizedSender() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@email.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'isAuthorizedDomainRequiredForNewCampaigns' => Expected::never(),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once(['email.com']),
+      'getVerifiedSenderDomains' => Expected::never(),
+      'isLastReloadFailed' => false,
+    ]);
+    verify($result)->true();
+  }
+
+  public function testSenderAddressIsNotValidForResumeIfUnauthorizedSender() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@unauthorized.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'isAuthorizedDomainRequiredForNewCampaigns' => Expected::never(),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once(['email.com']),
+      'getVerifiedSenderDomains' => Expected::never(),
+      'isLastReloadFailed' => false,
+    ]);
+    verify($result)->false();
+  }
+
+  public function testSenderAddressIsNotValidForResumeIfThereAreNoDomainsAndReloadSucceeded() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@email.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once([]),
+      'isLastReloadFailed' => false,
+    ]);
+    verify($result)->false();
+  }
+
+  public function testSenderAddressIsValidForResumeIfReloadFailed() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@email.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once([]),
+      'isLastReloadFailed' => true,
+    ]);
+    verify($result)->true();
+  }
+
+  private function senderDomainControllerWithBridge(Bridge $bridge): AuthorizedSenderDomainController {
+    return new AuthorizedSenderDomainController(
+      $bridge,
+      $this->diContainer->get(NewsletterStatisticsRepository::class),
+      $this->settings,
+      $this->diContainer->get(Subscribers::class),
+      $this->diContainer->get(WPFunctions::class)
+    );
+  }
+
+  private function isSenderAddressValidWithBackoff(string $context, Bridge $bridge): bool {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+    $this->settings->set(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME, null);
+    set_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY, AuthorizedSenderDomainController::UPPER_LIMIT + 1);
+    set_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY, 1, 300);
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+    $newsletter->setSenderAddress('contact@unauthorized.com');
+    $controller = $this->getControllerWithCustomMocks(['AuthorizedSenderDomainController' => $this->senderDomainControllerWithBridge($bridge)]);
+    return $controller->isSenderAddressValid($newsletter, $context);
+  }
+
+  public function testSenderAddressRecheckHonoursReloadFailureBackoff() {
+    $bridge = $this->make(Bridge::class, ['getRawSenderDomainData' => Expected::never()]);
+    verify($this->isSenderAddressValidWithBackoff('recheck', $bridge))->true();
+  }
+
+  public function testSenderAddressResumeIgnoresReloadFailureBackoff() {
+    $bridge = $this->make(Bridge::class, [
+      'getRawSenderDomainData' => Expected::once([['domain' => 'email.com', 'domain_status' => 'verified', 'dns' => []]]),
+    ]);
+    verify($this->isSenderAddressValidWithBackoff('resume', $bridge))->false();
+  }
+
+  public function testSenderAddressRecheckUsesFreshDomainsWithBackoff() {
+    $result = $this->isSenderAddressValidWithMock('recheck', 'contact@unauthorized.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once(function (bool $respectBackoff = false) {
+        return $respectBackoff ? ['email.com'] : [];
+      }),
+      'getVerifiedSenderDomains' => Expected::never(),
+      'isLastReloadFailed' => false,
+    ]);
+    verify($result)->false();
+    $result = $this->isSenderAddressValidWithMock('recheck', 'contact@email.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once(function (bool $respectBackoff = false) {
+        return $respectBackoff ? ['email.com'] : [];
+      }),
+      'isLastReloadFailed' => false,
+    ]);
+    verify($result)->true();
+  }
+
+  public function testSenderAddressRecheckIsValidWhenReloadFailed() {
+    $result = $this->isSenderAddressValidWithMock('recheck', 'contact@unauthorized.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'getVerifiedSenderDomainsIgnoringCache' => [],
+      'isLastReloadFailed' => true,
+    ]);
+    verify($result)->true();
+  }
+
+  public function testSenderAddressIsValidForResumeIfRestrictionsDoNotApply() {
+    $result = $this->isSenderAddressValidWithMock('resume', 'contact@unauthorized.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(false),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::never(),
+    ]);
+    verify($result)->true();
+  }
+
+  public function testSenderAddressForSendingUsesCachedDomains() {
+    $result = $this->isSenderAddressValidWithMock('sending', 'contact@email.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'getVerifiedSenderDomains' => Expected::once(['email.com']),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::never(),
+    ]);
+    verify($result)->true();
+  }
+
+  public function testSenderAddressIsNotValidForSendingIfCachedDomainListIsEmpty() {
+    $result = $this->isSenderAddressValidWithMock('sending', 'contact@email.com', [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'getVerifiedSenderDomains' => Expected::once([]),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::never(),
+      'isCacheAvailable' => Expected::once(true),
+    ]);
+    verify($result)->false();
+  }
+
+  public function testSenderAddressRequirementBoundaryForExistingCampaigns() {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+    $this->settings->set(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME, null);
+    set_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY, [['domain' => 'email.com', 'domain_status' => 'verified']]);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+    $newsletter->setSenderAddress('contact@unauthorized.com');
+
+    set_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY, AuthorizedSenderDomainController::UPPER_LIMIT);
+    $senderDomainController = new AuthorizedSenderDomainController(
+      $this->diContainer->get(Bridge::class),
+      $this->diContainer->get(NewsletterStatisticsRepository::class),
+      $this->settings,
+      $this->diContainer->get(Subscribers::class),
+      $this->diContainer->get(WPFunctions::class)
+    );
+    $controller = $this->getControllerWithCustomMocks(['AuthorizedSenderDomainController' => $senderDomainController]);
+    verify($controller->isSenderAddressValid($newsletter, 'sending'))->true();
+
+    set_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY, AuthorizedSenderDomainController::UPPER_LIMIT + 1);
+    verify($controller->isSenderAddressValid($newsletter, 'sending'))->false();
+
+    delete_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY);
+  }
+
+  public function testSenderAddressIsValidForSendingIfThereIsNoCacheAndShopReturnsNothing() {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
+    set_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY, AuthorizedSenderDomainController::UPPER_LIMIT + 1);
+    $bridge = $this->make(Bridge::class, ['getRawSenderDomainData' => null]);
+    $senderDomainController = new AuthorizedSenderDomainController(
+      $bridge,
+      $this->diContainer->get(NewsletterStatisticsRepository::class),
+      $this->settings,
+      $this->diContainer->get(Subscribers::class),
+      $this->diContainer->get(WPFunctions::class)
+    );
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+    $newsletter->setSenderAddress('contact@unauthorized.com');
+
+    $controller = $this->getControllerWithCustomMocks(['AuthorizedSenderDomainController' => $senderDomainController]);
+    verify($controller->isSenderAddressValid($newsletter, 'sending'))->true();
+
+    delete_transient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY);
+    delete_transient(AuthorizedSenderDomainController::SENDER_DOMAINS_RELOAD_FAILED_KEY);
+  }
+
   public function testSenderAddressIsValidForActivationIfNotACampaign() {
     $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
 
@@ -567,7 +836,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     ];
     $response = ['status' => true];
     $bridgeMock = $this->make(Bridge::class, [
-      'getAuthorizedEmailAddresses' => Expected::once($array),
+      'getAuthorizedEmailAddresses' => Expected::exactly(2, $array),
       'createAuthorizedEmailAddress' => Expected::once($response),
     ]);
     $mocks = [
@@ -643,13 +912,13 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     ];
 
     $controller = $this->getControllerWithCustomMocks($mocks);
-    $result = $controller->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAILS_TYPE_ALL);
+    $result = $controller->getAuthorizedEmailAddressesIgnoringCache(self::AUTHORIZED_EMAILS_TYPE_ALL);
     verify($result)->equals($apiData);
   }
 
   public function testItReturnsCachedDataIfAPIIsDownForGetAllAuthorizedEmailAddresses() {
     $bridgeMock = $this->make(Bridge::class, [
-      'getAuthorizedEmailAddresses' => Expected::once([]),
+      'getAuthorizedEmailAddresses' => Expected::once(null),
     ]);
 
     $cacheData = [
@@ -669,8 +938,140 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     ];
 
     $controller = $this->getControllerWithCustomMocks($mocks);
-    $result = $controller->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAILS_TYPE_ALL);
+    $result = $controller->getAuthorizedEmailAddressesIgnoringCache(self::AUTHORIZED_EMAILS_TYPE_ALL);
     verify($result)->equals($cacheData);
+  }
+
+  public function testItReadsAuthorizedEmailsFromCacheFirst() {
+    $cached = ['authorized' => ['a@b.com'], 'pending' => [], 'main' => 'a@b.com'];
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::never()]);
+    $wpMock = $this->make(WPFunctions::class, ['getTransient' => $cached, 'setTransient' => Expected::never()]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock, 'WPFunctions' => $wpMock]);
+    verify($controller->getAuthorizedEmailAddresses())->equals(['a@b.com']);
+    verify($controller->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAILS_TYPE_ALL))->equals($cached);
+  }
+
+  public function testItCallsBridgeAndCachesWhenCacheIsEmpty() {
+    $data = ['authorized' => ['a@b.com'], 'pending' => []];
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once($data)]);
+    $wpMock = $this->make(WPFunctions::class, [
+      'getTransient' => false,
+      'setTransient' => Expected::once(true),
+    ]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock, 'WPFunctions' => $wpMock]);
+    verify($controller->getAuthorizedEmailAddresses())->equals(['a@b.com']);
+  }
+
+  public function testIgnoringCacheUpdatesTheCache() {
+    $new = ['authorized' => ['new@b.com'], 'pending' => []];
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once($new)]);
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY, ['authorized' => ['old@b.com'], 'pending' => []]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock]);
+    verify($controller->getAuthorizedEmailAddressesIgnoringCache())->equals(['new@b.com']);
+    verify(get_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY))->equals($new);
+  }
+
+  public function testIgnoringCacheFallsBackToCacheWhenBridgeFails() {
+    $cached = ['authorized' => ['old@b.com'], 'pending' => []];
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(null)]);
+    $wpMock = $this->make(WPFunctions::class, [
+      'getTransient' => $cached,
+      'setTransient' => Expected::once(function ($key) {
+        verify($key)->same(AuthorizedEmailsController::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY);
+        return true;
+      }),
+    ]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock, 'WPFunctions' => $wpMock]);
+    verify($controller->getAuthorizedEmailAddressesIgnoringCache())->equals(['old@b.com']);
+  }
+
+  public function testItReturnsEmptyWhenBridgeFailsAndNoCache() {
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(null)]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock]);
+    verify($controller->getAuthorizedEmailAddressesIgnoringCache())->equals([]);
+  }
+
+  public function testItCachesValidEmptyResponse() {
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => Expected::once([]),
+    ]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock]);
+    verify($controller->getAuthorizedEmailAddresses())->equals([]);
+    verify($controller->getAuthorizedEmailAddresses())->equals([]);
+  }
+
+  public function testFailedBridgeReadSetsBackoffAndLaterReadsSkipBridge() {
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(null)]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock]);
+    verify($controller->getAuthorizedEmailAddresses())->equals([]);
+    verify(get_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY))->notEmpty();
+
+    $laterController = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock]);
+    verify($laterController->getAuthorizedEmailAddresses())->equals([]);
+  }
+
+  public function testUserActionsIgnoreEmailsBackoff() {
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY, 1, 300);
+    $data = ['authorized' => ['a@b.com'], 'pending' => []];
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once($data)]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock]);
+    verify($controller->getAuthorizedEmailAddressesIgnoringCache())->equals(['a@b.com']);
+  }
+
+  public function testSuccessfulBridgeReadDeletesEmailsBackoff() {
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY, 1, 300);
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(['authorized' => [], 'pending' => []])]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock]);
+    $controller->getAuthorizedEmailAddressesIgnoringCache();
+    verify(get_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY))->false();
+  }
+
+  public function testCachedEmailsAreUsedDuringBackoff() {
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY, 1, 300);
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY, ['authorized' => ['a@b.com'], 'pending' => []]);
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::never()]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock]);
+    verify($controller->getAuthorizedEmailAddresses())->equals(['a@b.com']);
+  }
+
+  public function testClearCacheRemovesTheBackoff() {
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY, 1, 300);
+    $this->getControllerWithCustomMocks()->clearCache();
+    verify(get_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY))->false();
+  }
+
+  public function testClearCacheRemovesTheTransient() {
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY, ['authorized' => ['a@b.com']]);
+    $this->getControllerWithCustomMocks()->clearCache();
+    verify(get_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY))->false();
+  }
+
+  public function testCheckKeepsPreviousErrorWhenThereAreNoAuthorizedEmails() {
+    $this->setMailPoetSendingMethod();
+    $previous = ['invalid_sender_address' => 'old@email.com'];
+    $this->settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, $previous);
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, ['shouldSkipAuthorization' => false]);
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => Expected::once(['authorized' => [], 'pending' => []]),
+    ]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock, 'AuthorizedSenderDomainController' => $senderDomainMock]);
+    verify($controller->checkAuthorizedEmailAddresses())->null();
+    verify($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->equals($previous);
+  }
+
+  public function testCreateRefreshesTheCache() {
+    $before = ['authorized' => [], 'pending' => []];
+    $after = ['authorized' => [], 'pending' => ['new@email.com']];
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => Expected::exactly(2, function () use ($before, $after) {
+        static $calls = 0;
+        return ++$calls === 1 ? $before : $after;
+      }),
+      'createAuthorizedEmailAddress' => Expected::once(['status' => true]),
+    ]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridgeMock]);
+    $controller->createAuthorizedEmailAddress('new@email.com');
+    verify(get_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY))->equals($after);
   }
 
   private function setMailPoetSendingMethod() {
@@ -681,6 +1082,42 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
         'mailpoet_api_key' => 'some_key',
       ]
     );
+  }
+
+  public function testCachedListWithPendingAddressIsRefreshedFromBridge() {
+    $key = AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY;
+    set_transient($key, ['authorized' => [], 'pending' => ['new@email.com']], WEEK_IN_SECONDS);
+    $fresh = ['authorized' => ['new@email.com'], 'pending' => []];
+    $controller = $this->getController($fresh);
+
+    verify($controller->getAuthorizedEmailAddresses())->equals(['new@email.com']);
+    verify(get_transient($key))->equals($fresh);
+  }
+
+  public function testCachedListWithoutPendingAddressIsNotRefreshed() {
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY, ['authorized' => ['auth@email.com'], 'pending' => []], WEEK_IN_SECONDS);
+    $controller = $this->getController(null);
+
+    verify($controller->getAuthorizedEmailAddresses())->equals(['auth@email.com']);
+  }
+
+  public function testCachedListWithPendingAddressIsReturnedWhenBridgeFails() {
+    $cached = ['authorized' => ['auth@email.com'], 'pending' => ['new@email.com']];
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY, $cached, WEEK_IN_SECONDS);
+    $bridge = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(null)]);
+    $controller = $this->getControllerWithCustomMocks(['Bridge' => $bridge]);
+
+    verify($controller->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAILS_TYPE_ALL))->equals($cached);
+    verify(get_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY))->notEmpty();
+  }
+
+  public function testCachedListWithPendingAddressSkipsBridgeDuringBackoff() {
+    $cached = ['authorized' => ['auth@email.com'], 'pending' => ['new@email.com']];
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_KEY, $cached, WEEK_IN_SECONDS);
+    set_transient(AuthorizedEmailsController::AUTHORIZED_EMAILS_RELOAD_FAILED_KEY, 1, 300);
+    $controller = $this->getController(null);
+
+    verify($controller->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAILS_TYPE_ALL))->equals($cached);
   }
 
   private function getController($authorizedEmails) {

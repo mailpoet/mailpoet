@@ -197,7 +197,7 @@ class EditorPageRenderer {
       ]
     );
 
-    $installedAtDiff = (new \DateTime($this->mailpoetSettings->get('installed_at')))->diff(new \DateTime());
+    $installedAtDiff = (new \DateTime((string)$this->mailpoetSettings->get('installed_at')))->diff(new \DateTime());
     // Survey should be displayed only if there are 2 and more emails and the user hasn't seen it yet
     $displaySurvey = ($this->newslettersRepository->getCountOfEmailsWithWPPost() > 1) && !$this->userFlagsController->get(UserFlagsController::EMAIL_EDITOR_SURVEY);
 
@@ -208,7 +208,6 @@ class EditorPageRenderer {
     $inline_script_data = [
       'mailpoet_premium_plugin_installed' => Installer::isPluginInstalled(Installer::PREMIUM_PLUGIN_SLUG),
       'mailpoet_premium_active' => $this->servicesChecker->isPremiumPluginActive(),
-      'mailpoet_premium_plugin_download_url' => $this->subscribersFeature->hasValidPremiumKey() ? $installer->buildDownloadUrl() : null,
       'mailpoet_premium_plugin_activation_url' => $installer->generatePluginActivationUrl(Installer::PREMIUM_PLUGIN_PATH),
       'mailpoet_has_valid_api_key' => $this->subscribersFeature->hasValidApiKey(),
       'mailpoet_has_valid_premium_key' => $this->subscribersFeature->hasValidPremiumKey(),

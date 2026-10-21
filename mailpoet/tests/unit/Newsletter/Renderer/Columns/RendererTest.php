@@ -41,6 +41,16 @@ class RendererTest extends \MailPoetUnitTest {
     verify($result)->equals('<!-- Skipped unsupported block type: container -->');
   }
 
+  public function testItEscapesTheBlockTypeInTheSkippedMessage() {
+    $contentBlock = [
+      'type' => 'x --><b>injected</b><!--',
+      'styles' => ['block' => []],
+    ];
+
+    $result = $this->renderer->render($contentBlock, []);
+    verify($result)->equals('<!-- Skipped unsupported block type: x --&gt;&lt;b&gt;injected&lt;/b&gt;&lt;!-- -->');
+  }
+
   public function testItRendersOneColumn() {
     $contentBlock = [
       'blocks' => [1], // Single block
@@ -304,6 +314,58 @@ class RendererTest extends \MailPoetUnitTest {
     verify($template['content_start'])->stringContainsString('mailpoet_content');
     verify($template['content_start'])->stringContainsString('cols-one');
     verify($template['content_start'])->stringContainsString('background-image: url(test.jpg)');
+  }
+
+  public function testItKeepsBackgroundImageUrlInsideUrlFunction() {
+    $image = [
+      'src' => "https://example.com/bg.png);background-color:#ff00ff;x:url('a\" b\\",
+      'display' => 'scale',
+    ];
+
+    $template = $this->renderer->getOneColumnTemplate(['backgroundColor' => '#ffffff'], $image);
+
+    verify($template['content_start'])->stringContainsString(
+      'background-image: url(https://example.com/bg.png%29%3Bbackground-color:#ff00ff%3Bx:url%28%27a%22%20b%5C);'
+    );
+    verify($template['content_start'])->stringNotContainsString('bg.png)');
+  }
+
+  public function testItKeepsEntitiesInBackgroundImageUrlAsText() {
+    $image = [
+      'src' => 'https://example.com/bg.png&#41;&#59;color:red',
+      'display' => 'scale',
+    ];
+
+    $template = $this->renderer->getOneColumnTemplate(['backgroundColor' => '#ffffff'], $image);
+
+    verify($template['content_start'])->stringContainsString('background-image: url(https://example.com/bg.png&amp;#41%3B&amp;#59%3Bcolor:red);');
+  }
+
+  public function testItKeepsRegularBackgroundImageUrlUnchanged() {
+    $image = [
+      'src' => 'https://example.com/wp-content/uploads/logo@2x.png?ver=1',
+      'display' => 'scale',
+    ];
+
+    $template = $this->renderer->getOneColumnTemplate(['backgroundColor' => '#ffffff'], $image);
+
+    verify($template['content_start'])->stringContainsString(
+      'background-image: url(https://example.com/wp-content/uploads/logo@2x.png?ver=1);'
+    );
+  }
+
+  public function testItTreatsEmptyBackgroundColorAsMissing() {
+    $contentBlock = [
+      'blocks' => [1],
+      'styles' => ['block' => ['backgroundColor' => '']],
+    ];
+
+    $result = $this->renderer->render($contentBlock, ['<div>Empty background</div>']);
+    verify($result)->stringNotContainsString('background-color');
+    verify($result)->stringNotContainsString('bgcolor=');
+
+    $template = $this->renderer->getOneColumnTemplate(['backgroundColor' => ''], ['src' => 'bg.jpg', 'display' => 'scale']);
+    verify($template['content_start'])->stringContainsString('background-color: #ffffff;');
   }
 
   public function testGetMultipleColumnsContentStart() {

@@ -9,13 +9,16 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Url;
 use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsController;
 use MailPoet\SystemReport\SystemReportCollector;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class HelpTest extends \MailPoetTest {
@@ -36,14 +39,37 @@ class HelpTest extends \MailPoetTest {
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
 
-    $this->helpPage = new Help(
+    $this->helpPage = $this->makeHelpPage($this->diContainer->get(SendingEnvironment::class));
+  }
+
+  public function testItReportsNoPauseReasonOnProduction() {
+    $environment = new SendingEnvironment(
+      $this->diContainer->get(SettingsController::class),
+      $this->make(WPFunctions::class, ['wpGetEnvironmentType' => 'production'])
+    );
+    $data = $this->makeHelpPage($environment)->getQueueStatus();
+    verify($data['sendingPausedReason'])->null();
+  }
+
+  public function testItReportsWhyTheQueueIsPausedOnANonProductionSite() {
+    $environment = new SendingEnvironment(
+      $this->diContainer->get(SettingsController::class),
+      $this->make(WPFunctions::class, ['wpGetEnvironmentType' => 'staging', 'applyFilters' => fn($hook, $value) => $value])
+    );
+    $data = $this->makeHelpPage($environment)->getQueueStatus();
+    verify($data['sendingPausedReason'])->same('Sending is paused because this is a staging site.');
+  }
+
+  private function makeHelpPage(SendingEnvironment $sendingEnvironment): Help {
+    return new Help(
       $this->diContainer->get(PageRenderer::class),
       $this->diContainer->get(CronHelper::class),
       $this->diContainer->get(SystemReportCollector::class),
       $this->diContainer->get(Bridge::class),
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->sendingQueuesRepository,
-      $this->diContainer->get(Url::class)
+      $this->diContainer->get(Url::class),
+      $sendingEnvironment
     );
   }
 

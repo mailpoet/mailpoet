@@ -132,7 +132,6 @@ export type State = {
     type: 'steps' | 'triggers';
   };
   errors?: Errors;
-  isFullscreenForced: boolean;
 };
 
 export type Feature = 'fullscreenMode' | 'showIconLabels';

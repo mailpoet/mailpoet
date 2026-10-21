@@ -7,9 +7,11 @@ use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
+use MailPoet\Segments\DynamicSegments\Filters\DateFilterHelper;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
+use MailPoet\Segments\DynamicSegments\Filters\FilterHelper;
 use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberDateField;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
@@ -21,11 +23,15 @@ use MailPoet\Segments\DynamicSegments\Filters\SubscriberTrackingConsent;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfReviews;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProductVariation;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommercePurchasedWithAttribute;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTag;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceUsedCouponCode;
+use MailPoet\WP\Functions as WPFunctions;
 
 class FilterDataMapperTest extends \MailPoetTest {
   /** @var FilterDataMapper */
@@ -55,6 +61,42 @@ class FilterDataMapperTest extends \MailPoetTest {
     $this->expectExceptionMessage('Invalid type');
     $this->expectExceptionCode(InvalidFilterException::INVALID_TYPE);
     $this->mapper->map(['filters' => [['segmentType' => 'noexistent']]]);
+  }
+
+  public function testItRefusesMultipleFiltersWhenNoCallbackMapsThem(): void {
+    $mapper = $this->getMapperWithoutMultipleFiltersCallback();
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MULTIPLE_FILTERS_REQUIRE_PREMIUM);
+    $mapper->map([
+      'filters_connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+      'filters' => [
+        ['segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE, 'action' => SubscriberTextField::EMAIL, 'operator' => 'startsWith', 'value' => 'user'],
+        ['segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE, 'action' => SubscriberTextField::FIRST_NAME, 'operator' => 'is', 'value' => 'User7'],
+      ],
+    ]);
+  }
+
+  public function testItMapsASingleFilterWhenNoCallbackMapsMultipleFilters(): void {
+    $mapper = $this->getMapperWithoutMultipleFiltersCallback();
+    $filters = $mapper->map([
+      'filters' => [
+        ['segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE, 'action' => SubscriberTextField::EMAIL, 'operator' => 'startsWith', 'value' => 'user'],
+      ],
+    ]);
+    verify($filters)->arrayCount(1);
+    verify($filters[0]->getAction())->equals(SubscriberTextField::EMAIL);
+  }
+
+  private function getMapperWithoutMultipleFiltersCallback(): FilterDataMapper {
+    return new FilterDataMapper(
+      $this->make(WPFunctions::class, ['hasFilter' => false]),
+      $this->diContainer->get(DateFilterHelper::class),
+      $this->diContainer->get(FilterHelper::class),
+      $this->diContainer->get(WooCommerceNumberOfReviews::class),
+      $this->diContainer->get(WooCommerceUsedCouponCode::class),
+      $this->diContainer->get(WooCommercePurchasedWithAttribute::class),
+      $this->diContainer->get(WooCommerceTag::class)
+    );
   }
 
   public function testItMapsEmailFilter(): void {

@@ -224,11 +224,12 @@ class SendingQueuesRepository extends Repository {
       ->getQuery();
   }
 
-  public function pause(SendingQueueEntity $queue): void {
+  public function pause(SendingQueueEntity $queue, ?string $reason = null): void {
     if ($queue->getCountProcessed() !== $queue->getCountTotal()) {
       $task = $queue->getTask();
       if ($task instanceof ScheduledTaskEntity) {
         $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+        $task->setPauseReason($reason);
         $this->flush();
       }
     }
@@ -284,6 +285,13 @@ class SendingQueuesRepository extends Repository {
       $meta = [];
     }
     $meta['campaignId'] = $campaignId;
+    $queue->setMeta($meta);
+    $this->flush();
+  }
+
+  public function disableTemplatedSending(SendingQueueEntity $queue): void {
+    $meta = $queue->getMeta() ?? [];
+    $meta[SendingQueueEntity::META_TEMPLATED_SENDING_DISABLED] = true;
     $queue->setMeta($meta);
     $this->flush();
   }

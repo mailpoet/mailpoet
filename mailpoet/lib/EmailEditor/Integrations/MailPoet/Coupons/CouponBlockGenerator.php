@@ -58,7 +58,10 @@ class CouponBlockGenerator {
       5,
       3
     );
-    $this->wp->addAction('woocommerce_email_editor_render_start', [$this, 'registerEmailRenderer']);
+    // WooCommerce 11.1+ skips registering its blocks on cron and AJAX requests, and they get
+    // registered on demand at the default priority (ProductCollectionEmailRendererRegistrar,
+    // or WooCommerce itself on newer versions). Run after that so the coupon block exists.
+    $this->wp->addAction('woocommerce_email_editor_render_start', [$this, 'registerEmailRenderer'], 20);
   }
 
   public function generate($couponCode, array $attrs, Rendering_Context $renderingContext): string {

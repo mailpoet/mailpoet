@@ -8,6 +8,7 @@ use WC_Order;
 /**
  * @phpstan-type OrderRow array{created_at: string, newsletter_id: int, order_id: int, total: float, subscriber_id: int, first_name:string, last_name:string, email:string, subject:string, status:string}
  * @phpstan-type AttributionRow array{order_id: int, date_created_gmt: string, newsletter_id: string, subscriber_id: string|null, queue_id: string|null}
+ * @phpstan-type OrderRowsOptions array{search?: string|null, status?: string[], emails?: int[], order_by?: string, order?: string, limit?: int, offset?: int}
  */
 class OrderAttributionRevenueReader {
   /** @var Helper */
@@ -123,6 +124,142 @@ class OrderAttributionRevenueReader {
       $this->getWooNewsletterOrderRows($newsletterIds, $afterBoundaryFrom, $to),
       $this->getLegacyNewsletterOrderRows($newsletterIds, $afterBoundaryFrom, $to, true, false)
     );
+  }
+
+  /**
+   * Like getNewsletterOrderRows(), but returns one page. The database does
+   * the filtering, sorting and paging, so we never load orders we won't show.
+   *
+   * @param int[] $newsletterIds
+   * @param OrderRowsOptions $options
+   * @return OrderRow[]|null
+   */
+  public function getNewsletterOrderRowsPage(
+    array $newsletterIds,
+    \DateTimeImmutable $from,
+    \DateTimeImmutable $to,
+    array $options = []
+  ): ?array {
+    $sources = $this->getNewsletterOrderRowsSources($newsletterIds, $from, $to);
+    if ($sources === null) {
+      return null;
+    }
+    if (!$sources) {
+      return [];
+    }
+
+    global $wpdb;
+
+    $query = 'SELECT * FROM (' . implode(' UNION ALL ', $sources) . ') order_rows '
+      . $this->getOrderRowsFilterSql($options)
+      . $this->getOrderRowsOrderBySql($options);
+    if (isset($options['limit'])) {
+      $query .= $wpdb->prepare(' LIMIT %d OFFSET %d', max(0, (int)$options['limit']), max(0, (int)($options['offset'] ?? 0)));
+    }
+
+    $rows = $wpdb->get_results($query, ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Every fragment is prepared above.
+    return $this->normalizeOrderRows(is_array($rows) ? $rows : []);
+  }
+
+  /**
+   * @param int[] $newsletterIds
+   * @param OrderRowsOptions $options
+   */
+  public function countNewsletterOrderRows(
+    array $newsletterIds,
+    \DateTimeImmutable $from,
+    \DateTimeImmutable $to,
+    array $options = []
+  ): ?int {
+    $sources = $this->getNewsletterOrderRowsSources($newsletterIds, $from, $to, true);
+    if ($sources === null) {
+      return null;
+    }
+    if (!$sources) {
+      return 0;
+    }
+
+    global $wpdb;
+
+    $query = 'SELECT COUNT(*) FROM (' . implode(' UNION ALL ', $sources) . ') order_rows '
+      . $this->getOrderRowsFilterSql($options);
+    return (int)$wpdb->get_var($query); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Every fragment is prepared above.
+  }
+
+  /**
+   * The SELECT for each place order rows can come from. Joined with UNION ALL
+   * by the callers. Null means the Woo-backed read model is off.
+   * $countOnly skips the refund math, which a COUNT never reads.
+   *
+   * @param int[] $newsletterIds
+   * @return string[]|null
+   */
+  private function getNewsletterOrderRowsSources(array $newsletterIds, \DateTimeImmutable $from, \DateTimeImmutable $to, bool $countOnly = false): ?array {
+    $boundary = $this->getReadBoundary();
+    if ($boundary === null) {
+      return null;
+    }
+
+    $newsletterIds = $this->normalizeIds($newsletterIds);
+    if (!$newsletterIds) {
+      return [];
+    }
+
+    $beforeBoundaryTo = $this->getBeforeBoundaryTo($to, $boundary);
+    $afterBoundaryFrom = $this->getAfterBoundaryFrom($from, $boundary);
+
+    return array_values(array_filter([
+      $this->getLegacyNewsletterOrderRowsSql($newsletterIds, $from, $beforeBoundaryTo, false, $this->isBoundaryUpperLimit($to, $boundary)),
+      $this->getWooNewsletterOrderRowsSql($newsletterIds, $afterBoundaryFrom, $to, $countOnly),
+      $this->getLegacyNewsletterOrderRowsSql($newsletterIds, $afterBoundaryFrom, $to, true, false),
+    ]));
+  }
+
+  /**
+   * @param OrderRowsOptions $options
+   */
+  private function getOrderRowsFilterSql(array $options): string {
+    global $wpdb;
+
+    $sql = ' WHERE 1 = 1';
+    $search = isset($options['search']) ? trim((string)$options['search']) : '';
+    if ($search !== '') {
+      $like = '%' . $wpdb->esc_like(substr($search, 0, 100)) . '%';
+      $sql .= $wpdb->prepare(' AND (last_name LIKE %s OR first_name LIKE %s OR email LIKE %s)', $like, $like, $like);
+    }
+
+    $statuses = array_values(array_filter(array_map([$this->wp, 'sanitizeKey'], $options['status'] ?? [])));
+    if ($statuses) {
+      // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Placeholders are generated from the value count; values are prepared.
+      $sql .= $wpdb->prepare(' AND status IN (' . implode(',', array_fill(0, count($statuses), '%s')) . ')', ...$statuses);
+    }
+
+    $emails = $this->normalizeIds($options['emails'] ?? []);
+    if ($emails) {
+      $sql .= $wpdb->prepare(' AND newsletter_id IN (' . implode(',', array_fill(0, count($emails), '%d')) . ')', ...$emails);
+      // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+    }
+
+    return $sql;
+  }
+
+  /**
+   * The sort column and direction come from the request, so they are mapped
+   * to fixed values here before going into the SQL.
+   *
+   * @param OrderRowsOptions $options
+   */
+  private function getOrderRowsOrderBySql(array $options): string {
+    $columns = [
+      'created_at' => 'created_at',
+      'last_name' => 'last_name',
+      'subject' => 'subject',
+      'status' => 'status',
+      'revenue' => 'total',
+    ];
+    $column = $columns[$options['order_by'] ?? ''] ?? 'created_at';
+    $direction = strtolower($options['order'] ?? '') === 'asc' ? 'ASC' : 'DESC';
+    return " ORDER BY {$column} {$direction}, order_id {$direction}, newsletter_id {$direction}, subscriber_id {$direction}";
   }
 
   private function getReadBoundary(): ?\DateTimeImmutable {
@@ -369,8 +506,31 @@ class OrderAttributionRevenueReader {
     bool $excludeResolvedSource,
     bool $excludeTo
   ): array {
-    if ($this->isEmptyDateRange($from, $to, $excludeTo)) {
+    $query = $this->getLegacyNewsletterOrderRowsSql($newsletterIds, $from, $to, $excludeResolvedSource, $excludeTo);
+    if ($query === null) {
       return [];
+    }
+
+    global $wpdb;
+
+    $rows = $wpdb->get_results($query, ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above.
+    return $this->normalizeOrderRows(is_array($rows) ? $rows : []);
+  }
+
+  /**
+   * Order rows from MailPoet's own purchases table.
+   *
+   * @param int[] $newsletterIds
+   */
+  private function getLegacyNewsletterOrderRowsSql(
+    array $newsletterIds,
+    ?\DateTimeInterface $from,
+    ?\DateTimeInterface $to,
+    bool $excludeResolvedSource,
+    bool $excludeTo
+  ): ?string {
+    if ($this->isEmptyDateRange($from, $to, $excludeTo)) {
+      return null;
     }
 
     global $wpdb;
@@ -424,8 +584,124 @@ class OrderAttributionRevenueReader {
     );
     // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
-    $rows = $wpdb->get_results($query, ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above.
-    return $this->normalizeOrderRows(is_array($rows) ? $rows : []);
+    return is_string($query) ? $query : null;
+  }
+
+  /**
+   * Order rows from orders that Woo attributed to MailPoet. The total is the
+   * order total minus refunds, the same number WC_Order gives us, but done in
+   * SQL so we don't have to load each order.
+   *
+   * @param int[] $newsletterIds
+   */
+  private function getWooNewsletterOrderRowsSql(
+    array $newsletterIds,
+    \DateTimeInterface $from,
+    ?\DateTimeInterface $to,
+    bool $countOnly = false
+  ): ?string {
+    if ($this->isEmptyDateRange($from, $to, false) || !$newsletterIds) {
+      return null;
+    }
+
+    global $wpdb;
+
+    $orderLookup = $this->getOrderLookupTable();
+    $orderIdColumn = 'woo_order.' . $orderLookup['id_column'];
+    $orderDateColumn = 'woo_order.' . $orderLookup['date_column'];
+    $dateParams = [];
+    $dateSql = $this->getDateRangeSql($orderDateColumn, $from, $to, true, false, $dateParams);
+    $typeSql = $orderLookup['type_column'] !== null ? ' AND woo_order.' . $orderLookup['type_column'] . ' = %s' : '';
+    $typeParams = $orderLookup['type_column'] !== null ? ['shop_order'] : [];
+    $meta = $this->getOrderMetaTable();
+    $utmSourceMetaKey = OrderAttributionFields::getMetaKey('utm_source');
+    $purchasesTable = $wpdb->prefix . 'mailpoet_statistics_woocommerce_purchases';
+    $clicksTable = $wpdb->prefix . 'mailpoet_statistics_clicks';
+    $newsletterPlaceholders = implode(',', array_fill(0, count($newsletterIds), '%d'));
+
+    // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Dynamic fragments are trusted identifiers/placeholders; values are prepared below.
+    $hpos = $this->wooHelper->isWooCommerceCustomOrdersTableEnabled();
+    $statusColumn = $hpos ? 'woo_order.status' : 'woo_order.post_status';
+    $orderTotalJoin = '';
+    $totalSql = '0';
+    if ($countOnly) {
+      // The total is never read, so skip the refund subquery per order.
+    } elseif ($hpos) {
+      // Refund rows store a negative total_amount, so adding them subtracts.
+      $totalSql = $wpdb->prepare(
+        '(woo_order.total_amount + COALESCE((SELECT SUM(refund.total_amount) FROM %i refund WHERE refund.type = %s AND refund.parent_order_id = woo_order.id), 0))',
+        $orderLookup['table'],
+        'shop_order_refund'
+      );
+    } else {
+      $orderTotalJoin = $wpdb->prepare(
+        'LEFT JOIN %i order_total ON order_total.post_id = woo_order.ID AND order_total.meta_key = %s',
+        $wpdb->postmeta,
+        '_order_total'
+      );
+      $totalSql = $wpdb->prepare(
+        '(COALESCE(order_total.meta_value, 0) - COALESCE((SELECT SUM(refund_amount.meta_value) FROM %i refund INNER JOIN %i refund_amount ON refund_amount.post_id = refund.ID AND refund_amount.meta_key = %s WHERE refund.post_type = %s AND refund.post_parent = woo_order.ID), 0))',
+        $wpdb->posts,
+        $wpdb->postmeta,
+        '_refund_amount',
+        'shop_order_refund'
+      );
+    }
+
+    // Same attribution join as getWooAttributedOrders(): the order's standard
+    // source resolved to mailpoet, and the self-anti-join keeps the single
+    // most recent click per order.
+    $query = $wpdb->prepare(
+      '
+        SELECT
+          ' . $orderDateColumn . ' AS created_at,
+          p.newsletter_id AS newsletter_id,
+          ' . $orderIdColumn . ' AS order_id,
+          ' . $totalSql . ' AS total,
+          p.subscriber_id AS subscriber_id,
+          subscriber.first_name,
+          subscriber.last_name,
+          subscriber.email,
+          newsletter.subject,
+          ' . $statusColumn . ' AS status
+        FROM %i woo_order
+        INNER JOIN %i source_meta ON source_meta.%i = ' . $orderIdColumn . '
+          AND source_meta.meta_key = %s
+          AND source_meta.meta_value = %s
+        INNER JOIN %i p ON p.order_id = ' . $orderIdColumn . '
+        INNER JOIN %i c ON c.id = p.click_id
+        LEFT JOIN (%i p2 INNER JOIN %i c2 ON c2.id = p2.click_id) ON p2.order_id = p.order_id
+          AND (c2.updated_at > c.updated_at OR (c2.updated_at = c.updated_at AND p2.click_id > p.click_id))
+        INNER JOIN %i subscriber ON subscriber.ID = p.subscriber_id
+        INNER JOIN %i newsletter ON newsletter.ID = p.newsletter_id
+        ' . $orderTotalJoin . '
+        WHERE p2.id IS NULL
+          ' . $typeSql . '
+          ' . $dateSql . '
+          AND p.newsletter_id IN (' . $newsletterPlaceholders . ')
+      ',
+      array_merge(
+        [
+          $orderLookup['table'],
+          $meta['table'],
+          $meta['order_id_column'],
+          $utmSourceMetaKey,
+          'mailpoet',
+          $purchasesTable,
+          $clicksTable,
+          $purchasesTable,
+          $clicksTable,
+          $wpdb->prefix . 'mailpoet_subscribers',
+          $wpdb->prefix . 'mailpoet_newsletters',
+        ],
+        $typeParams,
+        $dateParams,
+        $newsletterIds
+      )
+    );
+    // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+
+    return is_string($query) ? $query : null;
   }
 
   /**

@@ -8,6 +8,7 @@ use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\DaemonActionSchedulerRunner;
 use MailPoet\InvalidStateException;
 use MailPoet\Migrator\Migrator;
+use MailPoet\Router\Endpoints\ExportDownload;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Notices\DisabledMailFunctionNotice;
 use MailPoet\WP\Functions as WPFunctions;
@@ -91,6 +92,16 @@ class Activator {
     $localizer->forceInstallLanguagePacks($this->wp);
 
     $this->checkForDisabledMailFunction();
+    $this->prepareExportDirectory();
+  }
+
+  private function prepareExportDirectory(): void {
+    try {
+      ExportDownload::ensureExportDirectory($this->wp);
+    } catch (\Exception $e) {
+      // Not fatal here: each export prepares the folder again and reports the error.
+      return;
+    }
   }
 
   /**

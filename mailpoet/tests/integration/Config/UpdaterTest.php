@@ -1,5 +1,7 @@
 <?php declare(strict_types = 1);
 
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
 namespace MailPoet\Test\Config;
 
 use Codeception\Stub;
@@ -44,7 +46,7 @@ class UpdaterTest extends \MailPoetTest {
 
   public function testItChecksForUpdates() {
     $updateTransient = new \stdClass;
-    $updateTransient->last_checked = time(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $updateTransient->last_checked = time();
     $updater = Stub::construct(
       $this->updater,
       [
@@ -63,12 +65,11 @@ class UpdaterTest extends \MailPoetTest {
             'package' => home_url() . '/wp-content/uploads/mailpoet-premium.zip',
           ];
         },
-        'shouldShowUpdateNotice' => true,
       ],
       $this
     );
     $result = $updater->checkForUpdate($updateTransient);
-    verify($result->last_checked)->greaterThanOrEqual($updateTransient->last_checked); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($result->last_checked)->greaterThanOrEqual($updateTransient->last_checked);
     verify($result->checked[$this->pluginName])->equals($this->version);
     verify($result->response[$this->pluginName]->slug)->equals($this->slug);
     verify($result->response[$this->pluginName]->plugin)->equals($this->pluginName);
@@ -82,7 +83,7 @@ class UpdaterTest extends \MailPoetTest {
 
   public function testItSetsNoupdateKeyIfNoUpdateAvailable() {
     $updateTransient = new \stdClass;
-    $updateTransient->last_checked = time(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $updateTransient->last_checked = time();
     $updater = Stub::construct(
       $this->updater,
       [
@@ -101,18 +102,17 @@ class UpdaterTest extends \MailPoetTest {
             'package' => home_url() . '/wp-content/uploads/mailpoet-premium.zip',
           ];
         },
-        'shouldShowUpdateNotice' => true,
       ],
       $this
     );
     $result = $updater->checkForUpdate($updateTransient);
-    verify($result->last_checked)->greaterThanOrEqual($updateTransient->last_checked); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($result->last_checked)->greaterThanOrEqual($updateTransient->last_checked);
     verify($result->checked[$this->pluginName])->equals($this->version);
-    verify($result->no_update[$this->pluginName]->slug)->equals($this->slug); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    verify($result->no_update[$this->pluginName]->plugin)->equals($this->pluginName); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($result->no_update[$this->pluginName]->slug)->equals($this->slug);
+    verify($result->no_update[$this->pluginName]->plugin)->equals($this->pluginName);
     verify(version_compare(
       $this->version,
-      $result->no_update[$this->pluginName]->new_version, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $result->no_update[$this->pluginName]->new_version,
       '='
     ))->true();
   }
@@ -122,77 +122,54 @@ class UpdaterTest extends \MailPoetTest {
     verify($result instanceof \stdClass)->true();
   }
 
-  public function testItSkipsUpdateNoticeWhenCurrentFreeVersionIsIncompatible() {
-    $updateTransient = new \stdClass;
-    $updateTransient->last_checked = time(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-
+  private function createUpdater(string $freeVersion, string $latestVersion, string $latestPackage = 'https://example.com/latest.zip', string $installedVersion = '0.1'): Updater {
     $updater = Stub::construct(
       $this->updater,
+      [$this->pluginName, $this->slug, $installedVersion],
       [
-        $this->pluginName,
-        $this->slug,
-        $this->version,
-      ],
-      [
-        'getLatestVersion' => Expected::exactly(1, function () {
+        'getLatestVersion' => Expected::exactly(1, function () use ($latestVersion, $latestPackage) {
           return (object)[
             'id' => 76630,
             'slug' => $this->slug,
             'plugin' => $this->pluginName,
-            'new_version' => '9.5.0', // a very far future version
+            'new_version' => $latestVersion,
             'url' => 'https://www.mailpoet.com/wordpress-newsletter-plugin-premium/',
-            'package' => home_url() . '/wp-content/uploads/mailpoet-premium.zip',
+            'package' => $latestPackage,
           ];
         }),
       ],
       $this
     );
-    $updater->currentFreeVersion = '5.16.0';
-
-    $result = $updater->checkForUpdate($updateTransient);
-    verify(isset($result->response[$this->pluginName]))->false();
-    verify(isset($result->no_update[$this->pluginName]))->false(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $updater->currentFreeVersion = $freeVersion;
+    return $updater;
   }
 
-  public function testItSkipsUpdateNoticeWhenVersionsAreIncompatible() {
+  private function createTransient(): \stdClass {
     $updateTransient = new \stdClass;
-    $updateTransient->last_checked = time(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-
-    $updater = Stub::construct(
-      $this->updater,
-      [
-        $this->pluginName,
-        $this->slug,
-        $this->version,
-      ],
-      [
-        'getLatestVersion' => function () {
-          return (object)[
-            'id' => 76630,
-            'slug' => $this->slug,
-            'plugin' => $this->pluginName,
-            'new_version' => '6.0.0', // Incompatible version
-            'url' => 'https://www.mailpoet.com/wordpress-newsletter-plugin-premium/',
-            'package' => home_url() . '/wp-content/uploads/mailpoet-premium.zip',
-          ];
-        },
-      ],
-      $this
-    );
-    $updater->currentFreeVersion = '5.16.0';
-
-    $result = $updater->checkForUpdate($updateTransient);
-
-    // Should return the original transient without modifications when incompatible
-    verify(isset($result->response[$this->pluginName]))->false();
-    verify(isset($result->no_update[$this->pluginName]))->false(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $updateTransient->last_checked = time();
+    return $updateTransient;
   }
 
-  public function testItSkipsUpdateWhenFreeUpdateIsPendingButNotInstalled() {
-    $updateTransient = new \stdClass;
-    $updateTransient->last_checked = time(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  public function testItOffersUpdateMatchingInstalledFreeWhenLatestIsFarAhead() {
+    $result = $this->createUpdater('5.16.0', '9.5.0')->checkForUpdate($this->createTransient());
+    $offer = $result->response[$this->pluginName];
+    verify($offer->new_version)->equals('5.16.0');
+    verify($offer->package)->equals('https://release.mailpoet.com/downloads/mailpoet-premium/5.16.0/mailpoet-premium.zip');
+    verify(isset($result->no_update[$this->pluginName]))->false();
+    verify(json_encode($result))->stringNotContainsString('9.5.0');
+  }
 
-    // A compatible free update is available in the transient, but not yet installed
+  public function testItOffersUpdateMatchingInstalledFreeWhenLatestIsNextMajor() {
+    $result = $this->createUpdater('5.16.0', '6.0.0')->checkForUpdate($this->createTransient());
+    $offer = $result->response[$this->pluginName];
+    verify($offer->new_version)->equals('5.16.0');
+    verify($offer->package)->equals('https://release.mailpoet.com/downloads/mailpoet-premium/5.16.0/mailpoet-premium.zip');
+    verify(isset($result->no_update[$this->pluginName]))->false();
+    verify(json_encode($result))->stringNotContainsString('6.0.0');
+  }
+
+  public function testItOffersUpdateMatchingInstalledFreeWhenFreeUpdateIsPending() {
+    $updateTransient = $this->createTransient();
     $updateTransient->response = [];
     $updateTransient->response[Env::$pluginPath] = (object)[
       'id' => 'w.org/plugins/mailpoet',
@@ -201,34 +178,64 @@ class UpdaterTest extends \MailPoetTest {
       'new_version' => '5.17.0',
     ];
 
-    $updater = Stub::construct(
-      $this->updater,
-      [
-        $this->pluginName,
-        $this->slug,
-        $this->version,
-      ],
-      [
-        'getLatestVersion' => function () {
-          return (object)[
-            'id' => 76630,
-            'slug' => $this->slug,
-            'plugin' => $this->pluginName,
-            'new_version' => '5.17.0',
-            'url' => 'https://www.mailpoet.com/wordpress-newsletter-plugin-premium/',
-            'package' => home_url() . '/wp-content/uploads/mailpoet-premium.zip',
-          ];
-        },
-      ],
-      $this
-    );
-    $updater->currentFreeVersion = '5.16.0';
-    $result = $updater->checkForUpdate($updateTransient);
+    $result = $this->createUpdater('5.16.0', '5.17.0')->checkForUpdate($updateTransient);
+    $offer = $result->response[$this->pluginName];
+    verify($offer->new_version)->equals('5.16.0');
+    verify($offer->package)->equals('https://release.mailpoet.com/downloads/mailpoet-premium/5.16.0/mailpoet-premium.zip');
+    verify(isset($result->no_update[$this->pluginName]))->false();
+    verify($result->response[Env::$pluginPath]->new_version)->equals('5.17.0');
+  }
 
-    // Premium must not be offered while the installed free version is incompatible,
-    // even though a compatible free update is pending in the transient.
+  public function testItSetsNoUpdateWhenInstalledPremiumMatchesInstalledFree() {
+    $updater = $this->createUpdater('5.16.0', '5.17.0', 'https://example.com/latest.zip', '5.16.0');
+    $result = $updater->checkForUpdate($this->createTransient());
+    verify($result->no_update[$this->pluginName]->new_version)->equals('5.16.0');
     verify(isset($result->response[$this->pluginName]))->false();
-    verify(isset($result->no_update[$this->pluginName]))->false(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  }
+
+  public function testItDoesNotOfferDowngradeWhenInstalledPremiumIsHotfixOfInstalledFreeMinor() {
+    $updater = $this->createUpdater('5.39.0', '5.40.0', 'https://example.com/latest.zip', '5.39.1');
+    $result = $updater->checkForUpdate($this->createTransient());
+    verify(isset($result->response[$this->pluginName]))->false();
+    verify($result->no_update[$this->pluginName]->new_version)->equals('5.39.0');
+  }
+
+  public function testItOffersNoPackageWhenLatestHasNoPackage() {
+    $result = $this->createUpdater('5.16.0', '5.17.0', '')->checkForUpdate($this->createTransient());
+    $offer = $result->response[$this->pluginName];
+    verify($offer->new_version)->equals('5.16.0');
+    verify($offer->package)->equals('');
+  }
+
+  public function testItOffersNothingWhenInstalledFreeVersionIsEmpty() {
+    $result = $this->createUpdater('', '5.17.0')->checkForUpdate($this->createTransient());
+    verify(isset($result->response[$this->pluginName]))->false();
+    verify(isset($result->no_update[$this->pluginName]))->false();
+  }
+
+  public function testGetCompatibleVersionReturnsCompatibleLatestUnchanged() {
+    $latest = (object)['new_version' => '5.16.1', 'package' => 'https://example.com/latest.zip'];
+    $this->updater->currentFreeVersion = '5.16.0';
+    verify($this->updater->getCompatibleVersion($latest))->same($latest);
+  }
+
+  public function testGetCompatibleVersionRewritesIncompatibleLatestWithoutMutatingIt() {
+    $latest = (object)['new_version' => '5.17.0', 'package' => 'https://example.com/latest.zip'];
+    $this->updater->currentFreeVersion = '5.16.0';
+    $result = $this->updater->getCompatibleVersion($latest);
+    verify($result)->notSame($latest);
+    verify($result->new_version)->equals('5.16.0');
+    verify($result->package)->equals('https://release.mailpoet.com/downloads/mailpoet-premium/5.16.0/mailpoet-premium.zip');
+    verify($latest->new_version)->equals('5.17.0');
+    verify($latest->package)->equals('https://example.com/latest.zip');
+  }
+
+  public function testGetCompatibleVersionUsesMinorVersionZeroOfInstalledFree() {
+    $latest = (object)['new_version' => '5.40.0', 'package' => 'https://example.com/latest.zip'];
+    $this->updater->currentFreeVersion = '5.39.2';
+    $result = $this->updater->getCompatibleVersion($latest);
+    verify($result->new_version)->equals('5.39.0');
+    verify($result->package)->stringContainsString('/5.39.0/');
   }
 
   public function testIsVersionCompatibleReturnsTrueForCompatibleVersions() {
@@ -269,43 +276,5 @@ class UpdaterTest extends \MailPoetTest {
     verify($this->updater->isVersionCompatible('5.17.0', '5.17'))->true();
     verify($this->updater->isVersionCompatible('5.17.0-beta', '5.17.0'))->true();
     verify($this->updater->isVersionCompatible('5.17.0', '5.17.0-alpha'))->true();
-  }
-
-  public function testShouldShowUpdateNoticeReturnsTrueWhenInstalledFreeVersionIsCompatible() {
-    $updater = Stub::construct(
-      $this->updater,
-      [
-        $this->pluginName,
-        $this->slug,
-        $this->version,
-      ],
-      [
-        'isVersionCompatible' => Expected::once(true), // Should only check the installed free version
-      ],
-      $this
-    );
-    $updater->currentFreeVersion = '5.17.0';
-
-    $result = $updater->shouldShowUpdateNotice('5.17.0');
-    verify($result)->true();
-  }
-
-  public function testShouldShowUpdateNoticeReturnsFalseWhenInstalledFreeVersionIsIncompatible() {
-    $updater = Stub::construct(
-      $this->updater,
-      [
-        $this->pluginName,
-        $this->slug,
-        $this->version,
-      ],
-      [
-        'isVersionCompatible' => Expected::once(false),
-      ],
-      $this
-    );
-    $updater->currentFreeVersion = '5.16.0';
-
-    $result = $updater->shouldShowUpdateNotice('5.17.0');
-    verify($result)->false();
   }
 }

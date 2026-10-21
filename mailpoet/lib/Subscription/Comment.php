@@ -63,10 +63,10 @@ class Comment {
    * @return string
    */
   private function getSubscriptionField(): string {
-    $label = $this->settings->get(
-      'subscribe.on_comment.label',
-      __('Yes, please add me to your mailing list.', 'mailpoet')
-    );
+    $label = $this->settings->get('subscribe.on_comment.label');
+    if (!is_string($label) || trim($label) === '') {
+      $label = __('Yes, add me to your mailing list', 'mailpoet');
+    }
 
     return '<p class="comment-form-mailpoet">
       <label for="mailpoet_subscribe_on_comment">

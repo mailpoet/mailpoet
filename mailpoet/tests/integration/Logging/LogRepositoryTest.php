@@ -142,6 +142,98 @@ class LogRepositoryTest extends \MailPoetTest {
     verify(count($rows))->equals(3);
   }
 
+  /** @dataProvider siteDayCases */
+  public function testExportAndDeleteUseSiteLocalDays(string $timezone, $gmtOffset, string $day, array $inside, array $outside): void {
+    $this->withSiteTimezone($timezone, $gmtOffset, function () use ($day, $inside, $outside) {
+      $createLogs = function () use ($inside, $outside) {
+        foreach (array_merge($inside, $outside) as $createdAt) {
+          (new Log())
+            ->withMessage($createdAt)
+            ->withCreatedAt(new \DateTimeImmutable($createdAt, new \DateTimeZone('UTC')))
+            ->create();
+        }
+      };
+      $remainingMessages = function (): array {
+        $messages = array_map(function ($log) {
+          return $log->getMessage();
+        }, $this->repository->getLogs());
+        sort($messages);
+        return $messages;
+      };
+      $filter = ['from' => $day, 'to' => $day];
+
+      $createLogs();
+      $exported = [];
+      foreach ($this->repository->getLogsForExport($filter) as $row) {
+        $exported[] = $row['message'];
+      }
+      sort($exported);
+      verify($exported)->same($inside);
+
+      verify($this->repository->deleteLogs($filter))->same(count($inside));
+      $expectedRemaining = $outside;
+      sort($expectedRemaining);
+      verify($remainingMessages())->same($expectedRemaining);
+    });
+  }
+
+  /** @dataProvider invalidDayFilters */
+  public function testInvalidDayBoundMatchesNothingForExportAndDelete(array $filter): void {
+    (new Log())->withMessage('keep_me')->withCreatedAt(new \DateTimeImmutable('2024-02-01 10:00:00', new \DateTimeZone('UTC')))->create();
+
+    $exported = [];
+    foreach ($this->repository->getLogsForExport($filter) as $row) {
+      $exported[] = $row['message'];
+    }
+    verify($exported)->same([]);
+    verify($this->repository->deleteLogs($filter))->same(0);
+    verify(count($this->repository->getLogs()))->same(1);
+  }
+
+  /** @return array<string, array{array<string, string>}> */
+  public function invalidDayFilters(): array {
+    return [
+      'invalid to' => [['to' => '2024-13-01']],
+      'invalid from' => [['from' => 'yesterday']],
+      'zero from' => [['from' => '0']],
+    ];
+  }
+
+  /**
+   * Site timezone, options to set, filter day, and UTC created-at values grouped by whether the
+   * row belongs to that site-local day. Rows sit one second either side of the UTC day boundaries.
+   *
+   * @return array<string, array{string, string|float|int, string, string[], string[]}>
+   */
+  public function siteDayCases(): array {
+    return [
+      'utc site' => ['', 0, '2020-03-10', ['2020-03-10 00:00:00', '2020-03-10 23:59:59'], ['2020-03-09 23:59:59', '2020-03-11 00:00:00']],
+      'dst zone, standard time' => ['Europe/Prague', 0, '2020-03-10', ['2020-03-09 23:00:00', '2020-03-10 22:59:59'], ['2020-03-09 22:59:59', '2020-03-10 23:00:00']],
+      'fixed gmt offset' => ['', 5.5, '2020-03-10', ['2020-03-09 18:30:00', '2020-03-10 18:29:59'], ['2020-03-09 18:29:59', '2020-03-10 18:30:00']],
+    ];
+  }
+
+  /** @param string|float|int $gmtOffset */
+  private function withSiteTimezone(string $timezoneString, $gmtOffset, callable $callback): void {
+    $previous = [
+      'timezone_string' => get_option('timezone_string'),
+      'gmt_offset' => get_option('gmt_offset'),
+    ];
+    update_option('timezone_string', $timezoneString);
+    update_option('gmt_offset', $gmtOffset);
+    try {
+      $callback();
+    } finally {
+      foreach ($previous as $option => $value) {
+        if ($value === false) {
+          delete_option($option);
+        } else {
+          update_option($option, $value);
+        }
+      }
+    }
+  }
+
   public function testGetRawMessagesForNewslettersGroupsDistinctMessagesByNewsletter(): void {
     $first = (new Newsletter())->withSubject('First')->create();
     $second = (new Newsletter())->withSubject('Second')->create();

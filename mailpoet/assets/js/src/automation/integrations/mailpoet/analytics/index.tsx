@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { dispatch, select, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
+import { ROUTER_FUTURE_FLAGS } from 'common/router-future-flags';
 import { TopBarWithBoundary } from '../../../../common/top-bar/top-bar';
 import { Notices } from '../../../listing/components/notices';
 import { Header } from './components/header';
@@ -63,7 +64,7 @@ function TopBarWithBreadcrumb(): JSX.Element {
 
 function App(): JSX.Element {
   return (
-    <BrowserRouter>
+    <BrowserRouter future={ROUTER_FUTURE_FLAGS}>
       <TopBarWithBreadcrumb />
       <Notices />
       <Analytics />

@@ -12,6 +12,7 @@ use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -83,6 +84,7 @@ class DaemonRunnerTest extends \MailPoetTest {
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(LoggerFactory::class),
       $this->diContainer->get(WorkersFactory::class),
+      $this->diContainer->get(SendingEnvironment::class),
       $persistedError
     ) extends DaemonRunner {
       /** @var CronHelper */
@@ -99,6 +101,7 @@ class DaemonRunnerTest extends \MailPoetTest {
         EntityManager $entityManager,
         LoggerFactory $loggerFactory,
         WorkersFactory $workersFactory,
+        SendingEnvironment $sendingEnvironment,
         array $persistedError
       ) {
         parent::__construct(
@@ -108,7 +111,8 @@ class DaemonRunnerTest extends \MailPoetTest {
           $scheduledTasksRepository,
           $entityManager,
           $loggerFactory,
-          $workersFactory
+          $workersFactory,
+          $sendingEnvironment
         );
         $this->stubCronHelper = $cronHelper;
         $this->persistedError = $persistedError;

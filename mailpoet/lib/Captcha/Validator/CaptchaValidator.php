@@ -4,6 +4,7 @@ namespace MailPoet\Captcha\Validator;
 
 use MailPoet\Captcha\CaptchaPhrase;
 use MailPoet\Captcha\CaptchaSession;
+use MailPoet\Captcha\CaptchaSessionLimitException;
 use MailPoet\Captcha\CaptchaUrlFactory;
 use MailPoet\Subscribers\SubscriberIPsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -57,15 +58,64 @@ class CaptchaValidator {
    * Validates the user's CAPTCHA answer without consulting isRequired().
    * Use this when the caller has already decided a challenge is needed
    * (e.g. the behavioral-signal escalation path).
+   *
+   * With $allowNewChallenge set to false, a failed check never creates a new
+   * session: the existing one is reset and a plain error is thrown.
+   *
+   * @param array<string,mixed> $data
    */
-  public function validateChallenge(array $data): bool {
-    // session ID must be set at this point
+  public function validateChallenge(array $data, bool $allowNewChallenge = true): bool {
     $sessionId = $data['captcha_session_id'] ?? null;
-    if (!$sessionId) {
-      throw new ValidationError(__('CAPTCHA verification failed.', 'mailpoet'));
+    $hasValidId = is_string($sessionId) && $this->captchaSession->isValidId($sessionId);
+
+    if (!$allowNewChallenge) {
+      if (!$hasValidId || !$this->isAnswerCorrect($sessionId, $data['captcha'] ?? null)) {
+        if ($hasValidId) {
+          $this->captchaSession->reset($sessionId);
+        }
+        throw new ValidationError(__('CAPTCHA verification failed. Please try again.', 'mailpoet'));
+      }
+      $isClaimed = $this->captchaPhrase->consume($sessionId);
+      $this->captchaSession->reset($sessionId);
+      if (!$isClaimed) {
+        throw new ValidationError(__('CAPTCHA verification failed. Please try again.', 'mailpoet'));
+      }
+      return true;
     }
 
-    if (empty($data['captcha'])) {
+    return $this->validateChallengeWithNewChallenges($data, $hasValidId ? $sessionId : null);
+  }
+
+  /**
+   * Validates a challenge that was started earlier and never starts a new one.
+   * Logged-in users that are exempt from CAPTCHA pass without an answer.
+   *
+   * @param array<string,mixed> $data
+   */
+  public function validateExistingChallenge(array $data): bool {
+    if ($this->isUserExemptFromCaptcha()) {
+      return true;
+    }
+    return $this->validateChallenge($data, false);
+  }
+
+  /**
+   * @param array<string,mixed> $data
+   */
+  private function validateChallengeWithNewChallenges(array $data, ?string $sessionId): bool {
+    if ($sessionId === null) {
+      throw $this->newChallengeError($data);
+    }
+
+    $answer = $data['captcha'] ?? null;
+    if (empty($answer) || !is_string($answer)) {
+      if (!$this->captchaSession->exists($sessionId)) {
+        throw $this->newChallengeError($data);
+      }
+      if ($this->captchaPhrase->getPhrase($sessionId) === null) {
+        // The phrase is gone (e.g. consumed by an answer followed by a new challenge request)
+        $this->captchaSession->registerNewSession();
+      }
       $this->captchaPhrase->createPhrase($sessionId);
       throw new ValidationError(
         __('Please fill in the CAPTCHA.', 'mailpoet'),
@@ -75,14 +125,17 @@ class CaptchaValidator {
 
     $captchaHash = $this->captchaPhrase->getPhrase($sessionId);
     if (empty($captchaHash)) {
-      $this->captchaPhrase->createPhrase($sessionId);
-      throw new ValidationError(
-        __('Please regenerate the CAPTCHA.', 'mailpoet'),
-        $this->getInlineCaptchaData($sessionId)
-      );
+      throw $this->newChallengeError($data);
     }
 
-    if (!hash_equals(strtolower($data['captcha']), strtolower($captchaHash))) {
+    if (!hash_equals(strtolower($answer), strtolower($captchaHash))) {
+      if ($this->captchaPhrase->registerFailedAttempt($sessionId) >= CaptchaPhrase::MAX_ATTEMPTS) {
+        $this->captchaSession->reset($sessionId);
+        throw new ValidationError(
+          __('Too many incorrect attempts. Here’s a new CAPTCHA to try.', 'mailpoet'),
+          $this->getInlineCaptchaChallenge($data)
+        );
+      }
       $this->captchaPhrase->createPhrase($sessionId);
       throw new ValidationError(
         __('The characters entered do not match with the previous CAPTCHA.', 'mailpoet'),
@@ -94,7 +147,31 @@ class CaptchaValidator {
       );
     }
 
+    if (!$this->captchaPhrase->consume($sessionId)) {
+      throw $this->newChallengeError($data);
+    }
     return true;
+  }
+
+  /**
+   * @param mixed $answer
+   */
+  private function isAnswerCorrect(string $sessionId, $answer): bool {
+    if (!is_string($answer) || $answer === '') {
+      return false;
+    }
+    $captchaHash = $this->captchaPhrase->getPhrase($sessionId);
+    return !empty($captchaHash) && hash_equals(strtolower($answer), strtolower($captchaHash));
+  }
+
+  /**
+   * @param array<string,mixed> $data
+   */
+  private function newChallengeError(array $data): ValidationError {
+    return new ValidationError(
+      __('Please fill in the CAPTCHA.', 'mailpoet'),
+      $this->getInlineCaptchaChallenge($data)
+    );
   }
 
   /**
@@ -104,12 +181,15 @@ class CaptchaValidator {
    * restore the original submission on resubmit.
    *
    * @param array<string, mixed>|null $formData Form data to stash, or null to skip stashing.
+   * @throws CaptchaSessionLimitException
    */
   public function getInlineCaptchaChallenge(?array $formData = null): array {
+    $this->captchaSession->registerNewSession();
     $sessionId = $this->captchaSession->generateSessionId();
     $this->captchaPhrase->createPhrase($sessionId);
     if ($formData !== null) {
-      $this->captchaSession->setFormData($sessionId, $formData);
+      unset($formData['captcha_session_id'], $formData['captcha']);
+      $this->captchaSession->setSubscriptionFormData($sessionId, $formData);
     }
     return $this->getInlineCaptchaData($sessionId);
   }

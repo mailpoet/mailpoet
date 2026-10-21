@@ -53,8 +53,8 @@ class SubscribersStatsReport extends SimpleWorker {
     // Spread the check within 6 hours after midnight so that all plugins don't ping the service at the same time
     return $date->startOfDay()
       ->addDay()
-      ->addHours(rand(0, 5))
-      ->addMinutes(rand(0, 59))
-      ->addSeconds(rand(0, 59));
+      ->addHours(random_int(0, 5))
+      ->addMinutes(random_int(0, 59))
+      ->addSeconds(random_int(0, 59));
   }
 }

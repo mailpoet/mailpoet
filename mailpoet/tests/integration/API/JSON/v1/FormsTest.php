@@ -4,12 +4,14 @@ namespace MailPoet\Test\API\JSON\v1;
 
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Forms;
+use MailPoet\Captcha\FormRenderStamp;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\TagEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\PreviewPage;
+use MailPoet\Router\Endpoints\FormPreview;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Tags\TagRepository;
 use MailPoet\Test\DataFactories\Tag;
@@ -85,6 +87,57 @@ class FormsTest extends \MailPoetTest {
     verify($storedData['body'])->notEmpty();
     verify($storedData['styles'])->notEmpty();
     verify($storedData['settings'])->notEmpty();
+  }
+
+  public function testPreviewPageRendersFormWithValidRenderStamp() {
+    $formId = (int)$this->form1->getId();
+    $endpoint = $this->diContainer->get(FormPreview::class);
+    $endpoint->view(['id' => $formId, 'form_type' => FormEntity::DISPLAY_TYPE_BELOW_POST, 'editor_url' => 'https://example.com/editor']);
+    $page = $endpoint->renderContent();
+    $matches = [];
+    verify(preg_match('/name="data\[form_stamp\]" value="([^"]+)"/', $page, $matches))->equals(1);
+    $stamp = $this->diContainer->get(FormRenderStamp::class);
+    verify($stamp->elapsedSeconds($matches[1] ?? null))->notNull();
+  }
+
+  public function testPreviewStoresSanitizedFormContent() {
+    $response = $this->endpoint->previewEditor([
+      'id' => $this->form1->getId(),
+      'body' => [
+        [
+          'type' => 'heading',
+          'id' => 'heading',
+          'params' => ['content' => 'Heading <strong>bold</strong><img src="x" onerror="alert(1)">'],
+        ],
+      ],
+    ]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+
+    $storedData = $this->wp->getTransient(PreviewPage::PREVIEW_DATA_TRANSIENT_PREFIX . $this->form1->getId());
+    verify($storedData['body'][0]['params']['content'])->equals('Heading <strong>bold</strong><img src="x">');
+  }
+
+  public function testOnlyAdminCanPreviewCustomHtml() {
+    $formId = $this->form1->getId();
+    $data = [
+      'id' => $formId,
+      'body' => [
+        [
+          'type' => FormEntity::HTML_BLOCK_TYPE,
+          'params' => ['content' => 'Hello'],
+        ],
+      ],
+    ];
+
+    wp_set_current_user(0);
+    $response = $this->endpoint->previewEditor($data);
+    verify($response->status)->equals(APIResponse::STATUS_FORBIDDEN);
+    verify($this->wp->getTransient(PreviewPage::PREVIEW_DATA_TRANSIENT_PREFIX . $formId))->false();
+
+    wp_set_current_user(1);
+    $response = $this->endpoint->previewEditor($data);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($this->wp->getTransient(PreviewPage::PREVIEW_DATA_TRANSIENT_PREFIX . $formId))->notEmpty();
   }
 
   public function testItCanSaveFormEditor() {

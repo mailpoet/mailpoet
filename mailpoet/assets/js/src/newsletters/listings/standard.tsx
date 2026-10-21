@@ -25,12 +25,18 @@ import {
   SHARE_VISIBILITY_PUBLIC,
 } from './share-modal';
 import {
-  STANDARD_NEWSLETTER_GROUPS,
   NewslettersListing,
   toNewsletterMailerLog,
   type ListingActionHelpers,
   type NewsletterMailerLog,
 } from './newsletters-listing';
+import {
+  segmentsFieldBase,
+  SENT_AT_OPERATORS,
+  getStatusFilterValue,
+  statusElements,
+} from './listing-fields';
+import { getAllowedStatuses } from './filters';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
@@ -49,6 +55,17 @@ function asNewsLetter(item: NewsletterListingItem): NewsLetter {
   return item as unknown as NewsLetter;
 }
 
+function renderDateTime(value: string | null) {
+  if (!value) return null;
+  return (
+    <>
+      {MailPoet.Date.short(value)}
+      <br />
+      {MailPoet.Date.time(value)}
+    </>
+  );
+}
+
 function buildFields(
   currentTime?: string,
   mailerLog: NewsletterMailerLog = { status: '' },
@@ -63,6 +80,7 @@ function buildFields(
       type: 'text',
       enableSorting: true,
       enableGlobalSearch: true,
+      enableHiding: false,
       getValue: ({ item }) => item.campaign_name || item.subject,
       render: ({ item }) => {
         const subject =
@@ -96,17 +114,18 @@ function buildFields(
     {
       id: 'status',
       label: __('Status', 'mailpoet'),
-      enableSorting: false,
+      type: 'text',
+      enableSorting: true,
       enableGlobalSearch: false,
+      getValue: ({ item }) => getStatusFilterValue(item),
+      elements: statusElements(getAllowedStatuses('standard')),
+      filterBy: { operators: ['isAny'] },
       render: ({ item }) => (
         <QueueStatus newsletter={asNewsLetter(item)} mailerLog={mailerLog} />
       ),
     },
     {
-      id: 'segments',
-      label: __('Lists', 'mailpoet'),
-      enableSorting: false,
-      enableGlobalSearch: false,
+      ...segmentsFieldBase,
       render: ({ item }) => (
         <ErrorBoundary>
           <SegmentTags
@@ -137,10 +156,12 @@ function buildFields(
       : []) as Field<NewsletterListingItem>[]),
     {
       id: 'sent_at',
-      label: __('Sent on', 'mailpoet'),
-      type: 'datetime',
+      label: __('Date sent', 'mailpoet'),
+      header: __('Sent on', 'mailpoet'),
+      type: 'date',
       enableSorting: true,
       enableGlobalSearch: false,
+      filterBy: { operators: [...SENT_AT_OPERATORS] },
       render: ({ item }) => {
         const isTimezoneCampaign = isTimezoneCampaignQueue(
           asNewsLetter(item).queue,
@@ -164,6 +185,26 @@ function buildFields(
           </>
         );
       },
+    },
+    {
+      id: 'created_at',
+      label: __('Date created', 'mailpoet'),
+      header: __('Created on', 'mailpoet'),
+      type: 'datetime',
+      enableSorting: true,
+      enableGlobalSearch: false,
+      filterBy: false,
+      render: ({ item }) => renderDateTime(item.created_at),
+    },
+    {
+      id: 'updated_at',
+      label: __('Last modified', 'mailpoet'),
+      header: __('Last modified on', 'mailpoet'),
+      type: 'datetime',
+      enableSorting: true,
+      enableGlobalSearch: false,
+      filterBy: false,
+      render: ({ item }) => renderDateTime(item.updated_at),
     },
   ];
 }
@@ -374,7 +415,6 @@ function NewsletterListStandardComponent() {
         defaultSort={{ field: 'sent_at', direction: 'desc' }}
         itemActions={itemActions}
         supportsExportStats={trackingHooksOk}
-        supportedGroups={STANDARD_NEWSLETTER_GROUPS}
         emptyState={() => (
           <NewsletterTypes
             filter={(type) => type.slug === 'standard'}

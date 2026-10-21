@@ -113,6 +113,55 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
     ], 'input'))->notEquals('');
   }
 
+  public function testItSkipsPlaceholderStylesWithInvalidColor() {
+    verify($this->renderer->renderPlaceholderStyles([
+      'params' => ['label_within' => '1'],
+      'styles' => ['font_color' => '#000}body{outline:5px solid red}x{'],
+    ], 'input'))->equals('');
+  }
+
+  public function testItRendersPlaceholderColor() {
+    verify($this->renderer->renderPlaceholderStyles([
+      'params' => ['label_within' => '1'],
+      'styles' => ['font_color' => '#1e1e1e'],
+    ], 'input'))->equals('<style>input::placeholder{color:#1e1e1e;opacity: 1;}</style>');
+  }
+
+  public function testItSkipsFieldStylesThatAreNotValid() {
+    $styles = [
+      'background_color' => 'red;x-bg:1',
+      'border_color' => 'red;x-border:1',
+      'font_color' => 'red;x-color:1',
+      'gradient' => 'red;x-gradient:1',
+      'padding' => '1;x-padding:1',
+      'font_family' => "Arial';x-font:1",
+      'font_size' => '1em;x-size:1',
+    ];
+    $settings = [
+      'input_padding' => '2;x-input:1',
+      'fontSize' => '1em;x-settings-size:1',
+      'font_family' => "Arial';x-settings-font:1",
+    ];
+
+    verify($this->renderer->renderForButton($styles, $settings))->stringNotContainsString('x-');
+    verify($this->renderer->renderForTextInput(['background_color' => 'red;x-bg:1'], $settings))->stringNotContainsString('x-');
+    verify($this->renderer->renderForSelect([], $settings))->stringNotContainsString('x-');
+  }
+
+  public function testItRendersFieldStylesWithUnitsAndPresets() {
+    $result = $this->renderer->renderForButton(
+      ['font_size' => '1.5rem', 'font_family' => 'Open Sans', 'font_color' => 'var(--wp--preset--color--black)'],
+      ['input_padding' => '12']
+    );
+    verify($result)->stringContainsString('font-size:1.5rem;');
+    verify($result)->stringContainsString("font-family:'Open Sans';");
+    verify($result)->stringContainsString('color:var(--wp--preset--color--black);');
+    verify($result)->stringContainsString('padding:12px;');
+
+    $result = $this->renderer->renderForTextInput([], ['fontSize' => 'var(--wp--preset--font-size--large)']);
+    verify($result)->stringContainsString('font-size:var(--wp--preset--font-size--large);');
+  }
+
   public function testItShouldRenderFontFamily() {
     $styles = [];
     $settings = [

@@ -1,3 +1,8 @@
+@use '../mixins/breakpoints' as *;
+@use '../settings/colors' as *;
+@use '../settings/grid' as *;
+@use '../settings/typography' as *;
+
 .mailpoet-steps {
   align-items: center;
   background: $color-input-background;

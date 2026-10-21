@@ -4,15 +4,33 @@ namespace MailPoet\Subscribers\RestApi\Endpoints;
 
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\API\REST\AbstractListingEndpoint;
+use MailPoet\API\REST\ListingRequestValidationTrait;
+use MailPoet\API\REST\Request;
+use MailPoet\API\REST\Response;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Listing\Handler as ListingHandler;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
+use MailPoet\Subscribers\RestApi\SubscribersFilterTrait;
 use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SubscribersListingEndpoint extends AbstractListingEndpoint {
+  use ListingRequestValidationTrait;
+  use SubscribersFilterTrait;
+
+  private const ALLOWED_SORT_FIELDS = ['id', 'email', 'status', 'engagement_score', 'last_subscribed_at', 'created_at'];
+  private const ALLOWED_GROUPS = [
+    'all',
+    SubscriberEntity::STATUS_SUBSCRIBED,
+    SubscriberEntity::STATUS_UNCONFIRMED,
+    SubscriberEntity::STATUS_UNSUBSCRIBED,
+    SubscriberEntity::STATUS_INACTIVE,
+    SubscriberEntity::STATUS_BOUNCED,
+    'trash',
+  ];
+
   /** @var SubscriberListingRepository */
   private $subscriberListingRepository;
 
@@ -29,6 +47,11 @@ class SubscribersListingEndpoint extends AbstractListingEndpoint {
     $this->subscribersResponseBuilder = $subscribersResponseBuilder;
   }
 
+  public function handle(Request $request): Response {
+    $this->validateRequest($request);
+    return parent::handle($request);
+  }
+
   public function checkPermissions(): bool {
     return WPFunctions::get()->currentUserCan(AccessControl::PERMISSION_MANAGE_SUBSCRIBERS);
   }
@@ -41,7 +64,7 @@ class SubscribersListingEndpoint extends AbstractListingEndpoint {
     if (!$repository instanceof SubscriberListingRepository) {
       return parent::getCountAndGroups($repository, $definition);
     }
-    return $repository->getCountAndGroups($definition);
+    return $repository->getCountAndAllTrashGroups($definition);
   }
 
   protected function buildItems(array $rows, ListingDefinition $definition): array {
@@ -49,7 +72,7 @@ class SubscribersListingEndpoint extends AbstractListingEndpoint {
     // Mirror the legacy endpoint: when filtering by a specific segment, surface
     // the per-segment unsubscribe status as the visible status so the UI shows
     // "unsubscribed from this list" rather than the global subscriber status.
-    $segmentFilter = $this->extractSegmentFilter($definition);
+    $segmentFilter = $this->subscriberListingRepository->getSingleListFilter($definition);
     if ($segmentFilter !== null) {
       foreach ($subscribers as $key => $subscriber) {
         if ($this->isUnsubscribedFromSegment($subscriber, $segmentFilter)) {
@@ -58,6 +81,23 @@ class SubscribersListingEndpoint extends AbstractListingEndpoint {
       }
     }
     return $subscribers;
+  }
+
+  protected function getListingValidationErrorPrefix(): string {
+    return 'subscribers';
+  }
+
+  private function validateRequest(Request $request): void {
+    $this->validateSortField($request->getParam('orderby'), self::ALLOWED_SORT_FIELDS);
+    $this->validateSortField($request->getParam('sort_by'), self::ALLOWED_SORT_FIELDS);
+    $this->validateSortOrder($request->getParam('order'));
+    $this->validateSortOrder($request->getParam('sort_order'));
+    $this->validatePagination($request);
+    $group = $request->getParam('group');
+    if ($group !== null && $group !== '' && (!is_string($group) || !in_array($group, self::ALLOWED_GROUPS, true))) {
+      throw $this->listingValidationError(__('Unsupported subscribers group.', 'mailpoet'), 'group');
+    }
+    $this->validateSubscribersFilter($request->getParam('filter'));
   }
 
   protected function getDefaultSortBy(): string {
@@ -70,15 +110,6 @@ class SubscribersListingEndpoint extends AbstractListingEndpoint {
 
   protected function getDefaultGroup(): ?string {
     return 'all';
-  }
-
-  private function extractSegmentFilter(ListingDefinition $definition): ?string {
-    $filters = $definition->getFilters();
-    if (!isset($filters['segment']) || !is_scalar($filters['segment'])) {
-      return null;
-    }
-    $segment = (string)$filters['segment'];
-    return $segment !== '' ? $segment : null;
   }
 
   /**

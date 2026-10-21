@@ -9,6 +9,7 @@ import {
   type LoadListing,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
+  useShowFiltersWhenActive,
 } from 'common/dataviews';
 import type { ListingGroup } from 'common/dataviews/types';
 import { CustomFieldsForm } from './custom-fields-form';
@@ -19,6 +20,7 @@ import {
   duplicateCustomField,
   getCustomFields,
   getSubscribersListingUrl,
+  type KeptCustomField,
 } from './api';
 import {
   requestFilterToViewFilters,
@@ -104,6 +106,32 @@ function bulkActionSuccessMessage(
       );
 }
 
+function keptCustomFieldsMessage(kept: KeptCustomField[]): string {
+  return kept
+    .map((customField) =>
+      sprintf(
+        /* translators: %1$s is the custom field name, %2$s is a comma-separated list of segment names */
+        __(
+          '"%1$s" was not deleted because it is used in these segments: %2$s. Remove it from these segments or delete the segments permanently first.',
+          'mailpoet',
+        ),
+        customField.name,
+        customField.segments
+          .map((segment) =>
+            segment.trashed
+              ? sprintf(
+                  /* translators: %s is the name of a segment */
+                  __('%s (in the trash)', 'mailpoet'),
+                  `"${segment.name}"`,
+                )
+              : `"${segment.name}"`,
+          )
+          .join(', '),
+      ),
+    )
+    .join(' ');
+}
+
 export function CustomFieldsPage() {
   const initialUrlState = useMemo(
     () => parseCustomFieldsUrlState(window.location.href),
@@ -175,6 +203,8 @@ export function CustomFieldsPage() {
     load,
     extraParams,
   });
+  const dataViewsRef = useRef<HTMLDivElement>(null);
+  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
 
   const onChangeViewWithFilterReset = useCallback(
     (nextView: View): void => {
@@ -209,43 +239,70 @@ export function CustomFieldsPage() {
   const handleBulkAction = useCallback(
     async (
       action: CustomFieldBulkAction,
-      ids: number[],
-      count = ids.length,
+      customFields: CustomField[],
+      count = customFields.length,
     ) => {
       if (count === 0) return;
 
       if (action === 'delete' || action === 'empty_trash') {
-        const confirmMessage =
-          action === 'empty_trash'
-            ? sprintf(
-                /* translators: %d is the number of custom fields */
-                _n(
-                  'Permanently delete %d custom field from the trash? It will be removed from subscribers, forms, and dynamic segments.',
-                  'Permanently delete %d custom fields from the trash? They will be removed from subscribers, forms, and dynamic segments.',
-                  count,
-                  'mailpoet',
-                ),
-                count,
-              )
-            : sprintf(
-                /* translators: %d is the number of custom fields */
-                _n(
-                  'Permanently delete %d custom field? It will be removed from subscribers, forms, and dynamic segments.',
-                  'Permanently delete %d custom fields? They will be removed from subscribers, forms, and dynamic segments.',
-                  count,
-                  'mailpoet',
-                ),
-                count,
-              );
+        const usedInSegments = customFields
+          .filter((customField) => customField.dynamic_segments_count > 0)
+          .map((customField) => customField.name);
+        let confirmMessage: string;
+        if (action === 'empty_trash') {
+          confirmMessage = sprintf(
+            /* translators: %d is the number of custom fields */
+            _n(
+              'Permanently delete %d custom field from the trash? It will be removed from subscribers and forms. Custom fields used in segments will be kept.',
+              'Permanently delete %d custom fields from the trash? They will be removed from subscribers and forms. Custom fields used in segments will be kept.',
+              count,
+              'mailpoet',
+            ),
+            count,
+          );
+        } else {
+          confirmMessage = sprintf(
+            /* translators: %d is the number of custom fields */
+            _n(
+              'Permanently delete %d custom field? It will be removed from subscribers and forms.',
+              'Permanently delete %d custom fields? They will be removed from subscribers and forms.',
+              count,
+              'mailpoet',
+            ),
+            count,
+          );
+          if (usedInSegments.length > 0) {
+            confirmMessage += ` ${sprintf(
+              /* translators: %s is a comma-separated list of custom field names */
+              _n(
+                'The custom field used in segments will be kept: %s.',
+                'Custom fields used in segments will be kept: %s.',
+                usedInSegments.length,
+                'mailpoet',
+              ),
+              usedInSegments.join(', '),
+            )}`;
+          }
+        }
         // eslint-disable-next-line no-alert
         if (!window.confirm(confirmMessage)) {
           return;
         }
       }
       try {
-        const updatedCount = await bulkAction(action, ids);
+        const result = await bulkAction(
+          action,
+          customFields.map((customField) => customField.id),
+        );
         setSelection([]);
-        setGlobalSuccess(bulkActionSuccessMessage(action, updatedCount));
+        setGlobalSuccess(
+          result.count > 0 || result.kept.length === 0
+            ? bulkActionSuccessMessage(action, result.count)
+            : null,
+        );
+        setGlobalError(
+          result.kept.length > 0 ? keptCustomFieldsMessage(result.kept) : null,
+        );
         refresh();
       } catch (err) {
         const apiError = err as ApiErrorResponse;
@@ -315,10 +372,7 @@ export function CustomFieldsPage() {
         supportsBulk: true,
         isEligible: (item) => !item.deleted_at,
         callback: (selected) => {
-          void handleBulkAction(
-            'trash',
-            selected.map((customField) => customField.id),
-          );
+          void handleBulkAction('trash', selected);
         },
       },
       {
@@ -327,10 +381,7 @@ export function CustomFieldsPage() {
         supportsBulk: true,
         isEligible: (item) => !!item.deleted_at,
         callback: (selected) => {
-          void handleBulkAction(
-            'restore',
-            selected.map((customField) => customField.id),
-          );
+          void handleBulkAction('restore', selected);
         },
       },
       {
@@ -340,10 +391,7 @@ export function CustomFieldsPage() {
         isDestructive: true,
         isEligible: (item) => !!item.deleted_at,
         callback: (selected) => {
-          void handleBulkAction(
-            'delete',
-            selected.map((customField) => customField.id),
-          );
+          void handleBulkAction('delete', selected);
         },
       },
     ],
@@ -474,7 +522,10 @@ export function CustomFieldsPage() {
         onSelect={handleTabSelect}
       >
         {() => (
-          <div className="mailpoet-dataviews mailpoet-custom-fields-dataviews">
+          <div
+            ref={dataViewsRef}
+            className="mailpoet-dataviews mailpoet-custom-fields-dataviews"
+          >
             <DataViews<CustomField>
               data={items}
               fields={listFields}
@@ -498,9 +549,7 @@ export function CustomFieldsPage() {
                   <DataViews.ViewConfig />
                 </div>
               </div>
-              <div className="mailpoet-dataviews__filters">
-                <DataViews.Filters />
-              </div>
+              <DataViews.FiltersToggled className="mailpoet-dataviews__filters" />
               {group === 'trash' && (groupCounts.trash ?? 0) > 0 && (
                 <div className="mailpoet-custom-fields-dataviews__toolbar">
                   <button

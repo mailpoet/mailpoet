@@ -14,6 +14,7 @@ use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\WPUserSubscriberLink;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WooCommerce\Subscription;
 use MailPoet\WP\Functions as WPFunctions;
@@ -81,6 +82,9 @@ class WooCommerce {
   /** @var SegmentsCountRecalculator */
   private $segmentsCountRecalculator;
 
+  /** @var WPUserSubscriberLink */
+  private $wpUserSubscriberLink;
+
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp,
@@ -94,7 +98,8 @@ class WooCommerce {
     Connection $connection,
     SubscriberChangesNotifier $subscriberChangesNotifier,
     Validator $validator,
-    SegmentsCountRecalculator $segmentsCountRecalculator
+    SegmentsCountRecalculator $segmentsCountRecalculator,
+    WPUserSubscriberLink $wpUserSubscriberLink
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
@@ -109,6 +114,7 @@ class WooCommerce {
     $this->subscriberChangesNotifier = $subscriberChangesNotifier;
     $this->validator = $validator;
     $this->segmentsCountRecalculator = $segmentsCountRecalculator;
+    $this->wpUserSubscriberLink = $wpUserSubscriberLink;
   }
 
   public function shouldShowWooCommerceSegment(): bool {
@@ -146,10 +152,12 @@ class WooCommerce {
           $data['source'] = Source::WOOCOMMERCE_USER;
         }
         $data['id'] = $subscriber->getId();
-        if ($wpUser->first_name) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        // Until the account confirms the address, keep the subscriber's own name.
+        $isLinkUnconfirmed = $this->wpUserSubscriberLink->isUnconfirmed($wpUserId);
+        if ($wpUser->first_name && !$isLinkUnconfirmed) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
           $data['first_name'] = $wpUser->first_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         }
-        if ($wpUser->last_name) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        if ($wpUser->last_name && !$isLinkUnconfirmed) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
           $data['last_name'] = $wpUser->last_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         }
         $subscriber = $this->subscriberSaveController->createOrUpdate($data, $subscriber);

@@ -238,7 +238,10 @@ class StatisticsExporter {
     foreach ($rows as $row) {
       $this->writeCsvLine($handle, $row);
     }
-    fclose($handle);
+    // Remote storage can fail to save on close and still report success.
+    if (!fclose($handle) || !is_file($filePath)) {
+      throw new \RuntimeException(__('The export file could not be saved on the server.', 'mailpoet'));
+    }
   }
 
   /**

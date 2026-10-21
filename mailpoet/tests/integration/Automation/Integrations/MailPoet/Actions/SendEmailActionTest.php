@@ -34,6 +34,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Exception;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\DynamicProductsBlock;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -135,7 +136,7 @@ class SendEmailActionTest extends \MailPoetTest {
     try {
       $this->action->validate(new StepValidationArgs($this->automation, $step, []));
     } catch (ValidationException $error) {
-      $this->assertSame('Automation email not found.', $error->getErrors()['email_id']);
+      $this->assertSame('Add email content before activating the automation.', $error->getErrors()['email_id']);
     }
     $this->assertNotNull($error);
   }
@@ -438,6 +439,138 @@ class SendEmailActionTest extends \MailPoetTest {
         $this->action->run($args, $controller);
       }
     );
+  }
+
+  public function testItKeepsPollingWithoutTimingOutWhileSendingIsPaused(): void {
+    [$step, $run, $controllerFor, $argsFor] = $this->prepareUnsentEmail();
+    $action = $this->getActionWithSendingAllowed(false);
+    $actionScheduler = $this->diContainer->get(ActionScheduler::class);
+
+    // 8th run would time out, but sending is paused
+    $before = time();
+    $action->run($argsFor(8), $controllerFor(8));
+
+    $actions = $actionScheduler->getScheduledActions();
+    $this->assertCount(1, $actions);
+    $scheduled = reset($actions);
+    $this->assertInstanceOf(\ActionScheduler_Action::class, $scheduled);
+    $this->assertSame([['automation_run_id' => $run->getId(), 'step_id' => $step->getId(), 'run_number' => 9]], $scheduled->get_args());
+    $runAt = as_next_scheduled_action('mailpoet/automation/step', $scheduled->get_args());
+    $this->assertIsInt($runAt);
+    $this->assertGreaterThanOrEqual($before + 6 * HOUR_IN_SECONDS, $runAt);
+    $this->assertLessThanOrEqual(time() + 6 * HOUR_IN_SECONDS, $runAt);
+    $this->assertSame(1, $controllerFor(8)->getRunLog()->getLog()->getData()['paused_polls']);
+  }
+
+  public function testItDoesNotCountPausedPollsTowardTheTimeout(): void {
+    [, , $controllerFor, $argsFor] = $this->prepareUnsentEmail();
+
+    $this->getActionWithSendingAllowed(false)->run($argsFor(3), $controllerFor(3));
+    $this->getActionWithSendingAllowed(false)->run($argsFor(4), $controllerFor(4));
+    $this->assertSame(2, $controllerFor(4)->getRunLog()->getLog()->getData()['paused_polls']);
+
+    // Sending is allowed again. Run 9 is the 7th real check, so it keeps polling.
+    $this->getActionWithSendingAllowed(true)->run($argsFor(9), $controllerFor(9));
+
+    // Run 10 is the 8th real check, the last one.
+    $this->assertThrowsExceptionWithMessage(
+      'Email sending process timed out.',
+      function() use ($argsFor, $controllerFor) {
+        $this->getActionWithSendingAllowed(true)->run($argsFor(10), $controllerFor(10));
+      }
+    );
+  }
+
+  public function testItTimesOutOnTheLastRunWhenSendingIsAllowed(): void {
+    [, , $controllerFor, $argsFor] = $this->prepareUnsentEmail();
+    $this->assertThrowsExceptionWithMessage(
+      'Email sending process timed out.',
+      function() use ($argsFor, $controllerFor) {
+        $this->getActionWithSendingAllowed(true)->run($argsFor(8), $controllerFor(8));
+      }
+    );
+  }
+
+  public function testItDoesNotCountOptInRetriesTowardTheTimeout(): void {
+    [, , $controllerFor, $argsFor] = $this->prepareUnsentEmail();
+    $controllerFor(2)->getRunLog()->saveLogData(['optin_retries' => 3]);
+
+    // Run 10 is the 7th real check, so it keeps polling.
+    $this->getActionWithSendingAllowed(true)->run($argsFor(10), $controllerFor(10));
+
+    // Run 11 is the 8th real check, the last one.
+    $this->assertThrowsExceptionWithMessage(
+      'Email sending process timed out.',
+      function() use ($argsFor, $controllerFor) {
+        $this->getActionWithSendingAllowed(true)->run($argsFor(11), $controllerFor(11));
+      }
+    );
+  }
+
+  public function testItDoesNotTimeOutOnTheRunThatSchedulesTheEmailAfterOptIn(): void {
+    [, , $controllerFor, $argsFor] = $this->prepareUnsentEmail();
+    $controllerFor(1)->getRunLog()->saveLogData(['wait_optin' => 1]);
+
+    // The subscriber is confirmed on run 8. The email was only just scheduled, so this run is not a timeout.
+    $this->getActionWithSendingAllowed(true)->run($argsFor(8), $controllerFor(8));
+
+    $this->assertSame(8, $controllerFor(8)->getRunLog()->getLog()->getData()['optin_retries']);
+  }
+
+  public function testItUsesThePollIntervalOfTheEffectiveRunAfterManyPausedPolls(): void {
+    [$step, $run, $controllerFor, $argsFor] = $this->prepareUnsentEmail();
+
+    for ($runNumber = 2; $runNumber <= 11; $runNumber++) {
+      $this->getActionWithSendingAllowed(false)->run($argsFor($runNumber), $controllerFor($runNumber));
+    }
+    $this->assertSame(10, $controllerFor(11)->getRunLog()->getLog()->getData()['paused_polls']);
+
+    // Run 12 minus 10 paused polls is the 2nd real check, so the next one is due after 10 minutes.
+    $before = time();
+    $this->getActionWithSendingAllowed(true)->run($argsFor(12), $controllerFor(12));
+
+    $runAt = as_next_scheduled_action('mailpoet/automation/step', [['automation_run_id' => $run->getId(), 'step_id' => $step->getId(), 'run_number' => 13]]);
+    $this->assertIsInt($runAt);
+    $this->assertGreaterThanOrEqual($before + 10 * MINUTE_IN_SECONDS, $runAt);
+    $this->assertLessThanOrEqual(time() + 10 * MINUTE_IN_SECONDS, $runAt);
+  }
+
+  private function getActionWithSendingAllowed(bool $allowed): SendEmailAction {
+    $environment = $this->createMock(SendingEnvironment::class);
+    $environment->method('isSendingAllowed')->willReturn($allowed);
+    return $this->getServiceWithOverrides(SendEmailAction::class, ['sendingEnvironment' => $environment]);
+  }
+
+  /**
+   * Creates an automation run with a scheduled, unsent email.
+   * Returns [step, run, controller factory by run number, args factory by run number].
+   */
+  private function prepareUnsentEmail(): array {
+    $segment = (new Segment())->create();
+    $subscriber = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([$segment])
+      ->create();
+    $subjects = $this->getSubjectData($subscriber, $segment);
+    $email = (new Newsletter())->withAutomationType()->create();
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
+    $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User(), 1);
+    $run = new AutomationRun(1, 1, 'trigger-key', [], 1);
+
+    $scheduledTask = (new ScheduledTask())->create('sending', ScheduledTaskEntity::STATUS_SCHEDULED);
+    $scheduledTask->setMeta(['automation' => ['run_id' => $run->getId(), 'step_id' => $step->getId(), 'run_number' => 1]]);
+    (new SendingQueue())->create($scheduledTask, $email);
+    (new ScheduledTaskSubscriber())->createUnprocessed($scheduledTask, $subscriber);
+
+    $entries = $this->getSubjectEntries($subjects);
+    $argsFor = function (int $runNumber) use ($automation, $run, $step, $entries): StepRunArgs {
+      return new StepRunArgs($automation, $run, $step, $entries, $runNumber);
+    };
+    $controllerFor = function (int $runNumber) use ($argsFor, $run, $step) {
+      $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), $runNumber);
+      return $this->diContainer->get(StepRunControllerFactory::class)->createController($argsFor($runNumber), $logger);
+    };
+    return [$step, $run, $controllerFor, $argsFor];
   }
 
   public function testEmailSentHandlerEnqueuesProgress(): void {

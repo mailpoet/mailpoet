@@ -69,7 +69,7 @@ class ReceiveScheduledEmailCest {
     if ($newsletter instanceof NewsletterEntity) {
       $scheduledTask = $scheduledTasksRepository->findOneByNewsletter($newsletter);
       if ($scheduledTask instanceof ScheduledTaskEntity) {
-        $scheduledTask->setScheduledAt((new \DateTime)->modify("-1 day"));
+        $scheduledTask->setScheduledAt((new \DateTime)->modify("-1 hour"));
         $scheduledTasksRepository->persist($scheduledTask);
         $scheduledTasksRepository->flush();
       }

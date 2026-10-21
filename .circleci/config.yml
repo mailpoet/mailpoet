@@ -94,28 +94,28 @@ executors:
   wpcli_php_oldest:
     <<: *default_job_config
     docker:
-      - image: mailpoet/wordpress:7.4_20250815.1
+      - image: mailpoet/wordpress:7.4_20261005.1
 
   wpcli_php_max_wporg:
     <<: *default_job_config
     docker:
-      - image: mailpoet/wordpress:8.1_20250815.1 # We need to use 8.1 to emulate the WP.org environment
+      - image: mailpoet/wordpress:8.1_20261005.1 # We need to use 8.1 to emulate the WP.org environment
 
   wpcli_php_latest:
     <<: *default_job_config
     docker:
-      - image: mailpoet/wordpress:8.3_20250815.1
+      - image: mailpoet/wordpress:8.5_20261014.1
 
   wpcli_php_mysql_oldest:
     <<: *default_job_config
     docker:
-      - image: mailpoet/wordpress:7.4_20250815.1
+      - image: mailpoet/wordpress:7.4_20261005.1
       - image: cimg/mysql:5.7
 
   wpcli_php_mysql_latest:
     <<: *default_job_config
     docker:
-      - image: mailpoet/wordpress:8.3_20250815.1
+      - image: mailpoet/wordpress:8.5_20261014.1
       - image: cimg/mysql:8.0
         command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_520_ci
 
@@ -132,7 +132,13 @@ jobs:
           command: pnpm config set store-dir ~/.pnpm-store
       - run:
           name: 'Compute checksum for prefixer'
-          command: find prefixer -type f -not -path 'prefixer/build/*' -not -path 'prefixer/vendor/*' | sort | xargs cat | sha512sum > prefixer-checksum
+          command: |
+            # The PHP version and the versions pinned in tools/install.php select the php-scoper version
+            {
+              php -r 'echo PHP_MAJOR_VERSION, ".", PHP_MINOR_VERSION, PHP_EOL;'
+              cat tools/install.php
+              find prefixer -type f -not -path 'prefixer/build/*' -not -path 'prefixer/vendor/*' | sort | xargs cat
+            } | sha512sum > prefixer-checksum
       - restore_cache:
           key: tools-{{ checksum "tools/install.php" }}
       - restore_cache:
@@ -165,7 +171,7 @@ jobs:
             ./tools/vendor/composer.phar --working-dir=tasks/phpstan install
             ./do compile:all --env production --skip-tests
             ./do doctrine:generate-cache
-            ../tests_env/vendor/bin/codecept build
+            php -d register_argc_argv=1 ../tests_env/vendor/bin/codecept build
             ./do twig:generate-cache
       - run:
           name: 'Check Prettier formatting'
@@ -203,10 +209,10 @@ jobs:
       - run:
           name: Download additional WP Plugins for tests
           command: |
-            ./do download:woo-commerce-zip 11.1.2
-            ./do download:woo-commerce-subscriptions-zip 9.2.0
+            ./do download:woo-commerce-zip 11.2.1
+            ./do download:woo-commerce-subscriptions-zip 9.3.0
             ./do download:woo-commerce-memberships-zip
-            ./do download:automate-woo-zip 6.9.1
+            ./do download:automate-woo-zip 6.9.3
       - run:
           name: Dump tests ENV variables for acceptance tests
           command: |
@@ -857,11 +863,21 @@ jobs:
           command: ./build.sh
       - store_artifacts:
           path: /home/circleci/mailpoet/mailpoet/mailpoet.zip
+      - store_artifacts:
+          path: /home/circleci/mailpoet/mailpoet/lang/mailpoet.pot
       - persist_to_workspace:
           root: /home/circleci/mailpoet
           paths:
             - mailpoet/release_zip_build_number.txt
             - mailpoet/mailpoet.zip
+  lint_release_zip_php74:
+    executor: wpcli_php_oldest
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - run:
+          name: 'Lint the release zip on PHP 7.4'
+          command: ../.circleci/lint-release-zip.sh /home/circleci/mailpoet/mailpoet.zip ../.circleci/php74-lint-exclude.txt
   qit_security_scan:
     executor: wpcli_php_latest
     steps:
@@ -1178,6 +1194,10 @@ workflows:
             - qa_php_oldest
             - security_analysis
             - qa_php_max_wporg
+      - lint_release_zip_php74:
+          <<: *slack-fail-post-step
+          requires:
+            - build_release_zip
       - qit_security_scan:
           <<: *slack-fail-post-step
           requires:
@@ -1223,14 +1243,14 @@ workflows:
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_oldest
-          woo_core_version: 11.0.1
-          woo_subscriptions_version: 9.1.0
+          woo_core_version: 11.1.2
+          woo_subscriptions_version: 9.2.0
           automate_woo_version: 6.8.3
           mysql_command: --max_allowed_packet=100M
           mysql_image: mysql:5.6
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
-          wordpress_version: 7.0.4
+          wordpress_version: 7.0.3
           requires:
             - build
       # Disabled: the performance testing site https://mpperftesting.com is no longer
@@ -1266,12 +1286,12 @@ workflows:
       - integration_tests:
           <<: *slack-fail-post-step
           name: integration_oldest
-          woo_core_version: 11.0.1
-          woo_subscriptions_version: 9.1.0
+          woo_core_version: 11.1.2
+          woo_subscriptions_version: 9.2.0
           automate_woo_version: 6.8.3
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI # We use image with PHP 7.4 and install required WordPress version via CLI
-          wordpress_version: 7.0.4
+          wordpress_version: 7.0.3
           mysql_command: --max_allowed_packet=100M
           mysql_image: mysql:5.6
           requires:
@@ -1328,23 +1348,23 @@ workflows:
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_with_premium_oldest
-          woo_core_version: 11.0.1
-          woo_subscriptions_version: 9.1.0
+          woo_core_version: 11.1.2
+          woo_subscriptions_version: 9.2.0
           automate_woo_version: 6.8.3
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
-          wordpress_version: 7.0.4
+          wordpress_version: 7.0.3
           requires:
             - build_premium
       - integration_tests:
           <<: *slack-fail-post-step
           name: integration_with_premium_oldest
-          woo_core_version: 11.0.1
-          woo_subscriptions_version: 9.1.0
+          woo_core_version: 11.1.2
+          woo_subscriptions_version: 9.2.0
           automate_woo_version: 6.8.3
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
-          wordpress_version: 7.0.4
+          wordpress_version: 7.0.3
           mysql_command: --max_allowed_packet=100M
           mysql_image: mysql:5.6
           requires:
@@ -1365,6 +1385,10 @@ workflows:
           <<: *slack-fail-post-step
           requires:
             - build
+      - lint_release_zip_php74:
+          <<: *slack-fail-post-step
+          requires:
+            - build_release_zip
       - qit_security_scan:
           <<: *slack-fail-post-step
           requires:

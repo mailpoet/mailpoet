@@ -3,6 +3,7 @@
 namespace MailPoet\Form\Block;
 
 use MailPoet\Form\Util\FieldNameObfuscator;
+use MailPoet\Form\Util\Styles;
 use MailPoet\Services\Validator;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -44,9 +45,11 @@ class BlockRendererHelper {
         __('Please specify a valid name.', 'mailpoet'),
         __('Addresses in names are not permitted, please add your name instead.', 'mailpoet'),
       ];
-      $rules['names'] = '[' . implode(',', array_map(function (string $errorMessage): string {
-        return $this->wp->escAttr('"' . $errorMessage . '"');
-      }, $errorMessages)) . ']';
+      // Translations may contain entities; the attribute must decode to the plain text JSON.
+      $errorMessages = array_map(function (string $errorMessage): string {
+        return html_entity_decode($errorMessage, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+      }, $errorMessages);
+      $rules['names'] = (string)$this->wp->wpJsonEncode($errorMessages, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_AMP);
     }
 
     // Segments should be required only when form ID is not empty. That allows save form on subscription management site when any segment is not checked.
@@ -88,14 +91,11 @@ class BlockRendererHelper {
       if (is_bool($value)) {
         $value = ($value) ? 'true' : 'false';
       }
-      // We need to use single quotes because we need to pass array of strings as a parameter for custom validation
-      if ($rule === 'names') {
-        $validation[] = 'data-parsley-' . $rule . '=\'' . $this->wp->wpKsesPost($value) . '\''; // The value has been escaped above.
-      } else {
-        $validation[] = 'data-parsley-' . $this->wp->escAttr($rule) . '="' . $this->wp->escAttr($this->wp->wpKsesPost($value)) . '"';
-        if ($rule === 'required') {
-          $validation[] = 'required aria-required="true"';
-        }
+      // The names rule is built from translated messages, so escaping is enough and keeps their text.
+      $value = $rule === 'names' ? $value : $this->wp->wpKsesPost($value);
+      $validation[] = 'data-parsley-' . $this->wp->escAttr($rule) . '="' . $this->wp->escAttr($value) . '"';
+      if ($rule === 'required') {
+        $validation[] = 'required aria-required="true"';
       }
     }
     return join(' ', $validation);
@@ -188,7 +188,7 @@ class BlockRendererHelper {
 
   public function renderFontStyle(array $formSettings, array $styles = []) {
     $rules = [];
-    if (isset($formSettings['fontSize'])) {
+    if (isset($formSettings['fontSize']) && Styles::isSizeValue($formSettings['fontSize'])) {
       $rules[] = 'font-size: ' . $formSettings['fontSize'] . (is_numeric($formSettings['fontSize']) ? "px;" : ";");
       $rules[] = 'line-height: 1.2;';
     }

@@ -15,6 +15,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Form\FormMessageController;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
@@ -85,6 +86,9 @@ class Settings extends APIEndpoint {
   /** @var ConfirmationEmailCustomizer */
   private $confirmationEmailCustomizer;
 
+  /** @var SendingEnvironment */
+  private $sendingEnvironment;
+
   public function __construct(
     SettingsController $settings,
     Bridge $bridge,
@@ -101,8 +105,10 @@ class Settings extends APIEndpoint {
     SettingsChangeHandler $settingsChangeHandler,
     SubscribersCountsController $subscribersCountsController,
     TrackingConfig $trackingConfig,
-    ConfirmationEmailCustomizer $confirmationEmailCustomizer
+    ConfirmationEmailCustomizer $confirmationEmailCustomizer,
+    SendingEnvironment $sendingEnvironment
   ) {
+    $this->sendingEnvironment = $sendingEnvironment;
     $this->settings = $settings;
     $this->bridge = $bridge;
     $this->authorizedEmailsController = $authorizedEmailsController;
@@ -146,7 +152,16 @@ class Settings extends APIEndpoint {
         $this->settings->set($name, $value);
       }
 
+      if (array_key_exists(SendingEnvironment::SETTING_ALLOW_SENDING, $settings)) {
+        $this->sendingEnvironment->syncSiteUrlWithSetting();
+      }
+
       $this->onSettingsChange($oldSettings, $this->settings->getAll());
+
+      if (($oldSettings['mta']['mailpoet_api_key'] ?? null) !== $this->settings->get('mta.mailpoet_api_key')) {
+        $this->senderDomainController->clearCache();
+        $this->authorizedEmailsController->clearCache();
+      }
 
       // when pending approval, leave this to cron / Key Activation tab logic
       if (!$this->servicesChecker->isMailPoetAPIKeyPendingApproval()) {

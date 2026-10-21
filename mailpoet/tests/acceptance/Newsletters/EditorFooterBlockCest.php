@@ -20,6 +20,7 @@ class EditorFooterBlockCest {
     $i->moveMouseOver($footerInEditor, 3, 2);
     $i->waitForText('Manage subscription');
     $i->click($footerSettingsIcon);
+    $i->waitForEditorSettingsPanel();
     $i->waitForElementVisible($footerSettingsAssertion);
     $i->click($footerSettingsAssertion);
   }

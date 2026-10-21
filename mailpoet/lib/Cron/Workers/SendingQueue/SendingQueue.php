@@ -8,18 +8,25 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsScheduler;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Features\FeaturesController;
 use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
+use MailPoet\Newsletter\Sending\OverdueCampaignHold;
+use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Sending\TemplateBatch;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
+use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -96,8 +103,17 @@ class SendingQueue {
   /** @var AuthorizedEmailsController */
   private $authorizedEmailsController;
 
+  /** @var FeaturesController */
+  private $featuresController;
+
   /** @var TimeZoneCampaignScheduler|null */
   private $timeZoneCampaignScheduler;
+
+  /** @var NewsletterUrl */
+  private $newsletterUrl;
+
+  /** @var OverdueCampaignHold */
+  private $overdueCampaignHold;
 
   public function __construct(
     SendingErrorHandler $errorHandler,
@@ -117,8 +133,11 @@ class SendingQueue {
     EntityManager $entityManager,
     StatisticsNewslettersRepository $statisticsNewslettersRepository,
     AuthorizedEmailsController $authorizedEmailsController,
+    FeaturesController $featuresController,
     ?TimeZoneCampaignScheduler $timeZoneCampaignScheduler = null,
-    $newsletterTask = false
+    $newsletterTask = false,
+    ?NewsletterUrl $newsletterUrl = null,
+    ?OverdueCampaignHold $overdueCampaignHold = null
   ) {
     $this->errorHandler = $errorHandler;
     $this->throttlingHandler = $throttlingHandler;
@@ -139,7 +158,10 @@ class SendingQueue {
     $this->entityManager = $entityManager;
     $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
     $this->authorizedEmailsController = $authorizedEmailsController;
+    $this->featuresController = $featuresController;
     $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
+    $this->newsletterUrl = $newsletterUrl ?? ContainerWrapper::getInstance()->get(NewsletterUrl::class);
+    $this->overdueCampaignHold = $overdueCampaignHold ?? ContainerWrapper::getInstance()->get(OverdueCampaignHold::class);
   }
 
   public function process($timer = false) {
@@ -148,6 +170,11 @@ class SendingQueue {
     foreach ($this->scheduledTasksRepository->findRunningSendingTasks(self::TASK_BATCH_SIZE) as $task) {
       $queue = $task->getSendingQueue();
       if (!$queue) {
+        continue;
+      }
+
+      // Paused earlier in this run, e.g. together with the other batches of its time zone campaign
+      if ($task->getStatus() !== null) {
         continue;
       }
 
@@ -197,6 +224,10 @@ class SendingQueue {
       return;
     }
 
+    if ($this->holdIfNotSendable($task, $newsletter)) {
+      return;
+    }
+
     // pre-process newsletter (render, replace shortcodes/links, etc.)
     $newsletter = $this->newsletterTask->preProcessNewsletter($newsletter, $task);
 
@@ -210,6 +241,8 @@ class SendingQueue {
 
     // configure mailer
     $this->mailerTask->configureMailer($newsletter);
+    $processingMethod = $this->mailerTask->getProcessingMethod();
+    $this->throttlingHandler->setUseTemplatedSending($this->shouldUseTemplatedSending($newsletter, $queue, $processingMethod));
     // get newsletter segments
     $newsletterSegmentsIds = $newsletter->getSegmentIds();
     $segmentIdsToCheck = $newsletterSegmentsIds;
@@ -231,13 +264,18 @@ class SendingQueue {
       return;
     }
 
-    // Pause task if sender domain requirements are not met
-    if (!$this->authorizedEmailsController->isSenderAddressValid($newsletter, 'sending')) {
+    // Pause task if sender domain requirements are not met.
+    // The fresh check runs only when the cached one fails, so stale cached data can't pause the task.
+    if (
+      !$this->authorizedEmailsController->isSenderAddressValid($newsletter, 'sending')
+      && !$this->authorizedEmailsController->isSenderAddressValid($newsletter, 'recheck')
+    ) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
         'pause task in sending queue due to sender domain requirements',
         ['task_id' => $task->getId()]
       );
       $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+      $task->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
       $this->scheduledTasksRepository->flush();
       return;
     }
@@ -377,7 +415,8 @@ class SendingQueue {
           $task,
           $newsletter,
           $foundSubscribers,
-          $timer
+          $timer,
+          $processingMethod
         );
         if (!$newsletter->isTransactional()) {
           $this->entityManager->wrapInTransaction(function() use ($foundSubscribersIds) {
@@ -416,12 +455,23 @@ class SendingQueue {
     return $this->throttlingHandler->getBatchSize();
   }
 
+  private function shouldUseTemplatedSending(NewsletterEntity $newsletter, SendingQueueEntity $queue, ?string $processingMethod): bool {
+    return $processingMethod === 'bulk'
+      && $this->featuresController->isSupported(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING)
+      && empty(($queue->getMeta() ?? [])[SendingQueueEntity::META_TEMPLATED_SENDING_DISABLED])
+      && !(
+        $newsletter->getWpPostId() !== null
+        && $this->newsletterTask->hasDeprecatedAutomationPersonalizationFilters()
+      );
+  }
+
   /**
    * @param SubscriberEntity[] $subscribers
+   * @param string|null $processingMethod The mailer's processing method when the caller already asked for it
    */
-  public function processQueue(ScheduledTaskEntity $task, NewsletterEntity $newsletter, array $subscribers, $timer) {
+  public function processQueue(ScheduledTaskEntity $task, NewsletterEntity $newsletter, array $subscribers, $timer, ?string $processingMethod = null) {
     // determine if processing is done in bulk or individually
-    $processingMethod = $this->mailerTask->getProcessingMethod();
+    $processingMethod = $processingMethod ?? $this->mailerTask->getProcessingMethod();
     $preparedNewsletters = [];
     $preparedSubscribers = [];
     $preparedSubscribersIds = [];
@@ -434,17 +484,56 @@ class SendingQueue {
       return;
     }
 
+    $useTemplatedBatch = $this->shouldUseTemplatedSending($newsletter, $sendingQueueEntity, $processingMethod);
+    /** @var TemplateBatch|null $templateBatch */
+    $templateBatch = null;
+    $placeholderNamespace = $useTemplatedBatch ? PlaceholderCollector::generateNamespace() : null;
     $sendingQueueMeta = $sendingQueueEntity->getMeta() ?? [];
     $campaignId = $sendingQueueMeta['campaignId'] ?? null;
+    // Anonymous (subscriber-less) link to the sent email, identical for all recipients
+    $previewUrl = $this->newsletterUrl->getViewInBrowserUrl($newsletter, null, $sendingQueueEntity, false);
 
     foreach ($subscribers as $subscriber) {
       // render shortcodes and replace subscriber data in tracked links
-      $preparedNewsletters[] =
-        $this->newsletterTask->prepareNewsletterForSending(
+      if ($useTemplatedBatch) {
+        $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending(
           $newsletter,
           $subscriber,
-          $sendingQueueEntity
+          $sendingQueueEntity,
+          $placeholderNamespace
         );
+        if ($templateBatch === null) {
+          $templateBatch = new TemplateBatch($templatedNewsletter['newsletter']);
+        } elseif ($templateBatch->getTemplate() !== $templatedNewsletter['newsletter']) {
+          // Every subscriber of a batch must produce the same template; the difference comes from
+          // the email content, so retrying the templated way would fail again. The queue switches
+          // to standard sending instead. This run stops here because its batches were sized for
+          // templated sending; the next run picks the queue up with the standard batch size.
+          $differingParts = $this->getDifferingTemplateParts($templateBatch->getTemplate(), $templatedNewsletter['newsletter']);
+          $this->sendingQueuesRepository->disableTemplatedSending($sendingQueueEntity);
+          $this->throttlingHandler->setUseTemplatedSending(false);
+          $this->loggerFactory->getLogger(LoggerFactory::TOPIC_SENDING)->warning('Templated sending disabled for this email: a subscriber produced a different email template than the first subscriber of the batch; the email continues in the standard way on the next run', [
+            'task_id' => $task->getId(),
+            'newsletter_id' => $newsletter->getId(),
+            'subscriber_id' => $subscriber->getId(),
+            'differing_parts' => $differingParts,
+          ]);
+          throw new InvalidStateException(sprintf(
+            'Templated sending disabled for newsletter %d: subscriber %d produced a different email template (%s) than the first subscriber of the batch. Nothing was sent in this run; the next run sends the email in the standard way.',
+            (int)$newsletter->getId(),
+            (int)$subscriber->getId(),
+            implode(', ', $differingParts)
+          ));
+        }
+        $templateBatch->addSubstitutions($templatedNewsletter['substitutions']);
+      } else {
+        $preparedNewsletters[] =
+          $this->newsletterTask->prepareNewsletterForSending(
+            $newsletter,
+            $subscriber,
+            $sendingQueueEntity
+          );
+      }
       // format subscriber name/address according to mailer settings
       $preparedSubscribers[] = $this->mailerTask->prepareSubscriberForSending(
         $subscriber
@@ -459,6 +548,7 @@ class SendingQueue {
         $metasForSubscriber['campaign_id'] = $campaignId;
       }
       $metasForSubscriber['tracking_consent'] = $subscriber->getTrackingConsent();
+      $metasForSubscriber['preview_url'] = $previewUrl;
       $metas[] = $metasForSubscriber;
 
       // keep track of values for statistics purposes
@@ -495,7 +585,7 @@ class SendingQueue {
       $this->sendNewsletters(
         $task,
         $preparedSubscribersIds,
-        $preparedNewsletters,
+        $templateBatch ?? $preparedNewsletters,
         $preparedSubscribers,
         $statistics,
         $timer,
@@ -513,6 +603,7 @@ class SendingQueue {
     $preparedSubscriber, $statistics, $timer, $extraParams = []
   ) {
     // send newsletter
+    $sendStart = microtime(true);
     $sendResult = $this->mailerTask->send(
       $preparedNewsletter,
       $preparedSubscriber,
@@ -524,15 +615,20 @@ class SendingQueue {
       [$preparedSubscriber],
       [$preparedSubscriberId],
       [$statistics],
-      $timer
+      $timer,
+      microtime(true) - $sendStart
     );
   }
 
+  /**
+   * @param array<int, array<string, mixed>>|TemplateBatch $preparedNewsletters One rendered email per recipient, or one template for all of them
+   */
   public function sendNewsletters(
     ScheduledTaskEntity $task, $preparedSubscribersIds, $preparedNewsletters,
     $preparedSubscribers, $statistics, $timer, $extraParams = []
   ) {
     // send newsletters
+    $sendStart = microtime(true);
     $sendResult = $this->mailerTask->sendBulk(
       $preparedNewsletters,
       $preparedSubscribers,
@@ -544,8 +640,27 @@ class SendingQueue {
       $preparedSubscribers,
       $preparedSubscribersIds,
       $statistics,
-      $timer
+      $timer,
+      microtime(true) - $sendStart
     );
+  }
+
+  /**
+   * @param array{subject: string, body: array{html?: string, text?: string}} $expected
+   * @param array{subject: string, body: array{html?: string, text?: string}} $actual
+   * @return string[]
+   */
+  private function getDifferingTemplateParts(array $expected, array $actual): array {
+    $parts = [];
+    if ($expected['subject'] !== $actual['subject']) {
+      $parts[] = 'subject';
+    }
+    foreach (['html', 'text'] as $part) {
+      if (($expected['body'][$part] ?? '') !== ($actual['body'][$part] ?? '')) {
+        $parts[] = $part;
+      }
+    }
+    return $parts;
   }
 
   /**
@@ -576,7 +691,8 @@ class SendingQueue {
     array $preparedSubscribers,
     array $preparedSubscribersIds,
     array $statistics,
-    $timer
+    $timer,
+    float $sendDurationSeconds
   ) {
     // log error message and schedule retry/pause sending
     if ($sendResult['response'] === false) {
@@ -626,7 +742,7 @@ class SendingQueue {
       }
     }
 
-    $this->throttlingHandler->processSuccess();
+    $this->throttlingHandler->processSuccess($sendDurationSeconds);
   }
 
   public function enforceSendingAndExecutionLimits($timer) {
@@ -641,12 +757,25 @@ class SendingQueue {
     if (count($bounceTasks)) {
       $bounceTask = reset($bounceTasks);
       if (Carbon::now()->millisecond(0)->addHours(42)->lessThan($bounceTask->getScheduledAt())) {
-        $randomOffset = rand(-6 * 60 * 60, 6 * 60 * 60);
+        $randomOffset = random_int(-6 * 60 * 60, 6 * 60 * 60);
         $bounceTask->setScheduledAt(Carbon::now()->millisecond(0)->addSeconds((36 * 60 * 60) + $randomOffset));
         $this->scheduledTasksRepository->persist($bounceTask);
         $this->scheduledTasksRepository->flush();
       }
     }
+  }
+
+  /**
+   * Per-task checks that decide whether this task may start sending live here, before anything is rendered.
+   * Checks that apply to the whole site (e.g. paused sending on non-production sites) belong in process(),
+   * next to enforceSendingAndExecutionLimits().
+   */
+  private function holdIfNotSendable(ScheduledTaskEntity $task, NewsletterEntity $newsletter): bool {
+    if (!$this->overdueCampaignHold->shouldHold($task, $newsletter)) {
+      return false;
+    }
+    $this->overdueCampaignHold->holdInWorker($task);
+    return true;
   }
 
   private function startProgress(ScheduledTaskEntity $task): void {

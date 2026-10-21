@@ -77,9 +77,9 @@ class SendingTaskSubscribersCleanup extends SimpleWorker {
     $baseDate = Carbon::now()->millisecond(0)->startOfDay();
 
     for ($slot = 0; $slot < 4; $slot++) {
-      $hour = $slot * 6 + mt_rand(0, 5);
-      $minute = mt_rand(0, 59);
-      $second = mt_rand(0, 59);
+      $hour = $slot * 6 + random_int(0, 5);
+      $minute = random_int(0, 59);
+      $second = random_int(0, 59);
 
       $scheduleDate = clone $baseDate;
       $scheduleDate->setTime($hour, $minute, $second);
@@ -94,11 +94,11 @@ class SendingTaskSubscribersCleanup extends SimpleWorker {
 
   public function getNextRunDate() {
     $date = Carbon::now()->millisecond(0);
-    $timeSlot = mt_rand(0, 3);
-    $hour = $timeSlot * 6 + mt_rand(0, 5);
-    $minute = mt_rand(0, 59);
+    $timeSlot = random_int(0, 3);
+    $hour = $timeSlot * 6 + random_int(0, 5);
+    $minute = random_int(0, 59);
 
-    $date->setTime($hour, $minute, mt_rand(0, 59));
+    $date->setTime($hour, $minute, random_int(0, 59));
 
     if ($date->isPast()) {
       $date->addDay();

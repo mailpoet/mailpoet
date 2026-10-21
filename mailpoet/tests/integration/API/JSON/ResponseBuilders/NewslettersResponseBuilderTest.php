@@ -192,6 +192,71 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
     verify(count($queue['meta'][TimeZoneCampaignScheduler::META_TIMEZONE_BREAKDOWN]))->equals(2);
   }
 
+  public function testItReportsPauseReasonInQueue(): void {
+    $responseBuilder = $this->diContainer->get(NewslettersResponseBuilder::class);
+    $reasons = [
+      'overdue' => ScheduledTaskEntity::PAUSE_REASON_OVERDUE,
+      'sender domain' => ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN,
+      'user pause' => null,
+    ];
+    $newsletters = [];
+    foreach ($reasons as $subject => $reason) {
+      $newsletter = (new Newsletter())->withSubject($subject)->withSendingQueue(['status' => ScheduledTaskEntity::STATUS_PAUSED, 'count_processed' => 0])->create();
+      $queue = $newsletter->getLatestQueue();
+      $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+      $task = $queue->getTask();
+      $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+      $task->setPauseReason($reason);
+      $newsletters[$subject] = $newsletter;
+    }
+    $running = (new Newsletter())->withSubject('running')->withSendingQueue(['status' => null, 'count_processed' => 0])->create();
+    $this->entityManager->flush();
+    $ids = array_map(fn(NewsletterEntity $newsletter) => $newsletter->getId(), array_merge(array_values($newsletters), [$running]));
+    // Start from an empty identity map so the listing query loads its own partial entities
+    $this->entityManager->clear();
+    $listed = array_map(fn($id) => $this->entityManager->getReference(NewsletterEntity::class, $id), $ids);
+
+    $response = $responseBuilder->buildForListing($listed);
+
+    $this->assertSame(
+      [ScheduledTaskEntity::PAUSE_REASON_OVERDUE, ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN, null, null],
+      array_map(fn(array $item) => $item['queue']['pause_reason'], $response)
+    );
+  }
+
+  public function testItReportsOverduePauseReasonForTimeZoneCampaign(): void {
+    $responseBuilder = $this->diContainer->get(NewslettersResponseBuilder::class);
+    $newsletter = (new Newsletter())->withSubject('Zones')->create();
+    for ($i = 0; $i < 2; $i++) {
+      $this->entityManager->persist($task = new ScheduledTaskEntity());
+      $task->setType(\MailPoet\Cron\Workers\SendingQueue\SendingQueue::TASK_TYPE);
+      // Only the last batch, the one the listing loads as a partial entity, is held
+      $task->setStatus($i === 1 ? ScheduledTaskEntity::STATUS_PAUSED : ScheduledTaskEntity::STATUS_COMPLETED);
+      $task->setScheduledAt(new \DateTimeImmutable('2018-10-1' . $i . ' 10:00:00'));
+      if ($i === 1) {
+        $task->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+      }
+      $this->entityManager->persist($queue = new SendingQueueEntity());
+      $queue->setNewsletter($newsletter);
+      $queue->setTask($task);
+      $queue->setCountTotal(1);
+      $queue->setCountToProcess(1);
+      $queue->setMeta([
+        TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+        TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => 'held-zones',
+        TimeZoneCampaignScheduler::META_GROUP_TIMEZONE => 'Europe/Bratislava',
+        TimeZoneCampaignScheduler::META_FALLBACK_USED => false,
+      ]);
+    }
+    $this->entityManager->flush();
+    $newsletterId = $newsletter->getId();
+    $this->entityManager->clear();
+
+    $response = $responseBuilder->buildForListing([$this->entityManager->getReference(NewsletterEntity::class, $newsletterId)]);
+
+    $this->assertSame(ScheduledTaskEntity::PAUSE_REASON_OVERDUE, $response[0]['queue']['pause_reason']);
+  }
+
   public function testItAddsSharingDataToListingItems() {
     $responseBuilder = $this->diContainer->get(NewslettersResponseBuilder::class);
     $newsletterUrl = $this->diContainer->get(Url::class);

@@ -5,23 +5,28 @@ set_error_handler(function ($severity, $message, $file, $line) {
   throw new ErrorException($message, 0, $severity, $file, $line);
 });
 
+require_once __DIR__ . '/replace-in-file.php';
+
 // Fix PHPStan variables import. The PHP-Scoper can't handle it
 //* @phpstan-import-type Level from \MailPoetVendor\Monolog\Logger
 //* @phpstan-import-type LevelName from \MailPoetVendor\Monolog\Logger
-$file = __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Handler/AbstractHandler.php';
-$content = file_get_contents($file);
-$content = str_replace(
-  [
-    '@phpstan-import-type Level from \Monolog\Logger',
-    '@phpstan-import-type LevelName from \Monolog\Logger',
-  ],
-  [
-    '@phpstan-import-type Level from \MailPoetVendor\Monolog\Logger',
-    '@phpstan-import-type LevelName from \MailPoetVendor\Monolog\Logger',
-  ],
-  $content
+replaceInFile(
+  __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Handler/AbstractHandler.php',
+  ['@phpstan-import-type Level from \Monolog\Logger'],
+  '@phpstan-import-type Level from \MailPoetVendor\Monolog\Logger'
 );
-file_put_contents($file, $content);
+replaceInFile(
+  __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Handler/AbstractHandler.php',
+  ['@phpstan-import-type LevelName from \Monolog\Logger'],
+  '@phpstan-import-type LevelName from \MailPoetVendor\Monolog\Logger'
+);
+
+// Fix the callable class name in Utils::jsonEncode. The PHP-Scoper can't handle it
+replaceInFile(
+  __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Utils.php',
+  ['array(\'Monolog\\\\Utils\'', 'array(\'Monolog\\Utils\''],
+  ['array(\'MailPoetVendor\\\\Monolog\\\\Utils\'', 'array(\'MailPoetVendor\\Monolog\\Utils\'']
+);
 
 // cleanup unused Handlers
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Handler/AbstractSyslogHandler.php');

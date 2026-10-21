@@ -25,10 +25,21 @@ class ColumnsHelper {
 
   /** @return int[] */
   public static function columnWidth($columnsCount, $columnsLayout) {
-    if ($columnsLayout && isset(self::$columnsWidth[$columnsLayout])) {
+    $columnsCount = (int)$columnsCount;
+    if (
+      $columnsLayout
+      && isset(self::$columnsWidth[$columnsLayout])
+      && count(self::$columnsWidth[$columnsLayout]) === $columnsCount
+    ) {
       return self::$columnsWidth[$columnsLayout];
     }
-    return self::$columnsWidth[$columnsCount];
+    if (isset(self::$columnsWidth[$columnsCount])) {
+      return self::$columnsWidth[$columnsCount];
+    }
+    if ($columnsCount < 1) {
+      return [];
+    }
+    return array_fill(0, $columnsCount, (int)floor(self::$columnsWidth[1][0] / $columnsCount));
   }
 
   public static function columnClass($columnsCount) {

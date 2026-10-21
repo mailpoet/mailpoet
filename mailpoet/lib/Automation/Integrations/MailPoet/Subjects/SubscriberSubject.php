@@ -12,7 +12,6 @@ use MailPoet\NotFoundException;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
-use MailPoet\WPCOM\DotcomHelperFunctions;
 
 /**
  * @implements Subject<SubscriberPayload>
@@ -26,17 +25,12 @@ class SubscriberSubject implements Subject {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
-  /** @var DotcomHelperFunctions */
-  private $dotcomHelperFunctions;
-
   public function __construct(
     SubscriberFieldsFactory $subscriberFieldsFactory,
-    SubscribersRepository $subscribersRepository,
-    DotcomHelperFunctions $dotcomHelperFunctions
+    SubscribersRepository $subscribersRepository
   ) {
     $this->subscriberFieldsFactory = $subscriberFieldsFactory;
     $this->subscribersRepository = $subscribersRepository;
-    $this->dotcomHelperFunctions = $dotcomHelperFunctions;
   }
 
   public function getKey(): string {
@@ -44,10 +38,6 @@ class SubscriberSubject implements Subject {
   }
 
   public function getName(): string {
-    if ($this->dotcomHelperFunctions->isGarden()) {
-      // translators: automation subject (entity entering automation) title
-      return __('Subscriber', 'mailpoet');
-    }
     // translators: automation subject (entity entering automation) title
     return __('MailPoet subscriber', 'mailpoet');
   }

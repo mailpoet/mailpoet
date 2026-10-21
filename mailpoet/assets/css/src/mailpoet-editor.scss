@@ -1,62 +1,51 @@
-// Settings
-// Global variables, config switches. Not producing any CSS.
-
-@import 'settings/breakpoints';
-@import 'settings/grid';
-@import 'settings/colors';
-@import 'settings/editor';
-@import 'settings/range';
-@import 'settings/typography';
-
 // Tools
 // Default mixins and functions. Still not producing any CSS.
 
-@import 'mixins/animations';
-@import 'mixins/breakpoints';
+@use 'mixins/animations' as *;
 
 // Generic
 // 3rd-party styles, can be overwritten.
 
-@import '../../../node_modules/spectrum-colorpicker/spectrum';
+@use '../../../node_modules/spectrum-colorpicker/spectrum' as spectrum;
 
 // Components
 // Actual UI components.
 
-@import 'components-editor/buttons';
-@import 'components-editor/common';
-@import 'components-editor/forms';
-@import 'components-editor/layout';
-@import 'components-editor/components/forms';
-@import 'components-editor/components/heading';
-@import 'components-editor/components/history';
-@import 'components-editor/components/sidebar';
-@import 'components-editor/components/sidepanel';
-@import 'components-editor/components/save';
-@import 'components-editor/components/block-tools';
-@import 'components-editor/components/layers';
-@import 'components-editor/components/drag-and-drop';
-@import 'components-editor/components/resize';
-@import 'components-editor/content-blocks/base';
-@import 'components-editor/content-blocks/container';
-@import 'components-editor/content-blocks/abandoned-cart-content';
-@import 'components-editor/content-blocks/automated-latest-content';
-@import 'components-editor/content-blocks/dynamic-products';
-@import 'components-editor/content-blocks/posts';
-@import 'components-editor/content-blocks/products';
-@import 'components-editor/content-blocks/button';
-@import 'components-editor/content-blocks/divider';
-@import 'components-editor/content-blocks/image';
-@import 'components-editor/content-blocks/social';
-@import 'components-editor/content-blocks/spacer';
-@import 'components-editor/content-blocks/text';
-@import 'components-editor/content-blocks/header';
-@import 'components-editor/content-blocks/footer';
-@import 'components-editor/content-blocks/unknown_block_fallback';
-@import 'components-editor/content-blocks/woocommerce-heading';
-@import 'components-editor/content-blocks/woocommerce-content';
-@import 'components-editor/content-blocks/coupon';
+@use 'components-editor/buttons' as *;
+@use 'components-editor/common' as *;
+@use 'components-editor/forms' as *;
+@use 'components-editor/layout' as *;
+@use 'components-editor/components/forms' as *;
+@use 'components-editor/components/heading' as *;
+@use 'components-editor/components/history' as *;
+@use 'components-editor/components/sidebar' as *;
+@use 'components-editor/components/sidepanel' as *;
+@use 'components-editor/components/save' as *;
+@use 'components-editor/components/block-tools' as *;
+@use 'components-editor/components/layers' as *;
+@use 'components-editor/components/drag-and-drop' as *;
+@use 'components-editor/components/resize' as *;
+@use 'components-editor/content-blocks/base' as *;
+@use 'components-editor/content-blocks/container' as *;
+@use 'components-editor/content-blocks/abandoned-cart-content' as *;
+@use 'components-editor/content-blocks/automated-latest-content' as *;
+@use 'components-editor/content-blocks/dynamic-products' as *;
+@use 'components-editor/content-blocks/posts' as *;
+@use 'components-editor/content-blocks/products' as *;
+@use 'components-editor/content-blocks/button' as *;
+@use 'components-editor/content-blocks/divider' as *;
+@use 'components-editor/content-blocks/image' as *;
+@use 'components-editor/content-blocks/social' as *;
+@use 'components-editor/content-blocks/spacer' as *;
+@use 'components-editor/content-blocks/text' as *;
+@use 'components-editor/content-blocks/header' as *;
+@use 'components-editor/content-blocks/footer' as *;
+@use 'components-editor/content-blocks/unknown_block_fallback' as *;
+@use 'components-editor/content-blocks/woocommerce-heading' as *;
+@use 'components-editor/content-blocks/woocommerce-content' as *;
+@use 'components-editor/content-blocks/coupon' as *;
 
 // Utilities
 // Helpers and overrides.
 
-@import 'components-editor/3rd-party-overrides/overrides';
+@use 'components-editor/3rd-party-overrides/overrides' as *;

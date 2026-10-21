@@ -97,10 +97,15 @@ class SwitchingLanguagesCest {
 
     $i->wantTo('Check Emails filter strings');
     $i->waitForText('Alle');
-    $i->waitForText('Entwurf');
-    $i->waitForText('Geplant');
-    $i->waitForText('Senden');
-    $i->waitForText('Gesendet');
+    // Status labels are built server side with counts, e.g. "Entwurf (0)".
+    $i->click('button.dataviews-filters__visibility-toggle[aria-haspopup="menu"]');
+    $i->click(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Status"]']);
+    $i->waitForElement('.dataviews-filters__search-widget-listitem');
+    $i->waitForText('Entwurf (');
+    $i->waitForText('Geplant (');
+    $i->waitForText('Senden (');
+    $i->waitForText('Gesendet (');
+    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
 
     $i->wantTo('Check Emails listing strings (translated with MailPoet.i18n)');
     $i->waitForText('GEKLICKT, GEÖFFNET');
@@ -127,15 +132,11 @@ class SwitchingLanguagesCest {
     // once that string is translated upstream.
     $i->waitForText(strtoupper('Änderungsdatum'));
 
-    $i->wantTo('Check Subscribers filter strings and button');
+    $i->wantTo('Check Subscribers tab and button strings');
+    // Statuses are no longer tabs; only the All tab (and Trash, when there are trashed subscribers) remains.
     $i->amOnMailpoetPage('subscribers');
     $i->waitForText('Neuen Abonnenten hinzufügen');
     $i->waitForText('Alle');
-    $i->waitForText('Eingetragen');
-    $i->waitForText('Unbestätigt');
-    $i->waitForText('Deabonniert');
-    $i->waitForText('Inaktiv');
-    $i->waitForText('Bounced');
 
     $i->wantTo('Check Subscribers listing strings');
     $i->waitForText('Neu berechnen');
@@ -143,6 +144,14 @@ class SwitchingLanguagesCest {
     $i->waitForText('Unbestätigt');
     $i->waitForText('Schlagwörter');
     $i->waitForText('Unbekannt');
+
+    $i->wantTo('Check Subscribers Status filter options');
+    // Option labels carry the count, e.g. "Unbestätigt (3)".
+    $i->click('button.dataviews-filters__visibility-toggle[aria-haspopup="menu"]');
+    $i->click(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Status"]']);
+    $i->waitForElement('.dataviews-filters__search-widget-listitem');
+    $i->waitForElement(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][contains(normalize-space(.), "Unbestätigt")]'], 3);
+    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
 
     $i->wantTo('Check some Lists strings');
     $i->amOnMailpoetPage('lists');

@@ -1,4 +1,6 @@
-@import '../../components-automation/colors';
+@use '../../settings/colors' as *;
+
+@use '../../components-automation/colors' as *;
 
 .mailpoet-analytics-tabs {
   background: $color-white;

@@ -919,8 +919,40 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.linkTarget).to.be.equal('_blank');
     expect(block.attributes.id).to.equal(123);
     expect(block.attributes.sizeSlug).to.equal('medium');
-    expect(block.attributes.width).to.equal(100);
-    expect(block.attributes.height).to.equal(200);
+    expect(block.attributes.width).to.equal('100px');
+    expect(block.attributes.height).to.equal('200px');
+  });
+
+  it('It should map unitless image size from a form template to pixels', () => {
+    const [block] = formBodyToBlocks([
+      { ...image, params: { ...image.params, width: '95', height: '90' } },
+    ]);
+    expect(block.attributes.width).to.equal('95px');
+    expect(block.attributes.height).to.equal('90px');
+  });
+
+  it('It should keep image size that already has a unit', () => {
+    const [block] = formBodyToBlocks([
+      { ...image, params: { ...image.params, width: '120px', height: 'auto' } },
+    ]);
+    expect(block.attributes.width).to.equal('120px');
+    expect(block.attributes.height).to.equal('auto');
+  });
+
+  it('It should keep image size that is not a plain positive number', () => {
+    const [block] = formBodyToBlocks([
+      { ...image, params: { ...image.params, width: '0', height: '1e2' } },
+    ]);
+    expect(block.attributes.width).to.equal('0');
+    expect(block.attributes.height).to.equal('1e2');
+  });
+
+  it('It should keep missing image size empty', () => {
+    const [block] = formBodyToBlocks([
+      { ...image, params: { ...image.params, width: null, height: '' } },
+    ]);
+    expect(block.attributes.width).to.equal(null);
+    expect(block.attributes.height).to.equal('');
   });
 
   it('Should map custom field in column', () => {

@@ -4,8 +4,10 @@ import { MailPoet } from 'mailpoet';
 import jQuery from 'jquery';
 import Cookies from 'js-cookie';
 import Parsley from 'parsleyjs';
+import { escapeHTML } from '@wordpress/escape-html';
 import { Hooks } from 'wp-js-hooks';
 import { Response } from './ajax';
+import { applyCaptchaChallenge } from './form/captcha-session';
 
 const exitIntentEvent = 'mouseleave.mailpoet.form-exit-intent';
 const startingClassName = 'starting-to-show';
@@ -35,6 +37,9 @@ const behavioralCounters = new WeakMap<
 const behavioralStartTimes = new WeakMap<HTMLFormElement, number>();
 const behavioralAccumulatedMs = new WeakMap<HTMLFormElement, number>();
 const behavioralFocusedFields = new WeakMap<HTMLFormElement, Set<string>>();
+
+const formatErrorMessages = (errors: ErrorResponse['errors']): string =>
+  errors.map((error) => escapeHTML(error.message)).join('<br />');
 
 jQuery(($) => {
   // Initialize Ajax Error message
@@ -295,8 +300,11 @@ jQuery(($) => {
   ) {
     // Check if captcha already exists in form
     if (form.find('.mailpoet_captcha_container').length > 0) {
-      // Just update the existing captcha
-      void updateCaptchaInForm(form);
+      if (meta.captcha_session_id) {
+        applyCaptchaChallenge(form[0], meta);
+      } else {
+        void updateCaptchaInForm(form);
+      }
       return;
     }
 
@@ -362,10 +370,12 @@ jQuery(($) => {
     audioButton.appendTo(container);
 
     // Audio player
-    const audioPlayer = $('<audio>').addClass('mailpoet_captcha_player');
+    const audioPlayer = $('<audio>')
+      .addClass('mailpoet_captcha_player')
+      .attr('preload', 'none');
     $('<source>')
       .attr('src', meta.captcha_audio_url)
-      .attr('type', 'audio/mpeg')
+      .attr('type', 'audio/wav')
       .appendTo(audioPlayer);
     audioPlayer.appendTo(container);
 
@@ -572,7 +582,7 @@ jQuery(($) => {
           showInlineCaptcha(form, response.meta as InlineCaptchaMeta);
           form
             .find('.mailpoet_validate_error')
-            .html(response.errors.map((error) => error.message).join('<br />'))
+            .html(formatErrorMessages(response.errors))
             .show();
         } else if (response.meta && response.meta.refresh_captcha) {
           // Wrong captcha answer - refresh and show error inline
@@ -585,7 +595,7 @@ jQuery(($) => {
           resetCaptchaWidgets(formData);
           form
             .find('.mailpoet_validate_error')
-            .html(response.errors.map((error) => error.message).join('<br />'))
+            .html(formatErrorMessages(response.errors))
             .show();
         } else if (
           response.meta !== undefined &&
@@ -597,7 +607,7 @@ jQuery(($) => {
           resetCaptchaWidgets(formData);
           form
             .find('.mailpoet_validate_error')
-            .html(response.errors.map((error) => error.message).join('<br />'))
+            .html(formatErrorMessages(response.errors))
             .show();
         }
       })
@@ -650,7 +660,7 @@ jQuery(($) => {
       return;
     }
     const recaptcha = $(element);
-    const form = $(recaptcha).closest('form') as JQuery<HTMLFormElement>;
+    const form = $(recaptcha).closest('form');
     const sitekey = recaptcha.attr('data-sitekey');
     let size = recaptcha.attr('data-size') as ReCaptchaV2.Size;
 

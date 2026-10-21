@@ -9,6 +9,7 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Url as NewsletterURL;
@@ -26,6 +27,7 @@ class Help {
   private ScheduledTasksRepository $scheduledTasksRepository;
   private SendingQueuesRepository $sendingQueuesRepository;
   private NewsletterURL $newsletterUrl;
+  private SendingEnvironment $sendingEnvironment;
 
   public function __construct(
     PageRenderer $pageRenderer,
@@ -34,7 +36,8 @@ class Help {
     Bridge $bridge,
     ScheduledTasksRepository $scheduledTasksRepository,
     SendingQueuesRepository $sendingQueuesRepository,
-    NewsletterURL $newsletterUrl
+    NewsletterURL $newsletterUrl,
+    SendingEnvironment $sendingEnvironment
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->cronHelper = $cronHelper;
@@ -43,6 +46,7 @@ class Help {
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->newsletterUrl = $newsletterUrl;
+    $this->sendingEnvironment = $sendingEnvironment;
   }
 
   public function render() {
@@ -61,8 +65,6 @@ class Help {
       $cronPingUrl = $cronPingResponse;
     }
 
-    $mailerLog = MailerLog::getMailerLog();
-    $mailerLog['sent'] = MailerLog::sentSince();
     $bridgePingResponse = $this->systemReportCollector->getBridgePingResponse();
     $systemStatusData = [
       'cron' => [
@@ -75,17 +77,11 @@ class Help {
         'isReachable' => $this->bridge->validateBridgePingResponse($bridgePingResponse),
       ],
       'cronStatus' => $this->cronHelper->getDaemon(),
-      'queueStatus' => $mailerLog,
+      'queueStatus' => $this->getQueueStatus(),
       'activePlugins' => $this->systemReportCollector->getActivePluginsData(),
     ];
 
     $systemStatusData['cronStatus']['accessible'] = $this->cronHelper->isDaemonAccessible();
-    $systemStatusData['queueStatus']['sendingLimitReached'] = MailerLog::isSendingLimitReached();
-    $systemStatusData['queueStatus']['tasksStatusCounts'] = $this->scheduledTasksRepository->getCountsPerStatus();
-
-    $scheduledTasks = $this->scheduledTasksRepository->getLatestTasks(SendingQueue::TASK_TYPE);
-    $systemStatusData['queueStatus']['latestTasks'] = array_map(fn($task) => $this->buildTaskData($task), $scheduledTasks);
-
     $this->pageRenderer->displayPage(
       'help.html',
       [
@@ -94,6 +90,21 @@ class Help {
         'actionSchedulerData' => $this->getActionSchedulerData(),
       ]
     );
+  }
+
+  public function getQueueStatus(): array {
+    $queueStatus = MailerLog::getMailerLog();
+    $queueStatus['sent'] = MailerLog::sentSince();
+    $queueStatus['sendingLimitReached'] = MailerLog::isSendingLimitReached();
+    $queueStatus['tasksStatusCounts'] = $this->scheduledTasksRepository->getCountsPerStatus();
+    $scheduledTasks = $this->scheduledTasksRepository->getLatestTasks(SendingQueue::TASK_TYPE);
+    $queueStatus['latestTasks'] = array_map(fn($task) => $this->buildTaskData($task), $scheduledTasks);
+    $queueStatus['sendingPausedReason'] = $this->sendingEnvironment->isSendingAllowed() ? null : sprintf(
+      // translators: %s is the site environment type, for example "staging" or "local".
+      __('Sending is paused because this is a %s site.', 'mailpoet'),
+      $this->sendingEnvironment->getEnvironmentType()
+    );
+    return $queueStatus;
   }
 
   private function getActionSchedulerData(): ?array {

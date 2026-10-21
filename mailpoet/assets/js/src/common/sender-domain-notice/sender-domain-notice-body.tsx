@@ -1,9 +1,6 @@
 import { createInterpolateElement } from '@wordpress/element';
 import { escapeHTML } from '@wordpress/escape-html';
 import { __ } from '@wordpress/i18n';
-import { getIsGarden } from 'common/functions';
-
-const isGarden = getIsGarden();
 
 function SenderDomainNoticeBody({
   emailAddressDomain,
@@ -20,24 +17,14 @@ function SenderDomainNoticeBody({
 }) {
   const renderMessage = (messageKey: string) => {
     const messages: { [key: string]: string } = {
-      freeSmall: isGarden
-        ? __(
-            "Shared 3rd-party domains like <emailDomain/> will send from a shared domain. We recommend that you use your site's branded domain instead.",
-            'mailpoet',
-          )
-        : __(
-            "Shared 3rd-party domains like <emailDomain/> will send from MailPoet's shared domain. We recommend that you use your site's branded domain instead.",
-            'mailpoet',
-          ),
-      free: isGarden
-        ? __(
-            "Email campaigns cannot be sent from shared 3rd-party domains like <emailDomain/>. Please send from your site's branded domain instead.",
-            'mailpoet',
-          )
-        : __(
-            "MailPoet cannot send email campaigns from shared 3rd-party domains like <emailDomain/>. Please send from your site's branded domain instead.",
-            'mailpoet',
-          ),
+      freeSmall: __(
+        "Shared 3rd-party domains like <emailDomain/> will send from MailPoet's shared domain. We recommend that you use your site's branded domain instead.",
+        'mailpoet',
+      ),
+      free: __(
+        "MailPoet cannot send email campaigns from shared 3rd-party domains like <emailDomain/>. Please send from your site's branded domain instead.",
+        'mailpoet',
+      ),
       partiallyVerified: __(
         'Update your domain settings to improve email deliverability and meet new sending requirements.',
         'mailpoet',

@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# Hides only deprecations raised before WordPress loads (the WP-CLI phar bundles react/promise v2).
+# Remove once the image ships a WP-CLI release with PHP 8.5 fixes.
+WP_CLI_BIN="$(type -P wp)"
 wp() {
-  command wp --allow-root "$@"
+  command php -d error_reporting="E_ALL & ~E_DEPRECATED" "$WP_CLI_BIN" --allow-root "$@"
 }
 
 # wait for WordPress container to be ready (otherwise tests may
@@ -33,8 +36,8 @@ wp config delete BLOG_ID_CURRENT_SITE > /dev/null 2>&1
 wp config set WP_AUTO_UPDATE_CORE false --raw
 
 # cleanup database
-mysqladmin --host=mysql --user=root --password=wordpress drop wordpress --force
-mysqladmin --host=mysql --user=root --password=wordpress create wordpress --force
+mysqladmin --skip-ssl --host=mysql --user=root --password=wordpress drop wordpress --force
+mysqladmin --skip-ssl --host=mysql --user=root --password=wordpress create wordpress --force
 
 
 if [[ $WORDPRESS_VERSION != "" ]]; then
@@ -283,9 +286,9 @@ chmod -R 777 wp-content/upgrade
 
 echo "MySQL Configuration";
 # print sql_mode
-mysql -u wordpress -pwordpress wordpress -h mysql -e "SELECT @@global.sql_mode"
+mysql --skip-ssl -u wordpress -pwordpress wordpress -h mysql -e "SELECT @@global.sql_mode"
 # print tables info
-mysql -u wordpress -pwordpress wordpress -h mysql -e "SELECT TABLE_NAME, ENGINE, TABLE_COLLATION FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'wordpress'"
+mysql --skip-ssl -u wordpress -pwordpress wordpress -h mysql -e "SELECT TABLE_NAME, ENGINE, TABLE_COLLATION FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'wordpress'"
 
 if [[ $PACKAGE_NAME == "email-editor" ]]; then
   cd /wp-core/wp-content/plugins/packages/php/email-editor

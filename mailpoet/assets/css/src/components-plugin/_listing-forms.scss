@@ -1,3 +1,5 @@
+@use '../settings/grid' as *;
+
 // Forms admin listing — DataViews layout overrides + empty state.
 .mailpoet-forms-dataviews__tabs {
   margin-top: $grid-gap-half;

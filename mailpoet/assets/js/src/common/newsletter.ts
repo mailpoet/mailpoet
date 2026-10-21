@@ -65,6 +65,8 @@ export type NewsLetter = {
   preheader: string;
   queue: Record<string, unknown> & {
     scheduled_at: string;
+    status?: string | null;
+    pause_reason?: string | null;
     count_processed: string;
     count_total: string;
     meta: Record<string, unknown> & {

@@ -7,6 +7,7 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Captcha\CaptchaRenderer;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\AuthorizedSenderDomainController;
@@ -48,6 +49,9 @@ class Settings {
   /** @var AssetsController */
   private $assetsController;
 
+  /** @var SendingEnvironment */
+  private $sendingEnvironment;
+
   public function __construct(
     AssetsController $assetsController,
     PageRenderer $pageRenderer,
@@ -58,8 +62,10 @@ class Settings {
     SegmentsSimpleListRepository $segmentsListRepository,
     Bridge $bridge,
     AuthorizedSenderDomainController $senderDomainController,
-    AuthorizedEmailsController $authorizedEmailsController
+    AuthorizedEmailsController $authorizedEmailsController,
+    SendingEnvironment $sendingEnvironment
   ) {
+    $this->sendingEnvironment = $sendingEnvironment;
     $this->assetsController = $assetsController;
     $this->pageRenderer = $pageRenderer;
     $this->settings = $settings;
@@ -74,6 +80,9 @@ class Settings {
 
   public function render() {
     $settings = $this->settings->getAll();
+    if (!$this->sendingEnvironment->isOverrideStoredForThisSite()) {
+      $settings[SendingEnvironment::SETTING_ALLOW_SENDING] = '';
+    }
 
     $premiumKeyValid = $this->servicesChecker->isPremiumKeyValid(false);
     // force MSS key check even if the method isn't active
@@ -97,6 +106,7 @@ class Settings {
       ],
       'current_site_title' => $this->wp->getBloginfo('name'),
       'built_in_captcha_supported' => $this->captchaRenderer->isSupported(),
+      'environment_type' => $this->sendingEnvironment->getEnvironmentType(),
     ];
 
     $data['authorized_emails'] = [];

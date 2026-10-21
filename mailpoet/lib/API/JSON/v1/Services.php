@@ -114,7 +114,12 @@ class Services extends APIEndpoint {
 
     try {
       $result = $this->bridge->checkMSSKey($key);
+      $previousKey = $this->settings->get(Bridge::API_KEY_SETTING_NAME);
       $this->bridge->storeMSSKeyAndState($key, $result);
+      if ($this->settings->get(Bridge::API_KEY_SETTING_NAME) !== $previousKey) {
+        $this->senderDomainController->clearCache();
+        $this->authorizedEmailsController->clearCache();
+      }
     } catch (\Exception $e) {
       return $this->errorResponse(
         [
@@ -311,7 +316,7 @@ class Services extends APIEndpoint {
     $emailDomain = Helpers::extractEmailDomain($fromEmail);
 
     if (!$this->isItemInArray($emailDomain, $verifiedDomains)) {
-      $authorizedEmails = $this->authorizedEmailsController->getAuthorizedEmailAddresses();
+      $authorizedEmails = $this->authorizedEmailsController->getAuthorizedEmailAddressesIgnoringCache();
 
       if (!$authorizedEmails) {
         return $this->createBadRequest(__('No FROM email addresses are authorized.', 'mailpoet'));

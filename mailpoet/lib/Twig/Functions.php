@@ -198,16 +198,6 @@ class Functions extends AbstractExtension {
         ['is_safe' => ['all']]
       ),
       new TwigFunction(
-        'clicked_stats_text_garden',
-        [$this, 'clickedStatsTextGarden'],
-        ['is_safe' => ['all']]
-      ),
-      new TwigFunction(
-        'clicked_stats_badge_color',
-        [$this, 'clickedStatsBadgeColor'],
-        ['is_safe' => ['all']]
-      ),
-      new TwigFunction(
         'add_referral_id',
         [$this, 'addReferralId'],
         ['is_safe' => ['all']]
@@ -225,11 +215,6 @@ class Functions extends AbstractExtension {
       new TwigFunction(
         'is_dotcom',
         [$this, 'isDotcom'],
-        ['is_safe' => ['all']]
-      ),
-      new TwigFunction(
-        'is_garden',
-        [$this, 'isGarden'],
         ['is_safe' => ['all']]
       ),
       new TwigFunction(
@@ -370,30 +355,6 @@ class Functions extends AbstractExtension {
     }
   }
 
-  public function clickedStatsTextGarden($clicked) {
-    if ($clicked > 3) {
-      return __('Excellent', 'mailpoet');
-    } elseif ($clicked > 1) {
-      return __('Good', 'mailpoet');
-    } elseif ($clicked > 0) {
-      return __('Average', 'mailpoet');
-    } else {
-      return __('Poor', 'mailpoet');
-    }
-  }
-
-  public function clickedStatsBadgeColor($clicked) {
-    if ($clicked > 3) {
-      return '#C6E1C6'; // Stable (green) — Excellent
-    } elseif ($clicked > 1) {
-      return '#B5D4EF'; // Informational (blue) — Good
-    } elseif ($clicked > 0) {
-      return '#DCDCDE'; // Draft (gray) — Average
-    } else {
-      return '#F5E6AB'; // Medium (yellow) — Poor
-    }
-  }
-
   /**
    * Wrapper around number_format_i18n() to return two decimals digits if the number
    * is smaller than 0.1 and one decimal digit if the number is equal or greater
@@ -430,10 +391,6 @@ class Functions extends AbstractExtension {
 
   public function isDotcom(): bool {
     return $this->getDotcomHelperFunctions()->isDotcom();
-  }
-
-  public function isGarden(): bool {
-    return $this->getDotcomHelperFunctions()->isGarden();
   }
 
   public function pendingApprovalMessage(): string {

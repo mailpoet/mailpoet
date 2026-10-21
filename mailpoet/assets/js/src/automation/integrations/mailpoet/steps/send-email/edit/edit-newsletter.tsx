@@ -80,12 +80,6 @@ const getEmailIdErrorMessage = (emailIdError: unknown): string =>
         'mailpoet',
       );
 
-const BLOCK_EMAIL_EDITOR_NAVIGATION_MESSAGE =
-  'mailpoet-navigate-to-email-editor';
-const BLOCK_EMAIL_EDITOR_NAVIGATION_ACK_MESSAGE =
-  'mailpoet-navigate-to-email-editor-ack';
-const BLOCK_EMAIL_EDITOR_FRAME_NAVIGATION_FALLBACK_DELAY = 1500;
-
 function EmailIdValidationMessage({
   message,
 }: {
@@ -99,59 +93,7 @@ function EmailIdValidationMessage({
 }
 
 const navigateToBlockEmailEditor = (postId: number): void => {
-  const editorUrl = MailPoet.getBlockEmailEditorUrl(postId);
-  if (!window.parent || window.parent === window) {
-    window.location.href = editorUrl;
-    return;
-  }
-
-  let fallbackTimeout: number | undefined;
-  let handleNavigationAcknowledgement: (event: MessageEvent) => void = () => {};
-  const clearFallback = () => {
-    if (fallbackTimeout !== undefined) {
-      window.clearTimeout(fallbackTimeout);
-    }
-    window.removeEventListener('message', handleNavigationAcknowledgement);
-  };
-  handleNavigationAcknowledgement = (event: MessageEvent) => {
-    const message = event.data as {
-      type?: string;
-      postId?: number | string;
-      success?: boolean;
-    };
-
-    if (
-      event.origin !== window.location.origin ||
-      message.type !== BLOCK_EMAIL_EDITOR_NAVIGATION_ACK_MESSAGE ||
-      Number(message.postId) !== postId
-    ) {
-      return;
-    }
-
-    clearFallback();
-    if (message.success === false) {
-      window.location.href = editorUrl;
-    }
-  };
-
-  window.addEventListener('message', handleNavigationAcknowledgement);
-  fallbackTimeout = window.setTimeout(() => {
-    clearFallback();
-    window.location.href = editorUrl;
-  }, BLOCK_EMAIL_EDITOR_FRAME_NAVIGATION_FALLBACK_DELAY);
-
-  try {
-    window.parent.postMessage(
-      {
-        type: BLOCK_EMAIL_EDITOR_NAVIGATION_MESSAGE,
-        postId,
-      },
-      window.location.origin,
-    );
-  } catch {
-    clearFallback();
-    window.location.href = editorUrl;
-  }
+  window.location.href = MailPoet.getBlockEmailEditorUrl(postId);
 };
 
 export function EditNewsletter(): JSX.Element {
@@ -168,6 +110,7 @@ export function EditNewsletter(): JSX.Element {
     block_email_editor_enabled: blockEmailEditorEnabled = false,
     editor_choice_modal_enabled: showEditorChoiceModal = false,
     last_email_editor_choice: lastEditorChoice = null,
+    has_remembered_email_editor_choice: hasRememberedEditorChoice = false,
   } = useSelectContext();
 
   const { selectedStep, automationId, errors } = useSelect(
@@ -182,6 +125,14 @@ export function EditNewsletter(): JSX.Element {
   );
 
   const emailId = selectedStep?.args?.email_id as number | undefined;
+  const templatePattern =
+    typeof selectedStep?.args?.pattern === 'string' &&
+    selectedStep.args.pattern !== ''
+      ? selectedStep.args.pattern
+      : undefined;
+  // The starter design is used only for the first email. If that email is deleted, the next one starts blank.
+  const starterDesignUsed = selectedStep?.args?.template_email_created === true;
+  const starterPattern = starterDesignUsed ? undefined : templatePattern;
   const automationStepId = selectedStep.id;
   const errorFields = errors?.fields ?? {};
   const emailIdError = errorFields?.email_id ?? '';
@@ -236,9 +187,12 @@ export function EditNewsletter(): JSX.Element {
         return;
       }
 
-      window.location.href = `admin.php?page=mailpoet-newsletters&context=automation#/template/${createdEmail.emailId}`;
+      // Starter emails already have classic content, so skip the template picker.
+      window.location.href = starterPattern
+        ? MailPoet.getNewsletterEditorUrl(createdEmail.emailId, 'automation')
+        : `admin.php?page=mailpoet-newsletters&context=automation#/template/${createdEmail.emailId}`;
     },
-    [],
+    [starterPattern],
   );
 
   const createEmail = useCallback(
@@ -258,6 +212,8 @@ export function EditNewsletter(): JSX.Element {
 
       const previousEmailId = selectedStep?.args?.email_id;
       const previousEmailWpPostId = selectedStep?.args?.email_wp_post_id;
+      const previousStarterDesignUsed =
+        selectedStep?.args?.template_email_created;
       const rollbackStepArgs = () => {
         void dispatch(storeName).updateStepArgs(
           automationStepId,
@@ -268,6 +224,11 @@ export function EditNewsletter(): JSX.Element {
           automationStepId,
           'email_wp_post_id',
           previousEmailWpPostId,
+        );
+        void dispatch(storeName).updateStepArgs(
+          automationStepId,
+          'template_email_created',
+          previousStarterDesignUsed,
         );
       };
       let createdEmail: CreatedAutomationEmail | undefined;
@@ -288,6 +249,9 @@ export function EditNewsletter(): JSX.Element {
             subject: '',
             options,
             new_editor: editorChoice === 'new',
+            ...(starterPattern && {
+              automation_template_pattern: starterPattern,
+            }),
           },
         });
 
@@ -322,6 +286,13 @@ export function EditNewsletter(): JSX.Element {
           'email_wp_post_id',
           editorChoice === 'new' ? createdEmail.emailWpPostId : undefined,
         );
+        if (starterPattern) {
+          void dispatch(storeName).updateStepArgs(
+            automationStepId,
+            'template_email_created',
+            true,
+          );
+        }
         stagedStepArgs = true;
 
         const saveResult = (await dispatch(
@@ -396,9 +367,17 @@ export function EditNewsletter(): JSX.Element {
       redirectToEmailEditor,
       selectedStep?.args?.email_id,
       selectedStep?.args?.email_wp_post_id,
+      selectedStep?.args?.template_email_created,
       showEditorChoiceError,
+      starterPattern,
     ],
   );
+
+  // Template emails ask for an editor on every site unless the user remembered a choice.
+  const hasRememberedEditor = hasRememberedEditorChoice && !!lastEditorChoice;
+  const showChooserFirst =
+    showEditorChoiceModal ||
+    (!!starterPattern && isBlockEmailEditorEnabled && !hasRememberedEditor);
 
   const rememberedEditor: EditorChoice =
     !showEditorChoiceModal &&
@@ -504,7 +483,6 @@ export function EditNewsletter(): JSX.Element {
     let newUrl = MailPoet.getNewsletterEditorUrl(currentEmailId, 'automation');
 
     const currentEmailWpPostId = Number(selectedStep?.args?.email_wp_post_id);
-    let postIdForNextAdmin = currentEmailWpPostId;
 
     if (currentEmailWpPostId && !Number.isNaN(currentEmailWpPostId)) {
       newUrl = MailPoet.getBlockEmailEditorUrl(currentEmailWpPostId);
@@ -523,10 +501,8 @@ export function EditNewsletter(): JSX.Element {
 
       if (newEmailWpPostId) {
         newUrl = MailPoet.getBlockEmailEditorUrl(newEmailWpPostId);
-        postIdForNextAdmin = newEmailWpPostId;
       } else if (newEmailId) {
         newUrl = MailPoet.getNewsletterEditorUrl(newEmailId, 'automation');
-        postIdForNextAdmin = undefined;
       } else {
         // If duplication failed, don't redirect and let user see the error
         setIsHandlingDuplicatedStep(false);
@@ -534,11 +510,6 @@ export function EditNewsletter(): JSX.Element {
       }
 
       setIsHandlingDuplicatedStep(false);
-    }
-
-    if (postIdForNextAdmin && !Number.isNaN(postIdForNextAdmin)) {
-      navigateToBlockEmailEditor(postIdForNextAdmin);
-      return;
     }
 
     window.location.href = newUrl;
@@ -556,7 +527,7 @@ export function EditNewsletter(): JSX.Element {
           'mailpoet-automation-field__error': hasEmailIdError,
         })}
       >
-        {showEditorChoiceModal ? (
+        {showChooserFirst ? (
           <Button
             variant="sidebar-primary"
             centered
@@ -614,7 +585,9 @@ export function EditNewsletter(): JSX.Element {
           <EditorChoiceModal
             context="automation"
             lastChoice={lastEditorChoice}
-            isRemembered={!showEditorChoiceModal}
+            isRemembered={
+              starterPattern ? hasRememberedEditor : !showEditorChoiceModal
+            }
             onClose={() => setIsEditorChoiceModalOpen(false)}
             onContinue={createEmailFromModal}
           />

@@ -166,6 +166,8 @@ class DynamicSegments extends APIEndpoint {
         return __('Please add at least one condition for filtering.', 'mailpoet');
       case InvalidFilterException::MISSING_OPERATOR:
         return __('Please select a type for the comparison.', 'mailpoet');
+      case InvalidFilterException::MULTIPLE_FILTERS_REQUIRE_PREMIUM:
+        return __('Segments with more than one condition need an active MailPoet Premium plugin that matches your MailPoet version. Please update MailPoet Premium and try again.', 'mailpoet');
       default:
         return __('An error occurred while saving data.', 'mailpoet');
     }

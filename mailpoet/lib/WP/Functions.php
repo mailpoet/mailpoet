@@ -164,6 +164,14 @@ class Functions {
     return current_user_can($capability);
   }
 
+  public function wpDoingCron(): bool {
+    return wp_doing_cron();
+  }
+
+  public function wpDoingAjax() {
+    return wp_doing_ajax();
+  }
+
   public function userCan($user, $capability) {
     return user_can($user, $capability);
   }
@@ -181,8 +189,8 @@ class Functions {
     return delete_comment_meta($commentId, $metaKey, $metaValue);
   }
 
-  public function addOption($option, $value) {
-    return add_option($option, $value);
+  public function addOption($option, $value, $autoload = null) {
+    return add_option($option, $value, '', $autoload);
   }
 
   public function deleteOption($option) {
@@ -409,6 +417,25 @@ class Functions {
     return get_userdata($userId);
   }
 
+  /**
+   * @return mixed
+   */
+  public function getUserOption(string $option, int $userId = 0) {
+    return get_user_option($option, $userId);
+  }
+
+  /**
+   * @param mixed $newValue
+   * @return int|bool
+   */
+  public function updateUserOption(int $userId, string $optionName, $newValue, bool $isGlobal = false) {
+    return update_user_option($userId, $optionName, $newValue, $isGlobal);
+  }
+
+  public function deleteUserOption(int $userId, string $optionName, bool $isGlobal = false): bool {
+    return delete_user_option($userId, $optionName, $isGlobal);
+  }
+
   public function getUserBy($field, $value) {
     return get_user_by($field, $value);
   }
@@ -439,6 +466,10 @@ class Functions {
 
   public function parseBlocks(string $content): array {
     return parse_blocks($content);
+  }
+
+  public function isSsl(): bool {
+    return is_ssl();
   }
 
   public function isMultisite() {
@@ -698,8 +729,17 @@ class Functions {
     return sanitize_email($email);
   }
 
+  /**
+   * @param string $url
+   * @param int $component
+   * @return ($component is -1 ? array{scheme?: string, host?: string, port?: int<0, 65535>, user?: string, pass?: string, path?: string, query?: string, fragment?: string}|false : string|int|null|false)
+   */
   public function wpParseUrl($url, $component = -1) {
     return wp_parse_url($url, $component);
+  }
+
+  public function wpRegistrationUrl() {
+    return wp_registration_url();
   }
 
   public function wpSpecialcharsDecode($string, $quoteStyle = ENT_NOQUOTES) {
@@ -736,6 +776,10 @@ class Functions {
 
   public function wpSafeRedirect($location, $status = 302) {
     return wp_safe_redirect($location, $status);
+  }
+
+  public function wpSalt($scheme = 'auth') {
+    return wp_salt($scheme);
   }
 
   public function wpValidateRedirect($location, $fallbackUrl = '') {
@@ -1094,6 +1138,10 @@ class Functions {
     return update_post_meta($postId, $metaKey, $metaValue, $prevValue);
   }
 
+  public function deletePostMeta(int $postId, string $metaKey, $metaValue = ''): bool {
+    return delete_post_meta($postId, $metaKey, $metaValue);
+  }
+
   public function getFileData(string $file, array $default_headers, string $context = 'plugin'): array {
     return get_file_data($file, $default_headers, $context);
   }
@@ -1141,6 +1189,10 @@ class Functions {
 
   public function wpIsMaintenanceMode(): bool {
     return wp_is_maintenance_mode();
+  }
+
+  public function wpGetEnvironmentType(): string {
+    return wp_get_environment_type();
   }
 
   public function headersSent(): bool {

@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -135,6 +135,8 @@ function Statistics({
     />
   );
 
+  const hoursLeft = showStatsTimeout - Math.max(sentHoursAgo, 0);
+
   const content = (
     <>
       {openedClickedAndRevenueStats}
@@ -146,10 +148,16 @@ function Statistics({
             variant="excellent"
             isInverted
           >
-            {__(
-              'Nice job! Check back in %1$d hour(s) for more stats.',
-              'mailpoet',
-            ).replace('%1$d', showStatsTimeout - sentHoursAgo)}
+            {sprintf(
+              /* translators: %d is the number of hours until more stats are available. */
+              _n(
+                'Nice job! Check back in %d hour for more stats.',
+                'Nice job! Check back in %d hours for more stats.',
+                hoursLeft,
+                'mailpoet',
+              ),
+              hoursLeft,
+            )}
           </Tag>,
           'check-back',
         )}

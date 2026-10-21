@@ -121,6 +121,18 @@ describe('DataViews preferences', () => {
     ).to.deep.equal(defaultView);
   });
 
+  it('keeps a title field that cannot be hidden visible despite a saved hidden title', () => {
+    setPreferences({ showTitle: false });
+    const lockedTitleFields = fields.map((field) =>
+      field.id === 'name' ? { ...field, enableHiding: false } : field,
+    );
+
+    expect(
+      getDataViewsPreference('subscribers', defaultView, lockedTitleFields)
+        .showTitle,
+    ).to.equal(true);
+  });
+
   it('allows hiding every non-title field', () => {
     setPreferences({ fields: [] });
 

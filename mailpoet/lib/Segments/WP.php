@@ -15,8 +15,10 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\SegmentsCountRecalculator;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SourceUrlResolver;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\WPUserSubscriberLink;
 use MailPoet\Util\DBCollationChecker;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -79,6 +81,12 @@ class WP {
   /** @var SegmentsCountRecalculator */
   private $segmentsCountRecalculator;
 
+  /** @var SourceUrlResolver */
+  private $sourceUrlResolver;
+
+  /** @var WPUserSubscriberLink */
+  private $wpUserSubscriberLink;
+
   public function __construct(
     WPFunctions $wp,
     WelcomeScheduler $welcomeScheduler,
@@ -90,7 +98,9 @@ class WP {
     SegmentsRepository $segmentsRepository,
     EntityManager $entityManager,
     DBCollationChecker $collationChecker,
-    SegmentsCountRecalculator $segmentsCountRecalculator
+    SegmentsCountRecalculator $segmentsCountRecalculator,
+    SourceUrlResolver $sourceUrlResolver,
+    WPUserSubscriberLink $wpUserSubscriberLink
   ) {
     $this->wp = $wp;
     $this->welcomeScheduler = $welcomeScheduler;
@@ -103,6 +113,8 @@ class WP {
     $this->entityManager = $entityManager;
     $this->collationChecker = $collationChecker;
     $this->segmentsCountRecalculator = $segmentsCountRecalculator;
+    $this->sourceUrlResolver = $sourceUrlResolver;
+    $this->wpUserSubscriberLink = $wpUserSubscriberLink;
     $this->databaseConnection = $this->entityManager->getConnection();
     $this->subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
   }
@@ -141,6 +153,7 @@ class WP {
     $currentFilter = $this->wp->currentFilter();
     // Delete
     if (in_array($currentFilter, ['delete_user', 'deleted_user', 'remove_user_from_blog'])) {
+      $this->wpUserSubscriberLink->clear($wpUserId);
       if ($subscriber instanceof SubscriberEntity) {
         $this->unlinkSubscriberFromWpUser($subscriber, $wpUser);
       }
@@ -246,6 +259,13 @@ class WP {
     // find subscriber by email when is null
     if (is_null($subscriber)) {
       $subscriber = $this->subscribersRepository->findOneBy(['email' => $wpUser->user_email]); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $currentUserId = (int)$this->wp->getCurrentUserId();
+      if (!$subscriber instanceof SubscriberEntity) {
+        $this->wpUserSubscriberLink->clear((int)$wpUser->ID); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      } elseif ($currentUserId === 0 || $currentUserId === (int)$wpUser->ID) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        // Accounts set up by their own user (e.g. sign-up forms) haven't confirmed this address yet.
+        $this->wpUserSubscriberLink->markUnconfirmed((int)$wpUser->ID, $wpUser->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      }
     }
 
     // get first name & last name
@@ -290,6 +310,12 @@ class WP {
           $data['deleted_at'] = null;
         }
       }
+    }
+
+    // Until the account confirms the address, keep the subscriber's own details.
+    if ($subscriber instanceof SubscriberEntity && $this->wpUserSubscriberLink->isUnconfirmed($wpUserId)) {
+      $data['email'] = $subscriber->getEmail();
+      unset($data['first_name'], $data['last_name']);
     }
 
     $addingNewUserToDisabledWPSegment = $wpSegment->getDeletedAt() !== null && $currentFilter === 'user_register';
@@ -424,6 +450,7 @@ class WP {
   private function createOrUpdateSubscriber(array $data, ?SubscriberEntity $subscriber = null): SubscriberEntity {
     if (is_null($subscriber)) {
       $subscriber = new SubscriberEntity();
+      $subscriber->setSourceUrl($this->sourceUrlResolver->resolve());
     }
 
     $subscriber->setWpUserId($data['wp_user_id']);
@@ -521,8 +548,10 @@ class WP {
     $updateSql =
       "UPDATE IGNORE {$this->subscribersTable} s
         INNER JOIN {$wpdb->users} as wu ON s.wp_user_id = wu.id
-        SET s.email = wu.user_email";
-    $this->databaseConnection->executeStatement($updateSql);
+        {$this->getUnconfirmedLinkJoin()}
+        SET s.email = wu.user_email
+        WHERE unconfirmed_link.umeta_id IS NULL";
+    $this->databaseConnection->executeStatement($updateSql, $this->getUnconfirmedLinkParams());
 
     $selectSql =
       "SELECT wp_user_id as id, email FROM {$this->subscribersTable}
@@ -563,6 +592,28 @@ class WP {
       $this->subscribersTable,
       'email'
     );
+    // Users whose address already belongs to a subscriber get linked to it below,
+    // so mark them first, as the per-user sync does. Compare with the subscribers
+    // email collation, which is what the unique key behind the insert uses.
+    $subscriberEmailCollation = $this->collationChecker->getCollateIfNeeded(
+      $this->subscribersTable,
+      'email',
+      $wpdb->users,
+      'user_email'
+    );
+    $linkingSql =
+      "SELECT wu.id, wu.user_email AS email
+        FROM {$wpdb->users} wu
+        LEFT JOIN {$this->subscribersTable} s ON wu.id = s.wp_user_id
+        INNER JOIN {$this->subscribersTable} existingSubscriber ON wu.user_email = existingSubscriber.email {$subscriberEmailCollation}
+        WHERE s.wp_user_id IS NULL AND wu.user_email != ''";
+    $linkingUsers = $this->databaseConnection->fetchAllAssociative($linkingSql);
+    foreach ($linkingUsers as $linkingUser) {
+      if (is_numeric($linkingUser['id']) && is_string($linkingUser['email'])) {
+        $this->wpUserSubscriberLink->markUnconfirmed((int)$linkingUser['id'], $linkingUser['email']);
+      }
+    }
+
     $insertSql =
       "INSERT IGNORE INTO {$this->subscribersTable} (wp_user_id, email, status, created_at, `source`, deleted_at)
         SELECT wu.id, wu.user_email, :subscriberStatus, CURRENT_TIMESTAMP(), :source, {$deletedAt}
@@ -588,6 +639,20 @@ class WP {
     $stmt->bindValue('deletedSource', Source::WORDPRESS_USER_DELETED);
     $stmt->executeStatement();
 
+    // Users who got a subscriber of their own have nothing left to confirm, as in the per-user sync.
+    // Only a few users carry the mark, so look those up instead of touching every inserted user.
+    $markedUserIds = $this->toUserIds($this->databaseConnection->fetchFirstColumn(
+      "SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = :unconfirmedLinkMetaKey",
+      $this->getUnconfirmedLinkParams()
+    ));
+    $ownSubscriberUserIds = array_diff(
+      $this->toUserIds(array_column($insertedUserIds, 'id')),
+      $this->toUserIds(array_column($linkingUsers, 'id'))
+    );
+    foreach (array_intersect($markedUserIds, $ownSubscriberUserIds) as $userId) {
+      $this->wpUserSubscriberLink->clear($userId);
+    }
+
     return $insertedUserIds;
   }
 
@@ -597,12 +662,14 @@ class WP {
     $sql =
       "UPDATE {$this->subscribersTable} s
         JOIN {$wpdb->usermeta} as wpum ON s.wp_user_id = wpum.user_id AND wpum.meta_key = 'first_name'
+        {$this->getUnconfirmedLinkJoin()}
         SET s.first_name = SUBSTRING(wpum.meta_value, 1, 255)
         WHERE s.first_name = ''
         AND s.wp_user_id IS NOT NULL
-        AND wpum.meta_value IS NOT NULL";
+        AND wpum.meta_value IS NOT NULL
+        AND unconfirmed_link.umeta_id IS NULL";
 
-    $this->databaseConnection->executeStatement($sql);
+    $this->databaseConnection->executeStatement($sql, $this->getUnconfirmedLinkParams());
   }
 
   private function updateLastNames(): void {
@@ -611,12 +678,14 @@ class WP {
     $sql =
       "UPDATE {$this->subscribersTable} s
         JOIN {$wpdb->usermeta} as wpum ON s.wp_user_id = wpum.user_id AND wpum.meta_key = 'last_name'
+        {$this->getUnconfirmedLinkJoin()}
         SET s.last_name = SUBSTRING(wpum.meta_value, 1, 255)
         WHERE s.last_name = ''
         AND s.wp_user_id IS NOT NULL
-        AND wpum.meta_value IS NOT NULL";
+        AND wpum.meta_value IS NOT NULL
+        AND unconfirmed_link.umeta_id IS NULL";
 
-    $this->databaseConnection->executeStatement($sql);
+    $this->databaseConnection->executeStatement($sql, $this->getUnconfirmedLinkParams());
   }
 
   private function updateFirstNameIfMissing(): void {
@@ -625,11 +694,44 @@ class WP {
     $sql =
       "UPDATE {$this->subscribersTable} s
         JOIN {$wpdb->users} wu ON s.wp_user_id = wu.id
+        {$this->getUnconfirmedLinkJoin()}
         SET s.first_name = wu.display_name
         WHERE s.first_name = ''
-        AND s.wp_user_id IS NOT NULL";
+        AND s.wp_user_id IS NOT NULL
+        AND unconfirmed_link.umeta_id IS NULL";
 
-    $this->databaseConnection->executeStatement($sql);
+    $this->databaseConnection->executeStatement($sql, $this->getUnconfirmedLinkParams());
+  }
+
+  /**
+   * @param mixed[] $values
+   * @return int[]
+   */
+  private function toUserIds(array $values): array {
+    $userIds = [];
+    foreach ($values as $value) {
+      if (is_numeric($value)) {
+        $userIds[] = (int)$value;
+      }
+    }
+    return $userIds;
+  }
+
+  /**
+   * Joins the users whose link to an existing subscriber isn't confirmed yet,
+   * so bulk updates can keep that subscriber's own details.
+   */
+  private function getUnconfirmedLinkJoin(): string {
+    global $wpdb;
+    return "LEFT JOIN {$wpdb->usermeta} AS unconfirmed_link
+      ON unconfirmed_link.user_id = s.wp_user_id AND unconfirmed_link.meta_key = :unconfirmedLinkMetaKey";
+  }
+
+  /**
+   * @return array{unconfirmedLinkMetaKey: string}
+   */
+  private function getUnconfirmedLinkParams(): array {
+    return ['unconfirmedLinkMetaKey' => $this->wpUserSubscriberLink->getUnconfirmedMetaKey()];
   }
 
   private function insertUsersToSegment(): void {

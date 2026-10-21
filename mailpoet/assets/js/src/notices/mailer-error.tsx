@@ -3,7 +3,9 @@ import { __ } from '@wordpress/i18n';
 import ReactStringReplace from 'react-string-replace';
 import classnames from 'classnames';
 
+import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
+import { isAllowedHref } from 'common/functions/filter-message-html';
 
 const resumeMailerSending = () =>
   MailPoet.Ajax.post({
@@ -13,6 +15,7 @@ const resumeMailerSending = () =>
   })
     .done(() => {
       MailPoet.Notice.success(__('Sending has been resumed.', 'mailpoet'));
+      Hooks.doAction('mailpoet.held_campaigns.refresh');
     })
     .fail((response) => {
       if (response.errors.length > 0) {
@@ -226,10 +229,12 @@ export function MailerError({
       return acc;
     }, {});
 
+    const href = link.getAttribute('href');
+
     return (
       <a
         key={`a-${match}`}
-        href={link.getAttribute('href')}
+        href={href !== null && isAllowedHref(href) ? href : undefined}
         {...allowedAttributes}
       >
         {link.textContent}

@@ -3,6 +3,7 @@ import { Modal } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import {
+  AddSenderDomain,
   ManageSenderDomain,
   SenderDomainDnsItem,
   SenderDomainEntity,
@@ -78,6 +79,7 @@ function AuthorizeSenderDomainModal({
   const [errorMessage, setErrorMessage] = useState('');
   const [loadingButton, setLoadingButton] = useState(false);
   const [rowData, setRowData] = useState<SenderDomainEntity[]>([]);
+  const [needsAdding, setNeedsAdding] = useState(false);
   const modalIsOpened = useRef<boolean>(false);
 
   const performStateUpdate = (callback: (param) => void, args) => {
@@ -120,30 +122,26 @@ function AuthorizeSenderDomainModal({
     }
     modalIsOpened.current = true;
 
+    // Only some pages localize this list, and it goes stale once a domain is added, so a domain
+    // missing from it may still be on the account.
     const allSenderDomains = window.mailpoet_all_sender_domains || [];
+    const knownToThisPage = allSenderDomains.includes(senderDomain);
 
     (async () => {
       try {
-        if (allSenderDomains.includes(senderDomain)) {
-          // sender domain already exist
-          const res: SenderDomainApiResponseType = await makeApiRequest(
-            senderDomain,
-          );
-          performStateUpdate(
-            setRowData,
-            generateRowData(senderDomain, res.data),
-          );
-        } else {
-          // create new sender domain
-          const res: SenderDomainApiResponseType = await makeApiRequest(
-            senderDomain,
-            'create',
-          );
-          performStateUpdate(
-            setRowData,
-            generateRowData(senderDomain, res.data),
-          );
+        const res: SenderDomainApiResponseType = await makeApiRequest(
+          senderDomain,
+        );
+
+        // Fetching is read-only and returns no records for a domain that isn't on the account.
+        // Creating it is what generates the records, but it changes what the account holds, which
+        // must not happen just because somebody opened this dialog. Ask first. See STOMAIL-8425.
+        if (!knownToThisPage && (!res.data || res.data.length === 0)) {
+          performStateUpdate(setNeedsAdding, true);
+          return;
         }
+
+        performStateUpdate(setRowData, generateRowData(senderDomain, res.data));
       } catch (e) {
         const apiErrorMessage = getApiErrorMessage(e);
 
@@ -158,7 +156,34 @@ function AuthorizeSenderDomainModal({
     };
   }, [senderDomain]);
 
-  const content = (
+  const addDomainButtonClicked = async () => {
+    // A second click while the first create is in flight would send another create.
+    if (loadingButton) return;
+    setLoadingButton(true);
+    setErrorMessage('');
+
+    try {
+      const res: SenderDomainApiResponseType = await makeApiRequest(
+        senderDomain,
+        'create',
+      );
+      performStateUpdate(setRowData, generateRowData(senderDomain, res.data));
+      performStateUpdate(setNeedsAdding, false);
+    } catch (e) {
+      performStateUpdate(setErrorMessage, getApiErrorMessage(e));
+    }
+
+    performStateUpdate(setLoadingButton, false);
+  };
+
+  const content = needsAdding ? (
+    <AddSenderDomain
+      senderDomain={senderDomain}
+      addDomainButtonClicked={addDomainButtonClicked}
+      loadingButton={loadingButton}
+      error={errorMessage}
+    />
+  ) : (
     <ManageSenderDomain
       rows={rowData}
       verifyDnsButtonClicked={verifyDnsButtonClicked}

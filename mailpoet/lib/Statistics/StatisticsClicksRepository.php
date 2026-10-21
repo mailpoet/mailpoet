@@ -19,12 +19,17 @@ class StatisticsClicksRepository extends Repository {
   /** @var StatisticsNewslettersRepository */
   private $statisticsNewslettersRepository;
 
+  /** @var UserAgentsRepository */
+  private $userAgentsRepository;
+
   public function __construct(
     EntityManager $entityManager,
-    StatisticsNewslettersRepository $statisticsNewslettersRepository
+    StatisticsNewslettersRepository $statisticsNewslettersRepository,
+    UserAgentsRepository $userAgentsRepository
   ) {
     parent::__construct($entityManager);
     $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
+    $this->userAgentsRepository = $userAgentsRepository;
   }
 
   protected function getEntityClassName(): string {
@@ -36,7 +41,7 @@ class StatisticsClicksRepository extends Repository {
     SubscriberEntity $subscriber,
     NewsletterEntity $newsletter,
     SendingQueueEntity $queue,
-    ?UserAgentEntity $userAgent
+    ?string $userAgent
   ): StatisticsClickEntity {
     $statistics = $this->findOneBy([
       'link' => $link,
@@ -47,17 +52,33 @@ class StatisticsClicksRepository extends Repository {
     if (!$statistics instanceof StatisticsClickEntity) {
       $statistics = new StatisticsClickEntity($newsletter, $queue, $subscriber, $link, 1);
       if ($userAgent) {
-        $statistics->setUserAgent($userAgent);
-        $statistics->setUserAgentType($userAgent->getUserAgentType());
+        $this->setUserAgent($statistics, $userAgent);
       }
       $this->persist($statistics);
       // Covers the one-click unsubscribe too, which never reaches the tracking endpoint.
       // A repeat click cannot change anything, the first one already marked the row.
       $this->statisticsNewslettersRepository->markSentWithTracking($newsletter, $queue, $subscriber);
-    } else {
-      $statistics->setCount($statistics->getCount() + 1);
+      return $statistics;
+    }
+    $statistics->setCount($statistics->getCount() + 1);
+    if ($userAgent && $this->shouldUpgradeToHumanClick($statistics, $userAgent)) {
+      $this->setUserAgent($statistics, $userAgent);
     }
     return $statistics;
+  }
+
+  private function setUserAgent(StatisticsClickEntity $statistics, string $userAgent): void {
+    $userAgentEntity = $this->userAgentsRepository->findOrCreate($userAgent);
+    $statistics->setUserAgent($userAgentEntity);
+    $statistics->setUserAgentType($userAgentEntity->getUserAgentType());
+  }
+
+  private function shouldUpgradeToHumanClick(StatisticsClickEntity $statistics, string $userAgent): bool {
+    if ($statistics->getUserAgentType() !== UserAgentEntity::USER_AGENT_TYPE_MACHINE) {
+      return false;
+    }
+    $newUserAgent = new UserAgentEntity($userAgent);
+    return $newUserAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_HUMAN;
   }
 
   public function getAllForSubscriber(SubscriberEntity $subscriber): QueryBuilder {

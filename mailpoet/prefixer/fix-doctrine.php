@@ -5,6 +5,8 @@ set_error_handler(function ($severity, $message, $file, $line) {
   throw new ErrorException($message, 0, $severity, $file, $line);
 });
 
+require_once __DIR__ . '/replace-in-file.php';
+
 // fix Doctrine namespaces in string not being correctly prefixed
 $iterator = new RecursiveDirectoryIterator(__DIR__ . '/../vendor-prefixed/doctrine', RecursiveDirectoryIterator::SKIP_DOTS);
 $files = new RecursiveIteratorIterator($iterator, RecursiveIteratorIterator::SELF_FIRST);
@@ -13,10 +15,8 @@ foreach ($files as $file) {
     $data = file_get_contents($file);
     $data = str_replace('\'Doctrine\\\\', '\'MailPoetVendor\\\\Doctrine\\\\', $data);
     $data = str_replace('"Doctrine\\\\', '"MailPoetVendor\\\\Doctrine\\\\', $data);
-    if (version_compare(PHP_VERSION, '8.4.0', '>=')) {
-      $data = str_replace('\'Doctrine\\', '\'MailPoetVendor\\Doctrine\\', $data);
-      $data = str_replace('"Doctrine\\', '"MailPoetVendor\\Doctrine\\', $data);
-    }
+    $data = str_replace('\'Doctrine\\', '\'MailPoetVendor\\Doctrine\\', $data);
+    $data = str_replace('"Doctrine\\', '"MailPoetVendor\\Doctrine\\', $data);
     $data = str_replace(' \\Doctrine\\', ' \\MailPoetVendor\\Doctrine\\', $data);
     $data = str_replace('* @var array<\\Doctrine\\', '* @var array<\\MailPoetVendor\\Doctrine\\', $data);
     file_put_contents($file, $data);
@@ -109,16 +109,11 @@ exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/deprecations/src/PHPUnit
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/instantiator/docs');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/symfony/console');
 
-// Removing #[\SensitiveParameter] attribute because it can break the plugin on PHP 7.4
-$attributeReplacement = [
-  'find' => [
-    '#[\SensitiveParameter]',
-  ],
-  'replace' => [
-    '',
-  ],
-];
-$files = [
+replaceInFile(__DIR__ . '/../vendor-prefixed/doctrine/orm/src/Mapping/ReflectionReadonlyProperty.php', ['private ReflectionProperty'], 'ReflectionProperty');
+
+// php-scoper 0.17 prints #[\SensitiveParameter] inline, where PHP 7.4 reads the rest of the line as a comment.
+// 0.18 prints it on its own line, so this fix matches nothing there and must not use replaceInFile().
+$sensitiveParameterFiles = [
   '../vendor-prefixed/doctrine/dbal/src/Connection.php',
   '../vendor-prefixed/doctrine/dbal/src/Driver.php',
   '../vendor-prefixed/doctrine/dbal/src/Driver/Middleware/AbstractDriverMiddleware.php',
@@ -127,29 +122,6 @@ $files = [
   '../vendor-prefixed/doctrine/dbal/src/Logging/Driver.php',
   '../vendor-prefixed/doctrine/dbal/src/Portability/Driver.php',
 ];
-
-$replacements = [
-  [
-    'file' => '../vendor-prefixed/doctrine/orm/src/Mapping/ReflectionReadonlyProperty.php',
-    'find' => [
-      'private ReflectionProperty',
-    ],
-    'replace' => [
-      'ReflectionProperty',
-    ],
-  ],
-];
-
-foreach ($files as $file) {
-  $replacements[] = [
-    'file' => $file,
-    'find' => $attributeReplacement['find'],
-    'replace' => $attributeReplacement['replace'],
-  ];
-}
-
-foreach ($replacements as $singleFile) {
-  $data = file_get_contents($singleFile['file']);
-  $data = str_replace($singleFile['find'], $singleFile['replace'], $data);
-  file_put_contents($singleFile['file'], $data);
+foreach ($sensitiveParameterFiles as $file) {
+  file_put_contents($file, str_replace('#[\SensitiveParameter]', '', file_get_contents($file)));
 }

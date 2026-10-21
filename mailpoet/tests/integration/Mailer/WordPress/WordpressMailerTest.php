@@ -240,6 +240,7 @@ class WordpressMailerTest extends \MailPoetTest {
           'email_type' => 'transactional',
           'subscriber_status' => 'subscribed',
           'subscriber_source' => 'form',
+          'subscriber_source_plugin' => 'mailpoet',
         ],
       ])
       ->willReturn(['response' => true]);

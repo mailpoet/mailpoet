@@ -2,6 +2,8 @@
 
 namespace MailPoet\Newsletter;
 
+use MailPoet\Newsletter\Renderer\StylesHelper;
+
 class ApiDataSanitizer {
   /** @var NewsletterHtmlSanitizer */
   private $htmlSanitizer;
@@ -28,7 +30,33 @@ class ApiDataSanitizer {
     if (isset($body['blockDefaults']) && is_array($body['blockDefaults'])) {
       $body['blockDefaults'] = $this->sanitizeBlockDefaults($body['blockDefaults']);
     }
+    foreach (['content', 'blockDefaults'] as $key) {
+      if (isset($body[$key]) && is_array($body[$key])) {
+        $body[$key] = StylesHelper::sanitizeBlockStyles($body[$key]);
+      }
+    }
+    if (isset($body['globalStyles']) && is_array($body['globalStyles'])) {
+      $body['globalStyles'] = $this->sanitizeGlobalStyles($body['globalStyles']);
+    }
     return $body;
+  }
+
+  /**
+   * Global styles end up in a <style> element in the editor and the email. Invalid values are removed,
+   * so the editor falls back to its defaults; the email renderer skips them too.
+   */
+  private function sanitizeGlobalStyles(array $globalStyles): array {
+    foreach ($globalStyles as $group => $styles) {
+      if (!is_array($styles)) {
+        continue;
+      }
+      foreach ($styles as $property => $value) {
+        if (!StylesHelper::isValidStyleKey($property) || !StylesHelper::isValidCssValue($value)) {
+          unset($globalStyles[$group][$property]);
+        }
+      }
+    }
+    return $globalStyles;
   }
 
   private function sanitizeBlockDefaults(array $blockDefaults): array {
@@ -56,6 +84,15 @@ class ApiDataSanitizer {
   }
 
   private function sanitizeBlock(array $block): array {
+    if (
+      ($block['type'] ?? null) === 'container'
+      && isset($block['image'])
+      && is_array($block['image'])
+      && is_string($block['image']['src'] ?? null)
+    ) {
+      // The editor puts the background image URL into url() in a <style> element
+      $block['image']['src'] = StylesHelper::escapeCssUrl($block['image']['src']);
+    }
     return $this->sanitizeBlockProperties($block, $block['type'] ?? null);
   }
 

@@ -10,7 +10,7 @@ if [ "$MP_GIT_HOOKS_ENABLE" != "true" ]; then
 fi
 
 if [ "$MP_GIT_HOOKS_ESLINT" = "true" ]; then
-  eslint --max-warnings 0 $@
+  eslint --max-warnings 0 --no-warn-ignored "$@"
 else
   echo "MP_GIT_HOOKS_ESLINT is not set to 'true', skipping eslint"
 fi

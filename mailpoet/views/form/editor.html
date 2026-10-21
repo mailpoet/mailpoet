@@ -33,6 +33,7 @@
   var mailpoet_tutorial_seen = '<%= editor_tutorial_seen %>';
   var mailpoet_tutorial_url = '<%= cdn_url('form-editor/tutorial.mp4') %>';
   var mailpoet_is_administrator = <%= is_administrator ? 'true' : 'false' %>;
+  var mailpoet_can_manage_subscribers = <%= can_manage_subscribers ? 'true' : 'false' %>;
   var mailpoet_tracking_consent_capture_enabled = <%= tracking_consent_capture_enabled ? 'true' : 'false' %>;
   var mailpoet_form_edit_url = "<%= admin_url('admin.php?page=mailpoet-form-editor&id=') %>";
   var mailpoet_theme_support_widgets = <%= theme_support_widgets ? 'true' : 'false' %>;
@@ -124,8 +125,6 @@
   'layoutBlocksCategory': __('Layout'),
   'customFieldNumberOfLines': __('Number of lines'),
   'customFieldSaveCTA': _x('Update custom field', 'Text on the save button'),
-  'customFieldDeleteCTA': _x('Delete this custom field', 'Text on the delete button'),
-  'customFieldDeleteConfirm': __('This field will be deleted for all your subscribers. Are you sure?'),
   'customFieldTypeText': __('Text Input'),
   'customFieldTypeTextarea': __('Text Area'),
   'customFieldTypeRadio': __('Radio buttons'),

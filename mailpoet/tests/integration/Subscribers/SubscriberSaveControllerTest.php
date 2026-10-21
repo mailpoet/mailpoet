@@ -76,6 +76,30 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     verify($subscriber->getSubscriberTags())->arrayCount(2);
   }
 
+  public function testItStoresSourceUrlOnlyWhenCreatingSubscriber(): void {
+    $server = $_SERVER;
+    $_SERVER['HTTP_HOST'] = 'example.com';
+    $_SERVER['REQUEST_URI'] = '/signup/?token=secret';
+    try {
+      $subscriber = $this->saveController->save(['email' => 'source-url@test.com', 'source_url' => 'https://forged.example/']);
+      verify($subscriber->getSourceUrl())->equals('http://example.com/signup/');
+
+      $_SERVER['REQUEST_URI'] = '/other/';
+      $subscriber = $this->saveController->save(['id' => $subscriber->getId(), 'email' => 'source-url@test.com']);
+      verify($subscriber->getSourceUrl())->equals('http://example.com/signup/');
+    } finally {
+      $_SERVER = $server;
+    }
+  }
+
+  public function testItAppliesSourcePluginOnlyForApiSource(): void {
+    $subscriber = $this->saveController->save(['email' => 'source-plugin-api@test.com', 'source' => 'api', 'source_plugin' => 'my-plugin']);
+    verify($subscriber->getSourcePlugin())->equals('my-plugin');
+
+    $subscriber = $this->saveController->save(['email' => 'source-plugin-form@test.com', 'source' => 'form', 'source_plugin' => 'my-plugin']);
+    verify($subscriber->getSourcePlugin())->null();
+  }
+
   public function testItStripsClientSuppliedTrackingConsentProofFields(): void {
     // A client (admin/API) can change the consent state but must not be able to
     // forge the proof-of-consent method/copy; those are stamped server-side only.

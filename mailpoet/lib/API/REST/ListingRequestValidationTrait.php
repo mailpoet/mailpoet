@@ -64,10 +64,10 @@ trait ListingRequestValidationTrait {
   }
 
   protected function validatePagination(Request $request): void {
-    $this->validatePositiveInteger($request->getParam('page'), 'page', 1, self::MAX_PAGE);
-    $this->validatePositiveInteger($request->getParam('per_page'), 'per_page', 1, self::MAX_PER_PAGE);
-    $this->validatePositiveInteger($request->getParam('limit'), 'limit', 1, self::MAX_PER_PAGE);
-    $this->validatePositiveInteger($request->getParam('offset'), 'offset', 0, self::MAX_PAGE);
+    $this->validatePositiveInteger($request->getParam('page'), 'page', 1, AbstractListingEndpoint::MAX_PAGE);
+    $this->validatePositiveInteger($request->getParam('per_page'), 'per_page', 1, AbstractListingEndpoint::MAX_PER_PAGE);
+    $this->validatePositiveInteger($request->getParam('limit'), 'limit', 1, AbstractListingEndpoint::MAX_PER_PAGE);
+    $this->validatePositiveInteger($request->getParam('offset'), 'offset', 0, AbstractListingEndpoint::MAX_PAGE);
   }
 
   /** @param mixed $value */

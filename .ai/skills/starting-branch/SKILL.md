@@ -1,6 +1,6 @@
 ---
 name: starting-branch
-description: ALWAYS use when creating a new branch, starting work on a task, or working on a Linear issue. Handles branch naming, Linear lookup, and branch creation. Do NOT run git switch -c or git checkout -b directly.
+description: Use when creating a new branch, starting work on a task, or working on a Linear issue. Triggers on "start a branch", "work on STOMAIL-1234", "create a branch for this". Handles branch naming, Linear lookup and branch creation. Do NOT run git switch -c or git checkout -b directly.
 ---
 
 # Starting a Branch
@@ -19,6 +19,7 @@ If the user provides a Linear issue ID (e.g. `STOMAIL-1234`):
 2. **Pick the prefix** based on issue type: `add/`, `update/`, `fix/` or any other relevant prefix
 3. **Generate the branch name:** `<prefix><ISSUE-ID>-<short-description>`
    - Issue ID in the branch name is **lowercase** (e.g. `stomail-1234`)
+   - Take the team key from the issue ID. Without one, read it from recent branch names (`git branch -r --sort=-committerdate | head -20`); don’t guess it
    - Description is **kebab-case**, derived from the issue title
    - Keep it short but descriptive
    - Example: `fix/stomail-7875-mailpoet-subscription-form-block-reloads-site-editor-iframe`
@@ -43,3 +44,7 @@ git switch trunk
 git pull
 git switch -c <branch-name>
 ```
+
+## Premium
+
+Premium is a separate repo in `mailpoet-premium/`. Run the same steps from that directory. When a change spans both plugins, use the same branch name in both repos.

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
+import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
 import { Link } from 'react-router-dom';
 import { APIErrorsNotice } from 'notices/api-errors-notice';
@@ -11,6 +12,24 @@ import {
   NewsletterStatus as NewsletterStatusEnum,
 } from 'common/newsletter';
 import { isTimezoneCampaignQueue } from 'newsletters/timezone-campaign';
+import {
+  getQueueActionLabels,
+  getScheduledFor,
+  isHeldQueue,
+} from 'newsletters/listings/queue-labels';
+
+function HeldNewsletter() {
+  return (
+    <div className="mailpoet-listing-stats-too-early">
+      <span
+        className="mailpoet-tag mailpoet-tag-inverted mailpoet-tag-unknown"
+        title={__('Waiting for your confirmation', 'mailpoet')}
+      >
+        {__('Held', 'mailpoet')}
+      </span>
+    </div>
+  );
+}
 
 type QueueSendingProps = {
   newsletter: NewsLetter;
@@ -18,7 +37,14 @@ type QueueSendingProps = {
 
 function QueueSending({ newsletter }: QueueSendingProps) {
   const [paused, setPaused] = useState(newsletter.queue.status === 'paused');
+  const [resumed, setResumed] = useState(false);
   const [errors, setErrors] = useState([]);
+
+  const { isHeld, resumeLabel } = getQueueActionLabels({
+    status: paused ? 'paused' : null,
+    pause_reason: newsletter.queue.pause_reason,
+    resumed,
+  });
 
   const pauseSending = async () => {
     setErrors([]);
@@ -38,13 +64,28 @@ function QueueSending({ newsletter }: QueueSendingProps) {
     await MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'sendingQueue',
-      action: 'resume',
+      action: isHeld ? 'resumeHeld' : 'resume',
       data: {
         newsletter_id: newsletter.id,
       },
     })
-      .done(() => setPaused(false))
-      .fail((response) => setErrors(response.errors));
+      .done(() => {
+        setPaused(false);
+        setResumed(true);
+        Hooks.doAction('mailpoet.held_campaigns.refresh');
+      })
+      .fail((response) => {
+        if (
+          isHeld &&
+          response.errors?.some((error) => error.error === 'not_held')
+        ) {
+          // Handled elsewhere since the list was loaded; show the current state.
+          Hooks.doAction('mailpoet.held_campaigns.refresh');
+          jQuery(document).trigger('heartbeat-tick.mailpoet-listing');
+          return;
+        }
+        setErrors(response.errors);
+      });
   };
 
   const resumeSending = async () => {
@@ -65,6 +106,7 @@ function QueueSending({ newsletter }: QueueSendingProps) {
   return (
     <>
       <APIErrorsNotice errors={errors} />
+      {isHeld && <HeldNewsletter />}
       {paused && (
         <Button
           dimension="small"
@@ -74,7 +116,7 @@ function QueueSending({ newsletter }: QueueSendingProps) {
               : resumeSending
           }
         >
-          {__('Resume', 'mailpoet')}
+          {resumeLabel}
         </Button>
       )}
       {!paused && (
@@ -122,7 +164,7 @@ function QueueStatus({ newsletter, mailerLog }: QueueStatusProps) {
       (newsletter.queue.status === 'scheduled' && hasStartedSending));
   const newsletterDate = isRunningTimezoneCampaign
     ? newsletter.sent_at
-    : newsletter.sent_at || newsletter.queue.scheduled_at;
+    : getScheduledFor(newsletter);
   const isNewsletterCancelled =
     newsletter.queue && newsletter.queue.status === 'cancelled';
   const isNewsletterSending =
@@ -146,6 +188,11 @@ function QueueStatus({ newsletter, mailerLog }: QueueStatusProps) {
         />
       </Link>
       {isNewsletterCancelled && <CancelledNewsletter />}
+      {isMtaPaused &&
+        isHeldQueue({
+          status: newsletter.queue.status,
+          pause_reason: newsletter.queue.pause_reason,
+        }) && <HeldNewsletter />}
       {newsletter.queue.status !== 'completed' &&
         !isNewsletterCancelled &&
         !isMtaPaused && <QueueSending newsletter={newsletter} />}

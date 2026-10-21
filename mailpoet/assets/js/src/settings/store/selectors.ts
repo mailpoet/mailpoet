@@ -31,6 +31,10 @@ export function hasWooCommerce(state: State) {
   return state.flags.woocommerce;
 }
 
+export function getEnvironmentType(state: State) {
+  return state.flags.environmentType;
+}
+
 export function hasMembersPlugin(state: State) {
   return state.flags.membersPlugin;
 }

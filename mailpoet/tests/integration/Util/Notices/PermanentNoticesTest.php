@@ -107,7 +107,99 @@ class PermanentNoticesTest extends \MailPoetTest {
     verify($output)->stringNotContainsString('<p>');
   }
 
-  private function createPermanentNotices(WPFunctions $wp): PermanentNotices {
+  /**
+   * @dataProvider pausedCampaignsNoticePageProvider
+   */
+  public function testItPassesPageVisibilityToPausedCampaignsNotice(string $page, bool $expected) {
+    $pausedNotice = $this->createMock(SenderDomainPausedCampaignsNotice::class);
+    $pausedNotice->expects($this->once())->method('init')->with($expected)->willReturn(null);
+
+    $this->initOnPage($page, $pausedNotice, $this->createMock(SenderDomainAuthenticationNotices::class));
+  }
+
+  public static function pausedCampaignsNoticePageProvider(): array {
+    return [
+      'email editor' => ['mailpoet-newsletter-editor', false],
+      'automation editor' => ['mailpoet-automation-editor', false],
+      'form editor' => ['mailpoet-form-editor', false],
+      'welcome wizard' => ['mailpoet-welcome-wizard', false],
+      'settings' => ['mailpoet-settings', true],
+      'emails' => ['mailpoet-newsletters', true],
+      'automations' => ['mailpoet-automation', true],
+      'homepage' => ['mailpoet-homepage', true],
+    ];
+  }
+
+  public function testItHidesDomainAuthenticationNoticesWhenPausedCampaignsNoticeListsTheDefaultSenderDomain() {
+    $pausedNotice = $this->createPausedNotice(['example.com']);
+    $authNotices = $this->createMock(SenderDomainAuthenticationNotices::class);
+    $authNotices->method('getDefaultFromDomain')->willReturn('example.com');
+    $authNotices->expects($this->once())->method('init')->with(false);
+
+    $this->initOnPage('mailpoet-newsletters', $pausedNotice, $authNotices);
+  }
+
+  public function testItKeepsDomainAuthenticationNoticesWhenDefaultSenderIsOnAnotherDomain() {
+    $pausedNotice = $this->createPausedNotice(['example.com']);
+    $authNotices = $this->createMock(SenderDomainAuthenticationNotices::class);
+    $authNotices->method('getDefaultFromDomain')->willReturn('other.com');
+    $authNotices->expects($this->once())->method('init')->with(true);
+
+    $this->initOnPage('mailpoet-newsletters', $pausedNotice, $authNotices);
+  }
+
+  private function createPausedNotice(array $listedDomains): SenderDomainPausedCampaignsNotice {
+    $pausedNotice = $this->createMock(SenderDomainPausedCampaignsNotice::class);
+    $pausedNotice->method('init')->willReturn(new Notice(Notice::TYPE_ERROR, 'Paused', '', '', true, new WPFunctions()));
+    $pausedNotice->method('getListedDomains')->willReturn($listedDomains);
+    return $pausedNotice;
+  }
+
+  public function testItKeepsDomainAuthenticationNoticesConditionWhenPausedCampaignsNoticeIsNull() {
+    $pausedNotice = $this->createMock(SenderDomainPausedCampaignsNotice::class);
+    $pausedNotice->method('init')->willReturn(null);
+    $authNotices = $this->createMock(SenderDomainAuthenticationNotices::class);
+    $authNotices->expects($this->once())->method('init')->with(true);
+
+    $this->initOnPage('mailpoet-newsletters', $pausedNotice, $authNotices);
+  }
+
+  public function testItKeepsDomainAuthenticationNoticesHiddenOnSettingsWhenPausedCampaignsNoticeIsNull() {
+    $pausedNotice = $this->createMock(SenderDomainPausedCampaignsNotice::class);
+    $pausedNotice->method('init')->willReturn(null);
+    $authNotices = $this->createMock(SenderDomainAuthenticationNotices::class);
+    $authNotices->expects($this->once())->method('init')->with(false);
+
+    $this->initOnPage('mailpoet-settings', $pausedNotice, $authNotices);
+  }
+
+  private function initOnPage(string $page, SenderDomainPausedCampaignsNotice $pausedNotice, SenderDomainAuthenticationNotices $authNotices): void {
+    global $wp_filter;
+    $previousPage = $_REQUEST['page'] ?? null;
+    $previousActions = $wp_filter['admin_notices'] ?? null;
+    $_REQUEST['page'] = $page;
+    try {
+      $this->createPermanentNotices(new WPFunctions(), $authNotices, $pausedNotice)->init();
+    } finally {
+      if ($previousPage === null) {
+        unset($_REQUEST['page']);
+      } else {
+        $_REQUEST['page'] = $previousPage;
+      }
+      if ($previousActions === null) {
+        unset($wp_filter['admin_notices']);
+      } else {
+        $wp_filter['admin_notices'] = $previousActions;
+      }
+    }
+  }
+
+  private function createPermanentNotices(
+    WPFunctions $wp,
+    ?SenderDomainAuthenticationNotices $authNotices = null,
+    ?SenderDomainPausedCampaignsNotice $pausedNotice = null,
+    ?NonProductionSendingNotice $sendingNotice = null
+  ): PermanentNotices {
     return new PermanentNotices(
       $wp,
       $this->diContainer->get(CronHelper::class),
@@ -118,10 +210,12 @@ class PermanentNoticesTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersFeature::class),
       $this->diContainer->get(ServicesChecker::class),
       $this->diContainer->get(MailerFactory::class),
-      $this->diContainer->get(SenderDomainAuthenticationNotices::class),
+      $authNotices ?? $this->diContainer->get(SenderDomainAuthenticationNotices::class),
       $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->diContainer->get(NewslettersRepository::class),
-      $this->diContainer->get(CaptchaDisabledNotice::class)
+      $this->diContainer->get(CaptchaDisabledNotice::class),
+      $pausedNotice ?? $this->diContainer->get(SenderDomainPausedCampaignsNotice::class),
+      $sendingNotice ?? $this->diContainer->get(NonProductionSendingNotice::class)
     );
   }
 }

@@ -41,6 +41,11 @@ export * as WordPressIcons from '@wordpress/icons';
 export * as WordPressDataControls from '@wordpress/data-controls';
 export * as WooCommerceDate from '@woocommerce/date';
 import { DateRangeFilterPicker, Search } from '@woocommerce/components';
+import * as CommonModule from 'common';
+import { fromDom, fromNewsletter, fromUrl } from 'common/thumbnail';
+// The thumbnail helpers are not part of the common barrel (it would pull
+// html2canvas into every bundle), but add-ons still expect them here.
+export const Common = { ...CommonModule, fromDom, fromNewsletter, fromUrl };
 export const WooCommerceComponents = {
   DateRangeFilterPicker,
   Search,
@@ -48,7 +53,6 @@ export const WooCommerceComponents = {
 
 // assets
 export * as Automation from 'automation';
-export * as Common from 'common';
 export * as CommonFormReactSelect from 'common/form/react-select/react-select';
 export * as CommonFormSelect from 'common/form/select/select';
 export * as CommonGrid from 'common/grid';

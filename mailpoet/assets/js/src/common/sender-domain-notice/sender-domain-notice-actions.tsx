@@ -1,8 +1,5 @@
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
-import { getIsGarden } from 'common/functions';
-
-const isGarden = getIsGarden();
 
 function SenderActions({
   showAuthorizeButton,
@@ -26,16 +23,14 @@ function SenderActions({
           {authorizeButtonLabel}
         </Button>
       )}
-      {!isGarden && (
-        <Button
-          variant="link"
-          target="_blank"
-          href={readMoreLink}
-          rel="noopener noreferrer"
-        >
-          {__('Learn more', 'mailpoet')}
-        </Button>
-      )}
+      <Button
+        variant="link"
+        target="_blank"
+        href={readMoreLink}
+        rel="noopener noreferrer"
+      >
+        {__('Learn more', 'mailpoet')}
+      </Button>
     </>
   );
 }

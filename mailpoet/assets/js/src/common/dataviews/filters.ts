@@ -6,7 +6,7 @@ import type { Filter } from '@wordpress/dataviews';
  * listing should reuse these so date handling stays identical across listings.
  */
 
-function hasOnlyDigits(value: string): boolean {
+export function hasOnlyDigits(value: string): boolean {
   return value
     .split('')
     .every((character) => character >= '0' && character <= '9');
@@ -59,7 +59,7 @@ export function normalizeYmd(value: unknown): string | undefined {
 /**
  * Shift a `yyyy-MM-dd` string by whole days, preserving the `yyyy-MM-dd` shape.
  */
-function shiftYmd(ymd: string, deltaDays: number): string {
+export function shiftYmd(ymd: string, deltaDays: number): string {
   const [year, month, day] = ymd.split('-').map(Number);
   const date = new Date(Date.UTC(year, month - 1, day + deltaDays));
   const shiftedMonth = String(date.getUTCMonth() + 1).padStart(2, '0');
@@ -69,8 +69,8 @@ function shiftYmd(ymd: string, deltaDays: number): string {
 
 /**
  * Translate a single DataViews date filter into a `{ from, to }` range the
- * listing endpoints apply as inclusive whole days (`>= from 00:00:00`,
- * `<= to 23:59:59`). Supports the standard date operators (`on`,
+ * listing endpoints apply as inclusive whole site-local days (from the start
+ * of `from` up to, not including, the start of the day after `to`). Supports the standard date operators (`on`,
  * `beforeInc`/`afterInc` inclusive, `before`/`after` exclusive, `between`).
  *
  * Because the backend boundaries are inclusive, the exclusive `before`/`after`

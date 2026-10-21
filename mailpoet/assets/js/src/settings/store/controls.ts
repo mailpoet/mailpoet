@@ -1,5 +1,6 @@
 import { MailPoet } from 'mailpoet';
 import { select } from '@wordpress/data';
+import { Hooks } from 'wp-js-hooks';
 import { STORE_NAME } from './store-name';
 
 export { callApi as CALL_API } from 'common/controls/call-api';
@@ -32,6 +33,11 @@ export function TRACK_SETTINGS_SAVED() {
       settings.woocommerce && settings.woocommerce.use_mailpoet_editor;
   }
   MailPoet.trackEvent('User has saved Settings', data);
+}
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function REFRESH_HELD_CAMPAIGNS() {
+  Hooks.doAction('mailpoet.held_campaigns.refresh');
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

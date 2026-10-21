@@ -6,9 +6,11 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
+use MailPoet\Automation\Integrations\MailPoet\Templates\TemplateEmailContent;
 use MailPoet\Config\AccessControl;
 use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\ApiDataSanitizer;
 use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewsletterResendController;
@@ -68,6 +70,10 @@ class Newsletters extends APIEndpoint {
 
   private EntityManager $entityManager;
 
+  private TemplateEmailContent $templateEmailContent;
+
+  private LoggerFactory $loggerFactory;
+
   public function __construct(
     WPFunctions $wp,
     NewslettersRepository $newslettersRepository,
@@ -81,7 +87,9 @@ class Newsletters extends APIEndpoint {
     ApiDataSanitizer $apiDataSanitizer,
     SegmentsRepository $segmentsRepository,
     SettingsController $settings,
-    EntityManager $entityManager
+    EntityManager $entityManager,
+    TemplateEmailContent $templateEmailContent,
+    LoggerFactory $loggerFactory
   ) {
     $this->wp = $wp;
     $this->newslettersRepository = $newslettersRepository;
@@ -96,6 +104,8 @@ class Newsletters extends APIEndpoint {
     $this->segmentsRepository = $segmentsRepository;
     $this->settings = $settings;
     $this->entityManager = $entityManager;
+    $this->templateEmailContent = $templateEmailContent;
+    $this->loggerFactory = $loggerFactory;
   }
 
   public function get($data = []) {
@@ -289,13 +299,42 @@ class Newsletters extends APIEndpoint {
   }
 
   public function create($data = []) {
+    $templatePattern = $data['automation_template_pattern'] ?? null;
+    unset($data['automation_template_pattern']);
+    if ($templatePattern !== null && !empty($data['id'])) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => __('A template pattern can only be used when creating a new email.', 'mailpoet'),
+      ]);
+    }
     try {
       $newsletter = $this->newsletterSaveController->save($data);
     } catch (ValidationException $exception) {
       return $this->badRequest(['Please specify a type.']);
     }
+
+    if (is_string($templatePattern) && $templatePattern !== '') {
+      try {
+        $this->applyAutomationTemplateContent($newsletter, $templatePattern);
+      } catch (Throwable $e) {
+        $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->error(
+          'Could not apply the automation template content: ' . $e->getMessage(),
+          ['newsletter_id' => $newsletter->getId(), 'pattern' => $templatePattern]
+        );
+        $this->newsletterDeleteController->bulkDelete([(int)$newsletter->getId()]);
+        return $this->errorResponse([
+          APIError::UNKNOWN => __('The email could not be created from the template.', 'mailpoet'),
+        ], [], Response::STATUS_UNKNOWN);
+      }
+    }
     $response = $this->newslettersResponseBuilder->build($newsletter);
     return $this->successResponse($response);
+  }
+
+  private function applyAutomationTemplateContent(NewsletterEntity $newsletter, string $pattern): void {
+    if ($newsletter->getType() !== NewsletterEntity::TYPE_AUTOMATION) {
+      throw new UnexpectedValueException('Template content can only be applied to automation emails.');
+    }
+    $this->templateEmailContent->apply($newsletter, $pattern);
   }
 
   public function resendToNonOpeners($data = []) {

@@ -217,12 +217,12 @@ class CronHelperTest extends \MailPoetTest {
   }
 
   public function testItCreatesRandomToken() {
-    // random token is a string of 5 characters
     $token1 = $this->cronHelper->createToken();
     $token2 = $this->cronHelper->createToken();
     verify($token1)->notEquals($token2);
     verify(is_string($token1))->true();
-    verify(strlen($token1))->equals(5);
+    verify(strlen($token1))->equals(CronHelper::DAEMON_TOKEN_BYTES * 2);
+    verify(ctype_xdigit($token1))->true();
   }
 
   public function testItGetsSiteUrl() {
@@ -306,6 +306,25 @@ class CronHelperTest extends \MailPoetTest {
     verify($wpRemoteGetArgs[1])->equals($requestArgs);
 
     $wp->removeFilter('mailpoet_cron_request_args', $filter);
+  }
+
+  public function testItRespectsLocalSslVerifyFilter() {
+    $requestArgs = [];
+    $wp = Stub::make(new WPFunctions, [
+      'wpRemotePost' => function($url, array $args) use (&$requestArgs) {
+        $requestArgs = $args;
+        return [];
+      },
+    ]);
+    $cronHelper = new CronHelper($this->settings, $wp);
+
+    $cronHelper->queryCronUrl('test');
+    verify($requestArgs['sslverify'])->false();
+
+    $wp->addFilter('https_local_ssl_verify', '__return_true');
+    $cronHelper->queryCronUrl('test');
+    verify($requestArgs['sslverify'])->true();
+    $wp->removeFilter('https_local_ssl_verify', '__return_true');
   }
 
   public function testItReturnsErrorMessageAsPingResponseWhenCronUrlCannotBeAccessed() {

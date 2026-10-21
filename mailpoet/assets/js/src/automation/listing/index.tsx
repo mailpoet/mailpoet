@@ -86,7 +86,9 @@ function getViewFromSearch(
     ...defaultView,
     page: parsePositiveInt(search.get('paged')) ?? defaultView.page,
     perPage: parsePositiveInt(search.get('per_page')) ?? defaultView.perPage,
-    search: search.get('search') ?? undefined,
+    // DataViews syncs an undefined search to '' through onChangeView on
+    // mount, which resets the page to 1 and pushes a history entry.
+    search: search.get('search') ?? '',
     sort:
       orderby && (order === 'asc' || order === 'desc')
         ? { field: orderby, direction: order }
@@ -319,7 +321,7 @@ export function AutomationListing(): JSX.Element {
   }, [location.search]);
 
   const updateUrlSearchString = useCallback(
-    (nextGroup: Group, nextView: View) => {
+    (nextGroup: Group, nextView: View, replace = false) => {
       const newSearch = new URLSearchParams(location.search);
 
       newSearch.set('status', nextGroup);
@@ -357,17 +359,17 @@ export function AutomationListing(): JSX.Element {
         : location.search;
       const nextSearch = newSearch.toString();
       if (nextSearch !== currentSearch) {
-        navigate({ search: nextSearch });
+        navigate({ search: nextSearch }, { replace });
       }
     },
     [location.search, navigate],
   );
 
   const handleViewChange = useCallback(
-    (nextView: View) => {
+    (nextView: View, replace = false) => {
       setSelection([]);
       setView(nextView);
-      updateUrlSearchString(group, nextView);
+      updateUrlSearchString(group, nextView, replace);
     },
     [group, updateUrlSearchString],
   );
@@ -428,7 +430,9 @@ export function AutomationListing(): JSX.Element {
     const currentPage = view.page ?? 1;
     const lastPage = paginationInfo.totalPages;
     if (automations && lastPage > 0 && currentPage > lastPage) {
-      handleViewChange({ ...view, page: lastPage });
+      // Correct the URL in place: with a new entry, Back would land on the
+      // missing page again and clamp forward.
+      handleViewChange({ ...view, page: lastPage }, true);
     }
   }, [automations, handleViewChange, paginationInfo.totalPages, view]);
 

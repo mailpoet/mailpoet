@@ -5,6 +5,7 @@ namespace MailPoet\Newsletter\Shortcodes;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
 use MailPoet\Newsletter\Shortcodes\Categories\CategoryInterface;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
@@ -209,7 +210,11 @@ class Shortcodes {
     return $processedShortcodes;
   }
 
-  public function replace($content, $contentSource = null, $categories = null) {
+  /**
+   * @param bool $isPlainText Content that is never parsed as HTML, such as a subject line,
+   *   so values are inserted as they are even where the text looks like a tag.
+   */
+  public function replace($content, $contentSource = null, $categories = null, bool $isPlainText = false) {
     $shortcodes = $this->extract($content, $categories);
     if (!$shortcodes) {
       return $content;
@@ -222,23 +227,38 @@ class Shortcodes {
       ($contentSource) ? $contentSource : $content
     );
     $content = (string)$content;
-    $shortcodesInsideTags = $this->findShortcodesInsideTags($content, $shortcodes);
+    $shortcodesInsideTags = $isPlainText ? [] : $this->findShortcodesInsideTags($content, $shortcodes);
+    return $this->replaceOccurrences($content, $shortcodes, $processedShortcodes, $shortcodesInsideTags, function (int $index) use ($processedShortcodes): string {
+      return self::encodeForAttribute((string)$processedShortcodes[$index]);
+    });
+  }
+
+  /**
+   * Replaces every shortcode occurrence, inserting $insideTagReplacement($index) at the positions
+   * listed in $shortcodesInsideTags and $replacements[$index] everywhere else. Text around the tagged
+   * positions is replaced chunk by chunk, so shortcode-like text inside an inserted value is never
+   * replaced a second time.
+   *
+   * @param string[] $shortcodes
+   * @param string[] $replacements
+   * @param array<int, int> $shortcodesInsideTags As returned by findShortcodesInsideTags()
+   * @param callable(int): string $insideTagReplacement
+   */
+  private function replaceOccurrences(string $content, array $shortcodes, array $replacements, array $shortcodesInsideTags, callable $insideTagReplacement): string {
     if (!$shortcodesInsideTags) {
-      return str_replace($shortcodes, $processedShortcodes, $content);
+      return str_replace($shortcodes, $replacements, $content);
     }
-    // Text around the tagged positions is replaced chunk by chunk, so shortcode-like
-    // text inside an encoded value is never replaced a second time.
     $result = '';
     $cursor = 0;
     foreach ($shortcodesInsideTags as $position => $index) {
       if ($position < $cursor) {
         continue;
       }
-      $result .= str_replace($shortcodes, $processedShortcodes, substr($content, $cursor, $position - $cursor));
-      $result .= $this->encodeForAttribute((string)$processedShortcodes[$index]);
+      $result .= str_replace($shortcodes, $replacements, substr($content, $cursor, $position - $cursor));
+      $result .= $insideTagReplacement($index);
       $cursor = $position + strlen($shortcodes[$index]);
     }
-    return $result . str_replace($shortcodes, $processedShortcodes, substr($content, $cursor));
+    return $result . str_replace($shortcodes, $replacements, substr($content, $cursor));
   }
 
   /**
@@ -331,7 +351,7 @@ class Shortcodes {
     return null;
   }
 
-  private function encodeForAttribute(string $value): string {
+  public static function encodeForAttribute(string $value): string {
     // Ampersands are left alone: values such as URLs must stay byte-identical, and
     // an ampersand cannot end an attribute value.
     return strtr($value, [
@@ -340,6 +360,42 @@ class Shortcodes {
       '<' => '&lt;',
       '>' => '&gt;',
     ]);
+  }
+
+  /**
+   * The templated counterpart of replace(): every shortcode becomes a placeholder and its value is
+   * recorded in the collector with the escaping replace() would have applied at that position.
+   *
+   * @param string $part One of the PlaceholderCollector::PART_* constants
+   */
+  public function replaceWithPlaceholders($content, $contentSource, PlaceholderCollector $collector, string $part) {
+    $shortcodes = $this->extract($content);
+    if (!$shortcodes) {
+      return $content;
+    }
+    $processedShortcodes = $this->process(
+      $shortcodes,
+      ($contentSource) ? $contentSource : $content
+    );
+    $placeholders = [];
+    foreach ($processedShortcodes as $index => $processedShortcode) {
+      $processedShortcode = (string)$processedShortcode;
+      $token = $shortcodes[$index];
+      // A shortcode value may be markup (e.g. [site:homepage_link]), so it is converted for the plain-text parts.
+      if ($part === PlaceholderCollector::PART_SUBJECT) {
+        $placeholders[] = $collector->addSubjectTextFromHtml($processedShortcode, $token);
+      } elseif ($part === PlaceholderCollector::PART_HTML) {
+        $placeholders[] = $collector->addHtml($processedShortcode, $token);
+      } else {
+        $placeholders[] = $collector->addTextFromHtml($processedShortcode, $token);
+      }
+    }
+    $content = (string)$content;
+    // Only the HTML part is parsed as markup; the subject and text parts never are.
+    $shortcodesInsideTags = $part === PlaceholderCollector::PART_HTML ? $this->findShortcodesInsideTags($content, $shortcodes) : [];
+    return $this->replaceOccurrences($content, $shortcodes, $placeholders, $shortcodesInsideTags, function (int $index) use ($collector, $processedShortcodes, $shortcodes): string {
+      return $collector->addHtmlAttribute((string)$processedShortcodes[$index], $shortcodes[$index]);
+    });
   }
 
   private function getCategoryObject($category): ?CategoryInterface {

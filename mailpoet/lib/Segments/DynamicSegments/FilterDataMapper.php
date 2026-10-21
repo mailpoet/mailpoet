@@ -119,6 +119,10 @@ class FilterDataMapper {
         }));
       }
     }
+    if (count($data['filters']) > 1) {
+      // Keeping only the first filter would delete the others when the segment is saved.
+      throw new InvalidFilterException('Multiple filters require MailPoet Premium', InvalidFilterException::MULTIPLE_FILTERS_REQUIRE_PREMIUM);
+    }
     $filter = reset($data['filters']);
     return [$processFilter($filter, $data)];
   }

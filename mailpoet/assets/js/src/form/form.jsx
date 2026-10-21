@@ -32,7 +32,7 @@ class FormComponent extends Component {
     if (params.id !== undefined) {
       this.loadItem(params.id);
     } else {
-      setImmediate(() => {
+      setTimeout(() => {
         const defaultValues =
           jQuery('.mailpoet_form').mailpoetSerializeObject();
         const checkboxField =
@@ -47,7 +47,7 @@ class FormComponent extends Component {
         this.setState({
           item: defaultValues,
         });
-      });
+      }, 0);
     }
   }
 
@@ -58,12 +58,12 @@ class FormComponent extends Component {
       params.id === undefined &&
       prevProps.location?.pathname !== location.pathname
     ) {
-      setImmediate(() => {
+      setTimeout(() => {
         this.setState({
           loading: false,
           item: {},
         });
-      });
+      }, 0);
       if (item === undefined) {
         this.formRef.current.reset();
       }

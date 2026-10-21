@@ -33,6 +33,7 @@ use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\TrackingConsentController;
+use MailPoet\Subscribers\WPUserSubscriberLink;
 use MailPoet\Subscription\ManageSubscriptionFormRenderer;
 use MailPoet\Subscription\Pages;
 use MailPoet\Subscription\SubscriptionUrlFactory;
@@ -40,6 +41,7 @@ use MailPoet\Test\DataFactories\CustomField;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
+use MailPoet\Test\DataFactories\ScheduledTaskSubscriber as ScheduledTaskSubscriberFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\StatisticsNewsletters;
 use MailPoet\Test\DataFactories\Subscriber;
@@ -69,6 +71,12 @@ class PagesTest extends \MailPoetTest {
   /*** @var Links */
   private $links;
 
+  /** @var WPUserSubscriberLink */
+  private $wpUserSubscriberLink;
+
+  /** @var int[] */
+  private $wpUserIds = [];
+
   public function _before() {
     parent::_before();
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
@@ -81,6 +89,7 @@ class PagesTest extends \MailPoetTest {
     $this->subscribersRepository->flush();
     $this->linkTokens = $this->diContainer->get(LinkTokens::class);
     $this->links = $this->diContainer->get(Links::class);
+    $this->wpUserSubscriberLink = $this->diContainer->get(WPUserSubscriberLink::class);
 
     $this->testData = [
         'email' => $this->subscriber->getEmail(),
@@ -88,6 +97,16 @@ class PagesTest extends \MailPoetTest {
     ];
     $this->testData['email'] = $this->subscriber->getEmail();
     $this->testData['token'] = $this->linkTokens->getToken($this->subscriber);
+  }
+
+  public function _after() {
+    parent::_after();
+    require_once ABSPATH . 'wp-admin/includes/user.php';
+    require_once ABSPATH . 'wp-admin/includes/ms.php';
+    foreach ($this->wpUserIds as $wpUserId) {
+      is_multisite() ? wpmu_delete_user($wpUserId) : wp_delete_user($wpUserId);
+    }
+    $this->wpUserIds = [];
   }
 
   public function testItConfirmsSubscription() {
@@ -332,6 +351,7 @@ class PagesTest extends \MailPoetTest {
   public function testItUnsubscribesAndRecordsClickForOneClickMethod() {
     SettingsController::getInstance()->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $this->markSentToSubscriber($newsletter->getLatestQueue());
     $this->testData['queueId'] = $newsletter->getLatestQueue()->getId();
     (new NewsletterLink($newsletter))->withHash($newsletter->getHash())->create();
     $renderedNewsletter = ['html' => '', 'text' => ''];
@@ -352,6 +372,7 @@ class PagesTest extends \MailPoetTest {
     $newsletter = (new Newsletter())->withSendingQueue()->create();
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $this->markSentToSubscriber($queue);
     $this->testData['queueId'] = $queue->getId();
     (new NewsletterLink($newsletter))->withHash($newsletter->getHash())->create();
     $renderedNewsletter = ['html' => '', 'text' => ''];
@@ -364,6 +385,54 @@ class PagesTest extends \MailPoetTest {
     $clickStat = $this->statisticsClicksRepository->getAllForSubscriber($this->subscriber)->getQuery()->getResult();
     verify($clickStat)->arrayCount(1);
     verify($this->getSentWithTracking((int)$sentRow->getId()))->equals(1);
+  }
+
+  public function testItLinksUnsubscribeToNewsletterSentToSubscriber() {
+    $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $this->markSentToSubscriber($queue);
+    $this->testData['queueId'] = $queue->getId();
+    $pages = $this->getPages()->init('unsubscribe', $this->testData);
+
+    $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
+
+    $unsubscriptionStat = $this->statisticsUnsubscribesRepository->findOneBy(['subscriber' => $this->subscriber->getId()]);
+    $this->assertInstanceOf(StatisticsUnsubscribeEntity::class, $unsubscriptionStat);
+    $this->assertInstanceOf(SendingQueueEntity::class, $unsubscriptionStat->getQueue());
+    verify($unsubscriptionStat->getQueue()->getId())->equals($queue->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $unsubscriptionStat->getNewsletter());
+    verify($unsubscriptionStat->getNewsletter()->getId())->equals($newsletter->getId());
+  }
+
+  public function testItUnsubscribesWithoutNewsletterWhenQueueWasNotSentToSubscriber() {
+    SettingsController::getInstance()->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
+    $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $this->testData['queueId'] = $queue->getId();
+    (new NewsletterLink($newsletter))->withHash($newsletter->getHash())->create();
+    $renderedNewsletter = ['html' => '', 'text' => ''];
+    $this->links->process($renderedNewsletter, $newsletter, $queue);
+    $pages = $this->getPages()->init('unsubscribe', $this->testData);
+
+    $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
+
+    $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
+    verify($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $unsubscriptionStat = $this->statisticsUnsubscribesRepository->findOneBy(['subscriber' => $this->subscriber->getId()]);
+    $this->assertInstanceOf(StatisticsUnsubscribeEntity::class, $unsubscriptionStat);
+    verify($unsubscriptionStat->getQueue())->null();
+    verify($unsubscriptionStat->getNewsletter())->null();
+    $clickStat = $this->statisticsClicksRepository->getAllForSubscriber($this->subscriber)->getQuery()->getResult();
+    verify($clickStat)->arrayCount(0);
+  }
+
+  private function markSentToSubscriber(SendingQueueEntity $queue): void {
+    $task = $queue->getTask();
+    $this->assertNotNull($task);
+    (new ScheduledTaskSubscriberFactory())->createProcessed($task, $this->subscriber);
   }
 
   private function getSentWithTracking(int $rowId): int {
@@ -384,6 +453,7 @@ class PagesTest extends \MailPoetTest {
     $newsletter = (new Newsletter())->withSendingQueue()->create();
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $this->markSentToSubscriber($queue);
     $this->testData['queueId'] = $queue->getId();
     (new NewsletterLink($newsletter))->withHash($newsletter->getHash())->create();
     $renderedNewsletter = ['html' => '', 'text' => ''];
@@ -522,6 +592,76 @@ class PagesTest extends \MailPoetTest {
     $this->assertSame($copy, $subscriber->getTrackingConsentCopy());
   }
 
+  public function testManageContentDoesNotShowSubscriberOfUnconfirmedWpUserLink(): void {
+    $wpUserId = $this->createWpUserLinkedToSubscriber();
+    $this->wpUserSubscriberLink->markUnconfirmed($wpUserId, (string)$this->subscriber->getEmail());
+    wp_set_current_user($wpUserId);
+
+    $content = $this->getPages()->init()->getManageContent();
+
+    verify($content)->stringNotContainsString($this->testData['token']);
+    verify($content)->stringNotContainsString((string)$this->subscriber->getEmail());
+    verify($content)->stringContainsString('use the link in one of our emails');
+  }
+
+  public function testManageContentShowsSubscriberOfConfirmedWpUserLink(): void {
+    $wpUserId = $this->createWpUserLinkedToSubscriber();
+    $this->wpUserSubscriberLink->confirm($wpUserId);
+    wp_set_current_user($wpUserId);
+
+    $content = $this->getPages()->init()->getManageContent();
+
+    verify($content)->stringContainsString($this->testData['token']);
+  }
+
+  public function testManageLinkIsNotShownForUnconfirmedWpUserLink(): void {
+    $wpUserId = $this->createWpUserLinkedToSubscriber();
+    $this->wpUserSubscriberLink->markUnconfirmed($wpUserId, (string)$this->subscriber->getEmail());
+    wp_set_current_user($wpUserId);
+
+    $link = $this->getPages()->init()->getManageLink([]);
+
+    $manageUrl = $this->diContainer->get(SubscriptionUrlFactory::class)->getManageUrl($this->subscriber);
+    verify($link)->stringNotContainsString($manageUrl);
+    verify($link)->stringContainsString('use the link in one of our emails');
+  }
+
+  public function testManageLinkIsShownForConfirmedWpUserLink(): void {
+    $wpUserId = $this->createWpUserLinkedToSubscriber();
+    $this->wpUserSubscriberLink->confirm($wpUserId);
+    wp_set_current_user($wpUserId);
+
+    $link = $this->getPages()->init()->getManageLink([]);
+
+    $manageUrl = $this->diContainer->get(SubscriptionUrlFactory::class)->getManageUrl($this->subscriber);
+    verify($link)->stringContainsString($manageUrl);
+  }
+
+  public function testOpeningManagePageWithValidLinkConfirmsWpUserLink(): void {
+    $wpUserId = $this->createWpUserLinkedToSubscriber();
+    $this->wpUserSubscriberLink->markUnconfirmed($wpUserId, (string)$this->subscriber->getEmail());
+    wp_set_current_user($wpUserId);
+
+    $this->getPages()->init(Pages::ACTION_MANAGE, $this->testData)->getManageContent();
+
+    verify($this->wpUserSubscriberLink->isUnconfirmed($wpUserId))->false();
+  }
+
+  public function testOpeningManagePageOfAnotherSubscriberKeepsWpUserLinkUnconfirmed(): void {
+    $wpUserId = $this->createWpUserLinkedToSubscriber();
+    $this->wpUserSubscriberLink->markUnconfirmed($wpUserId, (string)$this->subscriber->getEmail());
+    wp_set_current_user($wpUserId);
+    $otherSubscriber = (new Subscriber())->withEmail('other-subscriber@example.com')->create();
+    $otherData = [
+      'email' => $otherSubscriber->getEmail(),
+      'token' => $this->linkTokens->getToken($otherSubscriber),
+    ];
+
+    $this->getPages()->init(Pages::ACTION_MANAGE, $otherData)->getManageContent();
+
+    verify($this->wpUserSubscriberLink->isUnconfirmed($wpUserId))->true();
+  }
+
   public function testWindowTitleCanBeCalledWithSingleArgument() {
     $pages = $this->getPages();
 
@@ -540,14 +680,53 @@ class PagesTest extends \MailPoetTest {
     $this->assertStringContainsString('MailPoet', $result);
   }
 
+  public function testItLeavesUnrelatedPostContentUntouchedForInvalidSubscriber() {
+    $pages = $this->getPages(null, null, $this->getWpForQueriedPost(false))
+      ->init(Pages::ACTION_MANAGE, ['email' => $this->subscriber->getEmail(), 'token' => 'bogus']);
+
+    verify($pages->setPageContent('Unrelated post body'))->equals('Unrelated post body');
+  }
+
+  public function testItReplacesPageShortcodeWithMessageForInvalidSubscriber() {
+    $pages = $this->getPages(null, null, $this->getWpForQueriedPost(false))
+      ->init(Pages::ACTION_MANAGE, ['email' => $this->subscriber->getEmail(), 'token' => 'bogus']);
+
+    verify($pages->setPageContent('[mailpoet_page]'))->stringContainsString("doesn't appear in our lists anymore");
+  }
+
+  public function testItReplacesQueriedCustomPageContentWithMessageForInvalidSubscriber() {
+    $pages = $this->getPages(null, null, $this->getWpForQueriedPost(true))
+      ->init(Pages::ACTION_MANAGE, ['email' => $this->subscriber->getEmail(), 'token' => 'bogus']);
+
+    verify($pages->setPageContent('Custom page body'))->stringContainsString("doesn't appear in our lists anymore");
+  }
+
+  public function testItLeavesUnrelatedPostContentUntouchedForValidSubscriber() {
+    $pages = $this->getPages(null, null, $this->getWpForQueriedPost(false))
+      ->init(Pages::ACTION_MANAGE, $this->testData);
+
+    verify($pages->setPageContent('Unrelated post body'))->equals('Unrelated post body');
+  }
+
+  private function getWpForQueriedPost(bool $isQueriedPost): WPFunctions {
+    return Stub::make(new WPFunctions, [
+      'isSingular' => $isQueriedPost,
+      'inTheLoop' => $isQueriedPost,
+      'isMainQuery' => $isQueriedPost,
+      'getTheId' => 10,
+      'getQueriedObjectId' => $isQueriedPost ? 10 : 20,
+    ]);
+  }
+
   private function getPages(
     ?NewSubscriberNotificationMailer $newSubscriberNotificationsMock = null,
-    ?Unsubscribes $unsubscribesMock = null
+    ?Unsubscribes $unsubscribesMock = null,
+    ?WPFunctions $wp = null
   ): Pages {
     $container = ContainerWrapper::getInstance();
     return new Pages(
       $newSubscriberNotificationsMock ?? $container->get(NewSubscriberNotificationMailer::class),
-      $container->get(WPFunctions::class),
+      $wp ?? $container->get(WPFunctions::class),
       $container->get(WelcomeScheduler::class),
       $container->get(LinkTokens::class),
       $container->get(SubscriptionUrlFactory::class),
@@ -567,8 +746,18 @@ class PagesTest extends \MailPoetTest {
       $container->get(SettingsController::class),
       $container->get(UnsubscribeReasonTracker::class),
       $container->get(Request::class),
-      $container->get(TrackingConsentController::class)
+      $container->get(TrackingConsentController::class),
+      $container->get(WPUserSubscriberLink::class)
     );
+  }
+
+  private function createWpUserLinkedToSubscriber(): int {
+    $wpUserId = wp_create_user('pages-test-user', 'password', (string)$this->subscriber->getEmail());
+    $this->assertIsInt($wpUserId);
+    $this->wpUserIds[] = $wpUserId;
+    $this->entityManager->refresh($this->subscriber);
+    $this->assertSame($wpUserId, $this->subscriber->getWpUserId());
+    return $wpUserId;
   }
 
   private function createSegment(): SegmentEntity {

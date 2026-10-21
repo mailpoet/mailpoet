@@ -5,6 +5,7 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response;
+use MailPoet\API\JSON\ResponseBuilders\HeldCampaignsResponseBuilder;
 use MailPoet\API\JSON\ResponseBuilders\SendingQueuesResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
@@ -16,17 +17,25 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Mailer\MailerFactory;
+use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\NewsletterValidator;
+use MailPoet\Newsletter\Sending\OverdueCampaignHold;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\FreeDomains;
+use MailPoet\Util\Helpers;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoetVendor\Carbon\Carbon;
 
 class SendingQueue extends APIEndpoint {
+  // Lets the held emails notice tell a stale row from other refusals.
+  public const ERROR_NOT_HELD = 'not_held';
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
@@ -67,6 +76,18 @@ class SendingQueue extends APIEndpoint {
   /** @var TimeZoneCampaignScheduler */
   private $timeZoneCampaignScheduler;
 
+  /** @var AuthorizedEmailsController */
+  private $authorizedEmailsController;
+
+  /** @var FreeDomains */
+  private $freeDomains;
+
+  private OverdueCampaignHold $overdueCampaignHold;
+
+  private HeldCampaignsResponseBuilder $heldCampaignsResponseBuilder;
+
+  private NewsletterDeleteController $newsletterDeleteController;
+
   public function __construct(
     SubscribersFeature $subscribersFeature,
     NewslettersRepository $newsletterRepository,
@@ -79,7 +100,12 @@ class SendingQueue extends APIEndpoint {
     NewsletterValidator $newsletterValidator,
     SendingQueuesResponseBuilder $sendingQueuesResponseBuilder,
     CronHelper $cronHelper,
-    TimeZoneCampaignScheduler $timeZoneCampaignScheduler
+    TimeZoneCampaignScheduler $timeZoneCampaignScheduler,
+    AuthorizedEmailsController $authorizedEmailsController,
+    FreeDomains $freeDomains,
+    OverdueCampaignHold $overdueCampaignHold,
+    HeldCampaignsResponseBuilder $heldCampaignsResponseBuilder,
+    NewsletterDeleteController $newsletterDeleteController
   ) {
     $this->subscribersFeature = $subscribersFeature;
     $this->subscribersFinder = $subscribersFinder;
@@ -93,6 +119,11 @@ class SendingQueue extends APIEndpoint {
     $this->sendingQueuesResponseBuilder = $sendingQueuesResponseBuilder;
     $this->cronHelper = $cronHelper;
     $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
+    $this->authorizedEmailsController = $authorizedEmailsController;
+    $this->freeDomains = $freeDomains;
+    $this->overdueCampaignHold = $overdueCampaignHold;
+    $this->heldCampaignsResponseBuilder = $heldCampaignsResponseBuilder;
+    $this->newsletterDeleteController = $newsletterDeleteController;
   }
 
   public function add($data = []) {
@@ -202,11 +233,14 @@ class SendingQueue extends APIEndpoint {
 
         $this->sendingQueuesRepository->updateCounts($sendingQueue);
         $scheduledTask->setStatus(null);
-        $scheduledTask->setScheduledAt(null);
+        $scheduledTask->setScheduledAt(Carbon::now()->millisecond(0));
 
         // set newsletter status
         $newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
       }
+      // A held run is replaced by this send. It is deleted only here, after every check that can refuse the
+      // request. The time zone branch above replaces held batches itself, inside its transaction.
+      $this->deleteHeldCampaignQueues($newsletter);
       $this->scheduledTasksRepository->persist($scheduledTask);
       $this->newsletterRepository->flush();
 
@@ -260,6 +294,18 @@ class SendingQueue extends APIEndpoint {
   }
 
   public function resume($data = []) {
+    return $this->resumeFromRequest(is_array($data) ? $data : [], false);
+  }
+
+  /**
+   * Like resume(), but only acts on a held email. The held notice can be stale (the email may have been
+   * rescheduled meanwhile), and a plain resume would then fall back to the newest queue.
+   */
+  public function resumeHeld($data = []) {
+    return $this->resumeFromRequest(is_array($data) ? $data : [], true);
+  }
+
+  private function resumeFromRequest(array $data, bool $heldOnly) {
     if ($this->subscribersFeature->check()) {
       return $this->errorResponse([
         APIError::FORBIDDEN => __('Subscribers limit reached.', 'mailpoet'),
@@ -271,27 +317,70 @@ class SendingQueue extends APIEndpoint {
     );
     $newsletter = $this->newsletterRepository->findOneById($newsletterId);
 
-    if ($newsletter instanceof NewsletterEntity) {
-      $queue = $newsletter->getLastUpdatedQueue();
-
-      if (!$queue instanceof SendingQueueEntity) {
-        return $this->errorResponse([
-          APIError::UNKNOWN => __('This newsletter has not been sent yet.', 'mailpoet'),
-        ]);
-      } else {
-        if ($this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)) {
-          $this->timeZoneCampaignScheduler->resumeCampaign($queue);
-        } else {
-          $this->sendingQueuesRepository->resume($queue);
-        }
-        $this->triggerSending($newsletter);
-        return $this->successResponse();
-      }
-    } else {
+    if (!$newsletter instanceof NewsletterEntity) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet'),
       ]);
     }
+    $heldTasks = $this->scheduledTasksRepository->findHeldOverdueForNewsletter($newsletter);
+    $failure = $heldOnly && !$heldTasks ? $this->notHeldFailure() : $this->resumeNewsletter($newsletter, $heldTasks);
+    if ($failure) {
+      return $this->errorResponse([$failure['code'] => $failure['message']], [], $failure['status']);
+    }
+    $this->triggerSending($newsletter);
+    return $this->successResponse();
+  }
+
+  public function cancelHeld($data = []) {
+    $newsletter = $this->newsletterRepository->findOneById(isset($data['newsletter_id']) ? (int)$data['newsletter_id'] : false);
+    if (!$newsletter instanceof NewsletterEntity) {
+      return $this->errorResponse([
+        APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet'),
+      ]);
+    }
+    $failure = $this->cancelHeldNewsletter($newsletter, $this->scheduledTasksRepository->findHeldOverdueForNewsletter($newsletter));
+    if ($failure) {
+      return $this->errorResponse([$failure['code'] => $failure['message']], [], $failure['status']);
+    }
+    return $this->successResponse();
+  }
+
+  public function resumeAllHeld($data = []) {
+    $newsletterIds = $this->getNewsletterIds($data);
+    if ($newsletterIds === null) {
+      return $this->invalidNewsletterIdsResponse();
+    }
+    $isLimitReached = $this->subscribersFeature->check();
+    $resumedNewsletter = null;
+    $result = $this->processHeldNewsletters($newsletterIds, function(NewsletterEntity $newsletter, array $heldTasks) use ($isLimitReached, &$resumedNewsletter) {
+      if ($isLimitReached) {
+        return ['message' => __('Subscribers limit reached.', 'mailpoet')];
+      }
+      $failure = $this->resumeNewsletter($newsletter, $heldTasks);
+      if (!$failure && $newsletter->getStatus() === NewsletterEntity::STATUS_SENDING) {
+        $resumedNewsletter = $newsletter;
+      }
+      return $failure;
+    });
+    if ($resumedNewsletter) {
+      $this->triggerSending($resumedNewsletter);
+    }
+    return $this->successResponse($result);
+  }
+
+  public function cancelAllHeld($data = []) {
+    $newsletterIds = $this->getNewsletterIds($data);
+    if ($newsletterIds === null) {
+      return $this->invalidNewsletterIdsResponse();
+    }
+    return $this->successResponse($this->processHeldNewsletters($newsletterIds, function(NewsletterEntity $newsletter, array $heldTasks) {
+      return $this->cancelHeldNewsletter($newsletter, $heldTasks);
+    }));
+  }
+
+  public function getHeld() {
+    $this->overdueCampaignHold->holdDueCampaigns();
+    return $this->successResponse($this->heldCampaignsResponseBuilder->buildAll($this->overdueCampaignHold->getHeld()));
   }
 
   public function pingCron() {
@@ -308,6 +397,257 @@ class SendingQueue extends APIEndpoint {
       ]);
     }
     return $this->successResponse();
+  }
+
+  /**
+   * @return int[]|null Null when the ids are missing or invalid.
+   */
+  private function getNewsletterIds(array $data): ?array {
+    $ids = $data['newsletter_ids'] ?? null;
+    if (!is_array($ids) || !$ids) {
+      return null;
+    }
+    foreach ($ids as $id) {
+      if (!(is_int($id) || (is_string($id) && ctype_digit($id))) || (int)$id < 1) {
+        return null;
+      }
+    }
+    return array_values(array_unique(array_map('intval', $ids)));
+  }
+
+  private function invalidNewsletterIdsResponse() {
+    return $this->badRequest([
+      APIError::BAD_REQUEST => __('Choose at least one email.', 'mailpoet'),
+    ]);
+  }
+
+  /**
+   * Runs $process for each requested email that is still held. The held tasks of all emails are loaded in one
+   * query. An email that fails with an unexpected error is reported without the error text.
+   *
+   * @param int[] $newsletterIds
+   * @param callable(NewsletterEntity, ScheduledTaskEntity[]): (array{message: string}|null) $process Returns a failure, or null on success.
+   * @return array{done: int[], failed: array<array{id: int, message: string}>, skipped: int[]}
+   */
+  private function processHeldNewsletters(array $newsletterIds, callable $process): array {
+    /** @var array<int, array{newsletter: NewsletterEntity, tasks: ScheduledTaskEntity[]}> $heldByNewsletter */
+    $heldByNewsletter = [];
+    foreach ($this->scheduledTasksRepository->findHeldOverdueForNewsletterIds($newsletterIds) as $heldTask) {
+      $heldQueue = $heldTask->getSendingQueue();
+      $heldNewsletter = $heldQueue ? $heldQueue->getNewsletter() : null;
+      if ($heldNewsletter instanceof NewsletterEntity) {
+        $heldByNewsletter[(int)$heldNewsletter->getId()]['newsletter'] = $heldNewsletter;
+        $heldByNewsletter[(int)$heldNewsletter->getId()]['tasks'][] = $heldTask;
+      }
+    }
+    $done = [];
+    $failed = [];
+    $skipped = [];
+    foreach ($newsletterIds as $id) {
+      if (!isset($heldByNewsletter[$id])) {
+        $skipped[] = $id;
+        continue;
+      }
+      try {
+        $failure = $process($heldByNewsletter[$id]['newsletter'], $heldByNewsletter[$id]['tasks']);
+      } catch (\Exception $e) {
+        $failure = ['message' => $this->getUnexpectedErrorMessage()];
+      }
+      if ($failure) {
+        $failed[] = ['id' => $id, 'message' => $failure['message']];
+      } else {
+        $done[] = $id;
+      }
+    }
+    return ['done' => $done, 'failed' => $failed, 'skipped' => $skipped];
+  }
+
+  private function getUnexpectedErrorMessage(): string {
+    return __('This email couldn’t be updated. Reload the page and try again.', 'mailpoet');
+  }
+
+  /**
+   * Every check that can refuse runs before the first change, so a refused email is left exactly as it was.
+   *
+   * @param ScheduledTaskEntity[] $heldTasks
+   * @return array{code: string, message: string, status: int}|null Null when the newsletter was resumed.
+   */
+  private function resumeNewsletter(NewsletterEntity $newsletter, array $heldTasks): ?array {
+    // Holds change only the task, so the held queues are not necessarily the last updated one.
+    $queue = $heldTasks ? $heldTasks[0]->getSendingQueue() : $newsletter->getLastUpdatedQueue();
+    if (!$queue instanceof SendingQueueEntity) {
+      return ['code' => APIError::UNKNOWN, 'message' => __('This newsletter has not been sent yet.', 'mailpoet'), 'status' => Response::STATUS_NOT_FOUND];
+    }
+    if ($heldTasks && $this->hasParentSender($newsletter) && $this->scheduledTasksRepository->hasActiveSiblingIssue($newsletter)) {
+      return [
+        'code' => APIError::BAD_REQUEST,
+        'message' => __('Another issue of this post notification is being sent. Wait until it finishes, then send this one.', 'mailpoet'),
+        'status' => Response::STATUS_BAD_REQUEST,
+      ];
+    }
+    $isPausedForSenderDomain = $this->isPausedForSenderDomain($queue);
+    // Post notification copies can't be edited, so an unmarked copy with a bad sender takes the parent's sender too.
+    $isSenderValid = null;
+    if (!$isPausedForSenderDomain && $this->hasParentSender($newsletter)) {
+      $isSenderValid = $this->authorizedEmailsController->isSenderAddressValid($newsletter, 'resume', false);
+    }
+    $previousSender = [$newsletter->getSenderAddress(), $newsletter->getSenderName()];
+    try {
+      if ($isPausedForSenderDomain || $isSenderValid === false) {
+        // The parent's sender has to be on the entity to be validated. It is only in memory until the resume below
+        // saves it, and put back when the resume is refused or fails.
+        $this->applyParentSender($newsletter);
+        $isSenderValid = null;
+      }
+      if ($isSenderValid === null) {
+        $isSenderValid = $this->authorizedEmailsController->isSenderAddressValid($newsletter, 'resume', $isPausedForSenderDomain);
+      }
+      if (!$isSenderValid) {
+        $message = $this->getSenderDomainNotReadyMessage($newsletter);
+        $this->restoreSender($newsletter, $previousSender);
+        return ['code' => APIError::FORBIDDEN, 'message' => $message, 'status' => Response::STATUS_FORBIDDEN];
+      }
+    } catch (\Throwable $e) {
+      $this->restoreSender($newsletter, $previousSender);
+      throw $e;
+    }
+
+    // Any explicit resume is a confirmation, so the campaign is not held again for being late.
+    $isTimeZoneQueue = $this->timeZoneCampaignScheduler->isTimeZoneQueue($queue);
+    if ($isTimeZoneQueue) {
+      $queues = $this->timeZoneCampaignScheduler->getCampaignQueues($queue);
+    } else {
+      $queues = $heldTasks ? array_filter(array_map(function(ScheduledTaskEntity $task) {
+        return $task->getSendingQueue();
+      }, $heldTasks)) : [$queue];
+    }
+    $confirmedBefore = [];
+    foreach ($queues as $campaignQueue) {
+      $campaignTask = $campaignQueue->getTask();
+      if ($campaignTask instanceof ScheduledTaskEntity) {
+        $confirmedBefore[] = [$campaignTask, $campaignTask->isOverdueSendConfirmed()];
+        $campaignTask->setOverdueSendConfirmed(true);
+      }
+    }
+
+    // The confirmation is only in memory until the resume saves it. If the resume fails, the next email's
+    // save must not confirm this one.
+    try {
+      if ($isTimeZoneQueue) {
+        $this->timeZoneCampaignScheduler->resumeCampaign($queue);
+      } else {
+        foreach ($queues as $queueToResume) {
+          $this->sendingQueuesRepository->resume($queueToResume);
+        }
+      }
+    } catch (\Throwable $e) {
+      foreach ($confirmedBefore as [$campaignTask, $wasConfirmed]) {
+        $campaignTask->setOverdueSendConfirmed($wasConfirmed);
+      }
+      $this->restoreSender($newsletter, $previousSender);
+      throw $e;
+    }
+    return null;
+  }
+
+  /**
+   * @return array{code: string, message: string, status: int}
+   */
+  private function notHeldFailure(): array {
+    return ['code' => self::ERROR_NOT_HELD, 'message' => __('This email is not held.', 'mailpoet'), 'status' => Response::STATUS_BAD_REQUEST];
+  }
+
+  /**
+   * @param ScheduledTaskEntity[] $heldTasks
+   * @return array{code: string, message: string, status: int}|null Null when the held run was cancelled.
+   */
+  private function cancelHeldNewsletter(NewsletterEntity $newsletter, array $heldTasks): ?array {
+    if (!$heldTasks) {
+      return $this->notHeldFailure();
+    }
+
+    if ($newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY) {
+      $this->newsletterDeleteController->bulkDelete([(int)$newsletter->getId()]);
+      return null;
+    }
+
+    $this->deleteHeldCampaignQueues($newsletter, $heldTasks);
+    if ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD) {
+      $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+      $this->newsletterRepository->flush();
+    }
+    return null;
+  }
+
+  /**
+   * @param ScheduledTaskEntity[]|null $heldTasks Loaded when not given.
+   */
+  private function deleteHeldCampaignQueues(NewsletterEntity $newsletter, ?array $heldTasks = null): void {
+    $heldTasks = $heldTasks ?? $this->scheduledTasksRepository->findHeldOverdueForNewsletter($newsletter);
+    foreach ($heldTasks as $heldTask) {
+      $heldQueue = $heldTask->getSendingQueue();
+      if ($heldQueue instanceof SendingQueueEntity) {
+        $this->timeZoneCampaignScheduler->deleteCampaignQueue($heldQueue);
+      }
+    }
+    if ($heldTasks) {
+      $this->scheduledTasksRepository->flush();
+    }
+  }
+
+  private function isPausedForSenderDomain(SendingQueueEntity $queue): bool {
+    $queues = $this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)
+      ? $this->timeZoneCampaignScheduler->getCampaignQueues($queue)
+      : [$queue];
+    foreach ($queues as $campaignQueue) {
+      $task = $campaignQueue->getTask();
+      if ($task instanceof ScheduledTaskEntity && $task->getPauseReason() === ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Notification history emails are copies made at schedule time, so they keep the parent's old sender.
+   */
+  private function hasParentSender(NewsletterEntity $newsletter): bool {
+    return $newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY && $newsletter->getParent() instanceof NewsletterEntity;
+  }
+
+  /**
+   * @param array{0: string, 1: string} $sender
+   */
+  private function restoreSender(NewsletterEntity $newsletter, array $sender): void {
+    $newsletter->setSenderAddress($sender[0]);
+    $newsletter->setSenderName($sender[1]);
+  }
+
+  private function applyParentSender(NewsletterEntity $newsletter): void {
+    $parent = $newsletter->getParent();
+    if (!$parent instanceof NewsletterEntity || !$this->hasParentSender($newsletter)) {
+      return;
+    }
+    $newsletter->setSenderAddress($parent->getSenderAddress());
+    $newsletter->setSenderName($parent->getSenderName());
+  }
+
+  /**
+   * Plain text: the client escapes API errors when rendering them.
+   */
+  private function getSenderDomainNotReadyMessage(NewsletterEntity $newsletter): string {
+    $sender = (string)$newsletter->getSenderAddress();
+    $domain = Helpers::extractEmailDomain($sender);
+
+    if ($domain === '') {
+      return __('This email can’t be resumed yet. To make sure your campaigns reach your subscribers, send it from an authenticated sender domain, then click Resume again.', 'mailpoet');
+    }
+    if ($this->freeDomains->isEmailOnFreeDomain($sender)) {
+      // translators: %s is a domain such as gmail.com.
+      return sprintf(__('This email can’t be resumed yet. To make sure your campaigns reach your subscribers, send it from an address on your own authenticated domain instead of %s, then click Resume again.', 'mailpoet'), $domain);
+    }
+    // translators: %s is a domain such as example.com.
+    return sprintf(__('This email can’t be resumed yet. To make sure your campaigns reach your subscribers, authenticate %s or switch to another authenticated sender domain, then click Resume again.', 'mailpoet'), $domain);
   }
 
   /**

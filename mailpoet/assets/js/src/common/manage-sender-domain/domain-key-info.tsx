@@ -1,5 +1,6 @@
 import { Fragment } from 'react';
 import { __ } from '@wordpress/i18n';
+import { filterMessageHtml } from 'common/functions/filter-message-html';
 import { SenderDomainDnsItem } from './manage-sender-domain-types';
 import { ErrorIcon } from './icons';
 
@@ -20,12 +21,14 @@ function Diff({ issues }: DiffProps) {
     message = __('Please remove the text highlighted in red:', 'mailpoet');
   }
 
+  const diffHtml = filterMessageHtml(issues.diff ?? '');
+
   return (
     <>
       {message}{' '}
       {issues.has_errors && (
         // eslint-disable-next-line react/no-danger -- display pre-rendered diff
-        <strong dangerouslySetInnerHTML={{ __html: issues.diff }} />
+        <strong dangerouslySetInnerHTML={{ __html: diffHtml }} />
       )}
     </>
   );

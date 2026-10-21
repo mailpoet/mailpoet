@@ -64,10 +64,11 @@ class WelcomeWizardCest {
     $i->waitForText('Activate your MailPoet account');
     $i->fillField('#mailpoet_premium_key', 'invalid key');
     $i->click('.mailpoet-verify-key-button');
-    $i->waitForElementVisible('.mailpoet_error');
+    $i->waitForElementVisible('.mailpoet_error', 30);
     $i->fillField('#mailpoet_premium_key', $mailPoetSendingKey);
-    $i->click('.mailpoet-verify-key-button');
-    $i->waitForText('MailPoet account connected', 20);
+    $i->verifyKeyRetryingOnBridgeError(function () use ($i) {
+      $i->click('.mailpoet-verify-key-button');
+    }, 'MailPoet account connected');
     $i->click('.mailpoet-wizard-continue-button');
 
     // wizard finished and the user was redirect to the home page

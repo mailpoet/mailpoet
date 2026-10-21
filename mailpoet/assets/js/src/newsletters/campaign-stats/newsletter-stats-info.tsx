@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { escapeHTML } from '@wordpress/escape-html';
 import {
   Button,
   ButtonGroup,
@@ -56,9 +57,9 @@ const duplicateNewsletter = (
             'Email "%s" has been duplicated. New email: <a href="%s"> %s </a>',
             'mailpoet',
           ),
-          newsletter.subject,
+          escapeHTML(newsletter.subject),
           editorHref,
-          duplicatedNewsletter.subject,
+          escapeHTML(duplicatedNewsletter.subject),
         ),
         { static: true },
       );

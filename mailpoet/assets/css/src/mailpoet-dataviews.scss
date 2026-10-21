@@ -2,9 +2,10 @@
 // `@wordpress/dataviews`. Loaded by AdminPages\AssetsController::setupDataViewsDependencies()
 // alongside the registered `wp-components` style handle. Per-listing tweaks
 // belong in their feature-specific stylesheet (see `_listing-forms.scss`).
-@import 'settings/grid';
-@import 'settings/colors';
-@import '../../../node_modules/@wordpress/dataviews/build-style/style';
+@use 'settings/grid' as *;
+@use 'settings/colors' as *;
+@use '../../../node_modules/@wordpress/dataviews/build-style/style' as
+  wp-dataviews;
 
 .mailpoet-dataviews__tabs,
 .mailpoet-segments-dataviews__tabs {
@@ -41,6 +42,11 @@
   flex-wrap: wrap;
   gap: 8px;
   padding: 8px;
+}
+
+// The active filter chips would otherwise touch the table header below them.
+.mailpoet-dataviews__filters {
+  padding: 0 8px 8px;
 }
 
 // Right-aligned group inside a listing toolbar. Holds the DataViews filters

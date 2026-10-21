@@ -11,7 +11,6 @@ use MailPoet\Automation\Integrations\WooCommerce\Payloads\CustomerPayload;
 use MailPoet\NotFoundException;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
-use MailPoet\WPCOM\DotcomHelperFunctions;
 use WC_Customer;
 use WC_Order;
 
@@ -24,22 +23,13 @@ class CustomerSubject implements Subject {
   /** @var CustomerFieldsFactory */
   private $customerFieldsFactory;
 
-  /** @var DotcomHelperFunctions */
-  private $dotcomHelperFunctions;
-
   public function __construct(
-    CustomerFieldsFactory $customerFieldsFactory,
-    DotcomHelperFunctions $dotcomHelperFunctions
+    CustomerFieldsFactory $customerFieldsFactory
   ) {
     $this->customerFieldsFactory = $customerFieldsFactory;
-    $this->dotcomHelperFunctions = $dotcomHelperFunctions;
   }
 
   public function getName(): string {
-    if ($this->dotcomHelperFunctions->isGarden()) {
-      // translators: automation subject (entity entering automation) title
-      return __('Customer', 'mailpoet');
-    }
     // translators: automation subject (entity entering automation) title
     return __('WooCommerce customer', 'mailpoet');
   }

@@ -11,6 +11,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\Settings\MailPoetPageResolver;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\LinkTokens;
@@ -66,7 +67,7 @@ class ShortcodesTest extends \MailPoetTest {
     $this->shortcodesObject->setSubscriber($this->subscriber);
     $this->shortcodesObject->setWpUserPreview(false);
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
-    $this->subscriptionUrlFactory = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, $this->linkTokens);
+    $this->subscriptionUrlFactory = new SubscriptionUrlFactory(WPFunctions::get(), $this->linkTokens, $this->diContainer->get(MailPoetPageResolver::class));
     $this->entityManager->flush();
 
     $blogname = get_option('blogname');
@@ -194,6 +195,17 @@ class ShortcodesTest extends \MailPoetTest {
     verify($out)->equals('BoldTitle');
   }
 
+  public function testItDoesNotTurnTagsInPostTitlesSavedWithKsesIntoMarkup() {
+    // Users without unfiltered_html save titles through kses; WordPress 7.2 stores them decoded.
+    $this->assertNotFalse(has_filter('title_save_pre', 'wp_filter_kses'));
+    $titles = ['&lt;b&gt;Bold&lt;/b&gt;Title', '&#060;b&#062;Bold&#060;/b&#062;Title', '&#x3c;b&#x3e;Bold&#x3c;/b&#x3e;Title', '<b>Bold</b>Title'];
+    foreach ($titles as $title) {
+      $postId = wp_insert_post(['post_title' => $title, 'post_content' => 'contents', 'post_status' => 'publish']);
+      $this->additionalPostIds[] = $postId;
+      verify($this->processPostTitle($postId))->equals('BoldTitle');
+    }
+  }
+
   public function testItDoesNotTurnHexEntityTagsInPostTitleIntoMarkup() {
     $postId = $this->createPostWithTitle('&#x3c;b&#x3e;Bold&#x3c;/b&#x3e;Title');
     $out = $this->processPostTitle($postId);
@@ -306,6 +318,13 @@ class ShortcodesTest extends \MailPoetTest {
     $postId = $this->createPostWithTitle('Spring sale" data-extra="yes');
     $out = $this->replaceWithPostTitle($postId, "<img data-note=it's alt=\"[newsletter:post_title]\" />");
     verify($out)->equals("<img data-note=it's alt=\"Spring sale&quot; data-extra=&quot;yes\" />");
+  }
+
+  public function testItKeepsPostTitleUnencodedInsideAngleBracketsInPlainText() {
+    $postId = $this->createPostWithTitle('Rock &#039;n&#039; Roll');
+    $postMarker = '<h3 data-post-id="' . $postId . '">x</h3>';
+    $out = $this->shortcodesObject->replace('Deal <<New: [newsletter:post_title]>>', $postMarker, null, $isPlainText = true);
+    verify($out)->equals("Deal <<New: Rock 'n' Roll>>");
   }
 
   public function testItEncodesOnlyTheAttributeOccurrenceWhenTheSameShortcodeIsAlsoInText() {
@@ -865,12 +884,24 @@ class ShortcodesTest extends \MailPoetTest {
     return wp_insert_post($data);
   }
 
+  /**
+   * Saves the title as is, the way it is stored for users with the unfiltered_html capability.
+   * Since WordPress 7.2, the kses title filter for other users decodes entities.
+   */
   private function createPostWithTitle(string $title): int {
-    $postId = wp_insert_post([
-      'post_title' => $title,
-      'post_content' => 'contents',
-      'post_status' => 'publish',
-    ]);
+    $ksesPriority = has_filter('title_save_pre', 'wp_filter_kses');
+    remove_filter('title_save_pre', 'wp_filter_kses');
+    try {
+      $postId = wp_insert_post([
+        'post_title' => $title,
+        'post_content' => 'contents',
+        'post_status' => 'publish',
+      ]);
+    } finally {
+      if ($ksesPriority !== false) {
+        add_filter('title_save_pre', 'wp_filter_kses', $ksesPriority);
+      }
+    }
     $this->additionalPostIds[] = $postId;
     $post = get_post($postId);
     $this->assertInstanceOf(WP_Post::class, $post);

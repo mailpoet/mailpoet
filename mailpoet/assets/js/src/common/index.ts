@@ -12,7 +12,6 @@ export * from './error-boundary';
 export * from './translations';
 export * from './functions';
 export * from './utils';
-export * from './thumbnail';
 export * from './controls';
 export * from './dataviews';
 export * from './confirm-alert';

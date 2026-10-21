@@ -2,6 +2,8 @@
 
 namespace MailPoet\Test\Form;
 
+use MailPoet\Captcha\FormRenderStamp;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Widget;
 use MailPoet\Util\pQuery\pQuery;
@@ -52,5 +54,41 @@ class WidgetTest extends \MailPoetTest {
     );
     $DOM = pQuery::parseStr($renderedFormWidget);
     verify($DOM->query('form')->attr('target'))->equals('_top');
+  }
+
+  public function testItRendersFormWithValidRenderStamp() {
+    $form = new FormEntity('Test Form');
+    $form->setBody([['type' => 'text', 'id' => 'email']]);
+    $form->setSettings(['success_message' => 'Hello!']);
+    $this->entityManager->persist($form);
+    $this->entityManager->flush();
+
+    $rendered = (new Widget())->widget([], ['form' => $form->getId(), 'form_type' => 'html']);
+
+    $stampInput = pQuery::parseStr($rendered)->query('input[name="data[form_stamp]"]');
+    verify($stampInput->attr('type'))->equals('hidden');
+    $stamp = ContainerWrapper::getInstance()->get(FormRenderStamp::class);
+    verify($stamp->elapsedSeconds($stampInput->attr('value')))->notNull();
+  }
+
+  public function testItShowsRenderErrorMessageAsText() {
+    $form = new FormEntity('Test Form');
+    $form->setBody([['type' => 'text', 'id' => 'email']]);
+    $form->setSettings(['success_message' => 'Hello!']);
+    $this->entityManager->persist($form);
+    $this->entityManager->flush();
+
+    $throwError = function() {
+      throw new \Exception('<b>Broken</b> form');
+    };
+    $wp = new WPFunctions();
+    $wp->addFilter('mailpoet_form_widget_post_process', $throwError);
+    try {
+      $rendered = (new Widget())->widget([], ['form' => $form->getId(), 'form_type' => 'html']);
+    } finally {
+      $wp->removeFilter('mailpoet_form_widget_post_process', $throwError);
+    }
+
+    verify($rendered)->equals('&lt;b&gt;Broken&lt;/b&gt; form');
   }
 }

@@ -66,14 +66,7 @@ function PostStep({ onClose }): JSX.Element {
   );
 
   const goToListings = () => {
-    if (window.parent && window.parent !== window) {
-      window.parent.postMessage(
-        { type: 'mailpoet-navigate-to-automation-listing' },
-        window.location.origin,
-      );
-    } else {
-      window.location.href = MailPoet.urls.automationListing;
-    }
+    window.location.href = MailPoet.urls.automationListing;
   };
 
   return (

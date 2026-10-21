@@ -562,7 +562,7 @@ class ServicesTest extends \MailPoetTest {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', 'authorized@email.com');
     $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
-      'getAuthorizedEmailAddresses' => ['authorized@email.com'],
+      'getAuthorizedEmailAddressesIgnoringCache' => ['authorized@email.com'],
     ]);
 
     $congratulatoryEmailController = $this->make(CongratulatoryMssEmailController::class, [
@@ -590,7 +590,7 @@ class ServicesTest extends \MailPoetTest {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', 'unauthorized@email.com');
     $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
-      'getAuthorizedEmailAddresses' => [],
+      'getAuthorizedEmailAddressesIgnoringCache' => [],
     ]);
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['authorizedEmailsController' => $authorizedEmailsController]);
@@ -602,7 +602,7 @@ class ServicesTest extends \MailPoetTest {
   public function testCongratulatoryEmailRespondsWithDifferentErrorWhenNoEmailAuthorizedButDomainIsVerified() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
-      'getAuthorizedEmailAddresses' => [],
+      'getAuthorizedEmailAddressesIgnoringCache' => [],
     ]);
 
     $verifiedDomains = ['email.com'];
@@ -625,7 +625,7 @@ class ServicesTest extends \MailPoetTest {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', null);
     $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
-      'getAuthorizedEmailAddresses' => ['authorized@email.com'],
+      'getAuthorizedEmailAddressesIgnoringCache' => ['authorized@email.com'],
     ]);
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['authorizedEmailsController' => $authorizedEmailsController]);
@@ -638,7 +638,7 @@ class ServicesTest extends \MailPoetTest {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', 'unauthorized@email.com');
     $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
-      'getAuthorizedEmailAddresses' => ['authorized@email.com'],
+      'getAuthorizedEmailAddressesIgnoringCache' => ['authorized@email.com'],
     ]);
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['authorizedEmailsController' => $authorizedEmailsController]);
@@ -651,7 +651,7 @@ class ServicesTest extends \MailPoetTest {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', 'unauthorized@email.com');
     $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
-      'getAuthorizedEmailAddresses' => ['authorized@email.com'],
+      'getAuthorizedEmailAddressesIgnoringCache' => ['authorized@email.com'],
     ]);
 
     $congratulatoryEmailController = $this->make(CongratulatoryMssEmailController::class, [
@@ -678,7 +678,7 @@ class ServicesTest extends \MailPoetTest {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', 'authorized@email.com');
     $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
-      'getAuthorizedEmailAddresses' => ['authorized@email.com'],
+      'getAuthorizedEmailAddressesIgnoringCache' => ['authorized@email.com'],
     ]);
 
     $congratulatoryEmailController = $this->make(CongratulatoryMssEmailController::class, [
@@ -766,6 +766,60 @@ class ServicesTest extends \MailPoetTest {
     $response = $response->getData();
     verify($response['data'])->empty();
     verify(empty($response['errors']))->true();
+  }
+
+  public function testItClearsSenderCachesWhenCheckedKeyDiffers() {
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'previous-key');
+    $servicesEndpoint = $this->createEndpointStoringKey(
+      ['state' => Bridge::KEY_VALID],
+      Expected::once(),
+      Expected::once()
+    );
+    $servicesEndpoint->checkMSSKey($this->data);
+    verify($this->settings->get(Bridge::API_KEY_SETTING_NAME))->equals($this->data['key']);
+  }
+
+  public function testItKeepsSenderCachesWhenCheckedKeyIsUnchanged() {
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, $this->data['key']);
+    $servicesEndpoint = $this->createEndpointStoringKey(
+      ['state' => Bridge::KEY_VALID],
+      Expected::never(),
+      Expected::never()
+    );
+    $servicesEndpoint->checkMSSKey($this->data);
+  }
+
+  public function testItKeepsSenderCachesWhenKeyCheckFailsAndKeyIsNotStored() {
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'previous-key');
+    $servicesEndpoint = $this->createEndpointStoringKey(
+      ['state' => Bridge::KEY_CHECK_ERROR],
+      Expected::never(),
+      Expected::never()
+    );
+    $servicesEndpoint->checkMSSKey($this->data);
+    verify($this->settings->get(Bridge::API_KEY_SETTING_NAME))->equals('previous-key');
+  }
+
+  private function createEndpointStoringKey(array $checkResult, $senderDomainClearCache, $emailsClearCache) {
+    $settings = $this->settings;
+    $bridge = $this->make(
+      new Bridge(),
+      [
+        'checkMSSKey' => $checkResult,
+        'storeMSSKeyAndState' => function ($key, $result) use ($settings) {
+          if (empty($result['state']) || $result['state'] === Bridge::KEY_CHECK_ERROR) {
+            return null;
+          }
+          $settings->set(Bridge::API_KEY_SETTING_NAME, $key);
+          return $result;
+        },
+      ]
+    );
+    return $this->createServicesEndpointWithMocks([
+      'bridge' => $bridge,
+      'senderDomain' => $this->make(AuthorizedSenderDomainController::class, ['clearCache' => $senderDomainClearCache]),
+      'authorizedEmailsController' => $this->make(AuthorizedEmailsController::class, ['clearCache' => $emailsClearCache]),
+    ]);
   }
 
   private function createServicesEndpointWithMocks(array $mocks) {

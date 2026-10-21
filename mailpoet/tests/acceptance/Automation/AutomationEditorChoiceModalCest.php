@@ -29,7 +29,7 @@ class AutomationEditorChoiceModalCest {
     $i->dontSeeCheckboxIsChecked('Remember my choice');
     $i->click('[data-automation-id="editor_choice_block"]');
     $i->click('[data-automation-id="editor_choice_continue"]');
-    $i->waitForText('Start with an email preset');
+    $i->waitForElement('[name="editor-canvas"]');
   }
 
   public function rememberedChoiceSkipsTheChooser(\AcceptanceTester $i, $scenario) {
@@ -45,13 +45,10 @@ class AutomationEditorChoiceModalCest {
     $i->click('[data-automation-id="editor_choice_block"]');
     $i->checkOption('Remember my choice');
     $i->click('[data-automation-id="editor_choice_continue"]');
-    $this->closeTemplateSelectionModal($i);
 
-    $i->wantTo('Save the email so it stays attached to the step');
+    $i->wantTo('Verify the pre-filled email is already saved and go back to the automation');
     $i->waitForElement('[name="editor-canvas"]');
-    $i->waitForText('Save draft', 20, '.edit-post-header');
-    $i->click('Save draft', '.edit-post-header');
-    $i->waitForText('Saved');
+    $i->waitForText('Saved', 20, '.edit-post-header');
     $i->click('[data-automation-id="email_editor_send_button"]');
     $i->waitForText('Inactive');
 
@@ -60,6 +57,7 @@ class AutomationEditorChoiceModalCest {
     $this->deleteAssignedEmail($i);
     $i->seeElement('[data-automation-id="automation_send_email_editor_choice"]');
     $i->click('[data-automation-id="automation_send_email_design"]');
+    // The template content is used only for the first email, so the new one starts blank.
     $i->waitForText('Start with an email preset');
   }
 
@@ -77,15 +75,6 @@ class AutomationEditorChoiceModalCest {
     $i->fillField('"From" name', 'From Test');
     $i->fillField('"From" email address', 'test@mailpoet.com');
     $i->fillField('Subject', 'Automation-Editor-Choice-Subject');
-    $this->deleteAssignedEmail($i);
-  }
-
-  private function closeTemplateSelectionModal(\AcceptanceTester $i): void {
-    $i->waitForElementClickable('.email-editor-start_from_scratch_button');
-    $i->waitForText('Newsletter - Newsletter');
-    $i->click('[aria-label="Newsletter"]');
-    $i->waitForElementVisible('.block-editor-block-preview__container');
-    $i->click('[aria-label="Close"]');
   }
 
   private function deleteAssignedEmail(\AcceptanceTester $i): void {

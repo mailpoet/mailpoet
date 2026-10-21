@@ -59,6 +59,11 @@ echo '[BUILD] Fetching prefixed production libraries'
 # Should be removed before `dump-autoload` to not include the annotations classes on the autoloader.
 rm -rf vendor-prefixed/doctrine/annotations
 
+# Remove orphans of symfony/console (already removed by the prefixer); nothing else uses them.
+# Should be removed before `dump-autoload` to not include these classes in the autoloader.
+rm -rf vendor-prefixed/symfony/string
+rm -rf vendor-prefixed/symfony/polyfill-intl-grapheme
+
 # Remove DI Container files used for container dump (no need since generated metadata are packed)
 # Should be removed before `dump-autoload` to not include these classes in the autoloader.
 echo '[BUILD] Removing DI Container development dependencies'
@@ -73,7 +78,8 @@ rm -rf vendor-prefixed/symfony/dependency-injection/Extension
 
 # Copy release folders.
 echo '[BUILD] Copying release folders'
-cp -Rf lang $plugin_name
+# The .pot is published as a CI artifact; keep an empty folder for the Domain Path header.
+mkdir $plugin_name/lang
 cp -RfL assets $plugin_name
 cp -Rf generated $plugin_name
 cp -Rf lib $plugin_name
@@ -83,6 +89,13 @@ cp -Rf vendor-prefixed $plugin_name
 cp -Rf views $plugin_name
 rm -Rf $plugin_name/assets/css/src
 rm -Rf $plugin_name/assets/js/src
+
+# mailpoet.php loads the Jetpack autoloader; Composer’s own autoloader files are never loaded.
+for file in autoload_static autoload_classmap autoload_real autoload_psr4 autoload_namespaces autoload_files platform_check ClassLoader InstalledVersions; do
+	rm -f $plugin_name/vendor/composer/$file.php
+done
+rm -f $plugin_name/vendor/composer/installed.json $plugin_name/vendor/composer/installed.php
+rm -f $plugin_name/vendor/autoload.php $plugin_name/vendor-prefixed/autoload.php
 
 
 # Remove generated PHP files after they were copied for release
@@ -121,17 +134,27 @@ rm -rf $plugin_name/vendor/phpmailer/phpmailer/test
 rm -rf $plugin_name/vendor-prefixed/psr/log/Psr/Log/Test
 rm -rf $plugin_name/vendor-prefixed/sabberworm/php-css-parser/tests
 rm -rf $plugin_name/vendor-prefixed/swiftmailer/swiftmailer/tests
-rm -rf $plugin_name/vendor-prefixed/symfony/service-contracts/Tests
-rm -rf $plugin_name/vendor-prefixed/symfony/translation/Tests
-rm -rf $plugin_name/vendor-prefixed/symfony/translation-contracts/Tests
+rm -rf $plugin_name/vendor-prefixed/symfony/service-contracts/Test
+rm -rf $plugin_name/vendor-prefixed/symfony/translation/Test
+rm -rf $plugin_name/vendor-prefixed/symfony/translation-contracts/Test
+rm -rf $plugin_name/vendor/mixpanel/mixpanel-php/test
+rm -rf $plugin_name/vendor-prefixed/monolog/monolog/src/Monolog/Test
 
 # Remove risky files from 3rd party extensions
 echo '[BUILD] Removing risky and demo files from vendor libraries'
 rm -f $plugin_name/vendor-prefixed/cerdic/css-tidy/css_optimiser.php
 rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/demo
-rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/src/Gregwar/Captcha/Font/captcha4.ttf # big font
+# MailPoet ships its own subset fonts in assets/fonts/captcha
+rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/src/Gregwar/Captcha/Font
 rm -rf $plugin_name/vendor-prefixed/cerdic/css-tidy/bin
 rm -f $plugin_name/vendor-prefixed/egulias/email-validator/psalm*.xml
+rm -rf $plugin_name/vendor-prefixed/symfony/validator/Command # console command, its console parent class is removed
+rm -rf $plugin_name/vendor-prefixed/symfony/validator/Mapping/Loader/schema # XSD read only by XmlFileLoader, which is not used
+rm -f $plugin_name/vendor-prefixed/nesbot/carbon/sponsors.php
+
+# Remove legacy CJK conversion tables of the iconv polyfill.
+# The polyfill runs only without ext-iconv and a missing table makes Iconv::getData() return false.
+rm -f $plugin_name/vendor-prefixed/symfony/polyfill-iconv/Resources/charset/from.{big5,cp932,cp936,cp949,cp950}.php
 
 # Copy release files.
 echo '[BUILD] Copying release files'
@@ -159,6 +182,7 @@ find $plugin_name -type d -print0 | while read -d $'\0' dir; do
 done
 
 # Strip whitespaces and comments from PHP files in vendor and vendor prefixed folders
+# Needs PHP >= 8 (token-based stripper); the CI build image runs PHP 8.3
 echo '[BUILD] Strip whitespaces and comments from PHP files in vendor folder'
 php "$(dirname "$0")"/tasks/strip-whitespaces.php $plugin_name/vendor
 php "$(dirname "$0")"/tasks/strip-whitespaces.php $plugin_name/vendor-prefixed

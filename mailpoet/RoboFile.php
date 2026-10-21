@@ -7,6 +7,10 @@ use MailPoetVendor\Twig\Loader\FilesystemLoader as TwigFileSystem;
 
 class RoboFile extends \Robo\Tasks {
   const ZIP_BUILD_PATH = __DIR__ . '/mailpoet.zip';
+  const ZIP_BUILD_JOB_PATH = __DIR__ . '/mailpoet.zip.job';
+
+  /** @var int|null */
+  private $releaseZipJobNumber;
 
   public function __construct() {
 
@@ -292,30 +296,21 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function translationsGetPotFileFromBuild() {
-    $potFilePathInsideZip = 'mailpoet/lang/mailpoet.pot';
-    $potFilePath = 'lang/mailpoet.pot';
-
-    if (!is_file(self::ZIP_BUILD_PATH)) {
-      throw new \Exception('mailpoet.zip file is missing. You must first download it using `./do release:download-zip`.');
+    $jobNumber = $this->releaseZipJobNumber;
+    if ($jobNumber === null && is_file(self::ZIP_BUILD_JOB_PATH)) {
+      $jobNumber = (int)trim((string)file_get_contents(self::ZIP_BUILD_JOB_PATH)) ?: null;
+    }
+    if ($jobNumber === null) {
+      throw new \Exception('The build to take mailpoet.pot from is unknown. Run `./do release:download-zip` first.');
     }
 
+    $potFilePath = __DIR__ . '/lang/mailpoet.pot';
     if (!file_exists(__DIR__ . '/lang')) {
       $this->taskExec('mkdir -p ' . __DIR__ . '/lang')->run();
     }
 
-    $zip = new ZipArchive();
-
-    if ($zip->open(self::ZIP_BUILD_PATH) === true) {
-      $potFileContent = $zip->getFromName($potFilePathInsideZip);
-      if ($potFileContent) {
-        file_put_contents($potFilePath, $potFileContent);
-        $this->say('mailpoet.pot extracted from the zip file to ' . $potFilePath);
-      } else {
-        throw new \Exception('Unable to find mailpoet.pot inside the zip file.');
-      }
-    } else {
-      throw new \Exception('Unable to open the zip file.');
-    }
+    $this->createCircleCiController()->downloadPotFile($jobNumber, $potFilePath);
+    $this->say('mailpoet.pot of build ' . $jobNumber . ' downloaded to ' . $potFilePath);
   }
 
   public function translationsPush() {
@@ -539,11 +534,6 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($this->codeceptCommand('run unit -g failed'));
   }
 
-  public function testFailedIntegration() {
-    $this->_exec($this->codeceptCommand('build'));
-    return $this->_exec($this->codeceptCommand('run integration -g failed'));
-  }
-
   public function containerDump() {
     if (!defined('ABSPATH')) {
       define('ABSPATH', getenv('WP_ROOT') . '/');
@@ -693,11 +683,16 @@ class RoboFile extends \Robo\Tasks {
       'vendor-prefixed/psr/log/Psr/Log/Test',
       'vendor-prefixed/sabberworm/php-css-parser/tests',
       'vendor-prefixed/swiftmailer/swiftmailer/tests',
-      'vendor-prefixed/symfony/service-contracts/Tests',
-      'vendor-prefixed/symfony/translation/Tests',
-      'vendor-prefixed/symfony/translation-contracts/Tests',
+      'vendor-prefixed/symfony/polyfill-intl-grapheme',
+      'vendor-prefixed/symfony/string',
+      'vendor-prefixed/symfony/service-contracts/Test',
+      'vendor-prefixed/symfony/translation/Test',
+      'vendor-prefixed/symfony/translation-contracts/Test',
+      'vendor-prefixed/monolog/monolog/src/Monolog/Test',
+      'vendor-prefixed/symfony/validator/Command',
       'vendor-prefixed/cerdic/css-tidy/css_optimiser.php',
       'vendor-prefixed/gregwar/captcha/demo',
+      'vendor-prefixed/nesbot/carbon/sponsors.php',
     ]);
 
     return $this
@@ -766,11 +761,9 @@ class RoboFile extends \Robo\Tasks {
       return '^' . preg_quote(__DIR__ . DIRECTORY_SEPARATOR . $path);
     }, $ignorePaths);
 
-    $stringFilesToCheck = !empty($filesToCheck) ? implode(' ', $filesToCheck) : '.';
-
     return $this->taskExec($task)
       ->arg('--ignore=' . implode(',', $ignorePatterns))
-      ->rawArg($stringFilesToCheck)
+      ->args(!empty($filesToCheck) ? $filesToCheck : ['.'])
       ->run();
   }
 
@@ -1292,13 +1285,16 @@ class RoboFile extends \Robo\Tasks {
   public function releaseDownloadZip() {
     $circleciController = $this->createCircleCiController();
     $path = $circleciController->downloadLatestBuild(self::ZIP_BUILD_PATH);
+    // The .pot must come from the same build as this ZIP.
+    $this->releaseZipJobNumber = $circleciController->getDownloadedJobNumber();
+    file_put_contents(self::ZIP_BUILD_JOB_PATH, (string)$this->releaseZipJobNumber);
     $this->say('Release ZIP downloaded to: ' . $path);
     $this->say(sprintf('Release ZIP file size: %.2F MB', filesize($path) / pow(1024, 2)));
   }
 
   public function releaseDeleteDownloadedZip() {
     $this->say('Delete downloaded ZIP: ' . self::ZIP_BUILD_PATH);
-    $this->taskExec('rm -f ' . self::ZIP_BUILD_PATH)->run();
+    $this->taskExec('rm -f ' . self::ZIP_BUILD_PATH . ' ' . self::ZIP_BUILD_JOB_PATH)->run();
     $this->say('ZIP file was deleted');
   }
 

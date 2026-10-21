@@ -3,15 +3,21 @@
 namespace MailPoet\Test\Cron\CliCommands;
 
 use InvalidArgumentException;
+use MailPoet\Cron\CliCommands\ClaimedTaskRunner;
 use MailPoet\Cron\CliCommands\TaskAdder;
+use MailPoet\Cron\CliCommands\WorkerTypesCatalog;
+use MailPoet\Cron\Workers\BulkConfirmationEmailResend;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\SubscribersCountCacheRecalculation;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use RuntimeException;
 
 class TaskAdderTest extends \MailPoetTest {
   /** @var TaskAdder */
@@ -167,6 +173,48 @@ class TaskAdderTest extends \MailPoetTest {
     $this->assertArrayHasKey('cli', $meta);
     verify($meta['cli']['pid'])->same(getmypid());
     $this->assertArrayHasKey('started_at', $meta['cli']);
+  }
+
+  public function testItRefusesToClaimAGatedTypeWhenSendingIsPaused() {
+    $adder = $this->makeAdderOnEnvironment('staging');
+    $before = count($this->scheduledTasksRepository->findBy(['type' => BulkConfirmationEmailResend::TASK_TYPE]));
+
+    try {
+      $adder->add(BulkConfirmationEmailResend::TASK_TYPE, null, null, 'low', false, true);
+      $this->fail('Expected a RuntimeException.');
+    } catch (RuntimeException $e) {
+      verify($e->getMessage())->stringContainsString('Sending is paused because this is a staging site');
+    }
+
+    $this->entityManager->clear();
+    verify($this->scheduledTasksRepository->findBy(['type' => BulkConfirmationEmailResend::TASK_TYPE]))->arrayCount($before);
+  }
+
+  public function testItStillQueuesAGatedTypeWithoutRunWhenSendingIsPaused() {
+    $result = $this->makeAdderOnEnvironment('staging')->add(BulkConfirmationEmailResend::TASK_TYPE, null, null, 'low', false, false);
+
+    verify($result['action'])->same('created');
+  }
+
+  public function testItClaimsAndRunsAGatedTypeWhenSendingIsAllowed() {
+    $this->diContainer->get(SendingEnvironment::class)->allowSending();
+
+    $result = $this->makeAdderOnEnvironment('staging')->add(BulkConfirmationEmailResend::TASK_TYPE, null, null, 'low', false, true);
+
+    verify($result['action'])->same('claimed');
+  }
+
+  private function makeAdderOnEnvironment(string $environmentType): TaskAdder {
+    $sendingEnvironment = new SendingEnvironment(
+      $this->diContainer->get(\MailPoet\Settings\SettingsController::class),
+      $this->make(WPFunctions::class, ['wpGetEnvironmentType' => $environmentType])
+    );
+    return new TaskAdder(
+      $this->diContainer->get(WorkerTypesCatalog::class),
+      $this->scheduledTasksRepository,
+      $this->diContainer->get(ClaimedTaskRunner::class),
+      $sendingEnvironment
+    );
   }
 
   public function testItIgnoresAnExistingScheduledTaskWhenRunning() {

@@ -169,7 +169,7 @@ class FormsRepository extends Repository {
     $blockTypes = [];
 
     foreach ($blocks as $block) {
-      if (in_array($block['id'], $fieldBlockIds)) {
+      if (isset($block['id']) && in_array($block['id'], $fieldBlockIds)) {
         $blockTypes[] = $block['id'];
       } elseif (!in_array($block['type'], $ignoredBlocks)) {
         $blockTypes[] = 'custom_' . $block['type'];

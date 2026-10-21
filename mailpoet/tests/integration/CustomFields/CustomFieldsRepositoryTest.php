@@ -65,7 +65,7 @@ class CustomFieldsRepositoryTest extends \MailPoetTest {
     $this->assertSame(2, $items['Alpha']['dynamic_segments_count']);
     $this->assertSame(1, $items['Beta']['subscribers_count']);
     $this->assertSame(1, $items['Beta']['forms_count']);
-    $this->assertSame(0, $items['Beta']['dynamic_segments_count']);
+    $this->assertSame(1, $items['Beta']['dynamic_segments_count']);
     $this->assertSame(0, $items['Gamma']['subscribers_count']);
   }
 
@@ -140,18 +140,15 @@ class CustomFieldsRepositoryTest extends \MailPoetTest {
       ->withCustomField($alpha)
       ->withCustomField($beta)
       ->create();
-    (new DynamicSegmentFactory())->withCustomFieldFilter($alpha)->create();
-    (new DynamicSegmentFactory())->withCustomFieldFilter($beta)->create();
 
     $this->repository->bulkTrash([(int)$alpha->getId(), (int)$beta->getId()]);
-    $deleted = $this->repository->bulkDelete([(int)$alpha->getId(), (int)$beta->getId(), (int)$gamma->getId()]);
+    $result = $this->repository->bulkDelete([(int)$alpha->getId(), (int)$beta->getId(), (int)$gamma->getId()]);
 
-    $this->assertSame(2, $deleted);
+    $this->assertSame(['count' => 2, 'kept' => []], $result);
     $this->assertNull($this->repository->findOneById($alpha->getId()));
     $this->assertNull($this->repository->findOneById($beta->getId()));
     $this->assertNotNull($this->repository->findOneById($gamma->getId()));
     $this->assertSame(0, $this->countSubscriberCustomFieldValues([(int)$alpha->getId(), (int)$beta->getId()]));
-    $this->assertSame(0, $this->countDynamicSegmentFilters([(int)$alpha->getId(), (int)$beta->getId()]));
 
     /** @var FormsRepository $formsRepository */
     $formsRepository = $this->diContainer->get(FormsRepository::class);
@@ -162,15 +159,117 @@ class CustomFieldsRepositoryTest extends \MailPoetTest {
     $this->assertNotContains((int)$beta->getId(), $formCustomFieldIds);
   }
 
+  public function testBulkDeleteKeepsCustomFieldsUsedInDynamicSegments(): void {
+    $subscriber = (new SubscriberFactory())->withEmail('subscriber@example.com')->create();
+    $alpha = (new CustomFieldFactory())->withName('Alpha')->withSubscriber($subscriber->getId(), 'value')->create();
+    $beta = (new CustomFieldFactory())->withName('Beta')->withSubscriber($subscriber->getId(), 'value')->create();
+    $gamma = (new CustomFieldFactory())->withName('Gamma')->withSubscriber($subscriber->getId(), 'value')->create();
+    $alphaFans = (new DynamicSegmentFactory())->withName('Alpha fans')->withCustomFieldFilter($alpha)->create();
+    $oldBetaFans = (new DynamicSegmentFactory())->withName('Old beta fans')->withCustomFieldFilter($beta)->withDeleted()->create();
+    $ids = [(int)$alpha->getId(), (int)$beta->getId(), (int)$gamma->getId()];
+    $this->repository->bulkTrash($ids);
+
+    $result = $this->repository->bulkDelete($ids);
+
+    $this->assertSame([
+      'count' => 1,
+      'kept' => [
+        [
+          'id' => (int)$alpha->getId(),
+          'name' => 'Alpha',
+          'segments' => [['id' => (int)$alphaFans->getId(), 'name' => 'Alpha fans', 'trashed' => false]],
+        ],
+        [
+          'id' => (int)$beta->getId(),
+          'name' => 'Beta',
+          'segments' => [['id' => (int)$oldBetaFans->getId(), 'name' => 'Old beta fans', 'trashed' => true]],
+        ],
+      ],
+    ], $result);
+    $this->assertNotNull($this->repository->findOneById($alpha->getId()));
+    $this->assertNotNull($this->repository->findOneById($beta->getId()));
+    $this->assertNull($this->repository->findOneById($gamma->getId()));
+    $this->assertSame(2, $this->countDynamicSegmentFilters([(int)$alpha->getId(), (int)$beta->getId()]));
+    $this->assertSame(2, $this->countSubscriberCustomFieldValues([(int)$alpha->getId(), (int)$beta->getId()]));
+    $this->assertSame(0, $this->countSubscriberCustomFieldValues([(int)$gamma->getId()]));
+  }
+
+  public function testDeletePermanentlyRemovesActiveCustomFieldAndUsageReferences(): void {
+    $subscriber = (new SubscriberFactory())->withEmail('subscriber@example.com')->create();
+    $alpha = (new CustomFieldFactory())
+      ->withName('Alpha')
+      ->withSubscriber($subscriber->getId(), 'value')
+      ->create();
+    $beta = (new CustomFieldFactory())
+      ->withName('Beta')
+      ->withSubscriber($subscriber->getId(), 'value')
+      ->create();
+    $form = (new FormFactory())
+      ->withName('Form with custom fields')
+      ->withCustomField($alpha)
+      ->withCustomField($beta)
+      ->create();
+    (new DynamicSegmentFactory())->withCustomFieldFilter($alpha)->create();
+
+    $this->assertSame(1, $this->repository->deletePermanently((int)$alpha->getId()));
+
+    $this->assertNull($this->repository->findOneById($alpha->getId()));
+    $this->assertNotNull($this->repository->findOneById($beta->getId()));
+    $this->assertSame(0, $this->countSubscriberCustomFieldValues([(int)$alpha->getId()]));
+    $this->assertSame(1, $this->countSubscriberCustomFieldValues([(int)$beta->getId()]));
+    $this->assertSame(0, $this->countDynamicSegmentFilters([(int)$alpha->getId()]));
+
+    /** @var FormsRepository $formsRepository */
+    $formsRepository = $this->diContainer->get(FormsRepository::class);
+    $refreshedForm = $formsRepository->findOneById($form->getId());
+    $this->assertInstanceOf(FormEntity::class, $refreshedForm);
+    $formCustomFieldIds = array_map('intval', array_column($refreshedForm->getBlocksByTypes(FormEntity::FORM_FIELD_TYPES), 'id'));
+    $this->assertNotContains((int)$alpha->getId(), $formCustomFieldIds);
+    $this->assertContains((int)$beta->getId(), $formCustomFieldIds);
+  }
+
+  public function testGetDynamicSegmentNamesUsingCustomFieldMarksTrashedSegments(): void {
+    $alpha = (new CustomFieldFactory())->withName('Alpha')->create();
+    $beta = (new CustomFieldFactory())->withName('Beta')->create();
+    (new DynamicSegmentFactory())->withName('Alpha fans')->withCustomFieldFilter($alpha)->create();
+    (new DynamicSegmentFactory())->withName('Old alpha fans')->withCustomFieldFilter($alpha)->withDeleted()->create();
+
+    $this->assertSame(['"Alpha fans"', '"Old alpha fans" (in the trash)'], $this->repository->getDynamicSegmentNamesUsingCustomField((int)$alpha->getId()));
+    $this->assertSame([], $this->repository->getDynamicSegmentNamesUsingCustomField((int)$beta->getId()));
+  }
+
   public function testEmptyTrashPermanentlyDeletesTrashedCustomFields(): void {
     $trashed = (new CustomFieldFactory())->withName('Trashed')->create();
     $active = (new CustomFieldFactory())->withName('Active')->create();
     $this->repository->bulkTrash([(int)$trashed->getId()]);
 
-    $this->assertSame(1, $this->repository->emptyTrash());
+    $this->assertSame(['count' => 1, 'kept' => []], $this->repository->emptyTrash());
 
     $this->assertNull($this->repository->findOneById($trashed->getId()));
     $this->assertNotNull($this->repository->findOneById($active->getId()));
+  }
+
+  public function testEmptyTrashKeepsCustomFieldsUsedInDynamicSegments(): void {
+    $used = (new CustomFieldFactory())->withName('Used')->create();
+    $unused = (new CustomFieldFactory())->withName('Unused')->create();
+    $segment = (new DynamicSegmentFactory())->withName('Used segment')->withCustomFieldFilter($used)->create();
+    $this->repository->bulkTrash([(int)$used->getId(), (int)$unused->getId()]);
+
+    $result = $this->repository->emptyTrash();
+
+    $this->assertSame([
+      'count' => 1,
+      'kept' => [
+        [
+          'id' => (int)$used->getId(),
+          'name' => 'Used',
+          'segments' => [['id' => (int)$segment->getId(), 'name' => 'Used segment', 'trashed' => false]],
+        ],
+      ],
+    ], $result);
+    $this->assertNotNull($this->repository->findOneById($used->getId()));
+    $this->assertNull($this->repository->findOneById($unused->getId()));
+    $this->assertSame(1, $this->countDynamicSegmentFilters([(int)$used->getId()]));
   }
 
   public function testListWithCountsFiltersByType(): void {

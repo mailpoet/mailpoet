@@ -2,7 +2,7 @@
 
 /*
  * Plugin Name: MailPoet
- * Version: 5.40.0
+ * Version: 5.43.0
  * Plugin URI: https://www.mailpoet.com
  * Description: Create and send newsletters, post notifications and welcome emails from your WordPress.
  * Author: MailPoet
@@ -10,9 +10,11 @@
  * Requires at least: 7.0
  * Text Domain: mailpoet
  * Domain Path: /lang
+ * License: GPLv3
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  *
- * WC requires at least: 11.0
- * WC tested up to: 11.1
+ * WC requires at least: 11.1
+ * WC tested up to: 11.2
  *
  * @package WordPress
  * @author MailPoet
@@ -20,7 +22,7 @@
  */
 
 $mailpoetPlugin = [
-  'version' => '5.40.0',
+  'version' => '5.43.0',
   'filename' => __FILE__,
   'path' => dirname(__FILE__),
   'autoloader' => dirname(__FILE__) . '/vendor/autoload_packages.php',
@@ -28,7 +30,7 @@ $mailpoetPlugin = [
 ];
 
 const MAILPOET_MINIMUM_REQUIRED_WP_VERSION = '7.0'; // L-1 version, not the latest
-const MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION = '11.0'; // L-1 version, not the latest
+const MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION = '11.1'; // L-1 version, not the latest
 const MAILPOET_MINIMUM_REQUIRED_PHP_VERSION = '7.4';
 const MAILPOET_RECOMMENDED_PHP_VERSION = '8.5';
 

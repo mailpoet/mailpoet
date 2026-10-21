@@ -189,7 +189,11 @@ function buildSystemStatusReport(
     : MailPoet.I18n.t('unknown');
 
   let queueStatusText = MailPoet.I18n.t('unknown');
-  if (queueStatus.status === 'paused')
+  if (queueStatus.sendingPausedReason)
+    queueStatusText = `${MailPoet.I18n.t('paused')} – ${
+      queueStatus.sendingPausedReason
+    }`;
+  else if (queueStatus.status === 'paused')
     queueStatusText = MailPoet.I18n.t('paused');
   else if (queueStatus.sendingLimitReached)
     queueStatusText = MailPoet.I18n.t('sendingLimitReached');

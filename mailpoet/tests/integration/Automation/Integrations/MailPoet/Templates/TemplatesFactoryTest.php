@@ -9,7 +9,6 @@ use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Templates\AutomationBuilder;
-use MailPoet\Automation\Integrations\MailPoet\Templates\EmailFactory;
 use MailPoet\Automation\Integrations\MailPoet\Templates\TemplatesFactory;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\AbandonedCart\AbandonedCartTrigger;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\BuysAProductTrigger;
@@ -22,43 +21,26 @@ use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WooCommerce\WooCommerceBookings\Helper as WooCommerceBookingsHelper;
 use MailPoet\WooCommerce\WooCommerceSubscriptions\Helper as WooCommerceSubscriptions;
 use MailPoetTest;
-use PHPUnit\Framework\MockObject\MockObject;
 
 class TemplatesFactoryTest extends MailPoetTest {
   /** @var AutomationBuilder */
   private $builder;
 
-  /** @var MockObject&EmailFactory */
-  private $emailFactory;
-
   public function _before(): void {
     parent::_before();
     $this->builder = $this->diContainer->get(AutomationBuilder::class);
-    $this->emailFactory = $this->createMock(EmailFactory::class);
   }
 
   /**
    * @dataProvider welcomeTemplateEmailData
    */
-  public function testWelcomeTemplateCreatesBlockEditorEmail(
+  public function testWelcomeTemplateDefersEmailCreation(
     string $slug,
     string $expectedTriggerKey,
     string $expectedName,
     string $expectedSubject,
     string $expectedPreheader
   ): void {
-    $this->emailFactory->expects($this->once())
-      ->method('createBlockEditorEmail')
-      ->with($this->callback(function (array $data) use ($expectedSubject, $expectedPreheader): bool {
-        return ($data['pattern'] ?? null) === 'welcome-email-content'
-          && ($data['subject'] ?? null) === $expectedSubject
-          && ($data['preheader'] ?? null) === $expectedPreheader;
-      }))
-      ->willReturn([
-        'email_id' => 123,
-        'email_wp_post_id' => 456,
-      ]);
-
     $factory = $this->createFactory();
     $template = $this->findTemplateBySlug($factory->createTemplates(), $slug);
     $this->assertInstanceOf(AutomationTemplate::class, $template);
@@ -73,36 +55,7 @@ class TemplatesFactoryTest extends MailPoetTest {
     $this->assertSame($expectedName, $args['name']);
     $this->assertSame($expectedSubject, $args['subject']);
     $this->assertSame($expectedPreheader, $args['preheader']);
-    $this->assertSame(123, $args['email_id']);
-    $this->assertSame(456, $args['email_wp_post_id']);
-  }
-
-  /**
-   * @dataProvider welcomeTemplateEmailData
-   */
-  public function testWelcomeTemplatePreviewDoesNotCreatePersistentEmail(
-    string $slug,
-    string $expectedTriggerKey,
-    string $expectedName,
-    string $expectedSubject,
-    string $expectedPreheader
-  ): void {
-    $this->emailFactory->expects($this->never())->method('createBlockEditorEmail');
-
-    $factory = $this->createFactory();
-    $template = $this->findTemplateBySlug($factory->createTemplates(), $slug);
-    $this->assertInstanceOf(AutomationTemplate::class, $template);
-
-    $automation = $template->createAutomation(true);
-
-    $this->assertNotNull($this->getFirstStepByKey($automation->getSteps(), $expectedTriggerKey));
-    $sendEmailStep = $this->getFirstStepByKey($automation->getSteps(), 'mailpoet:send-email');
-    $this->assertNotNull($sendEmailStep);
-
-    $args = $sendEmailStep->getArgs();
-    $this->assertSame($expectedName, $args['name']);
-    $this->assertSame($expectedSubject, $args['subject']);
-    $this->assertSame($expectedPreheader, $args['preheader']);
+    $this->assertSame('welcome-email-content', $args['pattern']);
     $this->assertArrayNotHasKey('email_id', $args);
     $this->assertArrayNotHasKey('email_wp_post_id', $args);
   }
@@ -139,7 +92,7 @@ class TemplatesFactoryTest extends MailPoetTest {
    * @group woo
    * @dataProvider postPurchaseTemplateEmailData
    */
-  public function testPostPurchaseTemplateCreatesBlockEditorEmail(
+  public function testPostPurchaseTemplateDefersEmailCreation(
     string $slug,
     string $expectedTriggerKey,
     string $expectedPattern,
@@ -148,18 +101,6 @@ class TemplatesFactoryTest extends MailPoetTest {
     string $expectedPreheader
   ): void {
     $this->ensureWooCommerceTriggerRegistered($expectedTriggerKey);
-    $this->emailFactory->expects($this->once())
-      ->method('createBlockEditorEmail')
-      ->with([
-        'pattern' => $expectedPattern,
-        'subject' => $expectedSubject,
-        'preheader' => $expectedPreheader,
-      ])
-      ->willReturn([
-        'email_id' => 123,
-        'email_wp_post_id' => 456,
-      ]);
-
     $factory = $this->createFactory();
     $template = $this->findTemplateBySlug($factory->createTemplates(), $slug);
     $this->assertInstanceOf(AutomationTemplate::class, $template);
@@ -174,39 +115,7 @@ class TemplatesFactoryTest extends MailPoetTest {
     $this->assertSame($expectedName, $args['name']);
     $this->assertSame($expectedSubject, $args['subject']);
     $this->assertSame($expectedPreheader, $args['preheader']);
-    $this->assertSame(123, $args['email_id']);
-    $this->assertSame(456, $args['email_wp_post_id']);
-  }
-
-  /**
-   * @group woo
-   * @dataProvider postPurchaseTemplateEmailData
-   */
-  public function testPostPurchaseTemplatePreviewDoesNotCreatePersistentEmail(
-    string $slug,
-    string $expectedTriggerKey,
-    string $expectedPattern,
-    string $expectedName,
-    string $expectedSubject,
-    string $expectedPreheader
-  ): void {
-    $this->ensureWooCommerceTriggerRegistered($expectedTriggerKey);
-    $this->emailFactory->expects($this->never())->method('createBlockEditorEmail');
-
-    $factory = $this->createFactory();
-    $template = $this->findTemplateBySlug($factory->createTemplates(), $slug);
-    $this->assertInstanceOf(AutomationTemplate::class, $template);
-
-    $automation = $template->createAutomation(true);
-
-    $this->assertNotNull($this->getFirstStepByKey($automation->getSteps(), $expectedTriggerKey));
-    $sendEmailStep = $this->getFirstStepByKey($automation->getSteps(), 'mailpoet:send-email');
-    $this->assertInstanceOf(Step::class, $sendEmailStep);
-    $args = $sendEmailStep->getArgs();
-
-    $this->assertSame($expectedName, $args['name']);
-    $this->assertSame($expectedSubject, $args['subject']);
-    $this->assertSame($expectedPreheader, $args['preheader']);
+    $this->assertSame($expectedPattern, $args['pattern']);
     $this->assertArrayNotHasKey('email_id', $args);
     $this->assertArrayNotHasKey('email_wp_post_id', $args);
   }
@@ -251,20 +160,8 @@ class TemplatesFactoryTest extends MailPoetTest {
   /**
    * @group woo
    */
-  public function testThankLoyalCustomersTemplateCreatesBlockEditorEmail(): void {
+  public function testThankLoyalCustomersTemplateDefersEmailCreation(): void {
     $this->ensureWooCommerceTriggerRegistered('woocommerce:order-completed');
-    $this->emailFactory->expects($this->once())
-      ->method('createBlockEditorEmail')
-      ->with([
-        'pattern' => 'post-purchase-thank-you',
-        'subject' => 'Thank you for your loyalty',
-        'preheader' => 'We appreciate your continued support',
-      ])
-      ->willReturn([
-        'email_id' => 123,
-        'email_wp_post_id' => 456,
-      ]);
-
     $factory = $this->createFactory();
     $template = $this->findTemplateBySlug($factory->createTemplates(), 'thank-loyal-customers');
     $this->assertInstanceOf(AutomationTemplate::class, $template);
@@ -279,48 +176,13 @@ class TemplatesFactoryTest extends MailPoetTest {
     $this->assertSame('Thank you for your loyalty', $args['name']);
     $this->assertSame('Thank you for your loyalty', $args['subject']);
     $this->assertSame('We appreciate your continued support', $args['preheader']);
-    $this->assertSame(123, $args['email_id']);
-    $this->assertSame(456, $args['email_wp_post_id']);
-  }
-
-  /**
-   * @group woo
-   */
-  public function testThankLoyalCustomersTemplatePreviewDoesNotCreatePersistentEmail(): void {
-    $this->ensureWooCommerceTriggerRegistered('woocommerce:order-completed');
-    $this->emailFactory->expects($this->never())->method('createBlockEditorEmail');
-
-    $factory = $this->createFactory();
-    $template = $this->findTemplateBySlug($factory->createTemplates(), 'thank-loyal-customers');
-    $this->assertInstanceOf(AutomationTemplate::class, $template);
-
-    $automation = $template->createAutomation(true);
-
-    $sendEmailStep = $this->getFirstStepByKey($automation->getSteps(), 'mailpoet:send-email');
-    $this->assertInstanceOf(Step::class, $sendEmailStep);
-    $args = $sendEmailStep->getArgs();
-
-    $this->assertSame('Thank you for your loyalty', $args['name']);
-    $this->assertSame('Thank you for your loyalty', $args['subject']);
-    $this->assertSame('We appreciate your continued support', $args['preheader']);
+    $this->assertSame('post-purchase-thank-you', $args['pattern']);
     $this->assertArrayNotHasKey('email_id', $args);
     $this->assertArrayNotHasKey('email_wp_post_id', $args);
   }
 
-  public function testBirthdayEmailTemplateCreatesBlockEditorEmail(): void {
+  public function testBirthdayEmailTemplateDefersEmailCreation(): void {
     $this->ensureAnnualDateTriggerRegistered();
-    $this->emailFactory->expects($this->once())
-      ->method('createBlockEditorEmail')
-      ->with([
-        'pattern' => 'birthday-email-with-discount',
-        'subject' => 'A birthday treat from us',
-        'preheader' => 'Enjoy 10% off your next order',
-      ])
-      ->willReturn([
-        'email_id' => 123,
-        'email_wp_post_id' => 456,
-      ]);
-
     $factory = $this->createFactory();
     $template = $this->findTemplateBySlug($factory->createTemplates(), 'birthday-email');
     $this->assertInstanceOf(AutomationTemplate::class, $template);
@@ -336,24 +198,13 @@ class TemplatesFactoryTest extends MailPoetTest {
     $this->assertSame('A birthday treat from us', $args['name']);
     $this->assertSame('A birthday treat from us', $args['subject']);
     $this->assertSame('Enjoy 10% off your next order', $args['preheader']);
-    $this->assertSame(123, $args['email_id']);
-    $this->assertSame(456, $args['email_wp_post_id']);
+    $this->assertSame('birthday-email-with-discount', $args['pattern']);
+    $this->assertArrayNotHasKey('email_id', $args);
+    $this->assertArrayNotHasKey('email_wp_post_id', $args);
   }
 
   public function testBirthdayEmailTemplateUsesPlainPatternWithoutGeneratedCouponSupport(): void {
     $this->ensureAnnualDateTriggerRegistered();
-    $this->emailFactory->expects($this->once())
-      ->method('createBlockEditorEmail')
-      ->with([
-        'pattern' => 'birthday-email-content',
-        'subject' => 'Happy birthday!',
-        'preheader' => 'Wishing you a wonderful day',
-      ])
-      ->willReturn([
-        'email_id' => 123,
-        'email_wp_post_id' => 456,
-      ]);
-
     $factory = $this->createFactory(true, '10.7.0');
     $template = $this->findTemplateBySlug($factory->createTemplates(), 'birthday-email');
     $this->assertInstanceOf(AutomationTemplate::class, $template);
@@ -366,46 +217,13 @@ class TemplatesFactoryTest extends MailPoetTest {
     $this->assertSame('Happy birthday!', $args['name']);
     $this->assertSame('Happy birthday!', $args['subject']);
     $this->assertSame('Wishing you a wonderful day', $args['preheader']);
-    $this->assertSame(123, $args['email_id']);
-    $this->assertSame(456, $args['email_wp_post_id']);
-  }
-
-  public function testBirthdayEmailTemplatePreviewDoesNotCreatePersistentEmail(): void {
-    $this->ensureAnnualDateTriggerRegistered();
-    $this->emailFactory->expects($this->never())->method('createBlockEditorEmail');
-
-    $factory = $this->createFactory();
-    $template = $this->findTemplateBySlug($factory->createTemplates(), 'birthday-email');
-    $this->assertInstanceOf(AutomationTemplate::class, $template);
-
-    $automation = $template->createAutomation(true);
-    $this->assertNotNull($this->getFirstStepByKey($automation->getSteps(), 'mailpoet:annual-date'));
-    $this->assertNull($automation->getMeta('mailpoet:run-once-per-subscriber'));
-    $sendEmailStep = $this->getFirstStepByKey($automation->getSteps(), 'mailpoet:send-email');
-    $this->assertInstanceOf(Step::class, $sendEmailStep);
-    $args = $sendEmailStep->getArgs();
-
-    $this->assertSame('A birthday treat from us', $args['name']);
-    $this->assertSame('A birthday treat from us', $args['subject']);
-    $this->assertSame('Enjoy 10% off your next order', $args['preheader']);
+    $this->assertSame('birthday-email-content', $args['pattern']);
     $this->assertArrayNotHasKey('email_id', $args);
     $this->assertArrayNotHasKey('email_wp_post_id', $args);
   }
 
-  public function testAbandonedCartTemplateCreatesBlockEditorEmail(): void {
+  public function testAbandonedCartTemplateDefersEmailCreation(): void {
     $this->ensureAbandonedCartTriggerRegistered();
-    $this->emailFactory->expects($this->once())
-      ->method('createBlockEditorEmail')
-      ->with([
-        'pattern' => 'abandoned-cart-content',
-        'subject' => 'You left something behind!',
-        'preheader' => 'Complete your purchase today',
-      ])
-      ->willReturn([
-        'email_id' => 123,
-        'email_wp_post_id' => 456,
-      ]);
-
     $factory = $this->createFactory();
     $template = $this->findTemplateBySlug($factory->createTemplates(), 'abandoned-cart');
     $this->assertInstanceOf(AutomationTemplate::class, $template);
@@ -420,25 +238,7 @@ class TemplatesFactoryTest extends MailPoetTest {
     $this->assertSame('Abandoned cart reminder', $args['name']);
     $this->assertSame('You left something behind!', $args['subject']);
     $this->assertSame('Complete your purchase today', $args['preheader']);
-    $this->assertSame(123, $args['email_id']);
-    $this->assertSame(456, $args['email_wp_post_id']);
-  }
-
-  public function testAbandonedCartTemplatePreviewDoesNotCreatePersistentEmail(): void {
-    $this->emailFactory->expects($this->never())->method('createBlockEditorEmail');
-
-    $factory = $this->createFactory();
-    $template = $this->findTemplateBySlug($factory->createTemplates(), 'abandoned-cart');
-    $this->assertInstanceOf(AutomationTemplate::class, $template);
-
-    $automation = $template->createAutomation(true);
-    $sendEmailStep = $this->getFirstStepByKey($automation->getSteps(), 'mailpoet:send-email');
-    $this->assertInstanceOf(Step::class, $sendEmailStep);
-    $args = $sendEmailStep->getArgs();
-
-    $this->assertSame('Abandoned cart reminder', $args['name']);
-    $this->assertSame('You left something behind!', $args['subject']);
-    $this->assertSame('Complete your purchase today', $args['preheader']);
+    $this->assertSame('abandoned-cart-content', $args['pattern']);
     $this->assertArrayNotHasKey('email_id', $args);
     $this->assertArrayNotHasKey('email_wp_post_id', $args);
   }
@@ -515,7 +315,6 @@ class TemplatesFactoryTest extends MailPoetTest {
       $this->builder,
       $woocommerce,
       $woocommerceSubscriptions,
-      $this->emailFactory,
       $bookingsHelper,
       $woocommerceHelper
     );

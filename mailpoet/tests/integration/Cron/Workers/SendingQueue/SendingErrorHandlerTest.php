@@ -12,6 +12,8 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\SubscriberError;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Services\AuthorizedSenderDomainController;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoetVendor\Monolog\Logger;
 
 class SendingErrorHandlerTest extends \MailPoetTest {
@@ -87,5 +89,64 @@ class SendingErrorHandlerTest extends \MailPoetTest {
     $taskEntity = Stub::make(ScheduledTaskEntity::class, ['getSendingQueue' => $sendingQueue]);
 
     $errorHandler->processError($error, $taskEntity, [], []);
+  }
+
+  public function testItPausesTaskWithSenderDomainReasonAndClearsDomainCache() {
+    $error = new MailerError(
+      MailerError::OPERATION_DOMAIN_AUTHORIZATION,
+      MailerError::LEVEL_SOFT,
+      'Email violates Sender Domain requirements. Please authenticate the sender domain.',
+      null,
+      []
+    );
+    $senderDomainController = Stub::make(AuthorizedSenderDomainController::class, ['clearCache' => Expected::once()], $this);
+    $errorHandler = $this->getServiceWithOverrides(
+      SendingErrorHandler::class,
+      ['senderDomainController' => $senderDomainController]
+    );
+    $task = $this->createTaskWithQueue();
+
+    $errorHandler->processError($error, $task, [], []);
+
+    $this->entityManager->refresh($task);
+    verify($task->getStatus())->same(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($task->getPauseReason())->same(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
+  }
+
+  public function testItDoesNotMarkTaskOrClearDomainCacheForOtherSoftErrors() {
+    $error = new MailerError(
+      MailerError::OPERATION_SEND,
+      MailerError::LEVEL_SOFT,
+      'Error Message',
+      null,
+      []
+    );
+    $senderDomainController = Stub::make(AuthorizedSenderDomainController::class, ['clearCache' => Expected::never()], $this);
+    $errorHandler = $this->getServiceWithOverrides(
+      SendingErrorHandler::class,
+      ['senderDomainController' => $senderDomainController]
+    );
+    $task = $this->createTaskWithQueue();
+
+    $errorHandler->processError($error, $task, [], []);
+
+    $this->entityManager->refresh($task);
+    verify($task->getStatus())->notEquals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($task->getPauseReason())->null();
+  }
+
+  private function createTaskWithQueue(): ScheduledTaskEntity {
+    $newsletter = (new NewsletterFactory())->withSendingQueue()->create();
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $queue->setCountTotal(2);
+    $queue->setCountProcessed(0);
+    $task = $queue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    $task->setStatus(null);
+    $this->entityManager->flush();
+    $this->entityManager->refresh($queue);
+    $this->entityManager->refresh($task);
+    return $task;
   }
 }

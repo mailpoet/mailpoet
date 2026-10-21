@@ -59,15 +59,13 @@ class SubscriberCountShortcodeCest {
     $i->wantTo('Remove some subscribers and verify the shortcode rendering once again');
 
     $i->amOnMailpoetPage('Subscribers');
-    $i->waitForElement('[data-automation-id="listing_filter_segment"]');
-    $i->selectOption('[data-automation-id="listing_filter_segment"]', self::SUBSCRIBERS_LIST_NAME_TWO);
-    $i->waitForElementVisible('[data-automation-id="listing_filter_segment"]');
+    $i->waitForListingItemsToLoad();
+    $i->applyDataViewsFilter('Lists', [self::SUBSCRIBERS_LIST_NAME_TWO]);
     $i->selectAllListingItems();
     $i->selectListingBulkAction('Move to trash');
     $i->waitForListingItemsToLoad();
     $i->waitForNoticeAndClose('11 subscribers were moved to the trash.');
-    $i->selectOption('[data-automation-id="listing_filter_segment"]', '');
-    $i->waitForListingItemsToLoad();
+    $i->clearDataViewsFilters();
     $i->waitForElement('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
     $i->waitForListingItemsToLoad();

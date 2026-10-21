@@ -1,32 +1,6 @@
 <% extends 'emails/statsNotificationLayout.txt' %>
 
 <% block content %>
-<% if is_garden() %>
-<%= blogName %>
-
-<%= __('Your campaign stats') %>
-
-<% if recipientFirstName %><%= __('Hi %s,')|replace({'%s': recipientFirstName}) %>
-
-<% endif %>
-<%= __('Here\'s how your campaign "%s" performed in the first 24 hours.')|replace({'%s': subject}) %>
-
-<%= __('Clicked') %>: <%= stats_number_format_i18n(clicked) %>% (<%= clicked_stats_text_garden(clicked) %>)
-<%= __('Opened') %>: <%= stats_number_format_i18n(opened) %>%
-<%= __('Machine-opened') %>: <%= stats_number_format_i18n(machineOpened) %>%
-<%= __('Unsubscribed') %>: <%= stats_number_format_i18n(unsubscribed) %>%
-<%= __('Bounced') %>: <%= stats_number_format_i18n(bounced) %>%
-<% if notTracked > 0 %>
-<% if trackedSent > 0 %>
-  <%= _n('%1$s of your recipients is not tracked, so open and click rates are based on the other %2$s.', '%1$s of your recipients are not tracked, so open and click rates are based on the other %2$s.', notTracked)|replace({'%1$s': notTracked, '%2$s': trackedSent}) %>
-<% else %>
-  <%= _n('Your %1$s recipient is not tracked, so open and click rates cannot be measured.', 'None of your %1$s recipients are tracked, so open and click rates cannot be measured.', notTracked)|replace({'%1$s': notTracked}) %>
-<% endif %>
-<% endif %>
-
-<%= __('View full campaign report') %>
-  <%= linkStats|raw %>
-<% else %>
 <%= __('Your stats are in!') %>
 
 <%= subject %>
@@ -73,5 +47,4 @@
 
 <%= __('View all stats') %>
   <%= linkStats|raw %>
-<% endif %>
 <% endblock %>

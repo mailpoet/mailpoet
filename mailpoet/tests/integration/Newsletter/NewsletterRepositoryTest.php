@@ -374,6 +374,23 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     verify(isset($byParentId[$parentHealthyId]))->false();
   }
 
+  public function testFindStuckPostNotificationParentsIgnoresIssuesHeldAsOverdue() {
+    $heldParent = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
+    $heldIssue = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION_HISTORY, NewsletterEntity::STATUS_SENDING, $heldParent);
+    $heldTask = $this->createQueueWithTaskAndSegmentAndSubscribers($heldIssue, ScheduledTaskEntity::STATUS_PAUSED)->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $heldTask);
+    $heldTask->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_OVERDUE);
+    $this->entityManager->flush();
+
+    $pausedParent = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
+    $this->createNotificationHistoryWithTaskStatus($pausedParent, ScheduledTaskEntity::STATUS_PAUSED);
+
+    $results = $this->repository->findStuckPostNotificationParents();
+
+    verify($results)->arrayCount(1);
+    verify($results[0]['parent']->getId())->equals($pausedParent->getId());
+  }
+
   public function testFindStuckPostNotificationParentsExcludesTrashedEntries() {
     $parent = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
     $trashedHistory = $this->createNotificationHistoryWithTaskStatus($parent, ScheduledTaskEntity::STATUS_PAUSED);

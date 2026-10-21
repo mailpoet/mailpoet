@@ -5,6 +5,7 @@ import { registerLocale } from 'react-datepicker';
 import locale from 'date-fns/locale/en-US';
 import { Datepicker } from 'common/datepicker/datepicker';
 import { MailPoet } from 'mailpoet';
+import { momentToDateFnsFormat } from './date-fns-format';
 
 /**
  * This function is a copy of the buildLocalizeFn function from date-fns (date-fns/locale/_lib/buildLocalizeFn)
@@ -143,17 +144,8 @@ class DateText extends Component<DateTextProps> {
 
   getFieldName = () => this.props.name || 'date';
 
-  getDisplayDateFormat = (format: string) => {
-    const convertedFormat = MailPoet.Date.convertFormat(format);
-    // Convert moment format to date-fns, see: https://git.io/fxCyr
-    return convertedFormat
-      .replace(/D/g, 'd')
-      .replace(/Y/g, 'y')
-      .replace(/A/g, 'a')
-      .replace(/o/g, 'Y') // MailPoet.Date.convertFormat converts 'S' to 'o'
-      .replace(/\[/g, '')
-      .replace(/\]/g, '');
-  };
+  getDisplayDateFormat = (format: string) =>
+    momentToDateFnsFormat(MailPoet.Date.convertFormat(format));
 
   getDate = (date: string) => Moment(date).toDate();
 

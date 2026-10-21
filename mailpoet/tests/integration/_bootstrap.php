@@ -23,7 +23,15 @@ if ((bool)getenv('MULTISITE') === true) {
 } else {
   $wpLoadFile = getenv('WP_ROOT') . '/wp-load.php';
 }
+// Loading plugins can print PHP deprecations (e.g. compile-time ones from third-party plugins on new PHP versions).
+// Sending them to stderr keeps them visible without flushing output, which would make header() calls in tests no-ops.
+ob_start();
 require_once($wpLoadFile);
+$wpLoadOutput = (string)ob_get_clean();
+if ($wpLoadOutput !== '') {
+  fwrite(STDERR, $wpLoadOutput);
+}
+unset($wpLoadOutput);
 
 /**
  * Setting env from .evn file
@@ -145,7 +153,9 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
   public function invokeMethod(&$object, $methodName, array $parameters = []) {
     $reflection = new \ReflectionClass(get_class($object));
     $method = $reflection->getMethod($methodName);
-    $method->setAccessible(true);
+    if (PHP_VERSION_ID < 80100) {
+      $method->setAccessible(true);
+    }
 
     return $method->invokeArgs($object, $parameters);
   }
@@ -244,6 +254,69 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     libxml_clear_errors();
 
     $this->assertEmpty($errors, 'HTML is not valid: ' . $html);
+  }
+
+  /**
+   * Checks that the HTML has a tag with these attribute values, in any order and quoting.
+   * WordPress 7.2 re-serializes markup that passes through wp_kses().
+   *
+   * @param array<string, string|true> $attributes
+   */
+  protected function assertHtmlHasTag(string $html, string $tagName, array $attributes): void {
+    $processor = new \WP_HTML_Tag_Processor($html);
+    while ($processor->next_tag($tagName)) {
+      $matches = true;
+      foreach ($attributes as $name => $value) {
+        if ($processor->get_attribute($name) !== $value) {
+          $matches = false;
+          break;
+        }
+      }
+      if ($matches) {
+        $this->addToAssertionCount(1);
+        return;
+      }
+    }
+    $this->fail("No <$tagName> tag with attributes " . (string)json_encode($attributes) . ' in: ' . $html);
+  }
+
+  /**
+   * Compares HTML by meaning: the same tags, attribute values and text, regardless of attribute
+   * order, quoting, void-element slashes or how characters in text are encoded.
+   */
+  protected function assertSameHtml(string $expected, string $actual): void {
+    $this->assertSame($this->normalizeHtml($expected), $this->normalizeHtml($actual), 'Actual HTML: ' . $actual);
+  }
+
+  private function normalizeHtml(string $html): string {
+    $processor = new \WP_HTML_Tag_Processor($html);
+    $normalized = '';
+    while ($processor->next_token()) {
+      $type = $processor->get_token_type();
+      if ($type === '#text') {
+        $normalized .= htmlspecialchars($processor->get_modifiable_text(), ENT_NOQUOTES);
+        continue;
+      }
+      if ($type !== '#tag') {
+        $normalized .= "<!--$type:" . $processor->get_modifiable_text() . '-->';
+        continue;
+      }
+      $tagName = strtolower((string)$processor->get_tag());
+      if ($processor->is_tag_closer()) {
+        $normalized .= "</$tagName>";
+        continue;
+      }
+      $attributeNames = $processor->get_attribute_names_with_prefix('') ?? [];
+      sort($attributeNames);
+      $normalized .= "<$tagName";
+      foreach ($attributeNames as $name) {
+        $value = $processor->get_attribute($name);
+        $normalized .= $value === true ? " $name" : " $name=\"" . htmlspecialchars((string)$value, ENT_QUOTES) . '"';
+      }
+      $normalized .= '>' . htmlspecialchars($processor->get_modifiable_text(), ENT_NOQUOTES);
+    }
+    $this->assertFalse($processor->paused_at_incomplete_token(), 'Incomplete HTML: ' . $html);
+    return $normalized;
   }
 
   public function _after() {

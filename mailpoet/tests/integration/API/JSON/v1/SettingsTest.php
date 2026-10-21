@@ -18,6 +18,7 @@ use MailPoet\Form\FormMessageController;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
@@ -74,7 +75,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
   }
 
@@ -90,6 +92,31 @@ class SettingsTest extends \MailPoetTest {
     $response = $this->endpoint->get();
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->data)->equals($this->settings->getAllDefaults());
+  }
+
+  public function testSavingAllowSendingStampsTheSiteAddress() {
+    $response = $this->endpoint->set([SendingEnvironment::SETTING_ALLOW_SENDING => '1']);
+
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($this->settings->get(SendingEnvironment::SETTING_ALLOW_SENDING_SITE_URL))
+      ->same(preg_replace('#^https?://#', '', rtrim(strtolower(home_url()), '/')));
+  }
+
+  public function testSavingAllowSendingOffClearsTheSiteAddress() {
+    $this->endpoint->set([SendingEnvironment::SETTING_ALLOW_SENDING => '1']);
+    verify($this->settings->get(SendingEnvironment::SETTING_ALLOW_SENDING_SITE_URL))->notNull();
+
+    $this->endpoint->set([SendingEnvironment::SETTING_ALLOW_SENDING => '']);
+
+    verify($this->settings->get(SendingEnvironment::SETTING_ALLOW_SENDING_SITE_URL))->null();
+  }
+
+  public function testSavingOtherSettingsLeavesTheSiteAddressAlone() {
+    $this->settings->set(SendingEnvironment::SETTING_ALLOW_SENDING_SITE_URL, 'old.example.com');
+
+    $this->endpoint->set(['some.setting.key' => false]);
+
+    verify($this->settings->get(SendingEnvironment::SETTING_ALLOW_SENDING_SITE_URL))->same('old.example.com');
   }
 
   public function testItCanSetSettings() {
@@ -118,7 +145,8 @@ class SettingsTest extends \MailPoetTest {
       $this->make(SettingsChangeHandler::class, ['updateBridge' => Expected::once()]),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
 
     $response = $this->endpoint->set(/* missing data */);
@@ -155,7 +183,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
 
     MailerLog::pauseSending(MailerLog::getMailerLog());
@@ -197,7 +226,8 @@ class SettingsTest extends \MailPoetTest {
       ]),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
 
     $response = $this->endpoint->set([
@@ -247,7 +277,8 @@ class SettingsTest extends \MailPoetTest {
       ]),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
 
     $response = $this->endpoint->set([
@@ -280,7 +311,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
 
     $response = $this->endpoint->set([
@@ -314,7 +346,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
 
     $this->settings->set('sender.address', '');
@@ -479,8 +512,8 @@ class SettingsTest extends \MailPoetTest {
     $this->endpoint = new Settings(
       $this->settings,
       $this->make(Bridge::class, ['onSettingsSave' => Expected::once()]),
-      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => Expected::once()]),
-      $this->diContainer->get(AuthorizedSenderDomainController::class),
+      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => Expected::once(), 'clearCache' => Expected::once()]),
+      $this->make(AuthorizedSenderDomainController::class, ['clearCache' => Expected::once()]),
       $this->make(TransactionalEmails::class),
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(NewslettersRepository::class),
@@ -492,7 +525,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SettingsChangeHandler::class),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
     );
 
     verify($this->endpoint->setKeyAndSetupMss($newKey))->instanceOf(SuccessResponse::class);
@@ -501,6 +535,54 @@ class SettingsTest extends \MailPoetTest {
     verify($this->settings->get('mta.method'))->equals('MailPoet');
     verify($this->settings->get('signup_confirmation.enabled'))->equals(1);
     verify($this->settings->get('premium.premium_key'))->equals($newKey);
+  }
+
+  public function testItClearsSenderCachesWhenApiKeyChanges() {
+    $this->settings->set('mta', ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => 'old-key']);
+    $endpoint = $this->createEndpointWithCacheExpectations(Expected::once(), Expected::once());
+    $endpoint->set(['mta' => ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => 'new-key']]);
+    verify($this->settings->get('mta.mailpoet_api_key'))->same('new-key');
+  }
+
+  public function testItKeepsSenderCachesWhenApiKeyIsUnchanged() {
+    $this->settings->set('mta', ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => 'same-key']);
+    $endpoint = $this->createEndpointWithCacheExpectations(Expected::never(), Expected::never());
+    $endpoint->set(['mta' => ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => 'same-key']]);
+  }
+
+  public function testItKeepsSenderCachesWhenSavedSettingsOmitApiKey() {
+    $this->settings->set('mta', ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => 'same-key']);
+    $endpoint = $this->createEndpointWithCacheExpectations(Expected::never(), Expected::never());
+    $endpoint->set(['some.setting.key' => false]);
+    verify($this->settings->get('mta.mailpoet_api_key'))->same('same-key');
+  }
+
+  public function testItClearsSenderCachesWhenApiKeyChangesWhilePendingApproval() {
+    $this->settings->set('mta', ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => 'old-key']);
+    $endpoint = $this->createEndpointWithCacheExpectations(Expected::once(), Expected::once(), true);
+    $endpoint->set(['mta' => ['method' => Mailer::METHOD_MAILPOET, 'mailpoet_api_key' => 'new-key']]);
+  }
+
+  private function createEndpointWithCacheExpectations($senderDomainClearCache, $emailsClearCache, bool $pendingApproval = false): Settings {
+    return new Settings(
+      $this->settings,
+      new Bridge,
+      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => null, 'clearCache' => $emailsClearCache]),
+      $this->make(AuthorizedSenderDomainController::class, ['clearCache' => $senderDomainClearCache]),
+      $this->make(TransactionalEmails::class),
+      $this->diContainer->get(EntityManager::class),
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(ScheduledTasksRepository::class),
+      $this->diContainer->get(FormMessageController::class),
+      $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => $pendingApproval]),
+      $this->diContainer->get(SegmentsRepository::class),
+      $this->make(SettingsChangeHandler::class, ['updateApiKeyState' => null]),
+      $this->diContainer->get(SubscribersCountsController::class),
+      $this->diContainer->get(TrackingConfig::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class)
+    );
   }
 
   private function createNewsletter(string $type, string $status = NewsletterEntity::STATUS_DRAFT, $parent = null): NewsletterEntity {

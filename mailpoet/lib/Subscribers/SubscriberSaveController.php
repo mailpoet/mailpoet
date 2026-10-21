@@ -43,6 +43,9 @@ class SubscriberSaveController {
   /** @var SubscriberTagRepository */
   private $subscriberTagRepository;
 
+  /** @var SourceUrlResolver */
+  private $sourceUrlResolver;
+
   /** @var TagRepository */
   private $tagRepository;
 
@@ -67,7 +70,8 @@ class SubscriberSaveController {
     TagRepository $tagRepository,
     Unsubscribes $unsubscribesTracker,
     WelcomeScheduler $welcomeScheduler,
-    WPFunctions $wp
+    WPFunctions $wp,
+    SourceUrlResolver $sourceUrlResolver
   ) {
     $this->customFieldsRepository = $customFieldsRepository;
     $this->security = $security;
@@ -80,6 +84,7 @@ class SubscriberSaveController {
     $this->unsubscribesTracker = $unsubscribesTracker;
     $this->welcomeScheduler = $welcomeScheduler;
     $this->wp = $wp;
+    $this->sourceUrlResolver = $sourceUrlResolver;
     $this->subscriberTagRepository = $subscriberTagRepository;
   }
 
@@ -244,6 +249,8 @@ class SubscriberSaveController {
       );
     }
     if (isset($data['source'])) $subscriber->setSource($data['source']);
+    // The plugin only describes the API source; setSource() clears it for any other source
+    if (array_key_exists('source_plugin', $data) && $subscriber->getSource() === Source::API) $subscriber->setSourcePlugin($data['source_plugin']);
     if (isset($data['wp_user_id'])) $subscriber->setWpUserId($data['wp_user_id']);
     if (isset($data['subscribed_ip'])) $subscriber->setSubscribedIp($data['subscribed_ip']);
     if (isset($data['confirmed_ip'])) $subscriber->setConfirmedIp($data['confirmed_ip']);
@@ -329,6 +336,7 @@ class SubscriberSaveController {
     $subscriber = new SubscriberEntity();
     $subscriber->setUnsubscribeToken($this->security->generateUnsubscribeTokenByEntity($subscriber));
     $subscriber->setLinkToken(Security::generateHash(SubscriberEntity::LINK_TOKEN_LENGTH));
+    $subscriber->setSourceUrl($this->sourceUrlResolver->resolve());
     $subscriber->setStatus(!$this->settings->get('signup_confirmation.enabled') ? SubscriberEntity::STATUS_SUBSCRIBED : SubscriberEntity::STATUS_UNCONFIRMED);
 
     return $subscriber;

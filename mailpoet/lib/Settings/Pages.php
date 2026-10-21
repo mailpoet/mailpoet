@@ -42,10 +42,12 @@ class Pages {
     return $output;
   }
 
-  public static function createMailPoetPage($postName) {
-    WPFunctions::get()->removeAllActions('pre_post_update');
-    WPFunctions::get()->removeAllActions('save_post');
-    WPFunctions::get()->removeAllActions('wp_insert_post');
+  public static function createMailPoetPage($postName, bool $stripHooks = true) {
+    if ($stripHooks) {
+      WPFunctions::get()->removeAllActions('pre_post_update');
+      WPFunctions::get()->removeAllActions('save_post');
+      WPFunctions::get()->removeAllActions('wp_insert_post');
+    }
 
     $id = WPFunctions::get()->wpInsertPost([
       'post_status' => 'publish',

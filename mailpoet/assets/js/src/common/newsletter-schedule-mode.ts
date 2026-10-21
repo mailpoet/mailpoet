@@ -1,3 +1,5 @@
+import { MailPoetDate } from 'date';
+
 export const SCHEDULE_MODE_WEBSITE_TIME = 'website_time';
 export const SCHEDULE_MODE_SUBSCRIBER_TIMEZONE = 'subscriber_timezone';
 
@@ -7,6 +9,13 @@ export type ScheduleMode =
 
 export const DEFAULT_SCHEDULED_LOCAL_TIME = '08:00:00';
 export const SUBSCRIBER_TIMEZONE_LEAD_TIME_HOURS = 24;
+
+/** Tomorrow at the default local time, in GMT, as the site's date offset sees it. */
+export function getDefaultScheduledAt(): string {
+  return MailPoetDate.toGmtDatetimeString(
+    `${window.mailpoet_tomorrow_date} ${DEFAULT_SCHEDULED_LOCAL_TIME}`,
+  );
+}
 
 export function getScheduleMode(scheduleMode?: string | null): ScheduleMode {
   return scheduleMode === SCHEDULE_MODE_SUBSCRIBER_TIMEZONE
