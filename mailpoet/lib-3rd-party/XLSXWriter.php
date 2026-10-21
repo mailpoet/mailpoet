@@ -24,14 +24,6 @@ class XLSXWriter
   protected $current_sheet = '';
   public $rtl = false;
 
-  public function __construct() {
-    if (!ini_get('date.timezone'))
-    {
-      //using date functions can kick out warning if this isn't set
-      date_default_timezone_set('UTC');
-    }
-  }
-
   public function setAuthor($author='') {
     $this->author = $author; 
   }
@@ -39,7 +31,7 @@ class XLSXWriter
   public function __destruct() {
     if (!empty($this->temp_files)) {
       foreach ($this->temp_files as $temp_file) {
-        @unlink($temp_file);
+        @unlink($temp_file); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Vendored library, kept as upstream wrote it.
       }
     }
   }
@@ -53,7 +45,7 @@ class XLSXWriter
   public function writeToStdOut() {
     $temp_file = $this->tempFilename();
     self::writeToFile($temp_file);
-    readfile($temp_file);
+    readfile($temp_file); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- Vendored library, kept as upstream wrote it.
   }
 
   public function writeToString() {
@@ -68,7 +60,7 @@ class XLSXWriter
       self::finalizeSheet($sheet_name);//making sure all footers have been written
     }
 
-    @unlink($filename);//if the zip already exists, overwrite it
+    @unlink($filename); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Vendored library: if the zip already exists, overwrite it.
     $zip = new \ZipArchive();
     if (empty($this->sheets))                       { self::log("Error in " . __CLASS__ . "::" . __FUNCTION__ . ", no worksheets defined.");
       return; 
@@ -342,7 +334,7 @@ class XLSXWriter
     $core_xml = "";
     $core_xml .= '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
     $core_xml .= '<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">';
-    $core_xml .= '<dcterms:created xsi:type="dcterms:W3CDTF">' . date("Y-m-d\TH:i:s.00\Z") . '</dcterms:created>';//$date_time = '2014-10-25T15:54:37.00Z';
+    $core_xml .= '<dcterms:created xsi:type="dcterms:W3CDTF">' . gmdate("Y-m-d\TH:i:s.00\Z") . '</dcterms:created>';//$date_time = '2014-10-25T15:54:37.00Z';
     $core_xml .= '<dc:creator>' . self::xmlspecialchars($this->author) . '</dc:creator>';
     $core_xml .= '<cp:revision>0</cp:revision>';
     $core_xml .= '</cp:coreProperties>';
@@ -432,7 +424,7 @@ class XLSXWriter
   }
   //------------------------------------------------------------------
   public static function log($string) {
-    file_put_contents("php://stderr", date("Y-m-d H:i:s:") . rtrim(is_array($string) ? json_encode($string) : $string) . "\n");
+    file_put_contents("php://stderr", gmdate("Y-m-d H:i:s:") . rtrim(is_array($string) ? json_encode($string) : $string) . "\n");
   }
   //------------------------------------------------------------------
   public static function sanitize_filename($filename) {
@@ -522,7 +514,7 @@ class XLSXWriter_BuffererWriter
 
   public function __construct($filename, $fd_fopen_flags='w', $check_utf8=false) {
     $this->check_utf8 = $check_utf8;
-    $this->fd = fopen($filename, $fd_fopen_flags);
+    $this->fd = fopen($filename, $fd_fopen_flags); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Vendored library: writes the XLSX parts in chunks.
     if ($this->fd === false) {
       XLSXWriter::log("Unable to open $filename for writing.");
     }
@@ -541,7 +533,7 @@ class XLSXWriter_BuffererWriter
         XLSXWriter::log("Error, invalid UTF8 encoding detected.");
         $this->check_utf8 = false;
       }
-      fwrite($this->fd, $this->buffer);
+      fwrite($this->fd, $this->buffer); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- Vendored library: writes the XLSX parts in chunks.
       $this->buffer = '';
     }
   }
@@ -549,7 +541,7 @@ class XLSXWriter_BuffererWriter
   public function close() {
     $this->purge();
     if ($this->fd) {
-      fclose($this->fd);
+      fclose($this->fd); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Vendored library: writes the XLSX parts in chunks.
       $this->fd = null;
     }
   }
