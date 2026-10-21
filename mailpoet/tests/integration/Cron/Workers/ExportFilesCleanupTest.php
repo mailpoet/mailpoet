@@ -41,7 +41,7 @@ class ExportFilesCleanupTest extends \MailPoetTest {
     touch($oldFilePath, time() - (60 * 60 * 24 * 2));
     touch($newFilePath);
 
-    $cleanup = new ExportFilesCleanup();
+    $cleanup = $this->diContainer->get(ExportFilesCleanup::class);
     $cleanup->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
 
     $this->assertFileExists($newFilePath);
@@ -57,7 +57,7 @@ class ExportFilesCleanupTest extends \MailPoetTest {
     touch($oldFilePath, time() - (60 * 60 * 24 * 2));
     touch($newFilePath);
 
-    $cleanup = new ExportFilesCleanup();
+    $cleanup = $this->diContainer->get(ExportFilesCleanup::class);
     $cleanup->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
 
     $this->assertFileExists($newFilePath);
@@ -70,7 +70,7 @@ class ExportFilesCleanupTest extends \MailPoetTest {
     touch($oldFilePath, time() - (60 * 60 * 24 * 8));
     touch($newFilePath, time() - (60 * 60 * 24 * 6));
 
-    $cleanup = new ExportFilesCleanup();
+    $cleanup = $this->diContainer->get(ExportFilesCleanup::class);
     $cleanup->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
 
     $this->assertFileExists($newFilePath);
@@ -86,7 +86,7 @@ class ExportFilesCleanupTest extends \MailPoetTest {
     touch($oldFilePath, time() - (60 * 60 * 24 * 8));
     touch($newFilePath, time() - (60 * 60 * 24 * 6));
 
-    $cleanup = new ExportFilesCleanup();
+    $cleanup = $this->diContainer->get(ExportFilesCleanup::class);
     $cleanup->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
 
     $this->assertFileExists($newFilePath);

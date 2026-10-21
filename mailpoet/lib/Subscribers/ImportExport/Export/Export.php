@@ -10,6 +10,7 @@ use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Subscribers\ImportExport\ImportExportRepository;
 use MailPoet\Util\FormulaFreeXLSXWriter;
 use MailPoet\Util\SpreadsheetCellFormatter;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Export {
   const SUBSCRIBER_BATCH_SIZE = 1000;
@@ -42,15 +43,20 @@ class Export {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     CustomFieldsRepository $customFieldsRepository,
     ImportExportRepository $importExportRepository,
     SegmentsRepository $segmentsRepository,
+    WPFunctions $wp,
     array $data
   ) {
     $this->customFieldsRepository = $customFieldsRepository;
     $this->importExportRepository = $importExportRepository;
     $this->segmentsRepository = $segmentsRepository;
+    $this->wp = $wp;
     if (strpos((string)@ini_get('disable_functions'), 'set_time_limit') === false) {
       set_time_limit(0);
     }
@@ -84,8 +90,8 @@ class Export {
     $processedSubscribers = 0;
     $this->resetCounters();
     try {
-      ExportDownload::ensureExportDirectory();
-      if (is_writable($this->exportPath) === false) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable -- The CSV is written with fopen() below, not WP_Filesystem.
+      ExportDownload::ensureExportDirectory($this->wp);
+      if ($this->wp->wpIsWritable($this->exportPath) === false) {
         throw new \Exception(__('The export file could not be saved on the server.', 'mailpoet'));
       }
       if (!extension_loaded('zip') && ($this->exportFormatOption === 'xlsx')) {

@@ -15,6 +15,16 @@ class ExportFilesCleanup extends SimpleWorker {
   const DELETE_FILES_AFTER_X_DAYS = 1;
   const DELETE_STATS_FILES_AFTER_X_DAYS = 7;
 
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(
+    WPFunctions $wp
+  ) {
+    $this->wp = $wp;
+    parent::__construct();
+  }
+
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
     $this->cleanup(
       Export::getExportPath() . '/' . Export::getFilePrefix() . '*.*',
@@ -45,7 +55,7 @@ class ExportFilesCleanup extends SimpleWorker {
       $created = $file->getMTime();
       $now = new Carbon();
       if (Carbon::createFromTimestamp((int)$created)->lessThan($now->subDays($deleteAfterDays))) {
-        WPFunctions::get()->wpDeleteFile($name);
+        $this->wp->wpDeleteFile($name);
       }
     }
   }

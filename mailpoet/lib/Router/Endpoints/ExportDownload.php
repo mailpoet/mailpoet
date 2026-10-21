@@ -93,7 +93,7 @@ class ExportDownload {
       self::writeServerFiles($exportDirectory);
     }
     if ($wasJustCreated) {
-      self::purgeLegacyExportFiles();
+      self::purgeLegacyExportFiles($wp);
     }
   }
 
@@ -130,7 +130,7 @@ class ExportDownload {
     }
   }
 
-  private static function purgeLegacyExportFiles(): void {
+  private static function purgeLegacyExportFiles(WPFunctions $wp): void {
     $patterns = [
       Env::$tempPath . '/' . Export::getFilePrefix() . '*.*',
       Env::$tempPath . '/' . StatisticsExporter::FILE_PREFIX . '*.*',
@@ -138,7 +138,7 @@ class ExportDownload {
     foreach ($patterns as $pattern) {
       foreach (glob($pattern) ?: [] as $file) {
         if (is_file($file)) {
-          WPFunctions::get()->wpDeleteFile($file);
+          $wp->wpDeleteFile($file);
         }
       }
     }
@@ -276,7 +276,7 @@ class ExportDownload {
       }
     }
 
-    // phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown, WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- Streams a validated local export file from Env::$tempPath to the browser.
+    // phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown, WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- Streams a validated export file to the browser.
     readfile($filePath);
     exit;
   }

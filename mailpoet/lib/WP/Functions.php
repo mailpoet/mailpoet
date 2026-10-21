@@ -1004,6 +1004,10 @@ class Functions {
     return wp_mkdir_p($dir);
   }
 
+  public function wpIsWritable(string $path): bool {
+    return wp_is_writable($path);
+  }
+
   public function wpGetImageEditor(string $path, $args = []) {
     return wp_get_image_editor($path, $args);
   }
@@ -1179,11 +1183,8 @@ class Functions {
     return wp_strip_all_tags($string, $removeBreaks);
   }
 
-  /**
-   * @param string $file
-   */
-  public function wpDeleteFile($file): bool {
-    return (bool)wp_delete_file($file);
+  public function wpDeleteFile(string $file): bool {
+    return wp_delete_file($file);
   }
 
   public function getTheContent($more_link_text = null, $strip_teaser = false, $post = null) {
