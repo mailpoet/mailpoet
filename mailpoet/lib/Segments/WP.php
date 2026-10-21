@@ -23,6 +23,8 @@ use MailPoet\Util\DBCollationChecker;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class WP {
@@ -146,9 +148,10 @@ class WP {
     $currentFilter = $this->wp->currentFilter();
     // Delete
     if (in_array($currentFilter, ['delete_user', 'deleted_user', 'remove_user_from_blog'])) {
+      $isLinkUnconfirmed = $this->wpUserSubscriberLink->isUnconfirmed($wpUserId);
       $this->wpUserSubscriberLink->clear($wpUserId);
       if ($subscriber instanceof SubscriberEntity) {
-        $this->unlinkSubscriberFromWpUser($subscriber, $wpUser);
+        $this->unlinkSubscriberFromWpUser($subscriber, $wpUser, $isLinkUnconfirmed);
       }
       return;
     }
@@ -166,7 +169,14 @@ class WP {
     });
   }
 
-  private function unlinkSubscriberFromWpUser(SubscriberEntity $subscriber, \WP_User $wpUser): void {
+  private function unlinkSubscriberFromWpUser(SubscriberEntity $subscriber, \WP_User $wpUser, bool $isLinkUnconfirmed = false): void {
+    // The account never confirmed the subscriber's address, so the subscriber
+    // goes back to how it was before the link.
+    if ($isLinkUnconfirmed) {
+      $this->releaseSubscriber($subscriber);
+      return;
+    }
+
     // Backwards-compat escape hatch for sites that need the legacy hard-delete behavior
     // (e.g. GDPR-driven account deletion flows). Returning true reproduces pre-STOMAIL-8018 behavior.
     $hardDelete = (bool)$this->wp->applyFilters(
@@ -206,6 +216,42 @@ class WP {
         $subscriber->setDeletedAt(Carbon::now()->millisecond(0));
       }
 
+      $this->subscribersRepository->persist($subscriber);
+      $this->subscribersRepository->flush();
+    });
+    $this->segmentsCountRecalculator->recalculateForSubscribers([(int)$subscriber->getId()]);
+  }
+
+  private function hasWooCommerceOrders(string $email): bool {
+    if (!$this->wooHelper->isWooCommerceActive() || $email === '') {
+      return false;
+    }
+    $orderIds = $this->wooHelper->wcGetOrders(['billing_email' => $email, 'type' => 'shop_order', 'status' => 'any', 'limit' => 1, 'return' => 'ids']);
+    return is_array($orderIds) && count($orderIds) > 0;
+  }
+
+  /**
+   * Unlinks the subscriber and takes it off the WP Users list. It also leaves
+   * the WooCommerce Customers list unless its email has orders. Its status,
+   * other lists and custom fields stay.
+   */
+  private function releaseSubscriber(SubscriberEntity $subscriber): void {
+    $hasOrders = $this->hasWooCommerceOrders((string)$subscriber->getEmail());
+    $segmentTypes = $hasOrders ? [SegmentEntity::TYPE_WP_USERS] : [SegmentEntity::TYPE_WP_USERS, SegmentEntity::TYPE_WC_USERS];
+    $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
+    $this->entityManager->wrapInTransaction(function() use ($subscriber, $hasOrders, $segmentTypes, $subscriberSegmentsTable, $segmentsTable): void {
+      $this->databaseConnection->executeStatement(
+        "DELETE ss FROM {$subscriberSegmentsTable} ss
+          INNER JOIN {$segmentsTable} seg ON seg.id = ss.segment_id
+          WHERE ss.subscriber_id = :subscriberId AND seg.type IN (:types)",
+        ['subscriberId' => $subscriber->getId(), 'types' => $segmentTypes],
+        ['subscriberId' => ParameterType::INTEGER, 'types' => ArrayParameterType::STRING]
+      );
+      $subscriber->setWpUserId(null);
+      if (!$hasOrders) {
+        $subscriber->setIsWoocommerceUser(false);
+      }
       $this->subscribersRepository->persist($subscriber);
       $this->subscribersRepository->flush();
     });
