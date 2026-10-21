@@ -130,11 +130,11 @@ class Date {
     if (!empty($block['params']['value'])) {
       $date = CarbonImmutable::createFromFormat('Y-m-d H:i:s', $block['params']['value']);
       if ($date instanceof CarbonImmutable) {
-        $defaults['selected'] = (int)date('m', $date->getTimestamp());
+        $defaults['selected'] = (int)$date->format('m');
       }
     } elseif (!empty($block['params']['is_default_today'])) {
       // is default today
-      $defaults['selected'] = (int)date('m');
+      $defaults['selected'] = (int)gmdate('m');
     }
     // merge block with defaults
     $block = array_merge($defaults, $block);
@@ -159,18 +159,18 @@ class Date {
   private function getYears(array $block = []): string {
     $defaults = [
       'selected' => null,
-      'from' => (int)date('Y') - 100,
-      'to' => (int)date('Y'),
+      'from' => (int)gmdate('Y') - 100,
+      'to' => (int)gmdate('Y'),
     ];
 
     if (!empty($block['params']['value'])) {
       $date = CarbonImmutable::createFromFormat('Y-m-d H:i:s', $block['params']['value']);
       if ($date instanceof CarbonImmutable) {
-        $defaults['selected'] = (int)date('Y', $date->getTimestamp());
+        $defaults['selected'] = (int)$date->format('Y');
       }
     } elseif (!empty($block['params']['is_default_today'])) {
       // is default today
-      $defaults['selected'] = (int)date('Y');
+      $defaults['selected'] = (int)gmdate('Y');
     }
 
     // merge block with defaults
@@ -197,11 +197,11 @@ class Date {
     if (!empty($block['params']['value'])) {
       $date = CarbonImmutable::createFromFormat('Y-m-d H:i:s', $block['params']['value']);
       if ($date instanceof CarbonImmutable) {
-        $defaults['selected'] = (int)date('d', $date->getTimestamp());
+        $defaults['selected'] = (int)$date->format('d');
       }
     } elseif (!empty($block['params']['is_default_today'])) {
       // is default today
-      $defaults['selected'] = (int)date('d');
+      $defaults['selected'] = (int)gmdate('d');
     }
 
     // merge block with defaults

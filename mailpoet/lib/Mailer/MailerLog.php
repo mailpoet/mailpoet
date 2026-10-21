@@ -345,7 +345,7 @@ class MailerLog {
       }
       $sinceSeconds = (int)$mailerConfig['frequency']['interval'] * Mailer::SENDING_LIMIT_INTERVAL_MULTIPLIER;
     }
-    $sinceDate = date('Y-m-d H:i:s', time() - $sinceSeconds);
+    $sinceDate = gmdate('Y-m-d H:i:s', time() - $sinceSeconds);
     $mailerLog = self::getMailerLog($mailerLog);
 
     return (int)array_sum(
@@ -389,7 +389,7 @@ class MailerLog {
    */
   private static function sentEntriesDate(?int $timestamp = null): string {
 
-    return date('Y-m-d H:i:s', $timestamp ?? time());
+    return gmdate('Y-m-d H:i:s', $timestamp ?? time());
   }
 
   /**

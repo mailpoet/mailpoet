@@ -42,16 +42,16 @@ class DateTimeTest extends \MailPoetUnitTest {
   public function testGetCurrentDate() {
     $dateTime = new WPDateTime(Stub::make(new WPFunctions(), [
       'currentTime' => function($format) {
-        return date($format);
+        return gmdate($format);
       },
     ]));
-    verify($dateTime->getCurrentDate("Y-m"))->equals(date("Y-m"));
+    verify($dateTime->getCurrentDate("Y-m"))->equals(gmdate("Y-m"));
   }
 
   public function testGetCurrentTime() {
     $dateTime = new WPDateTime(Stub::make(new WPFunctions(), [
       'currentTime' => function($format) {
-        return date($format);
+        return gmdate($format);
       },
     ]));
     verify($dateTime->getCurrentTime("i:s"))->stringMatchesRegExp('/\d\d:\d\d/');
@@ -65,8 +65,8 @@ class DateTimeTest extends \MailPoetUnitTest {
     ]));
     $timestamp = 1234567;
     $format = "H:i:s";
-    verify($dateTime->formatTime($timestamp))->equals(date($dateTime->getTimeFormat(), $timestamp));
-    verify($dateTime->formatTime($timestamp, $format))->equals(date($format, $timestamp));
+    verify($dateTime->formatTime($timestamp))->equals(gmdate($dateTime->getTimeFormat(), $timestamp));
+    verify($dateTime->formatTime($timestamp, $format))->equals(gmdate($format, $timestamp));
   }
 
   public function testFormatDate() {
@@ -77,8 +77,8 @@ class DateTimeTest extends \MailPoetUnitTest {
     ]));
     $timestamp = 1234567;
     $format = "Y-m-d";
-    verify($dateTime->formatDate($timestamp))->equals(date($dateTime->getDateFormat(), $timestamp));
-    verify($dateTime->formatDate($timestamp, $format))->equals(date($format, $timestamp));
+    verify($dateTime->formatDate($timestamp))->equals(gmdate($dateTime->getDateFormat(), $timestamp));
+    verify($dateTime->formatDate($timestamp, $format))->equals(gmdate($format, $timestamp));
   }
 
   public function testTimeInterval() {

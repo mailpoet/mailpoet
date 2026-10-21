@@ -109,7 +109,7 @@ class I18n extends AbstractExtension {
       $date = strtotime($date);
     }
 
-    return WPFunctions::get()->getDateFromGmt(date('Y-m-d H:i:s', (int)$date), $dateFormat);
+    return WPFunctions::get()->getDateFromGmt(gmdate('Y-m-d H:i:s', (int)$date), $dateFormat);
   }
 
   private function setTextDomain($args = []) {
