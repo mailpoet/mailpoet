@@ -707,7 +707,7 @@ class SegmentSubscribersRepository {
    */
   private function logErrorAndReturnEmptyResult(?SegmentEntity $segment, QueryBuilder $queryBuilder, $result): array {
     $logger = LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SEGMENTS);
-    $logger->error('Invalid result for segment statistics count', [
+    $logger->error('The segment statistics count returned an invalid result, so MailPoet shows zero subscribers for this segment.', [
       'segment_id' => $segment ? $segment->getId() : null,
       'result' => $result,
       'query' => $queryBuilder->getSQL(),
@@ -718,7 +718,7 @@ class SegmentSubscribersRepository {
 
   private function logQueryException(?SegmentEntity $segment, Throwable $e): void {
     $logger = LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SEGMENTS);
-    $logger->error('Failed to execute segment subscribers query: ' . $e->getMessage(), [
+    $logger->error('Failed to execute the segment subscribers query, so MailPoet could not count or load the subscribers: ' . $e->getMessage(), [
       'segment_id' => $segment ? $segment->getId() : null,
       'error' => $e->getMessage(),
     ]);

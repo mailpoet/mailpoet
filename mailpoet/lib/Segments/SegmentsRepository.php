@@ -187,7 +187,7 @@ class SegmentsRepository extends Repository {
         throw InvalidStateException::create()->withMessage(sprintf("Segment with ID '%s' is not a dynamic segment. Its type is %s.", $id, $dynamicSegment->getType()));
       }
     } catch (InvalidStateException $exception) {
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_SEGMENTS)->error(sprintf("Could not verify existence of dynamic segment: %s", $exception->getMessage()));
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_SEGMENTS)->error(sprintf("Could not verify existence of dynamic segment, so the action on it was stopped: %s", $exception->getMessage()));
       throw $exception;
     }
     return $dynamicSegment;
