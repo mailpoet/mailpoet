@@ -16,6 +16,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Util\Helpers;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
@@ -655,6 +656,10 @@ class NewslettersRepository extends Repository {
       ->andWhere('p.deletedAt IS NULL')
       ->andWhere('n.deletedAt IS NULL')
       ->andWhere('t.status IN (:stuckStatuses)')
+      ->andWhere('t.status != :pausedStatus OR t.meta IS NULL OR t.meta NOT LIKE :overdueMarker')
+      ->setParameter('pausedStatus', ScheduledTaskEntity::STATUS_PAUSED)
+      // Held issues have their own notice.
+      ->setParameter('overdueMarker', ScheduledTasksRepository::getMetaMarker(ScheduledTaskEntity::META_PAUSE_REASON, ScheduledTaskEntity::PAUSE_REASON_OVERDUE))
       ->setParameter('parentType', NewsletterEntity::TYPE_NOTIFICATION)
       ->setParameter('historyType', NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
       ->setParameter('sendingStatus', NewsletterEntity::STATUS_SENDING)

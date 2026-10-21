@@ -158,7 +158,7 @@ class ScheduledTasksRepository extends Repository {
       ->setParameter('types', OverdueCampaignHold::HELD_TYPES)
       ->setParameter('cutoff', $cutoff)
       ->setParameter('replayMeta', NewsletterReplayMetadata::getMetaLikePattern())
-      ->setParameter('confirmedMarker', $this->getMetaMarker(ScheduledTaskEntity::META_OVERDUE_SEND_CONFIRMED, true))
+      ->setParameter('confirmedMarker', self::getMetaMarker(ScheduledTaskEntity::META_OVERDUE_SEND_CONFIRMED, true))
       ->orderBy('t.scheduledAt', 'ASC')
       ->getQuery()
       ->getResult();
@@ -242,13 +242,13 @@ class ScheduledTasksRepository extends Repository {
       ->setParameter('paused', ScheduledTaskEntity::STATUS_PAUSED)
       ->setParameter('campaignTypes', $newsletterTypes)
       ->setParameter('replayMeta', NewsletterReplayMetadata::getMetaLikePattern())
-      ->setParameter('marker', $this->getMetaMarker(ScheduledTaskEntity::META_PAUSE_REASON, $reason));
+      ->setParameter('marker', self::getMetaMarker(ScheduledTaskEntity::META_PAUSE_REASON, $reason));
   }
 
   /**
    * @param string|bool $value
    */
-  private function getMetaMarker(string $key, $value): string {
+  public static function getMetaMarker(string $key, $value): string {
     // Task meta is a LONGTEXT column written by JsonType (unescaped slashes and unicode), so the
     // stored text contains exactly this fragment of the encoder output.
     return '%' . trim((string)json_encode([$key => $value], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), '{}') . '%';
