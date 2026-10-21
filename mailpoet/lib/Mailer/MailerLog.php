@@ -187,7 +187,7 @@ class MailerLog {
     self::updateMailerLog($mailerLog);
     if ($pauseSending) {
       LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SENDING)->error(
-        'Email sending was paused due an error',
+        'Email sending was paused due an error. No more emails are sent until you resume sending.',
         [
           'error_message' => $errorMessage,
           'error_code' => $errorCode,
@@ -223,7 +223,7 @@ class MailerLog {
     self::updateMailerLog($mailerLog);
     if ($mailerLog['transactional_email_error_count'] >= self::RETRY_ATTEMPTS_LIMIT) {
       LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SENDING)->error(
-        'Email sending was paused due a transactional email error',
+        'Email sending was paused due a transactional email error. No more emails are sent until you resume sending.',
         [
           'error_message' => $errorMessage,
           'error_code' => $errorCode,
