@@ -2,6 +2,7 @@
 
 namespace integration\AdminPages;
 
+use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\AdminPages\Pages\Help;
 use MailPoet\Cron\CronHelper;
@@ -9,6 +10,7 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Logging\LogsPageData;
 use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -69,7 +71,9 @@ class HelpTest extends \MailPoetTest {
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->sendingQueuesRepository,
       $this->diContainer->get(Url::class),
-      $sendingEnvironment
+      $sendingEnvironment,
+      $this->diContainer->get(AssetsController::class),
+      $this->diContainer->get(LogsPageData::class)
     );
   }
 
