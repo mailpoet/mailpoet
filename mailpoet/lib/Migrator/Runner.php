@@ -56,8 +56,8 @@ class Runner {
       $this->store->startMigration($name);
       $this->runningMigration = $name;
       $migration->run();
-      $this->runningMigration = null;
       $this->store->completeMigration($name);
+      $this->runningMigration = null;
     } catch (Throwable $e) {
       $this->runningMigration = null;
       $this->store->failMigration($name, (string)$e);

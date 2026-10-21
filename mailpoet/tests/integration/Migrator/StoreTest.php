@@ -85,6 +85,17 @@ class StoreTest extends MailPoetTest {
     $this->assertSame($data['error'], 'test-error');
   }
 
+  public function testItDoesNotFailACompletedMigration(): void {
+    $this->store->ensureMigrationsTable();
+    $this->store->startMigration('TestingMigration');
+    $this->store->completeMigration('TestingMigration');
+    $this->store->failMigration('TestingMigration', 'test-error');
+
+    $data = $this->store->getAll()[0];
+    $this->assertNull($data['error']);
+    $this->assertNotNull($data['completed_at']);
+  }
+
   public function testItListsAllMigrations(): void {
     $this->store->ensureMigrationsTable();
     $this->store->startMigration('Started');
