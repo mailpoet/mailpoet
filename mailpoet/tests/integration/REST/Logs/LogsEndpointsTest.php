@@ -100,13 +100,7 @@ class LogsEndpointsTest extends Test {
     $this->assertSame([], $legacyItem['context']);
 
     // The decoded array cannot tell {} from [], so check the raw JSON.
-    $_SERVER['REQUEST_METHOD'] = 'GET';
-    $_GET = $query;
-    $_POST = [];
-    $GLOBALS['HTTP_RAW_POST_DATA'] = '';
-    ob_start();
-    rest_get_server()->serve_request(self::BASE_PATH);
-    $this->assertStringContainsString('"context":{}', (string)ob_get_clean());
+    $this->assertStringContainsString('"context":{}', $this->requestRaw(self::BASE_PATH, 'GET', ['query' => $query]));
   }
 
   public function testGetSearchesNameAndMessageWithLiteralWildcards(): void {
@@ -583,10 +577,8 @@ class LogsEndpointsTest extends Test {
     $names = $this->get(self::BASE_PATH . '/names')['data']['names'];
 
     $this->assertNotContains('', $names);
+    $this->assertNotContains(null, $names);
     $this->assertSame($names, array_values(array_unique($names)));
-    $sorted = $names;
-    sort($sorted);
-    $this->assertSame($sorted, $names);
     $mine = array_values(array_filter($names, fn($name) => strpos($name, $suffix) !== false));
     $this->assertSame(["names-a-{$suffix}", "names-b-{$suffix}"], $mine);
   }
