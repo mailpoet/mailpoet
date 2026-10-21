@@ -77,6 +77,22 @@ class PersonalizationTagLinkResolverTest extends \MailPoetTest {
     $this->assertSame(Personalizer::RENDERING_CONTEXT_HREF, $receivedContext[Personalizer::RENDERING_CONTEXT_KEY]);
   }
 
+  public function testItResolvesEmbeddedTokensForARecipient(): void {
+    $receivedContext = null;
+    $this->registry->register($this->createTag(function (array $context) use (&$receivedContext): string {
+      $receivedContext = $context;
+      return 'https://example.com/for/' . $context['recipient_email'];
+    }));
+
+    $url = $this->resolver->resolveEmbeddedTokensForRecipient('https://example.com/?go=[acme/test-url]', $this->newsletter, $this->subscriber, $this->queue, true);
+
+    $this->assertSame('https://example.com/?go=https://example.com/for/recipient@example.com', $url);
+    $this->assertIsArray($receivedContext);
+    $this->assertSame($this->queue->getId(), $receivedContext['queue_id']);
+    $this->assertTrue($receivedContext['is_preview']);
+    $this->assertSame('https://example.com/plain', $this->resolver->resolveEmbeddedTokensForRecipient('https://example.com/plain', $this->newsletter, $this->subscriber, $this->queue));
+  }
+
   public function testItLooksTagUpOnlyAfterContextBuildRegisteredIt(): void {
     $run = (new AutomationRunFactory())->create();
     $this->queue->setMeta(['automation' => ['run_id' => $run->getId()]]);

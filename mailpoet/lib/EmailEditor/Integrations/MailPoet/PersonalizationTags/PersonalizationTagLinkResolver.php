@@ -83,6 +83,24 @@ class PersonalizationTagLinkResolver {
   }
 
   /**
+   * resolveEmbeddedTokens() for a recipient of a queue; the counterpart of resolve() for tokens
+   * inside a longer URL. The context is built only when the URL has a token: building it loads the
+   * automation run and fires the tag-registration action, and most URLs have none.
+   */
+  public function resolveEmbeddedTokensForRecipient(
+    string $url,
+    NewsletterEntity $newsletter,
+    SubscriberEntity $subscriber,
+    SendingQueueEntity $queue,
+    bool $isPreview = false
+  ): string {
+    if (!self::hasEmbeddedToken($url)) {
+      return $url;
+    }
+    return $this->resolveEmbeddedTokens($url, $this->contextBuilder->build($newsletter, $subscriber, $queue, $isPreview));
+  }
+
+  /**
    * @param array<string, mixed> $context A context produced by PersonalizationContextBuilder, which
    *   also registers the subject-dependent tags the token may belong to.
    */
@@ -145,8 +163,7 @@ class PersonalizationTagLinkResolver {
    *   string, e.g. a placeholder; an empty return leaves the token literal.
    */
   public function resolveEmbeddedTokens(string $url, array $context, ?callable $valueInterceptor = null): string {
-    // Tokens may arrive URL-encoded ("%5B...%5D") or as HTML entities, so they are matched in the decoded form.
-    $decodedUrl = html_entity_decode(urldecode($url), ENT_QUOTES, 'UTF-8');
+    $decodedUrl = self::decodeUrl($url);
     if (!preg_match_all(self::EMBEDDED_TOKEN_PATTERN, $decodedUrl, $matches)) {
       return $url;
     }
@@ -199,6 +216,16 @@ class PersonalizationTagLinkResolver {
       return null;
     }
     return $resolved === '' ? null : $resolved;
+  }
+
+  /** Whether a tag token is embedded anywhere in the URL, in any of the forms decodeUrl() handles. */
+  private static function hasEmbeddedToken(string $url): bool {
+    return preg_match(self::EMBEDDED_TOKEN_PATTERN, self::decodeUrl($url)) === 1;
+  }
+
+  /** Tokens may arrive URL-encoded ("%5B...%5D") or as HTML entities, so they are matched in the decoded form. */
+  private static function decodeUrl(string $url): string {
+    return html_entity_decode(urldecode($url), ENT_QUOTES, 'UTF-8');
   }
 
   private function getTag(string $url): ?Personalization_Tag {
