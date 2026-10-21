@@ -138,7 +138,7 @@ class ExportDownload {
     foreach ($patterns as $pattern) {
       foreach (glob($pattern) ?: [] as $file) {
         if (is_file($file)) {
-          unlink($file);
+          WPFunctions::get()->wpDeleteFile($file);
         }
       }
     }
@@ -276,7 +276,7 @@ class ExportDownload {
       }
     }
 
-    // phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown -- Reads a validated local export file from Env::$tempPath.
+    // phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown, WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- Streams a validated local export file from Env::$tempPath to the browser.
     readfile($filePath);
     exit;
   }

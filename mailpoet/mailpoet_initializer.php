@@ -24,10 +24,10 @@ if (WP_DEBUG && PHP_VERSION_ID >= 70100 && file_exists($tracyPath)) {
     }
 
     if (!is_dir($logDir)) {
-      @mkdir($logDir, 0777, true);
+      @mkdir($logDir, 0777, true); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir -- Tracy debug logging, only with WP_DEBUG and a dev-only tool.
     }
 
-    if (!is_writable($logDir)) {
+    if (!is_writable($logDir)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable -- Tracy debug logging, only with WP_DEBUG and a dev-only tool.
       throw new RuntimeException("Logging directory '$logDir' is not writable.'");
     }
 

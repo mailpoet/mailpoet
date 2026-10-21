@@ -85,7 +85,7 @@ class Export {
     $this->resetCounters();
     try {
       ExportDownload::ensureExportDirectory();
-      if (is_writable($this->exportPath) === false) {
+      if (is_writable($this->exportPath) === false) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable -- The CSV is written with fopen() below, not WP_Filesystem.
         throw new \Exception(__('The export file could not be saved on the server.', 'mailpoet'));
       }
       if (!extension_loaded('zip') && ($this->exportFormatOption === 'xlsx')) {
@@ -110,13 +110,13 @@ class Export {
   public function generateCSV(): int {
     $processedSubscribers = 0;
     $formattedSubscriberFields = $this->formattedSubscriberFieldsWithList;
-    $cSVFile = fopen($this->exportFile, 'w');
+    $cSVFile = fopen($this->exportFile, 'w'); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Writes the CSV row by row; WP_Filesystem has no streaming API.
     if ($cSVFile === false) {
       throw new \Exception(__('Failed opening file for export.', 'mailpoet'));
     }
     // add UTF-8 BOM (3 bytes, hex EF BB BF) at the start of the file for
     // Excel to automatically recognize the encoding
-    fwrite($cSVFile, chr(0xEF) . chr(0xBB) . chr(0xBF));
+    fwrite($cSVFile, chr(0xEF) . chr(0xBB) . chr(0xBF)); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- Writes the CSV row by row; WP_Filesystem has no streaming API.
     $this->writeCSVRow($cSVFile, $formattedSubscriberFields);
 
     while (($subscribers = $this->getSubscribers()) !== null) {
@@ -128,7 +128,7 @@ class Export {
       }
     }
     // Remote storage can fail to save on close and still report success.
-    if (!fclose($cSVFile) || !is_file($this->exportFile)) {
+    if (!fclose($cSVFile) || !is_file($this->exportFile)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Writes the CSV row by row; WP_Filesystem has no streaming API.
       throw new \Exception(__('The export file could not be saved on the server.', 'mailpoet'));
     }
     return $processedSubscribers;

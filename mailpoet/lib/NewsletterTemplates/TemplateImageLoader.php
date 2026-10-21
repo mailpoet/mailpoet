@@ -32,12 +32,12 @@ class TemplateImageLoader {
     $mime = $this->wp->wpGetImageMime($image);
     if (!$this->isTypeAllowed($image, $mime)) {
       // Wrong file type
-      @unlink($image);
+      $this->wp->wpDeleteFile($image);
       return false;
     }
     header('Content-Type: ' . $mime);
-    readfile($image);
-    @unlink($image);
+    readfile($image); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- Streams the image to the browser.
+    $this->wp->wpDeleteFile($image);
     return true;
   }
 

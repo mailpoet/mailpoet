@@ -102,10 +102,10 @@ class PostTransformerContentsExtractor {
       '_wp_attachment_image_alt',
       true
     );
-    $altText = trim(strip_tags(is_string($rawAlt) ? $rawAlt : ''));
+    $altText = trim($this->wp->wpStripAllTags(is_string($rawAlt) ? $rawAlt : ''));
     if (strlen($altText) === 0) {
       // if the alt text is empty then use the post title
-      $altText = trim(strip_tags($postTitle));
+      $altText = trim($this->wp->wpStripAllTags($postTitle));
     }
 
     return [
