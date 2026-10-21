@@ -84,7 +84,7 @@ class PersonalizationTagLinkResolver {
 
   /**
    * resolveEmbeddedTokens() for a recipient of a queue; the counterpart of resolve() for tokens
-   * inside a longer URL. The context is built only when the URL has a token: building it loads the
+   * inside a longer URL. The context is built only when the URL has a token: building it can load the
    * automation run and fires the tag-registration action, and most URLs have none.
    */
   public function resolveEmbeddedTokensForRecipient(
@@ -119,25 +119,26 @@ class PersonalizationTagLinkResolver {
    * markdown links of the text body, so every target that can still carry a token when this runs is
    * covered here: links that were not hashed (tracking disabled), links restored for recipients
    * without tracking consent, and send previews. A whole token that does not resolve becomes an
-   * empty target rather than shipping as literal text; an embedded one stays literal.
+   * empty target rather than shipping as literal text; an embedded one stays literal unless an
+   * interceptor replaces it.
    *
    * @param array<string, mixed> $context
-   * @param (callable(string, string): string)|null $urlInterceptor Receives the resolved URL or token value
+   * @param (callable(string, string): string)|null $valueInterceptor Receives the resolved URL or token value
    *   (empty when nothing resolved) and its token, and returns what to write instead, e.g. a placeholder
    *   standing for the value. For a whole-token target it runs for every token, for an embedded one for
    *   every registered token, so that the output does not depend on the recipient's data.
    */
-  public function resolveMarkdownLinks(string $text, array $context, ?callable $urlInterceptor = null): string {
+  public function resolveMarkdownLinks(string $text, array $context, ?callable $valueInterceptor = null): string {
     return (string)preg_replace_callback(
       '/\]\(([^)\s]+)\)/',
-      function (array $matches) use ($context, $urlInterceptor): string {
+      function (array $matches) use ($context, $valueInterceptor): string {
         $token = self::extractToken($matches[1]);
         if ($token === null) {
-          return '](' . $this->resolveEmbeddedTokens($matches[1], $context, $urlInterceptor) . ')';
+          return '](' . $this->resolveEmbeddedTokens($matches[1], $context, $valueInterceptor) . ')';
         }
         $url = $this->resolveWithContext($token, $context) ?? '';
-        if ($urlInterceptor !== null) {
-          $url = $urlInterceptor($url, $token);
+        if ($valueInterceptor !== null) {
+          $url = $valueInterceptor($url, $token);
         }
         return '](' . $url . ')';
       },
@@ -151,10 +152,9 @@ class PersonalizationTagLinkResolver {
    * they are, and so do tokens that resolve to nothing unless an interceptor is given. The URL comes back
    * unchanged when it has no token.
    *
-   * With an interceptor every registered token is replaced, so the base choice and the forced-scheme
-   * drop below depend on the URL and the registry only, never on a recipient's value: a recipient whose
-   * tag resolves to nothing gets the scheme dropped or an encoded base decoded where the call without
-   * an interceptor keeps the URL literal.
+   * With an interceptor every registered token is replaced, whatever the recipient's value. The choice
+   * of the base URL and the dropping of the forced scheme then depend only on the URL and the registry,
+   * so with a per-token placeholder the output is the same for every recipient.
    *
    * @param array<string, mixed> $context A context produced by PersonalizationContextBuilder
    * @param (callable(string, string): string)|null $valueInterceptor Runs once per registered token, as the
@@ -223,7 +223,11 @@ class PersonalizationTagLinkResolver {
     return preg_match(self::EMBEDDED_TOKEN_PATTERN, self::decodeUrl($url)) === 1;
   }
 
-  /** Tokens may arrive URL-encoded ("%5B...%5D") or as HTML entities, so they are matched in the decoded form. */
+  /**
+   * Tokens may arrive URL-encoded ("%5B...%5D") or as HTML entities, so they are matched in the decoded
+   * form. Clicks compares a redirect with the stored destination in this form as well, so a URL
+   * rebuilt from another decoding would be sent to the home page.
+   */
   public static function decodeUrl(string $url): string {
     return html_entity_decode(urldecode($url), ENT_QUOTES, 'UTF-8');
   }

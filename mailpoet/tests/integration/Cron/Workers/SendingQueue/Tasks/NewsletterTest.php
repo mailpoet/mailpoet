@@ -661,6 +661,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->assertStringNotContainsString('[mailpoet/subscriber-email]', $reconstructedHtml);
     $this->assertSame($rendered['body']['html'], $reconstructedHtml);
     $reconstructedText = strtr($templated['newsletter']['body']['text'], $templated['substitutions']['text']);
+    $this->assertStringNotContainsString('[mailpoet/subscriber-email]', $reconstructedText);
     $this->assertSame($rendered['body']['text'], $reconstructedText);
   }
 
@@ -684,7 +685,9 @@ class NewsletterTest extends \MailPoetTest {
     $this->assertStringContainsString('href="https://example.com/profile?name=Anna%20AJ%20Lee"', $reconstructedHtml);
     $this->assertSame($rendered['body']['html'], $reconstructedHtml);
     // The text part is not escaped on either path; the raw name lands in the markdown target.
-    $this->assertSame($rendered['body']['text'], strtr($templated['newsletter']['body']['text'], $templated['substitutions']['text']));
+    $reconstructedText = strtr($templated['newsletter']['body']['text'], $templated['substitutions']['text']);
+    $this->assertSame('[Profile](https://example.com/profile?name=' . $this->subscriber->getFirstName() . ')', $reconstructedText);
+    $this->assertSame($rendered['body']['text'], $reconstructedText);
   }
 
   public function testItKeepsTemplateIdenticalWhenATagLinkResolvesForOnlySomeSubscribersInTemplatedBatch(): void {
@@ -786,6 +789,33 @@ class NewsletterTest extends \MailPoetTest {
     $reconstructedText = strtr($templated['newsletter']['body']['text'], $templated['substitutions']['text']);
     $this->assertSame('[Profile](https://example.com/profile?e=' . $this->subscriber->getEmail() . '&n=Anna)', $reconstructedText);
     $this->assertSame($rendered['body']['text'], $reconstructedText);
+  }
+
+  public function testItKeepsTemplateIdenticalWhenAnEmbeddedTagIsEmptyForOnlySomeSubscribersInTemplatedBatch(): void {
+    $newsletterTask = Stub::copy($this->newsletterTask, ['trackingEnabled' => false]);
+    $this->subscriber->setFirstName('Anna');
+    $this->entityManager->flush();
+    $other = (new SubscriberFactory())->withFirstName('')->create();
+    $url = 'https://example.com/profile?n=[mailpoet/subscriber-firstname]';
+    [$newsletter, , $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink($url, 'Profile');
+    // Without tracking the link stays in the body instead of a hash
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<a href="' . $url . '">Profile</a>',
+      'text' => '[Profile](' . $url . ')',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $namespace = PlaceholderCollector::generateNamespace();
+    $named = $newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $this->subscriber, $sendingQueue, $namespace);
+    $unnamed = $newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $other, $sendingQueue, $namespace);
+
+    // The empty value travels in the substitution map, so the template is the same for both recipients
+    $this->assertSame($named['newsletter'], $unnamed['newsletter']);
+    $this->assertStringNotContainsString('[mailpoet/subscriber-firstname]', $named['newsletter']['body']['text']);
+    $this->assertSame('[Profile](https://example.com/profile?n=Anna)', strtr($named['newsletter']['body']['text'], $named['substitutions']['text']));
+    $this->assertSame('[Profile](https://example.com/profile?n=)', strtr($unnamed['newsletter']['body']['text'], $unnamed['substitutions']['text']));
+    $this->assertStringContainsString('profile?n=Anna', strtr($named['newsletter']['body']['html'], $named['substitutions']['html']));
+    $this->assertStringContainsString('profile?n="', strtr($unnamed['newsletter']['body']['html'], $unnamed['substitutions']['html']));
   }
 
   public function testItDoesNotReplaceUserAuthoredTextThatLooksLikeOldPlaceholders(): void {

@@ -208,6 +208,41 @@ class PersonalizationTagLinkResolverTest extends \MailPoetTest {
     ], $calls);
   }
 
+  public function testItReplacesEveryOccurrenceOfATokenWithOneInterceptorCall(): void {
+    $this->registry->register($this->createTag(function (): string {
+      return 'https://example.com/resolved';
+    }));
+    $calls = 0;
+    $interceptor = function () use (&$calls): string {
+      $calls++;
+      return '{{p}}';
+    };
+
+    $url = $this->resolver->resolveEmbeddedTokens('https://example.com/?a=[acme/test-url]&b=[acme/test-url]', ['recipient_email' => 'recipient@example.com'], $interceptor);
+
+    $this->assertSame('https://example.com/?a={{p}}&b={{p}}', $url);
+    $this->assertSame(1, $calls);
+  }
+
+  public function testItRebuildsATargetTheSameWayForEveryRecipientWithAnInterceptor(): void {
+    // registered, but resolves to nothing for this recipient
+    $this->registry->register($this->createTag(function (): string {
+      return '';
+    }));
+    $context = ['recipient_email' => 'recipient@example.com'];
+    $placeholders = 0;
+    $interceptor = function () use (&$placeholders): string {
+      return '{{p' . (++$placeholders) . '}}';
+    };
+    // a forced scheme in front of a leading token, and a URL-encoded token
+    $text = '[A](http://[acme/test-url]?x=1) [B](https://example.com/?a=%5Bacme/test-url%5D)';
+
+    // the scheme is dropped and the encoded target decoded although the value is empty
+    $this->assertSame('[A]({{p1}}?x=1) [B](https://example.com/?a={{p2}})', $this->resolver->resolveMarkdownLinks($text, $context, $interceptor));
+    // without an interceptor an empty value leaves both targets as they are
+    $this->assertSame($text, $this->resolver->resolveMarkdownLinks($text, $context));
+  }
+
   public function testItResolvesMailPoetLinkTags(): void {
     $url = $this->resolver->resolve('[mailpoet/subscription-unsubscribe-url]', $this->newsletter, $this->subscriber, $this->queue);
 
