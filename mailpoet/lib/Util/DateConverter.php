@@ -44,7 +44,7 @@ class DateConverter {
           $parsedDate = [
             'month' => $parsedDate[$monthPosition],
             'day' => '01',
-            'year' => date('Y'),
+            'year' => gmdate('Y'),
           ];
         }
       } else if ($dateFormat === 'YYYY' && count($parsedDate) === 1) {
@@ -66,7 +66,7 @@ class DateConverter {
           $parsedDate = false;
         } else {
           $parsedDate = [
-            'year' => date('Y'),
+            'year' => gmdate('Y'),
             'month' => '01',
             'day' => $parsedDate[$dayPosition],
           ];
@@ -82,9 +82,9 @@ class DateConverter {
         if ((int)$year === 0 && (int)$month === 0 && (int)$day === 0) {
           $datetime = '';
         } else {
-          if ((int)$year === 0) $year = date('Y');
-          if ((int)$month === 0) $month = date('m');
-          if ((int)$day === 0) $day = date('d');
+          if ((int)$year === 0) $year = gmdate('Y');
+          if ((int)$month === 0) $month = gmdate('m');
+          if ((int)$day === 0) $day = gmdate('d');
           $datetime = sprintf(
             '%s-%s-%s 00:00:00',
             $year,

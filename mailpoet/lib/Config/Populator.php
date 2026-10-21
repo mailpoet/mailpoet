@@ -267,7 +267,7 @@ class Populator {
 
     // set installation date
     if (!$this->settings->get('installed_at')) {
-      $this->settings->set('installed_at', date("Y-m-d H:i:s"));
+      $this->settings->set('installed_at', gmdate("Y-m-d H:i:s"));
     }
 
     // set captcha settings

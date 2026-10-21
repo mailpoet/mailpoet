@@ -206,7 +206,7 @@ class Activator {
       $updatesLog[] = [
         'previous_version' => $currentDbVersion,
         'new_version' => Env::$version,
-        'date' => date('Y-m-d H:i:s'),
+        'date' => gmdate('Y-m-d H:i:s'),
       ];
       $this->settings->set('updates_log', $updatesLog);
     }

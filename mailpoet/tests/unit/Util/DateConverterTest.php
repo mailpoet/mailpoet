@@ -39,13 +39,13 @@ class DateConverterTest extends \MailPoetUnitTest {
   }
 
   public function testItCanConvertDayToDatetime() {
-    $currentYear = date('Y');
+    $currentYear = gmdate('Y');
     verify($this->dateConverter->convertDateToDatetime('23', 'DD'))
       ->equals(sprintf('%s-01-23 00:00:00', $currentYear));
   }
 
   public function testItCanConvertMonthToDatetime() {
-    $currentYear = date('Y');
+    $currentYear = gmdate('Y');
     verify($this->dateConverter->convertDateToDatetime('05', 'MM'))
       ->equals(sprintf('%s-05-01 00:00:00', $currentYear));
   }
@@ -62,9 +62,9 @@ class DateConverterTest extends \MailPoetUnitTest {
 
   public function testItCanClearDate() {
     verify($this->dateConverter->convertDateToDatetime('0/10/5', 'YYYY/MM/DD'))
-      ->equals(date('Y') . '-10-05 00:00:00');
+      ->equals(gmdate('Y') . '-10-05 00:00:00');
     verify($this->dateConverter->convertDateToDatetime('0/0/5', 'YYYY/MM/DD'))
-      ->equals(date('Y') . '-' . date('m') . '-05 00:00:00');
+      ->equals(gmdate('Y') . '-' . gmdate('m') . '-05 00:00:00');
     verify($this->dateConverter->convertDateToDatetime('0/0/0', 'YYYY/MM/DD'))
       ->equals('');
     verify($this->dateConverter->convertDateToDatetime('0', 'YYYY'))

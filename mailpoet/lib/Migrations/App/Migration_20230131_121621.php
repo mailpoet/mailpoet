@@ -15,7 +15,7 @@ class Migration_20230131_121621 extends AppMigration {
   public function run(): void {
     // Hide task list for users who installed the plugin more than 2 weeks ago
     $settings = $this->container->get(SettingsController::class);
-    $installedAt = strtotime($settings->get('installed_at', date('Y-m-d H:i:s')));
+    $installedAt = strtotime($settings->get('installed_at', gmdate('Y-m-d H:i:s')));
     $twoWeeksAgo = strtotime('-2 weeks');
     if ($installedAt < $twoWeeksAgo) {
       $settings->set('homepage.task_list_dismissed', true);

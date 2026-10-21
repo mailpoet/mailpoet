@@ -122,7 +122,7 @@ class TransactionalEmails {
     $text = $this->resolveSitePlaceholders($text);
     $text = str_replace(['{woocommerce}', '{WooCommerce}'], 'WooCommerce', $text);
     $replacements = [
-      '{order_date}' => date('Y-m-d'),
+      '{order_date}' => gmdate('Y-m-d'),
       '{order_number}' => '0001',
     ];
     return str_replace(array_keys($replacements), array_values($replacements), $text);
