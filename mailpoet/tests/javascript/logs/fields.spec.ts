@@ -121,4 +121,26 @@ describe('logs fields', () => {
     expect(unknown).to.contain('custom');
     expect(unknown).not.to.contain('mailpoet-logs-topic-raw');
   });
+
+  it('renders the severity as a tag with a description tooltip', () => {
+    const level = getLogFields(new Set()).find((f) => f.id === 'level');
+    if (!level?.render) {
+      throw new Error('level field has no render');
+    }
+    const render = (value: number | null) =>
+      renderToStaticMarkup(
+        createElement(level.render, {
+          item: { level: value } as LogListingItem,
+          field: level,
+        } as never),
+      );
+
+    const error = render(400);
+    expect(error).to.contain('mailpoet-tag-critical');
+    expect(error).to.contain('title="Something failed"');
+    expect(error).to.contain('>Error<');
+    expect(render(300)).to.contain('mailpoet-tag-average');
+    expect(render(null)).to.contain('—');
+    expect(render(null)).not.to.contain('mailpoet-tag');
+  });
 });

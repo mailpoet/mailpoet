@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import type { Filter } from '@wordpress/dataviews';
 import { dateRangeFromFilter } from 'common/dataviews';
+import type { TagVariant } from '../common/tag/tag';
 import type { LogsFilter } from './url-state';
 
 export const CREATED_AT_FIELD = 'created_at';
@@ -22,6 +23,30 @@ export const LOG_SEVERITY_LABELS: Record<number, string> = {
 
 export function getLogSeverityLabel(level: number): string {
   return LOG_SEVERITY_LABELS[level] ?? String(level);
+}
+
+// Plain English on purpose (logs are not translated). Generic, not claims
+// about sending.
+export const LOG_SEVERITY_DESCRIPTIONS: Record<number, string> = {
+  100: 'Details for developers',
+  200: 'Routine activity',
+  250: 'Notable event',
+  300: 'Something unexpected that MailPoet handled',
+  400: 'Something failed',
+  500: 'A serious problem',
+  550: 'A serious problem',
+  600: 'A serious problem',
+};
+
+export function getLogSeverityDescription(level: number): string {
+  return LOG_SEVERITY_DESCRIPTIONS[level] ?? '';
+}
+
+export function getLogSeverityVariant(level: number): TagVariant {
+  if (level >= 400) {
+    return 'critical';
+  }
+  return level === 300 ? 'average' : 'unknown';
 }
 
 // Severity is a finite Monolog enum, so the filter offers every level rather
