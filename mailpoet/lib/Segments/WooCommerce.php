@@ -25,6 +25,8 @@ use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class WooCommerce {
+  private const FORMER_CUSTOMERS_BATCH_SIZE = 1000;
+
   /**
    * Per-email record of whether synchronizeGuestCustomer() inserted a brand new
    * subscriber row this request, or found one that already existed.
@@ -733,15 +735,21 @@ class WooCommerce {
     $params['segmentId'] = $segmentId;
     $types['segmentId'] = ParameterType::INTEGER;
 
-    $formerCustomerIds = array_map(function ($id): int {
-      return is_numeric($id) ? (int)$id : 0;
-    }, $this->connection->executeQuery($formerCustomersSql, $params, $types)->fetchFirstColumn());
-    if (!$formerCustomerIds) {
-      return;
-    }
-
     $deletedAt = Carbon::now()->format('Y-m-d H:i:s');
-    foreach (array_chunk($formerCustomerIds, 1000) as $idsChunk) {
+    $hasChanges = false;
+    $lastId = 0;
+    do {
+      $idsChunk = array_map(function ($id): int {
+        return is_numeric($id) ? (int)$id : 0;
+      }, $this->connection->executeQuery(
+        $formerCustomersSql . ' AND mps.id > :lastId ORDER BY mps.id ASC LIMIT ' . self::FORMER_CUSTOMERS_BATCH_SIZE,
+        $params + ['lastId' => $lastId],
+        $types + ['lastId' => ParameterType::INTEGER]
+      )->fetchFirstColumn());
+      if (!$idsChunk) {
+        break;
+      }
+
       $this->connection->executeStatement("
         UPDATE {$subscribersTable} s
         SET s.deleted_at = :deletedAt
@@ -761,9 +769,14 @@ class WooCommerce {
         SET is_woocommerce_user = 0
         WHERE id IN (:ids)
       ", ['ids' => $idsChunk], ['ids' => ArrayParameterType::INTEGER]);
-    }
 
-    $this->subscriberChangesNotifier->subscribersBatchUpdate();
+      $hasChanges = true;
+      $lastId = (int)end($idsChunk);
+    } while (count($idsChunk) === self::FORMER_CUSTOMERS_BATCH_SIZE);
+
+    if ($hasChanges) {
+      $this->subscriberChangesNotifier->subscribersBatchUpdate();
+    }
   }
 
   private function updateStatus(): void {
