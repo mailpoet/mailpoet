@@ -97,17 +97,17 @@ class PlaceholderCollector {
   /**
    * Plain text for the <title> of the HTML body. WP_HTML_Tag_Processor writes title text for the
    * rendered path, and how it escapes that text depends on the WordPress version, so the value
-   * goes through it too. Every version keeps the value from breaking out of the element.
+   * goes through it too.
    */
   public function addHtmlPlainText(string $value, string $token): string {
-    return $this->addToPart(self::PART_HTML, self::CONTEXT_HTML_PLAIN_TEXT, $this->escapeTitleText($value), $token);
+    return $this->findPlaceholder(self::CONTEXT_HTML_PLAIN_TEXT, $token)
+      ?? $this->addToPart(self::PART_HTML, self::CONTEXT_HTML_PLAIN_TEXT, $this->escapeTitleText($value), $token);
   }
 
   private function escapeTitleText(string $value): string {
     $processor = new \WP_HTML_Tag_Processor('<title></title>');
-    if (!$processor->next_tag() || !$processor->set_modifiable_text($value)) {
-      return htmlspecialchars($value, ENT_NOQUOTES);
-    }
+    $processor->next_tag();
+    $processor->set_modifiable_text($value);
     return (string)substr($processor->get_updated_html(), strlen('<title>'), -strlen('</title>'));
   }
 
