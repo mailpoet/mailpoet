@@ -1179,6 +1179,13 @@ class Functions {
     return wp_strip_all_tags($string, $removeBreaks);
   }
 
+  /**
+   * @param string $file
+   */
+  public function wpDeleteFile($file): bool {
+    return (bool)wp_delete_file($file);
+  }
+
   public function getTheContent($more_link_text = null, $strip_teaser = false, $post = null) {
     return get_the_content($more_link_text, $strip_teaser, $post);
   }

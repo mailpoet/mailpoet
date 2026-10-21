@@ -227,19 +227,19 @@ class StatisticsExporter {
    * @param array<array<int|string|float|null>> $rows
    */
   private function writeCsv(string $filePath, array $headers, array $rows): void {
-    $handle = fopen($filePath, 'w');
+    $handle = fopen($filePath, 'w'); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Writes the CSV row by row; WP_Filesystem has no streaming API.
     if ($handle === false) {
       throw new \RuntimeException('Failed opening file for export.');
     }
 
     // UTF-8 BOM so Excel auto-detects encoding (matches Subscribers/ImportExport/Export/Export.php)
-    fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+    fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- Writes the CSV row by row; WP_Filesystem has no streaming API.
     $this->writeCsvLine($handle, $headers);
     foreach ($rows as $row) {
       $this->writeCsvLine($handle, $row);
     }
     // Remote storage can fail to save on close and still report success.
-    if (!fclose($handle) || !is_file($filePath)) {
+    if (!fclose($handle) || !is_file($filePath)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Writes the CSV row by row; WP_Filesystem has no streaming API.
       throw new \RuntimeException(__('The export file could not be saved on the server.', 'mailpoet'));
     }
   }

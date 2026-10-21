@@ -243,7 +243,7 @@ class Helper {
 
   public function getRawPrice($price, array $args = []) {
     $htmlPrice = $this->wcPrice($price, $args);
-    return strip_tags(html_entity_decode($htmlPrice, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401));
+    return $this->wp->wpStripAllTags(html_entity_decode($htmlPrice, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401));
   }
 
   public function getAllowedCountries(): array {

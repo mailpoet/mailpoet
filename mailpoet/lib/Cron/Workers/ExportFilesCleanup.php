@@ -7,6 +7,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Statistics\Export\StatisticsExporter;
 use MailPoet\Router\Endpoints\ExportDownload;
 use MailPoet\Subscribers\ImportExport\Export\Export;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class ExportFilesCleanup extends SimpleWorker {
@@ -44,7 +45,7 @@ class ExportFilesCleanup extends SimpleWorker {
       $created = $file->getMTime();
       $now = new Carbon();
       if (Carbon::createFromTimestamp((int)$created)->lessThan($now->subDays($deleteAfterDays))) {
-        unlink($name);
+        WPFunctions::get()->wpDeleteFile($name);
       }
     }
   }

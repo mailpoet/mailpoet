@@ -343,7 +343,7 @@ class SubscriberStats extends APIEndpoint {
     if ($formatted !== '') {
       $formatted = str_replace(['<br/>', '<br />', '<br>'], "\n", $formatted);
       return array_values(array_filter(
-        array_map('trim', explode("\n", strip_tags($formatted)))
+        array_map('trim', explode("\n", $this->wp->wpStripAllTags($formatted)))
       ));
     }
 
