@@ -13,6 +13,9 @@ import {
   getLogTopicLabel,
 } from './filters';
 
+// One stable reference so DataViews does not reload the options on every render.
+const loadTopicElements = () => getLogNames().then(getLogTopicElements);
+
 export function formatCreatedAt(createdAt: string | null): string {
   return createdAt ? MailPoetDate.full(createdAt) : '—';
 }
@@ -32,7 +35,7 @@ export function getLogDisplayMessage(
   item: LogListingItem,
   searchTerm?: string,
 ): string {
-  let text = item.raw_message ?? item.message;
+  let text = item.raw_message?.trim() ? item.raw_message : item.message;
   Object.entries(item.context ?? {}).forEach(([key, value]) => {
     if (isScalar(value)) {
       text = text.split(`{${key}}`).join(String(value));
@@ -114,7 +117,7 @@ export function getLogFields(
       enableSorting: true,
       enableGlobalSearch: false,
       enableHiding: false,
-      getElements: () => getLogNames().then(getLogTopicElements),
+      getElements: loadTopicElements,
       filterBy: { operators: ['isAny'] },
       render: ({ item }) => {
         const label = getLogTopicLabel(item.name);

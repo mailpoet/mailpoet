@@ -2,6 +2,7 @@ import apiFetch from '@wordpress/api-fetch';
 import {
   buildLogsRequestParams,
   getLogNames,
+  resetLogNamesCache,
 } from '../../../assets/js/src/logs/api';
 
 describe('logs API params', () => {
@@ -29,6 +30,7 @@ describe('logs names API', () => {
 
   beforeEach(() => {
     requests = [];
+    resetLogNamesCache();
     global.window = {
       mailpoet_logs_api: { root: 'http://localhost/wp-json', nonce: 'n' },
     } as unknown as Window & typeof globalThis;
@@ -39,8 +41,6 @@ describe('logs names API', () => {
     apiFetch.setFetchHandler((options) => Promise.resolve(options));
   });
 
-  // The first call fails and must not be cached, so this runs before the
-  // success case that fills the module-level cache.
   it('resolves to an empty list when the request fails', async () => {
     apiFetch.setFetchHandler(() => Promise.reject(new Error('boom')));
 
