@@ -6,6 +6,8 @@ import * as BlockEditor from '@wordpress/block-editor';
 import { Spinner } from '@wordpress/components';
 import { store as coreStore } from '@wordpress/core-data';
 import { QUERY_CONTEXT, DISPLAY_LAYOUT_CONTEXT, MAX_POSTS } from '../constants';
+import { DEFAULT_PASSWORD_PROTECTED } from '../password-protected';
+import type { PasswordProtectedMode } from '../password-protected';
 
 const {
   useBlockProps,
@@ -45,6 +47,7 @@ type LatestPostsQuery = {
   terms?: Term[];
   inclusionType?: 'include' | 'exclude';
   posts?: number[];
+  passwordProtected?: PasswordProtectedMode;
 };
 
 type TemplateContext = {
@@ -57,7 +60,11 @@ type EditProps = {
   context: TemplateContext;
 };
 
-type PostRecord = { id: number; type: string };
+type PostRecord = {
+  id: number;
+  type: string;
+  content?: { protected?: boolean };
+};
 type BlockContext = { postId: number; postType: string; queryId: number };
 
 // Core's post blocks show an editable field bound to the source post unless they
@@ -65,6 +72,59 @@ type BlockContext = { postId: number; postType: string; queryId: number };
 // email editor would let someone rewrite the post being previewed, and the
 // editable field takes its value as HTML rather than as text.
 const QUERY_ID = 0;
+
+/**
+ * What to ask the REST API for. The API cannot filter by password, so under
+ * 'exclude' the posts are dropped in the browser and the paging has to happen
+ * after that: the fetch takes no offset and asks for enough posts to still fill
+ * the preview once the protected ones are gone. Each record carries the post's
+ * rendered content, so the headroom is bounded rather than maxed out.
+ *
+ * Two ways the preview can then show fewer posts than the email sends: a run of
+ * protected posts longer than the headroom, and an offset that reaches past the
+ * fetched window, which previews as no posts at all. The block offers no offset
+ * control, so only a hand-written attribute reaches the second one.
+ */
+export function getFetchWindow(
+  passwordProtected: PasswordProtectedMode,
+  perPage: number,
+  offset: number,
+): { perPage: number; offset: number } {
+  if (passwordProtected !== 'exclude') {
+    return { perPage, offset };
+  }
+  return {
+    perPage: Math.min(MAX_POSTS, (offset + perPage) * 3 + 10),
+    offset: 0,
+  };
+}
+
+/**
+ * The posts the block shows, in the order it shows them, out of what
+ * getFetchWindow() asked for.
+ */
+export function selectVisiblePosts(
+  posts: PostRecord[],
+  {
+    passwordProtected,
+    isManual,
+    perPage,
+    offset,
+  }: {
+    passwordProtected: PasswordProtectedMode;
+    isManual: boolean;
+    perPage: number;
+    offset: number;
+  },
+): PostRecord[] {
+  if (passwordProtected !== 'exclude') {
+    return posts;
+  }
+  const kept = posts.filter((post) => !post.content?.protected);
+  // A manual selection shows exactly the posts picked, and the server ignores
+  // the offset for it.
+  return isManual ? kept : kept.slice(offset, offset + perPage);
+}
 
 /**
  * The context each previewed post is rendered under. Exported so the queryId
@@ -201,11 +261,18 @@ export function Edit({ clientId, context }: EditProps): JSX.Element {
     terms = [],
     inclusionType = 'include',
     posts: manualPosts = [],
+    passwordProtected = DEFAULT_PASSWORD_PROTECTED,
   } = query;
   const columns = displayLayout.columns || 1;
   const [activeBlockContextId, setActiveBlockContextId] = useState<number>();
 
   const isManual = selectionMode === 'manual';
+
+  const { perPage: fetchPerPage, offset: fetchOffset } = getFetchWindow(
+    passwordProtected,
+    perPage,
+    offset,
+  );
 
   const { posts, blocks } = useSelect(
     (select) => {
@@ -217,8 +284,8 @@ export function Edit({ clientId, context }: EditProps): JSX.Element {
       const restQuery = buildRestQuery({
         isManual,
         manualPosts,
-        perPage,
-        offset,
+        perPage: fetchPerPage,
+        offset: fetchOffset,
         order,
         // Categories and tags only apply to posts; ignore stale terms after a
         // switch to pages so the preview matches the server-side query.
@@ -236,19 +303,30 @@ export function Edit({ clientId, context }: EditProps): JSX.Element {
     [
       isManual,
       manualPosts.join(','),
-      perPage,
+      fetchPerPage,
       postType,
       order,
-      offset,
+      fetchOffset,
       JSON.stringify(terms),
       inclusionType,
       clientId,
     ],
   );
 
+  const visiblePosts = useMemo<PostRecord[]>(
+    () =>
+      selectVisiblePosts(posts ?? [], {
+        passwordProtected,
+        isManual,
+        perPage,
+        offset,
+      }),
+    [posts, passwordProtected, isManual, perPage, offset],
+  );
+
   const blockContexts = useMemo<BlockContext[]>(
-    () => buildBlockContexts(posts ?? []),
-    [posts],
+    () => buildBlockContexts(visiblePosts),
+    [visiblePosts],
   );
 
   const blockProps = useBlockProps({
@@ -266,11 +344,17 @@ export function Edit({ clientId, context }: EditProps): JSX.Element {
     );
   }
 
-  if (!posts.length) {
+  if (!visiblePosts.length) {
     return <p {...blockProps}>{__('No posts found.', 'mailpoet')}</p>;
   }
 
-  const activeContextId = activeBlockContextId || blockContexts[0]?.postId;
+  // The post the user picked can leave the preview, for example once protected
+  // posts are left out. Falling back keeps the editable template on screen.
+  const activeContextId = blockContexts.some(
+    (blockContext) => blockContext.postId === activeBlockContextId,
+  )
+    ? activeBlockContextId
+    : blockContexts[0]?.postId;
 
   return (
     <div {...blockProps}>

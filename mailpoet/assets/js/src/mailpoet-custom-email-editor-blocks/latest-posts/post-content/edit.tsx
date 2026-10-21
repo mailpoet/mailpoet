@@ -4,15 +4,19 @@ import { useBlockProps } from '@wordpress/block-editor';
 import { Spinner } from '@wordpress/components';
 import { store as coreStore } from '@wordpress/core-data';
 import { sanitizePreviewHtml } from './sanitize-preview-html';
+import { QUERY_CONTEXT } from '../constants';
+import { hidesPostContent, isProtectedRecord } from '../password-protected';
+import type { PasswordProtectedMode } from '../password-protected';
 
 type EditProps = {
   context: {
     postId?: number;
     postType?: string;
+    [QUERY_CONTEXT]?: { passwordProtected?: PasswordProtectedMode };
   };
 };
 
-type ContentRecord = { content?: { rendered?: string } };
+type ContentRecord = { content?: { rendered?: string; protected?: boolean } };
 
 export function Edit({ context }: EditProps): JSX.Element {
   const { postId, postType } = context;
@@ -68,6 +72,15 @@ export function Edit({ context }: EditProps): JSX.Element {
         </p>
       </div>
     );
+  }
+
+  // The email leaves this content out, so the canvas does too and shows what
+  // the email will send.
+  if (
+    isProtectedRecord(record) &&
+    hidesPostContent(context[QUERY_CONTEXT]?.passwordProtected)
+  ) {
+    return <div {...blockProps} />;
   }
 
   return (
