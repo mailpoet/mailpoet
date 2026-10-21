@@ -383,6 +383,31 @@ class WPTest extends \MailPoetTest {
     verify($this->wpUserSubscriberLink->isUnconfirmed($secondUserId))->false();
   }
 
+  public function testItKeepsSubscriberOfUnconfirmedLinkWhenWpUsersListIsTrashed(): void {
+    $wpSegment = $this->segmentsRepository->getWPUsersSegment();
+    $wpSegment->setDeletedAt(Carbon::now());
+    $this->segmentsRepository->flush();
+    $randomNumber = rand();
+    $email = 'user-sync-test' . $randomNumber . '@example.com';
+    $subscriberId = (int)$this->subscriberFactory
+      ->withEmail($email)
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create()
+      ->getId();
+
+    $this->entityManager->clear();
+    // Syncs on set_user_role and then on user_register, like a real registration
+    $id = wp_insert_user(['user_login' => 'user-sync-test' . $randomNumber, 'user_email' => $email, 'user_pass' => 'password']);
+    $this->assertIsInt($id);
+    verify($this->wpUserSubscriberLink->isUnconfirmed($id))->true();
+
+    $this->entityManager->clear();
+    $subscriber = $this->subscribersRepository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertNull($subscriber->getDeletedAt());
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriber->getStatus());
+  }
+
   public function testRemovingUserFromSiteClearsMark(): void {
     $randomNumber = rand();
     $email = 'user-sync-test' . $randomNumber . '@example.com';
