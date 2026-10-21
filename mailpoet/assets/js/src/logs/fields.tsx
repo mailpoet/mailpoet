@@ -1,4 +1,4 @@
-import { createElement } from 'react';
+import { createElement, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import type { Action, Field } from '@wordpress/dataviews';
 import { MailPoetDate } from '../date';
@@ -17,8 +17,94 @@ export function formatCreatedAt(createdAt: string | null): string {
   return createdAt ? MailPoetDate.full(createdAt) : '—';
 }
 
+function isScalar(value: unknown): value is string | number | boolean {
+  return (
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  );
+}
+
+// The plain message (placeholders filled from the context) shown in the
+// column. When the search matched only the formatted line, show that line so
+// the visible text explains the match.
+export function getLogDisplayMessage(
+  item: LogListingItem,
+  searchTerm?: string,
+): string {
+  let text = item.raw_message ?? item.message;
+  Object.entries(item.context ?? {}).forEach(([key, value]) => {
+    if (isScalar(value)) {
+      text = text.split(`{${key}}`).join(String(value));
+    }
+  });
+  const term = searchTerm?.trim().toLowerCase();
+  if (
+    term &&
+    !text.toLowerCase().includes(term) &&
+    !item.name.toLowerCase().includes(term)
+  ) {
+    return item.message;
+  }
+  return text;
+}
+
+// Labels in the expanded details are plain English on purpose (logs are not
+// translated).
+function renderLogDetails(item: LogListingItem): ReactNode {
+  const topicLabel = getLogTopicLabel(item.name);
+  const rows: { id: string; term: string; description: ReactNode }[] = [];
+  if (item.level !== null) {
+    const description = getLogSeverityDescription(item.level);
+    const label = getLogSeverityLabel(item.level);
+    rows.push({
+      id: 'log:level',
+      term: 'Severity',
+      description: description ? `${label} – ${description}` : label,
+    });
+  }
+  rows.push({
+    id: 'log:name',
+    term: 'Topic',
+    description:
+      topicLabel === item.name ? item.name : `${topicLabel} (${item.name})`,
+  });
+  Object.entries(item.context ?? {}).forEach(([key, value]) => {
+    rows.push({
+      id: `context:${key}`,
+      term: key,
+      description: isScalar(value)
+        ? String(value)
+        : createElement('pre', null, JSON.stringify(value, null, 2)),
+    });
+  });
+  const showFullLine =
+    item.raw_message !== null && item.raw_message !== item.message;
+  return createElement(
+    'div',
+    { className: 'mailpoet-logs-details' },
+    createElement(
+      'dl',
+      null,
+      rows.map((row) => [
+        createElement('dt', { key: `term-${row.id}` }, row.term),
+        createElement('dd', { key: `description-${row.id}` }, row.description),
+      ]),
+    ),
+    showFullLine
+      ? createElement(
+          'div',
+          null,
+          createElement('strong', null, __('Full log line', 'mailpoet')),
+          createElement('pre', null, item.message),
+        )
+      : null,
+  );
+}
+
 export function getLogFields(
   expandedLogIds: Set<number>,
+  searchTerm?: string,
 ): Field<LogListingItem>[] {
   return [
     {
@@ -77,7 +163,7 @@ export function getLogFields(
       filterBy: false,
       render: ({ item }) => {
         const isExpanded = expandedLogIds.has(item.id);
-        return createElement(
+        const message = createElement(
           'pre',
           {
             id: `mailpoet-log-message-${item.id}`,
@@ -85,9 +171,28 @@ export function getLogFields(
               isExpanded ? 'mailpoet-logs-message-full' : ''
             }`,
           },
-          item.message,
+          getLogDisplayMessage(item, searchTerm),
         );
+        return isExpanded
+          ? createElement('div', null, message, renderLogDetails(item))
+          : message;
       },
+    },
+    {
+      id: 'full_message',
+      label: __('Full log line', 'mailpoet'),
+      type: 'text',
+      enableSorting: false,
+      enableGlobalSearch: false,
+      enableHiding: true,
+      filterBy: false,
+      getValue: ({ item }) => item.message,
+      render: ({ item }) =>
+        createElement(
+          'pre',
+          { className: 'mailpoet-logs-message' },
+          item.message,
+        ),
     },
     {
       id: 'created_at',
