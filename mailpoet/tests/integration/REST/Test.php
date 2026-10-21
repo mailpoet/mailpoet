@@ -34,7 +34,7 @@ abstract class Test extends MailPoetTest {
   }
 
   /** @param array{query?: array, post?: array, json?: array} $options */
-  protected function request(string $path, string $method, array $options = []) {
+  protected function requestRaw(string $path, string $method, array $options = []): string {
     $_SERVER['REQUEST_METHOD'] = $method;
     $_SERVER['HTTP_CONTENT_TYPE'] = 'application/json';
 
@@ -47,7 +47,12 @@ abstract class Test extends MailPoetTest {
     $server = rest_get_server();
     ob_start();
     $server->serve_request($path);
-    $response = ob_get_clean();
+    return (string)ob_get_clean();
+  }
+
+  /** @param array{query?: array, post?: array, json?: array} $options */
+  protected function request(string $path, string $method, array $options = []) {
+    $response = $this->requestRaw($path, $method, $options);
 
     if (!$response) {
       throw new RuntimeException();
