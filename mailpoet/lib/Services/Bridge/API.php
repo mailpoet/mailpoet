@@ -579,11 +579,11 @@ class API {
     // \CurlHandle on PHP 8+ and resource on PHP 7.4. PHPStan stubs (min PHP 7.4) only
     // declare `resource` for curl_*(), so the PHP 8 path needs inline ignores.
     /** @phpstan-ignore-next-line argument.type */
-    $errno = $this->curlHandle ? curl_errno($this->curlHandle) : 'n/a';
+    $errno = $this->curlHandle ? curl_errno($this->curlHandle) : 'n/a'; // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_errno -- Reads the handle WordPress used for this request, for the error log.
     /** @phpstan-ignore-next-line argument.type */
-    $errMsg = $this->curlHandle ? curl_error($this->curlHandle) : $error->get_error_message();
+    $errMsg = $this->curlHandle ? curl_error($this->curlHandle) : $error->get_error_message(); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_error -- Reads the handle WordPress used for this request, for the error log.
     /** @phpstan-ignore-next-line argument.type */
-    $info = $this->curlHandle ? curl_getinfo($this->curlHandle) : 'n/a';
+    $info = $this->curlHandle ? curl_getinfo($this->curlHandle) : 'n/a'; // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_getinfo -- Reads the handle WordPress used for this request, for the error log.
     $logData = [
       'curl_errno' => $errno,
       'curl_error' => $errMsg,

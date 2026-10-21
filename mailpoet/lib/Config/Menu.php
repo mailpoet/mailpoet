@@ -153,8 +153,10 @@ class Menu {
     if (!$this->customFonts->displayCustomFonts()) {
       return;
     }
-    $this->wp->addAction('admin_head', function () {
-      echo '<link href="https://fonts.googleapis.com/css?family='
+    $this->wp->addAction('admin_enqueue_scripts', function () {
+      $this->wp->wpEnqueueStyle(
+        'mailpoet_editor_custom_fonts',
+        'https://fonts.googleapis.com/css?family='
         . 'Arvo:400,400i,700,700i'
         . '|Lato:400,400i,700,700i'
         . '|Lora:400,400i,700,700i'
@@ -168,8 +170,10 @@ class Menu {
         . '|Oswald:400,400i,700,700i'
         . '|Raleway:400,400i,700,700i'
         . '|Permanent+Marker:400,400i,700,700i'
-        . '|Pacifico:400,400i,700,700i'
-        . '" rel="stylesheet">';
+        . '|Pacifico:400,400i,700,700i',
+        [],
+        null
+      );
     });
   }
 
