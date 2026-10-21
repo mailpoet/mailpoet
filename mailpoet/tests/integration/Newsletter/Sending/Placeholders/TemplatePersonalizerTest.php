@@ -178,6 +178,23 @@ class TemplatePersonalizerTest extends \MailPoetTest {
     $this->assertStringNotContainsString('</title><script>', strtr($html, $collector->getValues()['html']));
   }
 
+  public function testItEscapesTitleValuesThatSitNextToEachOther(): void {
+    $this->registerTag('mailpoet/test-first', function (): string {
+      return 'A </ti';
+    }, Personalization_Tag::VALUE_TYPE_TEXT);
+    $this->registerTag('mailpoet/test-last', function (): string {
+      return 'tle> B';
+    }, Personalization_Tag::VALUE_TYPE_TEXT);
+    $collector = new PlaceholderCollector('ns');
+    $source = '<html><head><title><!--[mailpoet/test-first]--><!--[mailpoet/test-last]--></title></head><body></body></html>';
+
+    $html = $this->templatePersonalizer->personalize($source, [], $collector, PlaceholderCollector::PART_HTML);
+
+    $sent = strtr($html, $collector->getValues()['html']);
+    $this->assertStringContainsString('<title>A &lt;/title&gt; B</title>', $sent);
+    $this->assertReconstructsRenderedOutput($source, $html, $collector, PlaceholderCollector::PART_HTML);
+  }
+
   /**
    * @dataProvider disallowedSchemeValues
    */
@@ -256,7 +273,8 @@ class TemplatePersonalizerTest extends \MailPoetTest {
   }
 
   /**
-   * Substituting the recorded values back must give exactly what the rendered path sends.
+   * Substituting the recorded values back must give exactly what the rendered path sends. Only the
+   * title text is compared after decoding: before WordPress 7.2 the rendered path escapes it less.
    */
   private function assertReconstructsRenderedOutput(string $source, string $template, PlaceholderCollector $collector, string $part): void {
     $this->personalizer->set_context([]);
@@ -264,6 +282,19 @@ class TemplatePersonalizerTest extends \MailPoetTest {
       $source,
       $part === PlaceholderCollector::PART_HTML ? Personalizer::RENDERING_CONTEXT_HTML : Personalizer::RENDERING_CONTEXT_TEXT
     );
-    $this->assertSame($rendered, strtr($template, $collector->getValues()[$part]));
+    $this->assertSame($this->normalizeTitleText($rendered), $this->normalizeTitleText(strtr($template, $collector->getValues()[$part])));
+  }
+
+  private function normalizeTitleText(string $html): string {
+    $processor = new \WP_HTML_Tag_Processor($html);
+    if (!$processor->next_tag('TITLE')) {
+      return $html;
+    }
+    $start = strpos($html, '<title>');
+    $end = strrpos($html, '</title>');
+    $this->assertNotFalse($start);
+    $this->assertNotFalse($end);
+    $text = strtr($processor->get_modifiable_text(), ['&' => '&amp;', '<' => '&lt;', '>' => '&gt;']);
+    return substr($html, 0, $start + strlen('<title>')) . $text . substr($html, $end);
   }
 }
