@@ -532,6 +532,31 @@ class LogsEndpointsTest extends Test {
     $this->assertSame('rest_forbidden', $this->post(self::BASE_PATH . '/delete', ['json' => ['all' => true]])['code']);
   }
 
+  public function testNamesReturnsDistinctSortedNamesWithoutEmptyOnes(): void {
+    $suffix = uniqid();
+    (new LogFactory())->withName("names-b-{$suffix}")->create();
+    (new LogFactory())->withName("names-a-{$suffix}")->create();
+    (new LogFactory())->withName("names-b-{$suffix}")->create();
+    (new LogFactory())->withName(null)->create();
+    (new LogFactory())->withName('')->create();
+
+    $names = $this->get(self::BASE_PATH . '/names')['data']['names'];
+
+    $this->assertNotContains('', $names);
+    $this->assertSame($names, array_values(array_unique($names)));
+    $sorted = $names;
+    sort($sorted);
+    $this->assertSame($sorted, $names);
+    $mine = array_values(array_filter($names, fn($name) => strpos($name, $suffix) !== false));
+    $this->assertSame(["names-a-{$suffix}", "names-b-{$suffix}"], $mine);
+  }
+
+  public function testNamesRejectsUsersWithoutPermission(): void {
+    wp_set_current_user($this->editorUserId);
+
+    $this->assertSame('rest_forbidden', $this->get(self::BASE_PATH . '/names')['code']);
+  }
+
   /** @return int[] */
   private function getIdsForSearch(string $search): array {
     $data = $this->get(self::BASE_PATH, ['query' => [
