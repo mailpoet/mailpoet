@@ -80,7 +80,7 @@ class SubscribersEngagementScore extends SimpleWorker {
     // random day of the next week
     $date = Carbon::now()->millisecond(0);
     $date->addDay();
-    $date->setTime(mt_rand(0, 23), mt_rand(0, 59));
+    $date->setTime(random_int(0, 23), random_int(0, 59));
     return $date;
   }
 }

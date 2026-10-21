@@ -710,6 +710,11 @@ class Functions {
     return sanitize_email($email);
   }
 
+  /**
+   * @param string $url
+   * @param int $component
+   * @return ($component is -1 ? array{scheme?: string, host?: string, port?: int<0, 65535>, user?: string, pass?: string, path?: string, query?: string, fragment?: string}|false : string|int|null|false)
+   */
   public function wpParseUrl($url, $component = -1) {
     return wp_parse_url($url, $component);
   }

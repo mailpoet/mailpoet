@@ -742,7 +742,7 @@ class SendingQueue {
     if (count($bounceTasks)) {
       $bounceTask = reset($bounceTasks);
       if (Carbon::now()->millisecond(0)->addHours(42)->lessThan($bounceTask->getScheduledAt())) {
-        $randomOffset = rand(-6 * 60 * 60, 6 * 60 * 60);
+        $randomOffset = random_int(-6 * 60 * 60, 6 * 60 * 60);
         $bounceTask->setScheduledAt(Carbon::now()->millisecond(0)->addSeconds((36 * 60 * 60) + $randomOffset));
         $this->scheduledTasksRepository->persist($bounceTask);
         $this->scheduledTasksRepository->flush();

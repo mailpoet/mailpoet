@@ -47,9 +47,9 @@ abstract class KeyCheckWorker extends SimpleWorker {
     $date = Carbon::now()->millisecond(0);
     return $date->startOfDay()
       ->addDay()
-      ->addHours(rand(0, 5))
-      ->addMinutes(rand(0, 59))
-      ->addSeconds(rand(0, 59));
+      ->addHours(random_int(0, 5))
+      ->addMinutes(random_int(0, 59))
+      ->addSeconds(random_int(0, 59));
   }
 
   public abstract function checkKey();

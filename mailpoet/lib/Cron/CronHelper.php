@@ -190,7 +190,7 @@ class CronHelper {
     if (!$siteUrl) {
       $siteUrl = defined('MAILPOET_CRON_SITE_URL') ? MAILPOET_CRON_SITE_URL : $this->wp->homeUrl();
     }
-    $parsedUrl = parse_url($siteUrl);
+    $parsedUrl = $this->wp->wpParseUrl($siteUrl);
     if (!is_array($parsedUrl)) {
       throw new \Exception(__('Site URL is unreachable.', 'mailpoet'));
     }

@@ -216,8 +216,8 @@ class AutomatedEmails extends SimpleWorker {
     $nextMonday = $date->endOfMonth()->next(Carbon::MONDAY)->startOfDay();
     // Add random time across the entire day (0-23 hours, 0-59 minutes, 0-59 seconds)
     return $nextMonday
-      ->addHours(rand(0, 23))
-      ->addMinutes(rand(0, 59))
-      ->addSeconds(rand(0, 59));
+      ->addHours(random_int(0, 23))
+      ->addMinutes(random_int(0, 59))
+      ->addSeconds(random_int(0, 59));
   }
 }

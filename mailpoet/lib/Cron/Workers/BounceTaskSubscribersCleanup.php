@@ -70,7 +70,7 @@ class BounceTaskSubscribersCleanup extends SimpleWorker {
     return Carbon::now()->millisecond(0)
       ->startOfHour()
       ->addHour()
-      ->addMinutes(mt_rand(0, 59))
-      ->addSeconds(mt_rand(0, 59));
+      ->addMinutes(random_int(0, 59))
+      ->addSeconds(random_int(0, 59));
   }
 }
