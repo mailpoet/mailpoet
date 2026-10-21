@@ -104,7 +104,7 @@ class Daemon {
 
         // Expected sending state, not an error — sending resumes once the frequency interval passes.
         if ($e instanceof SendingLimitReachedException) {
-          $this->loggerFactory->getLogger(LoggerFactory::TOPIC_CRON)->info('A background task paused because a sending limit was reached: ' . $e->getMessage(), ['worker' => $workerName]);
+          $this->loggerFactory->getLogger(LoggerFactory::TOPIC_CRON)->info('A background task stopped for now because a sending limit was reached: ' . $e->getMessage(), ['worker' => $workerName]);
           continue;
         }
 
