@@ -1028,6 +1028,23 @@ class ClicksTest extends \MailPoetTest {
     }
   }
 
+  public function testItRedirectsToHomeWhenAnEncodedTagAtTheHostPositionHasNoLiteralBracket() {
+    $this->subscriber->setFirstName('https://example.org/?x=');
+    $this->entityManager->flush();
+    // bracket forms the resolver decodes that a cut at a literal bracket in the stored URL misses:
+    // URL-encoded, an entity with a leading zero, and a percent-encoded entity
+    $urls = [
+      'https://%5Bmailpoet/subscriber-firstname%5D/path',
+      'https://&#091;mailpoet/subscriber-firstname&#093;/path',
+      'https://&#x05b;mailpoet/subscriber-firstname&#x05d;/path',
+      'https://%26%2391%3Bmailpoet/subscriber-firstname%26%2393%3B/path',
+    ];
+    foreach ($urls as $url) {
+      $link = $this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false);
+      verify($link)->equals(home_url());
+    }
+  }
+
   public function testItUpdatesSubscriberTimestampsForHumanAgent() {
     $now = Carbon::now();
     $wpMock = $this->createMock(WPFunctions::class);

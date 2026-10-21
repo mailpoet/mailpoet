@@ -229,18 +229,18 @@ class Clicks {
    * the destination host may only come from them when it is the site's own.
    */
   private function isDestinationFixedBeforeSubstitutions(string $url): bool {
-    // The raw URL is what the redirect sends, so the check stays on it; decoding first would let an
-    // encoded "%2F" pass as the path separator that fixes the host. The cut is at the first opening
-    // bracket in any form a token may be stored in: literal, URL-encoded or as an HTML entity.
-    $cut = strlen($url);
-    foreach (['[', '%5b', '&#91;', '&#x5b;'] as $bracket) {
-      $position = stripos($url, $bracket);
-      if ($position !== false && $position < $cut) {
-        $cut = $position;
-      }
-    }
-    $textBeforeSubstitutions = substr($url, 0, $cut);
-    return preg_match(self::FIXED_DESTINATION_PATTERN, $textBeforeSubstitutions) === 1;
+    // The raw URL is what the redirect sends, so it must be fixed as stored: decoding first would let
+    // an encoded "%2F" pass as the path separator that fixes the host. The resolver matches tokens in
+    // the decoded URL, so the destination must be fixed there too, whatever form the bracket was
+    // stored in (literal, URL-encoded or an HTML entity).
+    return $this->isDestinationFixedBeforeFirstBracket($url)
+      && $this->isDestinationFixedBeforeFirstBracket(PersonalizationTagLinkResolver::decodeUrl($url));
+  }
+
+  private function isDestinationFixedBeforeFirstBracket(string $url): bool {
+    $bracket = strpos($url, '[');
+    $textBeforeBracket = $bracket === false ? $url : substr($url, 0, $bracket);
+    return preg_match(self::FIXED_DESTINATION_PATTERN, $textBeforeBracket) === 1;
   }
 
   /**
