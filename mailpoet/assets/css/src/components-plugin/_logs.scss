@@ -1,3 +1,4 @@
+@use '../settings/colors' as *;
 @use '../settings/grid' as *;
 
 .mailpoet-logs-message {
@@ -10,6 +11,16 @@
 
 .mailpoet-logs-message-full {
   white-space: normal;
+}
+
+.mailpoet-logs-topic {
+  overflow-wrap: anywhere;
+}
+
+.mailpoet-logs-topic-raw {
+  color: $color-text-light;
+  display: block;
+  font-size: 12px;
 }
 
 .mailpoet-logs-min-width {

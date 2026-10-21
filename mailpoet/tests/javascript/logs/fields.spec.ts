@@ -1,3 +1,5 @@
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import apiFetch from '@wordpress/api-fetch';
 import {
   formatCreatedAt,
@@ -68,7 +70,7 @@ describe('logs fields', () => {
     const name = getLogFieldDefinitions().find(({ id }) => id === 'name');
 
     expect(await name.getElements()).to.deep.equal([
-      { value: 'cron', label: 'cron' },
+      { value: 'cron', label: 'Background tasks (cron)' },
       { value: 'mailer', label: 'mailer' },
     ]);
   });
@@ -96,5 +98,27 @@ describe('logs fields', () => {
       collapsed.callback([item], {} as never);
     }
     expect(toggled).to.deep.equal([7]);
+  });
+
+  it('renders the readable topic label with the raw name below it', () => {
+    const name = getLogFieldDefinitions().find(({ id }) => id === 'name');
+    const render = (value: string) =>
+      renderToStaticMarkup(
+        createElement(name.render, {
+          item: { name: value } as LogListingItem,
+          field: name,
+        } as never),
+      );
+
+    const known = render('mss');
+    expect(known).to.contain('MailPoet Sending Service');
+    expect(known).to.contain('title="mss"');
+    expect(known).to.contain(
+      '<span class="mailpoet-logs-topic-raw">mss</span>',
+    );
+
+    const unknown = render('custom');
+    expect(unknown).to.contain('custom');
+    expect(unknown).not.to.contain('mailpoet-logs-topic-raw');
   });
 });
