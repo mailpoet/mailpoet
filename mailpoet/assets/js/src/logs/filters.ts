@@ -33,6 +33,46 @@ export function getLogSeverityElements(): { value: number; label: string }[] {
   }));
 }
 
+// Log names are plain English on purpose (logs are not translated). Unknown
+// names fall back to the raw name. Keep in sync with LoggerFactory::TOPIC_*.
+export const LOG_TOPIC_LABELS: Record<string, string> = {
+  newsletters: 'Newsletters',
+  'post-notifications': 'Post notifications',
+  mss: 'MailPoet Sending Service',
+  premium: 'Premium key',
+  'bridge-api': 'MailPoet account API',
+  sending: 'Sending',
+  cron: 'Background tasks',
+  api: 'Admin API',
+  tracking: 'Tracking',
+  coupons: 'Coupons',
+  provisioning: 'WordPress.com provisioning',
+  segments: 'Lists and segments',
+  'email-editor': 'Email editor',
+  migrations: 'Migrations',
+  pages: 'MailPoet pages',
+  captcha: 'CAPTCHA',
+  woocommerce_first_purchase: 'WooCommerce: first purchase',
+  woocommerce_product_purchased_in_category:
+    'WooCommerce: purchased in category',
+  woocommerce_product_purchased: 'WooCommerce: purchased product',
+  MailPoet: 'MailPoet (general)',
+};
+
+export function getLogTopicLabel(name: string): string {
+  return LOG_TOPIC_LABELS[name] ?? name;
+}
+
+// Values stay the raw names (they go into the URL and the REST filter).
+export function getLogTopicElements(
+  names: string[],
+): { value: string; label: string }[] {
+  return names.map((name) => {
+    const label = getLogTopicLabel(name);
+    return { value: name, label: label === name ? name : `${label} (${name})` };
+  });
+}
+
 function toStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) {
     return [];

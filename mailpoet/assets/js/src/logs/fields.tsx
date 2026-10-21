@@ -3,7 +3,12 @@ import { __ } from '@wordpress/i18n';
 import type { Action, Field } from '@wordpress/dataviews';
 import { MailPoetDate } from '../date';
 import { getLogNames, type LogListingItem } from './api';
-import { getLogSeverityElements, getLogSeverityLabel } from './filters';
+import {
+  getLogSeverityElements,
+  getLogSeverityLabel,
+  getLogTopicElements,
+  getLogTopicLabel,
+} from './filters';
 
 export function formatCreatedAt(createdAt: string | null): string {
   return createdAt ? MailPoetDate.full(createdAt) : '—';
@@ -20,17 +25,23 @@ export function getLogFields(
       enableSorting: true,
       enableGlobalSearch: false,
       enableHiding: false,
-      getElements: () =>
-        getLogNames().then((names) =>
-          names.map((name) => ({ value: name, label: name })),
-        ),
+      getElements: () => getLogNames().then(getLogTopicElements),
       filterBy: { operators: ['isAny'] },
-      render: ({ item }) =>
-        createElement(
+      render: ({ item }) => {
+        const label = getLogTopicLabel(item.name);
+        return createElement(
           'span',
-          { className: 'mailpoet-logs-min-width' },
-          item.name,
-        ),
+          { className: 'mailpoet-logs-topic', title: item.name },
+          label,
+          label !== item.name
+            ? createElement(
+                'span',
+                { className: 'mailpoet-logs-topic-raw' },
+                item.name,
+              )
+            : null,
+        );
+      },
     },
     {
       // Rendered as a textual severity label, so use the text type to keep the

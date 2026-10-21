@@ -1,4 +1,6 @@
 import {
+  getLogTopicElements,
+  getLogTopicLabel,
   requestFilterToViewFilters,
   viewFiltersToRequestFilter,
 } from '../../../assets/js/src/logs/filters';
@@ -103,6 +105,18 @@ describe('logs filters translation', () => {
       { field: 'created_at', operator: 'afterInc', value: '2026-05-01' },
       { field: 'name', operator: 'isAny', value: ['cron'] },
       { field: 'level', operator: 'isAny', value: [400] },
+    ]);
+  });
+
+  it('returns a readable label for known topics and the name for unknown ones', () => {
+    expect(getLogTopicLabel('mss')).to.equal('MailPoet Sending Service');
+    expect(getLogTopicLabel('custom')).to.equal('custom');
+  });
+
+  it('keeps raw values in topic filter elements', () => {
+    expect(getLogTopicElements(['mss', 'custom'])).to.deep.equal([
+      { value: 'mss', label: 'MailPoet Sending Service (mss)' },
+      { value: 'custom', label: 'custom' },
     ]);
   });
 });
