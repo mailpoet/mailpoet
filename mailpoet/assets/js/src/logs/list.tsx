@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Notice } from '@wordpress/components';
+import { createInterpolateElement } from '@wordpress/element';
 import { DataViews, View } from '@wordpress/dataviews';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
@@ -27,6 +28,16 @@ import {
   parseLogsUrlState,
   type LogsFilter,
 } from './url-state';
+
+const SETTINGS_URL = 'admin.php?page=mailpoet-settings#/advanced';
+
+function SettingsLink({ children }: { children?: React.ReactNode }) {
+  return (
+    <a href={SETTINGS_URL} className="mailpoet-link">
+      {children}
+    </a>
+  );
+}
 
 const DEFAULT_VIEW: View = {
   type: 'table',
@@ -128,7 +139,19 @@ export function List({
   const dateRangeError = getDateRangeError(requestFilter);
   const emptyState =
     loadError || dateRangeError ? null : (
-      <div>{__('No logs found.', 'mailpoet')}</div>
+      <div>
+        <p>{__('No logs found for this period.', 'mailpoet')}</p>
+        <p>
+          {__(
+            'Try a wider date range or clear the filters. If Logging is set to “Errors only” or “Nothing”, routine activity is not recorded. “Everything” records it, but switch it back after troubleshooting because the log grows fast.',
+            'mailpoet',
+          )}{' '}
+          {createInterpolateElement(
+            __('<a>Change the Logging setting</a>', 'mailpoet'),
+            { a: <SettingsLink /> },
+          )}
+        </p>
+      </div>
     );
 
   const searchTerm = view.search?.trim() || undefined;
@@ -212,6 +235,19 @@ export function List({
       ref={dataViewsRef}
       className="mailpoet-listing mailpoet-logs mailpoet-dataviews mailpoet-logs-dataviews"
     >
+      <div className="mailpoet_notice notice inline">
+        <p>
+          {__(
+            'MailPoet records what it does and the problems it runs into. The list shows the last 7 days by default; use the date filter to see older entries. Logs are deleted after 30 days. Search matches the message and the technical topic name (for example “mss”), not the readable label.',
+            'mailpoet',
+          )}{' '}
+          {createInterpolateElement(
+            __('<a>Change the Logging setting</a>', 'mailpoet'),
+            { a: <SettingsLink /> },
+          )}
+        </p>
+      </div>
+
       {successMessage && (
         <Notice status="success" onRemove={() => setSuccessMessage(null)}>
           {successMessage}
