@@ -298,7 +298,7 @@ class MailerLogTest extends \MailPoetTest {
     );
     $logs = $this->entityManager->getRepository(LogEntity::class)->findAll();
     $this->assertInstanceOf(LogEntity::class, $logs[0]);
-    verify($logs[0]->getMessage())->stringContainsString('Email sending was paused due an error');
+    verify($logs[0]->getMessage())->stringContainsString('Email sending was paused due an error. No more emails are sent until you resume sending.');
   }
 
   public function testItProcessesTransactionalEmailSendingError() {
@@ -354,7 +354,7 @@ class MailerLogTest extends \MailPoetTest {
     verify(MailerLog::isSendingPaused())->true();
     $logs = $this->entityManager->getRepository(LogEntity::class)->findAll();
     $this->assertInstanceOf(LogEntity::class, $logs[0]);
-    verify($logs[0]->getMessage())->stringContainsString('Email sending was paused due a transactional email error');
+    verify($logs[0]->getMessage())->stringContainsString('Email sending was paused due a transactional email error. No more emails are sent until you resume sending.');
   }
 
   public function testItEnforcesSendingLimit() {
