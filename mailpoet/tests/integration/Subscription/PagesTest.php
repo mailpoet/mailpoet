@@ -102,8 +102,9 @@ class PagesTest extends \MailPoetTest {
   public function _after() {
     parent::_after();
     require_once ABSPATH . 'wp-admin/includes/user.php';
+    require_once ABSPATH . 'wp-admin/includes/ms.php';
     foreach ($this->wpUserIds as $wpUserId) {
-      wp_delete_user($wpUserId);
+      is_multisite() ? wpmu_delete_user($wpUserId) : wp_delete_user($wpUserId);
     }
     $this->wpUserIds = [];
   }

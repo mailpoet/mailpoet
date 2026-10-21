@@ -984,7 +984,8 @@ class SubscribersRepositoryTest extends \MailPoetTest {
 
   private function deleteWpUser(int $wpUserId): void {
     require_once ABSPATH . 'wp-admin/includes/user.php';
-    wp_delete_user($wpUserId);
+    require_once ABSPATH . 'wp-admin/includes/ms.php';
+    is_multisite() ? wpmu_delete_user($wpUserId) : wp_delete_user($wpUserId);
   }
 
   private function createSubscriber(string $email, ?DateTimeImmutable $deletedAt = null): SubscriberEntity {
