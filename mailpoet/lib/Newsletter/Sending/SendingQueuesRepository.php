@@ -314,7 +314,7 @@ class SendingQueuesRepository extends Repository {
         try {
           $filterData['lookupData'] = $filter->getLookupData($data);
         } catch (\Throwable $e) {
-          $this->loggerFactory->getLogger(LoggerFactory::TOPIC_SEGMENTS)->error("Failed to save lookup data for filter {$filterEntity->getId()}: {$e->getMessage()}");
+          $this->loggerFactory->getLogger(LoggerFactory::TOPIC_SEGMENTS)->error("Failed to save lookup data for filter {$filterEntity->getId()}, so the sent email keeps no lookup data for this filter: {$e->getMessage()}");
         }
         return $filterData;
       }, $filterSegmentEntity->getDynamicFilters()->toArray()),

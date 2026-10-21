@@ -329,7 +329,7 @@ class WP {
       // If the filter returned a non-array, log it and use the original data
       $logger = LoggerFactory::getInstance()->getLogger();
       $logger->error(
-        'Filter mailpoet_subscriber_data_before_save returned non-array data.',
+        'The mailpoet_subscriber_data_before_save filter returned data that is not an array, so the subscriber was not saved.',
         ['data_type' => gettype($data)]
       );
       return;
@@ -354,7 +354,7 @@ class WP {
           // safely removed. Skip the email update to avoid a constraint violation.
           $logger = LoggerFactory::getInstance()->getLogger();
           $logger->warning(
-            'Cannot update subscriber email: duplicate subscriber is a WP user or WooCommerce customer',
+            'Cannot update subscriber email: another subscriber with the new email is a WP user or WooCommerce customer, so the subscriber was not updated.',
             ['subscriber_id' => $subscriber->getId(), 'duplicate_id' => $duplicateId, 'email' => $data['email']]
           );
           return;
