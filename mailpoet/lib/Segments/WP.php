@@ -626,6 +626,20 @@ class WP {
     $stmt->bindValue('deletedSource', Source::WORDPRESS_USER_DELETED);
     $stmt->executeStatement();
 
+    // Users who got a subscriber of their own have nothing left to confirm, as in the per-user sync.
+    // Only a few users carry the mark, so look those up instead of touching every inserted user.
+    $markedUserIds = $this->toUserIds($this->databaseConnection->fetchFirstColumn(
+      "SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = :unconfirmedLinkMetaKey",
+      $this->getUnconfirmedLinkParams()
+    ));
+    $ownSubscriberUserIds = array_diff(
+      $this->toUserIds(array_column($insertedUserIds, 'id')),
+      $this->toUserIds(array_column($linkingUsers, 'id'))
+    );
+    foreach (array_intersect($markedUserIds, $ownSubscriberUserIds) as $userId) {
+      $this->wpUserSubscriberLink->clear($userId);
+    }
+
     return $insertedUserIds;
   }
 
@@ -674,6 +688,20 @@ class WP {
         AND unconfirmed_link.umeta_id IS NULL";
 
     $this->databaseConnection->executeStatement($sql, $this->getUnconfirmedLinkParams());
+  }
+
+  /**
+   * @param mixed[] $values
+   * @return int[]
+   */
+  private function toUserIds(array $values): array {
+    $userIds = [];
+    foreach ($values as $value) {
+      if (is_numeric($value)) {
+        $userIds[] = (int)$value;
+      }
+    }
+    return $userIds;
   }
 
   /**
