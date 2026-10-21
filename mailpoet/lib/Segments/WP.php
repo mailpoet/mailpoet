@@ -579,6 +579,16 @@ class WP {
       $this->subscribersTable,
       'email'
     );
+    // Users whose address already belongs to a subscriber get linked to it below,
+    // so they confirm the address like in the per-user sync.
+    $linkingSql =
+      "SELECT wu.id, wu.user_email AS email
+        FROM {$wpdb->users} wu
+        LEFT JOIN {$this->subscribersTable} s ON wu.id = s.wp_user_id
+        INNER JOIN {$this->subscribersTable} existingSubscriber ON wu.user_email = existingSubscriber.email {$emailCollation}
+        WHERE s.wp_user_id IS NULL AND wu.user_email != ''";
+    $linkingUsers = $this->databaseConnection->fetchAllAssociative($linkingSql);
+
     $insertSql =
       "INSERT IGNORE INTO {$this->subscribersTable} (wp_user_id, email, status, created_at, `source`, deleted_at)
         SELECT wu.id, wu.user_email, :subscriberStatus, CURRENT_TIMESTAMP(), :source, {$deletedAt}
@@ -603,6 +613,12 @@ class WP {
     $stmt->bindValue('source', Source::WORDPRESS_USER);
     $stmt->bindValue('deletedSource', Source::WORDPRESS_USER_DELETED);
     $stmt->executeStatement();
+
+    foreach ($linkingUsers as $linkingUser) {
+      if (is_numeric($linkingUser['id']) && is_string($linkingUser['email'])) {
+        $this->wpUserSubscriberLink->markUnconfirmed((int)$linkingUser['id'], $linkingUser['email']);
+      }
+    }
 
     return $insertedUserIds;
   }
