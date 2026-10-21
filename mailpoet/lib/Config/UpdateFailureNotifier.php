@@ -8,7 +8,7 @@ use MailPoet\WP\Notice as WPNotice;
 use Throwable;
 
 /**
- * Tells administrators that the database update failed, and why.
+ * Tells administrators that the database update failed, or that MailPoet could not start, and why.
  *
  * Migration errors can name tables, queries and server paths, so the detail is shown
  * only to users with manage_options; other wp-admin users get a one-line notice.
@@ -82,6 +82,18 @@ class UpdateFailureNotifier {
       );
     }
     return $explained ? $html : $html . $this->renderFailure($failure);
+  }
+
+  /**
+   * For a failure outside the database update, e.g. a service that cannot start.
+   */
+  public function renderStartupFailure(Throwable $failure): string {
+    if (!$this->wp->currentUserCan('manage_options')) {
+      return '<p>' . esc_html__('MailPoet could not start. Please contact the site administrator.', 'mailpoet') . '</p>';
+    }
+    return '<p><strong>' . esc_html__('MailPoet could not start.', 'mailpoet') . '</strong></p>'
+      . $this->renderFailure($failure)
+      . '<p>' . esc_html__('Include the full error when contacting MailPoet support.', 'mailpoet') . '</p>';
   }
 
   private function renderFailure(Throwable $failure): string {
