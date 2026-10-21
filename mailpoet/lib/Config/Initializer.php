@@ -647,17 +647,12 @@ class Initializer {
     $this->permanentNotices->init();
   }
 
-  public function handleFailedInitialization($exception) {
+  public function handleFailedInitialization(\Throwable $exception) {
     // check if we are able to add pages at this point
     if (function_exists('wp_get_current_user')) {
       Menu::addErrorPage($this->accessControl);
     }
-    // Exception text can name tables, queries and server paths, so only administrators see it.
-    $message = $exception instanceof \Throwable ? $exception->getMessage() : (string)$exception;
-    if (!$this->wpFunctions->currentUserCan('manage_options')) {
-      $message = __('MailPoet could not start. Please contact the site administrator.', 'mailpoet');
-    }
-    return WPNotice::displayError($message);
+    return WPNotice::displayError($this->updateFailureNotifier->renderStartupFailure($exception), '', '', false, false);
   }
 
   private function handleRunningMigration(InvalidStateException $exception) {

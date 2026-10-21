@@ -66,6 +66,20 @@ class UpdateFailureNotifierTest extends \MailPoetTest {
     verify($html)->stringContainsString(esc_html(__FILE__));
   }
 
+  public function testItShowsAdministratorsTheFullStartupError(): void {
+    $failure = new \RuntimeException('Unknown column wp_mailpoet_x.y');
+    $html = $this->notifier->renderStartupFailure($failure);
+    verify($html)->stringContainsString('contact the site administrator');
+    verify($html)->stringNotContainsString('Unknown column');
+
+    wp_set_current_user(1);
+    $html = $this->notifier->renderStartupFailure($failure);
+    verify($html)->stringContainsString('<strong>MailPoet could not start.</strong>');
+    verify($html)->stringContainsString('Unknown column wp_mailpoet_x.y');
+    verify($html)->stringContainsString('<summary>Full error</summary>');
+    verify($html)->stringContainsString(esc_html(__FILE__));
+  }
+
   public function testItEscapesEverythingItPrints(): void {
     wp_set_current_user(1);
     $notifier = $this->createNotifier([

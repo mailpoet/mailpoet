@@ -196,8 +196,11 @@ class InitializerTest extends \MailPoetTest {
   public function testOnlyAdministratorsSeeWhyInitializationFailed(): void {
     $initializer = $this->createInitializer([]);
 
-    verify($this->renderNotice($initializer->handleFailedInitialization(new \Exception('Unknown column wp_mailpoet_x.y'))))
-      ->stringContainsString('Unknown column wp_mailpoet_x.y');
+    $html = $this->renderNotice($initializer->handleFailedInitialization(new \Exception('Unknown column wp_mailpoet_x.y')));
+    verify($html)->stringContainsString('MailPoet could not start.');
+    verify($html)->stringContainsString('Unknown column wp_mailpoet_x.y');
+    verify($html)->stringContainsString('<summary>Full error</summary>');
+    verify($html)->stringContainsString(esc_html(__FILE__));
 
     wp_set_current_user(0);
     $html = $this->renderNotice($initializer->handleFailedInitialization(new \Exception('Unknown column wp_mailpoet_x.y')));
