@@ -681,7 +681,7 @@ class Pages {
     }
     $queueId = $this->getQueueId();
     $unsubscribeUrl = $this->subscriptionUrlFactory->getUnsubscribeUrl($this->subscriber, $queueId);
-    $unsubscribeUrl = $unsubscribeUrl . (parse_url($unsubscribeUrl, PHP_URL_QUERY) ? '&' : '?') . 'request_method=POST';
+    $unsubscribeUrl = $unsubscribeUrl . ($this->wp->wpParseUrl($unsubscribeUrl, PHP_URL_QUERY) ? '&' : '?') . 'request_method=POST';
     $templateData = [
       'unsubscribeUrl' => $unsubscribeUrl,
       'subscriberEmail' => $this->subscriber instanceof SubscriberEntity ? $this->subscriber->getEmail() : null,

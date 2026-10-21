@@ -59,7 +59,7 @@ class SourceUrlResolver {
     $withoutQuery = explode('#', explode('?', $url)[0])[0];
     $sanitized = $this->wp->escUrlRaw($withoutQuery, ['http', 'https']);
     // escUrlRaw() with a protocol allowlist still lets relative URLs through
-    if (!in_array(parse_url($sanitized, PHP_URL_SCHEME), ['http', 'https'], true)) {
+    if (!in_array($this->wp->wpParseUrl($sanitized, PHP_URL_SCHEME), ['http', 'https'], true)) {
       return null;
     }
     // Multibyte safe, so the value is never cut inside a UTF-8 character

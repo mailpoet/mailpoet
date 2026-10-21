@@ -243,7 +243,7 @@ class Clicks {
       $fragment = substr($url, $hashPosition);
       $url = substr($url, 0, $hashPosition);
     }
-    return $url . (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . 'request_method=POST' . $fragment;
+    return $url . (WPFunctions::get()->wpParseUrl($url, PHP_URL_QUERY) ? '&' : '?') . 'request_method=POST' . $fragment;
   }
 
   public function abort() {

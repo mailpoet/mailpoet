@@ -85,6 +85,9 @@ class SourceUrlResolverTest extends \MailPoetUnitTest {
     $wp->method('wpGetReferer')->willReturn($referer);
     $wp->method('isSsl')->willReturn($isSsl);
     $wp->method('wpUnslash')->willReturnArgument(0);
+    $wp->method('wpParseUrl')->willReturnCallback(function (string $url, int $component = -1) {
+      return parse_url($url, $component);
+    });
     $wp->method('escUrlRaw')->willReturnCallback(function (string $url, ?array $protocols = null): string {
       $scheme = parse_url($url, PHP_URL_SCHEME);
       // Like esc_url_raw(), relative URLs pass through

@@ -56,6 +56,6 @@ class Mixpanel extends SimpleWorker {
   }
 
   public function getNextRunDate() {
-    return $this->analytics->getNextSendDateForMixpanel()->addMinutes(rand(0, 59));
+    return $this->analytics->getNextSendDateForMixpanel()->addMinutes(random_int(0, 59));
   }
 }

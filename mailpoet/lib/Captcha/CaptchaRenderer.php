@@ -50,7 +50,7 @@ class CaptchaRenderer {
     $height = self::DEFAULT_HEIGHT;
 
     $fontNumbers = array_merge(range(0, 3), [5]); // MailPoet ships captcha0–3 and captcha5 in assets/fonts/captcha
-    $fontNumber = $fontNumbers[mt_rand(0, count($fontNumbers) - 1)];
+    $fontNumber = $fontNumbers[random_int(0, count($fontNumbers) - 1)];
 
     $font = Env::$assetsPath . '/fonts/captcha/captcha' . $fontNumber . '.ttf';
 

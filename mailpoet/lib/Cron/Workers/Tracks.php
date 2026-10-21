@@ -125,6 +125,6 @@ class Tracks extends SimpleWorker {
   }
 
   public function getNextRunDate() {
-    return $this->analytics->getNextSendDateForTracks()->addMinutes(rand(0, 59));
+    return $this->analytics->getNextSendDateForTracks()->addMinutes(random_int(0, 59));
   }
 }

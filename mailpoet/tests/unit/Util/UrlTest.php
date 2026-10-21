@@ -12,6 +12,9 @@ class UrlTest extends \MailPoetUnitTest {
     $urlHelper = new Url(Stub::make(new WPFunctions(), [
       'homeUrl' => $homeUrl,
       'addQueryArg' => '',
+      'wpParseUrl' => function ($url, $component = -1) {
+        return parse_url($url, $component);
+      },
     ]));
     $currentUrl = $urlHelper->getCurrentUrl();
     verify($currentUrl)->equals($homeUrl);

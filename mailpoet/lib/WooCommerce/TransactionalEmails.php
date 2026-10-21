@@ -130,7 +130,7 @@ class TransactionalEmails {
 
   private function resolveSitePlaceholders(string $text): string {
     $title = $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES);
-    $address = $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST);
+    $address = (string)$this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST);
     $replacements = [
       '{site_title}' => $title,
       '{site_address}' => $address,
