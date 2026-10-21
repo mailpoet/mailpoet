@@ -471,6 +471,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Logging\LoggerFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Logging\LogRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Logging\LogListingRepository::class)->setPublic(true);
+    $container->autowire(\MailPoet\Logging\LogsPageData::class)->setPublic(true);
     // Notices
     $container->autowire(\MailPoet\Util\Notices\PermanentNotices::class);
     $container->autowire(\MailPoet\Util\Notices\NonProductionSendingNotice::class)->setPublic(true);

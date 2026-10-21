@@ -2,12 +2,14 @@
 
 namespace MailPoet\AdminPages\Pages;
 
+use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Cron\ActionScheduler\Actions\DaemonRun;
 use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Logging\LogsPageData;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -28,6 +30,8 @@ class Help {
   private SendingQueuesRepository $sendingQueuesRepository;
   private NewsletterURL $newsletterUrl;
   private SendingEnvironment $sendingEnvironment;
+  private AssetsController $assetsController;
+  private LogsPageData $logsPageData;
 
   public function __construct(
     PageRenderer $pageRenderer,
@@ -37,7 +41,9 @@ class Help {
     ScheduledTasksRepository $scheduledTasksRepository,
     SendingQueuesRepository $sendingQueuesRepository,
     NewsletterURL $newsletterUrl,
-    SendingEnvironment $sendingEnvironment
+    SendingEnvironment $sendingEnvironment,
+    AssetsController $assetsController,
+    LogsPageData $logsPageData
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->cronHelper = $cronHelper;
@@ -47,9 +53,13 @@ class Help {
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->newsletterUrl = $newsletterUrl;
     $this->sendingEnvironment = $sendingEnvironment;
+    $this->assetsController = $assetsController;
+    $this->logsPageData = $logsPageData;
   }
 
   public function render() {
+    $this->assetsController->setupDataViewsDependencies();
+
     /**
      * Filter the system info.
      *
@@ -84,11 +94,14 @@ class Help {
     $systemStatusData['cronStatus']['accessible'] = $this->cronHelper->isDaemonAccessible();
     $this->pageRenderer->displayPage(
       'help.html',
-      [
-        'systemInfoData' => $systemInfoData,
-        'systemStatusData' => $systemStatusData,
-        'actionSchedulerData' => $this->getActionSchedulerData(),
-      ]
+      array_merge(
+        [
+          'systemInfoData' => $systemInfoData,
+          'systemStatusData' => $systemStatusData,
+          'actionSchedulerData' => $this->getActionSchedulerData(),
+        ],
+        $this->logsPageData->get()
+      )
     );
   }
 
