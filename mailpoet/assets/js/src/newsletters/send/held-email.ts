@@ -29,8 +29,9 @@ type ScheduleDefaults = {
   scheduledLocalTime: string;
 };
 
-// The server keeps options that are missing from a save, so the old date is
-// replaced with the one the page shows when Schedule is turned on.
+// Rescheduling a held email opens the page with Schedule on. The server keeps
+// options that are missing from a save, so the old date is replaced with the
+// default one.
 export function withoutStaleSchedule<T extends SchedulingOptions>(
   options: T,
   defaults: ScheduleDefaults,
@@ -39,7 +40,7 @@ export function withoutStaleSchedule<T extends SchedulingOptions>(
     options.scheduleMode === SCHEDULE_MODE_SUBSCRIBER_TIMEZONE;
   return {
     ...options,
-    isScheduled: '0',
+    isScheduled: '1',
     scheduledAt: defaults.scheduledAt,
     scheduledLocalDate: isTimeZoneMode ? defaults.scheduledLocalDate : '',
     scheduledLocalTime: isTimeZoneMode ? defaults.scheduledLocalTime : '',

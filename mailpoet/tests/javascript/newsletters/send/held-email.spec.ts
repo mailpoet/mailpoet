@@ -38,7 +38,7 @@ describe('send page held email helpers', () => {
       scheduledLocalTime: '08:00:00',
     };
 
-    it('turns scheduling off and replaces the old date with the default', () => {
+    it('keeps scheduling on and replaces the old date with the default', () => {
       const options = {
         isScheduled: '1',
         scheduledAt: '2026-07-23 10:00:00',
@@ -46,7 +46,7 @@ describe('send page held email helpers', () => {
       };
       const result = withoutStaleSchedule(options, defaults);
       expect(result).to.deep.equal({
-        isScheduled: '0',
+        isScheduled: '1',
         scheduledAt: '2026-07-25 06:00:00',
         scheduledLocalDate: '',
         scheduledLocalTime: '',
@@ -67,7 +67,7 @@ describe('send page held email helpers', () => {
         defaults,
       );
       expect(result).to.deep.equal({
-        isScheduled: '0',
+        isScheduled: '1',
         scheduleMode: 'subscriber_timezone',
         scheduledAt: '2026-07-25 06:00:00',
         scheduledLocalDate: '2026-07-25',
