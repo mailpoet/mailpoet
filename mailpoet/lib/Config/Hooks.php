@@ -933,6 +933,11 @@ class Hooks {
    * On multisite the request targets the current site only; other sites migrate on their
    * own next request, as before.
    *
+   * Automatic (background) updates fire this hook while core's maintenance mode is still
+   * on, so the request gets a 503 and does nothing. That is fine: after an automatic update
+   * of an active plugin, core loads the home page itself to check for fatal errors, and that
+   * request runs the migration.
+   *
    * @param mixed $upgrader
    * @param mixed $options The upgrader's hook_extra: single and automatic updates carry `plugin`, bulk updates carry `plugins`.
    */
