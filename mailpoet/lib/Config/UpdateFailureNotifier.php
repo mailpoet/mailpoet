@@ -74,10 +74,10 @@ class UpdateFailureNotifier {
       $explained = $explained || strpos($failure->getMessage(), $migration['name']) !== false;
       $error = (string)$migration['error'];
       $html .= '<p>' . sprintf(
-        // translators: %1$s is the migration name, %2$d how many times it was tried, %3$s the error
-        esc_html__('%1$s (attempts: %2$d): %3$s', 'mailpoet'),
+        // translators: %1$s is the migration name, %2$d how many times it was retried, %3$s the error
+        esc_html__('%1$s (retries: %2$d): %3$s', 'mailpoet'),
         esc_html($migration['name']),
-        (int)($migration['retries'] ?? 0) + 1,
+        (int)($migration['retries'] ?? 0),
         esc_html(wp_check_invalid_utf8(explode("\n", $error, 2)[0], true))
       ) . '</p>';
       $html .= $this->renderDump(

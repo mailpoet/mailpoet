@@ -32,7 +32,7 @@ class UpdateFailureNotifierTest extends \MailPoetTest {
     wp_set_current_user(1);
     $html = $this->notifier->render(MigratorException::migrationFailed('Migration_2', new \Exception('Unknown column wp_mailpoet_x.y')));
     verify($html)->stringContainsString('MailPoet database update failed.');
-    verify($html)->stringContainsString('Migration_2 (attempts: 4): ' . esc_html("Exception: Unknown column 'x' in /plugin/Migration_2.php:12"));
+    verify($html)->stringContainsString('Migration_2 (retries: 3): ' . esc_html("Exception: Unknown column 'x' in /plugin/Migration_2.php:12"));
     verify($html)->stringContainsString('<summary>Full error: Migration_2</summary>');
     verify($html)->stringContainsString(esc_html("Migration_2.php:12") . '<br>Stack trace:<br>#0 ...');
     verify($html)->stringNotContainsString("\n");
@@ -44,7 +44,7 @@ class UpdateFailureNotifierTest extends \MailPoetTest {
     // Migration_2's row is left over from an earlier attempt; this attempt broke before reaching it
     $failure = MigratorException::migrationClassNotFound('MailPoet\\Migrations\\App\\Migration_1');
     $html = $this->notifier->render($failure);
-    verify($html)->stringContainsString('Migration_2 (attempts: 4)');
+    verify($html)->stringContainsString('Migration_2 (retries: 3)');
     verify($html)->stringContainsString('Migration class &quot;MailPoet\\Migrations\\App\\Migration_1&quot; not found.');
     verify($html)->stringContainsString('<summary>Full error</summary>');
   }
