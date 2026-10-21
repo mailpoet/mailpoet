@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
@@ -12,13 +12,21 @@ function HeldCampaignsApp() {
     window.mailpoet_held_campaigns ?? [],
   );
 
+  const latestRequest = useRef(0);
+
   const refetch = useCallback(() => {
+    latestRequest.current += 1;
+    const request = latestRequest.current;
     void MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'sendingQueue',
       action: 'getHeld',
     })
-      .done((response) => setCampaigns(response.data as HeldCampaign[]))
+      .done((response) => {
+        if (request === latestRequest.current) {
+          setCampaigns(response.data as HeldCampaign[]);
+        }
+      })
       .fail(() => {});
   }, []);
 

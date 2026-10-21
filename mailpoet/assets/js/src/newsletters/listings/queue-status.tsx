@@ -40,6 +40,12 @@ function QueueSending({ newsletter }: QueueSendingProps) {
   const [resumed, setResumed] = useState(false);
   const [errors, setErrors] = useState([]);
 
+  const { isHeld, resumeLabel } = getQueueActionLabels({
+    status: paused ? 'paused' : null,
+    pause_reason: newsletter.queue.pause_reason,
+    resumed,
+  });
+
   const pauseSending = async () => {
     setErrors([]);
     await MailPoet.Ajax.post({
@@ -58,7 +64,7 @@ function QueueSending({ newsletter }: QueueSendingProps) {
     await MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'sendingQueue',
-      action: 'resume',
+      action: isHeld ? 'resumeHeld' : 'resume',
       data: {
         newsletter_id: newsletter.id,
       },
@@ -68,7 +74,18 @@ function QueueSending({ newsletter }: QueueSendingProps) {
         setResumed(true);
         Hooks.doAction('mailpoet.held_campaigns.refresh');
       })
-      .fail((response) => setErrors(response.errors));
+      .fail((response) => {
+        if (
+          isHeld &&
+          response.errors?.some((error) => error.error === 'not_held')
+        ) {
+          // Handled elsewhere since the list was loaded; show the current state.
+          Hooks.doAction('mailpoet.held_campaigns.refresh');
+          jQuery(document).trigger('heartbeat-tick.mailpoet-listing');
+          return;
+        }
+        setErrors(response.errors);
+      });
   };
 
   const resumeSending = async () => {
@@ -85,12 +102,6 @@ function QueueSending({ newsletter }: QueueSendingProps) {
       onConfirm: resumeSending,
     });
   };
-
-  const { isHeld, resumeLabel } = getQueueActionLabels({
-    status: paused ? 'paused' : null,
-    pause_reason: newsletter.queue.pause_reason,
-    resumed,
-  });
 
   return (
     <>

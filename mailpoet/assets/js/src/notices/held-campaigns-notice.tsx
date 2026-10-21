@@ -102,8 +102,20 @@ function HeldCampaignsNotice({
   const fail = (
     row: HeldCampaign,
     action: HeldRowAction,
-    response?: { errors?: { message: string }[] },
+    response?: { errors?: { error?: string; message: string }[] },
   ) => {
+    if (response?.errors?.some((error) => error.error === 'not_held')) {
+      // Handled elsewhere since the list was loaded, so there is nothing left to confirm.
+      finish(
+        row,
+        sprintf(
+          __('%s is no longer held.', 'mailpoet'),
+          subjectText(row.subject),
+        ),
+      );
+      onRefresh();
+      return;
+    }
     setBusy((current) => clearBusy(current, row.id));
     setErrors(response?.errors ?? []);
     setFocusRequest({ rowId: row.id, action });
@@ -113,7 +125,7 @@ function HeldCampaignsNotice({
   const post = (
     row: HeldCampaign,
     action: HeldRowAction,
-    endpoint: 'resume' | 'cancelHeld',
+    endpoint: 'resumeHeld' | 'cancelHeld',
     data: Record<string, unknown>,
     onSuccess: () => void,
   ) => {
@@ -133,7 +145,7 @@ function HeldCampaignsNotice({
 
   const handlers: Record<HeldRowAction, (row: HeldCampaign) => void> = {
     resume: (row) => {
-      void post(row, 'resume', 'resume', { newsletter_id: row.id }, () =>
+      void post(row, 'resume', 'resumeHeld', { newsletter_id: row.id }, () =>
         finish(
           row,
           sprintf(__('Send confirmed: %s', 'mailpoet'), subjectOf(row)),

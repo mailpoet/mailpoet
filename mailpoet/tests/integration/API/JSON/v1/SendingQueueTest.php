@@ -674,6 +674,18 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertNull($task->getStatus());
   }
 
+  public function testResumeIgnoresRequestDataThatIsNotAnArray(): void {
+    $calls = [];
+    $api = $this->getResumeApi($calls, true);
+
+    foreach (['resume', 'resumeHeld'] as $method) {
+      $result = $api->$method('not-an-array');
+
+      $this->assertSame(404, $result->status);
+      $this->assertSame('This newsletter does not exist.', $result->errors[0]['message']);
+    }
+  }
+
   public function testResumeConfirmsAndResumesAHeldCampaign(): void {
     [$task] = $this->createHeldCampaign($this->newsletter);
     $calls = [];
@@ -1236,6 +1248,32 @@ class SendingQueueTest extends \MailPoetTest {
     $reloaded = $this->entityManager->find(NewsletterEntity::class, $newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $reloaded);
     $this->assertSame(NewsletterEntity::STATUS_SCHEDULED, $reloaded->getStatus());
+  }
+
+  public function testResumeHeldRefusesAnEmailThatWasRescheduledAfterTheHoldAndLeavesTheNewQueueAlone(): void {
+    $segment = (new SegmentFactory())->create();
+    (new SubscriberFactory())->withSegments([$segment])->create();
+    $newsletter = (new NewsletterFactory())->withSubject('Held')->withDefaultBody()->withSegments([$segment])->create();
+    $newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_IS_SCHEDULED => '1',
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_AT => Carbon::now()->addDays(2)->millisecond(0)->format('Y-m-d H:i:s'),
+    ]);
+    $this->createHeldCampaign($newsletter);
+    $api = $this->diContainer->get(SendingQueueAPI::class);
+    $this->assertSame(200, $api->add(['newsletter_id' => $newsletter->getId()])->status);
+
+    $result = $api->resumeHeld(['newsletter_id' => $newsletter->getId()]);
+
+    $this->assertSame(400, $result->status);
+    $this->assertSame('not_held', $result->errors[0]['error']);
+    $this->assertSame('This email is not held.', $result->errors[0]['message']);
+    $this->entityManager->clear();
+    $queues = $this->diContainer->get(SendingQueuesRepository::class)->findBy(['newsletter' => $newsletter->getId()]);
+    $this->assertCount(1, $queues);
+    $task = $queues[0]->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    $this->assertSame(ScheduledTaskEntity::STATUS_SCHEDULED, $task->getStatus());
   }
 
   public function testAddInTimeZoneModeLeavesNoHeldQueueBehind(): void {
