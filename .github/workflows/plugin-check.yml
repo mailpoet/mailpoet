@@ -106,11 +106,8 @@ jobs:
           repo-token: ''
           # The QIT security scan reads this file from the zip, so it ships on purpose.
           exclude-files: .gitleaksignore
-          # Compiled Twig templates can't carry a phpcs:ignore line, and AGENTS.md
-          # says not to edit the vendored code in lib-3rd-party.
-          exclude-directories: |
-            generated/twig
-            lib-3rd-party
+          # Compiled Twig templates can't carry a phpcs:ignore line.
+          exclude-directories: generated/twig
           # Each ignored code was reviewed. The reasons are in the PR that added this workflow.
           ignore-codes: |
             WordPress.Security.EscapeOutput.ExceptionNotEscaped
