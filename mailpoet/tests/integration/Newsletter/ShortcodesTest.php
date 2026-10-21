@@ -195,6 +195,17 @@ class ShortcodesTest extends \MailPoetTest {
     verify($out)->equals('BoldTitle');
   }
 
+  public function testItDoesNotTurnTagsInPostTitlesSavedWithKsesIntoMarkup() {
+    // Users without unfiltered_html save titles through kses; WordPress 7.2 stores them decoded.
+    $this->assertNotFalse(has_filter('title_save_pre', 'wp_filter_kses'));
+    $titles = ['&lt;b&gt;Bold&lt;/b&gt;Title', '&#060;b&#062;Bold&#060;/b&#062;Title', '&#x3c;b&#x3e;Bold&#x3c;/b&#x3e;Title', '<b>Bold</b>Title'];
+    foreach ($titles as $title) {
+      $postId = wp_insert_post(['post_title' => $title, 'post_content' => 'contents', 'post_status' => 'publish']);
+      $this->additionalPostIds[] = $postId;
+      verify($this->processPostTitle($postId))->equals('BoldTitle');
+    }
+  }
+
   public function testItDoesNotTurnHexEntityTagsInPostTitleIntoMarkup() {
     $postId = $this->createPostWithTitle('&#x3c;b&#x3e;Bold&#x3c;/b&#x3e;Title');
     $out = $this->processPostTitle($postId);
