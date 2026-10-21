@@ -70,6 +70,10 @@ class Runner {
    * so the catch above never runs and the row would stay "started" with no error. PHP still
    * runs shutdown functions after a fatal error, so the error is recorded from here.
    *
+   * Not under WP-CLI: its wp_die handler exits the process from inside WordPress's own
+   * fatal error handler, which runs first. The fatal is printed on the terminal instead,
+   * and the next web request records it.
+   *
    * @param array{type: int, message: string, file: string, line: int}|null $error Defaults to the last PHP error.
    */
   public function recordFatalError(?array $error = null): void {
