@@ -1,4 +1,5 @@
 @use '../settings/colors' as *;
+@use '../settings/breakpoints' as *;
 @use '../settings/grid' as *;
 
 .mailpoet-logs-message {
@@ -62,6 +63,17 @@
     max-width: 100%;
     table-layout: fixed;
     width: 100%;
+
+    // Fixed columns take 680px; keep the Message column readable and let the
+    // listing scroll horizontally inside its wrapper on narrow screens.
+    @media (max-width: $mailpoet-breakpoint-medium) {
+      max-width: none;
+      min-width: 920px;
+    }
+  }
+
+  .dataviews-wrapper {
+    overflow-x: auto;
   }
 
   // DataViews table column sizing is exposed through generated column classes;
