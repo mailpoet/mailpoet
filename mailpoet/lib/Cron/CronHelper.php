@@ -204,13 +204,13 @@ class CronHelper {
     if (!isset($parsedUrl['port']) || empty($parsedUrl['port'])) return $siteUrl;
     // 2. if site URL contains valid port, try connecting to it
     $urlHost = $parsedUrl['host'] ?? '';
-    $fp = @fsockopen($callScheme . $urlHost, $parsedUrl['port'], $errno, $errstr, 2);
+    $fp = @fsockopen($callScheme . $urlHost, $parsedUrl['port'], $errno, $errstr, 2); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fsockopen -- Checks the port accepts a connection; the HTTP API has no plain socket check.
     if ($fp) return $siteUrl;
     // 3. if connection fails, attempt to connect the standard port derived from URL
     // schema
     $urlScheme = $parsedUrl['scheme'] ?? '';
     $port = (strtolower($urlScheme) === 'http') ? 80 : 443;
-    $fp = @fsockopen($callScheme . $urlHost, $port, $errno, $errstr, 2);
+    $fp = @fsockopen($callScheme . $urlHost, $port, $errno, $errstr, 2); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fsockopen -- Checks the port accepts a connection; the HTTP API has no plain socket check.
     if ($fp) return sprintf('%s://%s', $urlScheme, $urlHost);
     // 4. throw an error if all connection attempts failed
     throw new \Exception(__('Site URL is unreachable.', 'mailpoet'));

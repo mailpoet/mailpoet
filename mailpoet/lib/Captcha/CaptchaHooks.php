@@ -48,6 +48,7 @@ class CaptchaHooks {
 
   private function render($formSelector, $referrer) {
     // phpcs:disable WordPress.Security.EscapeOutput.HeredocOutputNotEscaped
+    // phpcs:ignore PluginCheck.CodeAnalysis.Heredoc.NotAllowed -- Long inline HTML and JS; a heredoc keeps it readable.
     echo <<<HTML
       <input class="mailpoet_hidden_field" type="hidden" name="action" value="mailpoet">
       <input class="mailpoet_hidden_field" type="hidden" name="endpoint" value="captcha">

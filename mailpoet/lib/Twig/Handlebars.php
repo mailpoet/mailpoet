@@ -46,25 +46,21 @@ class Handlebars extends AbstractExtension {
 
     $renderedTemplate = CoreExtension::include($env, $context, $file);
 
-    $output = <<<EOL
-<script id="$id" type="text/x-handlebars-template">
-  $renderedTemplate
-</script>
-EOL;
+    $output = '<script id="' . $id . '" type="text/x-handlebars-template">' . "\n"
+      . '  ' . $renderedTemplate . "\n"
+      . '</script>';
 
     if ($alias !== null) {
-      $output .= <<<EOL
-<script type="text/javascript">
-jQuery(function($) {
-  $(function() {
-    Handlebars.registerPartial(
-      '$alias',
-      jQuery('#$id').html()
-    );
-  });
-});
-</script>
-EOL;
+      $output .= '<script type="text/javascript">' . "\n"
+        . 'jQuery(function($) {' . "\n"
+        . '  $(function() {' . "\n"
+        . '    Handlebars.registerPartial(' . "\n"
+        . "      '" . $alias . "',\n"
+        . "      jQuery('#" . $id . "').html()\n"
+        . '    );' . "\n"
+        . '  });' . "\n"
+        . '});' . "\n"
+        . '</script>';
     }
     return $output;
   }
