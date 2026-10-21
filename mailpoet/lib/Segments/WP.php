@@ -366,7 +366,8 @@ class WP {
     }
 
     // Until the account confirms the address, keep the subscriber's own details.
-    if ($subscriber instanceof SubscriberEntity && $this->wpUserSubscriberLink->isUnconfirmed($wpUserId)) {
+    $isLinkUnconfirmed = $this->wpUserSubscriberLink->isUnconfirmed($wpUserId);
+    if ($subscriber instanceof SubscriberEntity && $isLinkUnconfirmed) {
       $data['email'] = $subscriber->getEmail();
       unset($data['first_name'], $data['last_name']);
     }
@@ -382,7 +383,8 @@ class WP {
     $isWooCustomer = $this->wooHelper->isWooCommerceActive() && in_array('customer', $wpUser->roles, true);
     // When WP Segment is disabled force trashed state and unconfirmed status for new WPUsers without active segment
     // or who are not WooCommerce customers at the same time since customers are added to the WooCommerce list
-    if ($addingNewUserToDisabledWPSegment && !$isRelinkingDeletedWpUser && !$otherActiveSegments && !$isWooCustomer) {
+    // A subscriber linked to an account that hasn't confirmed its address isn't the account's to trash
+    if ($addingNewUserToDisabledWPSegment && !$isRelinkingDeletedWpUser && !$isLinkUnconfirmed && !$otherActiveSegments && !$isWooCustomer) {
       $data['deleted_at'] = Carbon::now()->millisecond(0);
       $data['status'] = SubscriberEntity::STATUS_UNCONFIRMED;
     }
