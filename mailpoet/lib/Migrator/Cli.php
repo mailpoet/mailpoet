@@ -150,7 +150,7 @@ class Cli {
     }
     WP_CLI::log("\nFAILED MIGRATIONS:\n");
     foreach ($failed as $migration) {
-      WP_CLI::log(sprintf('%s (attempts: %d)', $migration['name'], (int)$migration['retries'] + 1));
+      WP_CLI::log(sprintf('%s (retries: %d)', $migration['name'], (int)$migration['retries']));
       WP_CLI::log((string)$migration['error']);
       WP_CLI::log('');
     }
