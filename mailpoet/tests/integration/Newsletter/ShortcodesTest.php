@@ -873,12 +873,24 @@ class ShortcodesTest extends \MailPoetTest {
     return wp_insert_post($data);
   }
 
+  /**
+   * Saves the title as is, the way it is stored for users with the unfiltered_html capability.
+   * Since WordPress 7.2, the kses title filter for other users decodes entities.
+   */
   private function createPostWithTitle(string $title): int {
-    $postId = wp_insert_post([
-      'post_title' => $title,
-      'post_content' => 'contents',
-      'post_status' => 'publish',
-    ]);
+    $ksesPriority = has_filter('title_save_pre', 'wp_filter_kses');
+    remove_filter('title_save_pre', 'wp_filter_kses');
+    try {
+      $postId = wp_insert_post([
+        'post_title' => $title,
+        'post_content' => 'contents',
+        'post_status' => 'publish',
+      ]);
+    } finally {
+      if ($ksesPriority !== false) {
+        add_filter('title_save_pre', 'wp_filter_kses', $ksesPriority);
+      }
+    }
     $this->additionalPostIds[] = $postId;
     $post = get_post($postId);
     $this->assertInstanceOf(WP_Post::class, $post);

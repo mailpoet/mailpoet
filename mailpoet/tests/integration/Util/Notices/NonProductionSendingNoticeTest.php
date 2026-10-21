@@ -76,10 +76,11 @@ class NonProductionSendingNoticeTest extends \MailPoetTest {
     verify($html)->stringContainsString('Newsletters, post notifications, automation emails and bulk confirmation resends wait in the queue.');
     verify($html)->stringContainsString('Sign-up confirmations, test emails, WordPress and WooCommerce emails, and the Premium “Send notification email” automation step still go out.');
     verify($html)->stringContainsString('Everything waiting in the queue goes out once sending is on.');
-    verify($html)->stringContainsString('<form method="post" action="http://example.test/wp-admin/admin-post.php">');
-    verify($html)->stringContainsString('<input type="hidden" name="action" value="mailpoet_allow_non_production_sending"');
-    verify($html)->stringContainsString('<input type="hidden" name="_wpnonce" value="nonce-123"');
-    verify($html)->stringContainsString('<button type="submit" class="button button-primary">Turn sending on</button>');
+    $this->assertHtmlHasTag($html, 'form', ['method' => 'post', 'action' => 'http://example.test/wp-admin/admin-post.php']);
+    $this->assertHtmlHasTag($html, 'input', ['type' => 'hidden', 'name' => 'action', 'value' => 'mailpoet_allow_non_production_sending']);
+    $this->assertHtmlHasTag($html, 'input', ['type' => 'hidden', 'name' => '_wpnonce', 'value' => 'nonce-123']);
+    $this->assertHtmlHasTag($html, 'button', ['type' => 'submit', 'class' => 'button button-primary']);
+    verify($html)->stringContainsString('>Turn sending on</button>');
     verify($html)->stringNotContainsString('ask an administrator');
     verify($html)->stringNotContainsString('data-notice=');
   }

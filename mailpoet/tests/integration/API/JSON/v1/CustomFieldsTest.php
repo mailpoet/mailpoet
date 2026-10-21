@@ -242,8 +242,13 @@ class CustomFieldsTest extends \MailPoetTest {
 
     $response = $this->endpoint->save($newCustomField);
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    verify($response->data['params']['values'][0]['value'])
-      ->equals('"&gt;&lt;img src=e onerror=alert(1) <strong>hello</strong><a href="https://example.com">link</a>');
+    $value = $response->data['params']['values'][0]['value'];
+    // WordPress 7.2 parses the unclosed img tag as an element and drops its unsafe attributes;
+    // older versions escape it as text. Either way no event handler is left in markup.
+    $this->assertContains($value, [
+      '"&gt;&lt;img src=e onerror=alert(1) <strong>hello</strong><a href="https://example.com">link</a>',
+      '"&gt;<img src="e">hello</strong><a href="https://example.com">link</a>',
+    ]);
   }
 
   public function testItStoresTheTypeInLowercaseAndFormatsCheckboxValues() {
