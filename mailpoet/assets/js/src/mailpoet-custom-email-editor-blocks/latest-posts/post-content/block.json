@@ -12,7 +12,7 @@
     "reusable": false,
     "email": true
   },
-  "usesContext": ["postId", "postType"],
+  "usesContext": ["postId", "postType", "mailpoet/latestPostsQuery"],
   "apiVersion": 3,
   "$schema": "https://schemas.wp.org/trunk/block.json"
 }
