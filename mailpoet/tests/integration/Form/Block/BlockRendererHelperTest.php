@@ -17,7 +17,7 @@ class BlockRendererHelperTest extends \MailPoetTest {
   public function testItKeepsTheTextOfTranslatedNameValidationMessages() {
     $translations = [
       'Please specify a valid name.' => "Merci d'indiquer un nom valide.",
-      'Addresses in names are not permitted, please add your name instead.' => 'Pas d\'adresse <URL>, "www" non plus.',
+      'Addresses in names are not permitted, please add your name instead.' => 'Pas d&#8217;adresse <URL>, &quot;www&quot; &amp; "http" non plus.',
     ];
     $translate = function (string $translation, string $text) use ($translations): string {
       return $translations[$text] ?? $translation;
@@ -32,6 +32,9 @@ class BlockRendererHelperTest extends \MailPoetTest {
     $processor = new \WP_HTML_Tag_Processor('<input ' . $validation . '>');
     $processor->next_tag();
     // The form script reads this attribute as JSON.
-    verify(json_decode((string)$processor->get_attribute('data-parsley-names'), true))->equals(array_values($translations));
+    verify(json_decode((string)$processor->get_attribute('data-parsley-names'), true))->equals([
+      "Merci d'indiquer un nom valide.",
+      'Pas d’adresse <URL>, "www" & "http" non plus.',
+    ]);
   }
 }
