@@ -45,7 +45,11 @@ class BlockRendererHelper {
         __('Please specify a valid name.', 'mailpoet'),
         __('Addresses in names are not permitted, please add your name instead.', 'mailpoet'),
       ];
-      $rules['names'] = (string)$this->wp->wpJsonEncode($errorMessages, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+      // Translations may contain entities; the attribute must decode to the plain text JSON.
+      $errorMessages = array_map(function (string $errorMessage): string {
+        return html_entity_decode($errorMessage, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+      }, $errorMessages);
+      $rules['names'] = (string)$this->wp->wpJsonEncode($errorMessages, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_AMP);
     }
 
     // Segments should be required only when form ID is not empty. That allows save form on subscription management site when any segment is not checked.
