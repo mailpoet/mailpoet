@@ -97,6 +97,64 @@ class WooCommerceTest extends \MailPoetTest {
     verify($subscriber->getLastName())->equals('Mike');
   }
 
+  public function testItKeepsSubscriberOfUnconfirmedLinkAfterTheCustomerIsDeleted(): void {
+    require_once ABSPATH . 'wp-admin/includes/user.php';
+    $user = $this->insertRegisteredCustomer();
+    $subscriber = $this->createSubscriber(
+      'Earlier',
+      'Subscriber',
+      $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      SubscriberEntity::STATUS_UNSUBSCRIBED,
+      $user->ID,
+      Source::FORM
+    );
+    $this->diContainer->get(WPUserSubscriberLink::class)->markUnconfirmed($user->ID, $user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $this->wooCommerceSegment->synchronizeRegisteredCustomer($user->ID, 'woocommerce_new_customer');
+
+    wp_delete_user($user->ID);
+    $this->synchronizeAllCustomers();
+
+    $this->entityManager->clear();
+    $kept = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $kept);
+    verify($kept->getWpUserId())->null();
+    verify($kept->getIsWoocommerceUser())->false();
+    verify($kept->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+  }
+
+  public function testItKeepsWooCommerceListOfGuestCustomerAfterTheUnconfirmedLinkIsDeleted(): void {
+    require_once ABSPATH . 'wp-admin/includes/user.php';
+    $guest = $this->insertGuestCustomer();
+    $this->synchronizeAllCustomers();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $subscriberId = (int)$subscriber->getId();
+    $wcSegment = $this->segmentsRepository->getWooCommerceSegment();
+    $subscriberSegment = $this->subscriberSegmentsRepository->findOneBy(['subscriber' => $subscriber, 'segment' => $wcSegment]);
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
+    // A confirmed subscriber who left the WooCommerce Customers list
+    $subscriber->setConfirmedAt(Carbon::now());
+    $subscriberSegment->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->entityManager->flush();
+    // A WP user linked to the guest's subscriber without confirming the address
+    $user = $this->insertRegisteredCustomer();
+    $subscriber->setWpUserId($user->ID);
+    $this->entityManager->flush();
+    $this->diContainer->get(WPUserSubscriberLink::class)->markUnconfirmed($user->ID, (string)$subscriber->getEmail());
+
+    wp_delete_user($user->ID);
+    $this->synchronizeAllCustomers();
+
+    $this->entityManager->clear();
+    $kept = $this->subscribersRepository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $kept);
+    verify($kept->getWpUserId())->null();
+    verify($kept->getIsWoocommerceUser())->true();
+    $keptSegment = $this->subscriberSegmentsRepository->findOneBy(['subscriber' => $kept, 'segment' => $wcSegment]);
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $keptSegment);
+    verify($keptSegment->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+  }
+
   public function testItSynchronizesUpdatedRegisteredCustomer(): void {
     $firstName = 'Test First';
     $lastName = 'Test Last';

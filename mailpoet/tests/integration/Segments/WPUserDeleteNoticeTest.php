@@ -7,6 +7,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\WP;
 use MailPoet\Segments\WPUserDeleteNotice;
+use MailPoet\Subscribers\WPUserSubscriberLink;
 
 class WPUserDeleteNoticeTest extends \MailPoetTest {
   /** @var WPUserDeleteNotice */
@@ -75,6 +76,21 @@ class WPUserDeleteNoticeTest extends \MailPoetTest {
     }
 
     $this->assertSame('', $output);
+  }
+
+  public function testItCountsSubscriberOfUnconfirmedLinkAsKeptWhenTheHardDeleteFilterIsEnabled(): void {
+    $userId = $this->insertUser();
+    $this->wpSegment->synchronizeUsers();
+    $this->diContainer->get(WPUserSubscriberLink::class)->markUnconfirmed($userId, 'user-delete-notice-test@example.com');
+
+    add_filter('mailpoet_delete_subscriber_on_wp_user_delete', '__return_true');
+    try {
+      $output = $this->renderNotice([$userId]);
+    } finally {
+      remove_filter('mailpoet_delete_subscriber_on_wp_user_delete', '__return_true');
+    }
+
+    $this->assertStringContainsString('does not delete their MailPoet subscriber', $output);
   }
 
   public function testItRendersNothingWithoutUserIds(): void {

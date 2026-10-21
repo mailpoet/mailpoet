@@ -231,6 +231,58 @@ class WPTest extends \MailPoetTest {
     verify($this->wpUserSubscriberLink->isUnconfirmed($id))->false();
   }
 
+  public function testItUnlinksSubscriberOfUnconfirmedLinkWhenWpUserIsDeleted(): void {
+    $randomNumber = rand();
+    $list = $this->segmentFactory->withName('Earlier list ' . $randomNumber)->create();
+    $subscriber = $this->subscriberFactory
+      ->withEmail('user-sync-test' . $randomNumber . '@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withSource(Source::FORM)
+      ->withSegments([$list])
+      ->create();
+    $id = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUser($id);
+    verify($this->wpUserSubscriberLink->isUnconfirmed($id))->true();
+    $linkedSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $linkedSubscriber);
+    $linkedSubscriber->setIsWoocommerceUser(true);
+    $this->subscribersRepository->flush();
+
+    wp_delete_user($id);
+
+    $this->entityManager->clear();
+    $unlinked = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $unlinked);
+    $this->assertNull($unlinked->getWpUserId());
+    $this->assertFalse($unlinked->getIsWoocommerceUser());
+    $this->assertNull($unlinked->getDeletedAt());
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $unlinked->getStatus());
+    $this->assertSame(Source::FORM, $unlinked->getSource());
+    $this->assertSame([$list->getId()], array_values(array_map(function (SubscriberSegmentEntity $subscriberSegment) {
+      $segment = $subscriberSegment->getSegment();
+      return $segment ? $segment->getId() : null;
+    }, $unlinked->getSubscriberSegments()->toArray())));
+  }
+
+  public function testItKeepsSubscriberOfUnconfirmedLinkWhenWpUserIsDeletedWithHardDeleteFilter(): void {
+    $randomNumber = rand();
+    $subscriberId = (int)$this->subscriberFactory->withEmail('user-sync-test' . $randomNumber . '@example.com')->create()->getId();
+    $id = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUser($id);
+
+    add_filter('mailpoet_delete_subscriber_on_wp_user_delete', '__return_true');
+    try {
+      wp_delete_user($id);
+    } finally {
+      remove_filter('mailpoet_delete_subscriber_on_wp_user_delete', '__return_true');
+    }
+
+    $this->entityManager->clear();
+    $unlinked = $this->subscribersRepository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $unlinked);
+    $this->assertNull($unlinked->getWpUserId());
+  }
+
   public function testRemovingUserFromSiteClearsMark(): void {
     $randomNumber = rand();
     $email = 'user-sync-test' . $randomNumber . '@example.com';
