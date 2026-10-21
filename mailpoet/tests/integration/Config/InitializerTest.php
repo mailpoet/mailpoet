@@ -7,10 +7,13 @@ use MailPoet\Config\ActivationInProgressException;
 use MailPoet\Config\Activator;
 use MailPoet\Config\Env;
 use MailPoet\Config\Initializer;
+use MailPoet\Config\UpdateFailureNotifier;
 use MailPoet\Entities\SettingEntity;
 use MailPoet\InvalidStateException;
+use MailPoet\Migrator\Migrator;
 use MailPoet\Migrator\MigratorException;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice;
 
 class InitializerTest extends \MailPoetTest {
@@ -119,6 +122,29 @@ class InitializerTest extends \MailPoetTest {
     $initializer->maybeRunActivator();
 
     verify($this->renderMailPoetNotices())->equals('');
+  }
+
+  public function testItReportsARecordedFailureInsteadOfInProgressWhileTheLockIsHeld(): void {
+    $this->settings->set('db_version', '0.0.1');
+    $migrator = $this->makeEmpty(Migrator::class, ['getFailedMigrations' => [
+      ['name' => 'Migration_1', 'status' => Migrator::MIGRATION_STATUS_FAILED, 'retries' => 0, 'error' => 'Allowed memory size of 134217728 bytes exhausted in /plugin/Migration_1.php:12', 'unknown' => false],
+    ]]);
+    $initializer = $this->getServiceWithOverrides(Initializer::class, [
+      'activator' => $this->make(Activator::class, [
+        'settings' => $this->settings,
+        'activate' => Expected::once(function () {
+          throw new ActivationInProgressException('MailPoet version update is in progress, please refresh the page in a minute.');
+        }),
+      ]),
+      'updateFailureNotifier' => new UpdateFailureNotifier($migrator, $this->diContainer->get(WPFunctions::class)),
+    ]);
+
+    $initializer->maybeRunActivator();
+
+    $html = $this->renderMailPoetNotices();
+    verify($html)->stringContainsString('notice-error');
+    verify($html)->stringContainsString('Allowed memory size');
+    verify($html)->stringNotContainsString('update is in progress');
   }
 
   public function testItReportsAFailedMigrationAsAnError(): void {

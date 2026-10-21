@@ -30,6 +30,14 @@ class UpdateFailureNotifier {
     WPNotice::displayError($this->render($failure), '', '', false, false);
   }
 
+  public function hasRecordedFailures(): bool {
+    try {
+      return $this->migrator->getFailedMigrations() !== [];
+    } catch (Throwable $e) {
+      return false;
+    }
+  }
+
   public function render(Throwable $failure): string {
     if (!$this->wp->currentUserCan('manage_options')) {
       return '<p>' . esc_html__('MailPoet database update failed. Please contact the site administrator.', 'mailpoet') . '</p>';
@@ -55,7 +63,8 @@ class UpdateFailureNotifier {
       return $this->renderFailure($failure);
     }
     $html = '';
-    $explained = false;
+    // the activation lock is not a failure of its own, so it needs no explaining
+    $explained = $failure instanceof ActivationInProgressException;
     foreach ($failed as $migration) {
       $explained = $explained || strpos($failure->getMessage(), $migration['name']) !== false;
       $error = (string)$migration['error'];
