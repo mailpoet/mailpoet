@@ -188,7 +188,9 @@ class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
     $this->integration->registerCheckoutFrontendBlocks($registry);
 
     $this->assertInstanceOf(MarketingOptinBlock::class, $registeredBlock);
-    verify($registeredBlock->get_script_data()['defaultText'])->equals('Send me <strong>offers</strong><img src="x">alert(2)');
+    $defaultText = $registeredBlock->get_script_data()['defaultText'];
+    // WordPress 7.2 drops the text inside a removed script element; older versions keep it as text.
+    $this->assertContains($defaultText, ['Send me <strong>offers</strong><img src="x">', 'Send me <strong>offers</strong><img src="x">alert(2)']);
   }
 
   private function askForTrackingConsentAtCheckout(): void {

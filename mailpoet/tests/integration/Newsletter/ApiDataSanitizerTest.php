@@ -48,7 +48,7 @@ class ApiDataSanitizerTest extends \MailPoetTest {
     verify($block1['type'])->equals('text');
     verify($block1['text'])->equals('<p>Thanks for reading. See you soon!</p>');
     verify($block2['type'])->equals('footer');
-    verify($block2['text'])->equals('<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a><br />Add your postal address here!</p>');
+    $this->assertSameHtml('<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a><br />Add your postal address here!</p>', $block2['text']);
     $image = $result['content']['blocks'][1];
     verify($image['type'])->equals('header');
     verify($image['link'])->equals('');

@@ -36,8 +36,8 @@ class PremiumFeaturesAvailableNoticeTest extends \MailPoetTest {
     $output = ob_get_clean();
 
     $expectedUrl = (new Installer(Installer::PREMIUM_PLUGIN_PATH))->buildDownloadUrl();
-    verify($output)->stringContainsString('<form method="post" action="' . esc_url($expectedUrl) . '"');
-    verify($output)->stringContainsString('name="api_key" value="' . esc_attr($key) . '"');
+    $this->assertHtmlHasTag((string)$output, 'form', ['method' => 'post', 'action' => $expectedUrl]);
+    $this->assertHtmlHasTag((string)$output, 'input', ['name' => 'api_key', 'value' => $key]);
     verify($output)->stringNotContainsString('mailpoet-premium/' . $key . '/');
   }
 
@@ -53,7 +53,7 @@ class PremiumFeaturesAvailableNoticeTest extends \MailPoetTest {
     $output = ob_get_clean();
 
     verify($output)->stringContainsString('Activate MailPoet Premium plugin');
-    verify($output)->stringNotContainsString('<form method="post"');
+    verify($output)->stringNotContainsString('<form');
   }
 
   private function createNotice(bool $isPremiumPluginInstalled): PremiumFeaturesAvailableNotice {
