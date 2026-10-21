@@ -140,7 +140,7 @@ class ProductCollectionEmailRendererRegistrar {
       $blockTypesController->register_blocks();
     } catch (\Throwable $e) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_EMAIL_EDITOR)->error(
-        'Registering WooCommerce blocks for email rendering failed: {message}',
+        'Registering WooCommerce blocks for email rendering failed: ' . $e->getMessage(),
         ['message' => $e->getMessage()]
       );
     }

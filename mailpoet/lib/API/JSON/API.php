@@ -359,7 +359,7 @@ class API {
       // phpcs:enable QITStandard.PHP.DebugCode.DebugFunctionFound
     }
     // logging to the MailPoet table
-    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_API)->warning($e->getMessage(), [
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_API)->warning('An API request failed: ' . $e->getMessage(), [
       'requestMethod' => $this->requestMethod,
       'requestEndpoint' => $this->requestEndpoint,
       'exceptionMessage' => $e->getMessage(),
