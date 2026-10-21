@@ -66,6 +66,16 @@ class UpdateFailureNotifierTest extends \MailPoetTest {
     verify($html)->stringContainsString(esc_html(__FILE__));
   }
 
+  public function testItNamesTheSiteInTheCommandOnMultisite(): void {
+    wp_set_current_user(1);
+    $wp = $this->make(WPFunctions::class, ['isMultisite' => true, 'homeUrl' => 'https://shop.example.com']);
+    $notifier = new UpdateFailureNotifier($this->makeEmpty(Migrator::class, ['getFailedMigrations' => []]), $wp);
+    verify($notifier->render(new \Exception('boom')))
+      ->stringContainsString('<code>wp mailpoet migrations run --url=https://shop.example.com</code>');
+    verify($this->notifier->render(new \Exception('boom')))
+      ->stringContainsString('<code>wp mailpoet migrations run</code>');
+  }
+
   public function testItShowsAdministratorsTheFullStartupError(): void {
     $failure = new \RuntimeException('Unknown column wp_mailpoet_x.y');
     $html = $this->notifier->renderStartupFailure($failure);

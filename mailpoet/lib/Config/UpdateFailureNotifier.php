@@ -45,7 +45,12 @@ class UpdateFailureNotifier {
 
     $html = '<p><strong>' . esc_html__('MailPoet database update failed.', 'mailpoet') . '</strong></p>';
     $html .= $this->renderFailedMigrations($failure);
-    $html .= '<p>' . esc_html__('MailPoet retries the update on every page load. To retry it manually, run:', 'mailpoet') . ' <code>wp mailpoet migrations run</code></p>';
+    $command = 'wp mailpoet migrations run';
+    if ($this->wp->isMultisite()) {
+      // WP-CLI works on the main site unless told which site to use
+      $command .= ' --url=' . $this->wp->homeUrl();
+    }
+    $html .= '<p>' . esc_html__('MailPoet retries the update on every page load. To retry it manually, run:', 'mailpoet') . ' <code>' . esc_html($command) . '</code></p>';
     $html .= '<p>' . esc_html__('Include the full error when contacting MailPoet support.', 'mailpoet') . '</p>';
     return $html;
   }
