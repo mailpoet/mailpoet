@@ -242,7 +242,7 @@ class HooksWooCommerce {
 
   private function logError(\Throwable $e, $name) {
     $logger = $this->loggerFactory->getLogger($name);
-    $logger->error($e->getMessage(), [
+    $logger->error('WooCommerce integration hook failed: ' . $e->getMessage(), [
       'file' => $e->getFile(),
       'line' => $e->getLine(),
     ]);

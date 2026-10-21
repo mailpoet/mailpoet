@@ -179,7 +179,7 @@ class PurchasedInCategory {
     };
 
     $this->loggerFactory->getLogger(self::SLUG)->info(
-      'Email scheduled',
+      'Email scheduled: MailPoet is scheduling the automatic email for the customer of this order.',
       [
         'order_id' => $orderId,
         'customer_email' => Helpers::maskEmail($customerEmail),

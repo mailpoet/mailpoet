@@ -126,7 +126,7 @@ class PurchasedProduct {
     /** @var \WP_Post[] $woocommerceProducts */
     if (empty($woocommerceProducts)) {
       $this->loggerFactory->getLogger(self::SLUG)->info(
-        'no products found',
+        'No products were found for the search query.',
         ['search_query' => $productSearchQuery]
       );
       return;
@@ -182,7 +182,7 @@ class PurchasedProduct {
     };
 
     $this->loggerFactory->getLogger(self::SLUG)->info(
-      'Email scheduled',
+      'Email scheduled: MailPoet is scheduling the automatic email for the customer of this order.',
       [
         'order_id' => $orderId,
         'customer_email' => Helpers::maskEmail($customerEmail),
