@@ -349,6 +349,45 @@ class WPTest extends \MailPoetTest {
     }
   }
 
+  public function testSynchronizeUsersMarksLinkToExistingSubscriberWithMismatchedEmailColumnCollation(): void {
+    global $wpdb;
+    $originalCollation = $this->connection->executeQuery(
+      "SELECT COLLATION_NAME FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = '{$wpdb->users}'
+          AND COLUMN_NAME = 'user_email'"
+    )->fetchOne();
+    $this->assertIsString($originalCollation);
+    $mismatchCollation = $originalCollation === 'utf8mb4_unicode_ci' ? 'utf8mb4_general_ci' : 'utf8mb4_unicode_ci';
+    $this->connection->executeStatement(
+      "ALTER TABLE {$wpdb->users} MODIFY user_email VARCHAR(100) CHARACTER SET utf8mb4 COLLATE {$mismatchCollation} NOT NULL DEFAULT ''"
+    );
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $subscribersEmailCollation = $this->connection->executeQuery(
+      "SELECT COLLATION_NAME FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = '{$subscribersTable}'
+          AND COLUMN_NAME = 'email'"
+    )->fetchOne();
+    $this->assertNotSame($mismatchCollation, $subscribersEmailCollation, 'Test setup: subscribers.email should not match wp_users.user_email collation');
+
+    try {
+      $randomNumber = rand();
+      $this->subscriberFactory
+        ->withEmail('user-sync-test' . $randomNumber . '@example.com')
+        ->create();
+      $id = $this->insertUser($randomNumber);
+
+      $this->wpSegment->synchronizeUsers();
+
+      verify($this->wpUserSubscriberLink->isUnconfirmed($id))->true();
+    } finally {
+      $this->connection->executeStatement(
+        "ALTER TABLE {$wpdb->users} MODIFY user_email VARCHAR(100) NOT NULL DEFAULT '' COLLATE {$originalCollation}"
+      );
+    }
+  }
+
   public function testSynchronizeUserRemovesDuplicateSubscriberOnEmailChange(): void {
     $randomNumber = rand();
     // Create a WP user with email A

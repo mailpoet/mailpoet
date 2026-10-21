@@ -177,7 +177,8 @@ class ShortcodesTest extends \MailPoetTest {
     } finally {
       WordPress::releaseFunction('apply_filters');
       require_once ABSPATH . 'wp-admin/includes/user.php';
-      wp_delete_user($wpUserId);
+      require_once ABSPATH . 'wp-admin/includes/ms.php';
+      is_multisite() ? wpmu_delete_user($wpUserId) : wp_delete_user($wpUserId);
     }
 
     $wp = WPFunctions::get();
