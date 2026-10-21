@@ -195,9 +195,10 @@ class Newsletter {
    * The destination a recipient we may not track gets for one stored link; see untrackLinks().
    *
    * A personalization tag embedded in a stored URL (https://example.com/?ref=[acme/url]) is resolved
-   * here too. On the rendered path the Personalizer does that while it runs over the restored
-   * content and writes the href through esc_url(); on the templated path the URL leaves as a
-   * substitution value, so it has to be complete and, in the HTML part, escaped the same way.
+   * here too. On the rendered path the Personalizer does that for the HTML href while it runs over
+   * the restored content, writing it through esc_url(), and resolveMarkdownLinks() does it for the
+   * text body's link targets; on the templated path the URL leaves as a substitution value, so it
+   * has to be complete and, in the HTML part, escaped the same way.
    *
    * @param string $part The PlaceholderCollector::PART_* constant the URL is for
    * @param string $shortcodeLookupSource Content that shortcodes such as [newsletter:post_title] look their value up in
@@ -536,7 +537,8 @@ class Newsletter {
       $subject = $this->personalizer->personalize_content($subject, Personalizer::RENDERING_CONTEXT_TEXT);
       $html = $this->personalizer->personalize_content($html, Personalizer::RENDERING_CONTEXT_HTML);
       $text = $this->personalizer->personalize_content($text, Personalizer::RENDERING_CONTEXT_TEXT);
-      // Token links that were not hashed (tracking disabled) are still literal in the text body.
+      // The Personalizer leaves markdown link targets alone: token links that were not hashed (tracking
+      // disabled) and tags embedded in restored links (no consent) are still literal in the text body.
       $text = $this->personalizationTagLinkResolver->resolveMarkdownLinks($text, $context);
       $html = $this->applyDeprecatedAutomationPersonalizationFilter(self::AUTOMATION_EMAIL_PERSONALIZE_HTML_AFTER_FILTER, $html, $context);
       $text = $this->applyDeprecatedAutomationPersonalizationFilter(self::AUTOMATION_EMAIL_PERSONALIZE_TEXT_AFTER_FILTER, $text, $context);
@@ -603,7 +605,8 @@ class Newsletter {
       foreach ($parts as $part => $content) {
         $parts[$part] = $this->templatePersonalizer->personalize($content, $context, $collector, $part);
       }
-      // Token links that were not hashed (tracking disabled) are still literal in the text body.
+      // The Personalizer leaves markdown link targets alone: token links and embedded tags that were not
+      // hashed (tracking disabled) are still literal in the text body.
       $parts[PlaceholderCollector::PART_TEXT] = $this->personalizationTagLinkResolver->resolveMarkdownLinks(
         $parts[PlaceholderCollector::PART_TEXT],
         $context,
