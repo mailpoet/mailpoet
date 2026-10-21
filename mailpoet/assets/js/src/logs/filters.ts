@@ -85,7 +85,9 @@ export const LOG_TOPIC_LABELS: Record<string, string> = {
 };
 
 export function getLogTopicLabel(name: string): string {
-  return LOG_TOPIC_LABELS[name] ?? name;
+  return Object.prototype.hasOwnProperty.call(LOG_TOPIC_LABELS, name)
+    ? LOG_TOPIC_LABELS[name]
+    : name;
 }
 
 // Values stay the raw names (they go into the URL and the REST filter).

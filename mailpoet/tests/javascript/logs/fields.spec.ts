@@ -8,7 +8,10 @@ import {
   getLogDisplayMessage,
   getLogFields,
 } from '../../../assets/js/src/logs/fields';
-import type { LogListingItem } from '../../../assets/js/src/logs/api';
+import {
+  resetLogNamesCache,
+  type LogListingItem,
+} from '../../../assets/js/src/logs/api';
 
 describe('logs fields', () => {
   afterEach(() => {
@@ -65,6 +68,7 @@ describe('logs fields', () => {
     global.window = {
       mailpoet_logs_api: { root: 'http://localhost/wp-json', nonce: 'n' },
     } as unknown as Window & typeof globalThis;
+    resetLogNamesCache();
     apiFetch.setFetchHandler(() =>
       Promise.resolve({ data: { names: ['cron', 'mailer'] } }),
     );
@@ -74,6 +78,13 @@ describe('logs fields', () => {
       { value: 'cron', label: 'Background tasks (cron)' },
       { value: 'mailer', label: 'mailer' },
     ]);
+  });
+
+  it('keeps the name getElements reference stable between calls', () => {
+    const first = getLogFields(new Set()).find(({ id }) => id === 'name');
+    const second = getLogFields(new Set([1])).find(({ id }) => id === 'name');
+
+    expect(first.getElements).to.equal(second.getElements);
   });
 
   it('exposes a primary toggle action whose label tracks expanded state', () => {
@@ -163,6 +174,14 @@ describe('logs fields', () => {
       expect(
         getLogDisplayMessage({ ...base, raw_message: null, context: {} }),
       ).to.equal(base.message);
+    });
+
+    it('falls back to the formatted message for a blank raw message', () => {
+      ['', '   '].forEach((raw) => {
+        expect(
+          getLogDisplayMessage({ ...base, raw_message: raw, context: {} }),
+        ).to.equal(base.message);
+      });
     });
 
     it('leaves unknown and non-scalar placeholders untouched', () => {

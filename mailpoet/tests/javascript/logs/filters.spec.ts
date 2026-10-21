@@ -113,6 +113,8 @@ describe('logs filters translation', () => {
   it('returns a readable label for known topics and the name for unknown ones', () => {
     expect(getLogTopicLabel('mss')).to.equal('MailPoet Sending Service');
     expect(getLogTopicLabel('custom')).to.equal('custom');
+    expect(getLogTopicLabel('__proto__')).to.equal('__proto__');
+    expect(getLogTopicLabel('constructor')).to.equal('constructor');
   });
 
   it('keeps raw values in topic filter elements', () => {

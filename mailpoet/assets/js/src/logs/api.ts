@@ -89,6 +89,11 @@ export function getLogNames(): Promise<string[]> {
   return logNamesRequest;
 }
 
+// Clears the cached request so tests start from a clean state.
+export function resetLogNamesCache(): void {
+  logNamesRequest = null;
+}
+
 // Deletes the logs matching the listing's current filters and search, so a
 // deletion removes exactly the rows the filtered listing shows. `all` confirms
 // the unrestricted case (no filters, no search) where every log is removed.
