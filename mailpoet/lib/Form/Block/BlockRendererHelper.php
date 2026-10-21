@@ -45,9 +45,7 @@ class BlockRendererHelper {
         __('Please specify a valid name.', 'mailpoet'),
         __('Addresses in names are not permitted, please add your name instead.', 'mailpoet'),
       ];
-      $rules['names'] = '[' . implode(',', array_map(function (string $errorMessage): string {
-        return '"' . $errorMessage . '"';
-      }, $errorMessages)) . ']';
+      $rules['names'] = (string)$this->wp->wpJsonEncode($errorMessages, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
     // Segments should be required only when form ID is not empty. That allows save form on subscription management site when any segment is not checked.
