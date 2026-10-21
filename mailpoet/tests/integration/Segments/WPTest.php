@@ -283,6 +283,106 @@ class WPTest extends \MailPoetTest {
     $this->assertNull($unlinked->getWpUserId());
   }
 
+  public function testSynchronizeUserDoesNotLinkSubscriberOfAnotherWpUser(): void {
+    $randomNumber = rand();
+    $emailA = 'user-sync-test' . $randomNumber . '@example.com';
+    $firstUserId = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUser($firstUserId);
+    $firstUserSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $firstUserId]);
+    $this->assertInstanceOf(SubscriberEntity::class, $firstUserSubscriber);
+    // The first user's subscriber keeps email A when the user moves to an email that is in use
+    $this->subscriberFactory->withEmail('user-sync-test-other' . $randomNumber . '@example.com')->create();
+    $this->updateWPUserEmail($firstUserId, 'user-sync-test-other' . $randomNumber . '@example.com');
+    clean_user_cache($firstUserId);
+    $this->entityManager->clear();
+    $this->wpSegment->synchronizeUser($firstUserId);
+
+    $secondUserId = $this->insertUser();
+    $this->updateWPUserEmail($secondUserId, $emailA);
+    $this->wpUserSubscriberLink->markUnconfirmed($secondUserId, $emailA);
+    clean_user_cache($secondUserId);
+    $this->entityManager->clear();
+    $this->wpSegment->synchronizeUser($secondUserId);
+    $this->assertTrue($this->entityManager->isOpen());
+
+    $this->entityManager->clear();
+    $subscriber = $this->subscribersRepository->findOneById($firstUserSubscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertSame($emailA, $subscriber->getEmail());
+    $this->assertSame($firstUserId, $subscriber->getWpUserId());
+    verify($this->wpUserSubscriberLink->isUnconfirmed($secondUserId))->false();
+  }
+
+  public function testSynchronizeUserLinksSubscriberOfAnotherUsersUnconfirmedLink(): void {
+    $randomNumber = rand();
+    $email = 'user-sync-test' . $randomNumber . '@example.com';
+    $subscriber = $this->subscriberFactory->withEmail($email)->create();
+    $firstUserId = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUser($firstUserId);
+    // The first user moves to another email; their link was never confirmed
+    $this->updateWPUserEmail($firstUserId, 'user-sync-test-moved' . $randomNumber . '@example.com');
+    clean_user_cache($firstUserId);
+    $this->entityManager->clear();
+    $this->wpSegment->synchronizeUser($firstUserId);
+
+    $secondUserId = $this->insertUser();
+    $this->updateWPUserEmail($secondUserId, $email);
+    clean_user_cache($secondUserId);
+    $this->entityManager->clear();
+    $this->wpSegment->synchronizeUser($secondUserId);
+
+    $this->entityManager->clear();
+    $linkedSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $linkedSubscriber);
+    $this->assertSame($email, $linkedSubscriber->getEmail());
+    $this->assertSame($secondUserId, $linkedSubscriber->getWpUserId());
+    verify($this->wpUserSubscriberLink->isUnconfirmed($secondUserId))->true();
+  }
+
+  public function testSynchronizeUsersLinksSubscriberOfAnotherUsersUnconfirmedLink(): void {
+    $randomNumber = rand();
+    $email = 'user-sync-test' . $randomNumber . '@example.com';
+    $subscriber = $this->subscriberFactory->withEmail($email)->create();
+    $firstUserId = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUsers();
+    $this->updateWPUserEmail($firstUserId, 'user-sync-test-moved' . $randomNumber . '@example.com');
+    $this->wpSegment->synchronizeUsers();
+
+    $secondUserId = $this->insertUser();
+    $this->updateWPUserEmail($secondUserId, $email);
+    $this->wpSegment->synchronizeUsers();
+
+    $this->entityManager->clear();
+    $linkedSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $linkedSubscriber);
+    $this->assertSame($email, $linkedSubscriber->getEmail());
+    $this->assertSame($secondUserId, $linkedSubscriber->getWpUserId());
+    verify($this->wpUserSubscriberLink->isUnconfirmed($secondUserId))->true();
+  }
+
+  public function testSynchronizeUsersDoesNotLinkSubscriberOfAnotherWpUser(): void {
+    $randomNumber = rand();
+    $emailA = 'user-sync-test' . $randomNumber . '@example.com';
+    $firstUserId = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUsers();
+    $firstUserSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $firstUserId]);
+    $this->assertInstanceOf(SubscriberEntity::class, $firstUserSubscriber);
+    $this->subscriberFactory->withEmail('user-sync-test-other' . $randomNumber . '@example.com')->create();
+    $this->updateWPUserEmail($firstUserId, 'user-sync-test-other' . $randomNumber . '@example.com');
+    $this->wpSegment->synchronizeUsers();
+
+    $secondUserId = $this->insertUser();
+    $this->updateWPUserEmail($secondUserId, $emailA);
+    $this->wpSegment->synchronizeUsers();
+
+    $this->entityManager->clear();
+    $subscriber = $this->subscribersRepository->findOneById($firstUserSubscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertSame($emailA, $subscriber->getEmail());
+    $this->assertSame($firstUserId, $subscriber->getWpUserId());
+    verify($this->wpUserSubscriberLink->isUnconfirmed($secondUserId))->false();
+  }
+
   public function testRemovingUserFromSiteClearsMark(): void {
     $randomNumber = rand();
     $email = 'user-sync-test' . $randomNumber . '@example.com';
