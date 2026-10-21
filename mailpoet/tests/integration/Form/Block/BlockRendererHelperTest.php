@@ -14,9 +14,13 @@ class BlockRendererHelperTest extends \MailPoetTest {
     verify($escaped)->equals('&#91;mailpoet_subscribers_count&#93; &#91;gallery attr="attr"&#93;inside&#91;/gallery&#93;[unknown]');
   }
 
-  public function testItKeepsNameValidationMessagesWithApostrophesInOneAttribute() {
-    $translate = function (string $translation, string $text): string {
-      return $text === 'Please specify a valid name.' ? "Merci d'indiquer un nom valide." : $translation;
+  public function testItKeepsTheTextOfTranslatedNameValidationMessages() {
+    $translations = [
+      'Please specify a valid name.' => "Merci d'indiquer un nom valide.",
+      'Addresses in names are not permitted, please add your name instead.' => "Pas d'adresse <URL> dans le nom.",
+    ];
+    $translate = function (string $translation, string $text) use ($translations): string {
+      return $translations[$text] ?? $translation;
     };
     add_filter('gettext', $translate, 10, 2);
     try {
@@ -26,7 +30,7 @@ class BlockRendererHelperTest extends \MailPoetTest {
       remove_filter('gettext', $translate, 10);
     }
     $this->assertHtmlHasTag('<input ' . $validation . '>', 'input', [
-      'data-parsley-names' => '["Merci d\'indiquer un nom valide.","Addresses in names are not permitted, please add your name instead."]',
+      'data-parsley-names' => '["Merci d\'indiquer un nom valide.","Pas d\'adresse <URL> dans le nom."]',
     ]);
   }
 }

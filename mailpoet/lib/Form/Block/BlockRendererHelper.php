@@ -89,7 +89,9 @@ class BlockRendererHelper {
       if (is_bool($value)) {
         $value = ($value) ? 'true' : 'false';
       }
-      $validation[] = 'data-parsley-' . $this->wp->escAttr($rule) . '="' . $this->wp->escAttr($this->wp->wpKsesPost($value)) . '"';
+      // The names rule is built from translated messages, so escaping is enough and keeps their text.
+      $value = $rule === 'names' ? $value : $this->wp->wpKsesPost($value);
+      $validation[] = 'data-parsley-' . $this->wp->escAttr($rule) . '="' . $this->wp->escAttr($value) . '"';
       if ($rule === 'required') {
         $validation[] = 'required aria-required="true"';
       }
