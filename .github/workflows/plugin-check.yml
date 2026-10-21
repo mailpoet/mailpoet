@@ -104,6 +104,8 @@ jobs:
         with:
           build-dir: ./plugin-build/mailpoet
           repo-token: ''
+          # The QIT security scan reads this file from the zip, so it ships on purpose.
+          exclude-files: .gitleaksignore
           # Each ignored code was reviewed. The reasons are in the PR that added this workflow.
           ignore-codes: |
             WordPress.Security.EscapeOutput.ExceptionNotEscaped
