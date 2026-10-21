@@ -660,10 +660,8 @@ class NewsletterTest extends \MailPoetTest {
     $this->assertStringContainsString('https://example.com/profile?email=' . $this->subscriber->getEmail(), $reconstructedHtml);
     $this->assertStringNotContainsString('[mailpoet/subscriber-email]', $reconstructedHtml);
     $this->assertSame($rendered['body']['html'], $reconstructedHtml);
-    // The rendered path still ships the literal tag in the text body's markdown link, because the
-    // Personalizer resolves embedded tags only in hrefs. The templated path resolves the URL itself.
     $reconstructedText = strtr($templated['newsletter']['body']['text'], $templated['substitutions']['text']);
-    $this->assertSame('[Profile](https://example.com/profile?email=' . $this->subscriber->getEmail() . ')', $reconstructedText);
+    $this->assertSame($rendered['body']['text'], $reconstructedText);
   }
 
   public function testItEscapesAnUntrackedLinkWithAReplacedTagLikeTheRenderedPathInTemplatedBatch(): void {
@@ -685,6 +683,8 @@ class NewsletterTest extends \MailPoetTest {
     $reconstructedHtml = strtr($templated['newsletter']['body']['html'], $templated['substitutions']['html']);
     $this->assertStringContainsString('href="https://example.com/profile?name=Anna%20AJ%20Lee"', $reconstructedHtml);
     $this->assertSame($rendered['body']['html'], $reconstructedHtml);
+    // The text part is not escaped on either path; the raw name lands in the markdown target.
+    $this->assertSame($rendered['body']['text'], strtr($templated['newsletter']['body']['text'], $templated['substitutions']['text']));
   }
 
   public function testItKeepsTemplateIdenticalWhenATagLinkResolvesForOnlySomeSubscribersInTemplatedBatch(): void {
@@ -755,6 +755,37 @@ class NewsletterTest extends \MailPoetTest {
       $this->assertSame($rendered['body'][$part], $reconstructed);
       $this->assertStringContainsString('action=confirm_unsubscribe', $reconstructed);
     }
+  }
+
+  public function testItResolvesTagsEmbeddedInLinksInTextBodyWhenTrackingIsDisabledInTemplatedBatch(): void {
+    $newsletterTask = Stub::copy($this->newsletterTask, ['trackingEnabled' => false]);
+    // Both recipients need a first name: an empty tag value stays literal on the rendered path by design
+    $this->subscriber->setFirstName('Anna');
+    $this->entityManager->flush();
+    $other = (new SubscriberFactory())->withFirstName('Ben')->create();
+    // A legacy shortcode next to the tag: it is already a placeholder when the tag is resolved
+    $url = 'https://example.com/profile?e=[subscriber:email]&n=[mailpoet/subscriber-firstname]';
+    [$newsletter, , $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink($url, 'Profile');
+    // Without tracking the link stays in the body instead of a hash
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<a href="' . $url . '">Profile</a>',
+      'text' => '[Profile](' . $url . ')',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $namespace = PlaceholderCollector::generateNamespace();
+    $templated = $newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $this->subscriber, $sendingQueue, $namespace);
+    $templatedForOther = $newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $other, $sendingQueue, $namespace);
+    $rendered = $newsletterTask->prepareNewsletterForSending($newsletter, $this->subscriber, $sendingQueue);
+
+    $this->assertSame($templatedForOther['newsletter'], $templated['newsletter']);
+    // Every text placeholder sits in the template itself: the sending service substitutes once
+    foreach (array_keys($templated['substitutions']['text']) as $placeholder) {
+      $this->assertStringContainsString($placeholder, $templated['newsletter']['body']['text']);
+    }
+    $reconstructedText = strtr($templated['newsletter']['body']['text'], $templated['substitutions']['text']);
+    $this->assertSame('[Profile](https://example.com/profile?e=' . $this->subscriber->getEmail() . '&n=Anna)', $reconstructedText);
+    $this->assertSame($rendered['body']['text'], $reconstructedText);
   }
 
   public function testItDoesNotReplaceUserAuthoredTextThatLooksLikeOldPlaceholders(): void {
