@@ -23,22 +23,27 @@ class Renderer {
   /** @var CustomFonts */
   private $customFonts;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     Styles $styleUtils,
     SettingsController $settings,
     CustomFonts $customFonts,
-    BlocksRenderer $blocksRenderer
+    BlocksRenderer $blocksRenderer,
+    WPFunctions $wp
   ) {
     $this->styleUtils = $styleUtils;
     $this->settings = $settings;
     $this->blocksRenderer = $blocksRenderer;
     $this->customFonts = $customFonts;
+    $this->wp = $wp;
   }
 
   public function renderStyles(FormEntity $form, string $prefix, string $displayType): string {
     $this->customFonts->enqueueStyle();
     $html = $this->styleUtils->prefixStyles($this->getCustomStyles($form), $prefix);
-    $html .= WPFunctions::get()->wpStripAllTags($this->styleUtils->renderFormSettingsStyles($form, $prefix, $displayType));
+    $html .= $this->wp->wpStripAllTags($this->styleUtils->renderFormSettingsStyles($form, $prefix, $displayType));
     return $html;
   }
 
