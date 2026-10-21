@@ -231,6 +231,17 @@ class WP {
   }
 
   /**
+   * Linked to another existing WP user who confirmed the subscriber's email.
+   */
+  private function isLinkedToAnotherWpUser(SubscriberEntity $subscriber, int $wpUserId): bool {
+    $linkedWpUserId = $subscriber->getWpUserId();
+    return $linkedWpUserId !== null
+      && $linkedWpUserId !== $wpUserId
+      && $this->wp->getUserdata($linkedWpUserId) !== false
+      && !$this->wpUserSubscriberLink->isUnconfirmed($linkedWpUserId);
+  }
+
+  /**
    * Unlinks the subscriber and takes it off the WP Users list. It also leaves
    * the WooCommerce Customers list unless its email has orders. Its status,
    * other lists and custom fields stay.
@@ -292,6 +303,15 @@ class WP {
     // find subscriber by email when is null
     if (is_null($subscriber)) {
       $subscriber = $this->subscribersRepository->findOneBy(['email' => $wpUser->user_email]); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      if ($subscriber instanceof SubscriberEntity && $this->isLinkedToAnotherWpUser($subscriber, (int)$wpUser->ID)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        $logger = LoggerFactory::getInstance()->getLogger();
+        $logger->warning(
+          'Cannot link subscriber: it is linked to another WordPress user. The subscriber was not linked to this user.',
+          ['subscriber_id' => $subscriber->getId()]
+        );
+        $this->wpUserSubscriberLink->clear((int)$wpUser->ID); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        return;
+      }
       $currentUserId = (int)$this->wp->getCurrentUserId();
       if (!$subscriber instanceof SubscriberEntity) {
         $this->wpUserSubscriberLink->clear((int)$wpUser->ID); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -603,31 +623,33 @@ class WP {
     $insertedUserIds = $this->databaseConnection->fetchAllAssociative($selectSql);
 
     // Insert new users into the subscribers table.
-    // The email-based join can cross a collation boundary when wp_users.user_email and
+    // The email-based joins can cross a collation boundary when wp_users.user_email and
     // mailpoet_subscribers.email use different (but compatible) collations — force a
-    // matching collation to avoid "Illegal mix of collations" errors.
-    $emailCollation = $this->collationChecker->getCollateIfNeeded(
-      $wpdb->users,
-      'user_email',
-      $this->subscribersTable,
-      'email'
-    );
-    // Users whose address already belongs to a subscriber get linked to it below,
-    // so mark them first, as the per-user sync does. Compare with the subscribers
+    // matching collation to avoid "Illegal mix of collations" errors. Use the subscribers
     // email collation, which is what the unique key behind the insert uses.
+    // Users whose address already belongs to a subscriber get linked to it below,
+    // so mark them first, as the per-user sync does.
     $subscriberEmailCollation = $this->collationChecker->getCollateIfNeeded(
       $this->subscribersTable,
       'email',
       $wpdb->users,
       'user_email'
     );
+    // Don't link a subscriber that is linked to another existing WP user who confirmed its email
+    $canLink = '(existingSubscriber.wp_user_id IS NULL OR linkedUser.ID IS NULL OR linkedUserMark.umeta_id IS NOT NULL)';
+    $linkedUserJoins =
+      "LEFT JOIN {$wpdb->users} linkedUser ON linkedUser.ID = existingSubscriber.wp_user_id
+        LEFT JOIN {$wpdb->usermeta} linkedUserMark ON linkedUserMark.user_id = existingSubscriber.wp_user_id
+          AND linkedUserMark.meta_key = :unconfirmedLinkMetaKey";
     $linkingSql =
       "SELECT wu.id, wu.user_email AS email
         FROM {$wpdb->users} wu
         LEFT JOIN {$this->subscribersTable} s ON wu.id = s.wp_user_id
         INNER JOIN {$this->subscribersTable} existingSubscriber ON wu.user_email = existingSubscriber.email {$subscriberEmailCollation}
-        WHERE s.wp_user_id IS NULL AND wu.user_email != ''";
-    $linkingUsers = $this->databaseConnection->fetchAllAssociative($linkingSql);
+        {$linkedUserJoins}
+        WHERE s.wp_user_id IS NULL AND wu.user_email != ''
+        AND {$canLink}";
+    $linkingUsers = $this->databaseConnection->fetchAllAssociative($linkingSql, $this->getUnconfirmedLinkParams());
     foreach ($linkingUsers as $linkingUser) {
       if (is_numeric($linkingUser['id']) && is_string($linkingUser['email'])) {
         $this->wpUserSubscriberLink->markUnconfirmed((int)$linkingUser['id'], $linkingUser['email']);
@@ -639,17 +661,18 @@ class WP {
         SELECT wu.id, wu.user_email, :subscriberStatus, CURRENT_TIMESTAMP(), :source, {$deletedAt}
         FROM {$wpdb->users} wu
         LEFT JOIN {$this->subscribersTable} s ON wu.id = s.wp_user_id
-        LEFT JOIN {$this->subscribersTable} existingSubscriber ON wu.user_email = existingSubscriber.email {$emailCollation}
+        LEFT JOIN {$this->subscribersTable} existingSubscriber ON wu.user_email = existingSubscriber.email {$subscriberEmailCollation}
+        {$linkedUserJoins}
         WHERE s.wp_user_id IS NULL AND wu.user_email != ''
         ON DUPLICATE KEY UPDATE
-          wp_user_id = wu.id,
+          wp_user_id = IF({$canLink}, wu.id, existingSubscriber.wp_user_id),
           deleted_at = IF(
-            existingSubscriber.`source` = :deletedSource AND existingSubscriber.deleted_at IS NOT NULL,
+            {$canLink} AND existingSubscriber.`source` = :deletedSource AND existingSubscriber.deleted_at IS NOT NULL,
             NULL,
             existingSubscriber.deleted_at
           ),
           `source` = IF(
-            existingSubscriber.`source` = :deletedSource,
+            {$canLink} AND existingSubscriber.`source` = :deletedSource,
             :source,
             existingSubscriber.`source`
           )";
@@ -657,6 +680,7 @@ class WP {
     $stmt->bindValue('subscriberStatus', $subscriberStatus);
     $stmt->bindValue('source', Source::WORDPRESS_USER);
     $stmt->bindValue('deletedSource', Source::WORDPRESS_USER_DELETED);
+    $stmt->bindValue('unconfirmedLinkMetaKey', $this->wpUserSubscriberLink->getUnconfirmedMetaKey());
     $stmt->executeStatement();
 
     // Users who got a subscriber of their own have nothing left to confirm, as in the per-user sync.
