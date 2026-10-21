@@ -266,6 +266,15 @@ namespace {
       public function set_modifiable_text($plaintext_content ) {}
 
       public function set_bookmark($name) {}
+
+      /** @return bool */
+      public function is_tag_closer() {}
+
+      /** @return string[]|null */
+      public function get_attribute_names_with_prefix($prefix) {}
+
+      /** @return bool */
+      public function paused_at_incomplete_token() {}
     }
   }
 
