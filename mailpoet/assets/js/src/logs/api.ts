@@ -30,6 +30,8 @@ export type LogListingItem = {
   name: string;
   level: number | null;
   message: string;
+  raw_message: string | null;
+  context: Record<string, unknown>;
   created_at: string | null;
 };
 

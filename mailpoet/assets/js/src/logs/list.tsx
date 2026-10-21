@@ -175,7 +175,10 @@ export function List({
     });
   }, []);
 
-  const fields = useMemo(() => getLogFields(expandedLogIds), [expandedLogIds]);
+  const fields = useMemo(
+    () => getLogFields(expandedLogIds, view.search),
+    [expandedLogIds, view.search],
+  );
   const actions = useMemo(
     () => getLogActions(expandedLogIds, toggleExpanded),
     [expandedLogIds, toggleExpanded],

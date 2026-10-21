@@ -13,6 +13,35 @@
   white-space: normal;
 }
 
+.mailpoet-logs-details {
+  font-size: 12px;
+  margin-top: $grid-gap-half;
+
+  dl {
+    display: grid;
+    gap: 4px $grid-gap-half;
+    grid-template-columns: max-content minmax(0, 1fr);
+    margin: 0 0 $grid-gap-half;
+  }
+
+  dt {
+    color: $color-text-light;
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  pre {
+    margin: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+}
+
 .mailpoet-logs-topic {
   overflow-wrap: anywhere;
 }
@@ -46,6 +75,11 @@
   .dataviews-view-table
     col[class^='dataviews-view-table__col-'].dataviews-view-table__col-message {
     width: auto !important;
+  }
+
+  .dataviews-view-table
+    col[class^='dataviews-view-table__col-'].dataviews-view-table__col-full_message {
+    width: 360px !important;
   }
 
   .dataviews-view-table

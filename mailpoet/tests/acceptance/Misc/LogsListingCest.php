@@ -29,6 +29,7 @@ class LogsListingCest {
     (new LogFactory())
       ->withName("queue-{$suffix}")
       ->withMessage("debug-message-{$suffix}")
+      ->withRawMessage("plain-message-{$suffix}")
       ->withLevel(100)
       ->withCreatedAt($today)
       ->create();
@@ -38,7 +39,8 @@ class LogsListingCest {
     $i->searchFor($suffix);
     $i->waitForText("error-message-{$suffix}");
     $i->waitForText("warning-message-{$suffix}");
-    $i->waitForText("debug-message-{$suffix}");
+    $i->waitForText("plain-message-{$suffix}");
+    $i->dontSee("debug-message-{$suffix}");
 
     $i->wantTo('Toggle a message open and closed with the native row action');
     // The primary action button sits behind the cell wrapper for Selenium's
@@ -54,6 +56,7 @@ class LogsListingCest {
       "return document.querySelector('.mailpoet-logs-message-full') !== null;",
       10
     );
+    $i->waitForText("debug-message-{$suffix}", 10, '.mailpoet-logs-details');
     $clickRowAction('Show less');
     $i->waitForJS(
       "return document.querySelector('.mailpoet-logs-message-full') === null;",
