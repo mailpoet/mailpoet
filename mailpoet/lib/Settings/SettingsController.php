@@ -4,6 +4,7 @@ namespace MailPoet\Settings;
 
 use MailPoet\Cron\CronTrigger;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Mailer\SuperSendingController;
 use MailPoet\Subscribers\TrackingConsentController;
 
 class SettingsController {
@@ -73,6 +74,10 @@ class SettingsController {
         ],
         CronTrigger::SETTING_NAME => [
           'method' => CronTrigger::DEFAULT_METHOD,
+        ],
+        SuperSendingController::SETTING_NAME => [
+          'enabled' => false,
+          'source' => SuperSendingController::SOURCE_DEFAULT,
         ],
         'signup_confirmation' => [
           'enabled' => true,
