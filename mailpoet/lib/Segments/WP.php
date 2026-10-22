@@ -170,8 +170,8 @@ class WP {
   }
 
   private function unlinkSubscriberFromWpUser(SubscriberEntity $subscriber, \WP_User $wpUser, bool $isLinkUnconfirmed = false): void {
-    // The account never confirmed the subscriber's address, so the subscriber
-    // goes back to how it was before the link.
+    // The account never confirmed the subscriber's address, so only the link
+    // and the lists it added are undone. The subscriber's status stays.
     if ($isLinkUnconfirmed) {
       $this->releaseSubscriber($subscriber);
       return;
@@ -244,7 +244,9 @@ class WP {
   /**
    * Unlinks the subscriber and takes it off the WP Users list. It also leaves
    * the WooCommerce Customers list unless its email has orders. Its status,
-   * other lists and custom fields stay.
+   * other lists and custom fields stay. A subscriber with a WP user or
+   * WooCommerce source gets the deleted WP user source and, without lists
+   * left, goes to the trash, as on a regular unlink.
    */
   private function releaseSubscriber(SubscriberEntity $subscriber): void {
     $hasOrders = $this->hasWooCommerceOrders((string)$subscriber->getEmail());
@@ -262,6 +264,13 @@ class WP {
       $subscriber->setWpUserId(null);
       if (!$hasOrders) {
         $subscriber->setIsWoocommerceUser(false);
+      }
+      // The link set these sources, e.g. on a subscriber of an earlier deleted WP user taken out of the trash
+      if (in_array($subscriber->getSource(), [Source::WORDPRESS_USER, Source::WOOCOMMERCE_USER], true)) {
+        $subscriber->setSource(Source::WORDPRESS_USER_DELETED);
+        if (!$this->hasOtherActiveSegments($subscriber) && $subscriber->getDeletedAt() === null) {
+          $subscriber->setDeletedAt(Carbon::now()->millisecond(0));
+        }
       }
       $this->subscribersRepository->persist($subscriber);
       $this->subscribersRepository->flush();
