@@ -93,6 +93,9 @@ export type Settings = {
     };
   };
   logging: 'everything' | 'errors' | 'nothing';
+  mss_super_sending: {
+    enabled: '' | '1';
+  };
   mta_group: 'mailpoet' | 'website' | 'smtp';
   mta: {
     method: 'MailPoet' | 'AmazonSES' | 'SendGrid' | 'PHPMail' | 'SMTP';
