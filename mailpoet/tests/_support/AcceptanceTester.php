@@ -666,6 +666,9 @@ class AcceptanceTester extends \Codeception\Actor {
   public function activateWooCommerceSubscriptions() {
     $i = $this;
     $i->cli(['plugin', 'activate', self::WOO_COMMERCE_SUBSCRIPTIONS_PLUGIN]);
+    // Newer versions hide the subscription product types until they are enabled
+    $i->cli(['option', 'update', 'woocommerce_subscriptions_enable_simple_subscription', 'yes']);
+    $i->cli(['option', 'update', 'woocommerce_subscriptions_enable_variable_subscription', 'yes']);
   }
 
   public function deactivateWooCommerceSubscriptions() {

@@ -15,13 +15,6 @@ class WooCommerceSubscriptionsSegmentCest {
     if (!$i->canTestWithPlugin(\AcceptanceTester::WOO_COMMERCE_SUBSCRIPTIONS_PLUGIN)) {
       $scenario->skip('Can‘t test without woocommerce-subscriptions');
     }
-    /**
-     * Skip the test on WordPress 6.8+ because WooCommerce Subscriptions 8.3.0 has React compatibility issues.
-     * We can remove this check when we start testing with a newer version of WooCommerce Subscriptions.
-     */
-    if (version_compare($i->getWordPressVersion(), '6.8', '>=')) {
-      $scenario->skip('Skipping woocommerce-subscriptions tests on WordPress 6.8+');
-    }
     (new Settings())->withWooCommerceListImportPageDisplayed(true);
     (new Settings())->withCookieRevenueTrackingDisabled();
     $i->activateWooCommerce();
@@ -101,7 +94,7 @@ class WooCommerceSubscriptionsSegmentCest {
 
     $i->wantTo('Check that segment contains correct subscribers');
     $i->waitForText($segmentTitle);
-    $i->click('View subscribers');
+    $i->clickWooTableActionByItemName($segmentTitle, 'View subscribers');
     $i->waitForText('subscriber1@example.com');
     $i->waitForText('subscriber2@example.com');
 
