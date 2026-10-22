@@ -14,13 +14,6 @@ class WooCommerceMembershipsSegmentCest {
     if (!$i->canTestWithPlugin(\AcceptanceTester::WOO_COMMERCE_MEMBERSHIPS_PLUGIN)) {
       $scenario->skip('Can‘t test without woocommerce-memberships');
     }
-    /**
-     * Skip the test on WordPress 6.8+ because WooCommerce Memberships (Version 1.26.11) is not compatible with WordPress 6.8+.
-     * We can remove this check when we start testing with a newer version of WooCommerce Memberships.
-     */
-    if (version_compare($i->getWordPressVersion(), '6.8', '>=')) {
-      $scenario->skip('Skipping woocommerce-memberships tests on WordPress 6.8+');
-    }
     (new Settings())->withWooCommerceListImportPageDisplayed(true);
     (new Settings())->withCookieRevenueTrackingDisabled();
     $i->activateWooCommerce();

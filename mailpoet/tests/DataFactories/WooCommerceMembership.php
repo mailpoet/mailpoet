@@ -15,19 +15,29 @@ class WooCommerceMembership {
   public function createPlan($name) {
     $createCommand = ['wc', 'memberships', 'plan', 'create'];
     $createCommand[] = "--name='{$name}'";
-    $createOutput = $this->tester->cliToString($createCommand);
-    preg_match('!\d+!', $createOutput, $matches);
-    $planOut = $this->tester->cliToString(['wc', 'membership_plan', 'get', reset($matches), '--format=json', '--user=admin']);
-    return json_decode($planOut, true);
+    $planId = $this->createdId($this->tester->cliToString($createCommand));
+    $planOut = $this->tester->cliToString(['wc', 'membership_plan', 'get', $planId, '--format=json', '--user=admin']);
+    return json_decode($this->lastLine($planOut), true);
   }
 
   public function createMember(int $userId, int $planId) {
     $createCommand = ['wc', 'user_membership', 'create', '--user=admin'];
     $createCommand[] = "--customer_id='{$userId}'";
     $createCommand[] = "--plan_id='{$planId}'";
-    $createOutput = $this->tester->cliToString($createCommand);
-    preg_match('!\d+!', $createOutput, $matches);
-    $membershipOut = $this->tester->cliToString(['wc', 'user_membership', 'get', reset($matches), '--format=json', '--user=admin']);
-    return json_decode($membershipOut, true);
+    $membershipId = $this->createdId($this->tester->cliToString($createCommand));
+    $membershipOut = $this->tester->cliToString(['wc', 'user_membership', 'get', $membershipId, '--format=json', '--user=admin']);
+    return json_decode($this->lastLine($membershipOut), true);
+  }
+
+  // The create commands have no --porcelain. The ID is the number in the last line, "Success: Created ... 21."
+  private function createdId(string $output): string {
+    preg_match('/(\d+)\.?$/', $this->lastLine($output), $matches);
+    return $matches[1] ?? '';
+  }
+
+  // PHP deprecation notices from the plugin can precede the WP-CLI result.
+  private function lastLine(string $output): string {
+    $lines = explode("\n", trim($output));
+    return trim((string)end($lines));
   }
 }

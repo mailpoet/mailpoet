@@ -27,8 +27,6 @@ class CheckSkippedTestsExtension extends Extension {
       'createAndSendStandardNewsletter',
       'displayNewsletterPreview',
       'selectEditSwapAndResetEmailTemplate',
-      // WooCommerce Memberships tests are not compatible with WordPress 6.8+
-      'createSegmentForMembershipPlan',
       // WooCommerce before 11.1 always registers its blocks
       'testItGeneratesCouponWhenWooCommerceSkippedBlockRegistration',
     ];
