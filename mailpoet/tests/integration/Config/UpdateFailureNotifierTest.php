@@ -72,7 +72,9 @@ class UpdateFailureNotifierTest extends \MailPoetTest {
     $notifier = new UpdateFailureNotifier($this->makeEmpty(Migrator::class, ['getFailedMigrations' => []]), $wp);
     verify($notifier->render(new \Exception('boom')))
       ->stringContainsString('<code>wp mailpoet migrations run --url=https://shop.example.com</code>');
-    verify($this->notifier->render(new \Exception('boom')))
+    $wp = $this->make(WPFunctions::class, ['isMultisite' => false]);
+    $notifier = new UpdateFailureNotifier($this->makeEmpty(Migrator::class, ['getFailedMigrations' => []]), $wp);
+    verify($notifier->render(new \Exception('boom')))
       ->stringContainsString('<code>wp mailpoet migrations run</code>');
   }
 
