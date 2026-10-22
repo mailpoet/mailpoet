@@ -7,6 +7,8 @@ class GhDownloader {
   const RETRIES_COUNT = 3;
   const SECONDS_SLEEP_BEFORE_RETRY = 10;
   const API_BASE_URI = 'https://api.github.com/repos';
+  const COMMITS_PER_PAGE = 100;
+  const MAX_COMMIT_PAGES = 10;
 
   /** @var bool */
   private $hasGh;
@@ -64,6 +66,40 @@ class GhDownloader {
     } else {
       $this->curlDownload($url, $destPath, 'application/vnd.github.v3.raw');
     }
+  }
+
+  /**
+   * Finds the commit touching $filePath whose message's first line is "<slug>:<id> $version",
+   * e.g. "woocommerce-memberships:958589 1.30.1". Used for plugins that have no tags or releases.
+   */
+  public function findCommitShaByVersion(string $repo, string $filePath, string $version): string {
+    for ($page = 1; $page <= self::MAX_COMMIT_PAGES; $page++) {
+      $commits = $this->fetchCommits($repo, $filePath, $page);
+      foreach ($commits as $commit) {
+        $firstLine = strtok($commit['commit']['message'] ?? '', "\n");
+        if ($firstLine !== false && preg_match('/^\S+:\d+ ' . preg_quote($version, '/') . '$/', $firstLine)) {
+          return $commit['sha'];
+        }
+      }
+      if (count($commits) < self::COMMITS_PER_PAGE) {
+        break;
+      }
+    }
+    throw new \Exception("No commit for version $version found for $filePath in $repo");
+  }
+
+  private function fetchCommits(string $repo, string $filePath, int $page): array {
+    $query = sprintf('path=%s&per_page=%d&page=%d', rawurlencode($filePath), self::COMMITS_PER_PAGE, $page);
+    if ($this->hasGh) {
+      $output = $this->exec(sprintf('gh api %s', escapeshellarg("repos/$repo/commits?$query")));
+      $commits = json_decode($output, true);
+    } else {
+      $commits = $this->curlGetJson(self::API_BASE_URI . "/$repo/commits?$query");
+    }
+    if (!is_array($commits)) {
+      throw new \Exception("Failed to fetch commits for $filePath in $repo (page $page)");
+    }
+    return $commits;
   }
 
   private function downloadReleaseAssetWithGh(string $repo, string $assetPattern, string $destPath, ?string $tag): void {

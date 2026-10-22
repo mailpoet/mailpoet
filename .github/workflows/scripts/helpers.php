@@ -86,6 +86,36 @@ function fetchGitHubTags(string $repo, int $page = 1, int $limit = 50): array {
   });
 }
 
+/**
+ * Function to fetch versions of a plugin that has no tags from the commits of a file in a GitHub repository.
+ * The first line of a release commit message is "<slug>:<id> <version>", e.g. "woocommerce-memberships:958589 1.30.1".
+ * Older commits that list several plugins are ignored.
+ */
+function fetchGitHubCommitVersions(string $repo, string $filePath, int $page = 1, int $limit = 100): array {
+  $url = sprintf('repos/%s/commits?path=%s&per_page=%d&page=%d', $repo, rawurlencode($filePath), $limit, $page);
+  $command = sprintf(
+    'gh api %s --jq %s 2>&1',
+    escapeshellarg($url),
+    escapeshellarg('.[].commit.message | split("\n")[0]')
+  );
+  $output = [];
+  $exitCode = 0;
+  exec($command, $output, $exitCode);
+
+  if ($exitCode !== 0) {
+    fwrite(STDERR, "Failed to fetch commits for '$filePath' in '$repo' (page $page): " . implode("\n", $output) . "\n");
+    exit(1);
+  }
+
+  $versions = [];
+  foreach ($output as $line) {
+    if (preg_match('/^\S+:\d+ (\d+\.\d+\.\d+)$/', $line, $matches)) {
+      $versions[] = $matches[1];
+    }
+  }
+  return $versions;
+}
+
 function replaceLatestVersion(string $latestVersion, string $downloadCommand): void {
   replaceVersionInFile(
     __DIR__ . '/../../../.circleci/config.yml',
@@ -106,19 +136,24 @@ function replacePreviousVersion(string $previousVersion, string $configParameter
  * Function replacing the latest and previous versions of a private plugin in the config file.
  * The function fetches the tags from the GitHub repository, filters stable versions,
  * gets the latest and previous minor/major versions, and replaces the versions in the CircleCI config file.
+ * Versions come from the repository tags unless $fetchVersions (page number => list of versions) is given.
  */
 function replacePrivatePluginVersion(
   string $repository,
   string $downloadCommand,
   string $configParameterName,
-  string $versionsFilename
+  string $versionsFilename,
+  ?callable $fetchVersions = null
 ): void {
+  $fetchVersions = $fetchVersions ?: function (int $page) use ($repository): array {
+    return fetchGitHubTags($repository, $page);
+  };
   $page = 1;
   $latestVersion = null;
   $previousVersion = null;
   $allVersions = [];
   while (($latestVersion === null || $previousVersion === null) && $page < 10) {
-    $allVersions = array_merge($allVersions, fetchGitHubTags($repository, $page));
+    $allVersions = array_merge($allVersions, $fetchVersions($page));
     $stableVersions = filterStableVersions($allVersions);
     [$latestVersion, $previousVersion] = getLatestAndPreviousMinorMajorVersions($stableVersions);
     $page++;
