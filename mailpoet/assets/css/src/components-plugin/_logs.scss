@@ -135,6 +135,10 @@
     margin-bottom: $grid-gap;
   }
 
+  > .components-notice {
+    margin: 0 0 $grid-gap;
+  }
+
   .mailpoet-logs-error {
     align-items: center;
     display: flex;
