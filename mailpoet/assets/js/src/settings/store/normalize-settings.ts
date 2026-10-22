@@ -172,6 +172,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
       }),
     }),
     logging: asEnum(['everything', 'errors', 'nothing'], 'errors'),
+    mss_super_sending: asObject({ enabled: disabledRadio }),
     mta_group: asEnum(['mailpoet', 'website', 'smtp'], 'website'),
     mta: asObject({
       method: asEnum(

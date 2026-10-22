@@ -16,6 +16,7 @@ use MailPoet\Form\FormMessageController;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\SendingEnvironment;
+use MailPoet\Mailer\SuperSendingController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
@@ -89,6 +90,9 @@ class Settings extends APIEndpoint {
   /** @var SendingEnvironment */
   private $sendingEnvironment;
 
+  /** @var SuperSendingController */
+  private $superSendingController;
+
   public function __construct(
     SettingsController $settings,
     Bridge $bridge,
@@ -106,9 +110,11 @@ class Settings extends APIEndpoint {
     SubscribersCountsController $subscribersCountsController,
     TrackingConfig $trackingConfig,
     ConfirmationEmailCustomizer $confirmationEmailCustomizer,
-    SendingEnvironment $sendingEnvironment
+    SendingEnvironment $sendingEnvironment,
+    SuperSendingController $superSendingController
   ) {
     $this->sendingEnvironment = $sendingEnvironment;
+    $this->superSendingController = $superSendingController;
     $this->settings = $settings;
     $this->bridge = $bridge;
     $this->authorizedEmailsController = $authorizedEmailsController;
@@ -154,6 +160,10 @@ class Settings extends APIEndpoint {
 
       if (array_key_exists(SendingEnvironment::SETTING_ALLOW_SENDING, $settings)) {
         $this->sendingEnvironment->syncSiteUrlWithSetting();
+      }
+
+      if (array_key_exists(SuperSendingController::SETTING_NAME, $settings)) {
+        $this->superSendingController->onSettingSaved($oldSettings[SuperSendingController::SETTING_NAME]);
       }
 
       $this->onSettingsChange($oldSettings, $this->settings->getAll());

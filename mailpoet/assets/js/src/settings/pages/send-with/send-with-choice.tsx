@@ -4,6 +4,7 @@ import ReactStringReplace from 'react-string-replace';
 import { useSelector, useAction, useSetting } from 'settings/store/hooks';
 import { MssStatus, PremiumStatus } from 'settings/store/types';
 import { t } from 'common/functions';
+import { Checkbox } from 'common/form/checkbox/checkbox';
 
 interface SendWithChoiceWindow extends Window {
   mailpoet_free_plan_url: string;
@@ -15,6 +16,10 @@ export function SendWithChoice() {
   const navigate = useNavigate();
   const isMssActive = useSelector('isMssActive');
   const [key] = useSetting('mta', 'mailpoet_api_key');
+  const [superSending, setSuperSending] = useSetting(
+    'mss_super_sending',
+    'enabled',
+  );
   const { mssStatus, premiumStatus } = useSelector('getKeyActivationState');
   const isMssKeyValid = mssStatus !== null && mssStatus !== MssStatus.INVALID;
   const isPremiumKeyValid =
@@ -38,6 +43,11 @@ export function SendWithChoice() {
     if (!isMssActive && isMssKeyValid) {
       await activateMss();
     }
+  };
+
+  const superSendingChanged = async (isChecked: boolean) => {
+    await setSuperSending(isChecked ? '1' : '');
+    return saveSettings();
   };
 
   const otherChosen = (e) => {
@@ -102,6 +112,19 @@ export function SendWithChoice() {
             </div>
           )}
         </label>
+        {isMssActive && (
+          <div className="mailpoet-sending-method-option">
+            <Checkbox
+              id="mss-super-sending"
+              checked={superSending === '1'}
+              onCheck={superSendingChanged}
+            />
+            <label htmlFor="mss-super-sending">
+              <strong>{t('mssSuperSendingLabel')}</strong>
+            </label>
+            <p>{t('mssSuperSendingDescription')}</p>
+          </div>
+        )}
       </li>
       <li>
         <label className="mailpoet-sending-method mailpoet-form-checkbox">
