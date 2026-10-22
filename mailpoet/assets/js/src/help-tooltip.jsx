@@ -1,30 +1,15 @@
 import PropTypes from 'prop-types';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
-import ReactHtmlParser from 'react-html-parser';
+import { HelpTooltipContent } from './common/tooltip-html';
 
 function Tooltip(props) {
   let tooltipId = props.tooltipId;
-  let tooltip = props.tooltip;
   // tooltip ID must be unique, defaults to tooltip text
   if (!props.tooltipId && typeof props.tooltip === 'string') {
     tooltipId = props.tooltip;
   }
   if (!tooltipId) {
     tooltipId = (Math.random() + 1).toString(36).substring(7);
-  }
-
-  if (typeof props.tooltip === 'string') {
-    tooltip = (
-      <span
-        style={{
-          pointerEvents: 'all',
-          maxWidth: '400px',
-          display: 'inline-block',
-        }}
-      >
-        {ReactHtmlParser(props.tooltip)}
-      </span>
-    );
   }
 
   return (
@@ -44,7 +29,7 @@ function Tooltip(props) {
         id={tooltipId}
         place={props.place}
       >
-        {tooltip}
+        <HelpTooltipContent tooltip={props.tooltip} />
       </ReactTooltip>
     </span>
   );
