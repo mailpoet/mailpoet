@@ -175,8 +175,9 @@ class SubscribersListingCest {
 
     $i->wantTo('Apply a "Greater than" score filter from a link');
     $i->amOnPage('/wp-admin/admin.php?page=mailpoet-subscribers#/group[all]/filter[score_gt=50]/search[score-]');
+    // Only the hash changes, so the unfiltered rows stay until the filtered response arrives.
+    $i->waitForElementNotVisible(['xpath' => '//tbody//tr[contains(., "score-low@example.com")]']);
     $i->waitForText('score-high@example.com');
-    $i->dontSee('score-low@example.com');
     $i->waitForDataViewsFilterChip('Score');
 
     $i->wantTo('Not offer the Score filter or column when tracking is basic');
