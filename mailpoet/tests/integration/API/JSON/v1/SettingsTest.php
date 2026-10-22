@@ -19,6 +19,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\SendingEnvironment;
+use MailPoet\Mailer\SuperSendingController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
@@ -76,7 +77,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(ConfirmationEmailCustomizer::class),
-      $this->diContainer->get(SendingEnvironment::class)
+      $this->diContainer->get(SendingEnvironment::class),
+      $this->diContainer->get(SuperSendingController::class)
     );
   }
 
@@ -119,6 +121,37 @@ class SettingsTest extends \MailPoetTest {
     verify($this->settings->get(SendingEnvironment::SETTING_ALLOW_SENDING_SITE_URL))->same('old.example.com');
   }
 
+  public function testTurningSuperSendingOnRecordsAManualChange() {
+    $this->endpoint->set([SuperSendingController::SETTING_NAME => ['enabled' => '1']]);
+
+    verify($this->settings->get(SuperSendingController::SETTING_NAME))->same([
+      'enabled' => '1',
+      'source' => SuperSendingController::SOURCE_MANUAL,
+    ]);
+  }
+
+  public function testTurningSuperSendingOffRecordsAManualChange() {
+    $this->settings->set(SuperSendingController::SETTING_NAME, ['enabled' => '1', 'source' => 'new_install']);
+
+    $this->endpoint->set([SuperSendingController::SETTING_NAME => ['enabled' => '']]);
+
+    verify($this->settings->get(SuperSendingController::SETTING_NAME))->same([
+      'enabled' => '',
+      'source' => SuperSendingController::SOURCE_MANUAL,
+    ]);
+  }
+
+  public function testSavingUnchangedSuperSendingKeepsItsSource() {
+    $this->settings->set(SuperSendingController::SETTING_NAME, ['enabled' => '1', 'source' => 'new_install']);
+
+    $this->endpoint->set([SuperSendingController::SETTING_NAME => ['enabled' => '1']]);
+
+    verify($this->settings->get(SuperSendingController::SETTING_NAME))->same([
+      'enabled' => '1',
+      'source' => 'new_install',
+    ]);
+  }
+
   public function testItCanSetSettings() {
     $newSettings = [
       'some' => [
@@ -146,7 +179,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(ConfirmationEmailCustomizer::class),
-      $this->diContainer->get(SendingEnvironment::class)
+      $this->diContainer->get(SendingEnvironment::class),
+      $this->diContainer->get(SuperSendingController::class)
     );
 
     $response = $this->endpoint->set(/* missing data */);
@@ -184,7 +218,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(ConfirmationEmailCustomizer::class),
-      $this->diContainer->get(SendingEnvironment::class)
+      $this->diContainer->get(SendingEnvironment::class),
+      $this->diContainer->get(SuperSendingController::class)
     );
 
     MailerLog::pauseSending(MailerLog::getMailerLog());
@@ -227,7 +262,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(ConfirmationEmailCustomizer::class),
-      $this->diContainer->get(SendingEnvironment::class)
+      $this->diContainer->get(SendingEnvironment::class),
+      $this->diContainer->get(SuperSendingController::class)
     );
 
     $response = $this->endpoint->set([
@@ -278,7 +314,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(ConfirmationEmailCustomizer::class),
-      $this->diContainer->get(SendingEnvironment::class)
+      $this->diContainer->get(SendingEnvironment::class),
+      $this->diContainer->get(SuperSendingController::class)
     );
 
     $response = $this->endpoint->set([
@@ -312,7 +349,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(ConfirmationEmailCustomizer::class),
-      $this->diContainer->get(SendingEnvironment::class)
+      $this->diContainer->get(SendingEnvironment::class),
+      $this->diContainer->get(SuperSendingController::class)
     );
 
     $response = $this->endpoint->set([
@@ -347,7 +385,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(ConfirmationEmailCustomizer::class),
-      $this->diContainer->get(SendingEnvironment::class)
+      $this->diContainer->get(SendingEnvironment::class),
+      $this->diContainer->get(SuperSendingController::class)
     );
 
     $this->settings->set('sender.address', '');
@@ -526,7 +565,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(ConfirmationEmailCustomizer::class),
-      $this->diContainer->get(SendingEnvironment::class)
+      $this->diContainer->get(SendingEnvironment::class),
+      $this->diContainer->get(SuperSendingController::class)
     );
 
     verify($this->endpoint->setKeyAndSetupMss($newKey))->instanceOf(SuccessResponse::class);
@@ -581,7 +621,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(ConfirmationEmailCustomizer::class),
-      $this->diContainer->get(SendingEnvironment::class)
+      $this->diContainer->get(SendingEnvironment::class),
+      $this->diContainer->get(SuperSendingController::class)
     );
   }
 
