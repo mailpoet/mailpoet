@@ -76,7 +76,8 @@ export function KeyActivationButton({
     });
     MailPoet.Modal.loading(true);
     void setState({ inProgress: true });
-    await verifyMssKey(state.key);
+    // Re-verifying a key that already works with MSS keeps the current sending method
+    await verifyMssKey(state.key, true);
     const currentMssStatus =
       select(STORE_NAME).getKeyActivationState().mssStatus;
     if (currentMssStatus === MssStatus.VALID_MSS_ACTIVE) {
