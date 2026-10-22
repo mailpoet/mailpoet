@@ -283,6 +283,82 @@ class WPTest extends \MailPoetTest {
     $this->assertNull($unlinked->getWpUserId());
   }
 
+  public function testItTrashesSubscriberOfDeletedWpUserAgainWhenUnconfirmedLinkIsDeleted(): void {
+    $randomNumber = rand();
+    $deletedAt = Carbon::now()->subDays(10)->millisecond(0);
+    $subscriberId = (int)$this->subscriberFactory
+      ->withEmail('user-sync-test' . $randomNumber . '@example.com')
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withSource(Source::WORDPRESS_USER_DELETED)
+      ->withDeletedAt($deletedAt)
+      ->create()
+      ->getId();
+    $id = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUser($id);
+    verify($this->wpUserSubscriberLink->isUnconfirmed($id))->true();
+    $this->entityManager->clear();
+    $linked = $this->subscribersRepository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $linked);
+    $this->assertNull($linked->getDeletedAt());
+
+    wp_delete_user($id);
+
+    $this->entityManager->clear();
+    $unlinked = $this->subscribersRepository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $unlinked);
+    $this->assertNull($unlinked->getWpUserId());
+    $this->assertNotNull($unlinked->getDeletedAt());
+    $this->assertSame(Source::WORDPRESS_USER_DELETED, $unlinked->getSource());
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $unlinked->getStatus());
+    $this->assertCount(0, $unlinked->getSubscriberSegments());
+  }
+
+  public function testItRestoresSourceOfDeletedWpUserSubscriberWithListsWhenUnconfirmedLinkIsDeleted(): void {
+    $randomNumber = rand();
+    $list = $this->segmentFactory->withName('Earlier list ' . $randomNumber)->create();
+    $subscriberId = (int)$this->subscriberFactory
+      ->withEmail('user-sync-test' . $randomNumber . '@example.com')
+      ->withSource(Source::WORDPRESS_USER_DELETED)
+      ->withSegments([$list])
+      ->create()
+      ->getId();
+    $id = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUser($id);
+    verify($this->wpUserSubscriberLink->isUnconfirmed($id))->true();
+
+    wp_delete_user($id);
+
+    $this->entityManager->clear();
+    $unlinked = $this->subscribersRepository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $unlinked);
+    $this->assertNull($unlinked->getDeletedAt());
+    $this->assertSame(Source::WORDPRESS_USER_DELETED, $unlinked->getSource());
+    $this->assertSame([$list->getId()], array_values(array_map(function (SubscriberSegmentEntity $subscriberSegment) {
+      $segment = $subscriberSegment->getSegment();
+      return $segment ? $segment->getId() : null;
+    }, $unlinked->getSubscriberSegments()->toArray())));
+  }
+
+  public function testItKeepsSubscriberWithoutListsUntouchedWhenUnconfirmedLinkIsDeleted(): void {
+    $randomNumber = rand();
+    $subscriberId = (int)$this->subscriberFactory
+      ->withEmail('user-sync-test' . $randomNumber . '@example.com')
+      ->withSource(Source::FORM)
+      ->create()
+      ->getId();
+    $id = $this->insertUser($randomNumber);
+    $this->wpSegment->synchronizeUser($id);
+    verify($this->wpUserSubscriberLink->isUnconfirmed($id))->true();
+
+    wp_delete_user($id);
+
+    $this->entityManager->clear();
+    $unlinked = $this->subscribersRepository->findOneById($subscriberId);
+    $this->assertInstanceOf(SubscriberEntity::class, $unlinked);
+    $this->assertNull($unlinked->getDeletedAt());
+    $this->assertSame(Source::FORM, $unlinked->getSource());
+  }
+
   public function testSynchronizeUserDoesNotLinkSubscriberOfAnotherWpUser(): void {
     $randomNumber = rand();
     $emailA = 'user-sync-test' . $randomNumber . '@example.com';
