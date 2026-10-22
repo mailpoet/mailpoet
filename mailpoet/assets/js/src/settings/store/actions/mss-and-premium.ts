@@ -13,7 +13,10 @@ import { updateKeyActivationState } from './key-activation';
 import { setSetting, setSettings } from './settings';
 import { getMssStatus } from '../make-default-state';
 
-export function* verifyMssKey(key: string) {
+export function* verifyMssKey(
+  key: string,
+  keepSendingMethodForVerifiedKey = false,
+) {
   const { success, error, res } = yield {
     type: 'CALL_API',
     endpoint: 'services',
@@ -38,7 +41,28 @@ export function* verifyMssKey(key: string) {
     return updateKeyActivationState(fields);
   }
 
-  const data = cloneDeep(select(STORE_NAME).getSettings());
+  const settings = select(STORE_NAME).getSettings();
+  const isVerifiedKey =
+    key === settings.mta.mailpoet_api_key &&
+    ['valid', 'expiring'].includes(settings.mta.mailpoet_api_key_state?.state);
+  if (
+    keepSendingMethodForVerifiedKey &&
+    isVerifiedKey &&
+    settings.mta.method !== 'MailPoet'
+  ) {
+    // The API call already stored the key, so keep the other sending method
+    const updated = set(
+      cloneDeep(settings),
+      'mta.mailpoet_api_key_state',
+      res.data.result,
+    );
+    yield setSettings(updated);
+    yield { type: 'REFRESH_HELD_CAMPAIGNS' };
+    fields.mssStatus = getMssStatus(true, updated);
+    return updateKeyActivationState(fields);
+  }
+
+  const data = cloneDeep(settings);
 
   data.mta_group = 'mailpoet';
   data.mta = {

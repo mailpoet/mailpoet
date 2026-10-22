@@ -105,9 +105,14 @@ class AddSendingKeyCest {
 
     // activate MSS
     $firstAttempt = true;
-    $i->verifyKeyRetryingOnBridgeError(function () use ($i, &$firstAttempt) {
-      // After a transient error the activate link is gone, and Verify turns MSS on as well
-      $i->click($firstAttempt ? 'Activate MailPoet Sending Service' : 'Verify');
+    $i->verifyKeyRetryingOnBridgeError(function () use ($i, $settings, $mailPoetSendingKey, &$firstAttempt) {
+      if (!$firstAttempt) {
+        // After a transient error the activate link is gone, restore the valid key state to get it back
+        $settings->withValidMssKey($mailPoetSendingKey);
+        $i->reloadPage();
+        $i->waitForText('Activate MailPoet Sending Service');
+      }
+      $i->click('Activate MailPoet Sending Service');
       $firstAttempt = false;
     }, 'MailPoet Sending Service is active');
     $i->dontSee('A test email was sent to');
