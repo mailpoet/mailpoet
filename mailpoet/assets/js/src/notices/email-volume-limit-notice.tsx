@@ -1,5 +1,4 @@
 import ReactStringReplace from 'react-string-replace';
-import ReactHtmlParser from 'react-html-parser';
 import { MailPoet } from 'mailpoet';
 import { Notice } from 'notices/notice';
 import { withBoundary } from 'common';
@@ -51,9 +50,10 @@ function EmailVolumeLimitNotice(): JSX.Element {
 
   toContinueUpgradeYourPlanOrWaitUntil = ReactStringReplace(
     toContinueUpgradeYourPlanOrWaitUntil,
-    /<b>\[date]<\/b>\./g,
-    () =>
-      ReactHtmlParser(`<b>${MailPoet.Date.short(firstDayOfTheNextMonth)}</b>.`),
+    /(<b>\[date]<\/b>)/g,
+    (_match, index) => (
+      <b key={`date-${index}`}>{MailPoet.Date.short(firstDayOfTheNextMonth)}</b>
+    ),
   );
 
   return (
