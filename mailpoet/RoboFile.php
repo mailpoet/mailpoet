@@ -1339,17 +1339,17 @@ class RoboFile extends \Robo\Tasks {
     }
   }
 
-  public function downloadWooCommerceMembershipsZip(): void {
+  public function downloadWooCommerceMembershipsZip(string $ref = 'master'): void {
     $downloader = $this->createGhDownloader();
     if (!$downloader) {
       $this->yell("Skipping download of WooCommerce Memberships (not authenticated — run 'gh auth login' or set GH_TOKEN)", 40, 'red');
       exit(0);
     }
-    $this->say('Downloading WooCommerce Memberships plugin');
+    $this->say("Downloading WooCommerce Memberships plugin ($ref)");
     $downloader->downloadRawFile(
       'woocommerce/all-plugins',
       'product-packages/woocommerce-memberships/woocommerce-memberships.zip',
-      'master',
+      $ref,
       __DIR__ . '/tests/plugins/woocommerce-memberships.zip'
     );
   }
