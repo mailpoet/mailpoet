@@ -62,11 +62,12 @@ class EmailTemplatesCest {
 
     $i->wantTo('Restore template content to default');
     $i->click('.editor-all-actions-button');
-    $i->waitForElementVisible('//div[@role="menuitem"]//span[normalize-space(.)="Reset"]');
-    $i->click('//div[@role="menuitem"][.//span[normalize-space(.)="Reset"]]');
-    $i->waitForText('Are you sure you want to reset "Newsletter" to default', 10, '.components-modal__content');
+    // Match both WordPress 7.1 and 7.2, which reworded the menu item, dialog and notice.
+    $i->waitForElementVisible('//div[@role="menuitem"]//span[starts-with(normalize-space(.), "Reset")]');
+    $i->click('//div[@role="menuitem"][.//span[starts-with(normalize-space(.), "Reset")]]');
+    $i->waitForElementVisible('.components-modal__content .components-button.is-primary');
     $i->click('.components-modal__content .components-button.is-primary');
-    $i->waitForText('"Newsletter" reset to default.');
+    $i->waitForText('"Newsletter" reset');
     $this->checkTextIsNotInEmail($i, $textInTemplate);
   }
 
