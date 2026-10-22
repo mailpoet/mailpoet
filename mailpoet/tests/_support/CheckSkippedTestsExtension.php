@@ -16,7 +16,6 @@ class CheckSkippedTestsExtension extends Extension {
 
     // list of tests that are allowed to be skipped on trunk and release branches
     $allowedToSkipList = [
-      'createSubscriptionSegmentForActiveSubscriptions',
       'testAllSubscribersFoundWithOperatorAny',
       'testAllSubscribersFoundWithOperatorNoneOf',
       'testAllSubscribersFoundWithOperatorAllOf',
