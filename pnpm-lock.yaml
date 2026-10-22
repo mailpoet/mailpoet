@@ -301,9 +301,6 @@ importers:
       react-datepicker:
         specifier: ^6.9.0
         version: 6.9.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      react-dates:
-        specifier: ^21.8.0
-        version: 21.8.0(@babel/runtime@7.29.7)(moment@2.31.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-dom:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
