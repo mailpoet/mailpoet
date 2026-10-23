@@ -12,7 +12,7 @@ export function Logging() {
         description={
           <>
             {t('loggingDescription')}{' '}
-            <a href="?page=mailpoet-logs" className="mailpoet-link">
+            <a href="?page=mailpoet-help#/logs" className="mailpoet-link">
               {t('loggingDescriptionLink')}
             </a>
           </>
