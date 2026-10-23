@@ -672,6 +672,52 @@ class WooCommerceTest extends \MailPoetTest {
     verify($subscriber->getDeletedAt())->notNull();
   }
 
+  public function testItRestoresTrashedFormerCustomerWhoOrdersAgain(): void {
+    $guest = $this->insertGuestCustomer();
+    $this->synchronizeAllCustomers();
+    $this->tester->deleteTestWooOrder((int)$guest['order_id']);
+    $this->synchronizeAllCustomers();
+    verify($this->findSubscriberByEmail($guest['email'])->getDeletedAt())->notNull();
+
+    $this->createOrder(['email' => $guest['email']]);
+    $this->synchronizeAllCustomers();
+
+    $subscriber = $this->findSubscriberByEmail($guest['email']);
+    verify($subscriber->getDeletedAt())->null();
+    verify($subscriber->getIsWoocommerceUser())->true();
+    verify($this->isOnWooCommerceSegment($subscriber))->true();
+  }
+
+  public function testItRestoresTrashedFormerCustomerAtCheckout(): void {
+    $guest = $this->insertGuestCustomer();
+    $this->synchronizeAllCustomers();
+    $this->tester->deleteTestWooOrder((int)$guest['order_id']);
+    $this->synchronizeAllCustomers();
+    verify($this->findSubscriberByEmail($guest['email'])->getDeletedAt())->notNull();
+
+    $orderId = $this->createOrder(['email' => $guest['email']]);
+    $this->wooCommerceSegment->synchronizeGuestCustomer($orderId);
+
+    $subscriber = $this->findSubscriberByEmail($guest['email']);
+    verify($subscriber->getDeletedAt())->null();
+    verify($subscriber->getIsWoocommerceUser())->true();
+  }
+
+  public function testItKeepsTrashedFormerCustomerInTrashForUnconfirmedNewAccount(): void {
+    $number = mt_rand();
+    $guest = $this->insertGuestCustomer($number);
+    $this->synchronizeAllCustomers();
+    $this->tester->deleteTestWooOrder((int)$guest['order_id']);
+    $this->synchronizeAllCustomers();
+    verify($this->findSubscriberByEmail($guest['email'])->getDeletedAt())->notNull();
+
+    $user = $this->insertRegisteredCustomer($number);
+    verify($user->user_email)->equals($guest['email']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $this->synchronizeAllCustomers();
+
+    verify($this->findSubscriberByEmail($guest['email'])->getDeletedAt())->notNull();
+  }
+
   public function testItSkipsDeletedWpUserCheckWhenWooCommerceIsInactive(): void {
     $user = $this->insertRegisteredCustomer();
     $this->synchronizeAllCustomers();

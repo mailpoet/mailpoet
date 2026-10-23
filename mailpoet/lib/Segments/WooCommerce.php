@@ -147,6 +147,7 @@ class WooCommerce {
           return false;
         }
 
+        $isReturningFormerCustomer = !$subscriber->getIsWoocommerceUser() && $subscriber->getDeletedAt() !== null;
         $data = [
           'is_woocommerce_user' => 1,
         ];
@@ -163,6 +164,11 @@ class WooCommerce {
           $data['last_name'] = $wpUser->last_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         }
         $subscriber = $this->subscriberSaveController->createOrUpdate($data, $subscriber);
+        if ($isReturningFormerCustomer && !$isLinkUnconfirmed) {
+          // The list sync trashed them when they stopped being a customer; becoming one again restores them.
+          $subscriber->setDeletedAt(null);
+          $this->subscribersRepository->flush();
+        }
         // add subscriber to the WooCommerce Customers segment when relation doesn't exist
         $subscriberSegment = $this->subscriberSegmentRepository->findOneBy(['subscriber' => $subscriber, 'segment' => $wcSegment]);
 
@@ -327,6 +333,20 @@ class WooCommerce {
     // Mark WP users having a customer role as WooCommerce subscribers
     global $wpdb;
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    // A former customer the list sync trashed (flag 0) is restored when they become a customer again,
+    // unless their account hasn't confirmed the subscriber's address yet
+    $this->connection->executeQuery("
+      UPDATE LOW_PRIORITY {$subscribersTable} mps
+        JOIN {$wpdb->users} wu ON mps.wp_user_id = wu.id
+        JOIN {$wpdb->usermeta} wpum ON wu.id = wpum.user_id AND wpum.meta_key = :capabilities
+        LEFT JOIN {$wpdb->usermeta} linkMark ON wu.id = linkMark.user_id AND linkMark.meta_key = :unconfirmedLinkMetaKey
+      SET mps.deleted_at = NULL
+        WHERE wpum.meta_value LIKE '%\"customer\"%' AND mps.is_woocommerce_user = 0 AND mps.deleted_at IS NOT NULL
+          AND linkMark.umeta_id IS NULL
+    ", [
+      'capabilities' => $wpdb->prefix . 'capabilities',
+      'unconfirmedLinkMetaKey' => $this->wpUserSubscriberLink->getUnconfirmedMetaKey(),
+    ]);
     // Users who haven't confirmed the address of their linked subscriber keep its source
     $this->connection->executeQuery("
       UPDATE LOW_PRIORITY {$subscribersTable} mps
@@ -415,6 +435,12 @@ class WooCommerce {
 
     // Save timestamp about changes before insert
     $this->subscriberChangesNotifier->subscribersBatchUpdate();
+    // A former customer the list sync trashed (flag 0) is restored when they become a customer again
+    $this->connection->executeQuery('
+      UPDATE ' . $subscribersTable . ' mps
+      SET mps.deleted_at = NULL
+      WHERE mps.email IN (:emails) AND mps.is_woocommerce_user = 0 AND mps.deleted_at IS NOT NULL
+    ', ['emails' => $emails], ['emails' => ArrayParameterType::STRING]);
     // Update existing subscribers
     $this->connection->executeQuery('
       UPDATE ' . $subscribersTable . ' mps
