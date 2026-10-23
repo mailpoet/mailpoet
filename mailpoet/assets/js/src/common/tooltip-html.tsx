@@ -23,7 +23,7 @@ function convertAttributes(element: Element): Record<string, string> {
   });
   const className = element.getAttribute('class');
   if (className !== null) props.className = className;
-  if (props.target === '_blank') {
+  if (props.target?.toLowerCase() === '_blank') {
     const tokens = (props.rel ?? '')
       .toLowerCase()
       .split(/\s+/)
