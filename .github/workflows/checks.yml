@@ -104,6 +104,8 @@ jobs:
       contents: read
     defaults:
       run:
+        # Job defaults replace the workflow ones, so set the shell again
+        shell: bash
         working-directory: mailpoet
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -136,6 +138,8 @@ jobs:
       contents: read
     defaults:
       run:
+        # Job defaults replace the workflow ones, so set the shell again
+        shell: bash
         working-directory: mailpoet
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
