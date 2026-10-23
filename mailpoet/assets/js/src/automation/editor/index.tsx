@@ -151,7 +151,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const sidebarActiveByDefault = Platform.select({
     web: true,
   });
-  dispatch(interfaceStore).enableComplementaryArea(
+  void dispatch(interfaceStore).enableComplementaryArea(
     storeName,
     sidebarActiveByDefault ? automationSidebarKey : undefined,
   );

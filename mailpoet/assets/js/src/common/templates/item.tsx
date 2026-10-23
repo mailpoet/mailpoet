@@ -9,7 +9,7 @@ type Props = {
   description: string;
   category: string;
   badge?: 'essential' | 'coming-soon' | 'premium';
-  onClick?: EventHandler<MouseEvent<HTMLButtonElement>>;
+  onClick?: EventHandler<MouseEvent<HTMLElement>>;
   disabled?: boolean;
   isBusy?: boolean;
 };

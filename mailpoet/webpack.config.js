@@ -466,6 +466,15 @@ const testConfig = {
     interact: 'interact',
     spectrum: 'spectrum',
   },
+  ignoreWarnings: [
+    // Tests are compiled to CommonJS, so webpack picks the CJS build of
+    // @ariakit/react. Its dynamic require shim is never used in a browser.
+    {
+      module: /@ariakit[\\/]react[\\/]cjs[\\/]/,
+      message: /Critical dependency: require function is used/,
+    },
+    ...baseConfig.ignoreWarnings,
+  ],
 };
 
 // Form preview config

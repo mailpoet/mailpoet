@@ -34,44 +34,6 @@ declare module '@wordpress/editor' {
   }>;
 }
 
-// there are no @types/wordpress__interface yet
-declare module '@wordpress/interface' {
-  import { StoreDescriptor } from '@wordpress/data/build-types/types';
-  import * as interfaceActions from '@wordpress/interface/src/store/actions';
-
-  export const store: { name: 'core/interface' } & StoreDescriptor<{
-    reducer: () => unknown;
-    actions: typeof interfaceActions;
-    selectors: {
-      getActiveComplementaryArea: (
-        state: unknown,
-        scope: string,
-      ) => string | undefined | null;
-    };
-  }>;
-  export const ComplementaryArea: any;
-  export const FullscreenMode: any;
-  export const InterfaceSkeleton: any;
-  export const PinnedItems: any;
-}
-
-// there are no @types/wordpress__keyboard-shortcuts yet
-declare module '@wordpress/keyboard-shortcuts' {
-  import { StoreDescriptor } from '@wordpress/data/build-types/types';
-
-  export const store: { name: 'core/keyboard-shortcuts' } & StoreDescriptor<{
-    reducer: () => unknown;
-    selectors: {
-      getShortcutRepresentation: (state: unknown, scope: string) => unknown;
-    };
-    actions: {
-      registerShortcut: (options: any) => object;
-    };
-  }>;
-  export const ShortcutProvider: any;
-  export const useShortcut: any;
-}
-
 // there are no @types/wordpress__preferences yet
 declare module '@wordpress/preferences' {
   import { StoreDescriptor } from '@wordpress/data/build-types/types';
