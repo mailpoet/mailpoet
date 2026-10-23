@@ -238,7 +238,7 @@ class WooCommerceDummyData {
     $product = new class extends \WC_Product {
       use NonPersistablePreviewData;
     };
-    $product->set_name(__('Dummy Product', 'woocommerce'));
+    $product->set_name(__('Dummy Product', 'woocommerce')); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- WooCommerce's email preview string, with WooCommerce's translation.
     $product->set_price('25');
 
     return $product;
@@ -263,7 +263,7 @@ class WooCommerceDummyData {
     $variation = new class extends \WC_Product_Variation {
       use NonPersistablePreviewData;
     };
-    $variation->set_name(__('Dummy Product Variation', 'woocommerce'));
+    $variation->set_name(__('Dummy Product Variation', 'woocommerce')); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- WooCommerce's email preview string, with WooCommerce's translation.
     $variation->set_price('20');
 
     return $variation;
