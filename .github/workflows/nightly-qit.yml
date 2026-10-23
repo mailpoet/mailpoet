@@ -5,7 +5,9 @@ name: 'Nightly QIT'
 
 on:
   schedule:
-    - cron: '0 2 * * 2,3' # Every Tuesday and Wednesday at 2am UTC
+    # Every Tuesday and Wednesday at 4am UTC. CircleCI’s nightly_qit runs at
+    # 2am, so the two don’t share the QIT account at the same time.
+    - cron: '0 4 * * 2,3'
   workflow_dispatch:
 
 permissions: {}
