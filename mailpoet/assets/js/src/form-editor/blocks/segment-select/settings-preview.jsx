@@ -56,8 +56,14 @@ function Preview({
   };
 
   const onDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
     const from = result.source.index;
     const to = result.destination.index;
+    if (from === to) {
+      return;
+    }
     const newValues = [...segmentsWhileMoved];
     const [movedItem] = newValues.splice(from, 1);
     newValues.splice(to, 0, movedItem);

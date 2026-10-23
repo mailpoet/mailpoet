@@ -80,8 +80,14 @@ function Preview({ values, update, remove, onReorder }) {
   };
 
   const onDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
     const from = result.source.index;
     const to = result.destination.index;
+    if (from === to) {
+      return;
+    }
     const newValues = [...valuesWhileMoved];
     const [movedItem] = newValues.splice(from, 1);
     newValues.splice(to, 0, movedItem);
