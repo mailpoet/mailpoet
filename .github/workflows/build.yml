@@ -1,0 +1,118 @@
+name: 'Build'
+
+# Installs dependencies and compiles the free plugin once, then hands the
+# result to the jobs that need it as the "mailpoet-build" artifact. Mirrors the
+# "build" job in .circleci/config.yml.
+
+on:
+  workflow_call:
+
+permissions: {}
+
+jobs:
+  build:
+    name: 'Build'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: bash
+        working-directory: mailpoet
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: 'Set up PHP'
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.5'
+          extensions: mbstring, xml, mysql, gd, zip, intl
+          coverage: none
+          tools: composer
+
+      - name: 'Set up pnpm'
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - name: 'Set up Node.js'
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: 'Compute checksum for prefixer'
+        run: |
+          # The PHP version and the versions pinned in tools/install.php select the php-scoper version
+          {
+            php -r 'echo PHP_MAJOR_VERSION, ".", PHP_MINOR_VERSION, PHP_EOL;'
+            cat tools/install.php
+            find prefixer -type f -not -path 'prefixer/build/*' -not -path 'prefixer/vendor/*' | sort | xargs cat
+          } | sha512sum | cut -d' ' -f1 > "$RUNNER_TEMP/prefixer-checksum"
+          echo "PREFIXER_CHECKSUM=$(cat "$RUNNER_TEMP/prefixer-checksum")" >> "$GITHUB_ENV"
+
+      - name: 'Cache tools'
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: mailpoet/tools/vendor
+          key: tools-${{ hashFiles('mailpoet/tools/install.php') }}
+
+      - name: 'Cache Composer dependencies'
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: |
+            mailpoet/vendor
+            mailpoet/tasks/phpstan/vendor
+            mailpoet/tasks/code_sniffer/vendor
+            tests_env/vendor
+          key: composer-${{ hashFiles('mailpoet/composer.lock', 'mailpoet/tasks/phpstan/composer.lock', 'mailpoet/tasks/code_sniffer/composer.lock', 'tests_env/composer.lock') }}
+          restore-keys: composer-
+
+      - name: 'Cache prefixed dependencies'
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: |
+            mailpoet/prefixer/build
+            mailpoet/prefixer/vendor
+            mailpoet/vendor-prefixed
+          key: composer-prefixed-${{ env.PREFIXER_CHECKSUM }}
+
+      - name: 'Install and compile'
+        run: |
+          COMPOSER_DEV_MODE=1 php tools/install.php
+          ./tools/vendor/composer.phar validate --no-check-all --no-check-publish
+          ./tools/vendor/composer.phar validate --no-check-all --no-check-publish --working-dir=prefixer
+          touch .env
+          ./do install
+          # Reinstall phpstan dependencies so its post-install-cmd re-runs
+          # prefix-phpstan-doctrine.php against the current prefixed Doctrine
+          # version. Needed when the tasks/phpstan/vendor cache was restored
+          # but the prefixer/vendor content has since changed.
+          ./tools/vendor/composer.phar --working-dir=tasks/phpstan install
+          ./do compile:all --env production --skip-tests
+          ./do doctrine:generate-cache
+          php -d register_argc_argv=1 ../tests_env/vendor/bin/codecept build
+          ./do twig:generate-cache
+
+      - name: 'Check Prettier formatting'
+        run: ./do qa:prettier-check
+
+      # Pack only what git ignores (dependencies and build output). The other
+      # jobs check out the same commit and install node_modules themselves.
+      - name: 'Pack build'
+        working-directory: .
+        run: |
+          git ls-files --others --ignored --exclude-standard --directory \
+            | grep -v 'node_modules/$' > "$RUNNER_TEMP/build-files"
+          tar --zstd -cf "$RUNNER_TEMP/build.tar.zst" -T "$RUNNER_TEMP/build-files"
+          ls -lh "$RUNNER_TEMP/build.tar.zst"
+
+      - name: 'Upload build'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: mailpoet-build
+          path: ${{ runner.temp }}/build.tar.zst
+          retention-days: 1
+          compression-level: 0
