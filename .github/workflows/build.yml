@@ -104,9 +104,9 @@ jobs:
       - name: 'Pack build'
         working-directory: .
         run: |
-          git ls-files --others --ignored --exclude-standard --directory \
-            | grep -v 'node_modules/$' > "$RUNNER_TEMP/build-files"
-          tar --zstd -cf "$RUNNER_TEMP/build.tar.zst" -T "$RUNNER_TEMP/build-files"
+          git ls-files -z --others --ignored --exclude-standard --directory \
+            | grep -zv 'node_modules/$' > "$RUNNER_TEMP/build-files"
+          tar --zstd -cf "$RUNNER_TEMP/build.tar.zst" --null -T "$RUNNER_TEMP/build-files"
           ls -lh "$RUNNER_TEMP/build.tar.zst"
 
       - name: 'Upload build'
