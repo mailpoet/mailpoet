@@ -111,5 +111,4 @@ jobs:
           ignore-codes: |
             WordPress.Security.EscapeOutput.ExceptionNotEscaped
             PluginCheck.CodeAnalysis.Offloading.OffloadedContent
-            WordPress.WP.I18n.TextDomainMismatch
             plugin_updater_detected
