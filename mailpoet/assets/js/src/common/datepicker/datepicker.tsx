@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import ReactDatePicker, { DatePickerProps } from 'react-datepicker';
-import { MailPoet } from 'mailpoet';
 import { withBoundary } from '../error-boundary';
+import { weekStartsOn } from './locale';
 
 type Props = Extract<
   DatePickerProps,
@@ -37,7 +37,8 @@ function Datepicker({
       {iconStart}
       <ReactDatePicker
         useWeekdaysShort
-        calendarStartDay={props.calendarStartDay ?? MailPoet.wpWeekStartsOn}
+        locale="mailpoet"
+        calendarStartDay={props.calendarStartDay ?? weekStartsOn}
         {...props}
       />
       {iconEnd}
