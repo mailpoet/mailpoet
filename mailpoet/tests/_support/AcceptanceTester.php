@@ -958,7 +958,9 @@ class AcceptanceTester extends \Codeception\Actor {
   public function registerCustomerOnMyAccountPage(string $email, $optIn = false) {
     $i = $this;
     $i->amOnPage('my-account');
-    $i->fillField('Email address', $email);
+    // The form can render after the 2 s implicit wait on block themes (CircleCI jobs 450504, 451272).
+    $i->waitForElementVisible('#reg_email');
+    $i->fillField('#reg_email', $email);
     if ($optIn) {
       $i->checkOption('mailpoet[subscribe_on_register]');
     }
