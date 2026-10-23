@@ -155,7 +155,8 @@ jobs:
   notify:
     name: 'Notify Slack on failure'
     needs: [build, release_zip, lint_release_zip_php74, qit]
-    if: ${{ failure() }}
+    # Like CircleCI, alert only for trunk, not for manual runs on other branches.
+    if: ${{ failure() && (github.event_name == 'schedule' || github.ref_name == 'trunk') }}
     uses: ./.github/workflows/notify-slack.yml
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
