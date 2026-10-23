@@ -24,7 +24,7 @@ const sidebarActiveByDefault = Platform.select({
   web: true,
 });
 
-type Props = ComponentProps<typeof ComplementaryArea>;
+type Props = Partial<ComponentProps<typeof ComplementaryArea>>;
 
 function SidebarContent(props: Props): JSX.Element {
   const { keyboardShortcut, sidebarKey } = useSelect(

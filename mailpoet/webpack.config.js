@@ -446,6 +446,20 @@ const testConfig = {
       /mailpoet\.js/,
       './mailpoet-tests.js',
     ),
+    // Tests are compiled to CommonJS, so webpack would pick the CJS build of
+    // @ariakit/react. It loads React through a require shim that webpack
+    // can't resolve, so resolve @ariakit packages to their ESM builds.
+    {
+      apply: (compiler) => {
+        compiler.hooks.normalModuleFactory.tap('AriakitEsm', (factory) => {
+          factory.hooks.beforeResolve.tap('AriakitEsm', (data) => {
+            if (data.request.startsWith('@ariakit/')) {
+              data.dependencyType = 'esm';
+            }
+          });
+        });
+      },
+    },
   ],
   resolve: {
     modules: [
