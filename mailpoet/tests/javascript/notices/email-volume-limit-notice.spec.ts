@@ -1,6 +1,8 @@
 import NodeModule from 'module';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import sinon from 'sinon';
+import { MailPoetDate } from '../../../assets/js/src/date';
 
 type NoticeModule = { EmailVolumeLimitNotice: React.ComponentType };
 type ModuleLoader = (
@@ -19,6 +21,8 @@ const testRequire = (
 const defaultTranslation =
   'To continue please [link]upgrade your plan[/link], or wait until <b>[date]</b>. Thank you.';
 let translation = defaultTranslation;
+const fixedDate = (): string => '1 Nov 2026';
+let shortDate: (date: unknown) => string = fixedDate;
 
 let noticeModule: NoticeModule;
 let originalModuleLoad: ModuleLoader;
@@ -43,7 +47,7 @@ const installModuleMocks = () => {
                 ? translation
                 : key,
           },
-          Date: { short: () => '1 Nov 2026' },
+          Date: { short: (date: unknown) => shortDate(date) },
           MailPoetComUrlFactory: {
             getUpgradeUrl: () => 'https://example.com/upgrade',
           },
@@ -85,8 +89,18 @@ describe('email volume limit notice', () => {
       React.createElement(noticeModule.EmailVolumeLimitNotice),
     );
 
+  const globalWithWindow = global as unknown as { window?: unknown };
+  let originalWindow: unknown;
+
+  beforeEach(() => {
+    originalWindow = globalWithWindow.window;
+    globalWithWindow.window = {};
+  });
+
   afterEach(() => {
     translation = defaultTranslation;
+    shortDate = fixedDate;
+    globalWithWindow.window = originalWindow;
   });
 
   it('keeps the text after the date and the upgrade link', () => {
@@ -108,5 +122,25 @@ describe('email volume limit notice', () => {
   it('replaces every date token', () => {
     translation = '<b>[date]</b> and <b>[date]</b>';
     expect(render()).to.include('<b>1 Nov 2026</b> and <b>1 Nov 2026</b>');
+  });
+
+  describe('with the real date formatting', () => {
+    let clock: sinon.SinonFakeTimers;
+    beforeEach(() => {
+      globalWithWindow.window = {
+        mailpoet_date_offset: '-5',
+        mailpoet_date_format: 'F j, Y',
+      };
+      clock = sinon.useFakeTimers(new Date('2026-10-22T12:00:00Z'));
+      shortDate = (date) => MailPoetDate.short(date as Date);
+    });
+
+    afterEach(() => {
+      clock.restore();
+    });
+
+    it('shows the first day of the next month in the site time zone', () => {
+      expect(render()).to.include('<b>November 1, 2026</b>');
+    });
   });
 });
