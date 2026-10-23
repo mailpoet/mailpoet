@@ -42,7 +42,7 @@ runs:
         cache: 'pnpm'
 
     # The build job already ran the root postinstall (composer install), so skip
-    # scripts here. The only dependency build scripts pnpm allows are core-js's
+    # scripts here. The only dependency build scripts pnpm allows are core-js’s
     # postinstall messages.
     - name: 'Install JS dependencies'
       if: inputs.install-js == 'true'

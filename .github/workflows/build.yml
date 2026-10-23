@@ -1,8 +1,8 @@
 name: 'Build'
 
 # Installs dependencies and compiles the free plugin once, then hands the
-# result to the jobs that need it as the "mailpoet-build" artifact. Mirrors the
-# "build" job in .circleci/config.yml.
+# result to the jobs that need it as the “mailpoet-build” artifact. Mirrors the
+# “build” job in .circleci/config.yml.
 
 on:
   workflow_call:

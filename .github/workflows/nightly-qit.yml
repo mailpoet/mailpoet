@@ -1,7 +1,7 @@
 name: 'Nightly QIT'
 
 # Builds the release zip and runs the QIT checks on it. Moved from the
-# "nightly_qit" workflow in .circleci/config.yml.
+# “nightly_qit” workflow in .circleci/config.yml.
 
 on:
   schedule:
