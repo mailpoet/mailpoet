@@ -87,7 +87,7 @@ jobs:
 
       - name: 'Build zip'
         working-directory: mailpoet
-        run: bash build.sh
+        run: ./build.sh
 
       # The action merges its settings into .wp-env.json in the workspace root.
       # The repo's own file maps the source plugin and dev-only scripts, so remove it.
