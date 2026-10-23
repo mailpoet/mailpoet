@@ -65,6 +65,16 @@ describe('tooltipHtmlToReact', () => {
     );
   });
 
+  it('treats target=_BLANK case-insensitively', () => {
+    const html = render(
+      '<a href="https://example.com" target="_BLANK" rel="opener">x</a>',
+    );
+    expect(html).to.contain('rel="noopener noreferrer"');
+    expect(html.split('"').filter((v) => /\bopener\b/.test(v))).to.deep.equal(
+      [],
+    );
+  });
+
   it('keeps other rel tokens and adds noopener noreferrer', () => {
     const html = render(
       '<a href="https://example.com" target="_blank" rel="nofollow">x</a>',
