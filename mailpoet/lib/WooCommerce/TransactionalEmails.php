@@ -64,19 +64,19 @@ class TransactionalEmails {
     $this->emailHeadings = [
       'new_account' => [
         'option_name' => 'woocommerce_new_order_settings',
-        'default' => __('New Order: #{order_number}', 'woocommerce'),
+        'default' => __('New Order: #{order_number}', 'woocommerce'), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- WooCommerce's default heading, with WooCommerce's translation.
       ],
       'processing_order' => [
         'option_name' => 'woocommerce_customer_processing_order_settings',
-        'default' => __('Thank you for your order', 'woocommerce'),
+        'default' => __('Thank you for your order', 'woocommerce'), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- WooCommerce's default heading, with WooCommerce's translation.
       ],
       'completed_order' => [
         'option_name' => 'woocommerce_customer_completed_order_settings',
-        'default' => __('Thanks for shopping with us', 'woocommerce'),
+        'default' => __('Thanks for shopping with us', 'woocommerce'), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- WooCommerce's default heading, with WooCommerce's translation.
       ],
       'customer_note' => [
         'option_name' => 'woocommerce_customer_note_settings',
-        'default' => __('A note has been added to your order', 'woocommerce'),
+        'default' => __('A note has been added to your order', 'woocommerce'), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- WooCommerce's default heading, with WooCommerce's translation.
       ],
     ];
   }
