@@ -1,4 +1,4 @@
-import { createElement } from 'react';
+import { createElement, isValidElement, ReactElement, ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import sinon from 'sinon';
 import { JSDOM } from 'jsdom';
@@ -106,9 +106,25 @@ describe('tooltipHtmlToReact', () => {
     expect(render(text)).to.equal(text);
   });
 
-  it('sets keys on child elements', () => {
+  it('renders siblings without duplicate keys', () => {
     render('<b>a</b><br><i>b</i>');
     render('<div><b>a</b></div><b>b</b>');
+    [
+      '<b>x</b><div><b>y</b></div>',
+      '<i>a</i><section><i>b</i></section>',
+    ].forEach((html) => {
+      const result = tooltipHtmlToReact(html) as ReactElement<{
+        children: ReactNode;
+      }>;
+      const nodes = ([] as ReactNode[]).concat(
+        Array.isArray(result) ? result : result.props.children,
+      );
+      const keys = nodes
+        .filter(isValidElement)
+        .map((node) => node.key)
+        .filter((key) => key !== null);
+      expect(new Set(keys).size).to.equal(keys.length);
+    });
   });
 
   it('wraps strings in a span and passes other nodes through', () => {

@@ -1,4 +1,4 @@
-import { createElement, ReactNode } from 'react';
+import { createElement, Fragment, ReactNode } from 'react';
 
 const ALLOWED_TAGS = ['b', 'strong', 'i', 'em', 'a', 'br', 'span', 'p', 'code'];
 const DROP_WITH_CONTENT = ['script', 'style', 'template', 'iframe', 'noscript'];
@@ -56,11 +56,10 @@ function convertNodes(nodes: NodeListOf<ChildNode>): ReactNode[] {
       result.push(...children);
       return;
     }
-    const props = { ...attributes, key: result.length };
     result.push(
       tag === 'br'
-        ? createElement(tag, props)
-        : createElement(tag, props, ...children),
+        ? createElement(tag, attributes)
+        : createElement(tag, attributes, ...children),
     );
   });
   return result;
@@ -69,7 +68,7 @@ function convertNodes(nodes: NodeListOf<ChildNode>): ReactNode[] {
 // DOMParser documents are inert: scripts do not run and images do not load.
 export function tooltipHtmlToReact(html: string): ReactNode {
   const doc = new DOMParser().parseFromString(html, 'text/html');
-  return convertNodes(doc.body.childNodes);
+  return createElement(Fragment, null, ...convertNodes(doc.body.childNodes));
 }
 
 export function HelpTooltipContent({ tooltip }: { tooltip: ReactNode }) {
