@@ -120,6 +120,49 @@ class WooCommerceTest extends \MailPoetTest {
     verify($kept->getWpUserId())->null();
     verify($kept->getIsWoocommerceUser())->false();
     verify($kept->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($kept->getSource())->equals(Source::FORM);
+    verify($kept->getDeletedAt())->null();
+  }
+
+  public function testItKeepsSourceOfSubscriberWithUnconfirmedLinkWhenSynchronizingNewCustomer(): void {
+    $user = $this->insertRegisteredCustomer();
+    $this->createSubscriber(
+      'Earlier',
+      'Subscriber',
+      $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      SubscriberEntity::STATUS_SUBSCRIBED,
+      $user->ID,
+      Source::FORM
+    );
+    $this->diContainer->get(WPUserSubscriberLink::class)->markUnconfirmed($user->ID, $user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
+    $this->wooCommerceSegment->synchronizeRegisteredCustomer($user->ID, 'woocommerce_new_customer');
+
+    $subscriber = $this->findWCSubscriberByWpUserId($user->ID);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getIsWoocommerceUser())->true();
+    verify($subscriber->getSource())->equals(Source::FORM);
+  }
+
+  public function testItKeepsSourceOfSubscriberWithUnconfirmedLinkWhenSynchronizingAllCustomers(): void {
+    $user = $this->insertRegisteredCustomer();
+    $subscriber = $this->createSubscriber(
+      'Earlier',
+      'Subscriber',
+      $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      SubscriberEntity::STATUS_SUBSCRIBED,
+      $user->ID,
+      Source::FORM
+    );
+    $this->diContainer->get(WPUserSubscriberLink::class)->markUnconfirmed($user->ID, $user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
+    $this->synchronizeAllCustomers();
+
+    $this->entityManager->clear();
+    $synchronized = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $synchronized);
+    verify($synchronized->getIsWoocommerceUser())->true();
+    verify($synchronized->getSource())->equals(Source::FORM);
   }
 
   public function testItKeepsWooCommerceListOfGuestCustomerAfterTheUnconfirmedLinkIsDeleted(): void {
@@ -150,6 +193,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $kept);
     verify($kept->getWpUserId())->null();
     verify($kept->getIsWoocommerceUser())->true();
+    verify($kept->getSource())->equals(Source::WOOCOMMERCE_USER);
     $keptSegment = $this->subscriberSegmentsRepository->findOneBy(['subscriber' => $kept, 'segment' => $wcSegment]);
     $this->assertInstanceOf(SubscriberSegmentEntity::class, $keptSegment);
     verify($keptSegment->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
