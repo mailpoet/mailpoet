@@ -1,16 +1,31 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { __ } from '@wordpress/i18n';
 import { Dashicon } from '@wordpress/components';
 import { partial } from 'lodash';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 
-function PreviewItem({ value, remove, onUpdate, onCheck, index }) {
+function PreviewItem({
+  value,
+  remove,
+  onUpdate,
+  onCheck,
+  index,
+  dragHandleProps,
+}) {
   return (
     <div
       className="mailpoet-form-segments-settings-list"
       data-automation-id="custom_field_value_settings"
       key={value.id}
     >
+      <div
+        {...dragHandleProps}
+        aria-label={__('Drag to reorder', 'mailpoet')}
+        className="mailpoet-form-segments-drag-handle"
+      >
+        <Dashicon icon="menu" />
+      </div>
       <input
         type="checkbox"
         defaultChecked={value.isChecked || false}
@@ -45,6 +60,7 @@ PreviewItem.propTypes = {
   onCheck: PropTypes.func.isRequired,
   index: PropTypes.number.isRequired,
   remove: PropTypes.func.isRequired,
+  dragHandleProps: PropTypes.shape({}),
 };
 
 function Preview({ values, update, remove, onReorder }) {
@@ -99,12 +115,9 @@ function Preview({ values, update, remove, onReorder }) {
     valuesWhileMoved.map((value, index) => (
       <Draggable key={value.id} draggableId={value.id} index={index}>
         {(provided) => (
-          <div
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-          >
+          <div ref={provided.innerRef} {...provided.draggableProps}>
             <PreviewItem
+              dragHandleProps={provided.dragHandleProps}
               key={`inner${value.id}`}
               index={index}
               value={value}
