@@ -1,7 +1,7 @@
 name: 'Checks'
 
 # Static analysis, linting, JS tests and PHP unit tests. Moved from the
-# "build_and_test" workflow in .circleci/config.yml. Acceptance and
+# “build_and_test” workflow in .circleci/config.yml. Acceptance and
 # integration tests and the release zip still run on CircleCI.
 
 on:
