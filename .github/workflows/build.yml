@@ -54,13 +54,13 @@ jobs:
           echo "PREFIXER_CHECKSUM=$(cat "$RUNNER_TEMP/prefixer-checksum")" >> "$GITHUB_ENV"
 
       - name: 'Cache tools'
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: mailpoet/tools/vendor
           key: tools-${{ hashFiles('mailpoet/tools/install.php') }}
 
       - name: 'Cache Composer dependencies'
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             mailpoet/vendor
@@ -71,7 +71,7 @@ jobs:
           restore-keys: composer-
 
       - name: 'Cache prefixed dependencies'
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             mailpoet/prefixer/build
