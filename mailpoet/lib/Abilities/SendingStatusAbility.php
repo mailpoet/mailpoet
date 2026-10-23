@@ -150,12 +150,20 @@ class SendingStatusAbility implements Ability {
   }
 
   /**
-   * Mailer errors can quote subscribers. MailPoet formats them as "First Last <address>",
-   * so the first pattern replaces a name with its address: a name starting after the
-   * nearest "(", ",", ":" or whitespace and running up to "<...@...>". The second pattern
-   * replaces any remaining address: a local part, "@" and a domain (dotless domains included).
+   * Mailer errors can quote subscribers. MailPoet formats them as "First Last <address>"
+   * without quoting, so a name can contain ",", ":" or brackets.
+   *
+   * 1. MailerError lists failed subscribers as "(First Last <address>: reason)". The first
+   *    pattern replaces such an item from its "(" up to the ">" after the address. The name
+   *    may contain any character except "<" and ">", and brackets only as balanced pairs,
+   *    so an earlier "(550)" in the message can't start a match.
+   * 2. Outside that list, the second pattern replaces a name that starts after the nearest
+   *    "(", ",", ":" or whitespace and runs up to "<...@...>".
+   * 3. The third pattern replaces any remaining address: a local part, "@" and a domain
+   *    (dotless domains included).
    */
   public static function maskPersonalData(string $message): string {
+    $message = (string)preg_replace('/\((?:[^()<>]|\([^()<>]*\))*<[^<>\s]+@[^<>\s]+>/', '([subscriber]', $message);
     $message = (string)preg_replace('/[^(),:\s][^(),:]*<[^<>\s]+@[^<>\s]+>/', '[subscriber]', $message);
     return (string)preg_replace('/[^\s<>"\'(),;:]+@[^\s<>"\'(),;:]+/', '[email]', $message);
   }
