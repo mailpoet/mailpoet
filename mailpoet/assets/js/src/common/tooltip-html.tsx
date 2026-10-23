@@ -23,8 +23,14 @@ function convertAttributes(element: Element): Record<string, string> {
   });
   const className = element.getAttribute('class');
   if (className !== null) props.className = className;
-  if (props.target === '_blank' && !props.rel) {
-    props.rel = 'noopener noreferrer';
+  if (props.target === '_blank') {
+    const tokens = (props.rel ?? '')
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((token) => token && token !== 'opener');
+    props.rel = Array.from(new Set([...tokens, 'noopener', 'noreferrer'])).join(
+      ' ',
+    );
   }
   return props;
 }

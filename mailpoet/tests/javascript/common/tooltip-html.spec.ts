@@ -55,6 +55,23 @@ describe('tooltipHtmlToReact', () => {
     );
   });
 
+  it('removes the opener token from rel on target=_blank links', () => {
+    const html = render(
+      '<a href="https://example.com" target="_blank" rel="opener">x</a>',
+    );
+    expect(html).to.contain('rel="noopener noreferrer"');
+    expect(html.split('"').filter((v) => /\bopener\b/.test(v))).to.deep.equal(
+      [],
+    );
+  });
+
+  it('keeps other rel tokens and adds noopener noreferrer', () => {
+    const html = render(
+      '<a href="https://example.com" target="_blank" rel="nofollow">x</a>',
+    );
+    expect(html).to.contain('rel="nofollow noopener noreferrer"');
+  });
+
   it('drops scripts, images and event handlers', () => {
     const html = render(
       '<b>x</b><script>marker()</script><img src="x" onerror="marker()">',
