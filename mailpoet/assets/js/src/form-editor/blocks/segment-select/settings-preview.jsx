@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { CheckboxControl, Dashicon } from '@wordpress/components';
 import { partial } from 'lodash';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 function PreviewItem({ segment, removeSegment, onCheck }) {
   return (
