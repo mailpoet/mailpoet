@@ -162,6 +162,12 @@ const baseConfig = {
           fullySpecified: false,
         },
       },
+      // react-datepicker optionally requires date-fns-tz by a computed name,
+      // which webpack cannot resolve statically.
+      {
+        test: /react-datepicker[\\/]dist[\\/]index\.es\.js$/,
+        parser: { commonjs: false },
+      },
       {
         test: /\.(j|t)sx?$/,
         exclude: /(node_modules|src\/vendor)/,

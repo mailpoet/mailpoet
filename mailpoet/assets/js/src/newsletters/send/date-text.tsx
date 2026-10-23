@@ -2,7 +2,7 @@ import { Component, SyntheticEvent } from 'react';
 import Moment from 'moment';
 import { __, _x } from '@wordpress/i18n';
 import { registerLocale } from 'react-datepicker';
-import locale from 'date-fns/locale/en-US';
+import { enUS as locale } from 'date-fns/locale/en-US';
 import { Datepicker } from 'common/datepicker/datepicker';
 import { MailPoet } from 'mailpoet';
 import { momentToDateFnsFormat } from './date-fns-format';
