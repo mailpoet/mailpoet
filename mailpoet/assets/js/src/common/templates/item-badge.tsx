@@ -56,7 +56,7 @@ export function ItemBadge({ type }: Props): JSX.Element {
         className="mailpoet-templates-badge"
         style={{ backgroundColor, borderColor }}
       >
-        <Icon icon={icon} size={18} style={{ fill: foregroundColor }} />
+        <Icon icon={icon} size={18} style={{ color: foregroundColor }} />
       </div>
     </Tooltip>
   );
