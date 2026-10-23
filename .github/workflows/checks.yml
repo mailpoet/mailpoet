@@ -160,40 +160,24 @@ jobs:
 
   security_analysis:
     name: 'Semgrep'
-    needs: build
+    # Pull requests from forks get no secrets, so there is no key to clone the
+    # rules with. Everywhere else a missing key must fail the job.
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
       contents: read
-    defaults:
-      run:
-        working-directory: mailpoet
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      # Pull requests from forks get no secrets, so there is no key to clone
-      # the rules with. Skip instead of failing.
-      - name: 'Check for the rules deploy key'
-        id: key
-        env:
-          SEMGREP_RULES_DEPLOY_KEY: ${{ secrets.SEMGREP_RULES_DEPLOY_KEY }}
-        run: |
-          if [ -z "$SEMGREP_RULES_DEPLOY_KEY" ]; then
-            echo "No access to the wpscan-semgrep-rules deploy key (forked pull request?). Skipping."
-            echo "available=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "available=true" >> "$GITHUB_OUTPUT"
-          fi
       - uses: webfactory/ssh-agent@e83874834305fe9a4a2997156cb26c5de65a8555 # v0.10.0
-        if: steps.key.outputs.available == 'true'
         with:
           ssh-private-key: ${{ secrets.SEMGREP_RULES_DEPLOY_KEY }}
-      - uses: ./.github/actions/restore-build
-        if: steps.key.outputs.available == 'true'
+      # Same as `./do qa:semgrep`, without waiting for the build it doesn’t need.
       - name: 'QA Security'
-        if: steps.key.outputs.available == 'true'
-        run: ./do qa:semgrep
+        working-directory: mailpoet
+        run: ./tools/semgrep.sh lib/ lib-3rd-party/
 
   notify:
     name: 'Notify Slack on failure'
