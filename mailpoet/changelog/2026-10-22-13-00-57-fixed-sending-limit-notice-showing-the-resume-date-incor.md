@@ -2,4 +2,4 @@
 
 # Description
 
-Sending limit notice showing the resume date incorrectly in some translations
+Sending limit notice showing the wrong resume date, or a placeholder instead of the date in some languages
