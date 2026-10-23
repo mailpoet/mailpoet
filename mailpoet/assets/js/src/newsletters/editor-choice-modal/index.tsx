@@ -96,56 +96,58 @@ export function EditorChoiceModal({
           </Dialog.Title>
           <Dialog.CloseIcon disabled={isCreating} />
         </Dialog.Header>
-        <Stack direction="column" gap="xl">
-          <Text variant="body-lg">
-            {__(
-              'Choose the editor you want to use for this email. You can choose again next time.',
-              'mailpoet',
-            )}
-          </Text>
-          <Stack
-            direction="row"
-            gap="lg"
-            wrap="wrap"
-            role="group"
-            aria-label={__('Email editor', 'mailpoet')}
-          >
-            <EditorChoiceOption
-              value="classic"
-              title={__('Classic editor', 'mailpoet')}
-              description={__(
-                'Choose from 80+ ready-made templates and style each email on its own.',
+        <Dialog.Content>
+          <Stack direction="column" gap="xl">
+            <Text variant="body-lg">
+              {__(
+                'Choose the editor you want to use for this email. You can choose again next time.',
                 'mailpoet',
               )}
-              illustration={<ClassicEditorIllustration />}
-              isSelected={choice === 'classic'}
-              onSelect={setChoice}
-            />
-            <EditorChoiceOption
-              value="block"
-              title={
-                <>
-                  {__('Block editor', 'mailpoet')}{' '}
-                  <Badge>{__('Beta', 'mailpoet')}</Badge>
-                </>
-              }
-              description={__(
-                'Build with WordPress blocks and shared styles that keep every email consistent.',
-                'mailpoet',
-              )}
-              illustration={<BlockEditorIllustration />}
-              isSelected={choice === 'block'}
-              onSelect={setChoice}
+            </Text>
+            <Stack
+              direction="row"
+              gap="lg"
+              wrap="wrap"
+              role="group"
+              aria-label={__('Email editor', 'mailpoet')}
+            >
+              <EditorChoiceOption
+                value="classic"
+                title={__('Classic editor', 'mailpoet')}
+                description={__(
+                  'Choose from 80+ ready-made templates and style each email on its own.',
+                  'mailpoet',
+                )}
+                illustration={<ClassicEditorIllustration />}
+                isSelected={choice === 'classic'}
+                onSelect={setChoice}
+              />
+              <EditorChoiceOption
+                value="block"
+                title={
+                  <>
+                    {__('Block editor', 'mailpoet')}{' '}
+                    <Badge>{__('Beta', 'mailpoet')}</Badge>
+                  </>
+                }
+                description={__(
+                  'Build with WordPress blocks and shared styles that keep every email consistent.',
+                  'mailpoet',
+                )}
+                illustration={<BlockEditorIllustration />}
+                isSelected={choice === 'block'}
+                onSelect={setChoice}
+              />
+            </Stack>
+            <CheckboxControl
+              __nextHasNoMarginBottom
+              label={__('Remember my choice', 'mailpoet')}
+              checked={remember}
+              onChange={setRemember}
+              data-automation-id="editor_choice_remember"
             />
           </Stack>
-          <CheckboxControl
-            __nextHasNoMarginBottom
-            label={__('Remember my choice', 'mailpoet')}
-            checked={remember}
-            onChange={setRemember}
-            data-automation-id="editor_choice_remember"
-          />
-        </Stack>
+        </Dialog.Content>
         <Dialog.Footer>
           <Button
             variant="outline"
