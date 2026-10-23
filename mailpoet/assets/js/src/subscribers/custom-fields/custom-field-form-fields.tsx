@@ -10,8 +10,12 @@ import {
   ToggleControl,
   __experimentalSpacer as Spacer,
 } from '@wordpress/components';
-import { DragDropContext, Draggable, type DropResult } from '@hello-pangea/dnd';
-import { StrictModeDroppable as Droppable } from 'form-editor/utils/strict-mode-droppable';
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  type DropResult,
+} from '@hello-pangea/dnd';
 import type {
   CustomField,
   CustomFieldDateSettings,
