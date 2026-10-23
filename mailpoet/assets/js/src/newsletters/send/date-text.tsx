@@ -27,14 +27,16 @@ type DateTextProps = {
 };
 
 class DateText extends Component<DateTextProps> {
-  onChange = (value: Date, event) => {
-    const changeEvent: DateTextEvent = event;
+  onChange = (value: Date | null) => {
+    // Clearing the input gives null; keep the last valid date
+    if (!value) return;
     // Swap display format to storage format
-    const formattedDate = this.getAsStringInFormat(value);
-
-    changeEvent.target.name = this.getFieldName();
-    changeEvent.target.value = formattedDate;
-    this.props.onChange(changeEvent);
+    this.props.onChange({
+      target: {
+        name: this.getFieldName(),
+        value: this.getAsStringInFormat(value),
+      },
+    } as DateTextEvent);
   };
 
   getFieldName = () => this.props.name || 'date';
