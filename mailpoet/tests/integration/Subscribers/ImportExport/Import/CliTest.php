@@ -11,6 +11,7 @@ use MailPoet\Subscribers\ImportExport\Export\Export;
 use MailPoet\Subscribers\ImportExport\ImportExportRepository;
 use MailPoet\Subscribers\SubscriberCustomFieldRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WP\Functions as WPFunctions;
 
 class CliTest extends \MailPoetTest {
   /** @var Cli */
@@ -512,6 +513,7 @@ class CliTest extends \MailPoetTest {
       $this->customFieldsRepository,
       $this->importExportRepository,
       $this->segmentsRepository,
+      $this->diContainer->get(WPFunctions::class),
       [
         'export_format_option' => 'csv',
         'segments' => [(string)$segment->getId()],

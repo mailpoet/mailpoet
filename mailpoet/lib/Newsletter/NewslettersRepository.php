@@ -184,6 +184,23 @@ class NewslettersRepository extends Repository {
       ->getSingleScalarResult() ?: 0;
   }
 
+  /**
+   * @return NewsletterEntity[]
+   */
+  public function findLatestSentStandard(int $limit): array {
+    return $this->doctrineRepository->createQueryBuilder('n')
+      ->andWhere('n.type = :type')
+      ->andWhere('n.status = :status')
+      ->andWhere('n.deletedAt IS NULL')
+      ->orderBy('n.sentAt', 'DESC')
+      ->addOrderBy('n.id', 'DESC')
+      ->setParameter('type', NewsletterEntity::TYPE_STANDARD)
+      ->setParameter('status', NewsletterEntity::STATUS_SENT)
+      ->setMaxResults($limit)
+      ->getQuery()
+      ->getResult();
+  }
+
   public function getGutenbergNewsletterSentCount(): int {
     return intval($this->entityManager->createQueryBuilder()
       ->select('COUNT(n.id)')
@@ -523,7 +540,7 @@ class NewslettersRepository extends Repository {
       return 0;
     }
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS, $attachProcessors = true)->info(
-      'trashing newsletters',
+      'MailPoet is moving emails to the trash (trashing newsletters).',
       ['id' => $ids]
     );
     // Fetch children id for trashing

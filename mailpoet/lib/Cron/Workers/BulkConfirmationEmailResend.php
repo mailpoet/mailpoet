@@ -20,7 +20,7 @@ class BulkConfirmationEmailResend extends SimpleWorker {
   const SUPPORT_MULTIPLE_INSTANCES = false;
   const BATCH_SIZE = 20;
 
-  private const AUDIT_LOG_MESSAGE_COMPLETED = 'Bulk confirmation email resend completed.';
+  private const AUDIT_LOG_MESSAGE_COMPLETED = 'The bulk confirmation email resend finished. The log details have the sent count, the failed count (which includes skipped subscribers) and the skip reasons (Bulk confirmation email resend completed.).';
   private const LOG_LEVEL_INFO = 200;
 
   /** @var ConfirmationEmailMailer */

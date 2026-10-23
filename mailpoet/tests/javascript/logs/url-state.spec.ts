@@ -104,6 +104,32 @@ describe('logs URL state', () => {
     expect(searchParams.has('limit')).to.equal(false);
   });
 
+  it('sets the given page slug and keeps the URL hash', () => {
+    const view = { type: 'table' as const, page: 2, perPage: 20 };
+    const url = buildLogsUrl(
+      'http://example.test/wp-admin/admin.php?page=mailpoet-help#/logs',
+      view,
+      { from: '2026-05-01' },
+      'mailpoet-help',
+    );
+    const searchParams = new URL(url).searchParams;
+
+    expect(searchParams.get('page')).to.equal('mailpoet-help');
+    expect(searchParams.get('from')).to.equal('2026-05-01');
+    expect(searchParams.get('logs_page')).to.equal('2');
+    expect(url.endsWith('#/logs')).to.equal(true);
+  });
+
+  it('defaults the page slug to the logs page', () => {
+    const url = buildLogsUrl(
+      'http://example.test/wp-admin/admin.php?page=mailpoet-help',
+      { type: 'table', page: 1, perPage: 20 },
+      {},
+    );
+
+    expect(new URL(url).searchParams.get('page')).to.equal('mailpoet-logs');
+  });
+
   it('serializes name and level filters as repeated query params', () => {
     const url = buildLogsUrl(
       'http://example.test/wp-admin/admin.php?page=mailpoet-logs&log_name=stale&log_level=100',

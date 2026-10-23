@@ -39,11 +39,11 @@ class AssetsController {
     ob_start();
     $captcha = $this->settings->get('captcha');
     if (!empty($captcha['type']) && CaptchaConstants::isReCaptcha($captcha['type'])) {
-      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WPFunctions::escUrl() wraps esc_url().
+      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.EnqueuedResources.NonEnqueuedScript -- WPFunctions::escUrl() wraps esc_url(). The iframe form is a standalone page with no wp_head().
       echo '<script src="' . $this->wp->escUrl(self::RECAPTCHA_API_URL) . '" async defer></script>';
     }
     if (!empty($captcha['type']) && CaptchaConstants::isTurnstile($captcha['type'])) {
-      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WPFunctions::escUrl() wraps esc_url().
+      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.EnqueuedResources.NonEnqueuedScript -- WPFunctions::escUrl() wraps esc_url(). The iframe form is a standalone page with no wp_head().
       echo '<script src="' . $this->wp->escUrl(self::TURNSTILE_API_URL) . '" async defer></script>';
     }
 

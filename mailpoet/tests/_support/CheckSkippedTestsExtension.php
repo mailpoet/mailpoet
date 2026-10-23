@@ -16,10 +16,6 @@ class CheckSkippedTestsExtension extends Extension {
 
     // list of tests that are allowed to be skipped on trunk and release branches
     $allowedToSkipList = [
-      'createSubscriptionSegmentForActiveSubscriptions',
-      'testAllSubscribersFoundWithOperatorAny',
-      'testAllSubscribersFoundWithOperatorNoneOf',
-      'testAllSubscribersFoundWithOperatorAllOf',
       'automationTriggeredByRegistrationWitConfirmationNeeded',
       'automationTriggeredByRegistrationWithoutConfirmationNeeded',
       'testItCanSendWithSendGrid',
@@ -27,8 +23,6 @@ class CheckSkippedTestsExtension extends Extension {
       'createAndSendStandardNewsletter',
       'displayNewsletterPreview',
       'selectEditSwapAndResetEmailTemplate',
-      // WooCommerce Memberships tests are not compatible with WordPress 6.8+
-      'createSegmentForMembershipPlan',
       // WooCommerce before 11.1 always registers its blocks
       'testItGeneratesCouponWhenWooCommerceSkippedBlockRegistration',
     ];

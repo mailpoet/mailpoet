@@ -60,7 +60,7 @@ class AutomatedLatestContent {
     wp_set_current_user(0);
 
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-      'loading automated latest content',
+      'Started loading the posts for an automated latest content block (loading automated latest content).',
       [
         'args' => $query->args,
         'posts_to_exclude' => $query->postsToExclude,
@@ -75,7 +75,7 @@ class AutomatedLatestContent {
     $this->_attachSentPostsFilter($query->newsletterId);
     $parameters = $query->getQueryParams();
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-      'getting automated latest content',
+      'Searching for the posts of an automated latest content block (getting automated latest content).',
       ['parameters' => $parameters]
     );
     $posts = $this->wp->getPosts($parameters);
@@ -125,7 +125,7 @@ class AutomatedLatestContent {
       ];
     }
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-      'automated latest content loaded posts',
+      'The automated latest content block found these posts (automated latest content loaded posts).',
       ['posts' => $postsToLog]
     );
   }

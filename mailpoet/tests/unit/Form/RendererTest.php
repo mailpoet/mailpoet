@@ -9,6 +9,7 @@ use MailPoet\Form\Renderer;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Form\Util\Styles;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
 
 require_once __DIR__ . '/HtmlParser.php';
@@ -38,7 +39,7 @@ class RendererTest extends \MailPoetUnitTest {
     $this->settingsMock = $this->createMock(SettingsController::class);
     $this->blocksRendererMock = $this->createMock(BlocksRenderer::class);
     $this->customFonts = $this->createMock(CustomFonts::class);
-    $this->renderer = new Renderer($this->stylesMock, $this->settingsMock, $this->customFonts, $this->blocksRendererMock);
+    $this->renderer = new Renderer($this->stylesMock, $this->settingsMock, $this->customFonts, $this->blocksRendererMock, $this->createMock(WPFunctions::class));
     $this->htmlParser = new HtmlParser();
   }
 

@@ -90,7 +90,7 @@ class DaemonRunTest extends \MailPoetTest {
     verify($actions)->arrayCount(0);
     $log = $this->diContainer->get(LogRepository::class)->findOneBy(['name' => 'cron', 'level' => 200]);
     $this->assertInstanceOf(LogEntity::class, $log);
-    verify($log->getMessage())->stringContainsString('Daemon run ended too early');
+    verify($log->getMessage())->stringContainsString('Daemon run ended too early! The background task runner stopped while time was left, so no new run was started right away.');
     $this->diContainer->get(SettingsController::class)->set('logging', 'errors');
   }
 

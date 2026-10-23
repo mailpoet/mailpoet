@@ -13,6 +13,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Notices\DisabledMailFunctionNotice;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\DBAL\Connection;
+use Throwable;
 
 class Activator {
   public const TRANSIENT_ACTIVATE_KEY = 'mailpoet_activator_activate';
@@ -67,7 +68,7 @@ class Activator {
         $this->unlockActivation();
       }
     } else {
-      throw new InvalidStateException(__('MailPoet version update is in progress, please refresh the page in a minute.', 'mailpoet'));
+      throw new ActivationInProgressException(__('MailPoet version update is in progress, please refresh the page in a minute.', 'mailpoet'));
     }
   }
 
@@ -162,22 +163,50 @@ class Activator {
     }
   }
 
-  public function updateDbVersion() {
-    try {
-      $currentDbVersion = $this->settings->get('db_version');
-    } catch (\Exception $e) {
-      $currentDbVersion = null;
-    }
+  /**
+   * Answers from the settings cache; call refreshDbVersion() first to see a db_version
+   * another process wrote meanwhile.
+   *
+   * @phpstan-impure the answer changes after refreshDbVersion() or activate()
+   */
+  public function isDbUpToDate(): bool {
+    $dbVersion = $this->getDbVersion();
+    return $dbVersion !== null && version_compare($dbVersion, (string)Env::$version) === 0;
+  }
 
+  /**
+   * Re-reads db_version from the database, bypassing both the settings cache and
+   * Doctrine's identity map, so a request refused by the activation lock can notice
+   * that the lock holder has finished.
+   */
+  public function refreshDbVersion(): void {
+    try {
+      $this->settings->fetch('db_version');
+    } catch (Throwable $e) {
+      // no settings table yet; getDbVersion() reports null
+    }
+  }
+
+  public function getDbVersion(): ?string {
+    try {
+      $dbVersion = $this->settings->get('db_version');
+    } catch (Throwable $e) {
+      return null;
+    }
+    return is_scalar($dbVersion) && (string)$dbVersion !== '' ? (string)$dbVersion : null;
+  }
+
+  public function updateDbVersion() {
+    $currentDbVersion = $this->getDbVersion();
     $this->settings->set('db_version', Env::$version);
 
     // if current db version and plugin version differ, log an update
-    if (version_compare((string)$currentDbVersion, Env::$version) !== 0) {
+    if ($currentDbVersion !== (string)Env::$version) {
       $updatesLog = (array)$this->settings->get('updates_log', []);
       $updatesLog[] = [
         'previous_version' => $currentDbVersion,
         'new_version' => Env::$version,
-        'date' => date('Y-m-d H:i:s'),
+        'date' => gmdate('Y-m-d H:i:s'),
       ];
       $this->settings->set('updates_log', $updatesLog);
     }

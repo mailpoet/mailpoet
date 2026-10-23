@@ -160,6 +160,14 @@ class Functions {
     return wp_timezone();
   }
 
+  public function registerAbilityCategory(string $slug, array $args): ?\WP_Ability_Category {
+    return wp_register_ability_category($slug, $args);
+  }
+
+  public function registerAbility(string $name, array $args): ?\WP_Ability {
+    return wp_register_ability($name, $args);
+  }
+
   public function currentUserCan($capability) {
     return current_user_can($capability);
   }
@@ -1004,6 +1012,10 @@ class Functions {
     return wp_mkdir_p($dir);
   }
 
+  public function wpIsWritable(string $path): bool {
+    return wp_is_writable($path);
+  }
+
   public function wpGetImageEditor(string $path, $args = []) {
     return wp_get_image_editor($path, $args);
   }
@@ -1177,6 +1189,10 @@ class Functions {
    */
   public function wpStripAllTags($string, $removeBreaks = false): string {
     return wp_strip_all_tags($string, $removeBreaks);
+  }
+
+  public function wpDeleteFile(string $file): bool {
+    return wp_delete_file($file);
   }
 
   public function getTheContent($more_link_text = null, $strip_teaser = false, $post = null) {

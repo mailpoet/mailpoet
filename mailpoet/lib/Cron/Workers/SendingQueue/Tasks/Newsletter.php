@@ -320,7 +320,7 @@ class Newsletter {
       return $newsletter;
     }
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
-      'pre-processing newsletter',
+      'Preparing the email for sending (pre-processing newsletter).',
       ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId()]
     );
 
@@ -365,7 +365,7 @@ class Newsletter {
     ) {
       // delete notification history record since it will never be sent
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-        'no posts in post notification, deleting it',
+        'The post notification has no posts, so MailPoet deletes it (no posts in post notification, deleting it).',
         ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId()]
       );
       $this->newsletterDeleteController->bulkDelete([(int)$newsletter->getId()]);

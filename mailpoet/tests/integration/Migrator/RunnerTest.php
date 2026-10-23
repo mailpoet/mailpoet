@@ -104,6 +104,50 @@ class RunnerTest extends MailPoetTest {
     $this->assertSame($data['error'], 'Testing failing migration.');
   }
 
+  public function testItRecordsAFatalErrorThatEndedTheMigration(): void {
+    $memoryLimit = ini_get('memory_limit');
+    $this->store->startMigration('Migration_20221023_040819');
+    $runner = $this->getServiceWithOverrides(Runner::class, [
+      'store' => $this->store,
+      'runningMigration' => 'Migration_20221023_040819',
+    ]);
+
+    $runner->recordFatalError([
+      'type' => E_ERROR,
+      'message' => 'Allowed memory size of 134217728 bytes exhausted (tried to allocate 20480 bytes)',
+      'file' => '/plugin/Migration_20221023_040819.php',
+      'line' => 12,
+    ]);
+
+    $data = $this->store->getAll()[0];
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['completed_at']);
+    $this->assertSame(
+      'Allowed memory size of 134217728 bytes exhausted (tried to allocate 20480 bytes) in /plugin/Migration_20221023_040819.php:12',
+      $data['error']
+    );
+    // the handler must not touch the limit of the process it runs in, e.g. this test runner's
+    $this->assertSame($memoryLimit, ini_get('memory_limit'));
+
+    // a second fatal error in the same process, e.g. from the shutdown of another plugin, is not this migration's
+    $runner->recordFatalError(['type' => E_ERROR, 'message' => 'Other', 'file' => '/other.php', 'line' => 1]);
+    $this->assertStringStartsWith('Allowed memory size', $this->store->getAll()[0]['error']);
+  }
+
+  public function testItIgnoresNonFatalErrorsAndErrorsOutsideAMigration(): void {
+    $this->store->startMigration('Migration_20221023_040819');
+    $runner = $this->getServiceWithOverrides(Runner::class, [
+      'store' => $this->store,
+      'runningMigration' => 'Migration_20221023_040819',
+    ]);
+    $runner->recordFatalError(['type' => E_WARNING, 'message' => 'Undefined variable', 'file' => '/plugin/x.php', 'line' => 1]);
+    $runner->recordFatalError(null);
+    $this->assertNull($this->store->getAll()[0]['completed_at']);
+
+    $idleRunner = $this->getServiceWithOverrides(Runner::class, ['store' => $this->store]);
+    $idleRunner->recordFatalError(['type' => E_ERROR, 'message' => 'Boom', 'file' => '/plugin/x.php', 'line' => 1]);
+    $this->assertNull($this->store->getAll()[0]['completed_at']);
+  }
+
   public function _after() {
     parent::_after();
     $this->connection->executeStatement("DROP TABLE IF EXISTS {$this->table}");

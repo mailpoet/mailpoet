@@ -177,7 +177,7 @@ class MailChimp {
       'offset' => $offset,
     ]);
 
-    $connection = @fopen($url, 'r');
+    $connection = @fopen($url, 'r'); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Streams the response so it can stop once it passes the size limit.
     if (!$connection) {
       return null;
     }
@@ -197,7 +197,7 @@ class MailChimp {
         $this->throwException('size');
       }
     }
-    fclose($connection);
+    fclose($connection); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Streams the response so it can stop once it passes the size limit.
 
     $decoded = json_decode($response, true);
     return is_array($decoded) ? $decoded : null;

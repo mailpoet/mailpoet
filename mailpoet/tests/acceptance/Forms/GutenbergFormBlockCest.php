@@ -130,6 +130,9 @@ class GutenbergFormBlockCest {
     $i->click('[aria-label="Block Inserter"]');
     $i->waitForElementVisible('.block-editor-inserter__search [placeholder="Search"]');
     $i->fillField('.block-editor-inserter__search [placeholder="Search"]', 'MailPoet Subscription Form');
+    // The inserter applies the search after a delay. Until then it shows all blocks, and a click
+    // on the form block there is lost when the search results replace the list.
+    $i->waitForElementNotVisible(Locator::contains('.block-editor-block-types-list__item-title', 'Paragraph'));
     $i->waitForElement(Locator::contains('button', 'MailPoet Subscription Form'));
     $i->click(Locator::contains('button', 'MailPoet Subscription Form'));
     $i->switchToIframe('iframe[name="editor-canvas"]');

@@ -49,7 +49,7 @@ class Migration_20260826_120000_App extends AppMigration {
         // must leave a trace: the saved template would otherwise stay unresolved silently.
         $this->container->get(LoggerFactory::class)
           ->getLogger(LoggerFactory::TOPIC_MIGRATIONS)
-          ->error(sprintf('%s: %s', static::class, $e->getMessage()));
+          ->error(sprintf('%s could not resolve the existing saved template, so it stays unresolved: %s', static::class, $e->getMessage()));
       }
     });
   }

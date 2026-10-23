@@ -2,6 +2,7 @@
 
 namespace integration\AdminPages;
 
+use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\AdminPages\Pages\Help;
 use MailPoet\Cron\CronHelper;
@@ -9,6 +10,7 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Logging\LogsPageData;
 use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -60,16 +62,37 @@ class HelpTest extends \MailPoetTest {
     verify($data['sendingPausedReason'])->same('Sending is paused because this is a staging site.');
   }
 
-  private function makeHelpPage(SendingEnvironment $sendingEnvironment): Help {
+  public function testItPassesTheLogsDataToTheTemplate() {
+    $template = '';
+    $data = [];
+    $pageRenderer = $this->make(PageRenderer::class, [
+      'displayPage' => function ($renderedTemplate, $renderedData = []) use (&$template, &$data) {
+        $template = $renderedTemplate;
+        $data = $renderedData;
+      },
+    ]);
+    $this->makeHelpPage($this->diContainer->get(SendingEnvironment::class), $pageRenderer)->render();
+
+    verify($template)->same('help.html');
+    $logsData = $this->diContainer->get(LogsPageData::class)->get();
+    foreach (['logs_default_from', 'api', 'download'] as $key) {
+      verify($data)->arrayHasKey($key);
+      verify($data[$key])->same($logsData[$key]);
+    }
+  }
+
+  private function makeHelpPage(SendingEnvironment $sendingEnvironment, ?PageRenderer $pageRenderer = null): Help {
     return new Help(
-      $this->diContainer->get(PageRenderer::class),
+      $pageRenderer ?? $this->diContainer->get(PageRenderer::class),
       $this->diContainer->get(CronHelper::class),
       $this->diContainer->get(SystemReportCollector::class),
       $this->diContainer->get(Bridge::class),
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->sendingQueuesRepository,
       $this->diContainer->get(Url::class),
-      $sendingEnvironment
+      $sendingEnvironment,
+      $this->diContainer->get(AssetsController::class),
+      $this->diContainer->get(LogsPageData::class)
     );
   }
 

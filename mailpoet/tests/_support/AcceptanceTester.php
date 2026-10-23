@@ -180,11 +180,17 @@ class AcceptanceTester extends \Codeception\Actor {
       try {
         $i->waitForElementClickable($dataViewsActionsToggleXpath, 3);
         $i->click($dataViewsActionsToggleXpath);
-        $i->waitForElementClickable($dataViewsMenuItemXpath, 2);
+        $i->waitForElementClickable($dataViewsMenuItemXpath, 5);
         $i->click($dataViewsMenuItemXpath);
         return;
       } catch (Exception $menuException) {
         $lastException = $menuException;
+        // Close the menu before the next try: clicking the toggle of an open menu closes it.
+        try {
+          $this->clearMenuBackdrops();
+        } catch (Exception $backdropException) {
+          $lastException = $backdropException;
+        }
         $this->wait(1);
         continue;
       }
@@ -501,14 +507,34 @@ class AcceptanceTester extends \Codeception\Actor {
           || strpos($message, 'stale element reference') !== false;
         if ($retries > 0 && $isTransient) {
           if (strpos($message, 'data-backdrop') !== false) {
-            $this->pressKey('body', WebDriverKeys::ESCAPE);
-            $this->waitForJS('return document.querySelector("[data-backdrop][data-open=\"true\"]") === null;', 2);
+            $this->clearMenuBackdrops();
           }
           $this->wait(0.2);
           continue;
         }
         throw $e;
       }
+    }
+  }
+
+  /**
+   * A menu that closes while it is still opening can stay in the page as `inert`, with a
+   * full-page backdrop that takes every click (CircleCI job 451249). Let clicks pass through
+   * such backdrops, and close a menu that is really open.
+   */
+  public function clearMenuBackdrops(): void {
+    $this->executeJS(<<<'JS'
+      document.querySelectorAll('[data-backdrop]').forEach((backdrop) => {
+        const content = document.getElementById(backdrop.dataset.backdrop);
+        if (!content || content.hidden || content.hasAttribute('inert')) {
+          backdrop.style.pointerEvents = 'none';
+        }
+      });
+    JS);
+    $hasBlockingBackdrop = 'Array.from(document.querySelectorAll("[data-backdrop]")).some((backdrop) => !backdrop.hidden && getComputedStyle(backdrop).pointerEvents !== "none")';
+    if ($this->executeJS("return $hasBlockingBackdrop;")) {
+      $this->pressKey('body', WebDriverKeys::ESCAPE);
+      $this->waitForJS("return !$hasBlockingBackdrop;", 2);
     }
   }
 
@@ -666,6 +692,9 @@ class AcceptanceTester extends \Codeception\Actor {
   public function activateWooCommerceSubscriptions() {
     $i = $this;
     $i->cli(['plugin', 'activate', self::WOO_COMMERCE_SUBSCRIPTIONS_PLUGIN]);
+    // Newer versions hide the subscription product types until they are enabled
+    $i->haveOptionInDatabase('woocommerce_subscriptions_enable_simple_subscription', 'yes');
+    $i->haveOptionInDatabase('woocommerce_subscriptions_enable_variable_subscription', 'yes');
   }
 
   public function deactivateWooCommerceSubscriptions() {
@@ -929,7 +958,9 @@ class AcceptanceTester extends \Codeception\Actor {
   public function registerCustomerOnMyAccountPage(string $email, $optIn = false) {
     $i = $this;
     $i->amOnPage('my-account');
-    $i->fillField('Email address', $email);
+    // The form can render after the 2 s implicit wait on block themes (CircleCI jobs 450504, 451272).
+    $i->waitForElementVisible('#reg_email');
+    $i->fillField('#reg_email', $email);
     if ($optIn) {
       $i->checkOption('mailpoet[subscribe_on_register]');
     }

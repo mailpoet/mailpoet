@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Notice } from '@wordpress/components';
+import { createInterpolateElement } from '@wordpress/element';
 import { DataViews, View } from '@wordpress/dataviews';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
@@ -17,23 +18,33 @@ import { DeleteLogsModal } from './delete-modal';
 import { DownloadLogsModal } from './download-modal';
 import { getLogActions, getLogFieldDefinitions, getLogFields } from './fields';
 import {
-  getLogFilterOptions,
   requestFilterToViewFilters,
   viewFiltersToRequestFilter,
 } from './filters';
 import {
   buildLogsUrl,
+  LOGS_PAGE_SLUG,
   getDateRangeError,
   parseLogsUrlState,
   type LogsFilter,
 } from './url-state';
+
+const SETTINGS_URL = 'admin.php?page=mailpoet-settings#/advanced';
+
+function SettingsLink({ children }: { children?: React.ReactNode }) {
+  return (
+    <a href={SETTINGS_URL} className="mailpoet-link">
+      {children}
+    </a>
+  );
+}
 
 const DEFAULT_VIEW: View = {
   type: 'table',
   perPage: 20,
   page: 1,
   sort: { field: 'created_at', direction: 'desc' },
-  fields: ['message', 'created_at'],
+  fields: ['level', 'message', 'created_at'],
   titleField: 'name',
   showTitle: true,
 };
@@ -46,6 +57,7 @@ type DownloadConfig = {
 type Props = {
   defaultFrom: string;
   downloadConfig?: DownloadConfig;
+  pageSlug?: string;
 };
 
 function buildInitialView(defaultFrom: string): View {
@@ -55,7 +67,7 @@ function buildInitialView(defaultFrom: string): View {
   const hasPerPageUrlState =
     searchParams.has('per_page') || searchParams.has('limit');
   const preferredView = getDataViewsPreference(
-    'logs',
+    'logs-v2',
     DEFAULT_VIEW,
     getLogFieldDefinitions(),
   );
@@ -73,7 +85,11 @@ function filtersKey(view: View): string {
   return JSON.stringify(view.filters ?? []);
 }
 
-export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
+export function List({
+  defaultFrom,
+  downloadConfig,
+  pageSlug = LOGS_PAGE_SLUG,
+}: Props): JSX.Element {
   const initialView = useMemo(
     () => buildInitialView(defaultFrom),
     [defaultFrom],
@@ -123,7 +139,19 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
   const dateRangeError = getDateRangeError(requestFilter);
   const emptyState =
     loadError || dateRangeError ? null : (
-      <div>{__('No logs found.', 'mailpoet')}</div>
+      <div>
+        <p>{__('No logs found for this period.', 'mailpoet')}</p>
+        <p>
+          {__(
+            'Try a wider date range or clear the filters. If Logging is set to “Errors only” or “Nothing”, routine activity is not recorded. “Everything” records it, but switch it back after troubleshooting because the log grows fast.',
+            'mailpoet',
+          )}{' '}
+          {createInterpolateElement(
+            __('<a>Change the Logging setting</a>', 'mailpoet'),
+            { a: <SettingsLink /> },
+          )}
+        </p>
+      </div>
     );
 
   const searchTerm = view.search?.trim() || undefined;
@@ -133,7 +161,7 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
   const canDownload = canDelete;
 
   const persistedViewChange = usePersistedDataViewsPreference(
-    'logs',
+    'logs-v2',
     view,
     onChangeView,
   );
@@ -148,9 +176,10 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
       window.location.href,
       view,
       viewFiltersToRequestFilter(view.filters),
+      pageSlug,
     );
-    window.history.replaceState({}, '', nextUrl);
-  }, [view]);
+    window.history.replaceState(window.history.state, '', nextUrl);
+  }, [view, pageSlug]);
 
   const viewFiltersKey = filtersKey(view);
   useEffect(() => {
@@ -170,8 +199,8 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
   }, []);
 
   const fields = useMemo(
-    () => getLogFields(expandedLogIds, getLogFilterOptions()),
-    [expandedLogIds],
+    () => getLogFields(expandedLogIds, view.search),
+    [expandedLogIds, view.search],
   );
   const actions = useMemo(
     () => getLogActions(expandedLogIds, toggleExpanded),
@@ -206,6 +235,19 @@ export function List({ defaultFrom, downloadConfig }: Props): JSX.Element {
       ref={dataViewsRef}
       className="mailpoet-listing mailpoet-logs mailpoet-dataviews mailpoet-logs-dataviews"
     >
+      <div className="mailpoet_notice notice inline">
+        <p>
+          {__(
+            'MailPoet records what it does and the problems it runs into. The list shows the last 7 days by default; use the date filter to see older entries. Logs are deleted after 30 days. Search matches the message and the technical topic name (for example “mss”), not the readable label.',
+            'mailpoet',
+          )}{' '}
+          {createInterpolateElement(
+            __('<a>Change the Logging setting</a>', 'mailpoet'),
+            { a: <SettingsLink /> },
+          )}
+        </p>
+      </div>
+
       {successMessage && (
         <Notice status="success" onRemove={() => setSuccessMessage(null)}>
           {successMessage}

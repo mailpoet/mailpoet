@@ -29,6 +29,7 @@ class LogsListingCest {
     (new LogFactory())
       ->withName("queue-{$suffix}")
       ->withMessage("debug-message-{$suffix}")
+      ->withRawMessage("plain-message-{$suffix}")
       ->withLevel(100)
       ->withCreatedAt($today)
       ->create();
@@ -38,7 +39,8 @@ class LogsListingCest {
     $i->searchFor($suffix);
     $i->waitForText("error-message-{$suffix}");
     $i->waitForText("warning-message-{$suffix}");
-    $i->waitForText("debug-message-{$suffix}");
+    $i->waitForText("plain-message-{$suffix}");
+    $i->dontSee("debug-message-{$suffix}");
 
     $i->wantTo('Toggle a message open and closed with the native row action');
     // The primary action button sits behind the cell wrapper for Selenium's
@@ -54,6 +56,7 @@ class LogsListingCest {
       "return document.querySelector('.mailpoet-logs-message-full') !== null;",
       10
     );
+    $i->waitForText("debug-message-{$suffix}", 10, '.mailpoet-logs-details');
     $clickRowAction('Show less');
     $i->waitForJS(
       "return document.querySelector('.mailpoet-logs-message-full') === null;",
@@ -73,17 +76,17 @@ class LogsListingCest {
     $i->waitForJS(<<<JS
       const text = document.querySelector('.mailpoet-logs-dataviews')?.innerText ?? '';
       return !text.includes('warning-message-{$suffix}') &&
-        !text.includes('debug-message-{$suffix}');
+        !text.includes('plain-message-{$suffix}');
     JS, 10);
     $i->dontSee("warning-message-{$suffix}");
-    $i->dontSee("debug-message-{$suffix}");
+    $i->dontSee("plain-message-{$suffix}");
     $i->seeInCurrentUrl('log_level=400');
 
     $i->wantTo('Honor the new log_level query param on direct navigation');
     $i->amOnPage("/wp-admin/admin.php?page=mailpoet-logs&search={$suffix}&log_level=300");
     $i->waitForText("warning-message-{$suffix}");
     $i->dontSee("error-message-{$suffix}");
-    $i->dontSee("debug-message-{$suffix}");
+    $i->dontSee("plain-message-{$suffix}");
 
     $i->wantTo('Honor legacy from/to/search query params on direct navigation');
     $i->amOnPage(
@@ -93,7 +96,7 @@ class LogsListingCest {
     );
     $i->waitForText("warning-message-{$suffix}");
     $i->dontSee("error-message-{$suffix}");
-    $i->dontSee("debug-message-{$suffix}");
+    $i->dontSee("plain-message-{$suffix}");
 
     $i->wantTo('Sort the logs by creation date in ascending order');
     $i->amOnMailpoetPage('logs');
@@ -109,7 +112,7 @@ class LogsListingCest {
         .map((row) => row.textContent)
         .join('||');
       const errorAt = text.indexOf('error-message-{$suffix}');
-      const debugAt = text.indexOf('debug-message-{$suffix}');
+      const debugAt = text.indexOf('plain-message-{$suffix}');
       return errorAt !== -1 && debugAt !== -1 && errorAt < debugAt;
     JS, 10);
     $orderedMessages = $i->executeJS(<<<'JS'
@@ -119,7 +122,7 @@ class LogsListingCest {
     JS);
     \PHPUnit\Framework\Assert::assertIsString($orderedMessages);
     $errorPosition = strpos($orderedMessages, "error-message-{$suffix}");
-    $debugPosition = strpos($orderedMessages, "debug-message-{$suffix}");
+    $debugPosition = strpos($orderedMessages, "plain-message-{$suffix}");
     \PHPUnit\Framework\Assert::assertNotFalse($errorPosition);
     \PHPUnit\Framework\Assert::assertNotFalse($debugPosition);
     \PHPUnit\Framework\Assert::assertLessThan(

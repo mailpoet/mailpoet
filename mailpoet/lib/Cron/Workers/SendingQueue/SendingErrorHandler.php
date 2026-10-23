@@ -77,7 +77,7 @@ class SendingErrorHandler {
     if ($queue instanceof SendingQueueEntity) {
       if ($error->getOperation() === MailerError::OPERATION_DOMAIN_AUTHORIZATION) {
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
-          'Paused task in sending queue due to sender domain authorization error',
+          'A sender domain authorization error happened, so MailPoet pauses the sending task (Paused task in sending queue due to sender domain authorization error).',
           ['task_id' => $task->getId()]
         );
         $this->senderDomainController->clearCache();

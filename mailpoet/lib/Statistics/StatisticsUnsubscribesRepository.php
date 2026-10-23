@@ -73,6 +73,66 @@ class StatisticsUnsubscribesRepository extends Repository {
       ->getResult();
   }
 
+  /**
+   * @return array<int, array{month: string, method: string, count: int}>
+   */
+  public function getMonthlyCountsPerMethod(\DateTimeInterface $from): array {
+    return $this->getMonthlyCountsPerColumn('method', $from);
+  }
+
+  /**
+   * Unsubscribes without a submitted reason are counted as REASON_UNSPECIFIED.
+   *
+   * @return array<int, array{month: string, reason: string, count: int}>
+   */
+  public function getMonthlyCountsPerReason(\DateTimeInterface $from): array {
+    return $this->getMonthlyCountsPerColumn('reason', $from);
+  }
+
+  /**
+   * Rows without a recorded source are counted as "unknown".
+   *
+   * @return array<int, array{month: string, source: string, count: int}>
+   */
+  public function getMonthlyCountsPerSource(\DateTimeInterface $from): array {
+    return $this->getMonthlyCountsPerColumn('source', $from);
+  }
+
+  private function getMonthlyCountsPerColumn(string $column, \DateTimeInterface $from): array {
+    $statisticsTable = $this->getTableName();
+    $values = [
+      'method' => 'method',
+      'reason' => 'COALESCE(reason, :unspecified)',
+      'source' => 'COALESCE(source, :unknown)',
+    ];
+    $value = $values[$column];
+    $rows = $this->entityManager->getConnection()->executeQuery(
+      "SELECT DATE_FORMAT(created_at, '%Y-%m') AS month, $value AS value, COUNT(id) AS count
+       FROM $statisticsTable
+       WHERE created_at >= :from
+       GROUP BY month, value
+       ORDER BY month, value",
+      [
+        'from' => $from->format('Y-m-d H:i:s'),
+        'unspecified' => StatisticsUnsubscribeEntity::REASON_UNSPECIFIED,
+        'unknown' => 'unknown',
+      ]
+    )->fetchAllAssociative();
+
+    $counts = [];
+    foreach ($rows as $row) {
+      if (!is_string($row['month']) || !is_string($row['value']) || !is_numeric($row['count'])) {
+        continue;
+      }
+      $counts[] = [
+        'month' => $row['month'],
+        $column => $row['value'],
+        'count' => (int)$row['count'],
+      ];
+    }
+    return $counts;
+  }
+
   public function findOneBySubscriberAndQueue(SubscriberEntity $subscriber, SendingQueueEntity $queue, NewsletterEntity $newsletter): ?StatisticsUnsubscribeEntity {
     $statistics = $this->findOneBy([
       'queue' => $queue,

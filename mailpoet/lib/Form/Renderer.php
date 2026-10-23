@@ -8,6 +8,7 @@ use MailPoet\Form\Templates\FormTemplate;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Form\Util\Styles;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Renderer {
   /** @var Styles */
@@ -22,22 +23,27 @@ class Renderer {
   /** @var CustomFonts */
   private $customFonts;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     Styles $styleUtils,
     SettingsController $settings,
     CustomFonts $customFonts,
-    BlocksRenderer $blocksRenderer
+    BlocksRenderer $blocksRenderer,
+    WPFunctions $wp
   ) {
     $this->styleUtils = $styleUtils;
     $this->settings = $settings;
     $this->blocksRenderer = $blocksRenderer;
     $this->customFonts = $customFonts;
+    $this->wp = $wp;
   }
 
   public function renderStyles(FormEntity $form, string $prefix, string $displayType): string {
     $this->customFonts->enqueueStyle();
     $html = $this->styleUtils->prefixStyles($this->getCustomStyles($form), $prefix);
-    $html .= strip_tags($this->styleUtils->renderFormSettingsStyles($form, $prefix, $displayType));
+    $html .= $this->wp->wpStripAllTags($this->styleUtils->renderFormSettingsStyles($form, $prefix, $displayType));
     return $html;
   }
 
@@ -50,6 +56,7 @@ class Renderer {
 
   public function getCustomStyles(?FormEntity $form = null): string {
     if (($form instanceof FormEntity) && (strlen(trim($form->getStyles() ?? '')) > 0)) {
+      // phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags -- wp_strip_all_tags() would also drop CSS pasted inside <style> tags.
       return strip_tags($form->getStyles() ?? '');
     } else {
       return FormTemplate::DEFAULT_STYLES;

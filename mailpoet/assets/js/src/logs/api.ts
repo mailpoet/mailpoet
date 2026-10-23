@@ -30,6 +30,8 @@ export type LogListingItem = {
   name: string;
   level: number | null;
   message: string;
+  raw_message: string | null;
+  context: Record<string, unknown>;
   created_at: string | null;
 };
 
@@ -60,6 +62,36 @@ export async function getLogs(
     signal,
   });
   return response.data;
+}
+
+let logNamesRequest: Promise<string[]> | null = null;
+
+// Loads the logger names for the Name filter. A successful request is shared
+// for the whole page load, so remounting the listing does not refetch. A
+// failure resolves to no options (the listing still works) and is not cached,
+// so the next filter open retries.
+export function getLogNames(): Promise<string[]> {
+  if (logNamesRequest === null) {
+    ensureInitialized();
+    const request = apiFetch<ApiEnvelope<{ names: string[] }>>({
+      path: '/mailpoet/v1/logs/names',
+      method: 'GET',
+    })
+      .then((response) => response.data.names)
+      .catch(() => {
+        if (logNamesRequest === request) {
+          logNamesRequest = null;
+        }
+        return [];
+      });
+    logNamesRequest = request;
+  }
+  return logNamesRequest;
+}
+
+// Clears the cached request so tests start from a clean state.
+export function resetLogNamesCache(): void {
+  logNamesRequest = null;
 }
 
 // Deletes the logs matching the listing's current filters and search, so a

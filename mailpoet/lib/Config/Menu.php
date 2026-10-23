@@ -169,7 +169,7 @@ class Menu {
         . '|Raleway:400,400i,700,700i'
         . '|Permanent+Marker:400,400i,700,700i'
         . '|Pacifico:400,400i,700,700i'
-        . '" rel="stylesheet">';
+        . '" rel="stylesheet">'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- An enqueued style would be dequeued by the ConflictResolver on this page.
     });
   }
 

@@ -1,4 +1,8 @@
 import {
+  getLogSeverityDescription,
+  getLogSeverityVariant,
+  getLogTopicElements,
+  getLogTopicLabel,
   requestFilterToViewFilters,
   viewFiltersToRequestFilter,
 } from '../../../assets/js/src/logs/filters';
@@ -104,5 +108,37 @@ describe('logs filters translation', () => {
       { field: 'name', operator: 'isAny', value: ['cron'] },
       { field: 'level', operator: 'isAny', value: [400] },
     ]);
+  });
+
+  it('returns a readable label for known topics and the name for unknown ones', () => {
+    expect(getLogTopicLabel('mss')).to.equal('MailPoet Sending Service');
+    expect(getLogTopicLabel('custom')).to.equal('custom');
+    expect(getLogTopicLabel('__proto__')).to.equal('__proto__');
+    expect(getLogTopicLabel('constructor')).to.equal('constructor');
+  });
+
+  it('keeps raw values in topic filter elements', () => {
+    expect(getLogTopicElements(['mss', 'custom'])).to.deep.equal([
+      { value: 'mss', label: 'MailPoet Sending Service (mss)' },
+      { value: 'custom', label: 'custom' },
+    ]);
+  });
+
+  it('maps severity levels to tag variants', () => {
+    expect(getLogSeverityVariant(600)).to.equal('critical');
+    expect(getLogSeverityVariant(400)).to.equal('critical');
+    expect(getLogSeverityVariant(300)).to.equal('average');
+    expect(getLogSeverityVariant(250)).to.equal('unknown');
+    expect(getLogSeverityVariant(100)).to.equal('unknown');
+  });
+
+  it('describes severity levels in plain English', () => {
+    expect(getLogSeverityDescription(100)).to.equal('Details for developers');
+    expect(getLogSeverityDescription(300)).to.equal(
+      'Something unexpected that MailPoet handled',
+    );
+    expect(getLogSeverityDescription(400)).to.equal('Something failed');
+    expect(getLogSeverityDescription(550)).to.equal('A serious problem');
+    expect(getLogSeverityDescription(999)).to.equal('');
   });
 });

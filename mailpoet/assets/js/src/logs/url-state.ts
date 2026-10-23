@@ -172,15 +172,18 @@ export function parseLogsUrlState(
   };
 }
 
+export const LOGS_PAGE_SLUG = 'mailpoet-logs';
+
 export function buildLogsUrl(
   currentUrl: string,
   view: View,
   filters: LogsFilter,
+  pageSlug: string = LOGS_PAGE_SLUG,
 ): string {
   const url = new URL(currentUrl);
   const search = view.search?.trim();
 
-  url.searchParams.set('page', 'mailpoet-logs');
+  url.searchParams.set('page', pageSlug);
   url.searchParams.delete('offset');
   url.searchParams.delete('limit');
   url.searchParams.delete('search');

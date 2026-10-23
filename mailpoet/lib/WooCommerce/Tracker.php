@@ -43,7 +43,7 @@ class Tracker {
       $campaignData = $this->formatCampaignsData($this->wooPurchasesRepository->getRevenuesByCampaigns($currency));
       $data['extensions']['mailpoet'] = array_merge($data['extensions']['mailpoet'], $campaignData);
     } catch (\Throwable $e) {
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_TRACKING)->error($e->getMessage());
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_TRACKING)->error('Could not add MailPoet data to the WooCommerce tracking data: ' . $e->getMessage());
       return $data;
     }
     return $data;

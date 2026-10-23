@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { MailPoet } from 'mailpoet';
 import { __ } from '@wordpress/i18n';
 import { KnowledgeBase } from 'help/knowledge-base';
+import { Logs } from 'help/logs';
 import { SystemInfo } from 'help/system-info';
 import { SystemStatus } from 'help/system-status';
 import { YourPrivacy } from 'help/your-privacy';
@@ -38,6 +39,9 @@ function App(): JSX.Element {
         </Tab>
         <Tab key="systemInfo" title={MailPoet.I18n.t('tabSystemInfoTitle')}>
           <SystemInfo />
+        </Tab>
+        <Tab key="logs" title={__('Logs', 'mailpoet')}>
+          <Logs />
         </Tab>
         <Tab key="yourPrivacy" title={MailPoet.I18n.t('tabYourPrivacyTitle')}>
           <YourPrivacy />

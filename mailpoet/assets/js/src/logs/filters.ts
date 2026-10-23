@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import type { Filter } from '@wordpress/dataviews';
 import { dateRangeFromFilter } from 'common/dataviews';
+import type { TagVariant } from '../common/tag/tag';
 import type { LogsFilter } from './url-state';
 
 export const CREATED_AT_FIELD = 'created_at';
@@ -24,6 +25,30 @@ export function getLogSeverityLabel(level: number): string {
   return LOG_SEVERITY_LABELS[level] ?? String(level);
 }
 
+// Plain English on purpose (logs are not translated). Generic, not claims
+// about sending.
+export const LOG_SEVERITY_DESCRIPTIONS: Record<number, string> = {
+  100: 'Details for developers',
+  200: 'Routine activity',
+  250: 'Notable event',
+  300: 'Something unexpected that MailPoet handled',
+  400: 'Something failed',
+  500: 'A serious problem',
+  550: 'A serious problem',
+  600: 'A serious problem',
+};
+
+export function getLogSeverityDescription(level: number): string {
+  return LOG_SEVERITY_DESCRIPTIONS[level] ?? '';
+}
+
+export function getLogSeverityVariant(level: number): TagVariant {
+  if (level >= 400) {
+    return 'critical';
+  }
+  return level === 300 ? 'average' : 'unknown';
+}
+
 // Severity is a finite Monolog enum, so the filter offers every level rather
 // than only the ones already present in storage (no DB query needed).
 export function getLogSeverityElements(): { value: number; label: string }[] {
@@ -33,23 +58,46 @@ export function getLogSeverityElements(): { value: number; label: string }[] {
   }));
 }
 
-export type LogFilterOptions = {
-  names: string[];
+// Log names are plain English on purpose (logs are not translated). Unknown
+// names fall back to the raw name. Keep in sync with LoggerFactory::TOPIC_*.
+export const LOG_TOPIC_LABELS: Record<string, string> = {
+  newsletters: 'Newsletters',
+  'post-notifications': 'Post notifications',
+  mss: 'MailPoet Sending Service',
+  premium: 'Premium key',
+  'bridge-api': 'MailPoet account API',
+  sending: 'Sending',
+  cron: 'Background tasks',
+  api: 'Admin API',
+  tracking: 'Tracking',
+  coupons: 'Coupons',
+  provisioning: 'WordPress.com provisioning',
+  segments: 'Lists and segments',
+  'email-editor': 'Email editor',
+  migrations: 'Migrations',
+  pages: 'MailPoet pages',
+  captcha: 'CAPTCHA',
+  woocommerce_first_purchase: 'WooCommerce: first purchase',
+  woocommerce_product_purchased_in_category:
+    'WooCommerce: purchased in category',
+  woocommerce_product_purchased: 'WooCommerce: purchased product',
+  MailPoet: 'MailPoet (general)',
 };
 
-declare global {
-  interface Window {
-    mailpoet_logs_filter_options?: {
-      names?: string[];
-    };
-  }
+export function getLogTopicLabel(name: string): string {
+  return Object.prototype.hasOwnProperty.call(LOG_TOPIC_LABELS, name)
+    ? LOG_TOPIC_LABELS[name]
+    : name;
 }
 
-export function getLogFilterOptions(): LogFilterOptions {
-  const options = window.mailpoet_logs_filter_options;
-  return {
-    names: Array.isArray(options?.names) ? options.names : [],
-  };
+// Values stay the raw names (they go into the URL and the REST filter).
+export function getLogTopicElements(
+  names: string[],
+): { value: string; label: string }[] {
+  return names.map((name) => {
+    const label = getLogTopicLabel(name);
+    return { value: name, label: label === name ? name : `${label} (${name})` };
+  });
 }
 
 function toStringArray(value: unknown): string[] {

@@ -111,7 +111,7 @@ class CustomFonts {
 
     $output = '';
     foreach (array_chunk(self::FONTS, self::FONT_CHUNK_SIZE) as $key => $fonts) {
-      $output .= sprintf('<link href="%s" rel="stylesheet">', $this->generateLink($fonts));
+      $output .= sprintf('<link href="%s" rel="stylesheet">', $this->generateLink($fonts)); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- The iframe form is a standalone page with no wp_head().
     }
     return $output;
   }

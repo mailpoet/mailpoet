@@ -65,20 +65,20 @@ class Export {
         ' -->';
 
         // CSS
-        $output[] = '<link rel="stylesheet" type="text/css" href="' .
+        $output[] = '<link rel="stylesheet" type="text/css" href="' . // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- Embed code that people paste into other sites.
           Env::$assetsUrl . '/dist/css/mailpoet-public.css?mp_ver=' . MAILPOET_VERSION .
         '" />';
 
         // jQuery
-        $output[] = '<script type="text/javascript" src="' .
+        $output[] = '<script type="text/javascript" src="' . // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- Embed code that people paste into other sites.
           WPFunctions::get()->includesUrl() . 'js/jquery/jquery.js?mp_ver' . MAILPOET_VERSION .
         '"></script>';
 
         // JS
-        $output[] = '<script type="text/javascript" src="' .
+        $output[] = '<script type="text/javascript" src="' . // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- Embed code that people paste into other sites.
           Env::$assetsUrl . '/dist/js/vendor.js?mp_ver=' . MAILPOET_VERSION .
         '"></script>';
-        $output[] = '<script type="text/javascript" src="' .
+        $output[] = '<script type="text/javascript" src="' . // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- Embed code that people paste into other sites.
           Env::$assetsUrl . '/dist/js/public.min.js?mp_ver=' . MAILPOET_VERSION .
         '"></script>';
 

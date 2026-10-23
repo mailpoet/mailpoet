@@ -168,7 +168,7 @@ class AdminUserSubscription {
       // Log the error
       $logger = $this->loggerFactory->getLogger();
       $logger->error(
-        __('Failed to send confirmation email for admin-created user', 'mailpoet'),
+        'Failed to send confirmation email for admin-created user. The user stays unconfirmed.',
         ['user_id' => $userId, 'error' => $e->getMessage()]
       );
     }

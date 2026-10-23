@@ -707,7 +707,7 @@ class SegmentSubscribersRepository {
    */
   private function logErrorAndReturnEmptyResult(?SegmentEntity $segment, QueryBuilder $queryBuilder, $result): array {
     $logger = LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SEGMENTS);
-    $logger->error('Invalid result for segment statistics count', [
+    $logger->error('The segment statistics count returned an invalid result (Invalid result for segment statistics count).', [
       'segment_id' => $segment ? $segment->getId() : null,
       'result' => $result,
       'query' => $queryBuilder->getSQL(),
@@ -718,7 +718,7 @@ class SegmentSubscribersRepository {
 
   private function logQueryException(?SegmentEntity $segment, Throwable $e): void {
     $logger = LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SEGMENTS);
-    $logger->error('Failed to execute segment subscribers query: ' . $e->getMessage(), [
+    $logger->error('The segment subscribers query failed (Failed to execute segment subscribers query): ' . $e->getMessage(), [
       'segment_id' => $segment ? $segment->getId() : null,
       'error' => $e->getMessage(),
     ]);

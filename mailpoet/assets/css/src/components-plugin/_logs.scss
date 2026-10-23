@@ -1,3 +1,5 @@
+@use '../settings/colors' as *;
+@use '../settings/breakpoints' as *;
 @use '../settings/grid' as *;
 
 .mailpoet-logs-message {
@@ -12,6 +14,45 @@
   white-space: normal;
 }
 
+.mailpoet-logs-details {
+  font-size: 12px;
+  margin-top: $grid-gap-half;
+
+  dl {
+    display: grid;
+    gap: 4px $grid-gap-half;
+    grid-template-columns: max-content minmax(0, 1fr);
+    margin: 0 0 $grid-gap-half;
+  }
+
+  dt {
+    color: $color-text-light;
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  pre {
+    margin: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+}
+
+.mailpoet-logs-topic {
+  overflow-wrap: anywhere;
+}
+
+.mailpoet-logs-topic-raw {
+  color: $color-text-light;
+  display: block;
+  font-size: 12px;
+}
+
 .mailpoet-logs-min-width {
   white-space: nowrap;
   width: 1px;
@@ -22,6 +63,13 @@
     max-width: 100%;
     table-layout: fixed;
     width: 100%;
+
+    // Fixed columns take 680px; keep the Message column readable and let the
+    // table scroll horizontally inside its layout container on narrow screens.
+    @media (max-width: $mailpoet-breakpoint-medium) {
+      max-width: none;
+      min-width: 920px;
+    }
   }
 
   // DataViews table column sizing is exposed through generated column classes;
@@ -35,6 +83,11 @@
   .dataviews-view-table
     col[class^='dataviews-view-table__col-'].dataviews-view-table__col-message {
     width: auto !important;
+  }
+
+  .dataviews-view-table
+    col[class^='dataviews-view-table__col-'].dataviews-view-table__col-full_message {
+    width: 360px !important;
   }
 
   .dataviews-view-table
@@ -76,6 +129,10 @@
     flex-wrap: wrap;
     gap: $grid-gap;
     margin-bottom: $grid-gap;
+  }
+
+  > .components-notice {
+    margin: 0 0 $grid-gap;
   }
 
   .mailpoet-logs-error {

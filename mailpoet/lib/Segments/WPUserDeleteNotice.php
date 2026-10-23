@@ -5,6 +5,7 @@ namespace MailPoet\Segments;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Menu;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\WPUserSubscriberLink;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -39,14 +40,19 @@ class WPUserDeleteNotice {
   /** @var AccessControl */
   private $accessControl;
 
+  /** @var WPUserSubscriberLink */
+  private $wpUserSubscriberLink;
+
   public function __construct(
     WPFunctions $wp,
     SubscribersRepository $subscribersRepository,
-    AccessControl $accessControl
+    AccessControl $accessControl,
+    WPUserSubscriberLink $wpUserSubscriberLink
   ) {
     $this->wp = $wp;
     $this->subscribersRepository = $subscribersRepository;
     $this->accessControl = $accessControl;
+    $this->wpUserSubscriberLink = $wpUserSubscriberLink;
   }
 
   public function setupHooks(): void {
@@ -117,6 +123,11 @@ class WPUserDeleteNotice {
     foreach ($subscribers as $subscriber) {
       $wpUserId = $subscriber->getWpUserId();
       if ($wpUserId === null) {
+        continue;
+      }
+      // Never deleted, only unlinked, see WP::unlinkSubscriberFromWpUser()
+      if ($this->wpUserSubscriberLink->isUnconfirmed($wpUserId)) {
+        $count++;
         continue;
       }
       // Same filter call as WP::unlinkSubscriberFromWpUser(), so the count reflects what

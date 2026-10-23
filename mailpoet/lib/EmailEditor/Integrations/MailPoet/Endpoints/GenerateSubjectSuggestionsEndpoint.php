@@ -115,7 +115,7 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
     $result = $promptBuilder->generate_text();
 
     if (is_wp_error($result)) {
-      $logger->error('AI subject generation failed', [
+      $logger->error('The AI provider returned an error, so no subject suggestions were generated (AI subject generation failed).', [
         'error_code' => $result->get_error_code(),
         'error_message' => $result->get_error_message(),
         'post_id' => $postId,
@@ -129,7 +129,7 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
 
     $decoded = $this->parseAiResponse($result);
     if ($decoded === null) {
-      $logger->error('AI subject generation returned invalid JSON', [
+      $logger->error('The AI provider returned a response in an unexpected format, so no subject suggestions were generated (AI subject generation returned invalid JSON).', [
         'response_type' => gettype($result),
         'response_length' => is_string($result) ? mb_strlen($result) : null,
         'response_preview' => is_string($result) ? mb_substr($result, 0, 200) : null,
@@ -152,7 +152,7 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
         || mb_strlen($suggestion['subject']) > self::SUBJECT_MAX_LENGTH
         || mb_strlen($suggestion['preheader']) > self::PREHEADER_MAX_LENGTH
       ) {
-        $logger->info('AI subject suggestion filtered out', [
+        $logger->info('One AI subject suggestion was left out because it is missing a field, has a field of the wrong type or is too long (AI subject suggestion filtered out).', [
           'suggestion_type' => gettype($suggestion),
           'suggestion_keys' => is_array($suggestion) ? array_keys($suggestion) : [],
           'subject_length' => is_array($suggestion) && isset($suggestion['subject']) && is_string($suggestion['subject']) ? mb_strlen($suggestion['subject']) : null,
@@ -168,7 +168,7 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
     }
 
     if (empty($validSuggestions)) {
-      $logger->error('AI subject generation returned no valid suggestions', [
+      $logger->error('The AI provider returned no valid subject suggestions (AI subject generation returned no valid suggestions).', [
         'suggestion_count' => count($decoded['suggestions']),
         'post_id' => $postId,
       ]);

@@ -193,7 +193,7 @@ class Scheduler {
 
   public function processPostNotificationNewsletter(NewsletterEntity $newsletter, ScheduledTaskEntity $task) {
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-      'process post notification in scheduler',
+      'Started preparing a post notification for sending (process post notification in scheduler).',
       ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId()]
     );
 
@@ -201,7 +201,7 @@ class Scheduler {
     $segments = $newsletter->getSegmentIds();
     if (empty($segments)) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-        'post notification no segments',
+        'The post notification has no lists to send to (post notification no segments).',
         ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId()]
       );
       $this->deleteQueueOrUpdateNextRunDate($task, $newsletter);
@@ -213,7 +213,7 @@ class Scheduler {
     $subscribersCount = $task->getSubscribers()->count();
     if (empty($subscribersCount)) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-        'post notification no subscribers',
+        'The lists of the post notification have no subscribers (post notification no subscribers).',
         ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId(), 'segment_ids' => $segments]
       );
       $this->deleteQueueOrUpdateNextRunDate($task, $newsletter);
@@ -225,7 +225,7 @@ class Scheduler {
       $notificationHistory = $this->createPostNotificationHistory($newsletter);
     } catch (\Exception $exception) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->error(
-        'creating post notification history failed',
+        'MailPoet could not create the history email of the post notification (creating post notification history failed): ' . $exception->getMessage(),
         ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId(), 'error' => $exception->getMessage()]
       );
       return false;
@@ -235,7 +235,7 @@ class Scheduler {
     $queue = $task->getSendingQueue();
     if (!$queue) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->error(
-        'post notification no queue',
+        'The sending task of the post notification has no sending queue, so MailPoet could not prepare it (post notification no queue).',
         ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId()]
       );
       return false;
@@ -246,7 +246,7 @@ class Scheduler {
     $this->scheduledTasksRepository->flush();
 
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-      'post notification set status to sending',
+      'The post notification is ready and its status is now sending (post notification set status to sending).',
       ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId()]
     );
     return true;

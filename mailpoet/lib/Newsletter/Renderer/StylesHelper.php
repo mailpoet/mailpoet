@@ -280,6 +280,6 @@ class StylesHelper {
     // see https://stackoverflow.com/a/48214207
     return '<!--[if !mso]><!-- --><link href="https://fonts.googleapis.com/css?family='
       . implode("|", $links)
-      . '" rel="stylesheet"><!--<![endif]-->';
+      . '" rel="stylesheet"><!--<![endif]-->'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- Email HTML can't enqueue styles.
   }
 }

@@ -4,10 +4,7 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
-use MailPoet\Logging\LogRepository;
-use MailPoet\Logging\LogsDownload;
-use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Carbon\Carbon;
+use MailPoet\Logging\LogsPageData;
 
 class Logs {
   /** @var AssetsController */
@@ -16,42 +13,21 @@ class Logs {
   /** @var PageRenderer */
   private $pageRenderer;
 
-  /** @var WPFunctions */
-  private $wp;
-
-  /** @var LogRepository */
-  private $logRepository;
+  /** @var LogsPageData */
+  private $logsPageData;
 
   public function __construct(
     AssetsController $assetsController,
     PageRenderer $pageRenderer,
-    WPFunctions $wp,
-    LogRepository $logRepository
+    LogsPageData $logsPageData
   ) {
     $this->assetsController = $assetsController;
     $this->pageRenderer = $pageRenderer;
-    $this->wp = $wp;
-    $this->logRepository = $logRepository;
+    $this->logsPageData = $logsPageData;
   }
 
   public function render() {
     $this->assetsController->setupDataViewsDependencies();
-
-    $dateFrom = (new Carbon())->subDays(7);
-    $data = [
-      'logs_default_from' => $dateFrom->format('Y-m-d'),
-      'logs_filter_options' => [
-        'names' => $this->logRepository->getDistinctNames(),
-      ],
-      'api' => [
-        'root' => rtrim($this->wp->escUrlRaw($this->wp->restUrl()), '/'),
-        'nonce' => $this->wp->wpCreateNonce('wp_rest'),
-      ],
-      'download' => [
-        'action_url' => $this->wp->adminUrl('admin-post.php'),
-        'nonce' => LogsDownload::createNonce($this->wp),
-      ],
-    ];
-    $this->pageRenderer->displayPage('logs.html', $data);
+    $this->pageRenderer->displayPage('logs.html', $this->logsPageData->get());
   }
 }

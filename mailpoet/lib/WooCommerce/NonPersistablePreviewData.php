@@ -64,7 +64,7 @@ trait NonPersistablePreviewData {
     try {
       LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_EMAIL_EDITOR)->error(
         sprintf(
-          'Blocked %s() on preview-only WooCommerce data (%s, ID %s). An integration tried to persist email-preview sample data.',
+          'Blocked %s() on preview-only WooCommerce data (%s, ID %s). An integration tried to persist email-preview sample data. Nothing was written to or removed from the database.',
           $method,
           static::class,
           (string)$this->get_id()

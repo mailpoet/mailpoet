@@ -1339,19 +1339,26 @@ class RoboFile extends \Robo\Tasks {
     }
   }
 
-  public function downloadWooCommerceMembershipsZip(): void {
+  public function downloadWooCommerceMembershipsZip(?string $version = null): void {
     $downloader = $this->createGhDownloader();
     if (!$downloader) {
       $this->yell("Skipping download of WooCommerce Memberships (not authenticated — run 'gh auth login' or set GH_TOKEN)", 40, 'red');
       exit(0);
     }
-    $this->say('Downloading WooCommerce Memberships plugin');
-    $downloader->downloadRawFile(
-      'woocommerce/all-plugins',
-      'product-packages/woocommerce-memberships/woocommerce-memberships.zip',
-      'master',
-      __DIR__ . '/tests/plugins/woocommerce-memberships.zip'
-    );
+    // Memberships has no tags or releases. Each version is a commit in woocommerce/all-plugins.
+    $repo = 'woocommerce/all-plugins';
+    $zipPath = 'product-packages/woocommerce-memberships/woocommerce-memberships.zip';
+    $ref = 'master';
+    if ($version) {
+      try {
+        $ref = $downloader->findCommitShaByVersion($repo, $zipPath, $version);
+      } catch (\Exception $e) {
+        $this->yell($e->getMessage(), 40, 'red');
+        exit(1);
+      }
+    }
+    $this->say('Downloading WooCommerce Memberships plugin ' . ($version ?: 'master') . " ($ref)");
+    $downloader->downloadRawFile($repo, $zipPath, $ref, __DIR__ . '/tests/plugins/woocommerce-memberships.zip');
   }
 
   public function downloadWooCommerceSubscriptionsZip($tag = null) {

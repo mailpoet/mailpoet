@@ -69,6 +69,40 @@ class LogsEndpointsTest extends Test {
     $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $itemsById[(int)$logWithNullName->getId()]['created_at']);
   }
 
+  public function testGetReturnsRawMessageAndContext(): void {
+    $suffix = uniqid();
+    $context = ['task_id' => 5, 'source' => "ctx-{$suffix}"];
+    $withContext = (new LogFactory())
+      ->withName("with-context-{$suffix}")
+      ->withMessage("Task 5 failed {$suffix}")
+      ->withRawMessage('Task %d failed')
+      ->withContext($context)
+      ->create();
+    $legacy = (new LogFactory())
+      ->withName("legacy-{$suffix}")
+      ->withMessage("legacy message {$suffix}")
+      ->create();
+
+    $query = ['search' => $suffix, 'per_page' => 100];
+    $data = $this->get(self::BASE_PATH, ['query' => $query]);
+    $items = [];
+    foreach ($data['data']['items'] as $item) {
+      $items[(int)$item['id']] = $item;
+    }
+    $item = $items[(int)$withContext->getId()];
+    $this->assertSame("Task 5 failed {$suffix}", $item['message']);
+    $this->assertSame('Task %d failed', $item['raw_message']);
+    $this->assertSame($context, $item['context']);
+
+    $legacyItem = $items[(int)$legacy->getId()];
+    $this->assertSame("legacy message {$suffix}", $legacyItem['message']);
+    $this->assertNull($legacyItem['raw_message']);
+    $this->assertSame([], $legacyItem['context']);
+
+    // The decoded array cannot tell {} from [], so check the raw JSON.
+    $this->assertStringContainsString('"context":{}', $this->requestRaw(self::BASE_PATH, 'GET', ['query' => $query]));
+  }
+
   public function testGetSearchesNameAndMessageWithLiteralWildcards(): void {
     $suffix = uniqid();
     $percent = (new LogFactory())->withName("literal%{$suffix}")->withMessage('plain')->create();
@@ -530,6 +564,29 @@ class LogsEndpointsTest extends Test {
     wp_set_current_user($this->editorUserId);
 
     $this->assertSame('rest_forbidden', $this->post(self::BASE_PATH . '/delete', ['json' => ['all' => true]])['code']);
+  }
+
+  public function testNamesReturnsDistinctSortedNamesWithoutEmptyOnes(): void {
+    $suffix = uniqid();
+    (new LogFactory())->withName("names-b-{$suffix}")->create();
+    (new LogFactory())->withName("names-a-{$suffix}")->create();
+    (new LogFactory())->withName("names-b-{$suffix}")->create();
+    (new LogFactory())->withName(null)->create();
+    (new LogFactory())->withName('')->create();
+
+    $names = $this->get(self::BASE_PATH . '/names')['data']['names'];
+
+    $this->assertNotContains('', $names);
+    $this->assertNotContains(null, $names);
+    $this->assertSame($names, array_values(array_unique($names)));
+    $mine = array_values(array_filter($names, fn($name) => strpos($name, $suffix) !== false));
+    $this->assertSame(["names-a-{$suffix}", "names-b-{$suffix}"], $mine);
+  }
+
+  public function testNamesRejectsUsersWithoutPermission(): void {
+    wp_set_current_user($this->editorUserId);
+
+    $this->assertSame('rest_forbidden', $this->get(self::BASE_PATH . '/names')['code']);
   }
 
   /** @return int[] */

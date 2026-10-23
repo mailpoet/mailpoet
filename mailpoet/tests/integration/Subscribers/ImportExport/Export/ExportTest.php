@@ -16,6 +16,7 @@ use MailPoet\Subscribers\SubscriberCustomFieldRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\Router\Endpoints\RemoteStorageStreamWrapper;
+use MailPoet\WP\Functions as WPFunctions;
 
 require_once __DIR__ . '/../../../Router/Endpoints/RemoteStorageStreamWrapper.php';
 
@@ -472,6 +473,7 @@ class ExportTest extends \MailPoetTest {
       $this->customFieldsRepository,
       $this->importExportRepository,
       $this->segmentsRepository,
+      $this->diContainer->get(WPFunctions::class),
       $jsonData
     );
   }

@@ -253,7 +253,7 @@ class Cli {
 
     $segmentIds = $this->resolveSegments($options['segments'], $options['dry_run'], $log);
 
-    $handle = fopen($file, 'r');
+    $handle = fopen($file, 'r'); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Reads the CSV line by line; WP_Filesystem has no streaming API.
     if ($handle === false) {
       throw new \RuntimeException(sprintf('Unable to open file "%s".', $file));
     }
@@ -316,7 +316,7 @@ class Cli {
         $this->processBatch($batch, $columns, $segmentIds, $options, $totals, $log, $statusColumn);
       }
     } finally {
-      fclose($handle);
+      fclose($handle); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Reads the CSV line by line; WP_Filesystem has no streaming API.
     }
 
     return $totals;

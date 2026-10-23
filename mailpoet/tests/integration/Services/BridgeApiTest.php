@@ -71,7 +71,7 @@ class BridgeApiTest extends \MailPoetTest {
     verify($errorLog->getLevel())->equals(Logger::INFO);
     verify($errorLog->getMessage())->stringContainsString('premium.INFO:');
     verify($errorLog->getMessage())->stringContainsString('www.home-example.com');
-    verify($errorLog->getMessage())->stringContainsString('key-validation.failed');
+    verify($errorLog->getMessage())->stringContainsString('The server answered with HTTP code 401 (key-validation.failed).');
     verify($errorLog->getMessage())->stringContainsString('"key_type":"premium"');
   }
 
@@ -106,7 +106,7 @@ class BridgeApiTest extends \MailPoetTest {
     verify($errorLog->getLevel())->equals(Logger::INFO);
     verify($errorLog->getMessage())->stringContainsString('mss.INFO:');
     verify($errorLog->getMessage())->stringContainsString('www.home-example.com');
-    verify($errorLog->getMessage())->stringContainsString('key-validation.failed');
+    verify($errorLog->getMessage())->stringContainsString('The server answered with HTTP code 401 (key-validation.failed).');
     verify($errorLog->getMessage())->stringContainsString('"key_type":"mss"');
   }
 
@@ -149,7 +149,7 @@ class BridgeApiTest extends \MailPoetTest {
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
     verify($errorLog->getLevel())->equals(Logger::ERROR);
-    verify($errorLog->getMessage())->stringContainsString('getAuthorizedSenderDomains API response was not in expected format.');
+    verify($errorLog->getMessage())->stringContainsString('getAuthorizedSenderDomains API response was not in expected format. MailPoet could not read it.');
     verify($errorLog->getMessage())->stringContainsString('trololo');
   }
 
@@ -182,7 +182,7 @@ class BridgeApiTest extends \MailPoetTest {
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
     verify($errorLog->getLevel())->equals(Logger::ERROR);
-    verify($errorLog->getMessage())->stringContainsString('createAuthorizedSenderDomain API response was not in expected format.');
+    verify($errorLog->getMessage())->stringContainsString('createAuthorizedSenderDomain API response was not in expected format. MailPoet could not read it.');
     verify($errorLog->getMessage())->stringContainsString('trololo');
   }
 
@@ -297,7 +297,7 @@ class BridgeApiTest extends \MailPoetTest {
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
     verify($errorLog->getLevel())->equals(Logger::ERROR);
-    verify($errorLog->getMessage())->stringContainsString('getBouncesReport API call failed.');
+    verify($errorLog->getMessage())->stringContainsString('getBouncesReport API call failed. MailPoet did not get the bounces report from the MailPoet Sending Service.');
   }
 
   public function testItThrowsWithoutACodeWhenBouncesReportPayloadIsMalformed() {
@@ -329,7 +329,7 @@ class BridgeApiTest extends \MailPoetTest {
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
     verify($errorLog->getLevel())->equals(Logger::ERROR);
-    verify($errorLog->getMessage())->stringContainsString('getBouncesReport API response was not in expected format.');
+    verify($errorLog->getMessage())->stringContainsString('getBouncesReport API response was not in expected format. MailPoet could not read it.');
   }
 
   public function testItRejectsBouncesReportRecipientsWithoutAnEmail() {
@@ -367,7 +367,7 @@ class BridgeApiTest extends \MailPoetTest {
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
     verify($errorLog->getLevel())->equals(Logger::ERROR);
-    verify($errorLog->getMessage())->stringContainsString('verifyAuthorizedSenderDomain API response was not in expected format.');
+    verify($errorLog->getMessage())->stringContainsString('verifyAuthorizedSenderDomain API response was not in expected format. MailPoet could not read it.');
     verify($errorLog->getMessage())->stringContainsString('trololo');
   }
 

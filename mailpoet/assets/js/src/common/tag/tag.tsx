@@ -19,6 +19,7 @@ type Props = {
   isInverted?: boolean;
   className?: string;
   data?: string;
+  title?: string;
 };
 
 export function Tag({

@@ -1,0 +1,5 @@
+<% autoescape 'js' %>
+  var mailpoet_logs_default_from = '<%= logs_default_from %>';
+  var mailpoet_logs_api = <%= json_encode(api) %>;
+  var mailpoet_logs_download = <%= json_encode(download) %>;
+<% endautoescape %>

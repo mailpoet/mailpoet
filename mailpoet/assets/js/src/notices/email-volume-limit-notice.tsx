@@ -1,5 +1,5 @@
+import Moment from 'moment';
 import ReactStringReplace from 'react-string-replace';
-import ReactHtmlParser from 'react-html-parser';
 import { MailPoet } from 'mailpoet';
 import { Notice } from 'notices/notice';
 import { withBoundary } from 'common';
@@ -33,12 +33,11 @@ function EmailVolumeLimitNotice(): JSX.Element {
     window.location.reload();
   };
 
-  const date = new Date();
-  const firstDayOfTheNextMonth = new Date(
-    date.getFullYear(),
-    date.getMonth() + 1,
-    1,
-  );
+  // MailPoet.Date prints dates in the site time zone, so calculate in it too.
+  const firstDayOfTheNextMonth = Moment.utc()
+    .utcOffset(parseFloat(window.mailpoet_date_offset || '0'))
+    .add(1, 'month')
+    .startOf('month');
   let toContinueUpgradeYourPlanOrWaitUntil = ReactStringReplace(
     MailPoet.I18n.t('toContinueUpgradeYourPlanOrWaitUntil'),
     /\[link](.*?)\[\/link]/g,
@@ -51,9 +50,10 @@ function EmailVolumeLimitNotice(): JSX.Element {
 
   toContinueUpgradeYourPlanOrWaitUntil = ReactStringReplace(
     toContinueUpgradeYourPlanOrWaitUntil,
-    /<b>\[date]<\/b>\./g,
-    () =>
-      ReactHtmlParser(`<b>${MailPoet.Date.short(firstDayOfTheNextMonth)}</b>.`),
+    /(<b>\[date]<\/b>)/g,
+    (_match, index) => (
+      <b key={`date-${index}`}>{MailPoet.Date.short(firstDayOfTheNextMonth)}</b>
+    ),
   );
 
   return (

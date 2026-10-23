@@ -75,7 +75,7 @@ class PostNotificationScheduler {
 
   public function transitionHook($newStatus, $oldStatus, $post) {
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-      'transition post notification hook initiated',
+      'A post changed status, so MailPoet checks whether to schedule a post notification (transition post notification hook initiated).',
       [
         'post_id' => $post->ID,
         'new_status' => $newStatus,
@@ -91,7 +91,7 @@ class PostNotificationScheduler {
 
   public function schedulePostNotification($postId) {
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-      'schedule post notification hook',
+      'MailPoet is looking for post notifications to schedule for a post (schedule post notification hook).',
       ['post_id' => $postId]
     );
     $newsletters = $this->newslettersRepository->findActiveByTypes([NewsletterEntity::TYPE_NOTIFICATION]);
@@ -149,7 +149,7 @@ class PostNotificationScheduler {
     $scheduledTask->setSendingQueue($sendingQueue);
 
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-      'schedule post notification',
+      'A post notification was scheduled (schedule post notification).',
       [
         'sending_task' => $scheduledTask->getId(),
         'scheduled_at' => $nextRunDate->format(DateTime::DEFAULT_DATE_TIME_FORMAT),

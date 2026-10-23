@@ -154,7 +154,7 @@ class StatisticsOpensRepository extends Repository {
     $this->missingTrackingColumnLogged = true;
     try {
       LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->warning(
-        'Engagement scores count every send because statistics_newsletters.sent_with_tracking could not be read',
+        'Engagement scores count every send because statistics_newsletters.sent_with_tracking could not be read: ' . $e->getMessage(),
         ['error' => $e->getMessage()]
       );
     } catch (\Throwable $loggingError) {

@@ -99,7 +99,7 @@ class DaemonRun {
     // If there was still some execution time left, the daemon should have been continued.
     $lastDurationWasTooShort = ($this->lastRunDuration < self::SHORT_DURATION_THRESHOLD) && ($this->remainingExecutionLimit > 0);
     if ($lastDurationWasTooShort) {
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_CRON)->info('Daemon run ended too early!', [
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_CRON)->info('Daemon run ended too early! The background task runner stopped while time was left, so no new run was started right away.', [
         'duration' => $this->lastRunDuration,
         'remainingLimit' => $this->remainingExecutionLimit,
       ]);

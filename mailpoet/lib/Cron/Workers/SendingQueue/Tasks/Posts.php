@@ -25,7 +25,7 @@ class Posts {
       return false;
     }
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-      'extract and save posts - before',
+      'Looking for the posts in the email (extract and save posts - before).',
       ['newsletter_id' => $newsletter->getId()]
     );
     preg_match_all(
@@ -40,7 +40,7 @@ class Posts {
     $parent = $newsletter->getParent(); // parent post notification
     if (!$parent instanceof NewsletterEntity) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-        'parent post has not been found',
+        'The parent post notification was not found, so the posts could not be extracted and saved (parent post has not been found).',
         ['newsletter_id' => $newsletter->getId()]
       );
       return false;
@@ -51,7 +51,7 @@ class Posts {
     }
     $this->newsletterPostRepository->flush();
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-      'extract and save posts - after',
+      'Saved the posts found in the email (extract and save posts - after).',
       ['newsletter_id' => $newsletter->getId(), 'matched_posts_ids' => $matchedPostsIds]
     );
     return true;

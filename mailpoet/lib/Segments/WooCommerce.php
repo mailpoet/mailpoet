@@ -150,12 +150,12 @@ class WooCommerce {
         $data = [
           'is_woocommerce_user' => 1,
         ];
-        if (!empty($newCustomer)) {
+        // Until the account confirms the address, keep the subscriber's own source and name.
+        $isLinkUnconfirmed = $this->wpUserSubscriberLink->isUnconfirmed($wpUserId);
+        if (!empty($newCustomer) && !$isLinkUnconfirmed) {
           $data['source'] = Source::WOOCOMMERCE_USER;
         }
         $data['id'] = $subscriber->getId();
-        // Until the account confirms the address, keep the subscriber's own name.
-        $isLinkUnconfirmed = $this->wpUserSubscriberLink->isUnconfirmed($wpUserId);
         if ($wpUser->first_name && !$isLinkUnconfirmed) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
           $data['first_name'] = $wpUser->first_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         }
@@ -327,13 +327,19 @@ class WooCommerce {
     // Mark WP users having a customer role as WooCommerce subscribers
     global $wpdb;
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    // Users who haven't confirmed the address of their linked subscriber keep its source
     $this->connection->executeQuery("
       UPDATE LOW_PRIORITY {$subscribersTable} mps
         JOIN {$wpdb->users} wu ON mps.wp_user_id = wu.id
         JOIN {$wpdb->usermeta} wpum ON wu.id = wpum.user_id AND wpum.meta_key = :capabilities
-      SET is_woocommerce_user = 1, source = :source
+        LEFT JOIN {$wpdb->usermeta} linkMark ON wu.id = linkMark.user_id AND linkMark.meta_key = :unconfirmedLinkMetaKey
+      SET is_woocommerce_user = 1, source = IF(linkMark.umeta_id IS NULL, :source, mps.source)
         WHERE wpum.meta_value LIKE '%\"customer\"%'
-    ", ['capabilities' => $wpdb->prefix . 'capabilities', 'source' => Source::WOOCOMMERCE_USER]);
+    ", [
+      'capabilities' => $wpdb->prefix . 'capabilities',
+      'unconfirmedLinkMetaKey' => $this->wpUserSubscriberLink->getUnconfirmedMetaKey(),
+      'source' => Source::WOOCOMMERCE_USER,
+    ]);
   }
 
   private function insertSubscriberFromOrder(\WC_Order $wcOrder, string $status, bool &$wasNewlyCreated = false): ?string {

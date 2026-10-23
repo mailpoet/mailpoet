@@ -3,9 +3,9 @@ import { t } from 'common/functions';
 import { Input } from 'common/form/input/input';
 import { Label, Inputs, SegmentsSelect } from 'settings/components';
 import { Datepicker } from 'common/datepicker/datepicker';
-import { MailPoet } from 'mailpoet';
 import { __ } from '@wordpress/i18n';
 import { CopyToClipboardButton } from 'common/button/copy-to-clipboard-button';
+import { buildShortcode } from './build-shortcode';
 
 type Props = {
   name: 'mailpoet_archive' | 'mailpoet_subscribers_count';
@@ -21,37 +21,15 @@ export function Shortcode({ name, title, description }: Props) {
   const [subjectContains, setSubjectContains] = useState<string>('');
   const [limit, setLimit] = useState<string>('');
 
-  let shortcode = `[${name}`;
-
-  if (segments.length) {
-    shortcode += ` segments="${segments.join(',')}"`;
-  }
-
-  if (startDate) {
-    shortcode += ` start_date="${MailPoet.Date.format(startDate, {
-      format: 'Y-m-d',
-    })}"`;
-  }
-
-  if (endDate) {
-    shortcode += ` end_date="${MailPoet.Date.format(endDate, {
-      format: 'Y-m-d',
-    })}"`;
-  }
-
-  if (lastNDays && parseInt(lastNDays, 10) > 0) {
-    shortcode += ` in_the_last_days="${lastNDays}"`;
-  }
-
-  if (subjectContains && subjectContains.length > 0) {
-    shortcode += ` subject_contains="${subjectContains}"`;
-  }
-
-  if (limit && parseInt(limit, 10) > 0) {
-    shortcode += ` limit="${limit}"`;
-  }
-
-  shortcode += ']';
+  const shortcode = buildShortcode({
+    name,
+    segments,
+    startDate,
+    endDate,
+    lastNDays,
+    subjectContains,
+    limit,
+  });
 
   const selectText = (event) => {
     event.target.focus();

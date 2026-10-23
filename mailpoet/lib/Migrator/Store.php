@@ -43,13 +43,17 @@ class Store {
     ", [$name]);
   }
 
+  /**
+   * A migration already stored as completed stays completed, e.g. when the process dies
+   * right after that write and the fatal error handler reports the migration as failed.
+   */
   public function failMigration(string $name, string $error): void {
     $this->connection->executeStatement("
       UPDATE {$this->table}
       SET
         completed_at = current_timestamp(),
         error = ?
-      WHERE name = ?
+      WHERE name = ? AND completed_at IS NULL
     ", [$error ?: 'Unknown error', $name]);
   }
 
