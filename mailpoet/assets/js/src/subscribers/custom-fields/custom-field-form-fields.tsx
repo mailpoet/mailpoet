@@ -10,11 +10,7 @@ import {
   ToggleControl,
   __experimentalSpacer as Spacer,
 } from '@wordpress/components';
-import {
-  DragDropContext,
-  Draggable,
-  type DropResult,
-} from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, type DropResult } from '@hello-pangea/dnd';
 import { StrictModeDroppable as Droppable } from 'form-editor/utils/strict-mode-droppable';
 import type {
   CustomField,
