@@ -1,12 +1,20 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { __ } from '@wordpress/i18n';
 import { CheckboxControl, Dashicon } from '@wordpress/components';
 import { partial } from 'lodash';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
-function PreviewItem({ segment, removeSegment, onCheck }) {
+function PreviewItem({ segment, removeSegment, onCheck, dragHandleProps }) {
   return (
     <div className="mailpoet-form-segments-settings-list" key={segment.id}>
+      <div
+        {...dragHandleProps}
+        aria-label={__('Drag to reorder', 'mailpoet')}
+        className="mailpoet-form-segments-drag-handle"
+      >
+        <Dashicon icon="menu" />
+      </div>
       <CheckboxControl
         label={segment.name}
         defaultChecked={!!segment.isChecked}
@@ -31,6 +39,7 @@ PreviewItem.propTypes = {
   }).isRequired,
   onCheck: PropTypes.func.isRequired,
   removeSegment: PropTypes.func.isRequired,
+  dragHandleProps: PropTypes.shape({}),
 };
 
 function Preview({
@@ -75,12 +84,9 @@ function Preview({
     segmentsWhileMoved.map((segment, index) => (
       <Draggable key={segment.id} draggableId={segment.id} index={index}>
         {(provided) => (
-          <div
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-          >
+          <div ref={provided.innerRef} {...provided.draggableProps}>
             <PreviewItem
+              dragHandleProps={provided.dragHandleProps}
               key={segment.id}
               index={index}
               segment={segment}

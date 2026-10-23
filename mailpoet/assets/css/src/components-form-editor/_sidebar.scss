@@ -76,22 +76,50 @@
 
 .mailpoet-form-segments-settings-list {
   align-items: center;
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto auto minmax(0, 1fr) 20px;
 
   .components-base-control {
-    flex-grow: 1;
+    grid-column: 2 / 4;
     margin: 8px 0;
+    min-width: 0;
 
     .components-base-control__field {
       margin: 0;
     }
   }
 
+  input[type='checkbox'] {
+    margin: 0;
+  }
+
+  input[type='text'] {
+    grid-column: 3;
+    min-width: 0;
+  }
+
   .mailpoet-form-segments-segment-remove {
     cursor: pointer;
-    flex-grow: 0;
+    grid-column: 4;
     margin: 8px 0;
+  }
+}
+
+.mailpoet-form-segments-drag-handle {
+  align-items: center;
+  align-self: center;
+  cursor: grab;
+  display: flex;
+  justify-content: center;
+  min-width: 20px;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  .dashicon {
+    margin: 0;
   }
 }
 
