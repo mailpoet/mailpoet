@@ -59,6 +59,7 @@ describe('coupon code restrictToSubscriber extension', () => {
           },
         },
         category: 'text',
+        name: COUPON_CODE_BLOCK_NAME,
         title: 'Coupon Code',
       },
       COUPON_CODE_BLOCK_NAME,
@@ -81,6 +82,7 @@ describe('coupon code restrictToSubscriber extension', () => {
         },
       },
       category: 'text',
+      name: COUPON_CODE_BLOCK_NAME,
       title: 'Coupon Code',
     };
 
