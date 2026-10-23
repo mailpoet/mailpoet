@@ -1,5 +1,5 @@
 import { isValid, parseISO } from 'date-fns';
-import { MailPoet } from 'mailpoet';
+import { formatPickedDate } from 'common/datepicker/format-picked-date';
 
 export const convertDateToString = (
   value: Date | [Date, Date] | null,
@@ -12,7 +12,7 @@ export const convertDateToString = (
       'convertDateToString can process only single date array given',
     );
   }
-  return MailPoet.Date.format(value, { format: 'Y-m-d' });
+  return formatPickedDate(value);
 };
 
 export const parseDate = (value: string): Date | undefined => {
