@@ -1,9 +1,12 @@
 import classnames from 'classnames';
-import ReactDatePicker, { ReactDatePickerProps } from 'react-datepicker';
+import ReactDatePicker, { DatePickerProps } from 'react-datepicker';
 import { MailPoet } from 'mailpoet';
 import { withBoundary } from '../error-boundary';
 
-type Props = ReactDatePickerProps & {
+type Props = Extract<
+  DatePickerProps,
+  { selectsRange?: false; selectsMultiple?: false }
+> & {
   className?: string;
   dimension?: 'small';
   isFullWidth?: boolean;
