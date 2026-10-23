@@ -31,3 +31,4 @@ vendor-prefixed
 # Build outputs from packages/js workspaces
 /packages/js/components/build-module
 /packages/js/components/build-style
+/tools/mcp-server/dist
