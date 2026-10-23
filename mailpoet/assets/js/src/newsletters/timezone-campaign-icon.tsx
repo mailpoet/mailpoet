@@ -16,11 +16,7 @@ export function TimezoneCampaignIcon({ newsletterId, sent }: Props) {
       data-automation-id={`timezone_campaign_status_${newsletterId}`}
       style={{ marginLeft: '4px' }}
     >
-      <Icon
-        icon={globe}
-        size={20}
-        style={{ fill: 'currentColor', verticalAlign: 'middle' }}
-      />
+      <Icon icon={globe} size={20} style={{ verticalAlign: 'middle' }} />
       <Tooltip place="right" id={tooltipId}>
         {sent
           ? __("Sent in subscriber's time zone", 'mailpoet')
