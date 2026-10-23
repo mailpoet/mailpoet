@@ -160,9 +160,10 @@ jobs:
 
   security_analysis:
     name: 'Semgrep'
-    # Pull requests from forks get no secrets, so there is no key to clone the
-    # rules with. Everywhere else a missing key must fail the job.
-    if: ${{ !github.event.pull_request.head.repo.fork }}
+    # Pull requests from forks and Dependabot get no Actions secrets, so there
+    # is no key to clone the rules with. Everywhere else a missing key must
+    # fail the job.
+    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
