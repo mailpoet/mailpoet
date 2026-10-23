@@ -20,7 +20,7 @@ describe('Latest Posts protected content', () => {
   it('passes the query context to the blocks that print post content', () => {
     PROTECTED_POST_BLOCKS.forEach((name) => {
       const settings = addPasswordProtectedContext(
-        { title: name, category: 'theme', attributes: {} },
+        { name, title: name, category: 'theme', attributes: {} },
         name,
       );
       expect(settings.usesContext).to.deep.equal([QUERY_CONTEXT]);
@@ -30,6 +30,7 @@ describe('Latest Posts protected content', () => {
   it('keeps the context keys the block already asked for', () => {
     const settings = addPasswordProtectedContext(
       {
+        name: 'core/post-excerpt',
         title: 'Excerpt',
         category: 'theme',
         attributes: {},
@@ -45,7 +46,12 @@ describe('Latest Posts protected content', () => {
   });
 
   it('leaves other blocks untouched', () => {
-    const settings = { title: 'Paragraph', category: 'text', attributes: {} };
+    const settings = {
+      name: 'core/paragraph',
+      title: 'Paragraph',
+      category: 'text',
+      attributes: {},
+    };
     expect(addPasswordProtectedContext(settings, 'core/paragraph')).to.equal(
       settings,
     );
@@ -53,6 +59,7 @@ describe('Latest Posts protected content', () => {
 
   it('adds the context key only once', () => {
     const settings = {
+      name: 'core/post-excerpt',
       title: 'Excerpt',
       category: 'theme',
       attributes: {},

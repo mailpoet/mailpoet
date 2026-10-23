@@ -6,6 +6,7 @@
   "category": "mailpoet",
   "parent": ["mailpoet/latest-posts"],
   "textdomain": "mailpoet",
+  "attributes": {},
   "icon": "layout",
   "supports": {
     "html": false,
