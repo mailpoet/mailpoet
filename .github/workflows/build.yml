@@ -114,5 +114,6 @@ jobs:
         with:
           name: mailpoet-build
           path: ${{ runner.temp }}/build.tar.zst
-          retention-days: 1
+          # Long enough for “Re-run failed jobs” on the next days
+          retention-days: 7
           compression-level: 0
