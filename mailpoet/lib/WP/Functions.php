@@ -830,13 +830,6 @@ class Functions {
     return has_blocks($post);
   }
 
-  /**
-   * @param int|\WP_Post|null $post
-   */
-  public function postPasswordRequired($post = null): bool {
-    return post_password_required($post);
-  }
-
   public function stripShortcodes(string $content): string {
     return strip_shortcodes($content);
   }

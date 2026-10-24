@@ -8,6 +8,28 @@ class BlockPostQuery {
   const DEFAULT_POSTS_PER_PAGE = 10;
 
   /**
+   * How a post block handles posts that need a password: render them without
+   * their content, leave them out, or render them like any other post.
+   */
+  const PASSWORD_PROTECTED_TITLE_ONLY = 'title_only';
+  const PASSWORD_PROTECTED_EXCLUDE = 'exclude';
+  const PASSWORD_PROTECTED_FULL = 'full';
+
+  /**
+   * Anything unexpected becomes title_only, the handling that keeps the content
+   * out, so every caller answers the same way.
+   *
+   * @param mixed $mode
+   * @return 'title_only'|'exclude'|'full'
+   */
+  public static function normalizePasswordProtected($mode): string {
+    if ($mode === self::PASSWORD_PROTECTED_EXCLUDE || $mode === self::PASSWORD_PROTECTED_FULL) {
+      return $mode;
+    }
+    return self::PASSWORD_PROTECTED_TITLE_ONLY;
+  }
+
+  /**
    * @var array{
    *     amount?: int,
    *     offset?: int,
@@ -19,6 +41,7 @@ class BlockPostQuery {
    *     terms?: array{'taxonomy': string, 'id': int}[],
    *     inclusionType?: 'include'|'exclude',
    *     excludeOutOfStock?: bool,
+   *     passwordProtected?: 'title_only'|'exclude'|'full',
    * } $args
    */
   public $args = [];
@@ -60,6 +83,7 @@ class BlockPostQuery {
    *     terms?: array{'taxonomy': string, 'id': int}[],
    *     inclusionType?: 'include'|'exclude',
    *     excludeOutOfStock?: bool,
+   *     passwordProtected?: 'title_only'|'exclude'|'full',
    *    },
    *    postsToExclude?: int[],
    *    newsletterId?: int|false|null,
@@ -165,6 +189,10 @@ class BlockPostQuery {
     if (!empty($this->includeProductIds)) {
       $parameters['post__in'] = $this->includeProductIds;
       // Keep the posts_per_page limit to ensure we don't return too many products
+    }
+
+    if (self::normalizePasswordProtected($this->args['passwordProtected'] ?? null) === self::PASSWORD_PROTECTED_EXCLUDE) {
+      $parameters['has_password'] = false;
     }
 
     // WP posts with the type attachment have always post_status `inherit`
