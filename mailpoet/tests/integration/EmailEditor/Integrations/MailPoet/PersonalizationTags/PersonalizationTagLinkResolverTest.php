@@ -77,6 +77,22 @@ class PersonalizationTagLinkResolverTest extends \MailPoetTest {
     $this->assertSame(Personalizer::RENDERING_CONTEXT_HREF, $receivedContext[Personalizer::RENDERING_CONTEXT_KEY]);
   }
 
+  public function testItResolvesEmbeddedTokensForARecipient(): void {
+    $receivedContext = null;
+    $this->registry->register($this->createTag(function (array $context) use (&$receivedContext): string {
+      $receivedContext = $context;
+      return 'https://example.com/for/' . $context['recipient_email'];
+    }));
+
+    $url = $this->resolver->resolveEmbeddedTokensForRecipient('https://example.com/?go=[acme/test-url]', $this->newsletter, $this->subscriber, $this->queue, true);
+
+    $this->assertSame('https://example.com/?go=https://example.com/for/recipient@example.com', $url);
+    $this->assertIsArray($receivedContext);
+    $this->assertSame($this->queue->getId(), $receivedContext['queue_id']);
+    $this->assertTrue($receivedContext['is_preview']);
+    $this->assertSame('https://example.com/plain', $this->resolver->resolveEmbeddedTokensForRecipient('https://example.com/plain', $this->newsletter, $this->subscriber, $this->queue));
+  }
+
   public function testItLooksTagUpOnlyAfterContextBuildRegisteredIt(): void {
     $run = (new AutomationRunFactory())->create();
     $this->queue->setMeta(['automation' => ['run_id' => $run->getId()]]);
@@ -140,6 +156,91 @@ class PersonalizationTagLinkResolverTest extends \MailPoetTest {
       $this->resolver->resolveEmbeddedTokens('http://[acme/test-url]?utm=1', $context)
     );
     $this->assertSame('https://example.com/plain', $this->resolver->resolveEmbeddedTokens('https://example.com/plain', $context));
+  }
+
+  public function testItResolvesTokensEmbeddedInMarkdownLinkTargets(): void {
+    $this->registry->register($this->createTag(function (): string {
+      return 'https://example.com/resolved';
+    }));
+    $context = ['recipient_email' => 'recipient@example.com'];
+
+    // bracketed and URL-encoded tokens resolve; an unregistered token, a shortcode and a plain URL stay as they are
+    $text = '[Profile](https://example.com/?email=[mailpoet/subscriber-email])'
+      . ' [Enc](https://example.com/?email=%5Bmailpoet/subscriber-email%5D&go=[acme/test-url])'
+      . ' [Dead](https://example.com/?x=[acme/not-registered])'
+      . ' [Legacy](https://example.com/?e=[subscriber:email])'
+      . ' [Plain](https://example.com/plain)';
+    $this->assertSame(
+      '[Profile](https://example.com/?email=recipient@example.com)'
+      . ' [Enc](https://example.com/?email=recipient@example.com&go=https://example.com/resolved)'
+      . ' [Dead](https://example.com/?x=[acme/not-registered])'
+      . ' [Legacy](https://example.com/?e=[subscriber:email])'
+      . ' [Plain](https://example.com/plain)',
+      $this->resolver->resolveMarkdownLinks($text, $context)
+    );
+  }
+
+  public function testItInterceptsEveryRegisteredTokenEmbeddedInAMarkdownTarget(): void {
+    // registered, but resolves to nothing for this recipient
+    $this->registry->register($this->createTag(function (): string {
+      return '';
+    }));
+    $context = ['recipient_email' => 'recipient@example.com'];
+    $calls = [];
+    $interceptor = function (string $value, string $token) use (&$calls): string {
+      $calls[] = [$value, $token];
+      return '{{p' . count($calls) . '}}';
+    };
+
+    $text = '[Profile](https://example.com/?email=[mailpoet/subscriber-email]&go=[acme/test-url])'
+      . ' [Dead](https://example.com/?x=[acme/not-registered])'
+      . ' [Plain](https://example.com/plain)';
+    $this->assertSame(
+      '[Profile](https://example.com/?email={{p1}}&go={{p2}}) [Dead](https://example.com/?x=[acme/not-registered]) [Plain](https://example.com/plain)',
+      $this->resolver->resolveMarkdownLinks($text, $context, $interceptor)
+    );
+    // One call per registered token, keyed by the token, even when it resolved to nothing;
+    // unregistered tokens stay literal for every recipient. Either way the output does not
+    // depend on the recipient's data.
+    $this->assertSame([
+      ['recipient@example.com', '[mailpoet/subscriber-email]'],
+      ['', '[acme/test-url]'],
+    ], $calls);
+  }
+
+  public function testItReplacesEveryOccurrenceOfATokenWithOneInterceptorCall(): void {
+    $this->registry->register($this->createTag(function (): string {
+      return 'https://example.com/resolved';
+    }));
+    $calls = 0;
+    $interceptor = function () use (&$calls): string {
+      $calls++;
+      return '{{p}}';
+    };
+
+    $url = $this->resolver->resolveEmbeddedTokens('https://example.com/?a=[acme/test-url]&b=[acme/test-url]', ['recipient_email' => 'recipient@example.com'], $interceptor);
+
+    $this->assertSame('https://example.com/?a={{p}}&b={{p}}', $url);
+    $this->assertSame(1, $calls);
+  }
+
+  public function testItRebuildsATargetTheSameWayForEveryRecipientWithAnInterceptor(): void {
+    // registered, but resolves to nothing for this recipient
+    $this->registry->register($this->createTag(function (): string {
+      return '';
+    }));
+    $context = ['recipient_email' => 'recipient@example.com'];
+    $placeholders = 0;
+    $interceptor = function () use (&$placeholders): string {
+      return '{{p' . (++$placeholders) . '}}';
+    };
+    // a forced scheme in front of a leading token, and a URL-encoded token
+    $text = '[A](http://[acme/test-url]?x=1) [B](https://example.com/?a=%5Bacme/test-url%5D)';
+
+    // the scheme is dropped and the encoded target decoded although the value is empty
+    $this->assertSame('[A]({{p1}}?x=1) [B](https://example.com/?a={{p2}})', $this->resolver->resolveMarkdownLinks($text, $context, $interceptor));
+    // without an interceptor an empty value leaves both targets as they are
+    $this->assertSame($text, $this->resolver->resolveMarkdownLinks($text, $context));
   }
 
   public function testItResolvesMailPoetLinkTags(): void {
