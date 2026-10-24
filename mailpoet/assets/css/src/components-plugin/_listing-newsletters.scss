@@ -320,7 +320,7 @@ h1.title.mailpoet-newsletter-listing-heading {
 .mailpoet-listing-stats-too-early {
   line-height: 18px;
   margin-top: 5px;
-  max-width: 200px;
+  max-width: 160px;
   overflow-wrap: break-word;
   white-space: normal;
   width: max-content;
@@ -348,6 +348,32 @@ h1.title.mailpoet-newsletter-listing-heading {
   color: $color-primary-inactive;
   font-size: $font-size-extra-small;
   font-weight: normal;
+  max-width: 160px;
+  overflow-wrap: break-word;
+}
+
+// DataViews keeps every table cell on one line, so long subjects, list
+// badges and status buttons widen the table past the page.
+// DataViews' own `.dataviews-title-field a` rule also sets nowrap on the
+// subject link, so the subject needs `.mailpoet-listing-title` as well.
+.mailpoet-newsletters-dataviews {
+  .dataviews-view-table tbody .dataviews-view-table__cell-content-wrapper {
+    white-space: normal;
+  }
+
+  .mailpoet-listing-title {
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  .mailpoet-listing-queue-status {
+    flex-wrap: wrap;
+  }
+
+  // Keep each list badge on one line; badges wrap as whole units.
+  .mailpoet-tags .mailpoet-tag {
+    white-space: nowrap;
+  }
 }
 
 .mailpoet-share-email-modal.components-modal__frame {
