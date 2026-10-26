@@ -89,6 +89,9 @@ parameters:
   dynamicConstantNames:
     - MAILPOET_PREMIUM_INITIALIZED
     - MAILPOET_PREMIUM_VERSION
+    - WC_BOOKINGS_VERSION
+    - AUTOMATEWOO_VERSION
+    - WC_VERSION
   doctrine:
     objectManagerLoader: create-entity-manager.php
 
@@ -107,4 +110,8 @@ includes:
   - vendor/phpstan/phpstan-phpunit/extension.neon
   - vendor/phpstan/phpstan-doctrine/rules.neon
   - vendor/szepeviktor/phpstan-wordpress/extension.neon
+  # No minimum version is declared for these plugins, so use latest (see the woocommerce/php-stubs README); pin x.y.0 when one is declared
+  - vendor/woocommerce/php-stubs/stubs/woocommerce-subscriptions/latest.neon
+  - vendor/woocommerce/php-stubs/stubs/woocommerce-bookings/latest.neon
+  - vendor/woocommerce/php-stubs/stubs/automatewoo/latest.neon
   - phpstan-baseline.neon
