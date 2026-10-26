@@ -186,7 +186,8 @@ class Renderer {
           $e->getMessage(),
           ['newsletter_id' => $newsletter->getId()]
         );
-        if (!$sendingQueue || !NewsletterReplayMetadata::isLatestNewsletterReplayMeta($sendingQueue->getMeta())) {
+        // only a render for sending changes the email's status; previews just log
+        if ($sendingQueue && !NewsletterReplayMetadata::isLatestNewsletterReplayMeta($sendingQueue->getMeta())) {
           $this->newslettersRepository->setAsCorrupt($newsletter);
         }
         if ($sendingQueue) {
