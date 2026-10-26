@@ -58,6 +58,10 @@ class WordPress {
     return current_user_can($capability, ...$args);
   }
 
+  /**
+   * @param non-falsy-string $namespace
+   * @param non-falsy-string $route
+   */
   public function registerRestRoute(string $namespace, string $route, array $args = [], bool $override = false): bool {
     return register_rest_route($namespace, $route, $args, $override);
   }

@@ -291,6 +291,9 @@ JAVASCRIPT,
     return Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset($name);
   }
 
+  /**
+   * @param non-empty-string $handle
+   */
   private function registerFooterScript(string $handle, string $src, array $deps = []): void {
     $this->wp->wpRegisterScript($handle, $src, $deps, Env::$version, true);
   }

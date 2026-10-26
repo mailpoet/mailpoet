@@ -33,26 +33,44 @@ class API {
     });
   }
 
+  /**
+   * @param non-falsy-string $route
+   */
   public function registerGetRoute(string $route, string $endpoint): void {
     $this->registerRoute($route, $endpoint, 'GET');
   }
 
+  /**
+   * @param non-falsy-string $route
+   */
   public function registerPostRoute(string $route, string $endpoint): void {
     $this->registerRoute($route, $endpoint, 'POST');
   }
 
+  /**
+   * @param non-falsy-string $route
+   */
   public function registerPutRoute(string $route, string $endpoint): void {
     $this->registerRoute($route, $endpoint, 'PUT');
   }
 
+  /**
+   * @param non-falsy-string $route
+   */
   public function registerPatchRoute(string $route, string $endpoint): void {
     $this->registerRoute($route, $endpoint, 'PATCH');
   }
 
+  /**
+   * @param non-falsy-string $route
+   */
   public function registerDeleteRoute(string $route, string $endpoint): void {
     $this->registerRoute($route, $endpoint, 'DELETE');
   }
 
+  /**
+   * @param non-falsy-string $route
+   */
   protected function registerRoute(string $route, string $endpointClass, string $method): void {
     $schema = array_map(function (Schema $field) {
       return $field->toArray();
