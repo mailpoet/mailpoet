@@ -85,7 +85,7 @@ export function TagsPage() {
     pages: 0,
     subscriber_count_buckets: [],
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [selection, setSelection] = useState<string[]>([]);
   const [formState, setFormState] = useState<FormState>({ kind: 'closed' });
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -116,6 +116,8 @@ export function TagsPage() {
     const requestId = latestRequestIdRef.current + 1;
     latestRequestIdRef.current = requestId;
     setIsLoading(true);
+    // A clamped page triggers a new request, so the listing stays loading.
+    let refetching = false;
     try {
       const requestedPage = view.page ?? 1;
       const result = await getTags({
@@ -137,6 +139,7 @@ export function TagsPage() {
           ...currentView,
           page: lastValidPage,
         }));
+        refetching = true;
         return;
       }
 
@@ -153,7 +156,9 @@ export function TagsPage() {
     } finally {
       if (requestId === latestRequestIdRef.current) {
         completedInitialRequestRef.current = true;
-        setIsLoading(false);
+        if (!refetching) {
+          setIsLoading(false);
+        }
       }
     }
   }, [view.search, view.sort, view.page, view.perPage, view.filters]);
