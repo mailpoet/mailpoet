@@ -868,7 +868,7 @@ class RendererTest extends \MailPoetTest {
       $this->fail('Error preparing data for test: failed to retrieve file contents.');
     }
 
-    $upload = wp_upload_bits(basename($filename), null, $contents);
+    $upload = wp_upload_bits('600x400.jpg', null, $contents);
     $attachmentId = $this->makeAttachment($upload);
     set_post_thumbnail($postId, $attachmentId);
 

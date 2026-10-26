@@ -1170,7 +1170,7 @@ class LatestPostsTest extends \MailPoetTest {
     $filename = dirname(__DIR__, 5) . '/_data/600x400.jpg';
     $contents = file_get_contents($filename);
     $this->assertIsString($contents);
-    $upload = wp_upload_bits(basename($filename), null, $contents);
+    $upload = wp_upload_bits('600x400.jpg', null, $contents);
     $this->assertEmpty($upload['error']);
 
     $attachmentId = wp_insert_attachment([
