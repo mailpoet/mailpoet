@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter\ViewInBrowser;
 
 use Codeception\Stub\Expected;
+use MailPoet\Config\AccessControl;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\EmailEditor\Integrations\MailPoet\DependencyNotice;
 use MailPoet\Entities\NewsletterEntity;
@@ -23,6 +24,7 @@ use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\Util\Security;
+use MailPoet\WP\Functions as WPFunctions;
 
 class ViewInBrowserControllerTest extends \MailPoetTest {
   /** @var ViewInBrowserController */
@@ -166,13 +168,6 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $historyQueue = (new SendingQueueFactory())->create($historyTask, $history);
     $this->entityManager->flush();
 
-    $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
-      'render' => Expected::once(function () {
-        return 'rendered';
-      }),
-    ]);
-    $viewInBrowserController = $this->createController($viewInBrowserRenderer);
-
     $data = [
       'queue_id' => $historyQueue->getId(),
       'subscriber_id' => 0,
@@ -182,7 +177,100 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
       'preview' => true,
     ];
 
-    $this->assertSame('rendered', $viewInBrowserController->view($data));
+    $passedQueue = $this->getQueuePassedToRenderer($data);
+    $this->assertInstanceOf(SendingQueueEntity::class, $passedQueue);
+    verify($passedQueue->getId())->equals($historyQueue->getId());
+  }
+
+  public function testItIgnoresPerRecipientQueueForAnonymousPreview() {
+    [$newsletter, $queue] = $this->createAutomationQueueForSubscriber($this->createSubscriber('recipient@example.com'));
+
+    $data = [
+      'queue_id' => $queue->getId(),
+      'subscriber_id' => 0,
+      'newsletter_id' => $newsletter->getId(),
+      'newsletter_hash' => $newsletter->getHash(),
+      'subscriber_token' => 0,
+      'preview' => true,
+    ];
+
+    verify($this->getQueuePassedToRenderer($data))->null();
+  }
+
+  public function testItIgnoresPerRecipientQueueForAnonymousView() {
+    [$newsletter, $queue] = $this->createAutomationQueueForSubscriber($this->createSubscriber('recipient@example.com'));
+
+    $data = [
+      'queue_id' => $queue->getId(),
+      'subscriber_id' => 0,
+      'newsletter_id' => $newsletter->getId(),
+      'newsletter_hash' => $newsletter->getHash(),
+      'subscriber_token' => 0,
+      'preview' => false,
+    ];
+
+    verify($this->getQueuePassedToRenderer($data))->null();
+  }
+
+  public function testItIgnoresPerRecipientQueueForAnotherSubscriber() {
+    [$newsletter, $queue] = $this->createAutomationQueueForSubscriber($this->createSubscriber('recipient@example.com'));
+
+    $data = [
+      'queue_id' => $queue->getId(),
+      'subscriber_id' => $this->subscriber->getId(),
+      'newsletter_id' => $newsletter->getId(),
+      'newsletter_hash' => $newsletter->getHash(),
+      'subscriber_token' => $this->linkTokens->getToken($this->subscriber),
+      'preview' => true,
+    ];
+
+    verify($this->getQueuePassedToRenderer($data))->null();
+  }
+
+  public function testItUsesPerRecipientQueueForItsRecipient() {
+    $recipient = $this->createSubscriber('recipient@example.com');
+    [$newsletter, $queue] = $this->createAutomationQueueForSubscriber($recipient);
+
+    $data = [
+      'queue_id' => $queue->getId(),
+      'subscriber_id' => $recipient->getId(),
+      'newsletter_id' => $newsletter->getId(),
+      'newsletter_hash' => $newsletter->getHash(),
+      'subscriber_token' => $this->linkTokens->getToken($recipient),
+      'preview' => false,
+    ];
+
+    $passedQueue = $this->getQueuePassedToRenderer($data);
+    $this->assertInstanceOf(SendingQueueEntity::class, $passedQueue);
+    verify($passedQueue->getId())->equals($queue->getId());
+  }
+
+  public function testItUsesPerRecipientQueueForUserWhoCanManageEmails() {
+    [$newsletter, $queue] = $this->createAutomationQueueForSubscriber($this->createSubscriber('recipient@example.com'));
+
+    $data = [
+      'queue_id' => $queue->getId(),
+      'subscriber_id' => 0,
+      'newsletter_id' => $newsletter->getId(),
+      'newsletter_hash' => $newsletter->getHash(),
+      'subscriber_token' => 0,
+      'preview' => true,
+    ];
+
+    $passedQueue = $this->getQueuePassedToRenderer($data, true);
+    $this->assertInstanceOf(SendingQueueEntity::class, $passedQueue);
+    verify($passedQueue->getId())->equals($queue->getId());
+  }
+
+  public function testItUsesStandardNewsletterQueueForAnonymousPreview() {
+    $data = $this->browserPreviewData;
+    $data['subscriber_id'] = 0;
+    $data['subscriber_token'] = 0;
+    $data['preview'] = true;
+
+    $passedQueue = $this->getQueuePassedToRenderer($data);
+    $this->assertInstanceOf(SendingQueueEntity::class, $passedQueue);
+    verify($passedQueue->getId())->equals($this->sendingQueue->getId());
   }
 
   public function testUsesEmptySubscriberWhenNotLoggedIn() {
@@ -326,7 +414,46 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     }
   }
 
-  private function createController($viewInBrowserRenderer): ViewInBrowserController {
+  private function createSubscriber(string $email): SubscriberEntity {
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail($email);
+    $this->subscribersRepository->persist($subscriber);
+    $this->subscribersRepository->flush();
+    return $subscriber;
+  }
+
+  /**
+   * @return array{0: NewsletterEntity, 1: SendingQueueEntity}
+   */
+  private function createAutomationQueueForSubscriber(SubscriberEntity $subscriber): array {
+    $newsletter = (new Newsletter())->withAutomationType()->create();
+    $newsletter->setHash(Security::generateHash());
+    $task = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, null);
+    $queue = (new SendingQueueFactory())->create($task, $newsletter);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($task, [$subscriber->getId()]);
+    $this->scheduledTaskSubscribersRepository->updateProcessedSubscribers($task, [(int)$subscriber->getId()]);
+    $this->entityManager->flush();
+    return [$newsletter, $queue];
+  }
+
+  private function getQueuePassedToRenderer(array $data, bool $canManageEmails = false): ?SendingQueueEntity {
+    $passedQueue = null;
+    $wp = $this->make(WPFunctions::class, [
+      'currentUserCan' => function ($capability) use ($canManageEmails) {
+        return $capability === AccessControl::PERMISSION_MANAGE_EMAILS && $canManageEmails;
+      },
+    ]);
+    $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
+      'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, ?SubscriberEntity $subscriber = null, ?SendingQueueEntity $queue = null) use (&$passedQueue) {
+        $passedQueue = $queue;
+        return 'rendered';
+      }),
+    ]);
+    $this->createController($viewInBrowserRenderer, $wp)->view($data);
+    return $passedQueue;
+  }
+
+  private function createController($viewInBrowserRenderer, ?WPFunctions $wp = null): ViewInBrowserController {
     return new ViewInBrowserController(
       $this->linkTokens,
       $this->newsletterUrl,
@@ -336,7 +463,8 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
       $this->diContainer->get(DependencyNotice::class),
       $this->subscribersRepository,
       $this->diContainer->get(ShareVisibility::class),
-      $this->diContainer->get(ShareMetadataBuilder::class)
+      $this->diContainer->get(ShareMetadataBuilder::class),
+      $wp ?? $this->diContainer->get(WPFunctions::class)
     );
   }
 }
