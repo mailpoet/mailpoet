@@ -1018,6 +1018,8 @@ class Functions {
 
   /**
    * @param non-empty-string $handle
+   * @param non-empty-string|false $src
+   * @param non-empty-string[] $deps
    */
   public function wpRegisterScript(string $handle, $src, $deps = [], $ver = false, $in_footer = false): bool {
     return wp_register_script($handle, $src, $deps, $ver, $in_footer);

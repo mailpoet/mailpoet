@@ -27,22 +27,37 @@ class API extends MailPoetApi {
     });
   }
 
+  /**
+   * @param non-falsy-string $route
+   */
   public function registerGetRoute(string $route, string $endpoint): void {
     $this->api->registerGetRoute($route, $endpoint);
   }
 
+  /**
+   * @param non-falsy-string $route
+   */
   public function registerPostRoute(string $route, string $endpoint): void {
     $this->api->registerPostRoute($route, $endpoint);
   }
 
+  /**
+   * @param non-falsy-string $route
+   */
   public function registerPutRoute(string $route, string $endpoint): void {
     $this->api->registerPutRoute($route, $endpoint);
   }
 
+  /**
+   * @param non-falsy-string $route
+   */
   public function registerPatchRoute(string $route, string $endpoint): void {
     $this->api->registerPatchRoute($route, $endpoint);
   }
 
+  /**
+   * @param non-falsy-string $route
+   */
   public function registerDeleteRoute(string $route, string $endpoint): void {
     $this->api->registerDeleteRoute($route, $endpoint);
   }

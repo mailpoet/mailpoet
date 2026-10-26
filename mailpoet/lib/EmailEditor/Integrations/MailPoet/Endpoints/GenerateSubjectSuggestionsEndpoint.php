@@ -130,7 +130,6 @@ class GenerateSubjectSuggestionsEndpoint extends Endpoint {
     $decoded = $this->parseAiResponse($result);
     if ($decoded === null) {
       $logger->error('The AI provider returned a response in an unexpected format, so no subject suggestions were generated (AI subject generation returned invalid JSON).', [
-        'response_type' => gettype($result),
         'response_length' => mb_strlen($result),
         'response_preview' => mb_substr($result, 0, 200),
         'post_id' => $postId,

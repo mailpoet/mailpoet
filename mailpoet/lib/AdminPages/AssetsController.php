@@ -283,6 +283,9 @@ JAVASCRIPT,
     return is_array($preferences) ? (object)$preferences : new \stdClass();
   }
 
+  /**
+   * @return non-empty-string
+   */
   private function getScriptUrl(string $name): string {
     return Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset($name);
   }
@@ -293,6 +296,8 @@ JAVASCRIPT,
 
   /**
    * @param non-empty-string $handle
+   * @param non-empty-string $src
+   * @param non-empty-string[] $deps
    */
   private function registerFooterScript(string $handle, string $src, array $deps = []): void {
     $this->wp->wpRegisterScript($handle, $src, $deps, Env::$version, true);
