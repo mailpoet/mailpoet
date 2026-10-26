@@ -21,6 +21,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Test\DataFactories\Tag;
+use MailPoet\UnexpectedValueException;
 
 class SubscriberSubscribeControllerTest extends \MailPoetTest {
   /** @var SettingsController */
@@ -804,6 +805,44 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
       'email' => $email,
       'first_name' => 'Updated',
     ]));
+  }
+
+  public function testItRejectsAnInvalidFirstName(): void {
+    $this->settings->set('signup_confirmation.enabled', false);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $email = 'invalid-first-name-' . rand(0, 10000) . '@example.com';
+
+    try {
+      $this->subscribeController->subscribe([
+        $this->obfuscatedEmail => $email,
+        $this->obfuscatedFirstName => 'Jane > Doe',
+        $this->obfuscatedSegments => [$segment->getId()],
+        'form_id' => $form->getId(),
+      ]);
+      $this->fail('Expected UnexpectedValueException was not thrown.');
+    } catch (UnexpectedValueException $e) {
+      verify($this->subscribersRepository->findOneBy(['email' => $email]))->null();
+    }
+  }
+
+  public function testItRejectsAnInvalidLastName(): void {
+    $this->settings->set('signup_confirmation.enabled', false);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $email = 'invalid-last-name-' . rand(0, 10000) . '@example.com';
+
+    try {
+      $this->subscribeController->subscribe([
+        $this->obfuscatedEmail => $email,
+        $this->obfuscator->obfuscate('last_name') => 'Doe >',
+        $this->obfuscatedSegments => [$segment->getId()],
+        'form_id' => $form->getId(),
+      ]);
+      $this->fail('Expected UnexpectedValueException was not thrown.');
+    } catch (UnexpectedValueException $e) {
+      verify($this->subscribersRepository->findOneBy(['email' => $email]))->null();
+    }
   }
 
   public function testItCanSubscribeSubscriberWithCustomField(): void {

@@ -276,6 +276,33 @@ class ManageTest extends \MailPoetTest {
     verify($redirectParams)->equals(['error' => true]);
   }
 
+  public function testAnInvalidNameIsNotSaved() {
+    $redirectParams = null;
+    $manage = $this->getManageService([
+      'urlHelper' => Stub::make(UrlHelper::class, [
+        'redirectBack' => function($params = []) use (&$redirectParams) {
+          $redirectParams = $params;
+        },
+      ]),
+    ]);
+    $_POST['action'] = 'mailpoet_subscription_update';
+    $_POST['token'] = 'token';
+    $_POST['data'] = [
+      'first_name' => 'Jane > Doe',
+      'last_name' => 'John',
+      'email' => 'john.doe@example.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segments' => [$this->segmentA->getId()],
+    ];
+
+    $manage->onSave();
+
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getFirstName())->equals('John');
+    verify($redirectParams)->equals(['error' => true]);
+  }
+
   public function testNonArrayLegacySegmentIdsCannotChangeVisibleLists() {
     $redirectParams = null;
     $manage = $this->getManageService([

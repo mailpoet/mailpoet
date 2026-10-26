@@ -519,6 +519,34 @@ class WooCommerceTest extends \MailPoetTest {
     verify($subscriber->getLastName())->equals('Last name (newer)');
   }
 
+  public function testAGuestOrderDoesNotUseInvalidNames(): void {
+    $this->settings->set('signup_confirmation', ['enabled' => false]);
+    $this->settings->set('woocommerce.optin_on_checkout', ['enabled' => false]);
+    $guest = $this->insertGuestCustomer(null, ['first_name' => 'Jane', 'last_name' => 'Doe']);
+    $this->wooCommerceSegment->synchronizeGuestCustomer($guest['order_id']);
+
+    $orderId = $this->createOrder(['email' => $guest['email'], 'first_name' => 'Jane > Doe', 'last_name' => 'Smith']);
+    $this->wooCommerceSegment->synchronizeGuestCustomer($orderId);
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getFirstName())->equals('Jane');
+    verify($subscriber->getLastName())->equals('Smith');
+  }
+
+  public function testSynchronizingGuestCustomersDoesNotUseInvalidNames(): void {
+    $guest = $this->insertGuestCustomer(null, ['first_name' => 'Jane', 'last_name' => 'Doe']);
+    $this->synchronizeAllCustomers();
+
+    $this->createOrder(['email' => $guest['email'], 'first_name' => 'Anna', 'last_name' => 'Doe >']);
+    $this->synchronizeAllCustomers();
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getFirstName())->equals('Anna');
+    verify($subscriber->getLastName())->equals('Doe');
+  }
+
   public function testItSynchronizesSegment(): void {
     $this->insertRegisteredCustomer();
     $this->insertRegisteredCustomer();

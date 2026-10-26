@@ -123,6 +123,10 @@ class SubscriberSubscribeController {
     $data = $this->initCaptcha($captchaSettings, $form, $data);
     $data = $this->deobfuscateFormPayload($data);
 
+    if ($this->hasInvalidName($data)) {
+      throw new UnexpectedValueException(__('Please specify a valid name.', 'mailpoet'));
+    }
+
     try {
       $this->requiredCustomFieldValidator->validate($data, $form);
     } catch (\Exception $e) {
@@ -362,6 +366,18 @@ class SubscriberSubscribeController {
     }
 
     return $data;
+  }
+
+  /**
+   * The same name validation the subscription form runs in the browser.
+   */
+  private function hasInvalidName(array $data): bool {
+    foreach (['first_name', 'last_name'] as $field) {
+      if (isset($data[$field]) && is_string($data[$field]) && strpbrk($data[$field], '<>') !== false) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private function validateCaptcha($captchaSettings, $data, FormEntity $form): array {

@@ -219,10 +219,11 @@ class WooCommerce {
     if ($subscriber) {
       $firstName = $wcOrder->get_billing_first_name(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $lastName = $wcOrder->get_billing_last_name(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      if ($firstName) {
+      // Use only names that pass the subscription form name validation
+      if ($firstName && strpbrk($firstName, '<>') === false) {
         $subscriber->setFirstName($firstName);
       }
-      if ($lastName) {
+      if ($lastName && strpbrk($lastName, '<>') === false) {
         $subscriber->setLastName($lastName);
       }
       if ($firstName || $lastName) {
@@ -465,6 +466,10 @@ class WooCommerce {
 
     foreach ($metaData as $row) {
       if (!$row['meta_value']) {
+        continue;
+      }
+      // Use only names that pass the subscription form name validation
+      if (is_string($row['meta_value']) && strpbrk($row['meta_value'], '<>') !== false) {
         continue;
       }
       $postId = is_numeric($row['post_id']) ? (int)$row['post_id'] : 0;

@@ -97,7 +97,7 @@ class Manage {
     }
     // Never trust posted method/copy: stamp them server-side from the actual checkbox state.
     unset($subscriberData['tracking_consent_method'], $subscriberData['tracking_consent_copy']);
-    if ($this->hasInvalidStatus($subscriberData) || $this->hasMalformedLegacySegmentIds($subscriberData)) {
+    if ($this->hasInvalidStatus($subscriberData) || $this->hasInvalidName($subscriberData) || $this->hasMalformedLegacySegmentIds($subscriberData)) {
       $this->urlHelper->redirectBack(['error' => true]);
       return;
     }
@@ -290,6 +290,18 @@ class Manage {
       $subscriberData,
       array_flip(['email', 'first_name', 'last_name', 'status', 'tracking_consent', 'tracking_consent_method', 'tracking_consent_copy'])
     );
+  }
+
+  /**
+   * The same name validation the subscription form runs in the browser.
+   */
+  private function hasInvalidName(array $data): bool {
+    foreach (['first_name', 'last_name'] as $field) {
+      if (isset($data[$field]) && is_string($data[$field]) && strpbrk($data[$field], '<>') !== false) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private function hasInvalidStatus(array $subscriberData): bool {
