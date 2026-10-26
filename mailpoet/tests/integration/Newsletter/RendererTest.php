@@ -26,6 +26,7 @@ use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\Util\License\Features\Data\Capability;
 use MailPoet\Util\pQuery\pQuery;
@@ -1103,6 +1104,49 @@ class RendererTest extends \MailPoetTest {
 
     WPFunctions::get()->removeAllFilters(Renderer::FILTER_POST_PROCESS);
     wp_delete_post($wpPostId, true);
+  }
+
+  public function testItKeepsNewsletterStatusWhenPreviewRenderingFails() {
+    $newsletter = (new NewsletterFactory())
+      ->withWelcomeTypeForSegment()
+      ->withActiveStatus()
+      ->withBody([
+        'content' => [
+          'type' => 'container',
+          'orientation' => 'vertical',
+          'styles' => ['block' => []],
+          'blocks' => [
+            [
+              'type' => 'container',
+              'orientation' => 'horizontal',
+              'styles' => ['block' => []],
+              'blocks' => [
+                [
+                  'type' => 'container',
+                  'orientation' => 'vertical',
+                  'styles' => ['block' => []],
+                  'blocks' => [
+                    [
+                      'type' => 'coupon',
+                      'couponId' => 987654, // no such coupon
+                      'discountType' => 'percent',
+                      'amount' => 50,
+                      'code' => 'XXXX-XXXXXXX-XXXX',
+                      'styles' => ['block' => []],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+        ],
+      ])
+      ->create();
+
+    $this->renderer->renderAsPreview($newsletter);
+
+    $this->entityManager->refresh($newsletter);
+    verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_ACTIVE);
   }
 
   public function testItRendersDynamicProductsBlock() {
