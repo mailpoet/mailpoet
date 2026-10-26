@@ -62,6 +62,7 @@ jobs:
 
       # Keeping the WooCommerce PHPStan stubs equal to the minimum WooCommerce version
       - name: Sync WooCommerce stubs
+        continue-on-error: true
         run: php .github/workflows/scripts/sync_woocommerce_stubs.php
 
       - name: Check for WooCommerce stubs changes
