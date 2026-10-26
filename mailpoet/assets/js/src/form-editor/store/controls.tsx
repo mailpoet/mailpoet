@@ -1,6 +1,5 @@
 import { select, dispatch } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
-import { merge } from 'lodash';
 import Cookies from 'js-cookie';
 import {
   Block,
@@ -17,6 +16,8 @@ import {
 import { blocksToFormBodyFactory } from './blocks-to-form-body';
 import { registerCustomFieldBlock } from '../blocks/blocks.jsx';
 import { mapFormDataBeforeSaving } from './map-form-data-before-saving.jsx';
+import { mapCustomFieldBeforeSaving } from './map-custom-field-before-saving';
+import { CustomField } from './form-data-types';
 import { findBlock } from './find-block';
 import { formatCustomFieldBlockName } from '../blocks/format-custom-field-block-name';
 import { getCustomFieldBlockSettings } from '../blocks/custom-fields-blocks';
@@ -95,8 +96,8 @@ export const controls = {
     const customField = customFields.find(
       (cf) => cf.id === actionData.customFieldId,
     );
-    const requestData = {};
-    merge(requestData, customField, actionData.data);
+    const { data }: { data: Partial<CustomField> } = actionData;
+    const requestData = mapCustomFieldBeforeSaving(customField, data);
     await MailPoet.Ajax.post<{ data: unknown }>({
       api_version: window.mailpoet_api_version,
       endpoint: 'customFields',
