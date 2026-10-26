@@ -68,7 +68,7 @@ class ViewInBrowserRenderer {
       $newsletter,
       $subscriber,
       $queue,
-      $this->buildRenderOptionsForPreview($isPreview)
+      $this->buildRenderOptionsForPreview($isPreview, $subscriber && $subscriber->getId())
     );
   }
 
@@ -178,11 +178,12 @@ class ViewInBrowserRenderer {
    *   replaceViewInBrowserUrlWithPublicShareUrl: bool
    * }
    */
-  private function buildRenderOptionsForPreview(bool $isPreview): array {
+  private function buildRenderOptionsForPreview(bool $isPreview, bool $hasSubscriber): array {
     return [
-      self::OPTION_SANITIZE_RENDERED_QUEUE_LINKS => $isPreview,
-      self::OPTION_SHORTCODES_PREVIEW => $isPreview,
-      self::OPTION_REPLACE_SUBSCRIBER_TRACKING => !$isPreview,
+      // without a subscriber, links and shortcodes render as on the public share page
+      self::OPTION_SANITIZE_RENDERED_QUEUE_LINKS => $isPreview || !$hasSubscriber,
+      self::OPTION_SHORTCODES_PREVIEW => $isPreview || !$hasSubscriber,
+      self::OPTION_REPLACE_SUBSCRIBER_TRACKING => !$isPreview && $hasSubscriber,
       self::OPTION_PERSONALIZER_PREVIEW => $isPreview,
       self::OPTION_REPLACE_VIEW_IN_BROWSER_URL => false,
     ];

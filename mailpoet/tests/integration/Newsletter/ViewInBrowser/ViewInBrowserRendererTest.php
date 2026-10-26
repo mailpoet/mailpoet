@@ -329,6 +329,26 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     verify($renderedBody)->stringContainsString('<img alt="" class="" src="">');
   }
 
+  public function testItRendersQueueBodyWithoutSubscriber() {
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
+    $queue = $this->sendingQueue;
+    $queue->setNewsletterRenderedBody($this->queueRenderedNewsletterWithTracking);
+
+    $renderedBody = $this->viewInBrowserRenderer->render(
+      $preview = false,
+      $this->newsletter,
+      new SubscriberEntity(),
+      $queue
+    );
+
+    verify($renderedBody)->stringContainsString('Newsletter from queue');
+    verify($renderedBody)->stringContainsString('<a href="http://google.com">');
+    verify($renderedBody)->stringContainsString(Router::NAME . '&endpoint=view_in_browser');
+    verify($renderedBody)->stringNotContainsString('[link:');
+    verify($renderedBody)->stringNotContainsString('[mailpoet_click_data]');
+    verify($renderedBody)->stringNotContainsString('[mailpoet_open_data]');
+  }
+
   public function testItRendersPublicShareWithoutRecipientTracking() {
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $queue = $this->sendingQueue;
