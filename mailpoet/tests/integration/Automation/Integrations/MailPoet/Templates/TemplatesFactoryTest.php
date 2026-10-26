@@ -203,9 +203,9 @@ class TemplatesFactoryTest extends MailPoetTest {
     $this->assertArrayNotHasKey('email_wp_post_id', $args);
   }
 
-  public function testBirthdayEmailTemplateUsesPlainPatternWithoutGeneratedCouponSupport(): void {
+  public function testBirthdayEmailTemplateUsesPlainPatternWithoutWooCommerce(): void {
     $this->ensureAnnualDateTriggerRegistered();
-    $factory = $this->createFactory(true, '10.7.0');
+    $factory = $this->createFactory(false);
     $template = $this->findTemplateBySlug($factory->createTemplates(), 'birthday-email');
     $this->assertInstanceOf(AutomationTemplate::class, $template);
 
@@ -300,7 +300,7 @@ class TemplatesFactoryTest extends MailPoetTest {
     }
   }
 
-  private function createFactory(bool $woocommerceActive = true, string $wooCommerceVersion = '10.8.0'): TemplatesFactory {
+  private function createFactory(bool $woocommerceActive = true): TemplatesFactory {
     $woocommerce = $this->createMock(WooCommerce::class);
     $woocommerce->method('isWooCommerceActive')->willReturn($woocommerceActive);
     $woocommerceSubscriptions = $this->createMock(WooCommerceSubscriptions::class);
@@ -309,7 +309,6 @@ class TemplatesFactoryTest extends MailPoetTest {
     $bookingsHelper->method('isWooCommerceBookingsActive')->willReturn(false);
     $woocommerceHelper = $this->createMock(WooCommerceHelper::class);
     $woocommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(false);
-    $woocommerceHelper->method('getWooCommerceVersion')->willReturn($wooCommerceVersion);
 
     return new TemplatesFactory(
       $this->builder,
