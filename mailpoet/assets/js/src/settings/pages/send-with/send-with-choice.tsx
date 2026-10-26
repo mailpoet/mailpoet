@@ -1,3 +1,4 @@
+import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 
@@ -5,6 +6,7 @@ import { useSelector, useAction, useSetting } from 'settings/store/hooks';
 import { MssStatus, PremiumStatus } from 'settings/store/types';
 import { t } from 'common/functions';
 import { Checkbox } from 'common/form/checkbox/checkbox';
+import { GlobalContext, GlobalContextValue } from 'context';
 
 interface SendWithChoiceWindow extends Window {
   mailpoet_free_plan_url: string;
@@ -27,12 +29,25 @@ export function SendWithChoice() {
   const freePlanUrl = window.mailpoet_free_plan_url;
   const setSetting = useAction('setSetting');
   const saveSettings = useAction('saveSettings');
+  const { notices } = useContext<GlobalContextValue>(GlobalContext);
+
+  // This tab has no Save button to report the result, so show save errors here.
+  const saveAndShowErrors = async () => {
+    const result = await saveSettings();
+    if (result.type === 'SAVE_FAILED' && 'error' in result && result.error) {
+      notices.error(
+        result.error.map((err) => <p key={err}>{err}</p>),
+        { scroll: true },
+      );
+    }
+  };
+
   const activateMss = async () => {
     await setSetting(['mta_group'], 'mailpoet');
     await setSetting(['mta', 'method'], 'MailPoet');
     await setSetting(['mta', 'mailpoet_api_key'], key);
     await setSetting(['signup_confirmation', 'enabled'], '1');
-    return saveSettings();
+    return saveAndShowErrors();
   };
 
   const mssChosen = async (e) => {
@@ -47,7 +62,7 @@ export function SendWithChoice() {
 
   const superSendingChanged = async (isChecked: boolean) => {
     await setSuperSending(isChecked ? '1' : '');
-    return saveSettings();
+    return saveAndShowErrors();
   };
 
   const otherChosen = (e) => {
