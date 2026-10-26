@@ -27,16 +27,13 @@ updates:
     cooldown:
       default-days: 7
     open-pull-requests-limit: 5
+    # The sync script keeps the WordPress and WooCommerce stubs at MailPoet’s
+    # minimum versions.
     allow:
       - dependency-name: 'woocommerce/php-stubs'
     groups:
       php-stubs:
         patterns:
           - 'woocommerce/php-stubs'
-    ignore:
-      # The sync script and the weekly workflow keep these two equal to
-      # MailPoet’s minimum WordPress and WooCommerce versions.
-      - dependency-name: 'php-stubs/woocommerce-stubs'
-      - dependency-name: 'php-stubs/wordpress-stubs'
     labels:
       - 'dependencies'
