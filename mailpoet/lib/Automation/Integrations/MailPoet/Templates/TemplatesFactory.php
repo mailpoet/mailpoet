@@ -12,8 +12,6 @@ use MailPoet\WooCommerce\WooCommerceBookings\Helper as WooCommerceBookingsHelper
 use MailPoet\WooCommerce\WooCommerceSubscriptions\Helper as WooCommerceSubscriptions;
 
 class TemplatesFactory {
-  private const MIN_WOOCOMMERCE_VERSION_FOR_GENERATED_COUPON_BLOCK = '10.8.0';
-
   /** @var AutomationBuilder */
   private $builder;
 
@@ -88,7 +86,7 @@ class TemplatesFactory {
   }
 
   private function createBirthdayEmailTemplate(): AutomationTemplate {
-    $usesDiscountPattern = $this->woocommerce->isWooCommerceActive() && $this->supportsGeneratedCouponBlock();
+    $usesDiscountPattern = $this->woocommerce->isWooCommerceActive();
 
     return new AutomationTemplate(
       'birthday-email',
@@ -869,21 +867,6 @@ class TemplatesFactory {
       AutomationTemplate::TYPE_PREMIUM,
       'calendar'
     );
-  }
-
-  private function supportsGeneratedCouponBlock(): bool {
-    $wooCommerceVersion = $this->woocommerceHelper->getWooCommerceVersion();
-    if (!$wooCommerceVersion) {
-      return false;
-    }
-
-    $numericVersionLength = strspn($wooCommerceVersion, '0123456789.');
-    $numericVersion = substr($wooCommerceVersion, 0, $numericVersionLength);
-    if ($numericVersion === '') {
-      return false;
-    }
-
-    return version_compare($numericVersion, self::MIN_WOOCOMMERCE_VERSION_FOR_GENERATED_COUPON_BLOCK, '>=');
   }
 
   /**
