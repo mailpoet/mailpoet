@@ -10,6 +10,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
@@ -162,6 +163,71 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     verify($renderedBody)->stringMatchesRegExp('/Rendered newsletter/');
   }
 
+  /**
+   * @group woo
+   */
+  public function testItDoesNotGenerateCouponsWhenRenderingWithoutQueue() {
+    $newsletter = (new Newsletter())
+      ->withWelcomeTypeForSegment()
+      ->withActiveStatus()
+      ->withBody([
+        'content' => [
+          'type' => 'container',
+          'orientation' => 'vertical',
+          'blocks' => [
+            [
+              'type' => 'container',
+              'orientation' => 'horizontal',
+              'styles' => ['block' => []],
+              'blocks' => [
+                [
+                  'type' => 'container',
+                  'orientation' => 'vertical',
+                  'styles' => ['block' => []],
+                  'blocks' => [
+                    [
+                      'type' => 'coupon',
+                      'discountType' => 'percent',
+                      'amount' => 50,
+                      'code' => Coupon::CODE_PLACEHOLDER,
+                      'styles' => [
+                        'block' => [
+                          'backgroundColor' => '#ffffff',
+                          'borderColor' => '#000000',
+                          'borderWidth' => '1px',
+                          'borderRadius' => '0px',
+                          'borderStyle' => 'solid',
+                          'width' => '200px',
+                          'lineHeight' => '40px',
+                          'fontColor' => '#000000',
+                          'fontFamily' => 'Arial',
+                          'fontSize' => '18px',
+                          'fontWeight' => 'bold',
+                          'textAlign' => 'center',
+                        ],
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+        ],
+      ])
+      ->create();
+    $couponIdsBefore = $this->getCouponIds();
+
+    $renderedBody = $this->viewInBrowserRenderer->render(
+      $preview = false,
+      $newsletter,
+      $this->subscriber,
+      $queue = null
+    );
+
+    verify($renderedBody)->stringContainsString(Coupon::CODE_PLACEHOLDER);
+    verify($this->getCouponIds())->equals($couponIdsBefore);
+  }
+
   public function testItReusesRenderedNewsletterBodyWhenQueueExists() {
     $emoji = $this->make(Emoji::class, [
       'decodeEmojisInBody' => Expected::once(function ($params) {
@@ -289,6 +355,10 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     verify($renderedBody)->stringContainsString($this->diContainer->get(NewsletterUrl::class)->getPublicShareUrl($this->newsletter));
     verify($renderedBody)->stringNotContainsString(Router::NAME . '&endpoint=track');
     verify($renderedBody)->stringNotContainsString(Router::NAME . '&endpoint=view_in_browser');
+  }
+
+  private function getCouponIds(): array {
+    return get_posts(['post_type' => 'shop_coupon', 'post_status' => 'any', 'numberposts' => -1, 'fields' => 'ids']);
   }
 
   public function _after() {
