@@ -1,7 +1,2 @@
 parameters:
-	ignoreErrors:
-		-
-			message: '#^Method MailPoet\\WooCommerce\\Integrations\\AutomateWooHooks\:\:getAutomateWooCustomer\(\) should return AutomateWoo\\Customer\|false but returns AutomateWoo\\Customer\|bool\.$#'
-			identifier: return.type
-			count: 1
-			path: ../../lib/WooCommerce/Integrations/AutomateWooHooks.php
+	ignoreErrors: []
