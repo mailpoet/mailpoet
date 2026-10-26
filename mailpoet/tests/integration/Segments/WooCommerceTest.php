@@ -98,7 +98,6 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   public function testItKeepsSubscriberOfUnconfirmedLinkAfterTheCustomerIsDeleted(): void {
-    require_once ABSPATH . 'wp-admin/includes/user.php';
     $user = $this->insertRegisteredCustomer();
     $subscriber = $this->createSubscriber(
       'Earlier',
@@ -111,7 +110,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->diContainer->get(WPUserSubscriberLink::class)->markUnconfirmed($user->ID, $user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $this->wooCommerceSegment->synchronizeRegisteredCustomer($user->ID, 'woocommerce_new_customer');
 
-    wp_delete_user($user->ID);
+    $this->tester->deleteWordPressUser($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $this->synchronizeAllCustomers();
 
     $this->entityManager->clear();
@@ -166,7 +165,6 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   public function testItKeepsWooCommerceListOfGuestCustomerAfterTheUnconfirmedLinkIsDeleted(): void {
-    require_once ABSPATH . 'wp-admin/includes/user.php';
     $guest = $this->insertGuestCustomer();
     $this->synchronizeAllCustomers();
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
@@ -185,7 +183,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->entityManager->flush();
     $this->diContainer->get(WPUserSubscriberLink::class)->markUnconfirmed($user->ID, (string)$subscriber->getEmail());
 
-    wp_delete_user($user->ID);
+    $this->tester->deleteWordPressUser($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $this->synchronizeAllCustomers();
 
     $this->entityManager->clear();
