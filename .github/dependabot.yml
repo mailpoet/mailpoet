@@ -19,7 +19,7 @@ updates:
       - 'dependencies'
 
   # The Porter handles the PHP stubs PRs. New stubs arrive only through a lock
-  # update, so Dependabot is limited to the stubs packages.
+  # update, so Dependabot is limited to woocommerce/php-stubs.
   - package-ecosystem: 'composer'
     directory: '/mailpoet/tasks/phpstan'
     schedule:
@@ -29,15 +29,14 @@ updates:
     open-pull-requests-limit: 5
     allow:
       - dependency-name: 'woocommerce/php-stubs'
-      - dependency-name: 'php-stubs/*'
     groups:
       php-stubs:
         patterns:
           - 'woocommerce/php-stubs'
-          - 'php-stubs/*'
     ignore:
-      # The sync script and the weekly workflow keep it equal to MailPoet’s
-      # minimum WooCommerce version.
+      # The sync script and the weekly workflow keep these two equal to
+      # MailPoet’s minimum WordPress and WooCommerce versions.
       - dependency-name: 'php-stubs/woocommerce-stubs'
+      - dependency-name: 'php-stubs/wordpress-stubs'
     labels:
       - 'dependencies'
