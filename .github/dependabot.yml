@@ -36,11 +36,8 @@ updates:
           - 'woocommerce/php-stubs'
           - 'php-stubs/*'
     ignore:
-      # Must match MailPoet’s minimum WooCommerce version (`WC requires at
-      # least` in mailpoet.php), so it moves with the minimum, by hand.
+      # The sync script and the weekly workflow keep it equal to MailPoet’s
+      # minimum WooCommerce version.
       - dependency-name: 'php-stubs/woocommerce-stubs'
-        update-types:
-          - 'version-update:semver-major'
-          - 'version-update:semver-minor'
     labels:
       - 'dependencies'

@@ -44,6 +44,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/restore-build
+      - name: 'Check WooCommerce stubs match the minimum WooCommerce version'
+        run: php .github/workflows/scripts/sync_woocommerce_stubs.php --check
       - name: 'Static analysis'
         working-directory: mailpoet
         run: ./do qa:phpstan

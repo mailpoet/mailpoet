@@ -60,6 +60,26 @@ jobs:
           git add .
           git commit -m $'Update used WooCommerce plugin in Circle CI'
 
+      # Keeping the WooCommerce PHPStan stubs equal to the minimum WooCommerce version
+      - name: Sync WooCommerce stubs
+        run: php .github/workflows/scripts/sync_woocommerce_stubs.php
+
+      - name: Check for WooCommerce stubs changes
+        id: check_stubs_changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          if [ "$(git status --porcelain)" != "" ]; then
+            echo "CHANGES_DETECTED=true" >> $GITHUB_ENV
+            echo "WOOCOMMERCE_STUBS_CHANGES=true" >> $GITHUB_ENV
+          fi
+
+      - name: Commit WooCommerce stubs changes
+        if: env.WOOCOMMERCE_STUBS_CHANGES == 'true'
+        run: |
+          git add .
+          git commit -m $'Update WooCommerce stubs to the minimum WooCommerce version'
+
       # Updating used Automate Woo plugin
       - name: Check Automate Woo Versions
         env:
