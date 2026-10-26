@@ -102,6 +102,23 @@ class MailerTest extends \MailPoetTest {
       ->equals('Last <test3@email.com>');
   }
 
+  public function testItNormalizesTheRecipientName() {
+    $mailer = $this->mailerFactory->buildMailer($this->mailer, $this->sender, $this->replyTo);
+    verify($mailer->formatSubscriberNameAndEmailAddress(
+      [
+        'first_name' => 'Jane <Doe>',
+        'last_name' => 'Last',
+        'email' => 'test@email.com',
+      ]
+    ))->equals('Jane Doe Last <test@email.com>');
+    verify($mailer->formatSubscriberNameAndEmailAddress(
+      [
+        'full_name' => '<>',
+        'email' => 'test@email.com',
+      ]
+    ))->equals('test@email.com');
+  }
+
   public function testItCanSend() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $this->sender['address'] = 'staff@mailpoet.com';
