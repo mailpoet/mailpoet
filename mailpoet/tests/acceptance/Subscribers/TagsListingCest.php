@@ -70,8 +70,9 @@ class TagsListingCest {
     $i->waitForElement('.dataviews-filters__search-widget-listitem');
     $i->click(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][.//text()[contains(., "1+")]]']);
     $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
-    $i->waitForText($withSubs);
-    $i->dontSee($empty);
+    // The unfiltered rows stay on screen until the filtered response arrives.
+    $i->waitForElementNotVisible(['xpath' => "//tbody//tr[contains(., '{$empty}')]"]);
+    $i->waitForText($withSubs, 10, 'tbody');
     $i->seeInCurrentUrl('subscribers=1');
 
     $i->wantTo('Honor the subscribers bucket query param on direct navigation');
