@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c90e1b57d8c1380e1ac88e5d8938d92c",
+    "content-hash": "1364db848741ccfb7d497732c7a669f1",
     "packages": [
         {
             "name": "phar-io/version",
@@ -417,7 +417,7 @@
         },
         {
             "name": "woocommerce/php-stubs",
-            "version": "dev-trunk",
+            "version": "v2026.10.24.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/woocommerce/php-stubs.git",
@@ -429,7 +429,6 @@
                 "reference": "e4195817955c9e5775c16e369ad60587d84190ad",
                 "shasum": ""
             },
-            "default-branch": true,
             "type": "library",
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -454,9 +453,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "woocommerce/php-stubs": 20
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {},
