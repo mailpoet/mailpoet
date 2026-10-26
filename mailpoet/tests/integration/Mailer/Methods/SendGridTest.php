@@ -59,7 +59,8 @@ class SendGridTest extends \MailPoetTest {
 
   public function testItCanGenerateBody() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $this->extraParams);
-    verify($body['to'])->stringContainsString($this->subscriber);
+    verify($body['to'])->equals('mailpoet@sink.sendgrid.net');
+    verify($body['toname'])->equals('Recipient');
     verify($body['from'])->equals($this->sender['from_email']);
     verify($body['fromname'])->equals($this->sender['from_name']);
     verify($body['replyto'])->equals($this->replyTo['reply_to_email']);
@@ -70,6 +71,16 @@ class SendGridTest extends \MailPoetTest {
       ->equals('<' . $this->extraParams['unsubscribe_url'] . '>');
     verify($body['html'])->equals($this->newsletter['body']['html']);
     verify($body['text'])->equals($this->newsletter['body']['text']);
+  }
+
+  public function testItSendsTheRecipientNameSeparately() {
+    $body = $this->mailer->getBody($this->newsletter, 'Jane, Doe <test@test.com>');
+    verify($body['to'])->equals('test@test.com');
+    verify($body['toname'])->equals('Jane, Doe');
+
+    $body = $this->mailer->getBody($this->newsletter, 'test@test.com');
+    verify($body['to'])->equals('test@test.com');
+    verify($body)->arrayHasNotKey('toname');
   }
 
   public function testItCanCreateRequest() {

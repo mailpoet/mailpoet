@@ -62,14 +62,32 @@ class SendGrid implements MailerMethod {
     return Mailer::formatMailerSendSuccessResult();
   }
 
+  public function processSubscriber($subscriber) {
+    // Matches "Name <email>"
+    preg_match('!^(?P<name>.*)\s<(?P<email>[^<>]+)>\z!s', $subscriber, $subscriberData);
+    if (!isset($subscriberData['email'])) {
+      $subscriberData = [
+        'email' => $subscriber,
+      ];
+    }
+    return [
+      'email' => $subscriberData['email'],
+      'name' => (isset($subscriberData['name'])) ? $subscriberData['name'] : '',
+    ];
+  }
+
   public function getBody($newsletter, $subscriber, $extraParams = []) {
+    $recipient = $this->processSubscriber($subscriber);
     $body = [
-      'to' => $subscriber,
+      'to' => $recipient['email'],
       'from' => $this->sender['from_email'],
       'fromname' => $this->sender['from_name'],
       'replyto' => $this->replyTo['reply_to_email'],
       'subject' => $newsletter['subject'],
     ];
+    if ($recipient['name'] !== '') {
+      $body['toname'] = $recipient['name'];
+    }
     $headers = [];
 
     // unsubscribe header

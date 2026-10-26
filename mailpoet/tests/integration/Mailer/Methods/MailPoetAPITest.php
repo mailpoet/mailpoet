@@ -185,6 +185,15 @@ class MailPoetAPITest extends \MailPoetTest {
       );
   }
 
+  public function testItCanProcessSubscriberWithSpecialCharactersInName() {
+    verify($this->mailer->processSubscriber('Jane <Doe> <test@test.com>'))->equals(
+      [
+        'email' => 'test@test.com',
+        'name' => 'Jane <Doe>',
+      ]
+    );
+  }
+
   public function testItWillNotSendIfApiKeyIsMarkedInvalid() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $this->mailer->servicesChecker = Stub::make(

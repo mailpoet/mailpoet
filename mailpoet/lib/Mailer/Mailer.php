@@ -48,7 +48,9 @@ class Mailer {
     $fullName = (isset($subscriber['full_name'])) ? $subscriber['full_name'] : null;
     if (!$firstName && !$lastName && !$fullName) return $subscriber['email'];
     $fullName = is_null($fullName) ? sprintf('%s %s', $firstName, $lastName) : $fullName;
-    $fullName = trim(preg_replace('!\s\s+!', ' ', $fullName));
+    // Normalize the name part of "Name <email>"
+    $fullName = trim(preg_replace(['![<>]!', '!\s\s+!'], ['', ' '], $fullName));
+    if ($fullName === '') return $subscriber['email'];
     $fullName = $this->encodeAddressNamePart($fullName);
     $subscriber = sprintf(
       '%s <%s>',

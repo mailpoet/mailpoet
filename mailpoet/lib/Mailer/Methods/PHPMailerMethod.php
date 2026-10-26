@@ -109,7 +109,8 @@ abstract class PHPMailerMethod implements MailerMethod {
   }
 
   public function processSubscriber($subscriber) {
-    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriberData);
+    // Matches "Name <email>"
+    preg_match('!^(?P<name>.*)\s<(?P<email>[^<>]+)>\z!s', $subscriber, $subscriberData);
     if (!isset($subscriberData['email'])) {
       $subscriberData = [
         'email' => $subscriber,
