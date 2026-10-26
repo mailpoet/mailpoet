@@ -48,14 +48,6 @@ parameters:
     - '/Parameter #1 \$cssOrXPath of method AcceptanceTester::moveMouseOver\(\) expects string\|null, array<string, string> given./'
     - '/Call to method getName\(\) on an unknown class _generated\\([a-zA-Z])*Cookie/' # codeception generate incorrect return type in ../../tests/_support/_generated
     -
-      message: '/^Call to static method get_orders_table_name\(\) on an unknown class Automattic\\WooCommerce\\Internal\\DataStores\\Orders\\OrdersTableDataStore\.$/'
-      count: 1
-      path: ../../lib/WooCommerce/Helper.php
-    -
-      message: '/^Call to static method get_addresses_table_name\(\) on an unknown class Automattic\\WooCommerce\\Internal\\DataStores\\Orders\\OrdersTableDataStore\.$/'
-      count: 1
-      path: ../../lib/WooCommerce/Helper.php
-    -
       message: '/^Cannot call method get\(\) on mixed.$/'
       count: 2
       path: ../../lib/PostEditorBlocks/WooCommerceBlocksIntegration.php
@@ -114,4 +106,5 @@ includes:
   - vendor/woocommerce/php-stubs/stubs/woocommerce-subscriptions/latest.neon
   - vendor/woocommerce/php-stubs/stubs/woocommerce-bookings/latest.neon
   - vendor/woocommerce/php-stubs/stubs/automatewoo/latest.neon
+  - vendor/woocommerce/php-stubs/supplements/woocommerce-internal.php
   - phpstan-baseline.neon
