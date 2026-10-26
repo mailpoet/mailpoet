@@ -11,7 +11,14 @@ class WooCommerceSubscription {
       'billing_interval' => 1,
     ];
     $sub = wcs_create_subscription($args);
-    $sub->add_product(wc_get_product($subscriptionProductId));
+    if ($sub instanceof \WP_Error) {
+      throw new \RuntimeException('Could not create the subscription: ' . $sub->get_error_message());
+    }
+    $product = wc_get_product($subscriptionProductId);
+    if (!$product instanceof \WC_Product) {
+      throw new \RuntimeException('Product ' . $subscriptionProductId . ' does not exist.');
+    }
+    $sub->add_product($product);
     return $sub;
   }
 }

@@ -5,15 +5,3 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: ../../lib/WooCommerce/Integrations/AutomateWooHooks.php
-
-		-
-			message: '#^Call to an undefined method WC_Subscription\|WP_Error\:\:add_product\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: ../../tests/DataFactories/WooCommerceSubscription.php
-
-		-
-			message: '#^Method MailPoet\\Test\\DataFactories\\WooCommerceSubscription\:\:createSubscription\(\) should return WC_Subscription but returns WC_Subscription\|WP_Error\.$#'
-			identifier: return.type
-			count: 1
-			path: ../../tests/DataFactories/WooCommerceSubscription.php
