@@ -2,8 +2,10 @@
 
 namespace MailPoet\Test\EmailEditor\Integrations\MailPoet;
 
+use MailPoet\Config\AccessControl;
 use MailPoet\EmailEditor\Integrations\MailPoet\AutomationEmailPreviewOrderProvider;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\WP\Functions as WPFunctions;
 
 /**
  * @group woo
@@ -37,7 +39,7 @@ class AutomationEmailPreviewOrderProviderTest extends \MailPoetTest {
       ->with($order)
       ->willReturn(true);
 
-    $provider = new AutomationEmailPreviewOrderProvider($woocommerceHelper);
+    $provider = new AutomationEmailPreviewOrderProvider($woocommerceHelper, $this->createWp(true));
 
     $this->assertSame($order, $provider->getOrder());
   }
@@ -48,8 +50,27 @@ class AutomationEmailPreviewOrderProviderTest extends \MailPoetTest {
       ->method('wcGetOrders')
       ->willReturn([]);
 
-    $provider = new AutomationEmailPreviewOrderProvider($woocommerceHelper);
+    $provider = new AutomationEmailPreviewOrderProvider($woocommerceHelper, $this->createWp(true));
 
     $this->assertNull($provider->getOrder());
+  }
+
+  public function testItReturnsNullWithoutEmailPermission(): void {
+    $woocommerceHelper = $this->createMock(WooCommerceHelper::class);
+    $woocommerceHelper->expects($this->never())
+      ->method('wcGetOrders');
+
+    $provider = new AutomationEmailPreviewOrderProvider($woocommerceHelper, $this->createWp(false));
+
+    $this->assertNull($provider->getOrder());
+  }
+
+  private function createWp(bool $canManageEmails): WPFunctions {
+    $wp = $this->createMock(WPFunctions::class);
+    $wp->method('currentUserCan')
+      ->willReturnCallback(function ($capability) use ($canManageEmails): bool {
+        return $capability === AccessControl::PERMISSION_MANAGE_EMAILS && $canManageEmails;
+      });
+    return $wp;
   }
 }

@@ -2,19 +2,30 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
+use MailPoet\Config\AccessControl;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\WP\Functions as WPFunctions;
 
 class AutomationEmailPreviewOrderProvider {
   private WooCommerceHelper $wooCommerceHelper;
 
+  private WPFunctions $wp;
+
   public function __construct(
-    WooCommerceHelper $wooCommerceHelper
+    WooCommerceHelper $wooCommerceHelper,
+    WPFunctions $wp
   ) {
     $this->wooCommerceHelper = $wooCommerceHelper;
+    $this->wp = $wp;
   }
 
   public function getOrder(): ?\WC_Order {
     if (!class_exists(\WC_Order::class)) {
+      return null;
+    }
+
+    // sample data for users who can edit emails
+    if (!$this->wp->currentUserCan(AccessControl::PERMISSION_MANAGE_EMAILS)) {
       return null;
     }
 
