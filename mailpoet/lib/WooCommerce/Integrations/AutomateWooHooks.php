@@ -61,7 +61,8 @@ class AutomateWooHooks {
   public function getAutomateWooCustomer(string $email) {
     // AutomateWoo\Customer_Factory::get_by_email() returns false if customer is not found
     // Second parameter is set to false to prevent creating new customer if not found
-    return \AutomateWoo\Customer_Factory::get_by_email($email, false);
+    $customer = \AutomateWoo\Customer_Factory::get_by_email($email, false);
+    return $customer instanceof \AutomateWoo\Customer ? $customer : false;
   }
 
   public function setup(): void {
