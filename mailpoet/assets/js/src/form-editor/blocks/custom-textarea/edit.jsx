@@ -61,7 +61,6 @@ function CustomTextAreaEdit({ name, attributes, setAttributes, clientId }) {
                   setAttributes({
                     mandatory: params.mandatory,
                     validate: params.validate,
-                    lines: params.lines,
                     label: params.label,
                   }),
               })

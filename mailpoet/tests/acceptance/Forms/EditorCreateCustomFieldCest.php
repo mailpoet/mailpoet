@@ -145,15 +145,15 @@ class EditorCreateCustomFieldCest {
     $i->reloadPage();
     $this->checkCustomTextAreaInForm($i);
 
+    $i->wantTo('Change text area to 3 lines');
+    $i->selectOption('[data-automation-id="settings_custom_text_area_number_of_lines"]', '3 lines');
+
     $i->wantTo('Change text input validation');
     $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"]', 'Alphanumerical');
     $i->wantTo('Update label and save the form');
     $i->fillField('[data-automation-id="settings_custom_text_label_input"]', $customFieldName . ' updated');
     $i->click('[data-automation-id="custom_field_save"]');
     $i->waitForText('Custom field saved.');
-
-    $i->wantTo('Change text area to 3 lines');
-    $i->selectOption('[data-automation-id="settings_custom_text_area_number_of_lines"]', '3 lines');
 
     $i->saveFormInEditor();
 
