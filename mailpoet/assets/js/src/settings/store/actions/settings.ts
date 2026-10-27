@@ -16,8 +16,9 @@ export function setSettings(value: any): Action {
   return { type: 'SET_SETTINGS', value };
 }
 
-export function setSaveDone(): Action {
-  return { type: 'SAVE_DONE' };
+// For settings that another API call saved
+export function markSettingsSaved(paths: string[][]): Action {
+  return { type: 'MARK_SETTINGS_SAVED', paths };
 }
 
 export function setErrorFlag(value: boolean): Action {
@@ -60,7 +61,7 @@ export function* saveSettings() {
   }
   yield setSettings(res.data);
   yield* afterSave(res.meta);
-  return { type: 'SAVE_DONE' };
+  return { type: 'FULL_SAVE_DONE' };
 }
 
 /**

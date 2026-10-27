@@ -123,6 +123,7 @@ describe('verifyMssKey', () => {
     };
     expect(data.mta_group).to.equal('mailpoet');
     expect(data.mta.method).to.equal('MailPoet');
+    expect(steps.map((step) => step.type)).to.include('FULL_SAVE_DONE');
   };
 
   it('keeps the sending method when re-verifying the stored valid key', () => {
@@ -132,6 +133,10 @@ describe('verifyMssKey', () => {
     ]);
 
     expect(steps.some(isSettingsSave)).to.equal(false);
+    expect(steps).to.deep.include({
+      type: 'MARK_SETTINGS_SAVED',
+      paths: [['mta', 'mailpoet_api_key_state']],
+    });
     const update = steps.find((step) => step.type === 'SET_SETTINGS');
     expect(update.value).to.deep.include({
       mta_group: 'website',

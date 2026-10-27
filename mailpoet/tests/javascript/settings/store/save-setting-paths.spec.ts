@@ -4,6 +4,8 @@ import NodeModule from 'module';
 type Step = { type?: string; [key: string]: unknown };
 type StepGenerator = Generator<Step, Step, unknown>;
 type ActionsModule = {
+  recalculateSubscribersScore: () => StepGenerator;
+  saveSettings: () => StepGenerator;
   saveSettingPaths: (paths: string[][]) => StepGenerator;
 };
 type SettingsState = {
@@ -53,6 +55,7 @@ const storeSettings = {
 let originalModuleLoad: ModuleLoader;
 let settingsActions: ActionsModule;
 let reducerModule: ReducerModule;
+let recalculateActions: Pick<ActionsModule, 'recalculateSubscribersScore'>;
 
 const installModuleMocks = () => {
   const moduleWithLoader = NodeModule as unknown as ModuleWithLoader;
@@ -67,6 +70,9 @@ const installModuleMocks = () => {
     }
     if (request === 'common') {
       return { t: (key: string) => key, isTruthy: () => true };
+    }
+    if (request === 'mailpoet') {
+      return { MailPoet: { Modal: { loading: () => undefined } } };
     }
     return originalModuleLoad.apply(this, [request, parent, isMain]);
   };
@@ -94,6 +100,9 @@ describe('Saving only some settings', () => {
     reducerModule = testRequire(
       './assets/js/src/settings/store/create-reducer.ts',
     ) as ReducerModule;
+    recalculateActions = testRequire(
+      './assets/js/src/settings/store/actions/recalculate-subscribers-score.ts',
+    ) as Pick<ActionsModule, 'recalculateSubscribersScore'>;
     restoreModuleMocks();
   });
 
@@ -145,6 +154,26 @@ describe('Saving only some settings', () => {
     });
   });
 
+  describe('saveSettings', () => {
+    it('treats the settings as saved', () => {
+      const response = { success: true, res: { data: {}, meta: {} } };
+
+      expect(runToEnd(settingsActions.saveSettings(), response)).to.deep.equal({
+        type: 'FULL_SAVE_DONE',
+      });
+    });
+  });
+
+  describe('recalculateSubscribersScore', () => {
+    it('leaves the unsaved changes as they are', () => {
+      expect(
+        runToEnd(recalculateActions.recalculateSubscribersScore(), {
+          success: true,
+        }),
+      ).to.equal(null);
+    });
+  });
+
   describe('reducer', () => {
     const makeState = (
       data: Record<string, unknown>,
@@ -188,6 +217,54 @@ describe('Saving only some settings', () => {
         values: [{ path: ['a', 'enabled'], value: '1' }],
       });
 
+      expect(newState.save.hasUnsavedChanges).to.equal(false);
+    });
+
+    it('switches the warning off on SAVE_DONE', () => {
+      // The key check ends with SAVE_DONE and reloads the page right after
+      const state = makeState({ a: 'edited' }, { a: '' });
+
+      const newState = reduce(state, { type: 'SAVE_DONE' });
+
+      expect(newState.save.hasUnsavedChanges).to.equal(false);
+    });
+
+    it('keeps unsaved edits unsaved after SAVE_DONE', () => {
+      const state = makeState({ a: 'edited', b: '' }, { a: '', b: '' });
+
+      let newState = reduce(state, { type: 'SAVE_DONE' });
+      newState = reduce(newState, {
+        type: 'SET_SETTING',
+        path: ['b'],
+        value: 'x',
+      });
+      newState = reduce(newState, {
+        type: 'SET_SETTING',
+        path: ['b'],
+        value: '',
+      });
+
+      expect(newState.save.hasUnsavedChanges).to.equal(true);
+    });
+
+    it('marks settings saved elsewhere as saved', () => {
+      const state = makeState({ a: 'saved', b: 'edited' }, { a: '', b: '' });
+
+      const newState = reduce(state, {
+        type: 'MARK_SETTINGS_SAVED',
+        paths: [['a']],
+      });
+
+      expect(newState.originalData).to.deep.equal({ a: 'saved', b: '' });
+      expect(newState.save.hasUnsavedChanges).to.equal(true);
+    });
+
+    it('treats the settings as saved after a full save', () => {
+      const state = makeState({ a: 'saved' }, { a: '' });
+
+      const newState = reduce(state, { type: 'FULL_SAVE_DONE' });
+
+      expect(newState.originalData).to.deep.equal({ a: 'saved' });
       expect(newState.save.hasUnsavedChanges).to.equal(false);
     });
   });
