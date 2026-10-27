@@ -3,14 +3,20 @@
 namespace MailPoet\Test\Config;
 
 use Codeception\Util\Stub;
+use MailPoet\Config\AccessControl;
 use MailPoet\Config\Menu;
+use MailPoet\Config\Router;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Util\License\Features\CapabilitiesManager;
+use MailPoet\WP\Functions as WPFunctions;
 
 class MenuTest extends \MailPoetTest {
   public function testItReturnsTrueIfCurrentPageBelongsToMailpoet() {
@@ -371,6 +377,37 @@ class MenuTest extends \MailPoetTest {
     ob_start();
     do_action('admin_notices');
     return (string)ob_get_clean();
+  }
+
+  public function testItRegistersWelcomeWizardWithSettingsPermission() {
+    $capabilities = [];
+    $wp = Stub::make(
+      new WPFunctions(),
+      [
+        'addMenuPage' => null,
+        'addSubmenuPage' => function ($parentSlug, $pageTitle, $menuTitle, $capability, $menuSlug) use (&$capabilities) {
+          $capabilities[$menuSlug] = $capability;
+          return $menuSlug;
+        },
+      ],
+      $this
+    );
+    $accessControl = Stub::make(AccessControl::class, ['validatePermission' => true], $this);
+    $menu = new Menu(
+      $accessControl,
+      $wp,
+      $this->diContainer->get(ServicesChecker::class),
+      $this->diContainer->get(ContainerWrapper::class),
+      $this->diContainer->get(Router::class),
+      $this->diContainer->get(CustomFonts::class),
+      $this->diContainer->get(CapabilitiesManager::class),
+      $this->diContainer->get(EmailEditor::class)
+    );
+
+    $menu->setup();
+
+    verify($capabilities[Menu::WELCOME_WIZARD_PAGE_SLUG])->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+    verify($capabilities[Menu::SETTINGS_PAGE_SLUG])->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
   }
 
   public function testItHighlightsAutomationsWhenEditingAutomationEmail() {
