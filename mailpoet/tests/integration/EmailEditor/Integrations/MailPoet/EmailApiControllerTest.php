@@ -2,7 +2,9 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
+use MailPoet\AccessDeniedException;
 use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\Config\AccessControl;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -37,6 +39,7 @@ class EmailApiControllerTest extends \MailPoetTest {
     // one that is empty, and has to be put back the way it was found.
     $timezone = get_option('timezone_string');
     $this->originalTimezone = is_string($timezone) ? $timezone : false;
+    wp_set_current_user(1);
   }
 
   public function testItGetsEmailDataFromNewsletterEntity(): void {
@@ -179,6 +182,31 @@ class EmailApiControllerTest extends \MailPoetTest {
     verify($newsletter->getSenderAddress())->equals('sender@example.com');
     verify($newsletter->getReplyToName())->equals('New reply');
     verify($newsletter->getReplyToAddress())->equals('reply@example.com');
+  }
+
+  public function testItRejectsSavingEmailDataWithoutTheManageEmailsPermission(): void {
+    $wpPostId = 25;
+    $newsletter = (new NewsletterFactory())
+      ->withSubject('Old subject')
+      ->withWpPostId($wpPostId)
+      ->create();
+    wp_set_current_user($this->createUserWithoutManageEmailsPermission());
+
+    try {
+      $this->emailApiController->saveEmailData([
+        'id' => $newsletter->getId(),
+        'subject' => 'New subject',
+        'preheader' => 'New preheader',
+      ], new \WP_Post((object)['ID' => $wpPostId]));
+      $this->fail('Access denied exception should have been thrown.');
+    } catch (AccessDeniedException $exception) {
+      verify($exception->getHttpStatusCode())->equals(APIResponse::STATUS_FORBIDDEN);
+    }
+
+    $this->entityManager->clear();
+    $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    verify($newsletter->getSubject())->equals('Old subject');
   }
 
   public function testItMarksNewsletterAsUpdatedWhenItsEmailPostIsSaved(): void {
@@ -802,6 +830,12 @@ class EmailApiControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $segmentIds = $newsletter->getSegmentIds();
     verify($segmentIds)->arrayCount(0);
+  }
+
+  private function createUserWithoutManageEmailsPermission(): int {
+    $userId = (int)$this->tester->createWordPressUser('email-api-editor-' . uniqid() . '@localhost.test', 'editor');
+    (new \WP_User($userId))->add_cap(AccessControl::PERMISSION_MANAGE_EMAILS, false);
+    return $userId;
   }
 
   public function _after() {
