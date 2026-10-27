@@ -117,6 +117,12 @@ class MailerTest extends \MailPoetTest {
         'email' => 'test@email.com',
       ]
     ))->equals('test@email.com');
+    verify($mailer->formatSubscriberNameAndEmailAddress(
+      [
+        'full_name' => "Jane\nDoe\tSmith",
+        'email' => 'test@email.com',
+      ]
+    ))->equals('Jane Doe Smith <test@email.com>');
   }
 
   public function testItCanSend() {
