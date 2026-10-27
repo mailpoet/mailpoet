@@ -547,11 +547,11 @@ jobs:
             # lets CircleCI offer "Rerun failed tests" on this job. `circleci tests split` cannot.
             # in case group is defined find only tests containing the group
             if [[ -n '<< parameters.group >>' ]]; then
-              grep -rw 'tests/acceptance' -e '@group << parameters.group >>' | sed -e "s/:.*//"
+              ../.circleci/list_group_tests.sh tests/acceptance '<< parameters.group >>'
             else
               circleci tests glob "tests/acceptance/**/*Cest.php"
             fi | circleci tests run \
-              --command='../.circleci/run_acceptance_tests.sh' \
+              --command='../.circleci/run_split_tests.sh codeception_acceptance' \
               --split-by=timings \
               --timings-type=filename \
               --verbose
@@ -666,6 +666,7 @@ jobs:
           path: /tmp/fake-mailer/
           destination: fake-mailer
   integration_tests:
+    parallelism: << parameters.parallelism >>
     working_directory: /home/circleci/mailpoet/mailpoet
     machine:
       image: default
@@ -677,6 +678,9 @@ jobs:
       WORDPRESS_IMAGE_VERSION: << parameters.wordpress_image_version >>
       WORDPRESS_VERSION: << parameters.wordpress_version >>
     parameters:
+      parallelism:
+        type: integer
+        default: 1
       codeception_image_version:
         type: string
         default: ''
@@ -822,43 +826,28 @@ jobs:
           name: 'PHP Integration tests'
           command: |
             mkdir -m 777 -p tests/_output/exceptions
-            cd ../tests_env/docker
-            args=(
-              --steps
-              --debug
-              -vvv
-              --html
-              --xml
-            )
+            # Convert test result filename values to be relative paths because the circleci CLI requires exact matches
+            if [ -e $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json ]; then
+              sed -i.bak 's#/wp-core/wp-content/plugins/mailpoet/##g' $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json
+            fi
+            export SKIP_GROUP='<< parameters.skip_group >>'
+            export SKIP_PLUGINS=<< parameters.skip_plugins >>
+            export MULTISITE=<< parameters.multisite >>
+            export ENABLE_HPOS=<< parameters.enable_hpos >>
+            export ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >>
+            export DISABLE_HPOS=<< parameters.disable_hpos >>
+            # `circleci tests run` splits the files over the job’s containers by their stored timings
+            # and launches the tests itself, which is what lets CircleCI offer “Rerun failed tests”.
+            # With a group, only the tests in that group are listed.
             if [[ -n '<< parameters.group >>' ]]; then
-              args+=(--group << parameters.group >>)
-            fi
-            if [[ -n '<< parameters.skip_group >>' ]]; then
-              args+=(--skip-group << parameters.skip_group >>)
-            fi
-            docker compose run -e SKIP_DEPS=1 \
-              -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
-              -e CIRCLE_JOB=${CIRCLE_JOB} \
-              -e GH_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} \
-              -e SKIP_PLUGINS=<< parameters.skip_plugins >> \
-              -e WP_TEST_MAILER_ENABLE_SENDING=${WP_TEST_MAILER_ENABLE_SENDING} \
-              -e WP_TEST_ENABLE_NETWORK_TESTS=${WP_TEST_ENABLE_NETWORK_TESTS} \
-              -e WP_TEST_MAILER_MAILPOET_API=${WP_TEST_MAILER_MAILPOET_API} \
-              -e WP_TEST_MAILER_SENDGRID_API=${WP_TEST_MAILER_SENDGRID_API} \
-              -e WP_TEST_MAILER_AMAZON_ACCESS=${WP_TEST_MAILER_AMAZON_ACCESS} \
-              -e WP_TEST_MAILER_AMAZON_REGION=${WP_TEST_MAILER_AMAZON_REGION} \
-              -e WP_TEST_MAILER_AMAZON_SECRET=${WP_TEST_MAILER_AMAZON_SECRET} \
-              -e WP_TEST_IMPORT_MAILCHIMP_API=${WP_TEST_IMPORT_MAILCHIMP_API} \
-              -e WP_TEST_IMPORT_MAILCHIMP_LISTS=${WP_TEST_IMPORT_MAILCHIMP_LISTS} \
-              -e WP_TEST_MAILER_SMTP_HOST=${WP_TEST_MAILER_SMTP_HOST} \
-              -e WP_TEST_MAILER_SMTP_LOGIN=${WP_TEST_MAILER_SMTP_LOGIN} \
-              -e WP_TEST_MAILER_SMTP_PASSWORD=${WP_TEST_MAILER_SMTP_PASSWORD} \
-              -e MULTISITE=<< parameters.multisite >> \
-              -e ENABLE_HPOS=<< parameters.enable_hpos >> \
-              -e ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >> \
-              -e DISABLE_HPOS=<< parameters.disable_hpos >> \
-              -e WORDPRESS_VERSION=${WORDPRESS_VERSION} \
-              codeception_integration "${args[@]}"
+              ../.circleci/list_group_tests.sh tests/integration '<< parameters.group >>'
+            else
+              circleci tests glob "tests/integration/**/*Test.php"
+            fi | circleci tests run \
+              --command='../.circleci/run_split_tests.sh codeception_integration' \
+              --split-by=timings \
+              --timings-type=filename \
+              --verbose
       - store_test_results:
           path: tests/_output
       - store_artifacts:
@@ -1162,6 +1151,7 @@ workflows:
             - build
       - integration_tests:
           <<: *slack-fail-post-step
+          parallelism: 2
           skip_group: woo
           skip_plugins: 1
           name: integration_test_base
@@ -1176,6 +1166,7 @@ workflows:
       - integration_tests:
           <<: *slack-fail-post-step
           <<: *only_trunk_and_release
+          parallelism: 2
           multisite: 1
           name: integration_tests_multisite
           requires:
