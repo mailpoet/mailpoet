@@ -761,9 +761,26 @@ class RoboFile extends \Robo\Tasks {
       return '^' . preg_quote(__DIR__ . DIRECTORY_SEPARATOR . $path);
     }, $ignorePaths);
 
-    return $this->taskExec($task)
+    $result = $this->taskExec($task)
       ->arg('--ignore=' . implode(',', $ignorePatterns))
       ->args(!empty($filesToCheck) ? $filesToCheck : ['.'])
+      ->run();
+    if (!$result->wasSuccessful() || !empty($filesToCheck)) {
+      return $result;
+    }
+
+    // With --parallel, DuplicateClassName only compares files checked in the same process, so run it once in a single process
+    return $this->taskExec(implode(' ', [
+      'php -d memory_limit=-1',
+      './tasks/code_sniffer/vendor/bin/phpcs',
+      '--extensions=php',
+      $severityFlag,
+      '--standard=tasks/code_sniffer/MailPoet/free-ruleset.xml',
+      '--sniffs=Generic.Classes.DuplicateClassName',
+      '-s',
+    ]))
+      ->arg('--ignore=' . implode(',', $ignorePatterns))
+      ->arg('.')
       ->run();
   }
 
