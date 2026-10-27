@@ -21,6 +21,7 @@ class ViewInBrowserController {
   private const SHARED_QUEUE_BODY_TYPES = [
     NewsletterEntity::TYPE_STANDARD,
     NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
+    NewsletterEntity::TYPE_RE_ENGAGEMENT,
   ];
 
   /** @var LinkTokens */

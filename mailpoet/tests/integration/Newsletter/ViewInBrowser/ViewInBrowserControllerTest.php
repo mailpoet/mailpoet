@@ -273,6 +273,27 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     verify($passedQueue->getId())->equals($this->sendingQueue->getId());
   }
 
+  public function testItUsesReEngagementQueueForAnonymousView() {
+    $newsletter = (new Newsletter())->withReengagementType()->create();
+    $newsletter->setHash(Security::generateHash());
+    $task = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, null);
+    $queue = (new SendingQueueFactory())->create($task, $newsletter);
+    $this->entityManager->flush();
+
+    $data = [
+      'queue_id' => $queue->getId(),
+      'subscriber_id' => 0,
+      'newsletter_id' => $newsletter->getId(),
+      'newsletter_hash' => $newsletter->getHash(),
+      'subscriber_token' => 0,
+      'preview' => false,
+    ];
+
+    $passedQueue = $this->getQueuePassedToRenderer($data);
+    $this->assertInstanceOf(SendingQueueEntity::class, $passedQueue);
+    verify($passedQueue->getId())->equals($queue->getId());
+  }
+
   public function testUsesEmptySubscriberWhenNotLoggedIn() {
 
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
