@@ -7,7 +7,7 @@ use MailPoet\Newsletter\Editor\PostTransformer;
 use MailPoet\Newsletter\Editor\PostTransformerContentsExtractor;
 use PHPUnit\Framework\MockObject\MockObject;
 
-class PostContentTransformerTest extends \MailPoetTest {
+class PostContentTransformerTest extends \MailPoetUnitTest {
   /** @var array */
   private $contentMock;
 
