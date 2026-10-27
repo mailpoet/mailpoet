@@ -414,10 +414,8 @@ class SettingsTest extends \MailPoetTest {
     ]);
     verify($response->status)->same(200);
     verify($this->settings->get('sender.address'))->same('invalid@email.com');
-    verify($response->meta)->equals([
-      'invalid_sender_address' => 'invalid@email.com',
-      'showNotice' => false,
-    ]);
+    verify($response->meta['invalid_sender_address'])->same('invalid@email.com');
+    verify($response->meta['showNotice'])->false();
   }
 
   public function testItRejectsUnauthorizedFromAddress() {
@@ -559,6 +557,23 @@ class SettingsTest extends \MailPoetTest {
     $this->settings->resetCache();
     verify($this->settings->get('sender')['address'])->equals('johndoeexampletestnonexistinghopefullyfreemail@gmail.com');
     verify($this->settings->get('reply_to'))->empty();
+  }
+
+  public function testItListsTheSettingsItChanged() {
+    $_SERVER['HTTP_HOST'] = 'www.mailpoet.com';
+    $this->settings->set('sender', ['name' => '', 'address' => 'wordpress@mailpoet.com']);
+    $this->settings->set('reply_to', ['name' => '', 'address' => 'johndoe@gmail.com']);
+    $this->settings->set('mta_group', 'smtp');
+
+    $response = $this->endpoint->set(['mta_group' => 'mailpoet']);
+
+    $changed = $response->meta['changed_settings'];
+    verify($changed)->arrayContains('mta_group');
+    // Activating MSS replaces a wordpress@ sender with the reply-to address
+    verify($changed)->arrayContains('sender.address');
+    verify($changed)->arrayContains('reply_to');
+    verify($changed)->arrayNotContains('sender.name');
+    verify($changed)->arrayNotContains('some.setting');
   }
 
   public function testItDeactivatesReEngagementEmailsIfTrackingDisabled(): void {

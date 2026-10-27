@@ -1,8 +1,9 @@
 import { select } from '@wordpress/data';
-import { get } from 'lodash';
+import { get, has, isEqual, unionWith } from 'lodash';
 
 import { STORE_NAME } from 'settings/store/store-name';
 import { Action, ReEngagement } from 'settings/store/types';
+import { normalizeSettings } from 'settings/store/normalize-settings';
 import { updateKeyActivationState } from './key-activation';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -85,9 +86,16 @@ export function* saveSettingPaths(paths: string[][]) {
     return { type: 'SAVE_FAILED', error };
   }
   yield* afterSave(res.meta);
+  // The server can change other settings too, e.g. the sender when MSS is activated
+  const changedPaths = (res.meta.changed_settings as string[]).map((name) =>
+    name.split('.'),
+  );
+  const saved = normalizeSettings(res.data as Record<string, unknown>);
   return {
     type: 'PARTIAL_SAVE_DONE',
-    values: paths.map((path) => ({ path, value: get(res.data, path) })),
+    values: unionWith(paths, changedPaths, isEqual)
+      .filter((path) => has(saved, path))
+      .map((path) => ({ path, value: get(saved, path) })),
   };
 }
 

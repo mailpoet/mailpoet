@@ -195,7 +195,9 @@ class Settings extends APIEndpoint {
         }
       }
 
-      return $this->successResponse($this->settings->getAll(), $meta);
+      $newSettings = $this->settings->getAll();
+      $meta['changed_settings'] = $this->getChangedSettings($oldSettings, $newSettings);
+      return $this->successResponse($newSettings, $meta);
     }
   }
 
@@ -467,6 +469,30 @@ class Settings extends APIEndpoint {
       unset($target);
     }
     return $expanded;
+  }
+
+  /**
+   * Names of the settings that differ, two levels deep, e.g. "sender.address". The settings page
+   * copies them back after saving only some settings, because saving can change other settings too.
+   *
+   * @return string[]
+   */
+  private function getChangedSettings(array $oldSettings, array $newSettings): array {
+    $changed = [];
+    foreach (array_keys($oldSettings + $newSettings) as $name) {
+      $oldValue = $oldSettings[$name] ?? null;
+      $newValue = $newSettings[$name] ?? null;
+      if (is_array($oldValue) && is_array($newValue)) {
+        foreach (array_keys($oldValue + $newValue) as $key) {
+          if (($oldValue[$key] ?? null) !== ($newValue[$key] ?? null)) {
+            $changed[] = $name . '.' . $key;
+          }
+        }
+      } elseif ($oldValue !== $newValue) {
+        $changed[] = (string)$name;
+      }
+    }
+    return $changed;
   }
 
   private function validateSettingsBeforeSave(array $settings): ?string {

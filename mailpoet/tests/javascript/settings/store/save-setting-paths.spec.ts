@@ -35,6 +35,14 @@ const testRequire = (
 const actionsPath = testRequire.resolve(
   './assets/js/src/settings/store/actions/settings.ts',
 );
+const normalizePath = testRequire.resolve(
+  './assets/js/src/settings/store/normalize-settings.ts',
+);
+// Other specs may have loaded these with their own mocks
+const clearModuleCache = () => {
+  delete testRequire.cache[actionsPath];
+  delete testRequire.cache[normalizePath];
+};
 
 // The store holds an invalid, unsaved edit on another tab.
 const storeSettings = {
@@ -58,7 +66,7 @@ const installModuleMocks = () => {
       return { select: () => ({ getSettings: () => storeSettings }) };
     }
     if (request === 'common') {
-      return { t: () => undefined, isTruthy: () => true };
+      return { t: (key: string) => key, isTruthy: () => true };
     }
     return originalModuleLoad.apply(this, [request, parent, isMain]);
   };
@@ -69,10 +77,18 @@ const restoreModuleMocks = () => {
     originalModuleLoad;
 };
 
+// Steps a generator to the end, answering CALL_API with the response
+const runToEnd = (generator: StepGenerator, response: unknown) => {
+  let step = generator.next();
+  while (!step.done) {
+    step = generator.next(step.value.type === 'CALL_API' ? response : null);
+  }
+  return step.value;
+};
+
 describe('Saving only some settings', () => {
   before(() => {
-    // Other specs may have loaded the actions with their own store mock
-    delete testRequire.cache[actionsPath];
+    clearModuleCache();
     installModuleMocks();
     settingsActions = testRequire(actionsPath) as ActionsModule;
     reducerModule = testRequire(
@@ -81,9 +97,7 @@ describe('Saving only some settings', () => {
     restoreModuleMocks();
   });
 
-  after(() => {
-    delete testRequire.cache[actionsPath];
-  });
+  after(clearModuleCache);
 
   describe('saveSettingPaths', () => {
     it('posts only the given settings', () => {
@@ -95,6 +109,39 @@ describe('Saving only some settings', () => {
       const apiCall = generator.next().value;
       expect(apiCall.type).to.equal('CALL_API');
       expect(apiCall.data).to.deep.equal({ 'mss_super_sending.enabled': '1' });
+    });
+
+    it('copies back the saved settings and the ones the server changed', () => {
+      const generator = settingsActions.saveSettingPaths([
+        ['mss_super_sending', 'enabled'],
+      ]);
+      const response = {
+        success: true,
+        res: {
+          data: {
+            mss_super_sending: { enabled: '1' },
+            sender: { name: '', address: 'me@example.com' },
+            reply_to: null,
+          },
+          meta: {
+            // The settings page doesn't use "source", so it isn't copied back
+            changed_settings: [
+              'mss_super_sending.source',
+              'sender.address',
+              'reply_to',
+            ],
+          },
+        },
+      };
+
+      expect(runToEnd(generator, response)).to.deep.equal({
+        type: 'PARTIAL_SAVE_DONE',
+        values: [
+          { path: ['mss_super_sending', 'enabled'], value: '1' },
+          { path: ['sender', 'address'], value: 'me@example.com' },
+          { path: ['reply_to'], value: { name: '', address: '' } },
+        ],
+      });
     });
   });
 
