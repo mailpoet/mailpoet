@@ -60,7 +60,7 @@ class SendGridTest extends \MailPoetTest {
   public function testItCanGenerateBody() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $this->extraParams);
     verify($body['to'])->equals('mailpoet@sink.sendgrid.net');
-    verify($body['toname'])->equals('Recipient');
+    verify($body)->arrayHasNotKey('toname');
     verify($body['from'])->equals($this->sender['from_email']);
     verify($body['fromname'])->equals($this->sender['from_name']);
     verify($body['replyto'])->equals($this->replyTo['reply_to_email']);
@@ -73,20 +73,24 @@ class SendGridTest extends \MailPoetTest {
     verify($body['text'])->equals($this->newsletter['body']['text']);
   }
 
-  public function testItSendsTheRecipientNameSeparately() {
+  public function testItSendsOnlyTheRecipientAddress() {
     $body = $this->mailer->getBody($this->newsletter, 'Jane, Doe <test@test.com>');
     verify($body['to'])->equals('test@test.com');
-    verify($body['toname'])->equals('Jane, Doe');
+    verify($body)->arrayHasNotKey('toname');
 
     $body = $this->mailer->getBody($this->newsletter, 'test@test.com');
     verify($body['to'])->equals('test@test.com');
     verify($body)->arrayHasNotKey('toname');
   }
 
-  public function testItSendsANonAsciiRecipientNameAsPlainText() {
+  public function testItSendsOnlyTheRecipientAddressForAnEncodedName() {
     $body = $this->mailer->getBody($this->newsletter, '=?utf-8?B?' . base64_encode('Jiří Novák') . '?= <test@test.com>');
     verify($body['to'])->equals('test@test.com');
-    verify($body['toname'])->equals('Jiří Novák');
+    verify($body)->arrayHasNotKey('toname');
+
+    $body = $this->mailer->getBody($this->newsletter, '=?utf-8?B?SmFuZQ==?= <test@test.com>');
+    verify($body['to'])->equals('test@test.com');
+    verify($body)->arrayHasNotKey('toname');
   }
 
   public function testItCanCreateRequest() {
