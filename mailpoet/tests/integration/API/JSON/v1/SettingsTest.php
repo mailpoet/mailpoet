@@ -152,6 +152,15 @@ class SettingsTest extends \MailPoetTest {
     ]);
   }
 
+  public function testTurningSuperSendingOnWithADottedKeyRecordsAManualChange() {
+    $this->endpoint->set([SuperSendingController::SETTING_NAME . '.enabled' => '1']);
+
+    verify($this->settings->get(SuperSendingController::SETTING_NAME))->same([
+      'enabled' => '1',
+      'source' => SuperSendingController::SOURCE_MANUAL,
+    ]);
+  }
+
   public function testItCanSetSettings() {
     $newSettings = [
       'some' => [

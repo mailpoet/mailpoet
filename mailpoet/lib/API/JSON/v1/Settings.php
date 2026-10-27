@@ -157,12 +157,13 @@ class Settings extends APIEndpoint {
       foreach ($settings as $name => $value) {
         $this->settings->set($name, $value);
       }
+      $postedSettings = $this->expandDottedKeys($settings);
 
-      if (array_key_exists(SendingEnvironment::SETTING_ALLOW_SENDING, $settings)) {
+      if (array_key_exists(SendingEnvironment::SETTING_ALLOW_SENDING, $postedSettings)) {
         $this->sendingEnvironment->syncSiteUrlWithSetting();
       }
 
-      if (array_key_exists(SuperSendingController::SETTING_NAME, $settings)) {
+      if (array_key_exists(SuperSendingController::SETTING_NAME, $postedSettings)) {
         $this->superSendingController->onSettingSaved($oldSettings[SuperSendingController::SETTING_NAME]);
       }
 
@@ -175,10 +176,10 @@ class Settings extends APIEndpoint {
 
       // when pending approval, leave this to cron / Key Activation tab logic
       if (!$this->servicesChecker->isMailPoetAPIKeyPendingApproval()) {
-        $this->settingsChangeHandler->updateApiKeyState($settings);
+        $this->settingsChangeHandler->updateApiKeyState($postedSettings);
       }
 
-      $meta = $this->authorizedEmailsController->onSettingsSave($settings);
+      $meta = $this->authorizedEmailsController->onSettingsSave($postedSettings);
       if ($signupConfirmation !== $this->settings->get('signup_confirmation.enabled')) {
         $this->messageController->updateSuccessMessages();
       }
@@ -445,6 +446,27 @@ class Settings extends APIEndpoint {
     if (!empty($newSettings['signup_confirmation']['use_mailpoet_editor'])) {
       $this->confirmationEmailCustomizer->init();
     }
+  }
+
+  /**
+   * Turns dotted keys such as "mta.method" into nested arrays, so the checks after saving read all
+   * posted values the same way. Saving uses the dotted keys, because saving "mta" as an array would
+   * replace all of it.
+   */
+  private function expandDottedKeys(array $settings): array {
+    $expanded = [];
+    foreach ($settings as $name => $value) {
+      $target = &$expanded;
+      foreach (explode('.', (string)$name) as $key) {
+        if (!isset($target[$key]) || !is_array($target[$key])) {
+          $target[$key] = [];
+        }
+        $target = &$target[$key];
+      }
+      $target = $value;
+      unset($target);
+    }
+    return $expanded;
   }
 
   private function validateSettingsBeforeSave(array $settings): ?string {
