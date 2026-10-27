@@ -10,19 +10,30 @@
 #
 # A Cest file is listed as one file:method entry per test, so the split balances the
 # acceptance suite by test rather than by file. Codeception matches a file:method entry
-# by prefix, so a Cest whose method names are prefixes of each other is listed as a
-# whole file, or the shorter name would run on two containers.
+# by prefix, so a method whose name starts another method’s name is listed as a whole
+# file instead, or the shorter name would run on two containers.
 
 set -eo pipefail
 
 dir=$1
 group=$2
 
+# true when another public method of the file starts with the given name
+has_longer_sibling() {
+  awk -v name="$2" '
+    match($0, /^[[:space:]]*public function [A-Za-z][A-Za-z0-9_]*/) {
+      line = substr($0, RSTART, RLENGTH); sub(/.*function /, "", line)
+      if (line != name && index(line, name) == 1) { found = 1; exit }
+    }
+    END { exit !found }
+  ' "$1"
+}
+
 # prints a Cest as file:method entries, or as the file when its method names overlap
 list_cest() {
   awk -v file="$1" '
-    match($0, /public function [A-Za-z][A-Za-z0-9_]*/) {
-      name = substr($0, RSTART + 16, RLENGTH - 16)
+    match($0, /^[[:space:]]*public function [A-Za-z][A-Za-z0-9_]*/) {
+      name = substr($0, RSTART, RLENGTH); sub(/.*function /, "", name)
       if (name ~ /^_/) next
       names[++count] = name
     }
@@ -35,9 +46,13 @@ list_cest() {
   ' "$1"
 }
 
+list_file() {
+  if [[ "$1" == *Cest.php ]]; then list_cest "$1"; else echo "$1"; fi
+}
+
 if [[ -z "$group" ]]; then
   find "$dir" -name '*Test.php' -o -name '*Cest.php' | sort | while read -r file; do
-    if [[ "$file" == *Cest.php ]]; then list_cest "$file"; else echo "$file"; fi
+    list_file "$file"
   done
   exit 0
 fi
@@ -49,10 +64,16 @@ fi
     !seen_class && $0 ~ ("@group[[:space:]]+" group "([[:space:]]|$)") { print "WHOLE"; exit }
     /^(abstract |final )?class / { seen_class = 1 }
     seen_class && $0 ~ ("@group[[:space:]]+" group "([[:space:]]|$)") { pending = 1 }
-    pending && match($0, /function [A-Za-z][A-Za-z0-9_]*/) { print file ":" substr($0, RSTART + 9, RLENGTH - 9); pending = 0 }
+    pending && match($0, /^[[:space:]]*public function [A-Za-z][A-Za-z0-9_]*/) {
+      name = substr($0, RSTART, RLENGTH); sub(/.*function /, "", name)
+      print file ":" name; pending = 0
+    }
   ' "$file" | while read -r entry; do
     if [[ "$entry" == "WHOLE" ]]; then
-      if [[ "$file" == *Cest.php ]]; then list_cest "$file"; else echo "$file"; fi
+      list_file "$file"
+    elif has_longer_sibling "$file" "${entry#*:}"; then
+      echo "list_tests.sh: ${entry#*:} starts another method name in $file, listing the whole file" >&2
+      echo "$file"
     else
       echo "$entry"
     fi
