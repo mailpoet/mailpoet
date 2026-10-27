@@ -55,7 +55,9 @@ class LogCleanupTest extends \MailPoetTest {
 
   public function testItKeepsDeletingUntilABatchComesBackShort() {
     $batches = [LogCleanup::BATCH_SIZE, LogCleanup::BATCH_SIZE, 10];
-    $worker = $this->createWorkerWithPurge(Expected::exactly(3, function () use (&$batches) {
+    $worker = $this->createWorkerWithPurge(Expected::exactly(3, function (int $daysToKeepLogs, int $limit) use (&$batches) {
+      verify($daysToKeepLogs)->equals(LogCleanup::DAYS_TO_KEEP_LOGS);
+      verify($limit)->equals(LogCleanup::BATCH_SIZE);
       return array_shift($batches);
     }));
 
