@@ -27,6 +27,7 @@ export function DefaultSender({ showModal }) {
   const [replyToName, setReplyToName] = useSetting('reply_to', 'name');
   const [replyToEmail, setReplyToEmail] = useSetting('reply_to', 'address');
   const setErrorFlag = useAction('setErrorFlag');
+  const markSettingsSaved = useAction('markSettingsSaved');
   const invalidSenderEmail = senderEmail && !isEmail(senderEmail);
   const invalidReplyToEmail = replyToEmail && !isEmail(replyToEmail);
 
@@ -126,6 +127,8 @@ export function DefaultSender({ showModal }) {
             onSuccessfulEmailOrDomainAuthorization={(data) => {
               if (data.type === 'email') {
                 setIsAuthorized(true);
+                // The modal saved the address
+                void markSettingsSaved([['sender', 'address']]);
                 MailPoet.trackEvent('MSS in plugin authorize email', {
                   'authorized email source': 'settings',
                   wasSuccessful: 'yes',
