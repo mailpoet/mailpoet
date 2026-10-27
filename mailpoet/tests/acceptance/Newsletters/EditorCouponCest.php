@@ -26,7 +26,7 @@ class EditorCouponCest {
     $this->wcHelper = ContainerWrapper::getInstance()->get(Helper::class);
   }
 
-  public function addCoupon(\AcceptanceTester $i) {
+  public function addCouponBlock(\AcceptanceTester $i) {
     $couponInEditor = '[data-automation-id="coupon_block"]';
     $footer = '[data-automation-id="footer"]';
     $sendFormElement = '[data-automation-id="newsletter_send_form"]';

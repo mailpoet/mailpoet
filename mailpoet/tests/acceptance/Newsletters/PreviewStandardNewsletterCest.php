@@ -18,7 +18,7 @@ class PreviewStandardNewsletterCest {
     $this->settings = new Settings();
   }
 
-  public function previewStandardNewsletter(\AcceptanceTester $i) {
+  public function previewStandardNewsletterFromListing(\AcceptanceTester $i) {
     $newsletterName = 'Preview in Browser Newsletter';
     $newsletter = new Newsletter();
     $newsletter->withSubject($newsletterName)->create();

@@ -57,7 +57,7 @@ class WooCheckoutBlocksCest {
     }
   }
 
-  public function checkoutOptInDisabled(\AcceptanceTester $i) {
+  public function checkoutOptInDisabledWithConfirmation(\AcceptanceTester $i) {
     if (!$this->checkMinimalPluginVersions($i)) {
       $i->wantTo('Skip test due to minimal plugin version requirements');
       return;
@@ -79,7 +79,7 @@ class WooCheckoutBlocksCest {
     $i->seeConfirmationEmailWasNotReceived();
   }
 
-  public function checkoutOptInChecked(\AcceptanceTester $i) {
+  public function checkoutOptInCheckedWithConfirmation(\AcceptanceTester $i) {
     if (!$this->checkMinimalPluginVersions($i)) {
       $i->wantTo('Skip test due to minimal plugin version requirements');
       return;
@@ -93,7 +93,7 @@ class WooCheckoutBlocksCest {
     $i->seeConfirmationEmailWasReceived();
   }
 
-  public function checkoutOptInUnchecked(\AcceptanceTester $i) {
+  public function checkoutOptInUncheckedWithConfirmation(\AcceptanceTester $i) {
     if (!$this->checkMinimalPluginVersions($i)) {
       $i->wantTo('Skip test due to minimal plugin version requirements');
       return;

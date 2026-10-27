@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class DeleteNotificationCest {
-  public function deleteNotification(\AcceptanceTester $i) {
+  public function deleteNotificationToTrash(\AcceptanceTester $i) {
     // step 1 - Prepare post notification data
     $i->wantTo('delete a notification');
     $newsletterName = 'Deletion Test Post Notification';
