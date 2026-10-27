@@ -40,7 +40,7 @@ class SendingQueueBodyCleanup extends SimpleWorker {
       return true;
     }
 
-    $startTime = Carbon::now()->getTimestamp();
+    $startTime = (float)Carbon::now()->format('U.u');
     do {
       $this->cronHelper->enforceExecutionLimit($timer);
 
@@ -49,7 +49,7 @@ class SendingQueueBodyCleanup extends SimpleWorker {
         self::BATCH_SIZE
       );
 
-      if ($updated < self::BATCH_SIZE || (Carbon::now()->getTimestamp() - $startTime) > self::MAX_EXECUTION_TIME) {
+      if ($updated < self::BATCH_SIZE || ((float)Carbon::now()->format('U.u') - $startTime) > self::MAX_EXECUTION_TIME) {
         break;
       }
     } while (true);
