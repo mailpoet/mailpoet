@@ -11,7 +11,8 @@ class CircleCiController {
   const RELEASE_BRANCH = 'release';
   const RELEASE_ZIP_JOB_NAME = 'build_release_zip';
   const LINT_ZIP_JOB_NAME = 'lint_release_zip_php74';
-  const JOB_STATUS_SUCCESS = 'success';
+  // CircleCI reports a passed job and a passed workflow alike
+  const STATUS_SUCCESS = 'success';
 
   const FREE_ZIP_FILENAME = 'mailpoet.zip';
   const PREMIUM_ZIP_FILENAME = 'mailpoet-premium.zip';
@@ -77,9 +78,10 @@ class CircleCiController {
     if ($job === null) {
       throw new \Exception('No release ZIP build found');
     }
-    $this->checkZipBuildJobStatus($job);
+    $this->assertSuccess("Job '" . self::RELEASE_ZIP_JOB_NAME . "'", $job['status'] ?? null);
     if ($this->project === self::PROJECT_MAILPOET) {
-      $this->checkLintJobStatus($this->findJob($jobs, self::LINT_ZIP_JOB_NAME));
+      $lintJob = $this->findJob($jobs, self::LINT_ZIP_JOB_NAME);
+      $this->assertSuccess("Job '" . self::LINT_ZIP_JOB_NAME . "'", $lintJob['status'] ?? null, 'The release ZIP was not verified on PHP 7.4.');
     }
 
     $this->downloadArtifact((int)$job['job_number'], $this->zipFilename, $targetPath);
@@ -162,6 +164,9 @@ class CircleCiController {
     if ($latestWorkFlowId === null) {
       throw new \Exception('No release ZIP build found');
     }
+    // The zip job runs next to the test jobs (.circleci/config.yml), so a green zip job alone
+    // does not mean the tests passed. Only a workflow where every job passed may be released.
+    $this->assertSuccess('Workflow', $latestWorkflow['status'] ?? null, 'The release ZIP is only taken from a workflow where every job passed.');
 
     $responseJob = $this->httpClient->get('https://circleci.com/api/v2/workflow/' . urlencode($latestWorkFlowId) . '/job');
     $jobs = json_decode($responseJob->getBody()->getContents(), true);
@@ -178,20 +183,13 @@ class CircleCiController {
     return null;
   }
 
-  private function checkLintJobStatus(?array $job): void {
-    $name = self::LINT_ZIP_JOB_NAME;
-    $status = $job['status'] ?? 'missing';
-    if ($status !== self::JOB_STATUS_SUCCESS) {
-      $expectedStatus = self::JOB_STATUS_SUCCESS;
-      throw new \Exception("Job '$name' has status '$status', '$expectedStatus' expected. The release ZIP was not verified on PHP 7.4.");
+  private function assertSuccess(string $subject, ?string $status, string $hint = ''): void {
+    if ($status === self::STATUS_SUCCESS) {
+      return;
     }
-  }
-
-  private function checkZipBuildJobStatus(array $job) {
-    if ($job['status'] !== self::JOB_STATUS_SUCCESS) {
-      $expectedStatus = self::JOB_STATUS_SUCCESS;
-      throw new \Exception("Job has invalid status '$job[status]', '$expectedStatus' expected");
-    }
+    $status = $status ?? 'missing';
+    $expected = self::STATUS_SUCCESS;
+    throw new \Exception(trim("$subject has status '$status', '$expected' expected. $hint"));
   }
 
   /**
