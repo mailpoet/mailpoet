@@ -5,11 +5,8 @@ namespace MailPoet\Test\Mailer\Methods\ErrorMappers;
 use Codeception\Stub;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
-use MailPoet\Mailer\WordPress\PHPMailerLoader;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPMailer\PHPMailer\Exception;
-
-PHPMailerLoader::load();
 
 class SMTPMapperTest extends \MailPoetUnitTest {
 

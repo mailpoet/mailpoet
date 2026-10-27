@@ -1,6 +1,12 @@
 <?php declare(strict_types = 1);
 // phpcs:ignoreFile - We want to allow multiple classes etc.
 
+// PHPMailer ships inside WordPress core, which the unit suite does not load.
+// The error mappers only read the message of its exception.
+if (!class_exists('PHPMailer\\PHPMailer\\Exception')) {
+  class_alias(\Exception::class, 'PHPMailer\\PHPMailer\\Exception');
+}
+
 // Dummy WP classes
 if (!class_exists(\WP_Theme_JSON::class)) {
   class WP_Theme_JSON {
