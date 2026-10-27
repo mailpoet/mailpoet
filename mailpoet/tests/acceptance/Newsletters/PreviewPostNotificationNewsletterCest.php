@@ -15,7 +15,7 @@ class PreviewPostNotificationNewsletterCest {
     $this->settings = new Settings();
   }
 
-  public function previewPostNotificationNewsletter(\AcceptanceTester $i) {
+  public function previewPostNotificationNewsletterFromListing(\AcceptanceTester $i) {
     $newsletterName = 'Preview in Browser Post Notification';
     $newsletter = new Newsletter();
     $newsletter->withSubject($newsletterName)->withPostNotificationsType()->create();

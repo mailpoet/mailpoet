@@ -8,7 +8,7 @@ use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
 
 class HomepageBasicsCest {
-  public function homepageRenders(\AcceptanceTester $i) {
+  public function homepageRendersAndIsInMenu(\AcceptanceTester $i) {
     $i->wantTo('Check homepage renders and is present in menu');
     $i->login();
     $i->amOnMailpoetPage('Homepage');

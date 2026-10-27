@@ -291,7 +291,7 @@ class NewslettersListingCest {
     $i->dontSee('Nothing here yet!');
   }
 
-  public function dropDeletedListFromDeepLink(\AcceptanceTester $i) {
+  public function dropDeletedListFromDeepLinkWithoutListFilter(\AcceptanceTester $i) {
     $i->wantTo('Open a deep link with a deleted list without a list filter');
     $segment = (new Segment())->withName('Existing list')->create();
     (new Newsletter())->withSubject('Pruned link in list')->withSentStatus()->withSegments([$segment])->create();

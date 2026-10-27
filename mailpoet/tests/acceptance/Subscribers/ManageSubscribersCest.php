@@ -105,7 +105,7 @@ class ManageSubscribersCest {
     $i->seeNoJSErrors();
   }
 
-  public function deleteGlobalSubscriber(\AcceptanceTester $i) {
+  public function deleteGlobalSubscriberToTrash(\AcceptanceTester $i) {
     $i->wantTo('Delete a user from global subscribers list');
 
     $newSubscriberEmail = 'deleteglobaluser99@fakemail.fake';

@@ -39,7 +39,7 @@ class GutenbergFormBlockCest {
       ->withCaptchaType(CaptchaConstants::TYPE_DISABLED);
   }
 
-  public function subscriptionGutenbergBlock(\AcceptanceTester $i): void {
+  public function subscriptionGutenbergBlockWithEmailOnly(\AcceptanceTester $i): void {
     $formFactory = new Form();
     $formId = (int)$formFactory->withName('Acceptance Test Block Form')->create()->getId();
     $postId = $this->createPost($i, $formId);
@@ -53,7 +53,7 @@ class GutenbergFormBlockCest {
     $i->seeNoJSErrors();
   }
 
-  public function subscriptionGutenbergBlockWithName(\AcceptanceTester $i): void {
+  public function subscriptionGutenbergBlockWithNameFields(\AcceptanceTester $i): void {
     $formFactory = new Form();
     $formId = (int)$formFactory
       ->withName('Acceptance Test Block Form')

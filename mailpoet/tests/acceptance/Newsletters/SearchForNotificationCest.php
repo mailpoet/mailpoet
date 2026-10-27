@@ -10,7 +10,7 @@ class SearchForNotificationCest {
     return ['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip-container")][contains(., "' . $name . '")]'];
   }
 
-  public function searchForStandardNotification(\AcceptanceTester $i) {
+  public function searchForActiveStandardNotification(\AcceptanceTester $i) {
     $i->wantTo('Successfully search for an existing and active notification');
 
     $newsletterTitle = 'Active Post Notification';
