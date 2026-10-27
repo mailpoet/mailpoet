@@ -1198,25 +1198,11 @@ workflows:
             - build_premium
       - build_release_zip:
           <<: *slack-fail-post-step
+          # Runs next to the test jobs so the zip, its PHP 7.4 lint and the QIT security scan
+          # are not a 10-minute tail after the tests. A release still needs a green workflow:
+          # tasks/release/CircleCiController.php checks it before downloading the zip.
           requires:
             - build
-            - acceptance_tests_base_and_woo
-            - js_tests
-            - integration_test_base
-            - integration_test_woo_hpos_on
-            - integration_test_woo_hpos_off
-            - integration_test_woo_hpos_sync_on
-            - integration_with_premium_latest
-            - acceptance_tests_woo_hpos_sync_on
-            - acceptance_tests_woo_hpos_off
-            - acceptance_tests_blockbased_theme
-            - static_analysis
-            - unit_tests
-            - qa_js
-            - qa_php
-            - qa_php_oldest
-            - security_analysis
-            - qa_php_max_wporg
       - lint_release_zip_php74:
           <<: *slack-fail-post-step
           requires:

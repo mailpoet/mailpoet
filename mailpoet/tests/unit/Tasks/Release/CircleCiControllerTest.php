@@ -215,6 +215,36 @@ class CircleCiControllerTest extends \MailPoetUnitTest {
     verify($controller->getDownloadedJobNumber())->null();
   }
 
+  /** @dataProvider workflowStatusProvider */
+  public function testItRefusesZipWhenWorkflowIsNotSuccessful(array $workflow, string $expectedMessage) {
+    $controller = $this->makeZipController([
+      ['name' => 'build_release_zip', 'status' => 'success', 'job_number' => 55],
+      ['name' => 'lint_release_zip_php74', 'status' => 'success', 'job_number' => 56],
+    ], new \ArrayObject(), $workflow);
+    $target = $this->tempFile();
+
+    $caught = null;
+    try {
+      $controller->downloadLatestBuild($target);
+    } catch (\Exception $e) {
+      $caught = $e;
+    }
+    $this->assertInstanceOf(\Exception::class, $caught);
+    verify($caught->getMessage())->stringContainsString($expectedMessage);
+    verify(file_exists($target))->false();
+    verify($controller->getDownloadedJobNumber())->null();
+  }
+
+  public function workflowStatusProvider(): array {
+    return [
+      // the zip and lint jobs are green in every case; a test job failed, or is still running
+      'failed' => [['id' => 'w1', 'status' => 'failed'], "Workflow has status 'failed'"],
+      'failing' => [['id' => 'w1', 'status' => 'failing'], "has status 'failing'"],
+      'running' => [['id' => 'w1', 'status' => 'running'], "has status 'running'"],
+      'missing' => [['id' => 'w1'], "has status 'missing'"],
+    ];
+  }
+
   public function lintJobProvider(): array {
     return [
       'failed' => [[['name' => 'lint_release_zip_php74', 'status' => 'failed']], "'lint_release_zip_php74' has status 'failed'"],
@@ -264,10 +294,10 @@ class CircleCiControllerTest extends \MailPoetUnitTest {
   /**
    * @param array<int, array<string, mixed>> $jobs
    */
-  private function makeZipController(array $jobs, \ArrayObject $history): CircleCiController {
+  private function makeZipController(array $jobs, \ArrayObject $history, array $workflow = ['id' => 'w1', 'status' => 'success']): CircleCiController {
     return $this->makeController([
       $this->jsonResponse(['items' => [['id' => 'p1', 'vcs' => ['revision' => 'abc']]]]),
-      $this->jsonResponse(['items' => [['id' => 'w1']]]),
+      $this->jsonResponse(['items' => [$workflow]]),
       $this->jsonResponse(['items' => $jobs]),
       $this->jsonResponse(['items' => [['path' => 'mailpoet.zip', 'url' => 'https://artifacts.test/zip']]]),
       new Response(200, [], 'zip'),
