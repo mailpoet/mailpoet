@@ -84,4 +84,26 @@ class ApiSourcePluginResolverTest extends \MailPoetUnitTest {
     $resolver = new ApiSourcePluginResolver($wp, '/var/www/html/wp-content/plugins');
     verify($resolver->resolveFromFiles(['/var/www/html/wp-content/themes/DiviOther/Foo.php']))->null();
   }
+
+  public function testItResolvesSymlinkedThemeUsingItsRealPath(): void {
+    $base = sys_get_temp_dir() . '/mailpoet-theme-' . uniqid();
+    $realTheme = $base . '/real/Divi';
+    mkdir($realTheme, 0777, true);
+    mkdir($base . '/themes');
+    symlink($realTheme, $base . '/themes/Divi');
+    try {
+      $wp = $this->createMock(WPFunctions::class);
+      $wp->method('getStylesheetDirectory')->willReturn($base . '/themes/Divi');
+      $wp->method('getTemplateDirectory')->willReturn($base . '/themes/Divi');
+      $resolver = new ApiSourcePluginResolver($wp, '/var/www/html/wp-content/plugins');
+      // Backtraces hold the real path of the symlink target
+      verify($resolver->resolveFromFiles([realpath($realTheme) . '/includes/Signup.php']))->equals('Divi');
+    } finally {
+      unlink($base . '/themes/Divi');
+      rmdir($base . '/themes');
+      rmdir($realTheme);
+      rmdir($base . '/real');
+      rmdir($base);
+    }
+  }
 }
