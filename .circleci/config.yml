@@ -539,16 +539,18 @@ jobs:
             export DISABLE_HPOS=<< parameters.disable_hpos >>
             # `circleci tests run` splits the list and launches the tests itself, which is what
             # lets CircleCI offer "Rerun failed tests" on this job. `circleci tests split` cannot.
-            # in case group is defined find only tests containing the group
-            if [[ -n '<< parameters.group >>' ]]; then
-              ../.circleci/list_group_tests.sh tests/acceptance '<< parameters.group >>'
-            else
-              circleci tests glob "tests/acceptance/**/*Cest.php"
-            fi | circleci tests run \
+            # The tests are listed one per Cest method, so the split balances by test, not by file.
+            ../.circleci/list_tests.sh tests/acceptance '<< parameters.group >>' | circleci tests run \
               --command='../.circleci/run_split_tests.sh codeception_acceptance' \
               --split-by=timings \
               --timings-type=filename \
               --verbose
+      - run:
+          # The stored timings are keyed by the `file` attribute, which has to match the
+          # file:method entries the split was given.
+          name: Key the test timings by test
+          when: always
+          command: ../.circleci/junit_file_per_test.sh tests/_output/report.xml
       - run:
           name: Check exceptions
           command: |
@@ -822,11 +824,7 @@ jobs:
             # `circleci tests run` splits the files over the job’s containers by their stored timings
             # and launches the tests itself, which is what lets CircleCI offer “Rerun failed tests”.
             # With a group, only the tests in that group are listed.
-            if [[ -n '<< parameters.group >>' ]]; then
-              ../.circleci/list_group_tests.sh tests/integration '<< parameters.group >>'
-            else
-              circleci tests glob "tests/integration/**/*Test.php"
-            fi | circleci tests run \
+            ../.circleci/list_tests.sh tests/integration '<< parameters.group >>' | circleci tests run \
               --command='../.circleci/run_split_tests.sh codeception_integration' \
               --split-by=timings \
               --timings-type=filename \
