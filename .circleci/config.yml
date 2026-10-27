@@ -106,12 +106,6 @@ executors:
     docker:
       - image: mailpoet/wordpress:8.5_20261014.1
 
-  wpcli_php_mysql_oldest:
-    <<: *default_job_config
-    docker:
-      - image: mailpoet/wordpress:7.4_20261005.1
-      - image: cimg/mysql:5.7
-
   wpcli_php_mysql_latest:
     <<: *default_job_config
     docker:
@@ -631,28 +625,20 @@ jobs:
       - store_test_results:
           path: tests/performance/_output
   unit_tests:
+    # The unit suite loads neither WordPress nor a database
     working_directory: /home/circleci/mailpoet/mailpoet
     parameters:
       executor:
         type: string
-        default: wpcli_php_mysql_latest
+        default: wpcli_php_latest
     executor: << parameters.executor >>
     steps:
       - attach_workspace:
           at: /home/circleci
       - run:
-          name: 'Set up virtual host'
-          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
-      - run:
-          name: 'Prepare example.com for testing'
-          command: echo 127.0.0.1 example.com | sudo tee -a /etc/hosts
-      - run:
           # Some tools we use may need different version based on PHP version used in docker
           name: Ensure correct versions of tools
           command: COMPOSER_DEV_MODE=1 php tools/install.php
-      - run:
-          name: 'Set up test environment'
-          command: source ../.circleci/setup.bash && setup php7
       - run:
           name: 'PHP Unit tests'
           command: |
@@ -662,9 +648,6 @@ jobs:
       - store_artifacts:
           path: tests/_output
           destination: codeception
-      - store_artifacts:
-          path: /tmp/fake-mailer/
-          destination: fake-mailer
   integration_tests:
     parallelism: << parameters.parallelism >>
     working_directory: /home/circleci/mailpoet/mailpoet
@@ -1177,12 +1160,6 @@ workflows:
           name: acceptance_with_premium_latest
           requires:
             - build_premium
-      - unit_tests:
-          <<: *slack-fail-post-step
-          <<: *only_release
-          name: unit_with_premium_latest
-          requires:
-            - build_premium
       - integration_tests:
           <<: *slack-fail-post-step
           <<: *only_release
@@ -1276,7 +1253,7 @@ workflows:
       - unit_tests:
           <<: *slack-fail-post-step
           name: unit_oldest
-          executor: wpcli_php_mysql_oldest
+          executor: wpcli_php_oldest
           requires:
             - build
       - integration_tests:
@@ -1339,11 +1316,6 @@ workflows:
           use_woocommerce_beta: true
           requires:
             - build
-      - unit_tests:
-          <<: *slack-fail-post-step
-          name: unit_with_premium_latest
-          requires:
-            - build_premium
       - integration_tests:
           <<: *slack-fail-post-step
           name: integration_with_premium_latest

@@ -148,13 +148,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/restore-build
-      # Unit tests load some WordPress files (PHPMailer) but need no database.
-      - name: 'Download WordPress'
-        working-directory: .
-        run: curl -sSfL https://wordpress.org/latest.tar.gz | tar -xz
       - name: 'PHP Unit tests'
-        env:
-          WP_ROOT: ${{ github.workspace }}/wordpress
         run: ./do t:u --xml
       - name: 'Upload test results'
         if: ${{ !cancelled() }}
