@@ -76,31 +76,14 @@ class SendGrid implements MailerMethod {
     ];
   }
 
-  /**
-   * The API takes the name as plain text, so undo Mailer::encodeAddressNamePart()
-   */
-  private function decodeName(string $name): string {
-    $prefix = '=?utf-8?B?';
-    $suffix = '?=';
-    if (strpos($name, $prefix) !== 0 || substr($name, -strlen($suffix)) !== $suffix) {
-      return $name;
-    }
-    $decoded = base64_decode(substr($name, strlen($prefix), -strlen($suffix)), true);
-    return $decoded === false ? $name : $decoded;
-  }
-
   public function getBody($newsletter, $subscriber, $extraParams = []) {
-    $recipient = $this->processSubscriber($subscriber);
     $body = [
-      'to' => $recipient['email'],
+      'to' => $this->processSubscriber($subscriber)['email'],
       'from' => $this->sender['from_email'],
       'fromname' => $this->sender['from_name'],
       'replyto' => $this->replyTo['reply_to_email'],
       'subject' => $newsletter['subject'],
     ];
-    if ($recipient['name'] !== '') {
-      $body['toname'] = $this->decodeName($recipient['name']);
-    }
     $headers = [];
 
     // unsubscribe header
