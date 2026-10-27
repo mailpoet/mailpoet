@@ -51,7 +51,9 @@ class SendingQueueBodyCleanupTest extends \MailPoetTest {
 
   public function testItKeepsCleaningUntilABatchComesBackShort() {
     $batches = [SendingQueueBodyCleanup::BATCH_SIZE, SendingQueueBodyCleanup::BATCH_SIZE, 10];
-    $worker = $this->createWorkerWithCleanup(Expected::exactly(3, function () use (&$batches) {
+    $worker = $this->createWorkerWithCleanup(Expected::exactly(3, function (int $retentionDays, int $limit) use (&$batches) {
+      verify($retentionDays)->equals(30);
+      verify($limit)->equals(SendingQueueBodyCleanup::BATCH_SIZE);
       return array_shift($batches);
     }));
 
