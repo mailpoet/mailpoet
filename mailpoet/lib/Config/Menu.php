@@ -191,7 +191,7 @@ class Menu {
       self::NO_PARENT_PAGE_SLUG,
       $this->setPageTitle(__('Welcome Wizard', 'mailpoet')),
       esc_html__('Welcome Wizard', 'mailpoet'),
-      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+      AccessControl::PERMISSION_MANAGE_SETTINGS,
       self::WELCOME_WIZARD_PAGE_SLUG,
       [
         $this,
