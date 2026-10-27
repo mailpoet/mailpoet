@@ -161,6 +161,53 @@ class SettingsTest extends \MailPoetTest {
     ]);
   }
 
+  public function testDottedSendingMethodKeysReachTheKeyAndAuthorizedEmailChecks() {
+    $this->settings->set('mta_group', 'smtp');
+    $this->settings->set('mta', ['method' => Mailer::METHOD_SMTP, 'host' => 'smtp.example.com']);
+    $checkedSettings = [];
+    $this->endpoint = new Settings(
+      $this->settings,
+      new Bridge,
+      $this->make(AuthorizedEmailsController::class, [
+        'clearCache' => null,
+        'onSettingsSave' => Expected::once(function ($settings) use (&$checkedSettings) {
+          $checkedSettings['authorizedEmails'] = $settings;
+          return null;
+        }),
+      ]),
+      $this->diContainer->get(AuthorizedSenderDomainController::class),
+      $this->make(TransactionalEmails::class),
+      $this->diContainer->get(EntityManager::class),
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(ScheduledTasksRepository::class),
+      $this->diContainer->get(FormMessageController::class),
+      $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false]),
+      $this->diContainer->get(SegmentsRepository::class),
+      $this->make(SettingsChangeHandler::class, [
+        'onMSSActivate' => null,
+        'updateApiKeyState' => Expected::once(function ($settings) use (&$checkedSettings) {
+          $checkedSettings['apiKey'] = $settings;
+        }),
+      ]),
+      $this->diContainer->get(SubscribersCountsController::class),
+      $this->diContainer->get(TrackingConfig::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class),
+      $this->diContainer->get(SendingEnvironment::class),
+      $this->diContainer->get(SuperSendingController::class)
+    );
+
+    $this->endpoint->set([
+      'mta_group' => 'mailpoet',
+      'mta.method' => Mailer::METHOD_MAILPOET,
+      'mta.mailpoet_api_key' => 'new-key',
+    ]);
+
+    verify($checkedSettings['authorizedEmails']['mta']['method'])->same(Mailer::METHOD_MAILPOET);
+    verify($checkedSettings['apiKey']['mta']['mailpoet_api_key'])->same('new-key');
+    verify($this->settings->get('mta.host'))->same('smtp.example.com');
+  }
+
   public function testItCanSetSettings() {
     $newSettings = [
       'some' => [
