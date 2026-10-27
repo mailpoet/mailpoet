@@ -13,6 +13,7 @@ use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class DaemonHttpRunnerTest extends \MailPoetTest {
   public $cronHelper;
@@ -251,6 +252,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   }
 
   public function testItUpdatesTimestampsDuringExecution() {
+    Carbon::setTestNow(Carbon::now());
     $matcher = $this->any();
     $cronWorkerRunnerMock = $this->createMock(CronWorkerRunner::class);
     $cronWorkerRunnerMock
@@ -258,7 +260,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       ->method('run')
       ->willReturnCallback(function () use ($matcher) {
         if ($matcher->getInvocationCount() === 1) {
-          sleep(2);
+          Carbon::setTestNow(Carbon::now()->addSeconds(2));
         } else if ($matcher->getInvocationCount() === 2) {
           throw new \Exception();
         }
@@ -274,7 +276,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $data = [
       'token' => 123,
     ];
-    $now = time();
+    $now = Carbon::now()->getTimestamp();
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
     $daemonHttpRunner->__construct($daemon, $this->cronHelper, SettingsController::getInstance(), $this->diContainer->get(WordPress::class));
     $daemonHttpRunner->run($data);
