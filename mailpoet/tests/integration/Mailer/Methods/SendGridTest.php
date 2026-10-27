@@ -83,6 +83,12 @@ class SendGridTest extends \MailPoetTest {
     verify($body)->arrayHasNotKey('toname');
   }
 
+  public function testItSendsANonAsciiRecipientNameAsPlainText() {
+    $body = $this->mailer->getBody($this->newsletter, '=?utf-8?B?' . base64_encode('Jiří Novák') . '?= <test@test.com>');
+    verify($body['to'])->equals('test@test.com');
+    verify($body['toname'])->equals('Jiří Novák');
+  }
+
   public function testItCanCreateRequest() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     $request = $this->mailer->request($this->newsletter, $this->subscriber);
