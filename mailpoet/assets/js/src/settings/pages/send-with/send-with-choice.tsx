@@ -28,7 +28,6 @@ export function SendWithChoice() {
     premiumStatus !== null && premiumStatus !== PremiumStatus.INVALID;
   const freePlanUrl = window.mailpoet_free_plan_url;
   const setSetting = useAction('setSetting');
-  const saveSettings = useAction('saveSettings');
   const saveSettingPaths = useAction('saveSettingPaths');
   const { notices } = useContext<GlobalContextValue>(GlobalContext);
 
@@ -47,7 +46,14 @@ export function SendWithChoice() {
     await setSetting(['mta', 'method'], 'MailPoet');
     await setSetting(['mta', 'mailpoet_api_key'], key);
     await setSetting(['signup_confirmation', 'enabled'], '1');
-    showSaveErrors(await saveSettings());
+    showSaveErrors(
+      await saveSettingPaths([
+        ['mta_group'],
+        ['mta', 'method'],
+        ['mta', 'mailpoet_api_key'],
+        ['signup_confirmation', 'enabled'],
+      ]),
+    );
   };
 
   const mssChosen = async (e) => {
