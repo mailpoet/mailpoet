@@ -15,7 +15,9 @@ use Codeception\Event\SuiteEvent;
 use Codeception\Event\TestEvent;
 use Codeception\Events;
 use Codeception\Extension;
+use Codeception\Test\Descriptor;
 use Codeception\Test\Interfaces\Descriptive;
+use PHPUnit\Framework\SelfDescribing;
 
 class StatisticsExtension extends Extension {
   /**
@@ -76,7 +78,11 @@ class StatisticsExtension extends Extension {
 
   private function testName(TestEvent $e): string {
     $test = $e->getTest();
-    return $test instanceof Descriptive ? $test->getSignature() : get_class($test);
+    if ($test instanceof Descriptive) {
+      return $test->getSignature();
+    }
+    // PHPUnit-style tests: class and method
+    return $test instanceof SelfDescribing ? Descriptor::getTestSignature($test) : get_class($test);
   }
 
   public function afterSuite(SuiteEvent $e) {
