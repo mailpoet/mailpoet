@@ -48,4 +48,16 @@ class ApiSourcePluginResolverTest extends \MailPoetUnitTest {
     $resolver = new ApiSourcePluginResolver($wp, '/var/www/html/wp-content/plugins');
     verify($resolver->resolveFromFiles(['/home/dev/my-plugin/my-plugin.php']))->equals('my-plugin');
   }
+
+  public function testItResolvesThemeFolderAsSlug(): void {
+    $resolver = new ApiSourcePluginResolver(
+      $this->createMock(WPFunctions::class),
+      '/var/www/html/wp-content/plugins',
+      '/var/www/html/wp-content/themes'
+    );
+    verify($resolver->resolveFromFiles([
+      '/var/www/html/wp-content/plugins/mailpoet/lib/Foo.php',
+      '/var/www/html/wp-content/themes/Divi/includes/builder/module/Signup.php',
+    ]))->equals('Divi');
+  }
 }

@@ -15,16 +15,21 @@ class ApiSourcePluginResolver {
   /** @var string|null */
   private $pluginsDir;
 
+  /** @var string|null */
+  private $themesDir;
+
   public function __construct(
     WPFunctions $wp,
-    ?string $pluginsDir = null
+    ?string $pluginsDir = null,
+    ?string $themesDir = null
   ) {
     $this->wp = $wp;
     $this->pluginsDir = $pluginsDir;
+    $this->themesDir = $themesDir;
   }
 
   /**
-   * Returns the slug of the first third-party plugin found in the current call stack.
+   * Returns the slug of the first third-party plugin or theme found in the current call stack.
    * Meant for API signups; outside of the signup request (e.g. cron) the stack holds no plugin.
    */
   public function resolve(): ?string {
@@ -46,12 +51,18 @@ class ApiSourcePluginResolver {
    * @param string[] $files
    */
   public function resolveFromFiles(array $files): ?string {
-    $pluginsDirs = $this->getPluginsDirs();
+    $pluginsDirs = $this->getDirs(
+      $this->pluginsDir ?? (defined('WP_PLUGIN_DIR') ? (string)constant('WP_PLUGIN_DIR') : null)
+    );
+    // Themes can integrate with MailPoet too (e.g. Divi). The theme folder name is used as the slug.
+    $themesDirs = $this->getDirs(
+      $this->themesDir ?? (defined('WP_CONTENT_DIR') ? rtrim((string)constant('WP_CONTENT_DIR'), '/\\') . '/themes' : null)
+    );
     foreach ($files as $file) {
       $normalizedFile = $this->normalizePath($file);
       $slug = null;
-      foreach ($pluginsDirs as $pluginsDir) {
-        $slug = $this->getSlug($normalizedFile, $pluginsDir);
+      foreach (array_merge($pluginsDirs, $themesDirs) as $dir) {
+        $slug = $this->getSlug($normalizedFile, $dir);
         if ($slug) {
           break;
         }
@@ -100,16 +111,15 @@ class ApiSourcePluginResolver {
 
   /**
    * Backtrace paths are real paths, so besides the configured directory
-   * the resolved one is needed when the plugins directory is a symlink.
+   * the resolved one is needed when the directory is a symlink.
    * @return string[]
    */
-  private function getPluginsDirs(): array {
-    $pluginsDir = $this->pluginsDir ?? (defined('WP_PLUGIN_DIR') ? (string)constant('WP_PLUGIN_DIR') : null);
-    if (!$pluginsDir) {
+  private function getDirs(?string $dir): array {
+    if (!$dir) {
       return [];
     }
-    $dirs = [rtrim($this->normalizePath($pluginsDir), '/')];
-    $realPath = realpath($pluginsDir);
+    $dirs = [rtrim($this->normalizePath($dir), '/')];
+    $realPath = realpath($dir);
     if ($realPath) {
       $dirs[] = rtrim($this->normalizePath($realPath), '/');
     }
