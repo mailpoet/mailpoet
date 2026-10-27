@@ -45,14 +45,18 @@ class GenerateSubjectSuggestionsEndpointTest extends Test {
     $this->assertSame('mailpoet_ai_unavailable', $data['code']);
   }
 
-  public function testItRejectsEmailsTheUserCannotEditEvenWithTheManageEmailsCapability(): void {
-    $authorId = $this->createUserWithRole('author');
-    $otherAuthorId = $this->createUserWithRole('author');
-    (new \WP_User($authorId))->add_cap(AccessControl::PERMISSION_MANAGE_EMAILS);
-    $emailId = $this->createEmailOwnedBy($otherAuthorId);
-    wp_set_current_user($authorId);
+  public function testItRejectsEmailsTheUserCannotEdit(): void {
+    $editorId = $this->createUserWithRole('editor');
+    (new \WP_User($editorId))->add_cap(AccessControl::PERMISSION_MANAGE_EMAILS);
+    $emailId = $this->createEmailOwnedBy($editorId);
+    $denyEditingTheEmail = function (array $caps, string $cap, int $userId, array $args) use ($emailId): array {
+      return $cap === 'edit_post' && (int)($args[0] ?? 0) === $emailId ? ['do_not_allow'] : $caps;
+    };
+    add_filter('map_meta_cap', $denyEditingTheEmail, 10, 4);
+    wp_set_current_user($editorId);
 
     $data = $this->post(self::ENDPOINT, ['json' => ['post_id' => $emailId]]);
+    remove_filter('map_meta_cap', $denyEditingTheEmail, 10);
 
     $this->assertSame('mailpoet_ai_forbidden', $data['code']);
   }

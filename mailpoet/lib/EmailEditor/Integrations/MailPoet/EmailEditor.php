@@ -3,6 +3,7 @@
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use MailPoet\API\REST\API;
+use MailPoet\Config\AccessControl;
 use MailPoet\EmailEditor\Integrations\MailPoet\Endpoints\GenerateSubjectSuggestionsEndpoint;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\PatternsController;
 use MailPoet\EmailEditor\Integrations\MailPoet\Templates\TemplatesController;
@@ -80,6 +81,21 @@ class EmailEditor {
           'singular_name' => __('Email', 'mailpoet'),
         ],
         'rewrite' => ['slug' => self::MAILPOET_EMAIL_POST_TYPE],
+        'map_meta_cap' => true,
+        'capabilities' => [
+          'read' => AccessControl::PERMISSION_MANAGE_EMAILS,
+          'edit_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+          'edit_others_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+          'edit_published_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+          'edit_private_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+          'publish_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+          'read_private_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+          'delete_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+          'delete_others_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+          'delete_published_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+          'delete_private_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+          'create_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+        ],
       ],
     ];
     return $postTypes;
