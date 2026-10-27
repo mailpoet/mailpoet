@@ -95,6 +95,7 @@ parameters:
       - ../../lib/Config/PopulatorData/Templates # analysis of templates is extremely slow, let's skip them for now
       - ../../tests/_support/_generated
       - ../../tests/unit/_stubs.php # Contains stubs for WP classes etc.
+      - ../../tests/unit/_stubs # Stubs for the PHPMailer classes WordPress ships; PHPStan knows the real ones
       - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php # stubs are loaded via szepeviktor/phpstan-wordpress, no need to analyse them
 includes:
   - extensions/CodeceptionExtension/extension.neon
