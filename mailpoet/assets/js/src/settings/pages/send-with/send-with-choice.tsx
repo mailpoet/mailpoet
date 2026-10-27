@@ -29,14 +29,14 @@ export function SendWithChoice() {
   const freePlanUrl = window.mailpoet_free_plan_url;
   const setSetting = useAction('setSetting');
   const saveSettings = useAction('saveSettings');
+  const saveSettingPaths = useAction('saveSettingPaths');
   const { notices } = useContext<GlobalContextValue>(GlobalContext);
 
   // This tab has no Save button to report the result, so show save errors here.
-  const saveAndShowErrors = async () => {
-    const result = await saveSettings();
-    if (result.type === 'SAVE_FAILED' && 'error' in result && result.error) {
+  const showSaveErrors = (result: { type: string; error?: unknown }) => {
+    if (result.type === 'SAVE_FAILED' && Array.isArray(result.error)) {
       notices.error(
-        result.error.map((err) => <p key={err}>{err}</p>),
+        result.error.map((err: string) => <p key={err}>{err}</p>),
         { scroll: true },
       );
     }
@@ -47,7 +47,7 @@ export function SendWithChoice() {
     await setSetting(['mta', 'method'], 'MailPoet');
     await setSetting(['mta', 'mailpoet_api_key'], key);
     await setSetting(['signup_confirmation', 'enabled'], '1');
-    return saveAndShowErrors();
+    showSaveErrors(await saveSettings());
   };
 
   const mssChosen = async (e) => {
@@ -62,7 +62,7 @@ export function SendWithChoice() {
 
   const superSendingChanged = async (isChecked: boolean) => {
     await setSuperSending(isChecked ? '1' : '');
-    return saveAndShowErrors();
+    showSaveErrors(await saveSettingPaths([['mss_super_sending', 'enabled']]));
   };
 
   const otherChosen = (e) => {

@@ -58,8 +58,26 @@ export function createReducer(defaultValue: State) {
       case 'SAVE_DONE':
         return {
           ...state,
+          originalData: state.data,
           save: { inProgress: false, error: null, hasUnsavedChanges: false },
         };
+      case 'PARTIAL_SAVE_DONE': {
+        let { data, originalData } = state;
+        action.values.forEach(({ path, value }) => {
+          data = setWith(clone(data), path, value, clone);
+          originalData = setWith(clone(originalData), path, value, clone);
+        });
+        return {
+          ...state,
+          data,
+          originalData,
+          save: {
+            inProgress: false,
+            error: null,
+            hasUnsavedChanges: !isEqual(data, originalData),
+          },
+        };
+      }
       case 'SAVE_FAILED':
         return {
           ...state,
