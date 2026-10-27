@@ -523,6 +523,14 @@ class Functions {
     return plugin_basename($file);
   }
 
+  public function getStylesheetDirectory() {
+    return get_stylesheet_directory();
+  }
+
+  public function getTemplateDirectory() {
+    return get_template_directory();
+  }
+
   public function pluginsUrl($path = '', $plugin = '') {
     return plugins_url($path, $plugin);
   }

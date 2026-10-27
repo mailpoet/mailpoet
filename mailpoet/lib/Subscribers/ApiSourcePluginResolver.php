@@ -15,17 +15,12 @@ class ApiSourcePluginResolver {
   /** @var string|null */
   private $pluginsDir;
 
-  /** @var string|null */
-  private $themesDir;
-
   public function __construct(
     WPFunctions $wp,
-    ?string $pluginsDir = null,
-    ?string $themesDir = null
+    ?string $pluginsDir = null
   ) {
     $this->wp = $wp;
     $this->pluginsDir = $pluginsDir;
-    $this->themesDir = $themesDir;
   }
 
   /**
@@ -54,19 +49,17 @@ class ApiSourcePluginResolver {
     $pluginsDirs = $this->getDirs(
       $this->pluginsDir ?? (defined('WP_PLUGIN_DIR') ? (string)constant('WP_PLUGIN_DIR') : null)
     );
-    // Themes can integrate with MailPoet too (e.g. Divi). The theme folder name is used as the slug.
-    $themesDirs = $this->getDirs(
-      $this->themesDir ?? (defined('WP_CONTENT_DIR') ? rtrim((string)constant('WP_CONTENT_DIR'), '/\\') . '/themes' : null)
-    );
+    $themesDirs = $this->getActiveThemeDirs();
     foreach ($files as $file) {
       $normalizedFile = $this->normalizePath($file);
       $slug = null;
-      foreach (array_merge($pluginsDirs, $themesDirs) as $dir) {
-        $slug = $this->getSlug($normalizedFile, $dir);
+      foreach ($pluginsDirs as $pluginsDir) {
+        $slug = $this->getSlug($normalizedFile, $pluginsDir);
         if ($slug) {
           break;
         }
       }
+      $slug = $slug ?: $this->getThemeSlug($normalizedFile, $themesDirs);
       // Backtrace paths are real paths, so they don't match a plugin symlinked into the plugins directory.
       // plugin_basename() knows about those through wp_register_plugin_realpath().
       $slug = $slug ?: $this->getSlugFromPluginBasename($normalizedFile);
@@ -83,6 +76,39 @@ class ApiSourcePluginResolver {
       return null;
     }
     return $this->getSlugFromRelativePath(substr($file, strlen($prefix)));
+  }
+
+  /**
+   * @param string[] $themesDirs theme directory => theme slug
+   */
+  private function getThemeSlug(string $file, array $themesDirs): ?string {
+    foreach ($themesDirs as $dir => $slug) {
+      if (strpos($file, $dir . '/') === 0) {
+        return $slug;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Only the active theme and its parent can run code, so there is no need to scan all theme roots.
+   * That also covers themes in directories added by register_theme_directory().
+   * The slug is the theme folder name (e.g. Divi), which is what the theme directory ends with.
+   * @return string[] theme directory (also its real path, as backtraces hold real paths) => theme slug
+   */
+  private function getActiveThemeDirs(): array {
+    $result = [];
+    foreach ([$this->wp->getStylesheetDirectory(), $this->wp->getTemplateDirectory()] as $themeDir) {
+      $themeDir = (string)$themeDir;
+      $slug = basename($this->normalizePath($themeDir));
+      if ($slug === '' || strlen($slug) > self::MAX_SLUG_LENGTH) {
+        continue;
+      }
+      foreach ($this->getDirs($themeDir) as $dir) {
+        $result[$dir] = $slug;
+      }
+    }
+    return $result;
   }
 
   private function getSlugFromPluginBasename(string $file): ?string {

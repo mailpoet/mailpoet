@@ -49,15 +49,39 @@ class ApiSourcePluginResolverTest extends \MailPoetUnitTest {
     verify($resolver->resolveFromFiles(['/home/dev/my-plugin/my-plugin.php']))->equals('my-plugin');
   }
 
-  public function testItResolvesThemeFolderAsSlug(): void {
-    $resolver = new ApiSourcePluginResolver(
-      $this->createMock(WPFunctions::class),
-      '/var/www/html/wp-content/plugins',
-      '/var/www/html/wp-content/themes'
-    );
+  public function testItResolvesActiveThemeFolderAsSlug(): void {
+    $wp = $this->createMock(WPFunctions::class);
+    $wp->method('getStylesheetDirectory')->willReturn('/var/www/html/wp-content/themes/Divi');
+    $wp->method('getTemplateDirectory')->willReturn('/var/www/html/wp-content/themes/Divi');
+    $resolver = new ApiSourcePluginResolver($wp, '/var/www/html/wp-content/plugins');
     verify($resolver->resolveFromFiles([
       '/var/www/html/wp-content/plugins/mailpoet/lib/Foo.php',
       '/var/www/html/wp-content/themes/Divi/includes/builder/module/Signup.php',
     ]))->equals('Divi');
+  }
+
+  public function testItResolvesParentThemeOfChildTheme(): void {
+    $wp = $this->createMock(WPFunctions::class);
+    $wp->method('getStylesheetDirectory')->willReturn('/var/www/html/wp-content/themes/divi-child');
+    $wp->method('getTemplateDirectory')->willReturn('/var/www/html/wp-content/themes/Divi');
+    $resolver = new ApiSourcePluginResolver($wp, '/var/www/html/wp-content/plugins');
+    verify($resolver->resolveFromFiles(['/var/www/html/wp-content/themes/Divi/includes/Signup.php']))->equals('Divi');
+    verify($resolver->resolveFromFiles(['/var/www/html/wp-content/themes/divi-child/functions.php']))->equals('divi-child');
+  }
+
+  public function testItResolvesThemeInCustomOrNestedThemeDirectory(): void {
+    $wp = $this->createMock(WPFunctions::class);
+    $wp->method('getStylesheetDirectory')->willReturn('/var/www/custom-themes/group/Divi');
+    $wp->method('getTemplateDirectory')->willReturn('/var/www/custom-themes/group/Divi');
+    $resolver = new ApiSourcePluginResolver($wp, '/var/www/html/wp-content/plugins');
+    verify($resolver->resolveFromFiles(['/var/www/custom-themes/group/Divi/includes/Signup.php']))->equals('Divi');
+  }
+
+  public function testItIgnoresFilesOutsideActiveTheme(): void {
+    $wp = $this->createMock(WPFunctions::class);
+    $wp->method('getStylesheetDirectory')->willReturn('/var/www/html/wp-content/themes/Divi');
+    $wp->method('getTemplateDirectory')->willReturn('/var/www/html/wp-content/themes/Divi');
+    $resolver = new ApiSourcePluginResolver($wp, '/var/www/html/wp-content/plugins');
+    verify($resolver->resolveFromFiles(['/var/www/html/wp-content/themes/DiviOther/Foo.php']))->null();
   }
 }
