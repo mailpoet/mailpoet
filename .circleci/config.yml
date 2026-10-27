@@ -1139,6 +1139,7 @@ workflows:
             - build
       - integration_tests:
           <<: *slack-fail-post-step
+          <<: *only_trunk_and_release
           group: woo
           enable_hpos_sync: 1
           name: integration_test_woo_hpos_sync_on
@@ -1153,6 +1154,7 @@ workflows:
             - build
       - integration_tests:
           <<: *slack-fail-post-step
+          <<: *only_trunk_and_release
           group: woo
           disable_hpos: 1
           name: integration_test_woo_hpos_off
