@@ -822,6 +822,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
       ]);
       $this->fail('Expected UnexpectedValueException was not thrown.');
     } catch (UnexpectedValueException $e) {
+      verify($e->getMessage())->equals('Please specify a valid name.');
       verify($this->subscribersRepository->findOneBy(['email' => $email]))->null();
     }
   }
@@ -841,6 +842,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
       ]);
       $this->fail('Expected UnexpectedValueException was not thrown.');
     } catch (UnexpectedValueException $e) {
+      verify($e->getMessage())->equals('Please specify a valid name.');
       verify($this->subscribersRepository->findOneBy(['email' => $email]))->null();
     }
   }

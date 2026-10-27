@@ -369,7 +369,7 @@ class SubscriberSubscribeController {
   }
 
   /**
-   * The same name validation the subscription form runs in the browser.
+   * Names must pass the character check the subscription form also runs in the browser.
    */
   private function hasInvalidName(array $data): bool {
     foreach (['first_name', 'last_name'] as $field) {

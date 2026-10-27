@@ -219,7 +219,7 @@ class WooCommerce {
     if ($subscriber) {
       $firstName = $wcOrder->get_billing_first_name(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $lastName = $wcOrder->get_billing_last_name(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      // Use only names that pass the subscription form name validation
+      // Use only names that pass the character check the subscription form also runs in the browser
       if ($firstName && strpbrk($firstName, '<>') === false) {
         $subscriber->setFirstName($firstName);
       }
@@ -468,7 +468,7 @@ class WooCommerce {
       if (!$row['meta_value']) {
         continue;
       }
-      // Use only names that pass the subscription form name validation
+      // Use only names that pass the character check the subscription form also runs in the browser
       if (is_string($row['meta_value']) && strpbrk($row['meta_value'], '<>') !== false) {
         continue;
       }
