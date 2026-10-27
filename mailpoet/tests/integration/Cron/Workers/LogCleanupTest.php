@@ -2,8 +2,12 @@
 
 namespace MailPoet\Test\Cron\Workers;
 
+use Codeception\Stub;
+use Codeception\Stub\Expected;
+use Codeception\Stub\StubMarshaler;
 use MailPoet\Cron\Workers\LogCleanup;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Logging\LogRepository;
 use MailPoet\Test\DataFactories\Log;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -49,37 +53,29 @@ class LogCleanupTest extends \MailPoetTest {
     }
   }
 
-  public function testItRespectsBatchSize() {
-    $logFactory = new Log();
+  public function testItKeepsDeletingUntilABatchComesBackShort() {
+    $batches = [LogCleanup::BATCH_SIZE, LogCleanup::BATCH_SIZE, 10];
+    $worker = $this->createWorkerWithPurge(Expected::exactly(3, function () use (&$batches) {
+      return array_shift($batches);
+    }));
 
-    // Create more logs than the batch size
-    for ($i = 0; $i < LogCleanup::BATCH_SIZE + 10; $i++) {
-      $logFactory->withCreatedAt(Carbon::now()->subDays(50))->create();
-    }
-
-    $task = new ScheduledTaskEntity();
-    $this->worker->processTaskStrategy($task, microtime(true));
-
-    // Should have deleted at least the batch size
-    $remainingLogs = $this->entityManager->getRepository(\MailPoet\Entities\LogEntity::class)->findAll();
-    verify(count($remainingLogs))->lessThan(10);
+    $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
   }
 
-  public function testItRespectsExecutionTimeLimit() {
-    $logFactory = new Log();
+  public function testItStopsAfterTheExecutionTimeLimit() {
+    Carbon::setTestNow(Carbon::now());
+    // every batch is full and takes just over half the limit, so the second one crosses it
+    $worker = $this->createWorkerWithPurge(Expected::exactly(2, function () {
+      Carbon::setTestNow(Carbon::now()->addSeconds((int)(LogCleanup::MAX_EXECUTION_TIME / 2) + 1));
+      return LogCleanup::BATCH_SIZE;
+    }));
 
-    // Create many old logs to ensure the worker runs for a while
-    for ($i = 0; $i < LogCleanup::BATCH_SIZE * 3; $i++) {
-      $logFactory->withCreatedAt(Carbon::now()->subDays(50))->create();
-    }
+    $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
+  }
 
-    $startTime = microtime(true);
-    $task = new ScheduledTaskEntity();
-    $this->worker->processTaskStrategy($task, microtime(true));
-    $executionTime = microtime(true) - $startTime;
-
-    // Should respect the execution time limit
-    verify($executionTime)->lessThan(LogCleanup::MAX_EXECUTION_TIME + 1); // Allow 1 second buffer
+  private function createWorkerWithPurge(StubMarshaler $purgeOldLogs): LogCleanup {
+    $logRepository = Stub::make(LogRepository::class, ['purgeOldLogs' => $purgeOldLogs], $this);
+    return new LogCleanup($logRepository);
   }
 
   public function testItSchedulesNextRun() {

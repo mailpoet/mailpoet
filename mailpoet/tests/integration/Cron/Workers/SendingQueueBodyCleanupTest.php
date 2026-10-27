@@ -2,10 +2,14 @@
 
 namespace MailPoet\Test\Cron\Workers;
 
+use Codeception\Stub;
+use Codeception\Stub\Expected;
+use Codeception\Stub\StubMarshaler;
 use MailPoet\Cron\Workers\SendingQueueBodyCleanup;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -45,17 +49,31 @@ class SendingQueueBodyCleanupTest extends \MailPoetTest {
     verify($queue->getNewsletterRenderedBody())->notNull();
   }
 
-  public function testItRespectsExecutionTimeLimit() {
-    for ($i = 0; $i < 10; $i++) {
-      $this->createOldCompletedQueue();
-    }
+  public function testItKeepsCleaningUntilABatchComesBackShort() {
+    $batches = [SendingQueueBodyCleanup::BATCH_SIZE, SendingQueueBodyCleanup::BATCH_SIZE, 10];
+    $worker = $this->createWorkerWithCleanup(Expected::exactly(3, function () use (&$batches) {
+      return array_shift($batches);
+    }));
 
-    $startTime = microtime(true);
-    $task = new ScheduledTaskEntity();
-    $this->worker->processTaskStrategy($task, microtime(true));
-    $executionTime = microtime(true) - $startTime;
+    $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
+  }
 
-    verify($executionTime)->lessThan(SendingQueueBodyCleanup::MAX_EXECUTION_TIME + 1);
+  public function testItStopsAfterTheExecutionTimeLimit() {
+    Carbon::setTestNow(Carbon::now());
+    // every batch is full and takes just over half the limit, so the second one crosses it
+    $worker = $this->createWorkerWithCleanup(Expected::exactly(2, function () {
+      Carbon::setTestNow(Carbon::now()->addSeconds((int)(SendingQueueBodyCleanup::MAX_EXECUTION_TIME / 2) + 1));
+      return SendingQueueBodyCleanup::BATCH_SIZE;
+    }));
+
+    $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
+  }
+
+  private function createWorkerWithCleanup(StubMarshaler $nullRenderedBodyForOldCompletedQueues): SendingQueueBodyCleanup {
+    $repository = Stub::make(SendingQueuesRepository::class, [
+      'nullRenderedBodyForOldCompletedQueues' => $nullRenderedBodyForOldCompletedQueues,
+    ], $this);
+    return new SendingQueueBodyCleanup($repository, $this->settings);
   }
 
   public function testItSchedulesNextRun() {
