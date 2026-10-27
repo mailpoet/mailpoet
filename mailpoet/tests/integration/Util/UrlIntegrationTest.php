@@ -5,7 +5,7 @@ namespace MailPoet\Test\Util;
 use MailPoet\Util\Url;
 use MailPoet\WP\Functions as WPFunctions;
 
-class UrlTest extends \MailPoetTest {
+class UrlIntegrationTest extends \MailPoetTest {
   public function testGetCurrentUrlKeepsQueryStringWithoutDeprecations() {
     $originalUri = $_SERVER['REQUEST_URI'] ?? null;
     $wp = new WPFunctions();
