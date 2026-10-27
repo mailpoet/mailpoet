@@ -5,7 +5,7 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 
-class OpenTrackingTest extends \MailPoetTest {
+class OpenTrackingTest extends \MailPoetUnitTest {
   public function testItAddsTrackingImage(): void {
     $template = '<html><body><p>text</p></body></html>';
     $result = OpenTracking::process($template);
