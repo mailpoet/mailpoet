@@ -11,7 +11,8 @@
 # A Cest file is listed as one file:method entry per test, so the split balances the
 # acceptance suite by test rather than by file. Codeception matches a file:method entry
 # by prefix, so a method whose name starts another method’s name is listed as a whole
-# file instead, or the shorter name would run on two containers.
+# file instead, or the shorter name would run on two containers. A Cest with @depends is
+# listed whole too, so a test and the one it depends on stay on one container.
 
 set -eo pipefail
 
@@ -31,6 +32,10 @@ has_longer_sibling() {
 
 # prints a Cest as file:method entries, or as the file when its method names overlap
 list_cest() {
+  if grep -q '@depends' "$1"; then
+    echo "$1"
+    return
+  fi
   awk -v file="$1" '
     match($0, /^[[:space:]]*public function [A-Za-z][A-Za-z0-9_]*/) {
       name = substr($0, RSTART, RLENGTH); sub(/.*function /, "", name)
