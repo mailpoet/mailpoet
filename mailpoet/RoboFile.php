@@ -726,6 +726,7 @@ class RoboFile extends \Robo\Tasks {
       '--extensions=php',
       $severityFlag,
       '--standard=tasks/code_sniffer/MailPoet/free-ruleset.xml',
+      '--exclude=Generic.Classes.DuplicateClassName',
       '-s',
     ]);
 
@@ -765,12 +766,12 @@ class RoboFile extends \Robo\Tasks {
       ->arg('--ignore=' . implode(',', $ignorePatterns))
       ->args(!empty($filesToCheck) ? $filesToCheck : ['.'])
       ->run();
-    if (!$result->wasSuccessful() || !empty($filesToCheck)) {
+    if (!empty($filesToCheck)) {
       return $result;
     }
 
     // With --parallel, DuplicateClassName only compares files checked in the same process, so run it once in a single process
-    return $this->taskExec(implode(' ', [
+    $duplicatesResult = $this->taskExec(implode(' ', [
       'php -d memory_limit=-1',
       './tasks/code_sniffer/vendor/bin/phpcs',
       '--extensions=php',
@@ -782,6 +783,8 @@ class RoboFile extends \Robo\Tasks {
       ->arg('--ignore=' . implode(',', $ignorePatterns))
       ->arg('.')
       ->run();
+
+    return $result->wasSuccessful() ? $duplicatesResult : $result;
   }
 
   public function qaFixFile($filePath) {
