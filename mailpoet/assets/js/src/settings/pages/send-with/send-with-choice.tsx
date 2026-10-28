@@ -17,6 +17,7 @@ declare let window: SendWithChoiceWindow;
 export function SendWithChoice() {
   const navigate = useNavigate();
   const isMssActive = useSelector('isMssActive');
+  const isSaving = useSelector('isSaving');
   const [key] = useSetting('mta', 'mailpoet_api_key');
   const [superSending, setSuperSending] = useSetting(
     'mss_super_sending',
@@ -67,6 +68,10 @@ export function SendWithChoice() {
   };
 
   const superSendingChanged = async (isChecked: boolean) => {
+    // Not `disabled`: it would take keyboard focus away from the checkbox
+    if (isSaving) {
+      return;
+    }
     await setSuperSending(isChecked ? '1' : '');
     showSaveErrors(await saveSettingPaths([['mss_super_sending', 'enabled']]));
   };
