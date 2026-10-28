@@ -50,6 +50,13 @@ class SendLatestNewsletterActionTest extends \MailPoetTest {
     $this->latestNewsletterScheduler = $this->diContainer->get(LatestNewsletterScheduler::class);
     $this->segmentSubject = $this->diContainer->get(SegmentSubject::class);
     $this->subscriberSubject = $this->diContainer->get(SubscriberSubject::class);
+    // Action Scheduler tables aren't reset between tests, and other tests may leave pending actions behind
+    $this->cleanup();
+  }
+
+  public function _after() {
+    parent::_after();
+    $this->cleanup();
   }
 
   public function testItReturnsRequiredSubjects(): void {
@@ -362,5 +369,11 @@ class SendLatestNewsletterActionTest extends \MailPoetTest {
       $error = $e->getMessage();
     }
     $this->assertSame($expectedMessage, $error);
+  }
+
+  private function cleanup(): void {
+    global $wpdb;
+    $wpdb->query($wpdb->prepare('TRUNCATE %i', $wpdb->prefix . 'actionscheduler_actions'));
+    $wpdb->query($wpdb->prepare('TRUNCATE %i', $wpdb->prefix . 'actionscheduler_claims'));
   }
 }
