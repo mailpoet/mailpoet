@@ -220,6 +220,25 @@ describe('Saving only some settings', () => {
       expect(newState.save.hasUnsavedChanges).to.equal(false);
     });
 
+    it('takes the value of a setting the server changed', () => {
+      const state = makeState(
+        { mta: { method: 'MailPoet' }, sender: { address: 'wordpress@x.com' } },
+        { mta: { method: 'SMTP' }, sender: { address: 'wordpress@x.com' } },
+      );
+
+      // Activating MSS replaced the saved sender on the server
+      const newState = reduce(state, {
+        type: 'PARTIAL_SAVE_DONE',
+        values: [
+          { path: ['mta', 'method'], value: 'MailPoet' },
+          { path: ['sender', 'address'], value: 'me@x.com' },
+        ],
+      });
+
+      expect(newState.data.sender).to.deep.equal({ address: 'me@x.com' });
+      expect(newState.save.hasUnsavedChanges).to.equal(false);
+    });
+
     it('switches the warning off on SAVE_DONE', () => {
       // The key check ends with SAVE_DONE and reloads the page right after
       const state = makeState({ a: 'edited' }, { a: '' });
