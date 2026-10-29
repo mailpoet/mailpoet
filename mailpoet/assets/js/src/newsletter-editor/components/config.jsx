@@ -1,6 +1,6 @@
 import { App } from 'newsletter-editor/app';
 import SuperModel from 'backbone.supermodel';
-import _ from 'underscore'; // eslint-disable-line func-names
+import _ from 'underscore';
 
 const ConfigComponent = {};
 

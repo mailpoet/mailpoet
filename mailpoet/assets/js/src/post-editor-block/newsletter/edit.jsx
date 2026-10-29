@@ -1,4 +1,3 @@
-/* eslint-disable react/react-in-jsx-scope */
 import PropTypes from 'prop-types';
 import { getNewsletterEmbeds } from './api.jsx';
 import { Icon } from './icon.jsx';

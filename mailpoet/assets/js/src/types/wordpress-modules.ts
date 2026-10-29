@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- some general types in this file need to use "any"  */
-/* eslint-disable import/no-duplicates -- importing within multiple "declare module" blocks is OK  */
 
 declare module '@wordpress/block-editor' {
   import * as blockEditorActions from '@wordpress/block-editor/store/actions';

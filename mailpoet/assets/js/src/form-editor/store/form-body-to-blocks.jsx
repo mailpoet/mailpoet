@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { has } from 'lodash';
 import { asNum } from './server-value-as-num';
 import {

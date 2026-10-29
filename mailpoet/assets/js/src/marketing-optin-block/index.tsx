@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-/* eslint-disable react/react-in-jsx-scope */
+
 import { Icon, megaphone } from '@wordpress/icons';
 import {
   registerBlockType,
