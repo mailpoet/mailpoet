@@ -144,20 +144,22 @@ class SubscribersTest extends \MailPoetTest {
   public function testItDoesNotSubscribeSubscriberToListsWhenOneOrMoreListsAreMissing() {
     $subscriber = $this->subscriberFactory->create();
     $segment = $this->getSegment();
+    $missingId = $segment->getId() + 1000;
+    $otherMissingId = $segment->getId() + 2000;
 
     // multiple lists error message
     try {
-      $this->getApi()->subscribeToLists($subscriber->getId(), [$segment->getId(), 90, 100]);
+      $this->getApi()->subscribeToLists($subscriber->getId(), [$segment->getId(), $missingId, $otherMissingId]);
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->equals("Lists with IDs '90, 100' do not exist.");
+      verify($e->getMessage())->equals("Lists with IDs '$missingId, $otherMissingId' do not exist.");
     }
     // single list error message
     try {
-      $this->getApi()->subscribeToLists($subscriber->getId(), [$segment->getId(), 90]);
+      $this->getApi()->subscribeToLists($subscriber->getId(), [$segment->getId(), $missingId]);
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->equals("List with ID '90' does not exist.");
+      verify($e->getMessage())->equals("List with ID '$missingId' does not exist.");
     }
   }
 
@@ -461,19 +463,21 @@ class SubscribersTest extends \MailPoetTest {
   public function testItDoesNotUnsubscribeSubscriberFromListsWhenOneOrMoreListsAreMissing() {
     $subscriber = $this->subscriberFactory->create();
     $segment = $this->getSegment();
+    $missingId = $segment->getId() + 1000;
+    $otherMissingId = $segment->getId() + 2000;
     // multiple lists error message
     try {
-      $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId(), 90, 100]);
+      $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId(), $missingId, $otherMissingId]);
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->equals("Lists with IDs '90, 100' do not exist.");
+      verify($e->getMessage())->equals("Lists with IDs '$missingId, $otherMissingId' do not exist.");
     }
     // single list error message
     try {
-      $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId(), 90]);
+      $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId(), $missingId]);
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->equals("List with ID '90' does not exist.");
+      verify($e->getMessage())->equals("List with ID '$missingId' does not exist.");
     }
   }
 
