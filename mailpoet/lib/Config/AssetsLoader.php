@@ -5,6 +5,8 @@ namespace MailPoet\Config;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AssetsLoader {
+  private const BUNDLED_DESIGN_TOKENS_STYLE = 'mailpoet-wpds-tokens';
+
   private const FORM_EDITOR_WORDPRESS_STYLE_DEPENDENCIES = [
     'wp-components',
     'wp-block-library',
@@ -34,14 +36,19 @@ class AssetsLoader {
     // MailPoet plugin style should be loaded on all mailpoet sites
     $page = isset($_GET['page']) && is_string($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : null;
     if ($page && strpos($page, 'mailpoet-') === 0) {
-      $this->enqueueStyle('mailpoet-plugin', array_merge([
+      $designTokensHandle = $this->getDesignTokensStyleHandle();
+      if ($designTokensHandle === self::BUNDLED_DESIGN_TOKENS_STYLE) {
+        $this->enqueueStyle(self::BUNDLED_DESIGN_TOKENS_STYLE);
+      }
+      $this->enqueueStyle('mailpoet-plugin', [
         'forms', // To prevent conflict in CSS with WP forms we need to add dependency
         'buttons',
         // @wordpress/components styles come from the core `wp-components` handle and must
         // load before MailPoet overrides. WordPress 7.1+ prints them on every admin screen
         // (command palette), so a bundled copy would apply the same styles twice.
         'wp-components',
-      ], $this->getDesignTokensStyleDependencies()));
+        $designTokensHandle,
+      ]);
     }
     if ($page === 'mailpoet-form-editor') {
       $this->enqueueStyle(
@@ -60,14 +67,17 @@ class AssetsLoader {
   }
 
   /**
-   * The --wpds-* design tokens used by our styles, @wordpress/ui, @wordpress/dataviews and
-   * @wordpress/admin-ui are defined in the core `wp-theme` stylesheet. WordPress skips a style
-   * with an unregistered dependency, so the handle is added only when core provides it.
+   * Get the handle of the WordPress Design System tokens stylesheet.
    *
-   * @return string[]
+   * Uses the `wp-theme` style registered by WordPress 7.1+ or the Gutenberg plugin when available,
+   * and falls back to the copy of the tokens bundled with MailPoet otherwise. The caller lists
+   * the handle as a style dependency, so WordPress enqueues it.
+   *
+   * The tokens are used by our styles, @wordpress/ui, @wordpress/dataviews and @wordpress/admin-ui.
+   * The bundled fallback can be removed once WP 7.1 is the minimum supported version.
    */
-  private function getDesignTokensStyleDependencies(): array {
-    return $this->wp->wpStyleIs('wp-theme', 'registered') ? ['wp-theme'] : [];
+  private function getDesignTokensStyleHandle(): string {
+    return $this->wp->wpStyleIs('wp-theme', 'registered') ? 'wp-theme' : self::BUNDLED_DESIGN_TOKENS_STYLE;
   }
 
   private function enqueueStyle(string $name, array $deps = []): void {
