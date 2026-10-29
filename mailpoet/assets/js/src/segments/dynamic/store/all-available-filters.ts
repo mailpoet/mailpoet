@@ -2,12 +2,12 @@ import { MailPoet } from 'mailpoet';
 
 import { GroupFilterValue } from '../types';
 import { AutomationsOptions } from '../dynamic-segments-filters/automation-options';
-import { EmailSegmentOptions } from '../dynamic-segments-filters/email-options';
+import { getEmailSegmentOptions } from '../dynamic-segments-filters/email-options';
 import { SubscriberSegmentOptions } from '../dynamic-segments-filters/subscriber-options';
 import {
-  WooCommerceOptions,
-  WooCommerceMembershipOptions,
-  WooCommerceSubscriptionOptions,
+  getWooCommerceOptions,
+  getWooCommerceMembershipOptions,
+  getWooCommerceSubscriptionOptions,
 } from '../dynamic-segments-filters/woocommerce-options';
 
 export function getAvailableFilters(
@@ -21,7 +21,7 @@ export function getAvailableFilters(
     },
     {
       label: MailPoet.I18n.t('email'),
-      options: EmailSegmentOptions,
+      options: getEmailSegmentOptions(),
     },
     {
       label: MailPoet.I18n.t('wpUserRole'),
@@ -31,19 +31,19 @@ export function getAvailableFilters(
   if (MailPoet.isWoocommerceActive) {
     filters.push({
       label: MailPoet.I18n.t('woocommerce'),
-      options: WooCommerceOptions,
+      options: getWooCommerceOptions(),
     });
   }
   if (MailPoet.isWoocommerceActive && canUseWooMembership) {
     filters.push({
       label: MailPoet.I18n.t('woocommerceMemberships'),
-      options: WooCommerceMembershipOptions,
+      options: getWooCommerceMembershipOptions(),
     });
   }
   if (MailPoet.isWoocommerceActive && canUseWooSubscriptions) {
     filters.push({
       label: MailPoet.I18n.t('woocommerceSubscriptions'),
-      options: WooCommerceSubscriptionOptions,
+      options: getWooCommerceSubscriptionOptions(),
     });
   }
   return filters;
