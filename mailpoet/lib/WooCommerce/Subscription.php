@@ -234,7 +234,7 @@ class Subscription {
       return null;
     }
 
-    $checkoutOptin = !empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME]);
+    $checkoutOptin = $this->isCheckoutOptinEnabled() && !empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME]);
     $trackingConsent = !empty($_POST[self::CHECKOUT_TRACKING_CONSENT_INPUT_NAME]);
     // Classic checkout has no pre-sync lookup of its own: the guest sync runs on
     // this same hook three priorities earlier, so by now a brand new guest's row
@@ -332,13 +332,21 @@ class Subscription {
 
   private function triggerAutomateWooOptin(): void {
     if (
-      !$this->wp->isPluginActive('automatewoo/automatewoo.php')
+      !$this->isCheckoutOptinEnabled()
+      || !$this->wp->isPluginActive('automatewoo/automatewoo.php')
       || empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME])
     ) {
       return;
     }
     // Emulate checkout opt-in triggering for AutomateWoo
     $_POST['automatewoo_optin'] = 'On';
+  }
+
+  /**
+   * The checkbox is only shown when the setting is on, so its value counts only then.
+   */
+  private function isCheckoutOptinEnabled(): bool {
+    return (bool)$this->settings->get(self::OPTIN_ENABLED_SETTING_NAME, false);
   }
 
   private function subscribe(SubscriberEntity $subscriber) {
