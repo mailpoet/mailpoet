@@ -123,6 +123,12 @@ class CaptchaTest extends \MailPoetTest {
     verify($response->location)->equals(wp_registration_url());
   }
 
+  public function testItRedirectsToTheRegistrationUrlWhenTheDataIsNotAnArray(): void {
+    $response = $this->createCaptchaEndpoint()->render('foo');
+    verify($response->status)->equals(Response::REDIRECT);
+    verify($response->location)->equals(wp_registration_url());
+  }
+
   public function testItRedirectsToTheMyAccountUrlWhenTheWooCommerceCaptchaIsOff(): void {
     $this->settings->set(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, false);
     $data = $this->getRegisterFormData();

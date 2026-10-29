@@ -198,22 +198,22 @@ class API {
         empty($this->requestEndpointClass) ||
         !$this->container->has($this->requestEndpointClass)
       ) {
-        throw new \Exception(__('Invalid API endpoint.', 'mailpoet'));
+        return $this->createErrorResponse(Error::BAD_REQUEST, __('Invalid API endpoint.', 'mailpoet'), Response::STATUS_BAD_REQUEST);
       }
 
       $endpoint = $this->container->get($this->requestEndpointClass);
       if (!$endpoint instanceof Endpoint) {
-        throw new \Exception(__('Invalid API endpoint.', 'mailpoet'));
+        return $this->createErrorResponse(Error::BAD_REQUEST, __('Invalid API endpoint.', 'mailpoet'), Response::STATUS_BAD_REQUEST);
       }
       if (
         !method_exists($endpoint, $this->requestMethod)
         || !$this->isDispatchableEndpointMethod($endpoint, $this->requestMethod)
       ) {
-        throw new \Exception(__('Invalid API endpoint method.', 'mailpoet'));
+        return $this->createErrorResponse(Error::BAD_REQUEST, __('Invalid API endpoint method.', 'mailpoet'), Response::STATUS_BAD_REQUEST);
       }
 
       if (!$endpoint->isMethodAllowed($this->requestMethod, $this->requestType)) {
-        throw new \Exception(__('HTTP request method not allowed.', 'mailpoet'));
+        return $this->createErrorResponse(Error::BAD_REQUEST, __('HTTP request method not allowed.', 'mailpoet'), Response::STATUS_BAD_REQUEST);
       }
 
       if (
@@ -234,7 +234,7 @@ class API {
       }
       $response = $endpoint->{$this->requestMethod}($this->requestData);
       if (!$response instanceof Response) {
-        throw new \Exception(__('Invalid API endpoint method.', 'mailpoet'));
+        return $this->createErrorResponse(Error::BAD_REQUEST, __('Invalid API endpoint method.', 'mailpoet'), Response::STATUS_BAD_REQUEST);
       }
       return $response;
     } catch (Exception $e) {
@@ -245,7 +245,7 @@ class API {
         Debugger::log($e, ILogger::EXCEPTION);
       }
       $this->logError($e);
-      $errorMessage = $e->getMessage();
+      $errorMessage = __('An unknown error occurred.', 'mailpoet');
       $errorResponse = $this->createErrorResponse(Error::BAD_REQUEST, $errorMessage, Response::STATUS_BAD_REQUEST);
       return $errorResponse;
     }

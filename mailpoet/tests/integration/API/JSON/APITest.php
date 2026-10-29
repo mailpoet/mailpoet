@@ -551,8 +551,28 @@ class APITest extends \MailPoetTest {
     $this->assertInstanceOf(LogEntity::class, $log);
     verify($log->getMessage())->stringContainsString('Some Error');
     verify($log->getName())->equals(LoggerFactory::TOPIC_API);
-    verify($response->errors)->arrayContains(['error' => 'bad_request', 'message' => 'Some Error']);
     $this->diContainer->get(SettingsController::class)->set('logging', 'errors');
+  }
+
+  public function testItReturnsAGenericMessageForAnUnexpectedError() {
+    $namespace = [
+      'name' => 'MailPoet\API\JSON\v1',
+      'version' => 'v1',
+    ];
+    $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
+
+    $data = [
+      'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
+      'method' => 'testError',
+      'api_version' => 'v1',
+      'data' => ['test' => 'data'],
+    ];
+    $this->api->setRequestData($data, Endpoint::TYPE_POST);
+    $response = $this->api->processRoute();
+
+    verify($response->status)->equals(Response::STATUS_BAD_REQUEST);
+    verify($response->errors)->arrayContains(['error' => 'bad_request', 'message' => 'An unknown error occurred.']);
+    verify(json_encode($response->errors))->stringNotContainsString('Some Error');
   }
 
   public function _after() {
