@@ -89,7 +89,7 @@ const fields = [
           'mailpoet',
         ),
         // ignore for now until the MailPoet object is refactored to typescript
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+
         tooltip: `${__(
           "This optional text will appear in your subscribers' inboxes, beside the subject line. Write something enticing!",
           'mailpoet',
@@ -164,7 +164,7 @@ const fields = [
 
 export const ReEngagementNewsletterFields = {
   // ignore for now until we refactor the forms to typescript
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+
   getFields() {
     return fields;
   },

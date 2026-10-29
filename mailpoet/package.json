@@ -170,7 +170,7 @@
     "copy-webpack-plugin": "^14.0.0",
     "core-js": "^3.50.0",
     "cross-env": "^10.1.0",
-    "eslint": "^8.57.1",
+    "eslint": "^9.39.0",
     "eslint-plugin-check-file": "^2.8.0",
     "exports-loader": "^5.0.0",
     "expose-loader": "^5.0.1",

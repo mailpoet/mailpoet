@@ -87,7 +87,7 @@ function renderSettings(item: NewsletterListingItem) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const lookupString = (map: any, key: string | undefined): string => {
     if (!map || key === undefined) return '';
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     const value: unknown = map[key];
     return value !== undefined && value !== null ? String(value) : '';
   };

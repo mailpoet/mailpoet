@@ -5,7 +5,7 @@
  */
 import Marionette from 'backbone.marionette';
 import jQuery from 'jquery';
-import { BehaviorsLookup } from 'newsletter-editor/behaviors/behaviors-lookup'; // eslint-disable-line func-names
+import { BehaviorsLookup } from 'newsletter-editor/behaviors/behaviors-lookup';
 
 var BL = BehaviorsLookup;
 

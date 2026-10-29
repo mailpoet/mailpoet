@@ -1,4 +1,3 @@
-/* eslint-disable react/react-in-jsx-scope */
 const wp = window.wp;
 const { G, Path, SVG } = wp.components;
 

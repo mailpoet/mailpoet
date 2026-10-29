@@ -82,8 +82,52 @@ module.exports = [
     },
   },
 
+  // ESLint 9 reports unused caught errors by default, ESLint 8 did not
+  {
+    files: ['assets/js/src/**/*.{js,jsx}'],
+    rules: {
+      'no-unused-vars': [
+        'error',
+        {
+          vars: 'all',
+          args: 'after-used',
+          ignoreRestSiblings: true,
+          caughtErrors: 'none',
+        },
+      ],
+    },
+  },
+
   // File-specific overrides
   // (These are existing violations that we should fix at some point.)
+  {
+    files: [
+      'assets/js/src/automation/editor/filters/integer.ts',
+      'assets/js/src/automation/editor/filters/number.ts',
+      'assets/js/src/automation/editor/filters/string.ts',
+      'assets/js/src/common/form/token-field/token-field.tsx',
+      'assets/js/src/common/listings/newsletter-stats/badge.tsx',
+      'assets/js/src/settings/store/normalize-settings.ts',
+    ],
+    rules: {
+      '@typescript-eslint/no-base-to-string': 0,
+    },
+  },
+  {
+    files: ['assets/js/src/form-editor/components/image-settings.tsx'],
+    rules: {
+      '@typescript-eslint/unbound-method': 0,
+    },
+  },
+  {
+    files: [
+      'assets/js/src/mailpoet-email-editor-integration/middleware/strip-post-status-on-save.ts',
+    ],
+    rules: {
+      '@typescript-eslint/return-await': 0,
+      'react-hooks/rules-of-hooks': 0, // false positive for the "use" middleware function
+    },
+  },
   {
     files: [
       'assets/js/src/common/premium-key/key-activation-button.tsx',

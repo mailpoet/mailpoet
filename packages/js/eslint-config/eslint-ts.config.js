@@ -91,6 +91,8 @@ module.exports = [
       '@typescript-eslint/no-unsafe-member-access': 0, // this needs to be off until we have typed assignments :(
       '@typescript-eslint/no-unsafe-call': 0, // this needs to be off until we have typed assignments :(
       '@typescript-eslint/no-unsafe-assignment': 0, // this needs to be off until we have typed assignments :(
+      '@typescript-eslint/no-unsafe-enum-comparison': 0, // added in typescript-eslint 6, too many existing violations to fix at once
+      '@typescript-eslint/no-redundant-type-constituents': 0, // added in typescript-eslint 6, too many existing violations to fix at once
       'import/extensions': 0, // we wouldn't be able to import jQuery without this line
       'import/no-named-as-default': 0, // we use named default exports at the moment
       'import/prefer-default-export': 0, // we want to stop using default exports and start using named exports

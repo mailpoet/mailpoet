@@ -6,7 +6,6 @@ import { createReducer } from './create-reducer';
 import { makeDefaultState } from './make-default-state';
 import { STORE_NAME } from './store-name';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const initStore = () => {
   const store = createReduxStore(STORE_NAME, {
     reducer: createReducer(makeDefaultState()),

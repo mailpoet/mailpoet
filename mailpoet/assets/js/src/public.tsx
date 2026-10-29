@@ -1097,7 +1097,6 @@ jQuery(($) => {
           // token here after calling getResponse() and then we can call submitSubscribeForm()
           // directly.
           if (size === 'invisible') {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             window.grecaptcha.execute(formData.recaptchaWidgetId);
           } else {
             formData.data.recaptchaResponseToken =
