@@ -496,21 +496,25 @@ class Newsletter {
   public function prepareNewsletterForSending(NewsletterEntity $newsletter, SubscriberEntity $subscriber, SendingQueueEntity $queue): array {
     $renderedNewsletter = $queue->getNewsletterRenderedBody();
     $renderedNewsletter = $this->emoji->decodeEmojisInBody($renderedNewsletter);
-    $preparedNewsletter = Helpers::joinObject(
-      [
-        $queue->getNewsletterRenderedSubject(),
-        $renderedNewsletter['html'],
-        $renderedNewsletter['text'],
-      ]
-    );
-
-    $preparedNewsletter = ShortcodesTask::process(
-      $preparedNewsletter,
-      null,
+    // The subject and the text body are plain text, so their shortcodes are replaced on their own
+    $subject = ShortcodesTask::process(
+      (string)$queue->getNewsletterRenderedSubject(),
+      $renderedNewsletter['html'],
       $newsletter,
       $subscriber,
-      $queue
+      $queue,
+      $isPlainText = true
     );
+    $html = ShortcodesTask::process($renderedNewsletter['html'], null, $newsletter, $subscriber, $queue);
+    $text = ShortcodesTask::process(
+      $renderedNewsletter['text'],
+      $renderedNewsletter['html'],
+      $newsletter,
+      $subscriber,
+      $queue,
+      $isPlainText = true
+    );
+    $preparedNewsletter = Helpers::joinObject([$subject, $html, $text]);
     $context = $newsletter->getWpPostId() !== null
       ? $this->personalizationContextBuilder->build($newsletter, $subscriber, $queue)
       : null;

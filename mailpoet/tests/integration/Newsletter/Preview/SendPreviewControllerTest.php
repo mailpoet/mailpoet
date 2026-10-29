@@ -187,6 +187,43 @@ class SendPreviewControllerTest extends \MailPoetTest {
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }
 
+  public function testItKeepsSubscriberValuesInSubjectAsTheyAre() {
+    $this->newsletter->setSubject("Hi [subscriber:firstname] / [subscriber:cf_999999 | default:Friend's & co]");
+    $subscriber = $this->diContainer->get(SubscribersRepository::class)->findOneBy(['email' => 'test@subscriber.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $subscriber->setFirstName("O'Brien");
+    $this->entityManager->flush();
+    $renderer = $this->makeEmpty(Renderer::class, [
+      'renderAsPreview' => ['html' => '<p>Hi</p>', 'text' => "Hi [subscriber:cf_999999 | default:Friend's & co]"],
+    ]);
+    $mailer = $this->makeEmpty(Mailer::class, [
+      'send' => Expected::once(
+        function ($newsletter) {
+          verify($newsletter['subject'])->equals("Hi O'Brien / Friend's & co");
+          verify($newsletter['body']['text'])->equals("Hi Friend's & co");
+          return ['response' => true];
+        }
+      ),
+    ]);
+
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
+    $shortcodes = $this->diContainer->get(Shortcodes::class);
+    $shortcodes->setQueue(null);
+    $sendPreviewController = new SendPreviewController(
+      $mailerFactory,
+      new MetaInfo(),
+      $renderer,
+      new WPFunctions(),
+      $this->diContainer->get(SubscribersRepository::class),
+      $shortcodes,
+      $this->diContainer->get(PersonalizationTagManager::class),
+      $this->diContainer->get(WooCommerceDummyData::class),
+      $this->diContainer->get(PersonalizationTagLinkResolver::class)
+    );
+    $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
+  }
+
   public function testItThrowsWhenSendingFailed() {
     $mailer = $this->makeEmpty(Mailer::class, [
       'send' => function ($newsletter, $subscriber) {

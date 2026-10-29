@@ -887,6 +887,18 @@ class ClicksTest extends \MailPoetTest {
     verify($link)->equals('http://example.com/?email=test@example.com&newsletter_subject=Subject');
   }
 
+  public function testItKeepsShortcodeValuesInUrlsAsTheyAre() {
+    $this->newsletter->setSubject("Don't & miss");
+    $link = $this->clicks->processUrl(
+      'http://example.com/?newsletter_subject=[newsletter:subject]',
+      $this->newsletter,
+      $this->subscriber,
+      $this->queue,
+      $preview = false
+    );
+    verify($link)->equals("http://example.com/?newsletter_subject=Don't & miss");
+  }
+
   public function testItRedirectsToHomeWhenShortcodesSetTheDestinationHost() {
     $this->subscriber->setFirstName('https://example.org/?x=');
     $this->subscriber->setLastName('');

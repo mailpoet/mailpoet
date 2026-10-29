@@ -227,6 +227,12 @@ class Shortcodes {
       ($contentSource) ? $contentSource : $content
     );
     $content = (string)$content;
+    if ($isPlainText) {
+      // Category values are escaped for HTML, which plain text must not show.
+      $processedShortcodes = array_map(function ($value) {
+        return is_string($value) ? htmlspecialchars_decode($value, ENT_QUOTES | ENT_HTML401) : $value;
+      }, $processedShortcodes);
+    }
     $shortcodesInsideTags = $isPlainText ? [] : $this->findShortcodesInsideTags($content, $shortcodes);
     return $this->replaceOccurrences($content, $shortcodes, $processedShortcodes, $shortcodesInsideTags, function (int $index) use ($processedShortcodes): string {
       return self::encodeForAttribute((string)$processedShortcodes[$index]);

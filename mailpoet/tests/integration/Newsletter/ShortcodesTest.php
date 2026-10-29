@@ -327,6 +327,38 @@ class ShortcodesTest extends \MailPoetTest {
     verify($out)->equals("Deal <<New: Rock 'n' Roll>>");
   }
 
+  public function testItShowsNewsletterSubjectAsTextInHtml() {
+    $this->newsletter->setSubject('Deals <b>now</b> & more');
+    $out = $this->shortcodesObject->replace('<p>[newsletter:subject]</p>');
+    verify($out)->equals('<p>Deals &lt;b&gt;now&lt;/b&gt; &amp; more</p>');
+  }
+
+  public function testItShowsCustomFieldDefaultAsTextInHtml() {
+    $out = $this->shortcodesObject->replace('<p>[subscriber:cf_999999 | default:<b>Friend</b>]</p>');
+    verify($out)->equals('<p>&lt;b&gt;Friend&lt;/b&gt;</p>');
+  }
+
+  public function testItDoesNotDoubleEncodeCustomFieldDefaultFromHtml() {
+    $out = $this->shortcodesObject->replace('<p>[subscriber:cf_999999 | default:Friend&#039;s &amp; co &lt;3]</p>');
+    verify($out)->equals('<p>Friend&#039;s &amp; co &lt;3</p>');
+  }
+
+  public function testItShowsCustomFieldDefaultWithWordPressSyntaxAsTextInHtml() {
+    $out = $this->shortcodesObject->replace('<p>[subscriber:cf_999999 default=&quot;&lt;b&gt;Friend&lt;/b&gt;&quot;]</p>');
+    verify($out)->equals('<p>&lt;b&gt;Friend&lt;/b&gt;</p>');
+  }
+
+  public function testItShowsCustomDateFormatAsTextInHtml() {
+    $out = $this->shortcodesObject->replace('<p>[date:custom | format:\<\b\>]</p>');
+    verify($out)->equals('<p>&lt;b&gt;</p>');
+  }
+
+  public function testItKeepsSubjectAndDefaultValuesAsTheyAreInPlainText() {
+    $this->newsletter->setSubject('Deals <b>now</b> & more');
+    $out = $this->shortcodesObject->replace("[newsletter:subject] / [subscriber:cf_999999 | default:Friend's] / [date:custom | format:\<\b\>]", null, null, $isPlainText = true);
+    verify($out)->equals("Deals <b>now</b> & more / Friend's / <b>");
+  }
+
   public function testItEncodesOnlyTheAttributeOccurrenceWhenTheSameShortcodeIsAlsoInText() {
     $postId = $this->createPostWithTitle('Spring sale" data-extra="yes');
     $out = $this->replaceWithPostTitle($postId, '<img alt="[newsletter:post_title]" /><p>[newsletter:post_title]</p>');
