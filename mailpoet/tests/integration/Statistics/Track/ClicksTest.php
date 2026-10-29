@@ -979,6 +979,125 @@ class ClicksTest extends \MailPoetTest {
     verify($link)->equals(home_url('/page/'));
   }
 
+  public function testItResolvesPersonalizationTagsEmbeddedInRegularUrls() {
+    // the URL keeps the stored scheme and host, so the values only fill the query, as for shortcodes
+    $link = $this->clicks->processUrl(
+      'https://example.com/?email=[mailpoet/subscriber-email]&name=[subscriber:firstname]',
+      $this->newsletter,
+      $this->subscriber,
+      $this->queue,
+      $preview = false
+    );
+    verify($link)->equals('https://example.com/?email=test@example.com&name=First');
+
+    // an unregistered tag stays literal and the URL is not touched
+    $url = 'https://example.com/?x=[acme/not-registered]';
+    verify($this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false))->equals($url);
+  }
+
+  public function testItResolvesAnEncodedPersonalizationTagInARegularUrl() {
+    // the renderer stores a tag in a link URL-encoded
+    $link = $this->clicks->processUrl(
+      'https://example.com/?email=%5Bmailpoet/subscriber-email%5D',
+      $this->newsletter,
+      $this->subscriber,
+      $this->queue,
+      $preview = false
+    );
+    verify($link)->equals('https://example.com/?email=test@example.com');
+
+    // the resolver rebuilds such a URL from its decoded form, so the stored destination counts in that form too
+    $link = $this->clicks->processUrl(
+      'https://ex%41mple.com/?email=%5Bmailpoet/subscriber-email%5D',
+      $this->newsletter,
+      $this->subscriber,
+      $this->queue,
+      $preview = false
+    );
+    verify($link)->equals('https://exAmple.com/?email=test@example.com');
+  }
+
+  public function testItRedirectsToHomeWhenEmbeddedPersonalizationTagsSetTheDestinationHost() {
+    $this->subscriber->setFirstName('https://example.org/?x=');
+    $this->entityManager->flush();
+    // a tag at the host position, and the scheme the editor forces in front of a leading tag
+    foreach (['https://[mailpoet/subscriber-firstname]/path', 'http://[mailpoet/subscriber-firstname]?utm=1'] as $url) {
+      $link = $this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false);
+      verify($link)->equals(home_url());
+    }
+  }
+
+  public function testItDoesNotTreatAnEncodedSlashAsAFixedDestination() {
+    // "https://example.com%2F" is not a host followed by a path; decoded it would look like one,
+    // while the redirect sends the raw URL, whose host is then set by the value after "@"
+    $this->subscriber->setFirstName('@example.org');
+    $this->entityManager->flush();
+    foreach (['https://example.com%2F[subscriber:firstname]', 'https://example.com%2F[mailpoet/subscriber-firstname]'] as $url) {
+      $link = $this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false);
+      verify($link)->equals(home_url());
+    }
+  }
+
+  public function testItRedirectsToHomeWhenAnEncodedTagSetsTheDestinationHost() {
+    $this->subscriber->setFirstName('https://example.org/?x=');
+    $this->entityManager->flush();
+    // the forms in which the resolver finds a tag: URL-encoded, an HTML entity, a percent-encoded entity
+    $urls = [
+      'https://%5Bmailpoet/subscriber-firstname%5D/path',
+      'https://&#091;mailpoet/subscriber-firstname&#093;/path',
+      'https://&#x05b;mailpoet/subscriber-firstname&#x05d;/path',
+      'https://%26%2391%3Bmailpoet/subscriber-firstname%26%2393%3B/path',
+    ];
+    foreach ($urls as $url) {
+      $link = $this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false);
+      verify($link)->equals(home_url());
+    }
+  }
+
+  public function testItRedirectsToHomeWhenAShortcodeValueCompletesAnEntityThatSetsTheHost() {
+    // "&#" in the stored URL and "64;" from the value decode to "@" when the resolver rebuilds the
+    // URL from its decoded form, so the host would come from the value
+    $cases = [
+      ['https://example.com&#[subscriber:firstname]/p?e=%5Bmailpoet/subscriber-email%5D', '64;example.org'],
+      ['https://example.com&#[subscriber:firstname]', '64;example.org/%5Bmailpoet/subscriber-email%5D'],
+    ];
+    foreach ($cases as [$url, $firstName]) {
+      $this->subscriber->setFirstName($firstName);
+      $this->entityManager->flush();
+      $link = $this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false);
+      verify($link)->equals(home_url());
+    }
+  }
+
+  public function testItRedirectsToHomeWhenTheStoredHostIsWhitespace() {
+    // browsers drop tabs and line breaks before they parse a URL, so the value after such a host becomes the host
+    $this->subscriber->setFirstName('example.org');
+    $this->entityManager->flush();
+    $urls = [
+      'https://%09/%5Bmailpoet/subscriber-firstname%5D',
+      'https://&#9;/%5Bmailpoet/subscriber-firstname%5D',
+      "https://\t/[subscriber:firstname]",
+    ];
+    foreach ($urls as $url) {
+      $link = $this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false);
+      verify($link)->equals(home_url());
+    }
+  }
+
+  public function testItRedirectsToHomeWhenAValueAfterAnotherSchemeSetsTheHost() {
+    // browsers read "\" as "/" and drop a tab, so the value after them would become the host of the link
+    $cases = [
+      ['ftp:%09%5Bmailpoet/subscriber-firstname%5D', '//example.org/path'],
+      ['ftp:\\[subscriber:firstname]', '\\example.org/path'],
+    ];
+    foreach ($cases as [$url, $firstName]) {
+      $this->subscriber->setFirstName($firstName);
+      $this->entityManager->flush();
+      $link = $this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false);
+      verify($link)->equals(home_url());
+    }
+  }
+
   public function testItUpdatesSubscriberTimestampsForHumanAgent() {
     $now = Carbon::now();
     $wpMock = $this->createMock(WPFunctions::class);
