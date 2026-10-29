@@ -209,7 +209,7 @@ class Clicks {
       $this->shortcodes->setNewsletter($newsletter);
       $this->shortcodes->setSubscriber($subscriber);
       $this->shortcodes->setWpUserPreview($wpUserPreview);
-      $processedUrl = $this->shortcodes->replace($url);
+      $processedUrl = $this->shortcodes->replace($url, null, null, $isPlainText = true);
       // Shortcodes first, then embedded personalization tags: the order the sending task uses for a
       // link it cannot track.
       $processedUrl = $this->linkResolver->resolveEmbeddedTokensForRecipient($processedUrl, $newsletter, $subscriber, $queue, $wpUserPreview);

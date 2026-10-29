@@ -77,19 +77,10 @@ class SendPreviewController {
     }
     $this->shortcodes->setWpUserPreview(true);
 
-    $divider = '***MailPoet***';
-    $dataForShortcodes = array_merge(
-      [$this->shortcodes->replace($newsletter->getSubject(), $renderedNewsletter['html'], null, $isPlainText = true)],
-      $renderedNewsletter
-    );
-
-    $body = implode($divider, $dataForShortcodes);
-
-    [
-      $renderedNewsletter['subject'],
-      $renderedNewsletter['body']['html'],
-      $renderedNewsletter['body']['text'],
-    ] = explode($divider, $this->shortcodes->replace($body));
+    // The subject and the text body are plain text, so their shortcodes are replaced on their own
+    $renderedNewsletter['subject'] = $this->shortcodes->replace($newsletter->getSubject(), $renderedNewsletter['html'], null, $isPlainText = true);
+    $renderedNewsletter['body']['text'] = $this->shortcodes->replace($renderedNewsletter['text'], $renderedNewsletter['html'], null, $isPlainText = true);
+    $renderedNewsletter['body']['html'] = $this->shortcodes->replace($renderedNewsletter['html']);
 
     if ($newsletter->getWpPostId()) {
       $context = [

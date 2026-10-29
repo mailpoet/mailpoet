@@ -396,6 +396,31 @@ class NewsletterTest extends \MailPoetTest {
       ->stringContainsString(Router::NAME . '&endpoint=track&action=click&data=');
   }
 
+  public function testItKeepsSubscriberValuesInSubjectAsTheyAre() {
+    $this->subscriber->setFirstName("O'Brien");
+    $this->sendingQueueEntity->setNewsletterRenderedSubject("Hi [subscriber:firstname] / [subscriber:cf_999999 | default:Friend's & co]");
+    $this->sendingQueueEntity->setNewsletterRenderedBody(['html' => '<p>Hi</p>', 'text' => 'Hi']);
+    $result = $this->newsletterTask->prepareNewsletterForSending(
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+    verify($result['subject'])->equals("Hi O'Brien / Friend's & co");
+  }
+
+  public function testItKeepsShortcodeValuesInTextBodyAsTheyAre() {
+    $this->newsletter->setSubject("Don't & miss");
+    $this->sendingQueueEntity->setNewsletterRenderedSubject('Hi');
+    $this->sendingQueueEntity->setNewsletterRenderedBody(['html' => '<p>[newsletter:subject]</p>', 'text' => '[newsletter:subject]']);
+    $result = $this->newsletterTask->prepareNewsletterForSending(
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+    verify($result['body']['html'])->equals('<p>Don&#039;t &amp; miss</p>');
+    verify($result['body']['text'])->equals("Don't & miss");
+  }
+
   public function testItCanPrepareNewsletterTemplateWithPlaceholderMap(): void {
     $newsletterEntity = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);

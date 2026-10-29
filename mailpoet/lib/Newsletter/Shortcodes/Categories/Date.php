@@ -37,7 +37,7 @@ class Date implements CategoryInterface {
       return $wp->dateI18n($actionMapping[$shortcodeDetails['action']], $date);
     }
     return ($shortcodeDetails['action'] === 'custom' && $shortcodeDetails['action_argument'] === 'format') ?
-      $wp->dateI18n($shortcodeDetails['action_argument_value'], $date) :
+      htmlspecialchars($wp->dateI18n($shortcodeDetails['action_argument_value'], $date), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401) :
       null;
   }
 }
