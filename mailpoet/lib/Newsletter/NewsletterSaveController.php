@@ -363,7 +363,7 @@ class NewsletterSaveController {
     }
 
     if (array_key_exists('ga_campaign', $data)) {
-      $newsletter->setGaCampaign($data['ga_campaign']);
+      $newsletter->setGaCampaign($this->wp->sanitizeTextField((string)$data['ga_campaign']));
     }
 
     if (array_key_exists('sender_name', $data)) {

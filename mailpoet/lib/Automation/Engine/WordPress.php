@@ -281,4 +281,8 @@ class WordPress {
   public function sanitizeFileName(string $filename): string {
     return sanitize_file_name($filename);
   }
+
+  public function sanitizeTextField(string $text): string {
+    return sanitize_text_field($text);
+  }
 }
