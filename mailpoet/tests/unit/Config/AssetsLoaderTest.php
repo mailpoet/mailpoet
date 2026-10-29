@@ -27,9 +27,16 @@ class AssetsLoaderTest extends \MailPoetUnitTest {
 
     $this->assertSame([
       [
+        'mailpoet-wpds-tokens',
+        'https://example.test/wp-content/plugins/mailpoet/assets/dist/css/mailpoet-wpds-tokens.css',
+        [],
+        false,
+        'all',
+      ],
+      [
         'mailpoet-plugin',
         'https://example.test/wp-content/plugins/mailpoet/assets/dist/css/mailpoet-plugin.css',
-        ['forms', 'buttons', 'wp-components'],
+        ['forms', 'buttons', 'wp-components', 'mailpoet-wpds-tokens'],
         false,
         'all',
       ],
@@ -65,9 +72,16 @@ class AssetsLoaderTest extends \MailPoetUnitTest {
 
     $this->assertSame([
       [
+        'mailpoet-wpds-tokens',
+        'https://example.test/wp-content/plugins/mailpoet/assets/dist/css/mailpoet-wpds-tokens.css',
+        [],
+        false,
+        'all',
+      ],
+      [
         'mailpoet-plugin',
         'https://example.test/wp-content/plugins/mailpoet/assets/dist/css/mailpoet-plugin.css',
-        ['forms', 'buttons', 'wp-components'],
+        ['forms', 'buttons', 'wp-components', 'mailpoet-wpds-tokens'],
         false,
         'all',
       ],
@@ -86,9 +100,16 @@ class AssetsLoaderTest extends \MailPoetUnitTest {
 
     $this->assertSame([
       [
+        'mailpoet-wpds-tokens',
+        'https://example.test/wp-content/plugins/mailpoet/assets/dist/css/mailpoet-wpds-tokens.css',
+        [],
+        false,
+        'all',
+      ],
+      [
         'mailpoet-plugin',
         'https://example.test/wp-content/plugins/mailpoet/assets/dist/css/mailpoet-plugin.css',
-        ['forms', 'buttons', 'wp-components'],
+        ['forms', 'buttons', 'wp-components', 'mailpoet-wpds-tokens'],
         false,
         'all',
       ],
