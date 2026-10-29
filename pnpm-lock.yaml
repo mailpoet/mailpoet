@@ -493,6 +493,9 @@ importers:
       '@wordpress/is-shallow-equal':
         specifier: ^6.0.0
         version: 6.0.0
+      '@wordpress/theme':
+        specifier: 2.2.0
+        version: 2.2.0(@types/react-dom@18.3.0)(@types/react@18.3.28)(postcss@8.5.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@17.16.0(typescript@5.9.3))
       autoprefixer:
         specifier: ^10.6.1
         version: 10.6.1(postcss@8.5.28)
