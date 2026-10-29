@@ -64,6 +64,15 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     verify($newsletter->getGaCampaign())->equals('Updated GA campaign');
   }
 
+  public function testItSavesGaCampaignAsPlainText() {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
+    $newsletter = $this->saveController->save([
+      'id' => $newsletter->getId(),
+      'ga_campaign' => '<b>Spring</b> sale',
+    ]);
+    verify($newsletter->getGaCampaign())->equals('Spring sale');
+  }
+
   public function testItCanSaveANewsletterWithEmojis() {
     $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
     $newsletterData = [

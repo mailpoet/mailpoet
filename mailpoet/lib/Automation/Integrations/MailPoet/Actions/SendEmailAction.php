@@ -557,7 +557,7 @@ class SendEmailAction implements Action {
     $email->setSenderAddress($args['sender_address'] ?? '');
     $email->setReplyToName($args['reply_to_name'] ?? '');
     $email->setReplyToAddress($args['reply_to_address'] ?? '');
-    $email->setGaCampaign($args['ga_campaign'] ?? '');
+    $email->setGaCampaign($this->wp->sanitizeTextField((string)($args['ga_campaign'] ?? '')));
     $this->storeNewsletterOption(
       $email,
       NewsletterOptionFieldEntity::NAME_GROUP,
