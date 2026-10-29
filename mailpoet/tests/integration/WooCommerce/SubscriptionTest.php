@@ -11,6 +11,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
 
 /**
@@ -156,6 +157,48 @@ class SubscriptionTest extends \MailPoetTest {
     verify($this->subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
+  public function testItIgnoresTheCheckboxWhenOptinIsDisabled() {
+    $this->settings->set('signup_confirmation', ['enabled' => false]);
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->subscribersRepository->flush();
+
+    $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, false);
+    $_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME] = 'on';
+    $data['billing_email'] = $this->subscriber->getEmail();
+
+    $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
+    unset($_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME]);
+
+    verify($subscribed)->equals(false);
+    $this->entityManager->clear();
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($subscriber->getSegments())->arrayCount(0);
+  }
+
+  public function testItDoesNotPassTheCheckboxToAutomateWooWhenOptinIsDisabled() {
+    $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, false);
+    $_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME] = 'on';
+
+    $this->getSubscriptionWithAutomateWoo()->subscribeOnCheckout($this->orderId, []);
+    $automateWooOptin = $_POST['automatewoo_optin'] ?? null;
+    unset($_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME], $_POST['automatewoo_optin']);
+
+    verify($automateWooOptin)->null();
+  }
+
+  public function testItPassesTheCheckboxToAutomateWooWhenOptinIsEnabled() {
+    $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, true);
+    $_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME] = 'on';
+
+    $this->getSubscriptionWithAutomateWoo()->subscribeOnCheckout($this->orderId, []);
+    $automateWooOptin = $_POST['automatewoo_optin'] ?? null;
+    unset($_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME], $_POST['automatewoo_optin']);
+
+    verify($automateWooOptin)->equals('On');
+  }
+
   public function testItDoesNotUnsubscribesIfCheckboxIsNotChecked() {
     $this->subscribeToSegment($this->subscriber, $this->wcSegment);
     $this->entityManager->clear();
@@ -284,5 +327,12 @@ class SubscriptionTest extends \MailPoetTest {
     $this->subscription->extendWooCommerceCheckoutForm();
     $result = ob_get_clean();
     return $result;
+  }
+
+  private function getSubscriptionWithAutomateWoo(): Subscription {
+    return $this->getServiceWithOverrides(Subscription::class, [
+      'confirmationEmailMailer' => $this->confirmationEmailMailer,
+      'wp' => $this->make(WPFunctions::class, ['isPluginActive' => true]),
+    ]);
   }
 }
