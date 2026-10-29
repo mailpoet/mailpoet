@@ -72,6 +72,8 @@ class Subscriber implements CategoryInterface {
             'subscriber' => $subscriber,
             'customField' => $customField[1],
           ]);
+          // A default typed into the email body is already encoded, so it is not encoded twice
+          $defaultValue = htmlspecialchars($defaultValue, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8', false);
           if (!($customField instanceof SubscriberCustomFieldEntity) || empty($customField->getValue())) {
             return $defaultValue;
           }
@@ -83,7 +85,7 @@ class Subscriber implements CategoryInterface {
           ) {
             $timestamp = strtotime($customField->getValue());
             if ($timestamp !== false) {
-              return $this->wp->dateI18n($shortcodeDetails['action_argument_value'], $timestamp);
+              return htmlspecialchars($this->wp->dateI18n($shortcodeDetails['action_argument_value'], $timestamp), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
             }
             return $defaultValue;
           }
