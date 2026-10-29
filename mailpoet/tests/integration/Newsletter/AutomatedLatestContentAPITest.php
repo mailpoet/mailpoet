@@ -181,13 +181,25 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
   }
 
   /**
-   * @param \WP_Post[] $posts
+   * @param array{ID: int, post_title: string}[] $posts
    * @return string[]
    */
   private function getPostTitles($posts): array {
-    return array_map(function (\WP_Post $post) {
-      return $post->post_title;// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    return array_map(function (array $post) {
+      return $post['post_title'];
     }, $posts);
+  }
+
+  public function testGetPostsReturnsIdsAndTitles() {
+    $postId = wp_insert_post([
+      'post_title' => 'Published Post',
+      'post_content' => 'contents',
+      'post_status' => 'publish',
+    ]);
+
+    $result = $this->alcAPI->getPosts(['contentType' => 'post']);
+
+    verify($result->data)->equals([['ID' => $postId, 'post_title' => 'Published Post']]);
   }
 
   public function testGetPosts() {
