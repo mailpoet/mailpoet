@@ -23,6 +23,7 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Renderer\EscapeHelper;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
@@ -216,7 +217,10 @@ class Newsletter {
       return $this->resolveTokenUrl($url, $newsletter, $personalizationContext);
     }
     $url = $this->resolveLinkShortcodes($url, $newsletter, $subscriber, $queue);
-    $url = (string)ShortcodesTask::process($url, $shortcodeLookupSource, $newsletter, $subscriber, $queue);
+    $url = (string)ShortcodesTask::process($url, $shortcodeLookupSource, $newsletter, $subscriber, $queue, $part !== PlaceholderCollector::PART_HTML);
+    if (EscapeHelper::hasDisallowedScheme($url)) {
+      return '';
+    }
     if ($personalizationContext === null) {
       return $url;
     }

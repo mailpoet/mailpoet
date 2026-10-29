@@ -327,6 +327,15 @@ class ShortcodesTest extends \MailPoetTest {
     verify($out)->equals("Deal <<New: Rock 'n' Roll>>");
   }
 
+  public function testItLeavesLinkPartEmptyWhenTheUrlBuiltFromShortcodesIsInvalid() {
+    $this->newsletter->setSubject('script:void(0)');
+    verify($this->shortcodesObject->replace('<a href="java[newsletter:subject]">x</a>'))->equals('<a href="java">x</a>');
+    verify($this->shortcodesObject->replace('<a href="[date:custom | format:\j\a\v\a][newsletter:subject]">x</a>'))->equals('<a href="java">x</a>');
+    $this->newsletter->setSubject('javascript:void(0)');
+    verify($this->shortcodesObject->replace('<a href=" [newsletter:subject]">x</a>'))->equals('<a href=" ">x</a>');
+    verify($this->shortcodesObject->replace('<a href="https://example.com/?q=[newsletter:subject]">x</a>'))->equals('<a href="https://example.com/?q=javascript:void(0)">x</a>');
+  }
+
   public function testItShowsNewsletterSubjectAsTextInHtml() {
     $this->newsletter->setSubject('Deals <b>now</b> & more');
     $out = $this->shortcodesObject->replace('<p>[newsletter:subject]</p>');
@@ -357,6 +366,21 @@ class ShortcodesTest extends \MailPoetTest {
     $this->newsletter->setSubject('Deals <b>now</b> & more');
     $out = $this->shortcodesObject->replace("[newsletter:subject] / [subscriber:cf_999999 | default:Friend's] / [date:custom | format:\<\b\>]", null, null, $isPlainText = true);
     verify($out)->equals("Deals <b>now</b> & more / Friend's / <b>");
+  }
+
+  public function testItLeavesLinkEmptyWhenTheReplacedUrlIsInvalid() {
+    $this->newsletter->setSubject('javascript:void(0)');
+    verify($this->shortcodesObject->replace('<a href="[newsletter:subject]">x</a>'))->equals('<a href="">x</a>');
+    verify($this->shortcodesObject->replace("<a class='b' href = '[newsletter:subject]'>x</a>"))->equals("<a class='b' href = ''>x</a>");
+    verify($this->shortcodesObject->replace('<a href="[subscriber:cf_999999 | default:JavaScript:void(0)]">x</a>'))->equals('<a href="">x</a>');
+    verify($this->shortcodesObject->replace('<img src="[subscriber:cf_999999 | default:data:text/html,x]" />'))->equals('<img src="" />');
+  }
+
+  public function testItKeepsAllowedUrlsReplacedInLinks() {
+    verify($this->shortcodesObject->replace('<a href="[subscriber:cf_999999 | default:mailto:sales@example.com]">x</a>'))->equals('<a href="mailto:sales@example.com">x</a>');
+    verify($this->shortcodesObject->replace('<a href="tel:[subscriber:cf_999999 | default:+420123456789]">x</a>'))->equals('<a href="tel:+420123456789">x</a>');
+    $this->newsletter->setSubject('javascript:void(0)');
+    verify($this->shortcodesObject->replace('<a title="[newsletter:subject]" href="#">x</a>'))->equals('<a title="javascript:void(0)" href="#">x</a>');
   }
 
   public function testItEncodesOnlyTheAttributeOccurrenceWhenTheSameShortcodeIsAlsoInText() {
