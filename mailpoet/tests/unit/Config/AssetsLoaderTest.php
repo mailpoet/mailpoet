@@ -95,6 +95,20 @@ class AssetsLoaderTest extends \MailPoetUnitTest {
     ], $enqueuedStyles);
   }
 
+  public function testItLoadsDesignTokensBeforePluginStylesWhenRegistered(): void {
+    $enqueuedStyles = $this->loadStylesForPage('mailpoet-newsletters', true);
+
+    $this->assertSame([
+      [
+        'mailpoet-plugin',
+        'https://example.test/wp-content/plugins/mailpoet/assets/dist/css/mailpoet-plugin.css',
+        ['forms', 'buttons', 'wp-components', 'wp-theme'],
+        false,
+        'all',
+      ],
+    ], $enqueuedStyles);
+  }
+
   public function _after() {
     Env::$assetsUrl = $this->assetsUrl;
     $_GET = $this->get;
@@ -118,10 +132,16 @@ class AssetsLoaderTest extends \MailPoetUnitTest {
   /**
    * @return EnqueuedStyle[]
    */
-  private function loadStylesForPage(string $page): array {
+  private function loadStylesForPage(string $page, bool $designTokensRegistered = false): array {
     $_GET['page'] = $page;
 
     $wp = $this->createMock(WPFunctions::class);
+    $wp->method('wpStyleIs')
+      ->willReturnCallback(
+        function (string $handle, string $status = 'enqueued') use ($designTokensRegistered): bool {
+          return $designTokensRegistered && $handle === 'wp-theme' && $status === 'registered';
+        }
+      );
     $enqueuedStyles = [];
     $wp->method('wpEnqueueStyle')
       ->willReturnCallback(
