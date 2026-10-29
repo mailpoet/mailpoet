@@ -12,6 +12,7 @@ class CaptchaSession {
   const ID_LENGTH = 32;
   const NEW_SESSION_LIMIT = 200;
   const NEW_SESSION_WINDOW = 600; // 10 minutes
+  const MAX_SUBSCRIPTION_FORM_DATA_SIZE = 65536;
 
   /** Keys used only by the registration CAPTCHA page. */
   const REGISTER_ONLY_KEYS = ['referrer_form', 'referrer_form_url', 'rendered', 'action_url'];
@@ -79,11 +80,19 @@ class CaptchaSession {
 
   /**
    * Stores the data of a subscription form. Keys of the registration CAPTCHA page are dropped,
-   * so the stash can never be shown as a registration page.
+   * so the stash can never be shown as a registration page. Data over the size limit is not
+   * stored, and earlier data of the session is removed so it is not restored in its place;
+   * the limit leaves room for long textarea fields.
    */
   public function setSubscriptionFormData(string $sessionId, array $data): void {
     foreach (self::REGISTER_ONLY_KEYS as $key) {
       unset($data[$key]);
+    }
+    if (strlen(serialize($data)) > self::MAX_SUBSCRIPTION_FORM_DATA_SIZE) {
+      if ($this->isValidId($sessionId)) {
+        $this->wp->deleteTransient($this->getKey($sessionId, self::SESSION_FORM_KEY));
+      }
+      return;
     }
     $this->setFormData($sessionId, $data);
   }
