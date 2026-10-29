@@ -115,6 +115,13 @@ describe('Refreshing held campaigns after a sending settings change', () => {
       expect(types).to.include(refresh);
     });
 
+    it('marks the stored key as saved', () => {
+      const types = run(mssActions.verifyPremiumKey('key'), [
+        ok({}, { premium_plugin_active: true }),
+      ]);
+      expect(types).to.include('MARK_SETTINGS_SAVED');
+    });
+
     it('does not refresh when the key is invalid', () => {
       const types = run(mssActions.verifyPremiumKey('key'), [failed]);
       expect(types).to.not.include(refresh);

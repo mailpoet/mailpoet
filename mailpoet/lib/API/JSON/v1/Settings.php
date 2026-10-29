@@ -16,6 +16,7 @@ use MailPoet\Form\FormMessageController;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\SendingEnvironment;
+use MailPoet\Mailer\SuperSendingController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
@@ -89,6 +90,9 @@ class Settings extends APIEndpoint {
   /** @var SendingEnvironment */
   private $sendingEnvironment;
 
+  /** @var SuperSendingController */
+  private $superSendingController;
+
   public function __construct(
     SettingsController $settings,
     Bridge $bridge,
@@ -106,9 +110,11 @@ class Settings extends APIEndpoint {
     SubscribersCountsController $subscribersCountsController,
     TrackingConfig $trackingConfig,
     ConfirmationEmailCustomizer $confirmationEmailCustomizer,
-    SendingEnvironment $sendingEnvironment
+    SendingEnvironment $sendingEnvironment,
+    SuperSendingController $superSendingController
   ) {
     $this->sendingEnvironment = $sendingEnvironment;
+    $this->superSendingController = $superSendingController;
     $this->settings = $settings;
     $this->bridge = $bridge;
     $this->authorizedEmailsController = $authorizedEmailsController;
@@ -151,9 +157,14 @@ class Settings extends APIEndpoint {
       foreach ($settings as $name => $value) {
         $this->settings->set($name, $value);
       }
+      $postedSettings = $this->expandDottedKeys($settings);
 
-      if (array_key_exists(SendingEnvironment::SETTING_ALLOW_SENDING, $settings)) {
+      if (array_key_exists(SendingEnvironment::SETTING_ALLOW_SENDING, $postedSettings)) {
         $this->sendingEnvironment->syncSiteUrlWithSetting();
+      }
+
+      if (array_key_exists(SuperSendingController::SETTING_NAME, $postedSettings)) {
+        $this->superSendingController->onSettingSaved($oldSettings[SuperSendingController::SETTING_NAME]);
       }
 
       $this->onSettingsChange($oldSettings, $this->settings->getAll());
@@ -165,10 +176,10 @@ class Settings extends APIEndpoint {
 
       // when pending approval, leave this to cron / Key Activation tab logic
       if (!$this->servicesChecker->isMailPoetAPIKeyPendingApproval()) {
-        $this->settingsChangeHandler->updateApiKeyState($settings);
+        $this->settingsChangeHandler->updateApiKeyState($postedSettings);
       }
 
-      $meta = $this->authorizedEmailsController->onSettingsSave($settings);
+      $meta = $this->authorizedEmailsController->onSettingsSave($postedSettings);
       if ($signupConfirmation !== $this->settings->get('signup_confirmation.enabled')) {
         $this->messageController->updateSuccessMessages();
       }
@@ -184,7 +195,9 @@ class Settings extends APIEndpoint {
         }
       }
 
-      return $this->successResponse($this->settings->getAll(), $meta);
+      $newSettings = $this->settings->getAll();
+      $meta['changed_settings'] = $this->getChangedSettings($oldSettings, $newSettings);
+      return $this->successResponse($newSettings, $meta);
     }
   }
 
@@ -435,6 +448,51 @@ class Settings extends APIEndpoint {
     if (!empty($newSettings['signup_confirmation']['use_mailpoet_editor'])) {
       $this->confirmationEmailCustomizer->init();
     }
+  }
+
+  /**
+   * Turns dotted keys such as "mta.method" into nested arrays, so the checks after saving read all
+   * posted values the same way. Saving uses the dotted keys, because saving "mta" as an array would
+   * replace all of it.
+   */
+  private function expandDottedKeys(array $settings): array {
+    $expanded = [];
+    foreach ($settings as $name => $value) {
+      $target = &$expanded;
+      foreach (explode('.', (string)$name) as $key) {
+        if (!isset($target[$key]) || !is_array($target[$key])) {
+          $target[$key] = [];
+        }
+        $target = &$target[$key];
+      }
+      $target = $value;
+      unset($target);
+    }
+    return $expanded;
+  }
+
+  /**
+   * Names of the settings that differ, two levels deep, e.g. "sender.address". The settings page
+   * copies them back after saving only some settings, because saving can change other settings too.
+   *
+   * @return string[]
+   */
+  private function getChangedSettings(array $oldSettings, array $newSettings): array {
+    $changed = [];
+    foreach (array_keys($oldSettings + $newSettings) as $name) {
+      $oldValue = $oldSettings[$name] ?? null;
+      $newValue = $newSettings[$name] ?? null;
+      if (is_array($oldValue) && is_array($newValue)) {
+        foreach (array_keys($oldValue + $newValue) as $key) {
+          if (($oldValue[$key] ?? null) !== ($newValue[$key] ?? null)) {
+            $changed[] = $name . '.' . $key;
+          }
+        }
+      } elseif ($oldValue !== $newValue) {
+        $changed[] = (string)$name;
+      }
+    }
+    return $changed;
   }
 
   private function validateSettingsBeforeSave(array $settings): ?string {

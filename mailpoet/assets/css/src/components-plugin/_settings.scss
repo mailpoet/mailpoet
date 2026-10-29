@@ -148,6 +148,16 @@ ul.sending-method-benefits {
   margin: $grid-gap-medium 0;
 }
 
+.mailpoet-sending-method-option {
+  margin-left: $form-control-choice-height;
+  max-width: 640px;
+  padding: 0 $grid-gap $grid-gap;
+
+  p {
+    margin: $grid-gap-half 0 0;
+  }
+}
+
 .mailpoet-sending-method-actions {
   align-items: center;
   display: flex;

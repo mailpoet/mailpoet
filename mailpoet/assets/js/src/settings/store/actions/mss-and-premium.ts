@@ -10,7 +10,7 @@ import {
   PremiumStatus,
 } from 'settings/store/types';
 import { updateKeyActivationState } from './key-activation';
-import { setSetting, setSettings } from './settings';
+import { markSettingsSaved, setSetting, setSettings } from './settings';
 import { getMssStatus } from '../make-default-state';
 
 export function* verifyMssKey(
@@ -57,6 +57,7 @@ export function* verifyMssKey(
       res.data.result,
     );
     yield setSettings(updated);
+    yield markSettingsSaved([['mta', 'mailpoet_api_key_state']]);
     yield { type: 'REFRESH_HELD_CAMPAIGNS' };
     fields.mssStatus = getMssStatus(true, updated);
     return updateKeyActivationState(fields);
@@ -88,6 +89,7 @@ export function* verifyMssKey(
     fields.mssStatus = MssStatus.VALID_MSS_NOT_ACTIVE;
   } else {
     yield setSettings(call.res.data);
+    yield { type: 'FULL_SAVE_DONE' };
     yield { type: 'REFRESH_HELD_CAMPAIGNS' };
     fields.mssStatus = getMssStatus(
       Number(call.res.data.mta.mailpoet_api_key_state.code) === 200,
@@ -115,7 +117,9 @@ export function* verifyPremiumKey(key: string) {
     });
   }
 
+  // The API call stored the key
   yield setSetting(['premium', 'premium_key'], key);
+  yield markSettingsSaved([['premium', 'premium_key']]);
 
   const pluginActive = res.meta.premium_plugin_active;
   const premiumInstalled = res.meta.premium_plugin_installed;

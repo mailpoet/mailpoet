@@ -1,7 +1,9 @@
 import { select } from '@wordpress/data';
+import { get, has, isEqual, unionWith } from 'lodash';
 
 import { STORE_NAME } from 'settings/store/store-name';
 import { Action, ReEngagement } from 'settings/store/types';
+import { normalizeSettings } from 'settings/store/normalize-settings';
 import { updateKeyActivationState } from './key-activation';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,8 +16,9 @@ export function setSettings(value: any): Action {
   return { type: 'SET_SETTINGS', value };
 }
 
-export function setSaveDone(): Action {
-  return { type: 'SAVE_DONE' };
+// For settings that another API call saved
+export function markSettingsSaved(paths: string[][]): Action {
+  return { type: 'MARK_SETTINGS_SAVED', paths };
 }
 
 export function setErrorFlag(value: boolean): Action {
@@ -24,6 +27,17 @@ export function setErrorFlag(value: boolean): Action {
 
 export function setReEngagement(value: ReEngagement): Action {
   return { type: 'SET_RE_ENGAGEMENT_NOTICE', value };
+}
+
+function* afterSave(meta: unknown) {
+  yield { type: 'TRACK_SETTINGS_SAVED' };
+  yield { type: 'REFRESH_HELD_CAMPAIGNS' };
+  yield updateKeyActivationState({
+    congratulatoryMssEmailSentTo: null,
+    fromAddressModalCanBeShown: false,
+  });
+  yield setReEngagement(meta as ReEngagement);
+  yield { type: 'TRACK_UNAUTHORIZED_EMAIL', meta };
 }
 
 export function* saveSettings() {
@@ -45,16 +59,45 @@ export function* saveSettings() {
   if (!success) {
     return { type: 'SAVE_FAILED', error };
   }
-  yield { type: 'TRACK_SETTINGS_SAVED' };
-  yield { type: 'REFRESH_HELD_CAMPAIGNS' };
-  yield updateKeyActivationState({
-    congratulatoryMssEmailSentTo: null,
-    fromAddressModalCanBeShown: false,
-  });
   yield setSettings(res.data);
-  yield setReEngagement(res.meta as ReEngagement);
-  yield { type: 'TRACK_UNAUTHORIZED_EMAIL', meta: res.meta };
-  return { type: 'SAVE_DONE' };
+  yield* afterSave(res.meta);
+  return { type: 'FULL_SAVE_DONE' };
+}
+
+/**
+ * Saves only the given settings, so unsaved edits on other tabs stay unsaved.
+ * The keys are posted dotted, e.g. "mta.method", so the rest of "mta" is kept.
+ */
+export function* saveSettingPaths(paths: string[][]) {
+  yield { type: 'SAVE_STARTED' };
+  const settings = select(STORE_NAME).getSettings();
+  const data = {};
+  paths.forEach((path) => {
+    const value: unknown = get(settings, path);
+    data[path.join('.')] = typeof value === 'string' ? value.trim() : value;
+  });
+
+  const { success, error, res } = yield {
+    type: 'CALL_API',
+    endpoint: 'settings',
+    action: 'set',
+    data,
+  };
+  if (!success) {
+    return { type: 'SAVE_FAILED', error };
+  }
+  yield* afterSave(res.meta);
+  // The server can change other settings too, e.g. the sender when MSS is activated
+  const changedPaths = (res.meta.changed_settings as string[]).map((name) =>
+    name.split('.'),
+  );
+  const saved = normalizeSettings(res.data as Record<string, unknown>);
+  return {
+    type: 'PARTIAL_SAVE_DONE',
+    values: unionWith(paths, changedPaths, isEqual)
+      .filter((path) => has(saved, path))
+      .map((path) => ({ path, value: get(saved, path) })),
+  };
 }
 
 export function* loadSettings() {
