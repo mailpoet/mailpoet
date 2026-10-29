@@ -230,6 +230,39 @@ class GATrackingTest extends \MailPoetTest {
     verify($result['text'])->stringContainsString('email=[subscriber:email]');
   }
 
+  public function testItEncodesCampaignInInternalUrl() {
+    $newsletter = (new NewsletterFactory())->withGaCampaign('Spring "sale" \'x\' & more')->create();
+    $url = $this->tracking->addParamsToUrl(home_url('/review/'), $newsletter);
+    verify($url)->equals(home_url('/review/?utm_source=mailpoet&utm_medium=email&utm_source_platform=mailpoet&utm_campaign=Spring%20%22sale%22%20%27x%27%20%26%20more'));
+  }
+
+  public function testItEncodesCampaignInLinks() {
+    $newsletter = (new NewsletterFactory())->withGaCampaign('c"\' data-x=y')->create();
+    $link = 'https://' . $this->internalHost . '/page/';
+    $renderedNewsletter = [
+      'html' => '<p><a href="' . $link . '">Click here</a></p>',
+      'text' => '[Click here](' . $link . ')',
+    ];
+    $result = $this->tracking->applyGATracking($renderedNewsletter, $newsletter, $this->internalHost);
+    $params = 'utm_source=mailpoet&utm_medium=email&utm_source_platform=mailpoet&utm_campaign=c%22%27%20data-x%3Dy';
+    verify($result['html'])->equals('<p><a href="' . $link . '?' . $params . '">Click here</a></p>');
+    verify($result['text'])->equals('[Click here](' . $link . '?' . $params . ')');
+  }
+
+  public function testItPassesTheCampaignAsSavedToTheLinkFilter() {
+    $newsletter = (new NewsletterFactory())->withGaCampaign('Spring sale')->create();
+    $receivedParams = null;
+    $callback = function ($link, $originalLink, $params) use (&$receivedParams) {
+      $receivedParams = $params;
+      return $link;
+    };
+    add_filter('mailpoet_ga_tracking_link', $callback, 10, 3);
+    $this->tracking->addParamsToUrl(home_url('/review/'), $newsletter);
+    remove_filter('mailpoet_ga_tracking_link', $callback, 10);
+    $this->assertIsArray($receivedParams);
+    verify($receivedParams['utm_campaign'])->equals('Spring sale');
+  }
+
   public function testItAddsParamsToInternalUrl() {
     $url = $this->tracking->addParamsToUrl(home_url('/review/'), $this->newsletter);
     verify($url)->equals(home_url('/review/?utm_source=mailpoet&utm_medium=email&utm_source_platform=mailpoet&utm_campaign=SpringEmail'));
