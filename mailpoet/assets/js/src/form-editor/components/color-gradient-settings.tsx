@@ -1,5 +1,4 @@
 import {
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- WordPress experimental API naming convention
   __experimentalPanelColorGradientSettings as PanelColorGradientSettings,
   useSettings,
 } from '@wordpress/block-editor';

@@ -4,7 +4,7 @@
  *
  * For more check: http://marionettejs.com/docs/marionette.behaviors.html#behaviorslookup
  */
-import BackboneMarionette from 'backbone.marionette'; // eslint-disable-line func-names
+import BackboneMarionette from 'backbone.marionette';
 
 var Marionette = BackboneMarionette;
 var BehaviorsLookup = {};
