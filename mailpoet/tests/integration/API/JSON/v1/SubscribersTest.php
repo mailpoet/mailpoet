@@ -381,6 +381,12 @@ class SubscribersTest extends \MailPoetTest {
     verify($response->errors[0]['message'])->equals('Please leave the first field empty.');
   }
 
+  public function testItCannotSubscribeWithDataThatIsNotAnArray() {
+    $response = $this->endpoint->subscribe('foo');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['error'])->equals(Error::BAD_REQUEST);
+  }
+
   public function testItCannotSubscribeWithoutFormID() {
     $response = $this->endpoint->subscribe([
       'form_field_ZW1haWw' => 'toto@mailpoet.com',
