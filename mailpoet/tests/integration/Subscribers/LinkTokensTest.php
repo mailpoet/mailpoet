@@ -125,6 +125,14 @@ class LinkTokensTest extends \MailPoetTest {
     verify($this->linkTokens->verifyToken($subscriber, 'whatever'))->false();
   }
 
+  public function testItRejectsTokenThatIsNotAString() {
+    $subscriber = $this->createSubscriber('demo@fake.loc');
+    $token = $this->linkTokens->getToken($subscriber);
+
+    verify($this->linkTokens->verifyToken($subscriber, null))->false();
+    verify($this->linkTokens->verifyToken($subscriber, [$token]))->false();
+  }
+
   private function createSubscriber(string $email, ?string $linkToken = null): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);

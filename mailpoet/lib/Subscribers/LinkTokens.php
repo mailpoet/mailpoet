@@ -37,7 +37,13 @@ class LinkTokens {
     return (string)$subscriber->getLinkToken();
   }
 
-  public function verifyToken(SubscriberEntity $subscriber, string $token) {
+  /**
+   * @param mixed $token Tokens come from decoded request data, so they can be of any type.
+   */
+  public function verifyToken(SubscriberEntity $subscriber, $token) {
+    if (!is_string($token)) {
+      return false;
+    }
     $databaseToken = $this->getToken($subscriber);
     // Fail closed: an empty stored token would otherwise accept any input,
     // because hash_equals('', substr($x, 0, 0)) is always true.
