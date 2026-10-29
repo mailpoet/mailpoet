@@ -5,7 +5,7 @@
   ],
   "scripts": {
     "lint": "NODE_OPTIONS=--max_old_space_size=2048 eslint --max-warnings 0 'assets/js/src/**/*.{js,jsx,ts,tsx}' 'tests/javascript-newsletter-editor/**/*.js'",
-    "autoprefixer": "postcss assets/dist/css/*.css --use autoprefixer --no-map --replace",
+    "autoprefixer": "postcss assets/dist/css/*.css --no-map --replace",
     "scss": "sass assets/css/src/:assets/dist/css/ --style compressed",
     "stylelint": "stylelint --fix",
     "stylelint-check": "stylelint",
@@ -161,6 +161,7 @@
     "@wordpress/browserslist-config": "^7.0.0",
     "@wordpress/dependency-extraction-webpack-plugin": "^7.0.0",
     "@wordpress/is-shallow-equal": "^6.0.0",
+    "@wordpress/theme": "^3.0.0",
     "autoprefixer": "^10.6.1",
     "babel-loader": "^10.1.1",
     "browserslist": "^4.29.3",
