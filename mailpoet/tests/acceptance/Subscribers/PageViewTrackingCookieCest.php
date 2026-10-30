@@ -3,6 +3,8 @@
 namespace MailPoet\Test\Acceptance;
 
 use AcceptanceTester;
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Statistics\Track\SubscriberCookie;
 use MailPoet\Test\DataFactories\Subscriber;
 use PHPUnit\Framework\Assert;
 
@@ -17,7 +19,8 @@ class PageViewTrackingCookieCest {
 
     $i->amOnPage('/');
     $i->cantSeeCookie(self::PAGE_VIEW_COOKIE_NAME);
-    $i->setCookie('mailpoet_subscriber', json_encode(['subscriber_id' => $subscriber->getId()]));
+    $cookieData = ContainerWrapper::getInstance()->get(SubscriberCookie::class)->getCookieData((int)$subscriber->getId());
+    $i->setCookie('mailpoet_subscriber', json_encode($cookieData));
     $i->reloadPage();
 
     $i->canSeeCookie(self::PAGE_VIEW_COOKIE_NAME);

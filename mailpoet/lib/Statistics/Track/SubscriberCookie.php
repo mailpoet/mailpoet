@@ -4,6 +4,7 @@ namespace MailPoet\Statistics\Track;
 
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Util\Cookies;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SubscriberCookie {
   const COOKIE_NAME = 'mailpoet_subscriber';
@@ -16,12 +17,17 @@ class SubscriberCookie {
   /** @var TrackingConfig */
   private $trackingConfig;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     Cookies $cookies,
-    TrackingConfig $trackingConfig
+    TrackingConfig $trackingConfig,
+    WPFunctions $wp
   ) {
     $this->cookies = $cookies;
     $this->trackingConfig = $trackingConfig;
+    $this->wp = $wp;
   }
 
   public function getSubscriberId(): ?int {
@@ -29,18 +35,11 @@ class SubscriberCookie {
       return null;
     }
 
-    $subscriberId = $this->getSubscriberIdFromCookie(self::COOKIE_NAME);
-    if ($subscriberId) {
-      return $subscriberId;
+    if ($this->cookies->get(self::COOKIE_NAME_LEGACY) !== null) {
+      $this->cookies->delete(self::COOKIE_NAME_LEGACY);
     }
 
-    $subscriberId = $this->getSubscriberIdFromCookie(self::COOKIE_NAME_LEGACY);
-    if ($subscriberId) {
-      $this->setSubscriberId($subscriberId);
-      $this->cookies->delete(self::COOKIE_NAME_LEGACY);
-      return $subscriberId;
-    }
-    return null;
+    return $this->getSubscriberIdFromCookie();
   }
 
   public function setSubscriberId(int $subscriberId): void {
@@ -50,7 +49,7 @@ class SubscriberCookie {
 
     $this->cookies->set(
       self::COOKIE_NAME,
-      ['subscriber_id' => $subscriberId],
+      $this->getCookieData($subscriberId),
       [
         'expires' => time() + self::COOKIE_EXPIRY,
         'path' => '/',
@@ -58,10 +57,29 @@ class SubscriberCookie {
     );
   }
 
-  private function getSubscriberIdFromCookie(string $cookieName): ?int {
-    $data = $this->cookies->get($cookieName);
-    return is_array($data) && isset($data['subscriber_id']) && is_numeric($data['subscriber_id'])
-      ? (int)$data['subscriber_id']
-      : null;
+  public function getCookieData(int $subscriberId): array {
+    return [
+      'subscriber_id' => $subscriberId,
+      'hash' => $this->getHash($subscriberId),
+    ];
+  }
+
+  private function getSubscriberIdFromCookie(): ?int {
+    $data = $this->cookies->get(self::COOKIE_NAME);
+    if (
+      !is_array($data)
+      || !isset($data['subscriber_id'], $data['hash'])
+      || !is_numeric($data['subscriber_id'])
+      || !is_string($data['hash'])
+    ) {
+      return null;
+    }
+    $subscriberId = (int)$data['subscriber_id'];
+    return hash_equals($this->getHash($subscriberId), $data['hash']) ? $subscriberId : null;
+  }
+
+  private function getHash(int $subscriberId): string {
+    $data = self::COOKIE_NAME . '|' . $this->wp->getCurrentBlogId() . '|' . $subscriberId;
+    return hash_hmac('sha256', $data, (string)$this->wp->wpSalt('auth'));
   }
 }
