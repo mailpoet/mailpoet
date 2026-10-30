@@ -1,6 +1,7 @@
 {
   'plugins': ['stylelint-order', 'stylelint-scss'],
   'customSyntax': 'postcss-scss',
+  'reportNeedlessDisables': true,
   'rules':
     {
       'block-no-empty': true,
