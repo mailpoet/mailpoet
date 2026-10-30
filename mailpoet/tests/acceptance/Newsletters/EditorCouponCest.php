@@ -180,7 +180,9 @@ class EditorCouponCest {
 
     $i->wantTo('Resume sending and verify coupon is sent');
     $i->activateWooCommerce();
-    $i->click(Locator::contains('button', 'Resume'));
+    $resumeButton = Locator::contains('button', 'Resume');
+    $i->scrollTo($resumeButton, 0, -200);
+    $i->click($resumeButton);
     $i->waitForText('Confirm to proceed');
     $i->click('#mailpoet_alert_confirm');
     $i->triggerMailPoetActionScheduler();
