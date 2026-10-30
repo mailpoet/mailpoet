@@ -102,6 +102,34 @@ class LatestPostsTest extends \MailPoetTest {
     verify(has_filter('render_block_core/read-more'))->false();
   }
 
+  public function testItRemovesUnregisteredShortcodesFromExcerpt(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts page builder post',
+      '[builder_section layout="1"][builder_text]Builder text [Update] with more words here[/builder_text][/builder_section]'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/post-excerpt', ['excerptLength' => 4])]);
+
+    verify($html)->stringContainsString('Builder text [Update] with');
+    verify($html)->stringNotContainsString('builder_');
+    verify($html)->stringNotContainsString('more words');
+    verify(has_filter('the_content', [$this->block, 'removeUnregisteredShortcodes']))->false();
+  }
+
+  public function testItKeepsBracketedTextWithAnEqualsSign(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts equals sign post',
+      'Rated [Score 3 = good] by [builder_rating value=3 style="stars"] readers'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/post-excerpt', ['excerptLength' => 20])]);
+
+    verify($html)->stringContainsString('Rated [Score 3 = good] by readers');
+    verify($html)->stringNotContainsString('builder_rating');
+  }
+
   public function testItRendersDefaultLayoutWhenInsertedWithoutInnerBlocks(): void {
     $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
 
@@ -641,9 +669,25 @@ class LatestPostsTest extends \MailPoetTest {
     verify($html)->stringNotContainsString('[gallery]');
   }
 
+  public function testItRemovesUnregisteredShortcodesFromClassicContent(): void {
+    $this->ensurePostContentBlockRegistered();
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts classic builder content',
+      '[builder_section layout="1"][builder_text]Builder text [Update] here[/builder_text][builder_divider /][/builder_section]'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('mailpoet/post-content')]);
+
+    verify($html)->stringContainsString('Builder text [Update] here');
+    verify($html)->stringNotContainsString('[builder_section');
+    verify($html)->stringNotContainsString('[/builder_text]');
+    verify($html)->stringNotContainsString('builder_divider');
+  }
+
   public function testItKeepsSquareBracketsThatAreNotShortcodes(): void {
-    // Nothing strips post content by syntax, so brackets that only look like a
-    // tag must survive: an array query parameter, a footnote.
+    // Brackets that only look like a tag must survive: an array query
+    // parameter, a footnote.
     $this->ensurePostContentBlockRegistered();
     $this->postIds[] = $this->createPostWithContent(
       'Latest posts bracket link',
@@ -655,6 +699,64 @@ class LatestPostsTest extends \MailPoetTest {
 
     verify($html)->stringContainsString('?tag[]=draft');
     verify($html)->stringContainsString('[1]');
+  }
+
+  public function testItRemovesUnregisteredShortcodesWithDigitNames(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts digit shortcode post',
+      '[2column width="50"]Column text[/2column] and note [1] here'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/post-excerpt', ['excerptLength' => 20])]);
+
+    verify($html)->stringContainsString('Column text and note [1] here');
+    verify($html)->stringNotContainsString('2column');
+  }
+
+  public function testItKeepsRemovingShortcodesAfterANestedLatestPostsBlock(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts nested post',
+      '[builder_text]Builder text here[/builder_text]'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+    $isNested = false;
+    $renderNested = function (string $content) use (&$isNested): string {
+      if ($isNested) {
+        return $content;
+      }
+      $isNested = true;
+      return $content . $this->render(['perPage' => 1]);
+    };
+
+    add_filter('render_block_core/post-title', $renderNested);
+    try {
+      $html = $this->render(['perPage' => 1], [], [
+        $this->block('core/post-title'),
+        $this->block('core/post-excerpt'),
+      ]);
+    } finally {
+      remove_filter('render_block_core/post-title', $renderNested);
+    }
+
+    verify($isNested)->true();
+    verify($html)->stringContainsString('Builder text here');
+    verify($html)->stringNotContainsString('builder_');
+    verify(has_filter('the_content', [$this->block, 'removeUnregisteredShortcodes']))->false();
+  }
+
+  public function testItRemovesUnregisteredSelfClosingShortcodes(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts self-closing shortcode post',
+      'Intro text [builder_widget compact /] and [Update] here'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/post-excerpt', ['excerptLength' => 20])]);
+
+    verify($html)->stringContainsString('Intro text');
+    verify($html)->stringContainsString('[Update] here');
+    verify($html)->stringNotContainsString('builder_widget');
   }
 
   public function testItStripsRegisteredShortcodesFromBlockContent(): void {
