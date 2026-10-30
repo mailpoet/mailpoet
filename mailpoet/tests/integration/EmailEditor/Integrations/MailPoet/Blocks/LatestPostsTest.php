@@ -91,6 +91,17 @@ class LatestPostsTest extends \MailPoetTest {
     verify($withExcerpt)->stringContainsString('excerpt content');
   }
 
+  public function testItRendersReadMoreWithoutScreenReaderText(): void {
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/read-more')]);
+
+    verify($html)->stringContainsString('Read more');
+    verify($html)->stringNotContainsString('screen-reader-text');
+    verify($html)->stringNotContainsString(': Latest posts block C');
+    verify(has_filter('render_block_core/read-more'))->false();
+  }
+
   public function testItRendersDefaultLayoutWhenInsertedWithoutInnerBlocks(): void {
     $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
 
