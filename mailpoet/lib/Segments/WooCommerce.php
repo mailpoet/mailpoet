@@ -4,6 +4,7 @@ namespace MailPoet\Segments;
 
 use MailPoet\Config\Env;
 use MailPoet\Config\SubscriberChangesNotifier;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Services\Validator;
@@ -24,6 +25,8 @@ use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class WooCommerce {
+  private const FORMER_CUSTOMERS_BATCH_SIZE = 1000;
+
   /**
    * Per-email record of whether synchronizeGuestCustomer() inserted a brand new
    * subscriber row this request, or found one that already existed.
@@ -144,6 +147,7 @@ class WooCommerce {
           return false;
         }
 
+        $isReturningFormerCustomer = !$subscriber->getIsWoocommerceUser() && $subscriber->getDeletedAt() !== null;
         $data = [
           'is_woocommerce_user' => 1,
         ];
@@ -160,6 +164,11 @@ class WooCommerce {
           $data['last_name'] = $wpUser->last_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         }
         $subscriber = $this->subscriberSaveController->createOrUpdate($data, $subscriber);
+        if ($isReturningFormerCustomer && !$isLinkUnconfirmed) {
+          // The list sync trashed them when they stopped being a customer; becoming one again restores them.
+          $subscriber->setDeletedAt(null);
+          $this->subscribersRepository->flush();
+        }
         // add subscriber to the WooCommerce Customers segment when relation doesn't exist
         $subscriberSegment = $this->subscriberSegmentRepository->findOneBy(['subscriber' => $subscriber, 'segment' => $wcSegment]);
 
@@ -173,6 +182,30 @@ class WooCommerce {
     }
 
     return true;
+  }
+
+  /**
+   * Runs after WP::synchronizeUser() has unlinked the subscriber from the deleted WP user,
+   * so the subscriber is judged the same way the next list sync would judge a guest.
+   */
+  public function synchronizeDeletedWpUser(int $wpUserId): void {
+    if (!$this->woocommerceHelper->isWooCommerceActive()) {
+      return;
+    }
+    $unlinkedSubscriberId = $this->wpSegment->getSubscriberIdUnlinkedFromWpUser($wpUserId);
+    if ($unlinkedSubscriberId === null) {
+      return;
+    }
+    $subscriber = $this->subscribersRepository->findOneById($unlinkedSubscriberId);
+    if (!$subscriber instanceof SubscriberEntity || $subscriber->getWpUserId() !== null || !$subscriber->getIsWoocommerceUser()) {
+      return;
+    }
+
+    $subscriberId = (int)$subscriber->getId();
+    $this->removeFormerGuestCustomers($subscriberId, (string)$subscriber->getEmail());
+    $this->unsubscribeUsersFromSegment([$subscriberId]);
+    $this->entityManager->refresh($subscriber);
+    $this->subscribersRepository->invalidateTotalSubscribersCache();
   }
 
   /**
@@ -244,8 +277,8 @@ class WooCommerce {
     $lastCheckedOrderId = $lastCheckedOrderId + $batchSize;
     if (!$highestOrderId || $lastCheckedOrderId >= $highestOrderId) {
       $this->insertUsersToSegment();
-      $this->unsubscribeUsersFromSegment();
       $this->removeOrphanedSubscribers();
+      $this->unsubscribeUsersFromSegment();
       $this->updateStatus();
       $this->updateGlobalStatus();
       // The bulk operations above add/remove/restatus the WooCommerce segment's
@@ -301,6 +334,20 @@ class WooCommerce {
     // Mark WP users having a customer role as WooCommerce subscribers
     global $wpdb;
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    // A former customer the list sync trashed (flag 0) is restored when they become a customer again,
+    // unless their account hasn't confirmed the subscriber's address yet
+    $this->connection->executeQuery("
+      UPDATE LOW_PRIORITY {$subscribersTable} mps
+        JOIN {$wpdb->users} wu ON mps.wp_user_id = wu.id
+        JOIN {$wpdb->usermeta} wpum ON wu.id = wpum.user_id AND wpum.meta_key = :capabilities
+        LEFT JOIN {$wpdb->usermeta} linkMark ON wu.id = linkMark.user_id AND linkMark.meta_key = :unconfirmedLinkMetaKey
+      SET mps.deleted_at = NULL
+        WHERE wpum.meta_value LIKE '%\"customer\"%' AND mps.is_woocommerce_user = 0 AND mps.deleted_at IS NOT NULL
+          AND linkMark.umeta_id IS NULL
+    ", [
+      'capabilities' => $wpdb->prefix . 'capabilities',
+      'unconfirmedLinkMetaKey' => $this->wpUserSubscriberLink->getUnconfirmedMetaKey(),
+    ]);
     // Users who haven't confirmed the address of their linked subscriber keep its source
     $this->connection->executeQuery("
       UPDATE LOW_PRIORITY {$subscribersTable} mps
@@ -389,6 +436,12 @@ class WooCommerce {
 
     // Save timestamp about changes before insert
     $this->subscriberChangesNotifier->subscribersBatchUpdate();
+    // A former customer the list sync trashed (flag 0) is restored when they become a customer again
+    $this->connection->executeQuery('
+      UPDATE ' . $subscribersTable . ' mps
+      SET mps.deleted_at = NULL
+      WHERE mps.email IN (:emails) AND mps.is_woocommerce_user = 0 AND mps.deleted_at IS NOT NULL
+    ', ['emails' => $emails], ['emails' => ArrayParameterType::STRING]);
     // Update existing subscribers
     $this->connection->executeQuery('
       UPDATE ' . $subscribersTable . ' mps
@@ -507,10 +560,22 @@ class WooCommerce {
     );
   }
 
-  private function unsubscribeUsersFromSegment(): void {
+  /**
+   * @param int[]|null $onlySubscriberIds
+   */
+  private function unsubscribeUsersFromSegment(?array $onlySubscriberIds = null): void {
     $wcSegment = $this->segmentsRepository->getWooCommerceSegment();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+
+    $params = ['segmentId' => $wcSegment->getId()];
+    $types = ['segmentId' => ParameterType::INTEGER];
+    $onlySubscribersCondition = '';
+    if ($onlySubscriberIds !== null) {
+      $onlySubscribersCondition = 'AND mpss.subscriber_id IN (:onlySubscriberIds)';
+      $params['onlySubscriberIds'] = $onlySubscriberIds;
+      $types['onlySubscriberIds'] = ArrayParameterType::INTEGER;
+    }
 
     // Capture the affected subscriber ids before the DELETE: once the membership
     // rows are gone, recalculateForSegment() can no longer see these subscribers,
@@ -522,9 +587,10 @@ class WooCommerce {
       LEFT JOIN {$subscribersTable} mps ON mpss.subscriber_id = mps.id
       WHERE mpss.segment_id = :segmentId AND mpss.status = :subscribedStatus
         AND (mps.is_woocommerce_user = 0 OR mps.email = '' OR mps.email IS NULL)
+        {$onlySubscribersCondition}
     ",
-      ['segmentId' => $wcSegment->getId(), 'subscribedStatus' => SubscriberEntity::STATUS_SUBSCRIBED],
-      ['segmentId' => ParameterType::INTEGER, 'subscribedStatus' => ParameterType::STRING]
+      $params + ['subscribedStatus' => SubscriberEntity::STATUS_SUBSCRIBED],
+      $types + ['subscribedStatus' => ParameterType::STRING]
     )->fetchFirstColumn();
 
     // Unsubscribe non-WC or invalid users from segment
@@ -533,9 +599,10 @@ class WooCommerce {
       DELETE mpss FROM {$subscriberSegmentsTable} mpss
       LEFT JOIN {$subscribersTable} mps ON mpss.subscriber_id = mps.id
       WHERE mpss.segment_id = :segmentId AND (mps.is_woocommerce_user = 0 OR mps.email = '' OR mps.email IS NULL)
+        {$onlySubscribersCondition}
     ",
-      ['segmentId' => $wcSegment->getId()],
-      ['segmentId' => ParameterType::INTEGER]
+      $params,
+      $types
     );
 
     $subscriberIds = array_map(function ($id): int {
@@ -581,16 +648,18 @@ class WooCommerce {
   }
 
   private function removeOrphanedSubscribers(): void {
-    // Remove orphaned WooCommerce segment subscribers (not having a matching WC customer email),
+    // Unlist WooCommerce segment subscribers that are no longer WC customers,
     // e.g. if WC orders were deleted directly from the database
     // or a customer role was revoked and a user has no orders
+    $this->removeFormerRegisteredCustomers();
+    $this->removeFormerGuestCustomers();
+  }
+
+  private function removeFormerRegisteredCustomers(): void {
     global $wpdb;
 
-    $wcSegment = $this->segmentsRepository->getWooCommerceSegment();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
-
-    // Unmark registered customers
 
     // Insert WC customer IDs to a temporary table for left join to use an index
     $tmpTableName = Env::$dbPrefix . 'tmp_wc_ids';
@@ -619,25 +688,24 @@ class WooCommerce {
       WHERE wpum.meta_key = :capabilities AND wpum.meta_value LIKE '%\"customer\"%'
     ", ['capabilities' => $wpdb->prefix . 'capabilities']);
 
-    // Unmark WC list registered users which aren't WC customers anymore
-    $subQb = $this->connection->createQueryBuilder();
-    $subQb->select('mps.id')
+    $formerCustomers = $this->connection->createQueryBuilder();
+    $formerCustomers->select('mps.id')
       ->from($subscribersTable, 'mps')
       ->join('mps', $subscriberSegmentsTable, 'mpss', 'mps.id = mpss.subscriber_id AND mpss.segment_id = :segmentId')
       ->leftJoin('mps', $tmpTableName, 'wctmp', 'mps.wp_user_id = wctmp.id')
       ->where('mps.is_woocommerce_user = 1')
       ->andWhere('wctmp.id IS NULL')
       ->andWhere('mps.wp_user_id IS NOT NULL');
-    $qb = $this->connection->createQueryBuilder();
-    $qb->update($subscribersTable)
-      ->set('is_woocommerce_user', '0')
-      ->where("id IN (SELECT id FROM ({$subQb->getSQL()}) AS sq) ")
-      ->setParameter('segmentId', $wcSegment->getId());
-    $qb->execute();
+    $this->unmarkFormerCustomers($formerCustomers->getSQL(), [], []);
 
     $this->connection->executeQuery("DROP TABLE {$tmpTableName}");
+  }
 
-    // Remove guest customers
+  private function removeFormerGuestCustomers(?int $onlySubscriberId = null, ?string $onlyEmail = null): void {
+    global $wpdb;
+
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
 
     // Insert WC customer emails to a temporary table and ensure matching collations
     // between MailPoet and WooCommerce emails for left join to use an index
@@ -651,35 +719,101 @@ class WooCommerce {
     if ($this->woocommerceHelper->isWooCommerceCustomOrdersTableEnabled()) {
       $ordersTable = $this->woocommerceHelper->getOrdersTableName();
       $guestCustomersSubQuery = "SELECT DISTINCT billing_email AS email FROM `{$ordersTable}` WHERE type = 'shop_order' AND billing_email IS NOT NULL AND billing_email != ''";
+      $onlyEmailCondition = ' AND billing_email = :onlyEmail';
     } else {
       $guestCustomersSubQuery = "SELECT DISTINCT wppm.meta_value AS email FROM {$wpdb->postmeta} wppm
         JOIN {$wpdb->posts} wpp ON wppm.post_id = wpp.ID
         AND wpp.post_type = 'shop_order'
         WHERE wppm.meta_key = '_billing_email'";
+      $onlyEmailCondition = ' AND wppm.meta_value = :onlyEmail';
+    }
+    $emailParams = [];
+    if ($onlyEmail !== null) {
+      $guestCustomersSubQuery .= $onlyEmailCondition;
+      $emailParams['onlyEmail'] = $onlyEmail;
     }
 
     $this->connection->executeQuery("
       CREATE TEMPORARY TABLE {$tmpTableName}
         (`email` varchar(150) NOT NULL, UNIQUE(`email`), PRIMARY KEY (`email`)) {$collation}
       {$guestCustomersSubQuery}
-    ");
+    ", $emailParams);
 
-    // Remove WC list guest users which aren't WC customers anymore
-    $subQb = $this->connection->createQueryBuilder();
-    $subQb->select('mps.id')
+    $formerCustomers = $this->connection->createQueryBuilder();
+    $formerCustomers->select('mps.id')
       ->from($subscribersTable, 'mps')
       ->join('mps', $subscriberSegmentsTable, 'mpss', 'mps.id = mpss.subscriber_id AND mpss.segment_id = :segmentId')
       ->leftJoin('mps', $tmpTableName, 'wctmp', 'mps.email = wctmp.email')
       ->where('mps.is_woocommerce_user = 1')
       ->andWhere('wctmp.email IS NULL')
       ->andWhere('mps.wp_user_id IS NULL');
-    $qb = $this->connection->createQueryBuilder();
-    $qb->delete($subscribersTable)
-      ->where("id IN (SELECT id FROM ({$subQb->getSQL()}) AS sq) ")
-      ->setParameter('segmentId', $wcSegment->getId());
-    $qb->execute();
+    $params = [];
+    $types = [];
+    if ($onlySubscriberId !== null) {
+      $formerCustomers->andWhere('mps.id = :onlySubscriberId');
+      $params['onlySubscriberId'] = $onlySubscriberId;
+      $types['onlySubscriberId'] = ParameterType::INTEGER;
+    }
+    $this->unmarkFormerCustomers($formerCustomers->getSQL(), $params, $types);
 
     $this->connection->executeQuery("DROP TABLE {$tmpTableName}");
+  }
+
+  /**
+   * Trashes former customers that the WooCommerce segment was the only list for,
+   * then clears their WooCommerce flag so unsubscribeUsersFromSegment() removes them from the segment.
+   * Already trashed subscribers keep their original deleted_at.
+   */
+  private function unmarkFormerCustomers(string $formerCustomersSql, array $params, array $types): void {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
+    $segmentId = $this->segmentsRepository->getWooCommerceSegment()->getId();
+    $params['segmentId'] = $segmentId;
+    $types['segmentId'] = ParameterType::INTEGER;
+
+    $deletedAt = Carbon::now()->format('Y-m-d H:i:s');
+    $hasChanges = false;
+    $lastId = 0;
+    do {
+      $idsChunk = array_map(function ($id): int {
+        return is_numeric($id) ? (int)$id : 0;
+      }, $this->connection->executeQuery(
+        $formerCustomersSql . ' AND mps.id > :lastId ORDER BY mps.id ASC LIMIT ' . self::FORMER_CUSTOMERS_BATCH_SIZE,
+        $params + ['lastId' => $lastId],
+        $types + ['lastId' => ParameterType::INTEGER]
+      )->fetchFirstColumn());
+      if (!$idsChunk) {
+        break;
+      }
+
+      $this->connection->executeStatement("
+        UPDATE {$subscribersTable} s
+        SET s.deleted_at = :deletedAt
+        WHERE s.id IN (:ids)
+          AND s.deleted_at IS NULL
+          AND NOT EXISTS (
+            SELECT 1 FROM {$subscriberSegmentsTable} ss_other
+            INNER JOIN {$segmentsTable} seg ON seg.id = ss_other.segment_id
+            WHERE ss_other.subscriber_id = s.id
+              AND ss_other.segment_id != :segmentId
+              AND seg.deleted_at IS NULL
+          )
+      ", ['ids' => $idsChunk, 'segmentId' => $segmentId, 'deletedAt' => $deletedAt], ['ids' => ArrayParameterType::INTEGER, 'segmentId' => ParameterType::INTEGER, 'deletedAt' => ParameterType::STRING]);
+
+      $this->connection->executeStatement("
+        UPDATE {$subscribersTable}
+        SET is_woocommerce_user = 0
+        WHERE id IN (:ids)
+      ", ['ids' => $idsChunk], ['ids' => ArrayParameterType::INTEGER]);
+
+      $hasChanges = true;
+      $lastId = (int)end($idsChunk);
+    } while (count($idsChunk) === self::FORMER_CUSTOMERS_BATCH_SIZE);
+
+    if ($hasChanges) {
+      $this->subscriberChangesNotifier->subscribersBatchUpdate();
+    }
   }
 
   private function updateStatus(): void {
