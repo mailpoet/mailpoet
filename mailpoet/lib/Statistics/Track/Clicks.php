@@ -207,7 +207,7 @@ class Clicks {
       $this->shortcodes->setNewsletter($newsletter);
       $this->shortcodes->setSubscriber($subscriber);
       $this->shortcodes->setWpUserPreview($wpUserPreview);
-      $processedUrl = $this->shortcodes->replace($url);
+      $processedUrl = $this->shortcodes->replace($url, null, null, $isPlainText = true);
       if ($processedUrl !== $url && !$this->isDestinationFixedBeforeShortcodes($url)) {
         return $this->validateRedirect($processedUrl);
       }

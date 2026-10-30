@@ -23,6 +23,7 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Renderer\EscapeHelper;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
@@ -216,7 +217,10 @@ class Newsletter {
       return $this->resolveTokenUrl($url, $newsletter, $personalizationContext);
     }
     $url = $this->resolveLinkShortcodes($url, $newsletter, $subscriber, $queue);
-    $url = (string)ShortcodesTask::process($url, $shortcodeLookupSource, $newsletter, $subscriber, $queue);
+    $url = (string)ShortcodesTask::process($url, $shortcodeLookupSource, $newsletter, $subscriber, $queue, $part !== PlaceholderCollector::PART_HTML);
+    if (EscapeHelper::hasDisallowedScheme($url)) {
+      return '';
+    }
     if ($personalizationContext === null) {
       return $url;
     }
@@ -496,21 +500,25 @@ class Newsletter {
   public function prepareNewsletterForSending(NewsletterEntity $newsletter, SubscriberEntity $subscriber, SendingQueueEntity $queue): array {
     $renderedNewsletter = $queue->getNewsletterRenderedBody();
     $renderedNewsletter = $this->emoji->decodeEmojisInBody($renderedNewsletter);
-    $preparedNewsletter = Helpers::joinObject(
-      [
-        $queue->getNewsletterRenderedSubject(),
-        $renderedNewsletter['html'],
-        $renderedNewsletter['text'],
-      ]
-    );
-
-    $preparedNewsletter = ShortcodesTask::process(
-      $preparedNewsletter,
-      null,
+    // The subject and the text body are plain text, so their shortcodes are replaced on their own
+    $subject = ShortcodesTask::process(
+      (string)$queue->getNewsletterRenderedSubject(),
+      $renderedNewsletter['html'],
       $newsletter,
       $subscriber,
-      $queue
+      $queue,
+      $isPlainText = true
     );
+    $html = ShortcodesTask::process($renderedNewsletter['html'], null, $newsletter, $subscriber, $queue);
+    $text = ShortcodesTask::process(
+      $renderedNewsletter['text'],
+      $renderedNewsletter['html'],
+      $newsletter,
+      $subscriber,
+      $queue,
+      $isPlainText = true
+    );
+    $preparedNewsletter = Helpers::joinObject([$subject, $html, $text]);
     $context = $newsletter->getWpPostId() !== null
       ? $this->personalizationContextBuilder->build($newsletter, $subscriber, $queue)
       : null;

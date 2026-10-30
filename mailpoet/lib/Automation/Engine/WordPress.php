@@ -281,4 +281,8 @@ class WordPress {
   public function sanitizeFileName(string $filename): string {
     return sanitize_file_name($filename);
   }
+
+  public function wpStripAllTags(string $text, bool $removeBreaks = false): string {
+    return wp_strip_all_tags($text, $removeBreaks);
+  }
 }

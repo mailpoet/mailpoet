@@ -184,6 +184,25 @@ class EmailApiControllerTest extends \MailPoetTest {
     verify($newsletter->getReplyToAddress())->equals('reply@example.com');
   }
 
+  public function testItSavesUtmCampaignAsPlainText(): void {
+    $wpPostId = 6;
+    $newsletter = (new NewsletterFactory())
+      ->withWpPostId($wpPostId)
+      ->create();
+
+    $this->emailApiController->saveEmailData([
+      'id' => $newsletter->getId(),
+      'subject' => 'Subject',
+      'preheader' => '',
+      'utm_campaign' => '<b>Spring</b> sale 50%cashback',
+    ], new \WP_Post((object)['ID' => $wpPostId]));
+
+    $this->entityManager->clear();
+    $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    verify($newsletter->getGaCampaign())->equals('Spring sale 50%cashback');
+  }
+
   public function testItRejectsSavingEmailDataWithoutTheManageEmailsPermission(): void {
     $wpPostId = 25;
     $newsletter = (new NewsletterFactory())

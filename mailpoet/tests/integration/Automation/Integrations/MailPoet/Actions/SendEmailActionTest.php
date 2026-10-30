@@ -125,6 +125,13 @@ class SendEmailActionTest extends \MailPoetTest {
     $this->cleanup();
   }
 
+  public function testItSavesGaCampaignAsPlainText() {
+    $email = (new Newsletter())->withAutomationType()->create();
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId(), 'ga_campaign' => '<b>Spring</b> sale 50%cashback'], []);
+    $this->action->saveEmailSettings($step, $this->automation);
+    verify($email->getGaCampaign())->equals('Spring sale 50%cashback');
+  }
+
   public function testItReturnsRequiredSubjects() {
     $this->assertSame(['mailpoet:subscriber'], $this->action->getSubjectKeys());
   }

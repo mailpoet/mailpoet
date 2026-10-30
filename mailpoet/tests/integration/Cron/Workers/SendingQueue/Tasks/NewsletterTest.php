@@ -396,6 +396,97 @@ class NewsletterTest extends \MailPoetTest {
       ->stringContainsString(Router::NAME . '&endpoint=track&action=click&data=');
   }
 
+  public function testItPreprocessesNewsletterWithQuotesInGaCampaign() {
+    $this->newsletter->setGaCampaign('a"b\'c');
+    $styles = ['block' => ['backgroundColor' => 'transparent']];
+    $this->newsletter->setBody([
+      'content' => ['type' => 'container', 'orientation' => 'vertical', 'styles' => $styles, 'blocks' => [
+        ['type' => 'container', 'orientation' => 'horizontal', 'styles' => $styles, 'blocks' => [
+          ['type' => 'container', 'orientation' => 'vertical', 'styles' => $styles, 'blocks' => [
+            ['type' => 'text', 'text' => '<p><a href="' . home_url('/page/') . '">Internal link</a></p>'],
+          ]],
+        ]],
+      ]],
+      'globalStyles' => [],
+    ]);
+    $this->newslettersRepository->persist($this->newsletter);
+    $this->newslettersRepository->flush();
+
+    $newsletter = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $sendingQueue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
+    $renderedBody = $sendingQueue->getNewsletterRenderedBody();
+    $this->assertIsArray($renderedBody);
+    verify($renderedBody['text'])->stringContainsString('Internal link');
+  }
+
+  public function testItKeepsSubscriberValuesInSubjectAsTheyAre() {
+    $this->subscriber->setFirstName("O'Brien");
+    $this->sendingQueueEntity->setNewsletterRenderedSubject("Hi [subscriber:firstname] / [subscriber:cf_999999 | default:Friend's & co]");
+    $this->sendingQueueEntity->setNewsletterRenderedBody(['html' => '<p>Hi</p>', 'text' => 'Hi']);
+    $result = $this->newsletterTask->prepareNewsletterForSending(
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+    verify($result['subject'])->equals("Hi O'Brien / Friend's & co");
+  }
+
+  public function testItKeepsShortcodeValuesInTextBodyAsTheyAre() {
+    $this->newsletter->setSubject("Don't & miss");
+    $this->sendingQueueEntity->setNewsletterRenderedSubject('Hi');
+    $this->sendingQueueEntity->setNewsletterRenderedBody(['html' => '<p>[newsletter:subject]</p>', 'text' => '[newsletter:subject]']);
+    $result = $this->newsletterTask->prepareNewsletterForSending(
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+    verify($result['body']['html'])->equals('<p>Don&#039;t &amp; miss</p>');
+    verify($result['body']['text'])->equals("Don't & miss");
+  }
+
+  public function testItLeavesLinkEmptyInTemplateWhenTheReplacedUrlIsInvalid(): void {
+    foreach ([false, true] as $trackingEnabled) {
+      $this->newsletterTask->trackingEnabled = $trackingEnabled;
+      $html = $this->prepareTemplatedHtmlWithSubjectLink('javascript:void(0)');
+      verify($html)->stringContainsString('Subject link');
+      verify($html)->stringNotContainsString('href="javascript:');
+    }
+    $this->subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $this->entityManager->flush();
+    $html = $this->prepareTemplatedHtmlWithSubjectLink('javascript:void(0)');
+    verify($html)->stringContainsString('Subject link');
+    verify($html)->stringNotContainsString('href="javascript:');
+  }
+
+  private function prepareTemplatedHtmlWithSubjectLink(string $subject): string {
+    $newsletter = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withSubject($subject)
+      ->create();
+    $styles = ['block' => ['backgroundColor' => 'transparent']];
+    $newsletter->setBody([
+      'content' => ['type' => 'container', 'orientation' => 'vertical', 'styles' => $styles, 'blocks' => [
+        ['type' => 'container', 'orientation' => 'horizontal', 'styles' => $styles, 'blocks' => [
+          ['type' => 'container', 'orientation' => 'vertical', 'styles' => $styles, 'blocks' => [
+            ['type' => 'text', 'text' => '<p><a href="[newsletter:subject]">Subject link</a></p>'],
+          ]],
+        ]],
+      ]],
+      'globalStyles' => [],
+    ]);
+    $this->newslettersRepository->flush();
+    $task = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $queue = (new SendingQueueFactory())->create($task, $newsletter);
+
+    $newsletter = $this->newsletterTask->preProcessNewsletter($newsletter, $task);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $this->subscriber, $queue);
+    return strtr($templatedNewsletter['newsletter']['body']['html'], $templatedNewsletter['substitutions']['html']);
+  }
+
   public function testItCanPrepareNewsletterTemplateWithPlaceholderMap(): void {
     $newsletterEntity = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
