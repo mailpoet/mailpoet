@@ -53,7 +53,7 @@ class SendingStatusAbility implements Ability {
   public function getRegistrationArgs(): array {
     return [
       'label' => __('Get MailPoet sending status', 'mailpoet'),
-      'description' => __('Use this first when MailPoet emails are not being sent or arrive late. Returns the sending method, whether sending is paused or waiting for a retry and the last sending error, the MailPoet Sending Service key state and access restrictions, subscriber and email volume limits of the plan, and the state of the background task runner (cron) that sends emails. Reads stored state only; it does not contact the sending service, so key states can be a few hours old.', 'mailpoet'),
+      'description' => __('Use this first when MailPoet emails are not sent or arrive late. Returns the sending method, whether sending is paused or waiting for a retry and the last error, the MailPoet Sending Service key state and restrictions, the plan limits for subscribers and email volume, and the state of the cron that sends emails. Reads stored state only, so key states can be a few hours old.', 'mailpoet'),
       'input_schema' => [
         'type' => 'object',
         'additionalProperties' => false,

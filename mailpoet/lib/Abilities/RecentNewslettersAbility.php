@@ -59,7 +59,7 @@ class RecentNewslettersAbility implements Ability {
   public function getRegistrationArgs(): array {
     return [
       'label' => __('List recent MailPoet newsletters', 'mailpoet'),
-      'description' => __('The most recently sent MailPoet newsletters (one-off campaigns, not automations or post notifications), newest first, with the same summary statistics as the MailPoet campaign listing: emails sent, unique clicks, WooCommerce revenue and orders attributed to the email (null without WooCommerce or without attributed orders), unique opens, unsubscribes and bounces. Rates are percentages of tracked_sent, the recipients whose engagement could be measured, as in MailPoet reports. Judge performance by clicks and revenue first: opens are inflated by email clients that load images automatically (e.g. Apple Mail Privacy Protection), and machine_opens are the opens MailPoet identified as automatic. stats_url links to the campaign report in MailPoet. Contains no subscriber data. Unsubscribe reasons per newsletter are included only on plans with detailed analytics; detailed_statistics_available tells whether they are.', 'mailpoet'),
+      'description' => __('The most recently sent MailPoet newsletters (one-off campaigns, not automations or post notifications), newest first, with the summary statistics of the MailPoet campaign listing. Rates are percentages of tracked_sent. Judge performance by clicks and revenue first: opens are inflated by email clients that load images automatically (e.g. Apple Mail Privacy Protection), counted in machine_opens. Contains no subscriber data.', 'mailpoet'),
       'input_schema' => [
         'type' => 'object',
         'properties' => [
@@ -196,7 +196,10 @@ class RecentNewslettersAbility implements Ability {
             ],
           ],
         ],
-        'detailed_statistics_available' => ['type' => 'boolean'],
+        'detailed_statistics_available' => [
+          'type' => 'boolean',
+          'description' => __('False when the plan does not include detailed analytics, so unsubscribe_reasons is left out.', 'mailpoet'),
+        ],
       ],
     ];
   }
