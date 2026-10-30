@@ -51,6 +51,9 @@ class LatestPosts extends AbstractBlock {
    */
   private const PASSWORD_FILTER_PRIORITY = PHP_INT_MAX;
 
+  /** Before the_content formats the text (10) and runs registered shortcodes (11). */
+  private const REMOVE_SHORTCODES_PRIORITY = 9;
+
   /** Template blocks. Not email-enabled by default, so we opt them in. */
   private const TEMPLATE_CORE_BLOCKS = [
     'core/post-featured-image',
@@ -1055,6 +1058,7 @@ class LatestPosts extends AbstractBlock {
 
     $content = '';
     $this->wp->addFilter('render_block_context', $injectContext, 1);
+    $this->wp->addFilter('the_content', [$this, 'removeUnregisteredShortcodes'], self::REMOVE_SHORTCODES_PRIORITY);
     try {
       foreach ($innerBlocks as $innerBlock) {
         if (!is_array($innerBlock)) {
@@ -1063,12 +1067,33 @@ class LatestPosts extends AbstractBlock {
         $content .= render_block($this->normalizeBlock($innerBlock));
       }
     } finally {
+      $this->wp->removeFilter('the_content', [$this, 'removeUnregisteredShortcodes'], self::REMOVE_SHORTCODES_PRIORITY);
       $this->wp->removeFilter('render_block_context', $injectContext, 1);
       $post = $previousPost; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
       $wp_query = $previousQuery; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
     }
 
     return $this->withPostId($content, $postId);
+  }
+
+  /**
+   * Page builders such as Divi register their shortcodes only on some requests.
+   * When they are not registered, WordPress keeps them in the excerpt as text.
+   * Only tags with attributes or a closing tag are removed, so plain text in
+   * square brackets stays.
+   */
+  public function removeUnregisteredShortcodes(string $content): string {
+    preg_match_all('#\[/([a-zA-Z][\w-]*)\]#', $content, $closingTags);
+    $pairedTags = array_flip($closingTags[1]);
+    return (string)preg_replace_callback(
+      '#\[/?([a-zA-Z][\w-]*)(\s[^\[\]]*)?\]#',
+      static function (array $tag) use ($pairedTags): string {
+        $hasAttributes = isset($tag[2]) && strpos($tag[2], '=') !== false;
+        $isShortcode = $hasAttributes || isset($pairedTags[$tag[1]]);
+        return $isShortcode && !shortcode_exists($tag[1]) ? '' : $tag[0];
+      },
+      $content
+    );
   }
 
   /**

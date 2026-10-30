@@ -91,6 +91,21 @@ class LatestPostsTest extends \MailPoetTest {
     verify($withExcerpt)->stringContainsString('excerpt content');
   }
 
+  public function testItRemovesUnregisteredShortcodesFromExcerpt(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts page builder post',
+      '[et_pb_section fb_built="1"][et_pb_text]Builder text [Update] with more words here[/et_pb_text][/et_pb_section]'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/post-excerpt', ['excerptLength' => 4])]);
+
+    verify($html)->stringContainsString('Builder text [Update] with');
+    verify($html)->stringNotContainsString('et_pb_');
+    verify($html)->stringNotContainsString('more words');
+    verify(has_filter('the_content', [$this->block, 'removeUnregisteredShortcodes']))->false();
+  }
+
   public function testItRendersDefaultLayoutWhenInsertedWithoutInnerBlocks(): void {
     $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
 
