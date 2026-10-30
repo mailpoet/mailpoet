@@ -77,41 +77,42 @@ class StatisticsUnsubscribesRepository extends Repository {
    * @return array<int, array{month: string, method: string, count: int}>
    */
   public function getMonthlyCountsPerMethod(\DateTimeInterface $from): array {
-    return $this->getMonthlyCountsPerColumn('method', $from);
+    return $this->getMonthlyCounts(['method'], $from);
   }
 
   /**
-   * Unsubscribes without a submitted reason are counted as REASON_UNSPECIFIED.
+   * All three breakdowns from one table scan. Unsubscribes without a submitted reason are
+   * counted as REASON_UNSPECIFIED, rows without a recorded source as "unknown".
    *
-   * @return array<int, array{month: string, reason: string, count: int}>
+   * @return array<int, array{month: string, method: string, source: string, reason: string, count: int}>
    */
-  public function getMonthlyCountsPerReason(\DateTimeInterface $from): array {
-    return $this->getMonthlyCountsPerColumn('reason', $from);
+  public function getMonthlyCountsPerMethodSourceAndReason(\DateTimeInterface $from): array {
+    return $this->getMonthlyCounts(['method', 'source', 'reason'], $from);
   }
 
   /**
-   * Rows without a recorded source are counted as "unknown".
-   *
-   * @return array<int, array{month: string, source: string, count: int}>
+   * @param string[] $columns
    */
-  public function getMonthlyCountsPerSource(\DateTimeInterface $from): array {
-    return $this->getMonthlyCountsPerColumn('source', $from);
-  }
-
-  private function getMonthlyCountsPerColumn(string $column, \DateTimeInterface $from): array {
+  private function getMonthlyCounts(array $columns, \DateTimeInterface $from): array {
     $statisticsTable = $this->getTableName();
     $values = [
       'method' => 'method',
       'reason' => 'COALESCE(reason, :unspecified)',
       'source' => 'COALESCE(source, :unknown)',
     ];
-    $value = $values[$column];
+    // GROUP BY resolves table columns before aliases, so the aliases must not be column names.
+    $select = implode(', ', array_map(function (string $column) use ($values): string {
+      return "{$values[$column]} AS {$column}_value";
+    }, $columns));
+    $groupBy = implode(', ', array_map(function (string $column): string {
+      return "{$column}_value";
+    }, $columns));
     $rows = $this->entityManager->getConnection()->executeQuery(
-      "SELECT DATE_FORMAT(created_at, '%Y-%m') AS month, $value AS value, COUNT(id) AS count
+      "SELECT DATE_FORMAT(created_at, '%Y-%m') AS month, $select, COUNT(id) AS count
        FROM $statisticsTable
        WHERE created_at >= :from
-       GROUP BY month, value
-       ORDER BY month, value",
+       GROUP BY month, $groupBy
+       ORDER BY month, $groupBy",
       [
         'from' => $from->format('Y-m-d H:i:s'),
         'unspecified' => StatisticsUnsubscribeEntity::REASON_UNSPECIFIED,
@@ -121,14 +122,18 @@ class StatisticsUnsubscribesRepository extends Repository {
 
     $counts = [];
     foreach ($rows as $row) {
-      if (!is_string($row['month']) || !is_string($row['value']) || !is_numeric($row['count'])) {
+      if (!is_string($row['month']) || !is_numeric($row['count'])) {
         continue;
       }
-      $counts[] = [
-        'month' => $row['month'],
-        $column => $row['value'],
-        'count' => (int)$row['count'],
-      ];
+      $count = ['month' => $row['month']];
+      foreach ($columns as $column) {
+        if (!is_string($row["{$column}_value"])) {
+          continue 2;
+        }
+        $count[$column] = $row["{$column}_value"];
+      }
+      $count['count'] = (int)$row['count'];
+      $counts[] = $count;
     }
     return $counts;
   }
