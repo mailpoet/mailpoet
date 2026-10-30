@@ -159,7 +159,7 @@ class SendingStatusAbility implements Ability {
    *    earlier "(550)" in the message can't start a match.
    * 2. A name with an unpaired "(" makes the first pattern start at that "(", which leaves
    *    the start of the name before "([subscriber]". The second pattern removes it: one or
-   *    more "(" with text up to the masked item, without ":" or "," that would mean the text
+   *    more "(" with text up to the masked item, without a ":" that would mean the text
    *    belongs to the message or to the previous item.
    * 3. Outside that list, the third pattern replaces a name that starts after the nearest
    *    "(", ",", ":" or whitespace and runs up to "<...@...>".
@@ -168,7 +168,7 @@ class SendingStatusAbility implements Ability {
    */
   public static function maskPersonalData(string $message): string {
     $message = (string)preg_replace('/\((?:[^(<>]|\([^()<>]*\))*<[^<>\s]+@[^<>\s]+>/', '([subscriber]', $message);
-    $message = (string)preg_replace('/(?:\([^(<>:,]*)+\(\[subscriber\]/', '([subscriber]', $message);
+    $message = (string)preg_replace('/(?:\([^(<>:]*)+\(\[subscriber\]/', '([subscriber]', $message);
     $message = (string)preg_replace('/[^(),:\s][^(),:]*<[^<>\s]+@[^<>\s]+>/', '[subscriber]', $message);
     return (string)preg_replace('/[^\s<>"\'(),;:]+@[^\s<>"\'(),;:]+/', '[email]', $message);
   }

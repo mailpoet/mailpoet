@@ -80,13 +80,13 @@ class SendingStatusAbilityTest extends \MailPoetTest {
     $mailerLog = MailerLog::setError(
       MailerLog::getMailerLog(),
       MailerError::OPERATION_SEND,
-      'Error (550): Mailbox rejected. Unprocessed subscribers: (Jan (Honza <jan@example.com>: Full), (Petr) Svoboda <petr@example.com>: Bounced), (Eva (Evi (E <eva@example.com>: Full)'
+      'Error (550): Mailbox rejected. Unprocessed subscribers: (Jan (Honza <jan@example.com>: Full), (Petr) Svoboda <petr@example.com>: Bounced), (Eva (Evi (E <eva@example.com>: Full), (Alice, QA (Ali <alice@example.com>: Full)'
     );
     MailerLog::pauseSending($mailerLog);
 
     $message = $this->executeAbility()['sending']['last_error']['message'];
 
-    verify($message)->equals('Error (550): Mailbox rejected. Unprocessed subscribers: ([subscriber]: Full), ([subscriber]: Bounced), ([subscriber]: Full)');
+    verify($message)->equals('Error (550): Mailbox rejected. Unprocessed subscribers: ([subscriber]: Full), ([subscriber]: Bounced), ([subscriber]: Full), ([subscriber]: Full)');
   }
 
   public function testItReportsAWaitingRetryAfterATemporaryError(): void {
