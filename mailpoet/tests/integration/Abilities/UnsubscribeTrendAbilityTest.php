@@ -26,7 +26,6 @@ class UnsubscribeTrendAbilityTest extends \MailPoetTest {
   public function _before(): void {
     Carbon::setTestNow(new Carbon('2026-05-15 12:00:00'));
     $this->newsletter = (new Newsletter())->withSendingQueue()->create();
-    AbilitiesTestHelper::enableFeature();
     AbilitiesTestHelper::register($this->diContainer->get(AbilitiesRegistrar::class));
     wp_set_current_user((int)$this->tester->createWordPressUser('unsubscribe-trend-editor@example.com', 'editor'));
   }

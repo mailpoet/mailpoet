@@ -21,7 +21,6 @@ class SendingStatusAbilityTest extends \MailPoetTest {
 
   public function _before(): void {
     $this->settings = $this->diContainer->get(SettingsController::class);
-    AbilitiesTestHelper::enableFeature();
     AbilitiesTestHelper::register($this->diContainer->get(AbilitiesRegistrar::class));
     wp_set_current_user((int)$this->tester->createWordPressUser('sending-status-admin@example.com', 'administrator'));
   }
