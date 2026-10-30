@@ -45,7 +45,6 @@ class RecentNewslettersAbilityTest extends \MailPoetTest {
     $unsubscribe->setReason(StatisticsUnsubscribeEntity::REASON_SPAM);
     $this->entityManager->flush();
 
-    AbilitiesTestHelper::enableFeature();
     AbilitiesTestHelper::register($this->diContainer->get(AbilitiesRegistrar::class));
     wp_set_current_user((int)$this->tester->createWordPressUser('recent-newsletters-editor@example.com', 'editor'));
   }

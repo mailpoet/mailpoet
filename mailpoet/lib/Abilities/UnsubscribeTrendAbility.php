@@ -58,7 +58,7 @@ class UnsubscribeTrendAbility implements Ability {
   public function getRegistrationArgs(): array {
     return [
       'label' => __('Get MailPoet unsubscribe trend', 'mailpoet'),
-      'description' => __('Monthly unsubscribe counts for all MailPoet emails. On plans with detailed analytics, each month is also split by how people unsubscribed (by_method), where the unsubscribe came from (by_source) and the reason given (by_reason). by_method: link (the unsubscribe link in an email), one_click (the unsubscribe button of the email client, List-Unsubscribe), or unknown (not unsubscribed from an email, e.g. by an admin or through the API, and records from before methods were tracked). by_source: newsletter (from an email), manage (the subscription management page), admin (an administrator unsubscribed them), order_checkout (unchecked at WooCommerce checkout), automation, mp_api (another plugin through the MailPoet API), or unknown. Counts are raw numbers, not rates. Use it to spot rising unsubscribes and to tell subscribers leaving because of emails from unsubscribes made by the site. Months are calendar months in UTC, oldest first, ending with the current month. by_method, by_source and by_reason are detailed statistics, included only on plans with detailed analytics; detailed_statistics_available tells whether they are, otherwise each month has only its total. Reasons are optional and one-click unsubscribes never include one, so a high unspecified count is normal.', 'mailpoet'),
+      'description' => __('Monthly unsubscribe counts for all MailPoet emails, oldest first, in UTC calendar months ending with the current one. Counts are raw numbers, not rates. Use it to spot rising unsubscribes and to tell people leaving because of emails from unsubscribes made by the site. With detailed analytics (detailed_statistics_available), each month is also split by_method, by_source and by_reason; otherwise it has only its total.', 'mailpoet'),
       'input_schema' => [
         'type' => 'object',
         'properties' => [
@@ -108,25 +108,22 @@ class UnsubscribeTrendAbility implements Ability {
       $result[$item['month']] = $item;
     }
 
-    foreach ($this->unsubscribesRepository->getMonthlyCountsPerMethod($from) as $row) {
-      if (!isset($result[$row['month']])) {
-        continue;
-      }
-      $result[$row['month']]['total'] += $row['count'];
-      if ($detailed) {
-        $result[$row['month']]['by_method'][$row['method']] = $row['count'];
-      }
-    }
-
-    if ($detailed) {
-      foreach ($this->unsubscribesRepository->getMonthlyCountsPerSource($from) as $row) {
+    if (!$detailed) {
+      foreach ($this->unsubscribesRepository->getMonthlyCountsPerMethod($from) as $row) {
         if (isset($result[$row['month']])) {
-          $result[$row['month']]['by_source'][$row['source']] = $row['count'];
+          $result[$row['month']]['total'] += $row['count'];
         }
       }
-      foreach ($this->unsubscribesRepository->getMonthlyCountsPerReason($from) as $row) {
-        if (isset($result[$row['month']])) {
-          $result[$row['month']]['by_reason'][$row['reason']] = $row['count'];
+    } else {
+      // One scan for all breakdowns; the table has no index on created_at.
+      foreach ($this->unsubscribesRepository->getMonthlyCountsPerMethodSourceAndReason($from) as $row) {
+        $month = $row['month'];
+        if (!isset($result[$month])) {
+          continue;
+        }
+        $result[$month]['total'] += $row['count'];
+        foreach (['method' => 'by_method', 'source' => 'by_source', 'reason' => 'by_reason'] as $column => $key) {
+          $result[$month][$key][$row[$column]] = ($result[$month][$key][$row[$column]] ?? 0) + $row['count'];
         }
       }
     }
@@ -157,10 +154,14 @@ class UnsubscribeTrendAbility implements Ability {
             'properties' => [
               'month' => ['type' => 'string', 'description' => __('Calendar month as YYYY-MM.', 'mailpoet')],
               'total' => ['type' => 'integer'],
-              'by_method' => $counts,
-              'by_source' => $counts,
+              'by_method' => $counts + [
+                'description' => __('Counts per method: link (the unsubscribe link in an email), one_click (the unsubscribe button of the email client), unknown (not from an email, e.g. by an admin or through the API, or from before methods were tracked).', 'mailpoet'),
+              ],
+              'by_source' => $counts + [
+                'description' => __('Counts per source: newsletter (from an email), manage (the subscription management page), admin (an administrator), order_checkout (unchecked at WooCommerce checkout), automation, mp_api (another plugin through the MailPoet API), unknown.', 'mailpoet'),
+              ],
               'by_reason' => $counts + [
-                'description' => __('Counts per reason: normal (no longer interested), nosignup (did not sign up), inappropriate (inappropriate content), spam, other, unspecified (no reason given).', 'mailpoet'),
+                'description' => __('Counts per reason: normal (no longer interested), nosignup (did not sign up), inappropriate (inappropriate content), spam, other, unspecified (no reason given). Reasons are optional and one-click unsubscribes never have one, so a high unspecified count is normal.', 'mailpoet'),
               ],
             ],
           ],
