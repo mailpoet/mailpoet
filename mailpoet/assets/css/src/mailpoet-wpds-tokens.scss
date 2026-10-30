@@ -1,0 +1,3 @@
+// WordPress Design System tokens. Loaded only when WordPress does not provide the `wp-theme` style.
+// See AssetsLoader::getDesignTokensStyleHandle().
+@use '../../../node_modules/@wordpress/theme/prebuilt/css/design-tokens';

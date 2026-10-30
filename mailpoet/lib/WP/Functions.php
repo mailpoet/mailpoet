@@ -671,6 +671,10 @@ class Functions {
     return wp_enqueue_script($handle, $src, $deps, $ver, $inFooter);
   }
 
+  public function wpStyleIs($handle, $status = 'enqueued') {
+    return wp_style_is($handle, $status);
+  }
+
   public function wpEnqueueStyle($handle, $src = '', array $deps = [], $ver = false, $media = 'all') {
     return wp_enqueue_style($handle, $src, $deps, $ver, $media);
   }
