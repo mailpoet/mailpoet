@@ -145,7 +145,7 @@ class EmailApiController {
     }
 
     if (isset($data['utm_campaign'])) {
-      $newsletter->setGaCampaign($this->wp->sanitizeTextField((string)$data['utm_campaign']));
+      $newsletter->setGaCampaign($this->wp->wpStripAllTags((string)$data['utm_campaign'], true));
     }
 
     if (isset($data['deleted_at'])) {
