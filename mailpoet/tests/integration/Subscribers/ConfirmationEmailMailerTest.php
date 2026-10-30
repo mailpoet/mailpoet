@@ -509,6 +509,22 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     verify($mailBody['subject'])->equals("Confirm <<News from O'Brien's shop>>");
   }
 
+  public function testItKeepsSubjectInCustomizerTextBodyAsItIs() {
+    $newsletter = (new NewsletterFactory())
+      ->loadBodyFrom('newsletterThreeCols.json')
+      ->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)
+      ->withSubject("Tom's <news>")
+      ->create();
+    $body = $newsletter->getBody();
+    $body['content']['blocks'][0]['blocks'][1]['blocks'][] = ['type' => 'text', 'text' => '<p>About: [newsletter:subject]</p>'];
+    $newsletter->setBody($body);
+    $this->entityManager->flush();
+    $sender = $this->diContainer->get(ConfirmationEmailMailer::class);
+    $mailBody = $sender->getMailBodyWithCustomizer($this->subscriber, ['List'], $newsletter);
+    verify($mailBody['body']['text'])->stringContainsString("About: Tom's <news>");
+    verify($mailBody['body']['html'])->stringContainsString('About: Tom&#039;s &lt;news&gt;');
+  }
+
   public function testGetMailBodyWithCustomizerReplacesActivationShortcode() {
     $subscriptionUrlFactoryMock = $this->createMock(SubscriptionUrlFactory::class);
     $subscriptionUrlFactoryMock->method('getConfirmationUrl')->willReturn('https://example.com');
