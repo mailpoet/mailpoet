@@ -487,6 +487,10 @@ class Functions {
     return is_multisite();
   }
 
+  public function getCurrentBlogId(): int {
+    return get_current_blog_id();
+  }
+
   public function isPluginActive($plugin) {
     return is_plugin_active($plugin);
   }
