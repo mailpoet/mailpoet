@@ -1052,9 +1052,14 @@ class LatestPosts extends AbstractBlock {
       $context['queryId'] = self::QUERY_ID;
       return $context;
     };
+    // Websites hide this text with CSS, email clients show it as "Read more: <post title>".
+    $removeReadMoreScreenReaderText = static function (string $blockContent): string {
+      return (string)preg_replace('#<span class="screen-reader-text">.*?</span>(?=</a>)#s', '', $blockContent);
+    };
 
     $content = '';
     $this->wp->addFilter('render_block_context', $injectContext, 1);
+    $this->wp->addFilter('render_block_core/read-more', $removeReadMoreScreenReaderText);
     try {
       foreach ($innerBlocks as $innerBlock) {
         if (!is_array($innerBlock)) {
@@ -1063,6 +1068,7 @@ class LatestPosts extends AbstractBlock {
         $content .= render_block($this->normalizeBlock($innerBlock));
       }
     } finally {
+      $this->wp->removeFilter('render_block_core/read-more', $removeReadMoreScreenReaderText);
       $this->wp->removeFilter('render_block_context', $injectContext, 1);
       $post = $previousPost; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
       $wp_query = $previousQuery; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
