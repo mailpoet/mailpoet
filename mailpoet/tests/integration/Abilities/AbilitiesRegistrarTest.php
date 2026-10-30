@@ -38,4 +38,15 @@ class AbilitiesRegistrarTest extends \MailPoetTest {
       verify($meta['annotations'])->equals(['readonly' => true, 'destructive' => false, 'idempotent' => true]);
     }
   }
+
+  public function testItKeepsDescriptionsShort(): void {
+    AbilitiesTestHelper::register($this->registrar);
+
+    // MCP clients load every description into the model's context on each request.
+    foreach (AbilitiesRegistrar::ABILITY_NAMES as $name) {
+      $ability = wp_get_ability($name);
+      $this->assertInstanceOf(\WP_Ability::class, $ability, $name);
+      $this->assertLessThanOrEqual(500, strlen($ability->get_description()), $name);
+    }
+  }
 }
