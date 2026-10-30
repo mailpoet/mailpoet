@@ -108,25 +108,22 @@ class UnsubscribeTrendAbility implements Ability {
       $result[$item['month']] = $item;
     }
 
-    foreach ($this->unsubscribesRepository->getMonthlyCountsPerMethod($from) as $row) {
-      if (!isset($result[$row['month']])) {
-        continue;
-      }
-      $result[$row['month']]['total'] += $row['count'];
-      if ($detailed) {
-        $result[$row['month']]['by_method'][$row['method']] = $row['count'];
-      }
-    }
-
-    if ($detailed) {
-      foreach ($this->unsubscribesRepository->getMonthlyCountsPerSource($from) as $row) {
+    if (!$detailed) {
+      foreach ($this->unsubscribesRepository->getMonthlyCountsPerMethod($from) as $row) {
         if (isset($result[$row['month']])) {
-          $result[$row['month']]['by_source'][$row['source']] = $row['count'];
+          $result[$row['month']]['total'] += $row['count'];
         }
       }
-      foreach ($this->unsubscribesRepository->getMonthlyCountsPerReason($from) as $row) {
-        if (isset($result[$row['month']])) {
-          $result[$row['month']]['by_reason'][$row['reason']] = $row['count'];
+    } else {
+      // One scan for all breakdowns; the table has no index on created_at.
+      foreach ($this->unsubscribesRepository->getMonthlyCountsPerMethodSourceAndReason($from) as $row) {
+        $month = $row['month'];
+        if (!isset($result[$month])) {
+          continue;
+        }
+        $result[$month]['total'] += $row['count'];
+        foreach (['method' => 'by_method', 'source' => 'by_source', 'reason' => 'by_reason'] as $column => $key) {
+          $result[$month][$key][$row[$column]] = ($result[$month][$key][$row[$column]] ?? 0) + $row['count'];
         }
       }
     }

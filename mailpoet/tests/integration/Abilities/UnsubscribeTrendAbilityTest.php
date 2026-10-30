@@ -103,6 +103,22 @@ class UnsubscribeTrendAbilityTest extends \MailPoetTest {
     ]]);
   }
 
+  public function testItSumsEachBreakdownToTheMonthlyTotalWithDetailedAnalytics(): void {
+    $this->createUnsubscribe('2026-05-02 10:00:00', StatisticsUnsubscribeEntity::METHOD_LINK, StatisticsUnsubscribeEntity::REASON_SPAM, StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
+    $this->createUnsubscribe('2026-05-03 10:00:00', StatisticsUnsubscribeEntity::METHOD_LINK, null, StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
+    $this->createUnsubscribe('2026-05-04 10:00:00', StatisticsUnsubscribeEntity::METHOD_LINK, StatisticsUnsubscribeEntity::REASON_SPAM, StatisticsUnsubscribeEntity::SOURCE_MANAGE);
+
+    $result = $this->createAbilityWithDetailedAnalytics()->execute(['months' => 1]);
+
+    $month = $result['months'][0];
+    verify($month['total'])->equals(3);
+    verify($month['by_method']['link'])->equals(3);
+    verify($month['by_source'][StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER])->equals(2);
+    verify($month['by_source'][StatisticsUnsubscribeEntity::SOURCE_MANAGE])->equals(1);
+    verify($month['by_reason'][StatisticsUnsubscribeEntity::REASON_SPAM])->equals(2);
+    verify($month['by_reason'][StatisticsUnsubscribeEntity::REASON_UNSPECIFIED])->equals(1);
+  }
+
   public function testItRejectsMoreThanTwelveMonths(): void {
     $result = $this->getAbility()->execute(['months' => 13]);
 
