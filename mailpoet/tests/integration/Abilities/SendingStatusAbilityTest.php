@@ -76,6 +76,19 @@ class SendingStatusAbilityTest extends \MailPoetTest {
     verify($message)->equals('Error (550): Mailbox rejected. Unprocessed subscribers: ([subscriber]: Rejected), ([subscriber]: Bounced), ([subscriber]: Full), ([subscriber]: Full)');
   }
 
+  public function testItMasksSubscriberNamesWithUnpairedBracketsInTheLastError(): void {
+    $mailerLog = MailerLog::setError(
+      MailerLog::getMailerLog(),
+      MailerError::OPERATION_SEND,
+      'Error (550): Mailbox rejected. Unprocessed subscribers: (Jan (Honza <jan@example.com>: Full), (Petr) Svoboda <petr@example.com>: Bounced), (Eva (Evi (E <eva@example.com>: Full)'
+    );
+    MailerLog::pauseSending($mailerLog);
+
+    $message = $this->executeAbility()['sending']['last_error']['message'];
+
+    verify($message)->equals('Error (550): Mailbox rejected. Unprocessed subscribers: ([subscriber]: Full), ([subscriber]: Bounced), ([subscriber]: Full)');
+  }
+
   public function testItReportsAWaitingRetryAfterATemporaryError(): void {
     $mailerLog = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_CONNECT, 'Could not connect to SMTP host');
     $mailerLog['retry_attempt'] = 2;

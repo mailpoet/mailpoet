@@ -155,15 +155,20 @@ class SendingStatusAbility implements Ability {
    *
    * 1. MailerError lists failed subscribers as "(First Last <address>: reason)". The first
    *    pattern replaces such an item from its "(" up to the ">" after the address. The name
-   *    may contain any character except "<" and ">", and brackets only as balanced pairs,
-   *    so an earlier "(550)" in the message can't start a match.
-   * 2. Outside that list, the second pattern replaces a name that starts after the nearest
+   *    may contain any character except "<" and ">", and "(" only in balanced pairs, so an
+   *    earlier "(550)" in the message can't start a match.
+   * 2. A name with an unpaired "(" makes the first pattern start at that "(", which leaves
+   *    the start of the name before "([subscriber]". The second pattern removes it: one or
+   *    more "(" with text up to the masked item, without ":" or "," that would mean the text
+   *    belongs to the message or to the previous item.
+   * 3. Outside that list, the third pattern replaces a name that starts after the nearest
    *    "(", ",", ":" or whitespace and runs up to "<...@...>".
-   * 3. The third pattern replaces any remaining address: a local part, "@" and a domain
+   * 4. The fourth pattern replaces any remaining address: a local part, "@" and a domain
    *    (dotless domains included).
    */
   public static function maskPersonalData(string $message): string {
-    $message = (string)preg_replace('/\((?:[^()<>]|\([^()<>]*\))*<[^<>\s]+@[^<>\s]+>/', '([subscriber]', $message);
+    $message = (string)preg_replace('/\((?:[^(<>]|\([^()<>]*\))*<[^<>\s]+@[^<>\s]+>/', '([subscriber]', $message);
+    $message = (string)preg_replace('/(?:\([^(<>:,]*)+\(\[subscriber\]/', '([subscriber]', $message);
     $message = (string)preg_replace('/[^(),:\s][^(),:]*<[^<>\s]+@[^<>\s]+>/', '[subscriber]', $message);
     return (string)preg_replace('/[^\s<>"\'(),;:]+@[^\s<>"\'(),;:]+/', '[email]', $message);
   }
