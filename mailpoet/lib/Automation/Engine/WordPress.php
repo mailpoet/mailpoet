@@ -282,7 +282,7 @@ class WordPress {
     return sanitize_file_name($filename);
   }
 
-  public function sanitizeTextField(string $text): string {
-    return sanitize_text_field($text);
+  public function wpStripAllTags(string $text, bool $removeBreaks = false): string {
+    return wp_strip_all_tags($text, $removeBreaks);
   }
 }
