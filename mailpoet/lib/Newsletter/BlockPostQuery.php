@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter;
 
 use DateTimeInterface;
+use MailPoet\WP\Posts as WPPosts;
 
 class BlockPostQuery {
   const DEFAULT_POSTS_PER_PAGE = 10;
@@ -189,6 +190,10 @@ class BlockPostQuery {
     if (!empty($this->includeProductIds)) {
       $parameters['post__in'] = $this->includeProductIds;
       // Keep the posts_per_page limit to ensure we don't return too many products
+    }
+
+    if (!in_array($parameters['post_type'], WPPosts::getTypes(), true)) {
+      $parameters['post__in'] = [0];
     }
 
     if (self::normalizePasswordProtected($this->args['passwordProtected'] ?? null) === self::PASSWORD_PROTECTED_EXCLUDE) {

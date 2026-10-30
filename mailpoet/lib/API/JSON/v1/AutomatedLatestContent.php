@@ -106,9 +106,13 @@ class AutomatedLatestContent extends APIEndpoint {
    * Fetches posts for Posts static block
    */
   public function getPosts(array $data = []): SuccessResponse {
-    return $this->successResponse(
-      $this->getPermittedPosts($this->ALC->getPosts(new BlockPostQuery(['args' => $data, 'dynamic' => false])))
-    );
+    $posts = $this->getPermittedPosts($this->ALC->getPosts(new BlockPostQuery(['args' => $data, 'dynamic' => false])));
+    return $this->successResponse(array_values(array_map(function (\WP_Post $post): array {
+      return [
+        'ID' => $post->ID,
+        'post_title' => $post->post_title, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      ];
+    }, $posts)));
   }
 
   /**

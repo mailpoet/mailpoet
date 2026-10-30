@@ -162,6 +162,9 @@ class LatestPostsTest extends \MailPoetTest {
     verify($html)->stringContainsString('Latest pages block A');
   }
 
+  /**
+   * @group woo
+   */
   public function testItSupportsCustomPostTypes(): void {
     $this->postIds[] = $this->createPost('Latest products block A', '2020-04-01 01:01:01', 'product');
     $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
@@ -169,6 +172,16 @@ class LatestPostsTest extends \MailPoetTest {
     $html = $this->render(['postType' => 'product']);
 
     verify($html)->stringContainsString('Latest products block A');
+    verify($html)->stringNotContainsString('Latest posts block C');
+  }
+
+  public function testItRendersNoPostsForAnUnlistedType(): void {
+    $this->postIds[] = $this->createPost('Latest reusable block A', '2020-04-01 01:01:01', 'wp_block');
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['postType' => 'wp_block']);
+
+    verify($html)->stringNotContainsString('Latest reusable block A');
     verify($html)->stringNotContainsString('Latest posts block C');
   }
 
