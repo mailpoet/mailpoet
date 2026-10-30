@@ -2,7 +2,7 @@ import { App } from 'newsletter-editor/app';
 import Marionette from 'backbone.marionette';
 import _ from 'underscore';
 import jQuery from 'jquery';
-import { MailPoet } from 'mailpoet'; // eslint-disable-line func-names
+import { MailPoet } from 'mailpoet';
 import { __ } from '@wordpress/i18n';
 
 var Module = {};

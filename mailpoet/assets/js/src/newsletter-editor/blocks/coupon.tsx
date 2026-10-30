@@ -1,4 +1,3 @@
-/* eslint-disable func-names */
 /**
  * Coupon content block
  */
