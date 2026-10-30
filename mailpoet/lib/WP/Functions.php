@@ -853,6 +853,10 @@ class Functions {
     return strip_shortcodes($content);
   }
 
+  public function shortcodeExists(string $tag): bool {
+    return shortcode_exists($tag);
+  }
+
   public function inTheLoop(): bool {
     return in_the_loop();
   }
