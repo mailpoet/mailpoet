@@ -3,8 +3,6 @@
 namespace MailPoet\Test\Abilities;
 
 use MailPoet\Abilities\AbilitiesRegistrar;
-use MailPoet\Features\FeaturesController;
-use MailPoet\Test\DataFactories\Features;
 
 require_once __DIR__ . '/AbilitiesTestHelper.php';
 
@@ -21,21 +19,7 @@ class AbilitiesRegistrarTest extends \MailPoetTest {
     parent::_after();
   }
 
-  public function testItRegistersNothingWhenTheFeatureIsDisabled(): void {
-    (new Features())->withFeatureDisabled(FeaturesController::FEATURE_MCP_ABILITIES);
-    $this->diContainer->get(FeaturesController::class)->resetCache();
-
-    AbilitiesTestHelper::register($this->registrar);
-
-    verify(wp_has_ability_category(AbilitiesRegistrar::CATEGORY))->false();
-    foreach (AbilitiesRegistrar::ABILITY_NAMES as $name) {
-      verify(wp_has_ability($name))->false();
-    }
-  }
-
-  public function testItRegistersReadOnlyMcpAbilitiesInMailPoetCategoryWhenTheFeatureIsEnabled(): void {
-    AbilitiesTestHelper::enableFeature();
-
+  public function testItRegistersReadOnlyMcpAbilitiesInMailPoetCategory(): void {
     AbilitiesTestHelper::register($this->registrar);
 
     verify(wp_has_ability_category('mailpoet'))->true();
