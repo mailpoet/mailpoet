@@ -63,6 +63,6 @@ class EscapeHelper {
     // Browsers remove tabs and line breaks anywhere in a URL, so do the same before looking for the scheme.
     $url = str_replace(["\t", "\n", "\r"], '', $url);
     // The scheme starts the URL, after optional leading control characters and spaces (\x00-\x20)
-    return preg_match('/^[\x00-\x20]*(javascript:|vbscript:|data:text|data:application)/ui', $url) === 1;
+    return preg_match('/^[\x00-\x20]*(javascript:|vbscript:|data:text|data:application)/i', $url) === 1;
   }
 }

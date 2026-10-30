@@ -50,6 +50,10 @@ class EscapeHelperTest extends \MailPoetUnitTest {
     verify(EHelper::escapeHtmlLinkAttr('&#32;javascript:void(0)'))->equals('');
   }
 
+  public function testItRecognizesDisallowedSchemeInUrlWithInvalidCharacters() {
+    verify(EHelper::hasDisallowedScheme("javascript:void(0)\xff"))->true();
+  }
+
   public function testItRemovesLinkWithVbscriptScheme() {
     verify(EHelper::escapeHtmlLinkAttr('VBScript:msgbox(1)'))->equals('');
   }
