@@ -318,9 +318,6 @@ export function requestFilterToViewFilters(
   return filters;
 }
 
-/**
- * The status when the status filter is "is any of" exactly one value.
- */
 export function toOrderby(field: string): string {
   return SORT_FIELD_TO_ORDERBY[field] ?? field;
 }
