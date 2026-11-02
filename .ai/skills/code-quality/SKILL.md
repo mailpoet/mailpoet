@@ -65,18 +65,21 @@ Hooks see only staged files, so still run `pnpm qa` before pushing. Do not use `
 
 ## What CI runs
 
-CircleCI (`.circleci/config.yml`) calls the Robo tasks from `mailpoet/`:
+GitHub Actions (`.github/workflows/checks.yml`) runs these jobs from `mailpoet/` on every pull request:
 
-| Job                 | Command                                       | PHP              |
-| ------------------- | --------------------------------------------- | ---------------- |
-| `build`             | `./do qa:prettier-check`                      | –                |
-| `qa_js`             | `./do qa:frontend-assets` (ESLint, Stylelint) | –                |
-| `qa_php`            | `./do qa:php` (lint + PHPCS)                  | 8.3              |
-| `qa_php_oldest`     | `./do qa:php`                                 | 7.4              |
-| `qa_php_max_wporg`  | `./do qa:php-max-wporg` (lint of the build)   | 8.1 (WP.org max) |
-| `static_analysis`   | `./do qa:phpstan`                             | 8.3              |
-| `security_analysis` | `./do qa:semgrep`                             | 8.1              |
-| `js_tests`          | JS and legacy newsletter editor tests         | –                |
+| Job                                 | Command                                       | PHP |
+| ----------------------------------- | --------------------------------------------- | --- |
+| `Build / Build`                     | `./do qa:prettier-check`                      | 8.5 |
+| `JS and CSS lint`                   | `./do qa:frontend-assets` (ESLint, Stylelint) | –   |
+| `PHP lint and code style (PHP 8.5)` | `./do qa:php` (lint + PHPCS)                  | 8.5 |
+| `PHP lint and code style (PHP 7.4)` | `./do qa:php`                                 | 7.4 |
+| `PHP lint and code style (PHP 8.1)` | `./do qa:php-max-wporg` (lint of the build)   | 8.1 |
+| `PHPStan`                           | `./do qa:phpstan`                             | 8.5 |
+| `Semgrep`                           | `./tools/semgrep.sh lib/ lib-3rd-party/`      | –   |
+| `JS tests`                          | JS and legacy newsletter editor tests         | –   |
+| `PHP unit tests`                    | `./do t:u`                                    | 8.5 |
+
+Acceptance and integration tests and the release zip run on CircleCI (`.circleci/config.yml`), which also runs the QIT security scan on every pull request. `.github/workflows/nightly-qit.yml` builds the release zip, lints it on PHP 7.4 and runs all six QIT checks on Tuesdays and Wednesdays.
 
 `pnpm qa` does not run Semgrep, the PHP 7.4 lint, the WP.org build lint or the newsletter editor tests.
 
