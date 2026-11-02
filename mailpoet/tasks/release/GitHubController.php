@@ -14,6 +14,9 @@ class GitHubController {
 
   const RELEASE_SOURCE_BRANCH = 'release';
 
+  // Jobs of .github/workflows/checks.yml a release can’t go out without
+  const REQUIRED_CHECK_RUNS = ['PHPStan', 'PHP unit tests', 'JS tests'];
+
   private const API_BASE_URI = 'https://api.github.com/repos/mailpoet';
   private const API_SEARCH_URI = 'https://api.github.com/search/issues';
 
@@ -26,6 +29,9 @@ class GitHubController {
   /** @var Client */
   private $httpClient;
 
+  /** @var string */
+  private $project;
+
   public function __construct(
     $username,
     $token,
@@ -33,6 +39,7 @@ class GitHubController {
     ?Client $httpClient = null
   ) {
     $this->username = $username;
+    $this->project = $project;
     $this->zipFilename = $project === self::PROJECT_MAILPOET ? self::FREE_ZIP_FILENAME : self::PREMIUM_ZIP_FILENAME;
     $this->httpClient = $httpClient ?? new Client([
       'auth' => [$username, $token],
@@ -91,7 +98,10 @@ class GitHubController {
     // Verify the CI builds passed. The release-PR approval requirement was removed when
     // MailPoet stopped using a dedicated QA reviewer; the Porter owns release verification.
     $this->checkPullRequestChecks($releasePullRequest['statuses_url']);
-    $this->checkPullRequestCheckRuns($releasePullRequest['head']['sha']);
+    // Premium’s tests run on CircleCI, which the statuses check above covers.
+    if ($this->project === self::PROJECT_MAILPOET) {
+      $this->checkPullRequestCheckRuns($releasePullRequest['head']['sha']);
+    }
   }
 
   // GitHub Actions jobs report check runs, not commit statuses.
@@ -101,8 +111,14 @@ class GitHubController {
     ]);
     $response = json_decode($response->getBody()->getContents(), true);
 
+    $checkRuns = $response['check_runs'] ?? [];
+    $missing = array_values(array_diff(self::REQUIRED_CHECK_RUNS, array_column($checkRuns, 'name')));
+    if (!empty($missing)) {
+      throw new \Exception('Release pull request is missing GitHub Actions checks: ' . join(', ', $missing));
+    }
+
     $failed = [];
-    foreach ($response['check_runs'] ?? [] as $checkRun) {
+    foreach ($checkRuns as $checkRun) {
       // A run that hasn't finished has no conclusion yet.
       if (!in_array($checkRun['conclusion'], ['success', 'skipped', 'neutral'], true)) {
         $failed[] = $checkRun['name'];
