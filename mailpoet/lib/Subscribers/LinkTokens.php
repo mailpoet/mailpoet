@@ -4,6 +4,7 @@ namespace MailPoet\Subscribers;
 
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class LinkTokens {
@@ -14,6 +15,14 @@ class LinkTokens {
   public const UPGRADED_TOKEN_SEPARATOR = '-';
   public const OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING = 'obsolete_link_tokens_accepted_until';
   private const OBSOLETE_TOKENS_GRACE_PERIOD_MONTHS = 12;
+  /**
+   * Once a subscriber reaches this many tokens that don't match the obsolete part, only their whole
+   * upgraded token is accepted. Mismatches aren't counted while the limit is reached, so the limit
+   * holds for MISMATCH_WINDOW seconds after the last counted mismatch.
+   */
+  public const MISMATCH_LIMIT = 10;
+  private const MISMATCH_WINDOW = DAY_IN_SECONDS;
+  private const MISMATCHES_TRANSIENT_PREFIX = 'MAILPOET_link_token_mismatches_';
 
   /** @var SubscribersRepository */
   private $subscribersRepository;
@@ -21,12 +30,20 @@ class LinkTokens {
   /** @var SettingsController */
   private $settings;
 
+  /** @var WPFunctions */
+  private $wp;
+
+  /** @var array<string, true> Mismatches counted in this request, so a token checked twice counts once */
+  private $countedMismatches = [];
+
   public function __construct(
     SubscribersRepository $subscribersRepository,
-    SettingsController $settings
+    SettingsController $settings,
+    WPFunctions $wp
   ) {
     $this->subscribersRepository = $subscribersRepository;
     $this->settings = $settings;
+    $this->wp = $wp;
   }
 
   public function getToken(SubscriberEntity $subscriber): string {
@@ -50,11 +67,19 @@ class LinkTokens {
     if ($databaseToken === '') {
       return false;
     }
-    if ($this->isUpgradedToken($databaseToken) && $this->acceptsObsoleteTokens()) {
-      $databaseToken = substr($databaseToken, 0, SubscriberEntity::OBSOLETE_LINK_TOKEN_LENGTH);
-    }
     $requestToken = substr($token, 0, strlen($databaseToken));
-    return hash_equals($databaseToken, $requestToken);
+    if (hash_equals($databaseToken, $requestToken)) {
+      return true;
+    }
+    if (!$this->isUpgradedToken($databaseToken) || !$this->acceptsObsoleteTokens() || $this->hasTooManyMismatches($subscriber)) {
+      return false;
+    }
+    $obsoleteToken = substr($databaseToken, 0, SubscriberEntity::OBSOLETE_LINK_TOKEN_LENGTH);
+    if (hash_equals($obsoleteToken, substr($token, 0, SubscriberEntity::OBSOLETE_LINK_TOKEN_LENGTH))) {
+      return true;
+    }
+    $this->countMismatch($subscriber, $token);
+    return false;
   }
 
   public function startObsoleteTokensGracePeriod(): void {
@@ -71,6 +96,31 @@ class LinkTokens {
 
   private function isUpgradedToken(string $token): bool {
     return substr($token, SubscriberEntity::OBSOLETE_LINK_TOKEN_LENGTH, 1) === self::UPGRADED_TOKEN_SEPARATOR;
+  }
+
+  private function hasTooManyMismatches(SubscriberEntity $subscriber): bool {
+    return $this->getMismatchCount($subscriber) >= self::MISMATCH_LIMIT;
+  }
+
+  private function countMismatch(SubscriberEntity $subscriber, string $token): void {
+    $transient = $this->getMismatchesTransient($subscriber);
+    $key = $transient . '|' . $token;
+    if ($transient === null || isset($this->countedMismatches[$key])) {
+      return;
+    }
+    $this->countedMismatches[$key] = true;
+    $this->wp->setTransient($transient, $this->getMismatchCount($subscriber) + 1, self::MISMATCH_WINDOW);
+  }
+
+  private function getMismatchCount(SubscriberEntity $subscriber): int {
+    $transient = $this->getMismatchesTransient($subscriber);
+    $count = $transient === null ? 0 : $this->wp->getTransient($transient);
+    return is_numeric($count) ? (int)$count : 0;
+  }
+
+  private function getMismatchesTransient(SubscriberEntity $subscriber): ?string {
+    $subscriberId = $subscriber->getId();
+    return $subscriberId ? self::MISMATCHES_TRANSIENT_PREFIX . $subscriberId : null;
   }
 
   private function acceptsObsoleteTokens(): bool {

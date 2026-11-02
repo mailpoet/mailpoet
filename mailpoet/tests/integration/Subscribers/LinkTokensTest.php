@@ -4,10 +4,12 @@ namespace MailPoet\Subscribers;
 
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class LinkTokensTest extends \MailPoetTest {
   private const UPGRADED_TOKEN = 'abcdef-0123456789abcdef012345678';
+  private const OTHER_UPGRADED_TOKEN = 'fedcba-0123456789abcdef012345678';
 
   /** @var LinkTokens */
   private $linkTokens;
@@ -23,11 +25,13 @@ class LinkTokensTest extends \MailPoetTest {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->settings = $this->diContainer->get(SettingsController::class);
     $this->settings->delete(LinkTokens::OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING);
-    $this->linkTokens = new LinkTokens($this->subscribersRepository, $this->settings);
+    $this->deleteMismatchCounts();
+    $this->linkTokens = new LinkTokens($this->subscribersRepository, $this->settings, $this->diContainer->get(WPFunctions::class));
   }
 
   public function _after() {
     $this->settings->delete(LinkTokens::OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING);
+    $this->deleteMismatchCounts();
     parent::_after();
   }
 
@@ -99,6 +103,37 @@ class LinkTokensTest extends \MailPoetTest {
     verify($this->linkTokens->verifyToken($subscriber, substr($token, 0, SubscriberEntity::OBSOLETE_LINK_TOKEN_LENGTH)))->false();
   }
 
+  public function testItComparesWholeUpgradedTokenAfterRepeatedMismatches() {
+    $this->settings->set(LinkTokens::OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING, Carbon::now()->addDay()->getTimestamp());
+    $subscriber = $this->createSubscriber('demo@fake.loc', self::UPGRADED_TOKEN);
+    $otherSubscriber = $this->createSubscriber('other@fake.loc', self::OTHER_UPGRADED_TOKEN);
+
+    $this->verifyWrongTokens($subscriber, LinkTokens::MISMATCH_LIMIT);
+
+    verify($this->linkTokens->verifyToken($subscriber, 'abcdef'))->false();
+    verify($this->linkTokens->verifyToken($subscriber, self::UPGRADED_TOKEN))->true();
+    verify($this->linkTokens->verifyToken($otherSubscriber, 'fedcba'))->true();
+  }
+
+  public function testItAcceptsObsoletePartBelowMismatchLimit() {
+    $this->settings->set(LinkTokens::OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING, Carbon::now()->addDay()->getTimestamp());
+    $subscriber = $this->createSubscriber('demo@fake.loc', self::UPGRADED_TOKEN);
+
+    $this->verifyWrongTokens($subscriber, LinkTokens::MISMATCH_LIMIT - 1);
+
+    verify($this->linkTokens->verifyToken($subscriber, 'abcdef'))->true();
+  }
+
+  public function testItCountsSameTokenCheckedRepeatedlyOnce() {
+    $this->settings->set(LinkTokens::OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING, Carbon::now()->addDay()->getTimestamp());
+    $subscriber = $this->createSubscriber('demo@fake.loc', self::UPGRADED_TOKEN);
+
+    $this->verifyWrongTokens($subscriber, LinkTokens::MISMATCH_LIMIT - 1);
+    verify($this->linkTokens->verifyToken($subscriber, '000000'))->false();
+
+    verify($this->linkTokens->verifyToken($subscriber, 'abcdef'))->true();
+  }
+
   public function testItStartsGracePeriodOnlyOnce() {
     $this->linkTokens->startObsoleteTokensGracePeriod();
     $acceptedUntil = (int)$this->settings->get(LinkTokens::OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING);
@@ -131,6 +166,18 @@ class LinkTokensTest extends \MailPoetTest {
 
     verify($this->linkTokens->verifyToken($subscriber, null))->false();
     verify($this->linkTokens->verifyToken($subscriber, [$token]))->false();
+  }
+
+  private function verifyWrongTokens(SubscriberEntity $subscriber, int $count): void {
+    for ($i = 0; $i < $count; $i++) {
+      verify($this->linkTokens->verifyToken($subscriber, sprintf('%06d', $i)))->false();
+    }
+  }
+
+  private function deleteMismatchCounts(): void {
+    global $wpdb;
+    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '%MAILPOET\\_link\\_token\\_mismatches%'");
+    wp_cache_flush();
   }
 
   private function createSubscriber(string $email, ?string $linkToken = null): SubscriberEntity {
