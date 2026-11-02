@@ -780,7 +780,7 @@ jobs:
             # Copy built ZIP to local directory for easier access from QIT
             cp /home/circleci/mailpoet/mailpoet.zip .
             # Authenticate in QIT
-            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
+            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --qit_token="${QIT_PARTNER_SECRET}"
       - run:
           name: 'QIT Security Test'
           command: |
