@@ -460,7 +460,23 @@ class NewsletterTest extends \MailPoetTest {
     verify($html)->stringNotContainsString('href="javascript:');
   }
 
-  private function prepareTemplatedHtmlWithSubjectLink(string $subject): string {
+  public function testItLeavesLinkEmptyInTemplateWhenTheResolvedUrlIsInvalid(): void {
+    $this->newsletterTask->trackingEnabled = false;
+    $html = $this->prepareTemplatedHtmlWithSubjectLink('javascript', '[newsletter:subject]:void(0)');
+    verify($html)->stringContainsString('Subject link');
+    verify($html)->stringNotContainsString('javascript:');
+  }
+
+  private function prepareTemplatedHtmlWithSubjectLink(string $subject, string $href = '[newsletter:subject]'): string {
+    [$newsletter, $queue] = $this->createNewsletterWithSubjectLink($subject, $href);
+    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $this->subscriber, $queue);
+    return strtr($templatedNewsletter['newsletter']['body']['html'], $templatedNewsletter['substitutions']['html']);
+  }
+
+  /**
+   * @return array{NewsletterEntity, SendingQueueEntity}
+   */
+  private function createNewsletterWithSubjectLink(string $subject, string $href): array {
     $newsletter = (new NewsletterFactory())
       ->withType(NewsletterEntity::TYPE_STANDARD)
       ->withStatus(NewsletterEntity::STATUS_ACTIVE)
@@ -471,7 +487,7 @@ class NewsletterTest extends \MailPoetTest {
       'content' => ['type' => 'container', 'orientation' => 'vertical', 'styles' => $styles, 'blocks' => [
         ['type' => 'container', 'orientation' => 'horizontal', 'styles' => $styles, 'blocks' => [
           ['type' => 'container', 'orientation' => 'vertical', 'styles' => $styles, 'blocks' => [
-            ['type' => 'text', 'text' => '<p><a href="[newsletter:subject]">Subject link</a></p>'],
+            ['type' => 'text', 'text' => '<p><a href="' . $href . '">Subject link</a></p>'],
           ]],
         ]],
       ]],
@@ -483,8 +499,7 @@ class NewsletterTest extends \MailPoetTest {
 
     $newsletter = $this->newsletterTask->preProcessNewsletter($newsletter, $task);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
-    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $this->subscriber, $queue);
-    return strtr($templatedNewsletter['newsletter']['body']['html'], $templatedNewsletter['substitutions']['html']);
+    return [$newsletter, $queue];
   }
 
   public function testItCanPrepareNewsletterTemplateWithPlaceholderMap(): void {

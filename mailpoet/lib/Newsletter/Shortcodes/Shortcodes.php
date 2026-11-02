@@ -234,39 +234,68 @@ class Shortcodes {
         return is_string($value) ? htmlspecialchars_decode($value, ENT_QUOTES | ENT_HTML401) : $value;
       }, $processedShortcodes);
     }
+    if (!$isPlainText) {
+      $content = $this->removeDisallowedUrls($content, $shortcodes, $processedShortcodes);
+    }
     $shortcodesInsideTags = $isPlainText ? [] : $this->findShortcodesInsideTags($content, $shortcodes);
-    return $this->replaceOccurrences($content, $shortcodes, $processedShortcodes, $shortcodesInsideTags, function (int $index, int $position) use ($processedShortcodes, $content, $shortcodes): string {
-      $value = (string)$processedShortcodes[$index];
-      if ($this->makesDisallowedUrl($content, $position, $value, $shortcodes, $processedShortcodes)) {
-        return '';
-      }
-      return self::encodeForAttribute($value);
+    return $this->replaceOccurrences($content, $shortcodes, $processedShortcodes, $shortcodesInsideTags, function (int $index) use ($processedShortcodes): string {
+      return self::encodeForAttribute((string)$processedShortcodes[$index]);
     });
   }
 
   /**
-   * Whether inserting $value at $position, inside an href or src attribute, gives that attribute
-   * a URL with a disallowed scheme. Shortcodes earlier in the same attribute count with their values.
+   * Empties every href or src attribute value that contains a shortcode and, once its shortcodes
+   * are replaced with $values, has a scheme that is not allowed in links.
    *
    * @param string[] $shortcodes
    * @param array<int, mixed> $values
    */
-  private function makesDisallowedUrl(string $content, int $position, string $value, array $shortcodes, array $values): bool {
-    $before = substr($content, max(0, $position - 2048), min($position, 2048));
-    // Matches an href or src attribute that is still open at the end of $before and captures its value
-    // so far: double-quoted, single-quoted or unquoted.
-    if (preg_match('/\s(?:href|src)\s*=\s*(?:"([^"]*)|\'([^\']*)|([^\s"\'>]*))$/i', $before, $attribute) !== 1) {
-      return false;
+  private function removeDisallowedUrls(string $content, array $shortcodes, array $values): string {
+    $values = array_map(function ($value): string {
+      return is_scalar($value) ? (string)$value : '';
+    }, $values);
+    $result = '';
+    $cursor = 0;
+    foreach ($this->findTags($content, strlen($content)) as [$tagStart, $tagEnd]) {
+      $tag = substr($content, $tagStart, $tagEnd - $tagStart);
+      foreach ($this->findUrlAttributeValues($tag) as [$valueOffset, $value]) {
+        if (str_replace($shortcodes, '', $value) === $value || !EscapeHelper::hasDisallowedScheme(str_replace($shortcodes, $values, $value))) {
+          continue;
+        }
+        $result .= substr($content, $cursor, $tagStart + $valueOffset - $cursor);
+        $cursor = $tagStart + $valueOffset + strlen($value);
+      }
     }
-    $valueBefore = $attribute[1] . ($attribute[2] ?? '') . ($attribute[3] ?? '');
-    $valueBefore = str_replace($shortcodes, array_map(function ($shortcodeValue): string {
-      return is_scalar($shortcodeValue) ? (string)$shortcodeValue : '';
-    }, $values), $valueBefore);
-    return EscapeHelper::hasDisallowedScheme($valueBefore . $value);
+    return $result . substr($content, $cursor);
   }
 
   /**
-   * Replaces every shortcode occurrence, inserting $insideTagReplacement($index, $position) at the positions
+   * Lists the href and src attribute values of a start tag (without its closing ">")
+   * as [offset in $tag, value] pairs.
+   *
+   * @return array<int, array{int, string}>
+   */
+  private function findUrlAttributeValues(string $tag): array {
+    // Matches one attribute after the tag name: its name, then optionally "=" and a double-quoted,
+    // single-quoted or unquoted value. findTagEnd() already made sure every quoted value is closed.
+    preg_match_all('/[\s\/]*([^\s"\'>\/=]+)(?:\s*=\s*(?:"([^"]*)"|\'([^\']*)\'|([^\s>]*)))?/', $tag, $attributes, PREG_SET_ORDER | PREG_OFFSET_CAPTURE, strcspn($tag, " \t\n\r\f/>", 1) + 1);
+    $values = [];
+    foreach ($attributes as $attribute) {
+      if (!in_array(strtolower($attribute[1][0]), ['href', 'src'], true)) {
+        continue;
+      }
+      for ($group = 2; $group <= 4; $group++) {
+        if (isset($attribute[$group]) && $attribute[$group][1] !== -1) {
+          $values[] = [$attribute[$group][1], $attribute[$group][0]];
+          break;
+        }
+      }
+    }
+    return $values;
+  }
+
+  /**
+   * Replaces every shortcode occurrence, inserting $insideTagReplacement($index) at the positions
    * listed in $shortcodesInsideTags and $replacements[$index] everywhere else. Text around the tagged
    * positions is replaced chunk by chunk, so shortcode-like text inside an inserted value is never
    * replaced a second time.
@@ -274,7 +303,7 @@ class Shortcodes {
    * @param string[] $shortcodes
    * @param string[] $replacements
    * @param array<int, int> $shortcodesInsideTags As returned by findShortcodesInsideTags()
-   * @param callable(int, int): string $insideTagReplacement
+   * @param callable(int): string $insideTagReplacement
    */
   private function replaceOccurrences(string $content, array $shortcodes, array $replacements, array $shortcodesInsideTags, callable $insideTagReplacement): string {
     if (!$shortcodesInsideTags) {
@@ -287,7 +316,7 @@ class Shortcodes {
         continue;
       }
       $result .= str_replace($shortcodes, $replacements, substr($content, $cursor, $position - $cursor));
-      $result .= $insideTagReplacement($index, $position);
+      $result .= $insideTagReplacement($index);
       $cursor = $position + strlen($shortcodes[$index]);
     }
     return $result . str_replace($shortcodes, $replacements, substr($content, $cursor));
@@ -424,13 +453,12 @@ class Shortcodes {
     }
     $content = (string)$content;
     // Only the HTML part is parsed as markup; the subject and text parts never are.
+    if ($part === PlaceholderCollector::PART_HTML) {
+      $content = $this->removeDisallowedUrls($content, $shortcodes, $processedShortcodes);
+    }
     $shortcodesInsideTags = $part === PlaceholderCollector::PART_HTML ? $this->findShortcodesInsideTags($content, $shortcodes) : [];
-    return $this->replaceOccurrences($content, $shortcodes, $placeholders, $shortcodesInsideTags, function (int $index, int $position) use ($collector, $processedShortcodes, $shortcodes, $content): string {
-      $value = (string)$processedShortcodes[$index];
-      if ($this->makesDisallowedUrl($content, $position, $value, $shortcodes, $processedShortcodes)) {
-        return '';
-      }
-      return $collector->addHtmlAttribute($value, $shortcodes[$index]);
+    return $this->replaceOccurrences($content, $shortcodes, $placeholders, $shortcodesInsideTags, function (int $index) use ($collector, $processedShortcodes, $shortcodes): string {
+      return $collector->addHtmlAttribute((string)$processedShortcodes[$index], $shortcodes[$index]);
     });
   }
 
