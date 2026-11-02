@@ -215,6 +215,23 @@ class APITest extends \MailPoetTest {
     verify($response->getData()['data'])->equals($data['data']);
   }
 
+  public function testWoocommerceSettingsEndpointIsNotAvailable() {
+    wp_set_current_user(1);
+    $originalColor = get_option('woocommerce_email_base_color');
+    $this->api->addEndpointNamespace('MailPoet\API\JSON\v1', 'v1');
+
+    $this->api->setRequestData([
+      'endpoint' => 'woocommerce_settings',
+      'method' => 'set',
+      'api_version' => 'v1',
+      'data' => ['woocommerce_email_base_color' => '#123456'],
+    ], Endpoint::TYPE_POST);
+    $response = $this->api->processRoute();
+
+    verify($response->status)->equals(Response::STATUS_BAD_REQUEST);
+    verify(get_option('woocommerce_email_base_color'))->equals($originalColor);
+  }
+
   public function testItConvertsExceptionToErrorResponse() {
     $namespace = [
       'name' => 'MailPoet\API\JSON\v1',
