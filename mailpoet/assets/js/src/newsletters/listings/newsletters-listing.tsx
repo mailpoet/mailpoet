@@ -27,7 +27,6 @@ import {
   getDataViewsPreference,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
-  useShowFiltersWhenActive,
   withStatusTab,
   type ListingGroup,
   type ListingQueryParams,
@@ -713,9 +712,6 @@ export function NewslettersListing({
     [fields, segmentElements, statusLabels],
   );
 
-  const dataViewsRef = useRef<HTMLDivElement>(null);
-  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
-
   // List ids from the URL that are no longer selectable (a deleted list) are
   // dropped once a listing response has arrived, because the options are only
   // known from it.
@@ -776,7 +772,6 @@ export function NewslettersListing({
       />
 
       <div
-        ref={dataViewsRef}
         className="mailpoet-dataviews mailpoet-newsletters-dataviews mailpoet-listing"
         data-automation-id={`newsletters_listing_${type}`}
       >

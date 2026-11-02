@@ -29,7 +29,6 @@ import {
   getSingleFilterValue,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
-  useShowFiltersWhenActive,
   withStatusTab,
   type ListingQueryParams,
 } from 'common/dataviews';
@@ -774,8 +773,6 @@ function SubscriberList() {
       orderby: currentView.sort ? toOrderby(currentView.sort.field) : undefined,
     }),
   });
-  const dataViewsRef = useRef<HTMLDivElement>(null);
-  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
   const viewRef = useRef(view);
   viewRef.current = view;
 
@@ -1582,7 +1579,6 @@ function SubscriberList() {
       />
 
       <div
-        ref={dataViewsRef}
         className="mailpoet-dataviews mailpoet-subscribers-dataviews"
         data-automation-id="subscribers_listing"
       >

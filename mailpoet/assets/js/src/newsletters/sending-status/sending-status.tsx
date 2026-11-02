@@ -17,7 +17,6 @@ import {
   getStoredDataViewsFieldIds,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
-  useShowFiltersWhenActive,
   filterToExtraParams,
   type ListingQueryParams,
 } from 'common/dataviews';
@@ -316,8 +315,6 @@ export function SendingStatus() {
     extraParams: (currentView) =>
       filterToExtraParams(toRequestFilter(currentView.filters)),
   });
-  const dataViewsRef = useRef<HTMLDivElement>(null);
-  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
   const requestFilter = useMemo(
     () => toRequestFilter(view.filters),
     [toRequestFilter, view.filters],
@@ -550,7 +547,6 @@ export function SendingStatus() {
       )}
 
       <div
-        ref={dataViewsRef}
         className="mailpoet-dataviews mailpoet-listing"
         data-automation-id="sending_status_listing"
       >

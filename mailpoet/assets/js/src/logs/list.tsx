@@ -10,7 +10,6 @@ import {
   useDataViewsQuery,
   filterToExtraParams,
   type ListingQueryParams,
-  useShowFiltersWhenActive,
 } from 'common/dataviews';
 import { getLogs, type LogListingItem } from './api';
 import { DeleteLogsModal } from './delete-modal';
@@ -131,8 +130,6 @@ export function List({
     extraParams: (currentView) =>
       filterToExtraParams(viewFiltersToRequestFilter(currentView.filters)),
   });
-  const dataViewsRef = useRef<HTMLDivElement>(null);
-  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
 
   const requestFilter = viewFiltersToRequestFilter(view.filters);
   const dateRangeError = getDateRangeError(requestFilter);
@@ -230,10 +227,7 @@ export function List({
   );
 
   return (
-    <div
-      ref={dataViewsRef}
-      className="mailpoet-listing mailpoet-logs mailpoet-dataviews mailpoet-logs-dataviews"
-    >
+    <div className="mailpoet-listing mailpoet-logs mailpoet-dataviews mailpoet-logs-dataviews">
       <div className="mailpoet_notice notice inline">
         <p>
           {__(
