@@ -1436,7 +1436,7 @@ class SubscriberListingRepository extends ListingRepository {
 
   /**
    * Map the cached per-segment statistics onto the listing's status-keyed counts
-   * array. "all" is read in formatGroups/countForCurrentGroup as the sum of the
+   * array. "all" is read in getListingCount as the sum of the
    * status buckets, which equals the cached "all" because the buckets partition
    * the non-deleted members exactly.
    *
