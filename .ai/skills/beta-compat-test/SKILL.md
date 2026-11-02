@@ -65,7 +65,7 @@ Pass only the versions under test — omitted flags default to `stable`. For `--
 You must authenticate QIT once per machine:
 
 ```bash
-./vendor/bin/qit partner:add --user="$QIT_PARTNER_USER" --application_password="$QIT_PARTNER_SECRET"
+./vendor/bin/qit partner:add --user="$QIT_PARTNER_USER" --qit_token="$QIT_TOKEN"
 ```
 
 After each command completes, fetch the HTML report from the `Result Url` printed in the output:
