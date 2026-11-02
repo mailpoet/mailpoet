@@ -1,0 +1,139 @@
+name: 'Integration tests'
+
+# Runs the integration suite in the tests_env Docker stack, like the
+# integration_tests job in .circleci/config.yml. Callers pick the group and the
+# WooCommerce or multisite set-up, and how many parts to split the tests into.
+
+on:
+  workflow_call:
+    inputs:
+      name:
+        description: 'Short name of the variant, used for artifact names'
+        type: string
+        required: true
+      parts:
+        description: 'JSON list with one entry per part, for example [1, 2]'
+        type: string
+        default: '[1]'
+      group:
+        type: string
+        default: ''
+      skip_group:
+        type: string
+        default: ''
+      skip_plugins:
+        type: number
+        default: 0
+      enable_hpos:
+        type: number
+        default: 0
+      enable_hpos_sync:
+        type: number
+        default: 0
+      disable_hpos:
+        type: number
+        default: 0
+      multisite:
+        type: number
+        default: 0
+    secrets:
+      WP_GITHUB_WOOCOMMERCE_TOKEN:
+        required: false
+      WP_TEST_ENV:
+        required: false
+
+permissions: {}
+
+jobs:
+  test:
+    name: 'Part ${{ matrix.part }}'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        part: ${{ fromJSON(inputs.parts) }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: mailpoet
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/restore-build
+
+      - name: 'Download plugins for the WooCommerce tests'
+        if: inputs.skip_plugins != 1
+        env:
+          GH_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+        run: ../tests_env/download-test-plugins.sh
+
+      - name: 'Pull test Docker images'
+        working-directory: tests_env/docker
+        run: |
+          for _ in 1 2 3; do docker compose pull --include-deps codeception_integration && break; sleep 3; done
+
+      - name: 'Create test containers'
+        working-directory: tests_env/docker
+        run: docker compose create codeception_integration || docker compose create codeception_integration
+
+      # Some tools need a different version for the PHP in the test image.
+      - name: 'Install tools for the test image'
+        working-directory: tests_env/docker
+        run: docker compose run --rm -w /project -e COMPOSER_DEV_MODE=1 --entrypoint "php tools/install.php" codeception_integration
+
+      - name: 'PHP integration tests'
+        env:
+          WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+          WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+          # tests/_support/CheckSkippedTestsExtension.php reads it to forbid
+          # skipped tests on trunk and release. A fork’s branch can be called
+          # trunk too, so fork pull requests get pull/<number>, like on CircleCI.
+          CIRCLE_BRANCH: ${{ github.event.pull_request.head.repo.fork && format('pull/{0}', github.event.number) || github.head_ref || github.ref_name }}
+          SKIP_GROUP: ${{ inputs.skip_group }}
+          SKIP_PLUGINS: ${{ inputs.skip_plugins }}
+          MULTISITE: ${{ inputs.multisite }}
+          ENABLE_HPOS: ${{ inputs.enable_hpos }}
+          ENABLE_HPOS_SYNC: ${{ inputs.enable_hpos_sync }}
+          DISABLE_HPOS: ${{ inputs.disable_hpos }}
+          GROUP: ${{ inputs.group }}
+          PART_INDEX: ${{ strategy.job-index }}
+          PART_TOTAL: ${{ strategy.job-total }}
+        run: |
+          # Without it the mailer and network tests skip, which trunk and release
+          # don’t allow; say so once instead of failing each of those tests.
+          if [[ -z "$WP_TEST_ENV" && "$GITHUB_EVENT_NAME" == "push" ]]; then
+            echo "::error::The WP_TEST_ENV secret is missing. Add the WP_TEST_* lines from CircleCI’s project variables."
+            exit 1
+          fi
+          mkdir -p tests/_output/exceptions
+          chmod 777 tests/_output/exceptions
+          # WP_TEST_ENV holds the WP_TEST_* lines CircleCI has as project variables.
+          # GitHub masks each whole line of the secret, so mask the values too,
+          # except flags and numbers, which would hide every “true” in the log.
+          while IFS= read -r line; do
+            line=${line%$'\r'}
+            if [[ "$line" == WP_TEST_*=* ]]; then
+              value=${line#*=}
+              if [[ ! "$value" =~ ^(true|false|[0-9]*)$ ]]; then
+                echo "::add-mask::$value"
+              fi
+              export "${line?}"
+            fi
+          done <<< "$WP_TEST_ENV"
+          # Every part takes every PART_TOTAL-th test from the same sorted list.
+          ../.circleci/list_tests.sh tests/integration "$GROUP" \
+            | awk -v total="$PART_TOTAL" -v index_="$PART_INDEX" '(NR - 1) % total == index_' \
+            | ../.circleci/run_split_tests.sh codeception_integration
+
+      - name: 'Upload test results'
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: integration-${{ inputs.name }}-part-${{ matrix.part }}
+          path: mailpoet/tests/_output
+          retention-days: 14
