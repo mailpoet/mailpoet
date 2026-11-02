@@ -1216,7 +1216,7 @@ class AcceptanceTester extends \Codeception\Actor {
 
   /**
    * Opens a DataViews filter: a primary filter by its chip, which is always
-   * shown, any other one from the "Add filter" menu.
+   * shown, any other one from the “Add filter” menu.
    */
   public function openDataViewsFilter(string $filterName): void {
     $i = $this;
@@ -1227,7 +1227,7 @@ class AcceptanceTester extends \Codeception\Actor {
       $i->click($chip);
       return;
     }
-    // The "Add filter" control is icon-only until a filter is shown, then it gets a text label.
+    // The “Add filter” control is icon-only until a filter is shown, then it gets a text label.
     $addFilter = ['xpath' => '//button[@aria-label="Add filter" or normalize-space(.)="Add filter"]'];
     $i->waitForElementClickable($addFilter);
     $i->click($addFilter);
