@@ -446,12 +446,12 @@ class NewslettersListingCest {
     // The sort is saved as the user's default, so the hash omits it; check the row order.
     $i->click(['xpath' => '//th//button[contains(., "Status")]']);
     $i->waitForText('Sort ascending');
-    $i->click(['xpath' => '//*[@role="menuitemradio"][contains(normalize-space(.), "Sort ascending")]']);
+    $i->clickDataViewsSortItem(['xpath' => '//*[@role="menuitemradio"][contains(normalize-space(.), "Sort ascending")]']);
     $this->waitForFirstRow($i, 'Sort draft');
 
     $i->click(['xpath' => '//th//button[contains(., "Status")]']);
     $i->waitForText('Sort descending');
-    $i->click(['xpath' => '//*[@role="menuitemradio"][contains(normalize-space(.), "Sort descending")]']);
+    $i->clickDataViewsSortItem(['xpath' => '//*[@role="menuitemradio"][contains(normalize-space(.), "Sort descending")]']);
     $this->waitForFirstRow($i, 'Sort sent');
   }
 

@@ -957,7 +957,7 @@ class SubscribersListingCest {
         $i->wait(0.5);
         $i->click($header);
         $i->waitForElementClickable($item, 5);
-        $i->click($item);
+        $i->clickDataViewsSortItem($item);
         if ($expectAriaSort) {
           $i->waitForElement($sorted, 5);
         }

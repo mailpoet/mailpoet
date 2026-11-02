@@ -104,7 +104,7 @@ class LogsListingCest {
     $i->waitForText("error-message-{$suffix}");
     $i->click(['xpath' => '//th//button[contains(., "Created On")]']);
     $i->waitForText('Sort ascending');
-    $i->click(['xpath' => '//*[@role="menuitemradio"][contains(normalize-space(.), "Sort ascending")]']);
+    $i->clickDataViewsSortItem(['xpath' => '//*[@role="menuitemradio"][contains(normalize-space(.), "Sort ascending")]']);
     $i->waitForText("error-message-{$suffix}");
     // Wait for the ascending re-fetch to re-render before snapshotting the order.
     $i->waitForJS(<<<JS
