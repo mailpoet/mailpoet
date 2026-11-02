@@ -1,7 +1,7 @@
 name: 'Checks'
 
-# Static analysis, linting, JS tests and PHP unit tests. Acceptance and
-# integration tests and the release zip run on CircleCI.
+# Static analysis, linting, JS tests, PHP unit tests and integration tests.
+# Acceptance tests and the release zip run on CircleCI.
 
 on:
   pull_request:
@@ -179,6 +179,83 @@ jobs:
         working-directory: mailpoet
         run: ./tools/semgrep.sh lib/ lib-3rd-party/
 
+  integration_base:
+    name: 'Integration tests'
+    needs: build
+    uses: ./.github/workflows/integration-tests.yml
+    permissions:
+      contents: read
+    with:
+      name: base
+      parts: '[1, 2]'
+      skip_group: woo
+      skip_plugins: 1
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+
+  # The WooCommerce jobs download paid plugins with a token, which pull requests
+  # from forks and Dependabot don’t get.
+  integration_woo_hpos_on:
+    name: 'Integration tests (WooCommerce, HPOS on)'
+    needs: build
+    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    uses: ./.github/workflows/integration-tests.yml
+    permissions:
+      contents: read
+    with:
+      name: woo-hpos-on
+      group: woo
+      enable_hpos: 1
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+
+  # These three run on trunk and release only, like on CircleCI.
+  integration_woo_hpos_sync_on:
+    name: 'Integration tests (WooCommerce, HPOS sync on)'
+    needs: build
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/integration-tests.yml
+    permissions:
+      contents: read
+    with:
+      name: woo-hpos-sync-on
+      group: woo
+      enable_hpos_sync: 1
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+
+  integration_woo_hpos_off:
+    name: 'Integration tests (WooCommerce, HPOS off)'
+    needs: build
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/integration-tests.yml
+    permissions:
+      contents: read
+    with:
+      name: woo-hpos-off
+      group: woo
+      disable_hpos: 1
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+
+  integration_multisite:
+    name: 'Integration tests (multisite)'
+    needs: build
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/integration-tests.yml
+    permissions:
+      contents: read
+    with:
+      name: multisite
+      parts: '[1, 2]'
+      multisite: 1
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+
   notify:
     name: 'Notify Slack on failure'
     needs:
@@ -189,6 +266,11 @@ jobs:
       - js_tests
       - unit_tests
       - security_analysis
+      - integration_base
+      - integration_woo_hpos_on
+      - integration_woo_hpos_sync_on
+      - integration_woo_hpos_off
+      - integration_multisite
     if: ${{ failure() && github.event_name == 'push' }}
     uses: ./.github/workflows/notify-slack.yml
     secrets:

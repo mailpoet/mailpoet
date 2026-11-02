@@ -79,7 +79,7 @@ GitHub Actions (`.github/workflows/checks.yml`) runs these jobs from `mailpoet/`
 | `JS tests`                          | JS and legacy newsletter editor tests         | –   |
 | `PHP unit tests`                    | `./do t:u`                                    | 8.5 |
 
-Acceptance and integration tests and the release zip run on CircleCI (`.circleci/config.yml`), which also runs the QIT security scan on every pull request. `.github/workflows/nightly-qit.yml` builds the release zip, lints it on PHP 7.4 and runs all six QIT checks on Tuesdays and Wednesdays.
+Integration tests run in `checks.yml` too (the “Integration tests” jobs), and for now also on CircleCI. Acceptance tests and the release zip run on CircleCI (`.circleci/config.yml`), which also runs the QIT security scan on every pull request. `.github/workflows/nightly-qit.yml` builds the release zip, lints it on PHP 7.4 and runs all six QIT checks on Tuesdays and Wednesdays.
 
 `pnpm qa` does not run Semgrep, the PHP 7.4 lint, the WP.org build lint or the newsletter editor tests.
 
