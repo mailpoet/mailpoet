@@ -107,7 +107,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
         'post_status' => 'publish',
         'post_type' => $postType,
       ]);
-      $posts = $this->alc->getPosts(new BlockPostQuery(['args' => ['contentType' => $postType]]));
+      $posts = $this->alc->getPosts(new BlockPostQuery(['args' => ['contentType' => $postType, 'posts' => $this->postIds]]));
       verify(array_column($posts, 'post_title'))->arrayContains("Published $postType");
     }
   }
@@ -121,7 +121,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
     ]);
     $wp_post_types['page']->exclude_from_search = true;
     try {
-      $posts = $this->alc->getPosts(new BlockPostQuery(['args' => ['contentType' => 'page']]));
+      $posts = $this->alc->getPosts(new BlockPostQuery(['args' => ['contentType' => 'page', 'posts' => $this->postIds]]));
     } finally {
       $wp_post_types['page']->exclude_from_search = false;
     }
@@ -136,7 +136,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
         'post_status' => 'publish',
         'post_type' => 'mailpoet_test_event',
       ]);
-      $posts = $this->alc->getPosts(new BlockPostQuery(['args' => ['contentType' => 'mailpoet_test_event']]));
+      $posts = $this->alc->getPosts(new BlockPostQuery(['args' => ['contentType' => 'mailpoet_test_event', 'posts' => $this->postIds]]));
     } finally {
       unregister_post_type('mailpoet_test_event');
     }
@@ -157,7 +157,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
       'post_status' => 'publish',
       'post_type' => 'product',
     ]);
-    $posts = $this->alc->getPosts(new BlockPostQuery(['args' => ['contentType' => 'product']]));
+    $posts = $this->alc->getPosts(new BlockPostQuery(['args' => ['contentType' => 'product', 'posts' => $this->postIds]]));
     verify(array_column($posts, 'post_title'))->arrayContains('Published product');
   }
 }
