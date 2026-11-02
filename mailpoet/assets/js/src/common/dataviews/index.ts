@@ -41,5 +41,5 @@ export { ListingTabs } from './listing-tabs';
 export {
   getActiveStatusTab,
   getSingleFilterValue,
-  withStatusTab,
+  getTabChange,
 } from './status-tabs';

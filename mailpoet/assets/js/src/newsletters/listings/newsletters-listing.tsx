@@ -24,10 +24,10 @@ import {
   ListingTabs,
   filterToExtraParams,
   getActiveStatusTab,
+  getTabChange,
   getDataViewsPreference,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
-  withStatusTab,
   type ListingGroup,
   type ListingQueryParams,
 } from 'common/dataviews';
@@ -528,28 +528,20 @@ export function NewslettersListing({
     allowedStatuses,
   );
 
-  // A status tab is a shortcut for the Status filter, so All and the status
-  // tabs change only that filter; Trash keeps every filter.
   const handleTabSelect = useCallback(
     (tab: string): void => {
-      if (tab === activeTab) return;
-      setGroup(tab === 'trash' ? 'trash' : 'all');
+      const change = getTabChange(tab, group, view.filters, STATUS_FIELD);
+      if (!change) return;
+      setGroup(change.group);
       setSelection([]);
       clearLoadError();
       setView((currentView) => ({
         ...currentView,
         page: 1,
-        filters:
-          tab === 'trash'
-            ? currentView.filters
-            : withStatusTab(
-                currentView.filters,
-                STATUS_FIELD,
-                tab === 'all' ? null : tab,
-              ),
+        filters: change.filters,
       }));
     },
-    [activeTab, clearLoadError, setView],
+    [clearLoadError, group, setView, view.filters],
   );
 
   const groupCounts = useMemo(() => {
