@@ -2,6 +2,7 @@ import type { Filter } from '@wordpress/dataviews';
 import {
   SORT_FIELD_TO_ORDERBY,
   fromOrderby,
+  filtersWithValues,
   hasActiveFilters,
   normalizeRequestFilter,
   requestFilterToViewFilters,
@@ -331,5 +332,16 @@ describe('Subscribers filters: helpers', () => {
     expect(hasActiveFilters(undefined, undefined)).to.equal(false);
     expect(hasActiveFilters([], 'abc')).to.equal(true);
     expect(hasActiveFilters([f('status', 'isAny', ['x'])], '')).to.equal(true);
+  });
+
+  it('ignores filters without a value, like an emptied primary filter', () => {
+    const emptied = [
+      f('segments', 'isAny', []),
+      f('status', 'isAny', undefined),
+    ];
+    expect(hasActiveFilters(emptied, '')).to.equal(false);
+    expect(
+      filtersWithValues([...emptied, f('status', 'isAny', ['x'])]),
+    ).to.deep.equal([f('status', 'isAny', ['x'])]);
   });
 });

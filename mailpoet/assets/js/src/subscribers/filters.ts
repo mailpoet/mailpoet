@@ -329,9 +329,18 @@ export function fromOrderby(orderby: string): string {
   return entry ? entry[0] : orderby;
 }
 
+// A primary filter can’t be removed, so emptying it leaves a filter without a value.
+export function filtersWithValues(filters: Filter[] | undefined): Filter[] {
+  return (filters ?? []).filter((filter) =>
+    Array.isArray(filter.value)
+      ? filter.value.length > 0
+      : filter.value !== undefined && filter.value !== '',
+  );
+}
+
 export function hasActiveFilters(
   filters: Filter[] | undefined,
   search: string | undefined,
 ): boolean {
-  return (filters ?? []).length > 0 || !!search;
+  return filtersWithValues(filters).length > 0 || !!search;
 }
