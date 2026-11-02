@@ -155,7 +155,7 @@ class Renderer {
    * - We prefix the original selectors to avoid inlining those rules into content added int the MailPoet's editor.
    * - We update the font-family in the original CSS if it's set in the editor.
    * - We update the font-size for the inner content if it's set in the editor.
-   * - We update the link color to the editor's link color.
+   * - We set links in the WooCommerce content to the editor's link color.
    */
   public function enhanceCss(string $css, NewsletterEntity $newsletter): string {
     $this->cssParser->settings['compress_colors'] = false;
@@ -182,6 +182,14 @@ class Renderer {
     $wooHeadingColor = $this->getValidGlobalStyle($newsletter, 'woocommerce', 'headingFontColor');
     if ($wooHeadingColor) {
       $css .= "#mailpoet-woo-email-header { color: $wooHeadingColor !important; }";
+    }
+
+    // WooCommerce derives link colors from its base color, which MailPoet sets to the branding color.
+    // The rule goes last, so it overrides link rules of the same specificity, including grouped ones like `a, .link`.
+    $linkColor = $this->getValidGlobalStyle($newsletter, 'link', 'fontColor');
+    if ($linkColor && $newsletter->getGlobalStyle('woocommerce', 'isSavedWithUpdatedStyles')) {
+      $container = '#' . self::CONTENT_CONTAINER_ID;
+      $css .= "$container a, $container .link, $container a.link { color: $linkColor; }";
     }
     return $css;
   }
@@ -233,7 +241,6 @@ class Renderer {
     $fontSize = $this->getValidGlobalStyle($newsletter, 'text', 'fontSize');
     $brandingColor = $this->getValidGlobalStyle($newsletter, 'woocommerce', 'brandingColor');
     $contentHeadingColor = $this->getValidGlobalStyle($newsletter, 'woocommerce', 'contentHeadingFontColor') ?? $brandingColor;
-    $linkColor = $this->getValidGlobalStyle($newsletter, 'link', 'fontColor');
 
     // Update font family if it's set in the editor
     if (!empty($fontFamilyRaw) && !empty($properties['font-family'])) {
@@ -242,10 +249,6 @@ class Renderer {
     // Update font size for inner content
     if ($fontSize && ($selectors === '#body_content_inner')) {
       $properties['font-size'] = $fontSize;
-    }
-    // WooCommerce derives link colors from its base color, which MailPoet sets to the branding color
-    if ($linkColor && in_array($selectors, ['a', '.link'], true)) {
-      $properties['color'] = $linkColor;
     }
 
     // Update heading font sizes and font family
