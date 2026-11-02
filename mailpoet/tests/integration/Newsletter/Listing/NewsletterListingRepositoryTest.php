@@ -31,8 +31,9 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     } finally {
       $configuration->setSQLLogger($previousLogger);
     }
-    $statusScans = array_filter($logger->queries, function(array $query): bool {
-      return stripos($query['sql'], 'GROUP BY') !== false;
+    $statusScans = array_filter($logger->queries, function($query): bool {
+      $sql = is_array($query) && is_string($query['sql'] ?? null) ? $query['sql'] : '';
+      return stripos($sql, 'GROUP BY') !== false;
     });
     verify(count($statusScans))->equals(1);
     verify($groups[NewsletterEntity::STATUS_DRAFT])->equals(1);
