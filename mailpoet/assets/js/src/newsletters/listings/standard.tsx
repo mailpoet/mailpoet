@@ -119,7 +119,7 @@ function buildFields(
       enableGlobalSearch: false,
       getValue: ({ item }) => getStatusFilterValue(item),
       elements: statusElements(getAllowedStatuses('standard')),
-      filterBy: { operators: ['isAny'] },
+      filterBy: { operators: ['isAny'], isPrimary: true },
       render: ({ item }) => (
         <QueueStatus newsletter={asNewsLetter(item)} mailerLog={mailerLog} />
       ),

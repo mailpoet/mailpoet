@@ -70,7 +70,7 @@ function buildFields(
       enableGlobalSearch: false,
       getValue: ({ item }) => getStatusFilterValue(item),
       elements: statusElements(getAllowedStatuses('notification_history')),
-      filterBy: { operators: ['isAny'] },
+      filterBy: { operators: ['isAny'], isPrimary: true },
       render: ({ item }) => (
         <QueueStatus newsletter={asNewsLetter(item)} mailerLog={mailerLog} />
       ),
