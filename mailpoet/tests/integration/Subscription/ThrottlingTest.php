@@ -31,6 +31,46 @@ class ThrottlingTest extends \MailPoetTest {
     verify($this->throttling->throttle())->equals(MINUTE_IN_SECONDS * pow(2, 10));
   }
 
+  public function testItReturnsTheTimeLeftUntilTheNextSubscription(): void {
+    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+    // Six signups mean a 32-minute back-off, 10 minutes of which have passed
+    for ($i = 10; $i <= 15; $i++) {
+      $this->createSubscriberIP('127.0.0.1', Carbon::now()->subMinutes($i));
+    }
+    verify($this->throttling->throttle())->equals(22 * MINUTE_IN_SECONDS);
+  }
+
+  public function testItRoundsTheTimeLeftUpToWholeMinutes(): void {
+    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+    // 21 minutes 20 seconds of the 32-minute back-off are left
+    $this->createSubscriberIP('127.0.0.1', Carbon::now()->subMinutes(10)->subSeconds(40));
+    for ($i = 11; $i <= 15; $i++) {
+      $this->createSubscriberIP('127.0.0.1', Carbon::now()->subMinutes($i));
+    }
+    verify($this->throttling->throttle())->equals(22 * MINUTE_IN_SECONDS);
+  }
+
+  public function testItAllowsASubscriptionOnceTheBackOffHasPassed(): void {
+    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+    // The newest of six signups is older than the 32-minute back-off
+    for ($i = 35; $i <= 40; $i++) {
+      $this->createSubscriberIP('127.0.0.1', Carbon::now()->subMinutes($i));
+    }
+    verify($this->throttling->getWaitTime())->equals(0);
+    verify($this->throttling->throttle())->equals(false);
+    verify($this->subscriberIPsRepository->countBy([]))->equals(7);
+  }
+
+  public function testGettingTheWaitTimeDoesNotRecordASubscription(): void {
+    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+    verify($this->throttling->getWaitTime())->equals(0);
+    verify($this->subscriberIPsRepository->countBy([]))->equals(0);
+
+    verify($this->throttling->throttle())->equals(false);
+    verify($this->subscriberIPsRepository->countBy([]))->equals(1);
+    verify($this->throttling->getWaitTime())->equals(MINUTE_IN_SECONDS);
+  }
+
   public function testItDoesNotThrowErrorForBigNumbersAndCapsTimeout() {
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
     verify($this->throttling->throttle())->equals(false);

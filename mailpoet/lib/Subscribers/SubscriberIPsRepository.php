@@ -22,6 +22,7 @@ class SubscriberIPsRepository extends Repository {
       ->andWhere('sip.createdAt >= :timeThreshold')
       ->setParameter('ip', $ip)
       ->setParameter('timeThreshold', (new Carbon())->subSeconds($seconds))
+      ->orderBy('sip.createdAt', 'DESC')
       ->setMaxResults(1)
       ->getQuery()
       ->getOneOrNullResult();
