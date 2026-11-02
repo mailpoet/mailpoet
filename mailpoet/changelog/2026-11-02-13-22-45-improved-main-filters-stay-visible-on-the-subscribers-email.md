@@ -2,4 +2,4 @@
 
 # Description
 
-Main filters stay visible on the Subscribers, Emails, Forms and Logs pages
+Main filters stay visible on the Subscribers, Emails, Sending status, Forms and Logs pages
