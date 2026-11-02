@@ -255,8 +255,13 @@ jobs:
       WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
       WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
 
-  notify:
-    name: 'Notify Slack on failure'
+  # The one check branch protection requires. It fails when any job failed or
+  # was cancelled, so jobs can be added or renamed without changing the repo
+  # settings. Skipped jobs (forks, Dependabot) count as passed. List every job
+  # of this workflow under needs.
+  all_checks:
+    name: 'All checks'
+    if: always()
     needs:
       - build
       - static_analysis
@@ -270,6 +275,23 @@ jobs:
       - integration_woo_hpos_sync_on
       - integration_woo_hpos_off
       - integration_multisite
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 'Check the job results'
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          failed=$(echo "$RESULTS" | jq -r 'to_entries[] | select(.value.result != "success" and .value.result != "skipped") | "::error::\(.key): \(.value.result)"')
+          if [ -n "$failed" ]; then
+            echo "$failed"
+            exit 1
+          fi
+          echo "All jobs passed."
+
+  notify:
+    name: 'Notify Slack on failure'
+    needs: all_checks
     if: ${{ failure() && github.event_name == 'push' }}
     uses: ./.github/workflows/notify-slack.yml
     secrets:
