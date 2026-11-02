@@ -1,4 +1,3 @@
-import classnames from 'classnames';
 import jQuery from 'jquery';
 import { Button, Notice } from '@wordpress/components';
 import {
@@ -22,11 +21,14 @@ import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { MailerError } from 'notices/mailer-error';
 import {
+  ListingTabs,
   filterToExtraParams,
+  getActiveStatusTab,
   getDataViewsPreference,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
   useShowFiltersWhenActive,
+  withStatusTab,
   type ListingGroup,
   type ListingQueryParams,
 } from 'common/dataviews';
@@ -46,6 +48,7 @@ import {
 import { checkCronStatus, checkMailerStatus } from './utils.jsx';
 import { buildHash, parseHash } from './hash-state';
 import {
+  STATUS_FIELD,
   getAllowedStatuses,
   hashFilterToRequestFilter,
   requestFilterToHashFilter,
@@ -519,15 +522,35 @@ export function NewslettersListing({
     [],
   );
 
-  const handleGroupSelect = useCallback(
-    (nextGroup: Group): void => {
-      if (nextGroup === group) return;
-      setGroup(nextGroup);
+  const activeTab = getActiveStatusTab(
+    group,
+    view.filters,
+    STATUS_FIELD,
+    allowedStatuses,
+  );
+
+  // A status tab is a shortcut for the Status filter, so All and the status
+  // tabs change only that filter; Trash keeps every filter.
+  const handleTabSelect = useCallback(
+    (tab: string): void => {
+      if (tab === activeTab) return;
+      setGroup(tab === 'trash' ? 'trash' : 'all');
       setSelection([]);
       clearLoadError();
-      setView((currentView) => ({ ...currentView, page: 1 }));
+      setView((currentView) => ({
+        ...currentView,
+        page: 1,
+        filters:
+          tab === 'trash'
+            ? currentView.filters
+            : withStatusTab(
+                currentView.filters,
+                STATUS_FIELD,
+                tab === 'all' ? null : tab,
+              ),
+      }));
     },
-    [clearLoadError, group, setView],
+    [activeTab, clearLoadError, setView],
   );
 
   const groupCounts = useMemo(() => {
@@ -569,10 +592,10 @@ export function NewslettersListing({
     () =>
       (groups ?? []).filter(
         (entry) =>
-          entry.name in groupCounts &&
+          (entry.name in groupCounts || allowedStatuses.includes(entry.name)) &&
           !(entry.name === 'trash' && entry.count === 0 && group !== 'trash'),
       ),
-    [group, groupCounts, groups],
+    [allowedStatuses, group, groupCounts, groups],
   );
 
   const actionHelpers = useMemo<ListingActionHelpers>(
@@ -745,41 +768,12 @@ export function NewslettersListing({
         </Notice>
       )}
 
-      <div className="mailpoet-categories mailpoet-dataviews__tabs mailpoet-newsletters-dataviews__tabs">
-        <div className="components-tab-panel__tabs" role="tablist">
-          {tabs.map((entry) => {
-            const tabClasses = classnames(
-              'components-button',
-              'components-tab-panel__tabs-item',
-              `mailpoet-dataviews-group-${entry.name}`,
-              {
-                'is-active': entry.name === group,
-              },
-            );
-            return (
-              <a
-                key={entry.name}
-                href="#"
-                role="tab"
-                aria-selected={entry.name === group}
-                className={tabClasses}
-                data-automation-id={`filters_${entry.name}`}
-                onClick={(event) => {
-                  event.preventDefault();
-                  handleGroupSelect(entry.name);
-                }}
-              >
-                <span data-title={entry.label}>{entry.label}</span>
-                {Number(entry.count) > 0 && (
-                  <span className="count">
-                    {Number(entry.count).toLocaleString()}
-                  </span>
-                )}
-              </a>
-            );
-          })}
-        </div>
-      </div>
+      <ListingTabs
+        className="mailpoet-newsletters-dataviews__tabs"
+        tabs={tabs}
+        active={activeTab}
+        onSelect={handleTabSelect}
+      />
 
       <div
         ref={dataViewsRef}
