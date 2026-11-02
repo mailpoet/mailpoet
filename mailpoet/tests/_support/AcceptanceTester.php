@@ -1198,11 +1198,38 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function applyDataViewsFilter(string $filterName, array $optionLabels, string $operator = ''): void {
     $i = $this;
-    // The "Add filter" control is icon-only until a filter is active, then it gets a text label.
+    $i->openDataViewsFilter($filterName);
+    if ($operator !== '') {
+      $operatorSelect = '.dataviews-filters__summary-operators-filter-select select';
+      $i->waitForElement($operatorSelect);
+      $i->selectOption($operatorSelect, $operator);
+    }
+    $i->waitForElement('.dataviews-filters__search-widget-listitem');
+    foreach ($optionLabels as $label) {
+      $i->click(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][.//text()[contains(., "' . $label . '")]]']);
+    }
+    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+    if ($i->executeJS('return document.querySelector(".mailpoet-dataviews") !== null;')) {
+      $i->waitForListingItemsToLoad();
+    }
+  }
+
+  /**
+   * Opens a DataViews filter: a primary filter by its chip, which is always
+   * shown, any other one from the "Add filter" menu.
+   */
+  public function openDataViewsFilter(string $filterName): void {
+    $i = $this;
+    // The tabs row renders after the first listing response and moves the filters down, so a click before that misses them.
+    $i->waitForListingItemsToLoad();
+    $chip = ['xpath' => '//*[@role="button"][contains(@class, "dataviews-filters__summary-chip")][starts-with(normalize-space(.), "' . $filterName . '")]'];
+    if ($i->grabMultiple($chip)) {
+      $i->click($chip);
+      return;
+    }
+    // The "Add filter" control is icon-only until a filter is shown, then it gets a text label.
     $addFilter = ['xpath' => '//button[@aria-label="Add filter" or normalize-space(.)="Add filter"]'];
     $i->waitForElementClickable($addFilter);
-    // The tabs row renders after the first listing response and moves the toggle down, so a click before that misses it.
-    $i->waitForListingItemsToLoad();
     $i->click($addFilter);
     // Skip the WP admin bar, which has menu items of its own.
     $menuItem = ['xpath' => '//*[@role="menuitem"][not(ancestor::*[@id="wpadminbar"])][contains(normalize-space(.), "' . $filterName . '")]'];
@@ -1218,19 +1245,6 @@ class AcceptanceTester extends \Codeception\Actor {
       $i->waitForElementVisible($menuItem);
     }
     $i->click($menuItem);
-    if ($operator !== '') {
-      $operatorSelect = '.dataviews-filters__summary-operators-filter-select select';
-      $i->waitForElement($operatorSelect);
-      $i->selectOption($operatorSelect, $operator);
-    }
-    $i->waitForElement('.dataviews-filters__search-widget-listitem');
-    foreach ($optionLabels as $label) {
-      $i->click(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][.//text()[contains(., "' . $label . '")]]']);
-    }
-    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
-    if ($i->executeJS('return document.querySelector(".mailpoet-dataviews") !== null;')) {
-      $i->waitForListingItemsToLoad();
-    }
   }
 
   public function changeGroupInListingFilter(string $name): void {

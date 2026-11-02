@@ -184,14 +184,13 @@ class NewslettersListingCest {
 
     $i->login();
     $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/standard/group[sent]/filter[segment=' . $segment->getId() . ']');
-    $i->waitForElement('.mailpoet-dataviews-group-all.is-active');
+    $i->waitForElement('.mailpoet-dataviews-group-sent.is-active');
     $i->waitForElement($this->filterChip('Status'));
     $i->waitForElement($this->filterChip('Lists'));
     $i->waitForElement('[data-automation-id="listing_item_' . $sentInList->getId() . '"]');
     $i->dontSeeElement('[data-automation-id="listing_item_' . $draftInList->getId() . '"]');
     $i->dontSeeElement('[data-automation-id="listing_item_' . $sentNoList->getId() . '"]');
     $i->waitForHashFilterValue('status', 'sent');
-    $i->dontSeeElement('.mailpoet-dataviews-group-sent');
 
     $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/standard/group[trash]');
     $i->waitForElement('.mailpoet-dataviews-group-trash.is-active');
@@ -221,10 +220,9 @@ class NewslettersListingCest {
     $i->login();
     $i->amOnMailpoetPage('Emails');
     $i->waitForElement('[data-automation-id="listing_item_' . $draft->getId() . '"]');
-    $i->dontSeeElement('.mailpoet-dataviews-group-draft');
-    $i->dontSeeElement('.mailpoet-dataviews-group-sent');
 
     $i->applyDataViewsFilter('Status', ['Sent']);
+    $i->waitForElement('.mailpoet-dataviews-group-sent.is-active');
     $i->waitForElementNotVisible('[data-automation-id="listing_item_' . $draft->getId() . '"]');
     $i->seeElement('[data-automation-id="listing_item_' . $sent->getId() . '"]');
 
@@ -234,10 +232,11 @@ class NewslettersListingCest {
     $i->waitForElement($this->filterChip('Status'));
     $i->waitForHashFilterValue('status', 'sent');
 
+    $i->wantTo('Clear the status with the All tab');
     $i->changeGroupInListingFilter('all');
-    $i->waitForElement('[data-automation-id="listing_item_' . $sent->getId() . '"]');
-    $i->dontSeeElement('[data-automation-id="listing_item_' . $draft->getId() . '"]');
-    $i->waitForElement($this->filterChip('Status'));
+    $i->waitForElement('[data-automation-id="listing_item_' . $draft->getId() . '"]');
+    $i->seeElement('[data-automation-id="listing_item_' . $sent->getId() . '"]');
+    $i->dontSeeElement($this->filterChip('Status'));
   }
 
   public function showCountsInStatusOptions(\AcceptanceTester $i) {
@@ -249,10 +248,7 @@ class NewslettersListingCest {
     $i->login();
     $i->amOnMailpoetPage('Emails');
     $i->waitForText('Count sent', 10, '[data-automation-id="newsletters_listing_standard"]');
-    $addFilter = ['xpath' => '//button[@aria-label="Add filter" or normalize-space(.)="Add filter"]'];
-    $i->waitForElementClickable($addFilter);
-    $i->click($addFilter);
-    $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "Status")]']);
+    $i->openDataViewsFilter('Status');
     $i->waitForText('Draft (2)');
     $i->waitForText('Sent (1)');
     $i->waitForText('Scheduled (0)');
@@ -270,10 +266,7 @@ class NewslettersListingCest {
     $i->waitForText('Live draft', 10, '[data-automation-id="newsletters_listing_standard"]');
     $i->changeGroupInListingFilter('trash');
     $i->waitForText('Trashed sent', 10, '[data-automation-id="newsletters_listing_standard"]');
-    $addFilter = ['xpath' => '//button[@aria-label="Add filter" or normalize-space(.)="Add filter"]'];
-    $i->waitForElementClickable($addFilter);
-    $i->click($addFilter);
-    $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "Status")]']);
+    $i->openDataViewsFilter('Status');
     $i->waitForText('Draft (2)');
     $i->waitForText('Sent (1)');
   }
@@ -305,24 +298,24 @@ class NewslettersListingCest {
     $i->dontSeeElement($this->filterChip('Lists'));
   }
 
-  public function filterToggleShowsAndHidesTheFilterRow(\AcceptanceTester $i) {
-    $i->wantTo('Hide and show the active filters with the filter toggle button');
-    $segment = (new Segment())->withName('Toggle list')->create();
-    (new Newsletter())->withSubject('Toggle in list')->withSentStatus()->withSegments([$segment])->create();
+  public function statusTabsSetTheStatusFilter(\AcceptanceTester $i) {
+    $i->wantTo('Show one status with its tab, next to the always visible filters');
+    $segment = (new Segment())->withName('Tabs list')->create();
+    $sent = (new Newsletter())->withSubject('Tabs sent')->withSentStatus()->withSegments([$segment])->create();
+    $draft = (new Newsletter())->withSubject('Tabs draft')->withDraftStatus()->withSegments([$segment])->create();
     $i->login();
-    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/standard/filter[segment=' . $segment->getId() . ']');
-    $i->waitForText('Toggle in list');
-    $i->waitForElement($this->filterChip('Lists'));
-    $i->waitForElement('.dataviews-filters-toggle__count');
+    $i->amOnMailpoetPage('Emails');
+    $i->waitForElement('[data-automation-id="listing_item_' . $draft->getId() . '"]');
+    $i->waitForElementVisible(['xpath' => '//*[@role="button"][contains(@class, "dataviews-filters__summary-chip")][normalize-space(.)="Status"]']);
+    $i->waitForElementVisible(['xpath' => '//*[@role="button"][contains(@class, "dataviews-filters__summary-chip")][normalize-space(.)="Lists"]']);
 
-    $i->wantTo('Hide the filter row with the toggle');
-    $i->click('.dataviews-filters__visibility-toggle');
-    $i->waitForElementNotVisible('.dataviews-filters__summary-chip');
+    $i->changeGroupInListingFilter('sent');
+    $i->waitForElementNotVisible('[data-automation-id="listing_item_' . $draft->getId() . '"]');
+    $i->seeElement('[data-automation-id="listing_item_' . $sent->getId() . '"]');
+    $i->waitForHashFilterValue('status', 'sent');
 
-    $i->wantTo('Show the filter row again with the toggle');
-    $i->click('.dataviews-filters__visibility-toggle');
-    $i->waitForElementVisible('.dataviews-filters__summary-chip');
-    $i->waitForElement($this->filterChip('Lists'));
+    $i->changeGroupInListingFilter('all');
+    $i->waitForElement('[data-automation-id="listing_item_' . $draft->getId() . '"]');
   }
 
   public function dropDeletedListFromDeepLinkWhenNoEmailHasList(\AcceptanceTester $i) {
@@ -459,7 +452,8 @@ class NewslettersListingCest {
    * @return array{xpath: string}
    */
   private function filterChip(string $name): array {
-    return ['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip-container")][contains(., "' . $name . '")]'];
+    // Primary filters always show a chip, so only a chip with values means the filter is set.
+    return ['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip") and contains(@class, "has-values")][contains(., "' . $name . '")]'];
   }
 
   private function waitForFirstRow(\AcceptanceTester $i, string $subject): void {

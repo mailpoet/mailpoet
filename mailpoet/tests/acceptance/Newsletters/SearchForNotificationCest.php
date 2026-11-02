@@ -7,7 +7,8 @@ use MailPoet\Test\DataFactories\Segment;
 
 class SearchForNotificationCest {
   private function filterChip(string $name): array {
-    return ['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip-container")][contains(., "' . $name . '")]'];
+    // Primary filters always show a chip, so only a chip with values means the filter is set.
+    return ['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip") and contains(@class, "has-values")][contains(., "' . $name . '")]'];
   }
 
   public function searchForActiveStandardNotification(\AcceptanceTester $i) {
