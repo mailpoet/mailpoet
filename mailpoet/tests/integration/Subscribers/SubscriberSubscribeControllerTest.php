@@ -14,6 +14,7 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberIPEntity;
 use MailPoet\Entities\TagEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\NotFoundException;
@@ -22,6 +23,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Test\DataFactories\Tag;
 use MailPoet\UnexpectedValueException;
+use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberSubscribeControllerTest extends \MailPoetTest {
   /** @var SettingsController */
@@ -752,12 +754,53 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
 
     $secondResult = $subscriberController->subscribe($data);
 
-    verify($secondResult['refresh_captcha'])->true();
+    verify($secondResult)->arrayHasNotKey('refresh_captcha');
     verify($secondResult['error'])->stringContainsString('You need to wait');
     $this->subscribersRepository->refresh($subscriber);
     verify($subscriber->getConfirmationsCount())->equals(2);
     verify($subscriber->getLastConfirmationEmailSentAt())->equals($lastConfirmationEmailSentAt);
     verify($subscriber->getUnconfirmedData())->equals('{"first_name":"Original"}');
+  }
+
+  public function testItAsksThrottledVisitorsToWaitBeforeShowingACaptcha(): void {
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
+    $_SERVER['REMOTE_ADDR'] = '203.0.113.60';
+    $this->createSubscriberIP('203.0.113.60', Carbon::now());
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $stashesBefore = $this->countFormStashes();
+    $sessionBudgetsBefore = $this->countCaptchaSessionBudgets();
+
+    $result = $this->subscribeController->subscribe($this->getCaptchaSubmission($form, $segment, 'throttled@example.com', []));
+
+    verify($result['error'])->stringContainsString('You need to wait');
+    verify($result)->arrayHasNotKey('show_captcha');
+    verify($result)->arrayHasNotKey('refresh_captcha');
+    verify($this->countFormStashes())->equals($stashesBefore);
+    verify($this->countCaptchaSessionBudgets())->equals($sessionBudgetsBefore);
+  }
+
+  public function testItKeepsASolvedCaptchaWhenTheVisitorIsThrottled(): void {
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
+    $_SERVER['REMOTE_ADDR'] = '203.0.113.61';
+    $captchaSession = $this->diContainer->get(CaptchaSession::class);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $challenge = $this->subscribeController->subscribe($this->getCaptchaSubmission($form, $segment, 'solved@example.com', []));
+    $sessionId = $challenge['captcha_session_id'];
+    $phrase = $captchaSession->getCaptchaHash($sessionId)['phrase'];
+    $this->createSubscriberIP('203.0.113.61', Carbon::now());
+
+    $result = $this->subscribeController->subscribe([
+      'form_id' => $form->getId(),
+      'captcha_session_id' => $sessionId,
+      'captcha' => $phrase,
+    ]);
+
+    verify($result['error'])->stringContainsString('You need to wait');
+    verify($result)->arrayHasNotKey('refresh_captcha');
+    verify($captchaSession->getCaptchaHash($sessionId)['phrase'] ?? null)->equals($phrase);
+    $captchaSession->reset($sessionId);
   }
 
   public function testItReturnsHelpfulErrorWhenUnconfirmedSubscriberReachedConfirmationEmailLimit(): void {
@@ -995,6 +1038,19 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
   private function makeStamp(int $ageInSeconds): string {
     $timestamp = time() - $ageInSeconds;
     return $timestamp . '.' . hash_hmac('sha256', (string)$timestamp, wp_salt('nonce'));
+  }
+
+  private function createSubscriberIP(string $ip, Carbon $createdAt): void {
+    $subscriberIP = new SubscriberIPEntity($ip);
+    $subscriberIP->setCreatedAt($createdAt);
+    $this->entityManager->persist($subscriberIP);
+    $this->entityManager->flush();
+  }
+
+  private function countCaptchaSessionBudgets(): int {
+    global $wpdb;
+    wp_cache_flush();
+    return (int)$wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_MAILPOET\\_captcha\\_sessions\\_%'");
   }
 
   private function countFormStashes(): int {

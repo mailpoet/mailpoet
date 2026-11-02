@@ -113,6 +113,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $throttling = Stub::makeEmpty(
       SubscriptionThrottling::class,
       [
+        'getWaitTime' => 0,
         'throttle' => 1,
         'secondsToTimeString' => '1',
       ]
@@ -189,6 +190,60 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     verify($result)->equals([
       'refresh_captcha' => true,
       'error' => 'You need to wait 1 before subscribing again.',
+    ]);
+  }
+
+  public function testItAsksToWaitWithoutValidatingTheCaptcha(): void {
+    $throttling = Stub::makeEmpty(
+      SubscriptionThrottling::class,
+      [
+        'getWaitTime' => 60,
+        'throttle' => Expected::never(),
+        'secondsToTimeString' => '1 minutes',
+      ],
+      $this
+    );
+    $form = Stub::makeEmpty(
+      FormEntity::class,
+      [
+        'getStatus' => FormEntity::STATUS_ENABLED,
+        'getSettingsSegmentIds' => [1],
+      ]
+    );
+    $builtInCaptchaValidator = Stub::makeEmpty(
+      CaptchaValidator::class,
+      [
+        'validate' => Expected::never(),
+        'validateChallenge' => Expected::never(),
+      ],
+      $this
+    );
+
+    $testee = new SubscriberSubscribeController(
+      Stub::makeEmpty(CaptchaSession::class),
+      Stub::makeEmpty(SubscriberActions::class, ['subscribe' => Expected::never()], $this),
+      Stub::makeEmpty(SubscribersFinder::class),
+      $throttling,
+      Stub::makeEmpty(FieldNameObfuscator::class, ['deobfuscateFormPayload' => function($data) {
+        return $data;
+      }]),
+      Stub::makeEmpty(RequiredCustomFieldValidator::class),
+      Stub::makeEmpty(SettingsController::class, ['get' => ['type' => CaptchaConstants::TYPE_BUILTIN]]),
+      Stub::makeEmpty(FormsRepository::class, ['findOneById' => $form]),
+      Stub::makeEmpty(StatisticsFormsRepository::class),
+      Stub::makeEmpty(TagRepository::class),
+      Stub::makeEmpty(SubscriberTagRepository::class),
+      Stub::make(WPFunctions::class, ['doAction' => Expected::never()], $this),
+      $builtInCaptchaValidator,
+      Stub::makeEmpty(RecaptchaValidator::class),
+      Stub::makeEmpty(TurnstileValidator::class),
+      Stub::makeEmpty(BehavioralSignals::class, ['looksHuman' => Expected::never()], $this),
+      Stub::makeEmpty(TrackingConsentCapture::class)
+    );
+
+    $result = $testee->subscribe(['form_id' => 1]);
+    verify($result)->equals([
+      'error' => 'You need to wait 1 minutes before subscribing again.',
     ]);
   }
 
