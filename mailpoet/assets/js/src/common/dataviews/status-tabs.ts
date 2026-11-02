@@ -13,7 +13,7 @@ export function groupsToTabs(groups: ListingGroup[]): Category[] {
   }));
 }
 
-/** The value of an "is any" filter on `field` that holds exactly one value. */
+/** The value of an “is any” filter on `field` that holds exactly one value. */
 export function getSingleFilterValue(
   filters: Filter[] | undefined,
   field: string,
@@ -27,7 +27,7 @@ export function getSingleFilterValue(
 
 /**
  * Status tabs are a shortcut for the status filter: a tab is active when the
- * filter is exactly its status, and All when it isn't a single tab status.
+ * filter is exactly its status, and All when it isn’t a single tab status.
  */
 export function getActiveStatusTab(
   group: string,
@@ -71,8 +71,9 @@ export function getTabChange(
           group: 'all' as const,
           filters: withStatusTab(filters, field, tab === 'all' ? null : tab),
         };
+  const byField = (list: Filter[]) =>
+    JSON.stringify([...list].sort((a, b) => a.field.localeCompare(b.field)));
   const unchanged =
-    next.group === group &&
-    JSON.stringify(next.filters) === JSON.stringify(filters ?? []);
+    next.group === group && byField(next.filters) === byField(filters ?? []);
   return unchanged ? null : next;
 }

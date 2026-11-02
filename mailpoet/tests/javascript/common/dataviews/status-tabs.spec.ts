@@ -164,5 +164,8 @@ describe('getTabChange', () => {
       null,
     );
     expect(getTabChange('trash', 'trash', [], 'status')).to.equal(null);
+    expect(
+      getTabChange('sent', 'all', [status(['sent']), listFilter], 'status'),
+    ).to.equal(null);
   });
 });
