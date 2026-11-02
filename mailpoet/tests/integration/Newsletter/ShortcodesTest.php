@@ -596,6 +596,19 @@ class ShortcodesTest extends \MailPoetTest {
     verify($result[0])->equals('2010');
   }
 
+  public function testItShowsFormattedDateCustomFieldAsTextInHtml() {
+    $customField = new CustomFieldEntity();
+    $customField->setName('birthday');
+    $customField->setType(CustomFieldEntity::TYPE_DATE);
+    $customField->setParams(['date_type' => 'year_month_day', 'date_format' => 'YYYY-MM-DD']);
+    $this->entityManager->persist($customField);
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscriber, $customField, '2010-04-20 00:00:00'));
+    $this->entityManager->flush();
+
+    $out = $this->shortcodesObject->replace('<p>[subscriber:cf_' . $customField->getId() . ' | format:\<\b\>Y]</p>');
+    verify($out)->equals('<p>&lt;b&gt;2010</p>');
+  }
+
   public function testItReturnsEmptyStringForEmptyDateCustomFieldWithFormat() {
     $shortcodesObject = $this->shortcodesObject;
     $subscriber = $this->subscriber;
