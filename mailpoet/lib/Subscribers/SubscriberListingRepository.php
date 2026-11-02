@@ -1540,7 +1540,7 @@ class SubscriberListingRepository extends ListingRepository {
 
   private function hasSegmentListFilter(ListingDefinition $definition): bool {
     $ids = $this->getSegmentIdsFromFilters($definition);
-    // "Without a list" alone has no list to bucket by, so it keeps the grouped scan.
+    // "Without a list" alone has no per-list statistics, so it is not a list filter here.
     if ($ids['in'] === [self::FILTER_WITHOUT_LIST] && !$ids['not_in']) {
       return false;
     }
