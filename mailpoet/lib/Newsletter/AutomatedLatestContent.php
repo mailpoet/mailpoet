@@ -5,6 +5,7 @@ namespace MailPoet\Newsletter;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\Editor\Transformer;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WP\Posts as WPPosts;
 
 class AutomatedLatestContent {
   const FILTER_POST = 'mailpoet_automated_latest_content_post';
@@ -53,6 +54,10 @@ class AutomatedLatestContent {
   }
 
   public function getPosts(BlockPostQuery $query) {
+    $postTypes = array_merge(WPPosts::getTypes(), ['post', 'page', 'product']);
+    if (!in_array($query->getPostType(), $postTypes, true)) {
+      return [];
+    }
     $this->newsletterId = $query->newsletterId;
     // Get posts as logged out user, so private posts hidden by other plugins (e.g. UAM) are also excluded
     $currentUserId = $this->wp->getCurrentUserId();

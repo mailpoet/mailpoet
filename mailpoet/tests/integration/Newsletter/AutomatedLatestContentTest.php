@@ -102,18 +102,47 @@ class AutomatedLatestContentTest extends \MailPoetTest {
 
   public function testItKeepsTheTypesTheEditorLists() {
     foreach (['post', 'page'] as $postType) {
-      $params = (new BlockPostQuery(['args' => ['contentType' => $postType]]))->getQueryParams();
-      verify($params['post_type'])->equals($postType);
-      verify($params)->arrayHasNotKey('post__in');
+      $this->postIds[] = wp_insert_post([
+        'post_title' => "Published $postType",
+        'post_status' => 'publish',
+        'post_type' => $postType,
+      ]);
+      $posts = $this->alc->getPosts(new BlockPostQuery(['args' => ['contentType' => $postType]]));
+      verify(array_column($posts, 'post_title'))->arrayContains("Published $postType");
     }
+  }
+
+  public function testItKeepsPagesHiddenFromSearch() {
+    global $wp_post_types;
+    $this->postIds[] = wp_insert_post([
+      'post_title' => 'Published page',
+      'post_status' => 'publish',
+      'post_type' => 'page',
+    ]);
+    $wp_post_types['page']->exclude_from_search = true;
+    try {
+      $posts = $this->alc->getPosts(new BlockPostQuery(['args' => ['contentType' => 'page']]));
+    } finally {
+      $wp_post_types['page']->exclude_from_search = false;
+    }
+    verify(array_column($posts, 'post_title'))->arrayContains('Published page');
+  }
+
+  public function testItKeepsTheProductIdsOfAQuery() {
+    $params = (new BlockPostQuery(['args' => ['contentType' => 'wp_block'], 'includeProductIds' => [5]]))->getQueryParams();
+    verify($params['post__in'])->equals([5]);
   }
 
   /**
    * @group woo
    */
   public function testItKeepsProducts() {
-    $params = (new BlockPostQuery(['args' => ['contentType' => 'product']]))->getQueryParams();
-    verify($params['post_type'])->equals('product');
-    verify($params)->arrayHasNotKey('post__in');
+    $this->postIds[] = wp_insert_post([
+      'post_title' => 'Published product',
+      'post_status' => 'publish',
+      'post_type' => 'product',
+    ]);
+    $posts = $this->alc->getPosts(new BlockPostQuery(['args' => ['contentType' => 'product']]));
+    verify(array_column($posts, 'post_title'))->arrayContains('Published product');
   }
 }
