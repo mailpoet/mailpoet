@@ -128,6 +128,21 @@ class AutomatedLatestContentTest extends \MailPoetTest {
     verify(array_column($posts, 'post_title'))->arrayContains('Published page');
   }
 
+  public function testItKeepsPublicTypesHiddenFromSearch() {
+    register_post_type('mailpoet_test_event', ['public' => true, 'exclude_from_search' => true]);
+    try {
+      $this->postIds[] = wp_insert_post([
+        'post_title' => 'Published event',
+        'post_status' => 'publish',
+        'post_type' => 'mailpoet_test_event',
+      ]);
+      $posts = $this->alc->getPosts(new BlockPostQuery(['args' => ['contentType' => 'mailpoet_test_event']]));
+    } finally {
+      unregister_post_type('mailpoet_test_event');
+    }
+    verify(array_column($posts, 'post_title'))->arrayContains('Published event');
+  }
+
   public function testItKeepsTheProductIdsOfAQuery() {
     $params = (new BlockPostQuery(['args' => ['contentType' => 'wp_block'], 'includeProductIds' => [5]]))->getQueryParams();
     verify($params['post__in'])->equals([5]);

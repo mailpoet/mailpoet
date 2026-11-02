@@ -54,7 +54,7 @@ class AutomatedLatestContent {
   }
 
   public function getPosts(BlockPostQuery $query) {
-    $postTypes = array_merge(WPPosts::getTypes(), ['post', 'page', 'product']);
+    $postTypes = array_merge(WPPosts::getTypes(), $this->wp->getPostTypes(['public' => true]));
     if (!in_array($query->getPostType(), $postTypes, true)) {
       return [];
     }
