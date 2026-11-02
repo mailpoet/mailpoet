@@ -633,6 +633,16 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     verify($meta)->arrayHasNotKey('redirect_url');
   }
 
+  public function testItRedirectsToSuccessUrl(): void {
+    $meta = $this->subscribeWithSuccessUrl('https://example.com/thanks');
+    verify($meta['redirect_url'])->equals('https://example.com/thanks');
+  }
+
+  public function testItDoesNotRedirectToSuccessUrlWithUnsupportedScheme(): void {
+    $meta = $this->subscribeWithSuccessUrl('ftp://example.com/thanks');
+    verify($meta)->arrayHasNotKey('redirect_url');
+  }
+
   public function testItDoesNotRedirectWhenSuccessPageHasNoPermalink(): void {
     $pageId = $this->createPage('publish');
     add_filter('page_link', '__return_empty_string');
@@ -949,10 +959,18 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
   }
 
   private function subscribeWithSuccessPage(int $pageId): array {
+    return $this->subscribeWithSuccessSettings(['on_success' => 'page', 'success_page' => $pageId]);
+  }
+
+  private function subscribeWithSuccessUrl(string $url): array {
+    return $this->subscribeWithSuccessSettings(['on_success' => 'url', 'success_url' => $url]);
+  }
+
+  private function subscribeWithSuccessSettings(array $successSettings): array {
     $this->settings->set('signup_confirmation.enabled', false);
     $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
     $form = $this->createForm($segment);
-    $form->setSettings(array_merge($form->getSettings() ?? [], ['on_success' => 'page', 'success_page' => $pageId]));
+    $form->setSettings(array_merge($form->getSettings() ?? [], $successSettings));
     $this->entityManager->flush();
     return $this->subscribeController->subscribe([
       $this->obfuscatedEmail => 'redirect' . rand(0, 100000) . '@example.com',

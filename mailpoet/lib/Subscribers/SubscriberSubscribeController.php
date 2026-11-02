@@ -230,7 +230,11 @@ class SubscriberSubscribeController {
           $meta['redirect_url'] = $redirectUrl;
         }
       } else if ($formSettings['on_success'] === 'url') {
-        $meta['redirect_url'] = $formSettings['success_url'];
+        $successUrl = is_string($formSettings['success_url'] ?? null) ? $formSettings['success_url'] : '';
+        $redirectUrl = $this->wp->escUrlRaw($successUrl, ['http', 'https']);
+        if ($redirectUrl !== '') {
+          $meta['redirect_url'] = $redirectUrl;
+        }
       }
     }
 

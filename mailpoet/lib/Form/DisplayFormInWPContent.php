@@ -280,7 +280,7 @@ class DisplayFormInWPContent {
       'form_type' => $displayType,
       'styles' => $this->formRenderer->renderStyles($form, '#' . $htmlId, $displayType),
       'html' => $this->formRenderer->renderHTML($form),
-      'close_button_icon' => $formSettings['close_button'] ?? 'round_white',
+      'close_button_icon' => $form->getCloseButtonIcon('round_white'),
     ];
 
     // (POST) non ajax success/error variables
