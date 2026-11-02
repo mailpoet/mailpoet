@@ -1,13 +1,10 @@
 name: 'Nightly QIT'
 
-# Builds the release zip and runs the QIT checks on it. Moved from the
-# “nightly_qit” workflow in .circleci/config.yml.
+# Builds the release zip and runs the QIT checks on it.
 
 on:
   schedule:
-    # Every Tuesday and Wednesday at 4am UTC. CircleCI’s nightly_qit runs at
-    # 2am, so the two don’t share the QIT account at the same time.
-    - cron: '0 4 * * 2,3'
+    - cron: '0 2 * * 2,3' # Every Tuesday and Wednesday at 2am UTC
   workflow_dispatch:
 
 permissions: {}
