@@ -714,7 +714,7 @@ class SendEmailAction implements Action {
     $email = $this->newslettersRepository->findOneBy([
       'id' => $emailId,
     ]);
-    if (!$email) {
+    if (!$email || !in_array($email->getType(), [NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL], true)) {
       throw new \MailPoet\Automation\Engine\Exceptions\InvalidStateException('Automation email entity not found for duplication.');
     }
     try {
