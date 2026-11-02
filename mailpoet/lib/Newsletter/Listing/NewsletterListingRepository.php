@@ -92,7 +92,8 @@ class NewsletterListingRepository extends ListingRepository {
   }
 
   /**
-   * Listing groups that exist for the type, as shown by getGroups().
+   * Groups a listing request or a bulk action may name for the type. Paused is a
+   * status tab and filter value only, not a group the listing query applies.
    *
    * @return string[]
    */
