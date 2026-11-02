@@ -156,6 +156,7 @@ class PageRenderer {
       $subscribersCacheCreatedAt = $this->transientCache->getOldestCreatedAt(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY) ?: Carbon::now();
     }
 
+    $referralId = $this->settings->get(ReferralDetector::REFERRAL_SETTING_NAME);
     $defaults = [
       'current_page' => sanitize_text_field(wp_unslash(is_string($_GET['page'] ?? null) ? $_GET['page'] : '')),
       'site_name' => $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES),
@@ -163,7 +164,7 @@ class PageRenderer {
       'site_url' => $this->wp->siteUrl(),
       'site_address' => $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST),
       'feature_flags' => $this->featuresController->getAllFlags(),
-      'referral_id' => $this->settings->get(ReferralDetector::REFERRAL_SETTING_NAME),
+      'referral_id' => ReferralDetector::isValid($referralId) ? $referralId : null,
       'mailpoet_api_key_state' => $this->settings->get('mta.mailpoet_api_key_state'),
       'mta_method' => $this->settings->get('mta.method'),
       'premium_key_state' => $this->settings->get('premium.premium_key_state'),

@@ -25,16 +25,28 @@ class ReferralDetector {
 
   public function detect() {
     $referralId = $this->settings->get(self::REFERRAL_SETTING_NAME, null);
-    if ($referralId) {
+    if (self::isValid($referralId)) {
       return $referralId;
     }
     $referralId = $this->wp->getOption(self::REFERRAL_CONSTANT_NAME, null);
     if ($referralId === null && defined(self::REFERRAL_CONSTANT_NAME)) {
       $referralId = constant(self::REFERRAL_CONSTANT_NAME);
     }
-    if ($referralId !== null) {
-      $this->settings->set(self::REFERRAL_SETTING_NAME, $referralId);
+    if ($referralId === null || !self::isValid($referralId)) {
+      return null;
     }
+    $this->settings->set(self::REFERRAL_SETTING_NAME, $referralId);
     return $referralId;
+  }
+
+  /**
+   * @param mixed $referralId
+   */
+  public static function isValid($referralId): bool {
+    if (is_int($referralId)) {
+      $referralId = (string)$referralId;
+    }
+    // Letters, digits, "_" and "-" only
+    return is_string($referralId) && preg_match('/^[A-Za-z0-9_-]+\z/', $referralId) === 1;
   }
 }
