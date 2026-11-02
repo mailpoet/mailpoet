@@ -617,6 +617,18 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     verify($result)->stringEndsWith($formHtml);
   }
 
+  public function testPopupRenderUsesSelectedCloseButtonIcon(): void {
+    $this->expectPopupRenderedWithCloseButtonIcon('square_black');
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$this->createPopupForm('square_black')]);
+    $this->hook->contentDisplay('content');
+  }
+
+  public function testPopupRenderUsesDefaultCloseButtonIconForUnknownValue(): void {
+    $this->expectPopupRenderedWithCloseButtonIcon('round_white');
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$this->createPopupForm('unknown_icon')]);
+    $this->hook->contentDisplay('content');
+  }
+
   public function testDisplayFormOnAllTagArchives(): void {
     $formHtml = '<form id="test-form"></form>';
     $this->wp->expects($this->any())->method('isTag')->willReturn(true);
@@ -1170,6 +1182,29 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ]);
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     return $form;
+  }
+
+  private function createPopupForm(string $closeButton): FormEntity {
+    $form = $this->createFormWithPlacement([
+      'popup' => ['enabled' => '1', 'pages' => ['all' => '1'], 'posts' => ['all' => '']],
+    ]);
+    $form->setSettings(array_merge((array)$form->getSettings(), ['close_button' => $closeButton]));
+    return $form;
+  }
+
+  private function expectPopupRenderedWithCloseButtonIcon(string $expectedIcon): void {
+    $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
+    $this->wp->expects($this->any())->method('isPage')->willReturn(true);
+    $this->templateRenderer
+      ->expects($this->once())
+      ->method('render')
+      ->with(
+        'form/front_end_form.html',
+        $this->callback(function(array $templateData) use ($expectedIcon) {
+          return $templateData['close_button_icon'] === $expectedIcon;
+        })
+      )
+      ->willReturn('<form></form>');
   }
 
   private function renderFooter(): string {

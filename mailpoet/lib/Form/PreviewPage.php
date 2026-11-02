@@ -93,7 +93,7 @@ class PreviewPage {
       'form_id' => $formId,
       'form_success_message' => $settings['success_message'] ?? null,
       'form_type' => $formDisplayType,
-      'close_button_icon' => $settings['close_button'] ?? 'classic',
+      'close_button_icon' => $form->getCloseButtonIcon('classic'),
       'styles' => $this->formRenderer->renderStyles($form, '#' . $htmlId, $formDisplayType),
       'html' => $this->formRenderer->renderHTML($form),
       'success' => false,
