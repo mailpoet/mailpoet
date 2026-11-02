@@ -157,7 +157,8 @@ export function List({
   const searchTerm = view.search?.trim() || undefined;
   const isUnrestrictedDelete =
     Object.keys(requestFilter).length === 0 && !searchTerm;
-  const canDelete = !isLoading && !dateRangeError && meta.count > 0;
+  const canDelete =
+    !isLoading && !loadError && !dateRangeError && meta.count > 0;
   const canDownload = canDelete;
 
   const persistedViewChange = usePersistedDataViewsPreference(

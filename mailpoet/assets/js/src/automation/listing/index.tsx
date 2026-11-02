@@ -365,13 +365,20 @@ export function AutomationListing(): JSX.Element {
     [location.search, navigate],
   );
 
+  const lastPageRef = useRef(0);
   const handleViewChange = useCallback(
     (nextView: View, replace = false) => {
+      // DataViews moves a page past the last one back to the last page, or
+      // to page 1 when there are no items. Correct the URL in place: with a
+      // new entry, Back would land on the missing page again and clamp forward.
+      const lastPage = Math.max(lastPageRef.current, 1);
+      const isPageClamp =
+        (view.page ?? 1) > lastPage && nextView.page === lastPage;
       setSelection([]);
       setView(nextView);
-      updateUrlSearchString(group, nextView, replace);
+      updateUrlSearchString(group, nextView, replace || isPageClamp);
     },
-    [group, updateUrlSearchString],
+    [group, updateUrlSearchString, view.page],
   );
   const persistedViewChange = usePersistedDataViewsPreference(
     'automation',
@@ -425,16 +432,7 @@ export function AutomationListing(): JSX.Element {
     const filteredAutomations = groupedAutomations[group] ?? [];
     return filterSortAndPaginate(filteredAutomations, view, automationFields);
   }, [automations, group, groupedAutomations, totalCount, view]);
-
-  useEffect(() => {
-    const currentPage = view.page ?? 1;
-    const lastPage = paginationInfo.totalPages;
-    if (automations && lastPage > 0 && currentPage > lastPage) {
-      // Correct the URL in place: with a new entry, Back would land on the
-      // missing page again and clamp forward.
-      handleViewChange({ ...view, page: lastPage }, true);
-    }
-  }, [automations, handleViewChange, paginationInfo.totalPages, view]);
+  lastPageRef.current = paginationInfo.totalPages;
 
   const tabs = useMemo(
     () => [
