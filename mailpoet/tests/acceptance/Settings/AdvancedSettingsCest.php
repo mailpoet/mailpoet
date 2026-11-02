@@ -74,7 +74,12 @@ class AdvancedSettingsCest {
     //check if there's proper text & link present without Members plugin
     $i->see('Members', Locator::href('https://wordpress.org/plugins/members/'));
     //install the Members plugin by MemberPress
-    $i->cli(['plugin', 'install', 'members', '--activate']);
+    $installMembers = ['plugin', 'install', 'members', '--activate'];
+    if (PHP_VERSION_ID < 80000) {
+      //Members 3.3.1+ requires PHP 8.0
+      $installMembers[] = '--version=3.3.0';
+    }
+    $i->cli($installMembers);
     //check if there's proper text & link present with Members plugin
     $i->reloadPage();
     $i->see('Manage using the Members plugin', Locator::href('?page=roles'));
