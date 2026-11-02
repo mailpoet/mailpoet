@@ -64,12 +64,7 @@ class LogsListingCest {
     );
 
     $i->wantTo('Apply a native Severity filter and keep only Error logs');
-    $i->click('Add filter');
-    $i->waitForText('Severity');
-    $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "Severity")]']);
-    $i->waitForElement('.dataviews-filters__search-widget-listitem');
-    $i->click(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][.//text()[contains(., "Error")]]']);
-    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+    $i->applyDataViewsFilter('Severity', ['Error']);
     $i->waitForText("error-message-{$suffix}");
     // Wait for the filtered re-fetch to drop the non-matching rows before
     // asserting; error-message is present before and after, so it can't gate.

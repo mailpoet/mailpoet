@@ -82,12 +82,18 @@ class SubscribersListingCest {
     $i->amOnMailpoetPage('Subscribers');
     $i->searchFor('status-');
     $i->waitForText('status-subscribed@example.com');
-    $i->dontSeeElement('.mailpoet-dataviews-group-unconfirmed');
 
-    $i->applyDataViewsFilter('Status', ['Unconfirmed']);
+    $i->wantTo('Show one status with its tab');
+    $i->changeGroupInListingFilter('unconfirmed');
     $i->waitForText('status-unconfirmed@example.com');
     $i->dontSee('status-subscribed@example.com');
     $i->dontSee('status-bounced@example.com');
+    $i->waitForDataViewsFilterChip('Unconfirmed');
+    $i->waitForHashFilterValue('status_in', 'unconfirmed');
+
+    $i->wantTo('Clear the status with the All tab');
+    $i->changeGroupInListingFilter('all');
+    $i->waitForText('status-bounced@example.com');
 
     $i->wantTo('Switch the Status filter to "Is none of"');
     $i->clearDataViewsFilters();
@@ -169,7 +175,7 @@ class SubscribersListingCest {
     $i->amOnMailpoetPage('Subscribers');
     $i->searchFor('score-');
     $i->waitForText('score-low@example.com');
-    $i->click(['xpath' => '//button[@aria-label="Add filter"]']);
+    $i->click(['xpath' => '//button[normalize-space(.)="Add filter"]']);
     $i->waitForElement(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Score"]']);
     $i->pressKey('body', WebDriverKeys::ESCAPE);
 
@@ -186,8 +192,8 @@ class SubscribersListingCest {
     $i->reloadPage();
     $i->waitForText('score-low@example.com');
     $i->waitForText('score-high@example.com');
-    $i->click(['xpath' => '//button[@aria-label="Add filter"]']);
-    $i->waitForElement(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Status"]']);
+    $i->click(['xpath' => '//button[normalize-space(.)="Add filter"]']);
+    $i->waitForElement(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Tags"]']);
     $i->dontSeeElement(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Score"]']);
     $i->pressKey('body', WebDriverKeys::ESCAPE);
     $settings->withTrackingEnabled();
@@ -256,7 +262,8 @@ class SubscribersListingCest {
     $i->reloadPage();
     $i->waitForText('legacy-unconfirmed@example.com');
     $i->dontSee('legacy-in-list@example.com');
-    $i->waitForDataViewsFilterChip('Status');
+    $i->waitForDataViewsFilterChip('Status includes');
+    $i->waitForElement('.mailpoet-dataviews-group-unconfirmed.is-active');
 
     $i->wantTo('Open a list link');
     $i->amOnPage($page . "/filter[segment={$listId}]");
@@ -813,29 +820,21 @@ class SubscribersListingCest {
     $i->waitForDataViewsFilterChip('Trashed Link List');
   }
 
-  public function filterToggleShowsAndHidesTheFilterRow(\AcceptanceTester $i) {
-    $i->wantTo('Hide and show the active filters with the filter toggle button');
+  public function primaryFiltersStayVisible(\AcceptanceTester $i) {
+    $i->wantTo('See the Status and Lists filters without opening the filter toggle');
 
-    (new Subscriber())->withEmail('toggle-filters@example.com')->create();
+    (new Subscriber())->withEmail('primary-filters@example.com')->create();
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
-    $i->waitForText('toggle-filters@example.com');
+    $i->waitForText('primary-filters@example.com');
+    $i->waitForElementVisible(['xpath' => '//*[@role="button"][contains(@class, "dataviews-filters__summary-chip")][normalize-space(.)="Status"]']);
+    $i->waitForElementVisible(['xpath' => '//*[@role="button"][contains(@class, "dataviews-filters__summary-chip")][normalize-space(.)="Lists"]']);
+    $i->seeElement('.dataviews-filters__visibility-toggle[aria-disabled="true"]');
 
-    $i->wantTo('Add a Created on filter from the toggle button');
-    $i->click(['xpath' => '//button[@aria-label="Add filter"]']);
-    $i->click(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Created on"]']);
+    $i->wantTo('Add another filter next to them');
+    $i->openDataViewsFilter('Created on');
     $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
-    $i->waitForDataViewsFilterChip('Created on');
-    $i->waitForElement('.dataviews-filters-toggle__count');
-
-    $i->wantTo('Hide the filter row with the toggle');
-    $i->click('.dataviews-filters__visibility-toggle');
-    $i->waitForElementNotVisible('.dataviews-filters__summary-chip');
-
-    $i->wantTo('Show the filter row again with the toggle');
-    $i->click('.dataviews-filters__visibility-toggle');
-    $i->waitForElementVisible('.dataviews-filters__summary-chip');
     $i->waitForDataViewsFilterChip('Created on');
   }
 
