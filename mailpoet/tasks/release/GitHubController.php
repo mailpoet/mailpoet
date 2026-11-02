@@ -29,11 +29,12 @@ class GitHubController {
   public function __construct(
     $username,
     $token,
-    $project
+    $project,
+    ?Client $httpClient = null
   ) {
     $this->username = $username;
     $this->zipFilename = $project === self::PROJECT_MAILPOET ? self::FREE_ZIP_FILENAME : self::PREMIUM_ZIP_FILENAME;
-    $this->httpClient = new Client([
+    $this->httpClient = $httpClient ?? new Client([
       'auth' => [$username, $token],
       'headers' => [
         'Accept' => 'application/vnd.github.v3+json',
@@ -90,6 +91,26 @@ class GitHubController {
     // Verify the CI builds passed. The release-PR approval requirement was removed when
     // MailPoet stopped using a dedicated QA reviewer; the Porter owns release verification.
     $this->checkPullRequestChecks($releasePullRequest['statuses_url']);
+    $this->checkPullRequestCheckRuns($releasePullRequest['head']['sha']);
+  }
+
+  // GitHub Actions jobs report check runs, not commit statuses.
+  private function checkPullRequestCheckRuns(string $sha): void {
+    $response = $this->httpClient->get('commits/' . urlencode($sha) . '/check-runs', [
+      'query' => ['per_page' => 100],
+    ]);
+    $response = json_decode($response->getBody()->getContents(), true);
+
+    $failed = [];
+    foreach ($response['check_runs'] ?? [] as $checkRun) {
+      // A run that hasn't finished has no conclusion yet.
+      if (!in_array($checkRun['conclusion'], ['success', 'skipped', 'neutral'], true)) {
+        $failed[] = $checkRun['name'];
+      }
+    }
+    if (!empty($failed)) {
+      throw new \Exception('Release pull request checks failed or are still running: ' . join(', ', $failed));
+    }
   }
 
   private function checkPullRequestChecks($statusesUrl) {
