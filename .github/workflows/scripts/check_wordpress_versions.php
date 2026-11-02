@@ -45,8 +45,8 @@ function sortVersions(&$versions) {
 }
 
 /**
- * This function group docker tags by the WordPress version and returns the latest with the higher PHP version
- * abd the previous with the lower PHP version.
+ * Groups docker tags by the WordPress major.minor version and returns the first (highest WordPress and PHP)
+ * tag of the latest and the previous group. A group can hold several patch versions, e.g. 7.0.4 and 7.0.3.
  */
 function getLatestAndPreviousVersions(array $sortedVersions): array {
   $uniqueVersions = [];
@@ -61,7 +61,7 @@ function getLatestAndPreviousVersions(array $sortedVersions): array {
   $previousVersionGroup = next($uniqueVersions);
 
   $latestVersion = $latestVersionGroup === false ? null : reset($latestVersionGroup);
-  $previousVersion = $previousVersionGroup === false ? null : end($previousVersionGroup);
+  $previousVersion = $previousVersionGroup === false ? null : reset($previousVersionGroup);
 
   return [$latestVersion, $previousVersion];
 }
