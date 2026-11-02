@@ -135,6 +135,13 @@ class SubscriberSubscribeController {
 
     $segmentIds = $this->getSegmentIds($form, $data['segments'] ?? []);
 
+    // Checked before the CAPTCHA so a visitor who must wait is not asked to solve one
+    // and does not use up an answer they already gave.
+    $waitTime = $this->throttling->getWaitTime();
+    if ($waitTime > 0) {
+      return ['error' => $this->getWaitErrorMessage($waitTime)];
+    }
+
     // Keep `segments` in $data until after CAPTCHA validation so that, if the
     // behavioral-baseline path stashes the submission for a deferred challenge,
     // the stash still carries the selected segments for the resubmit.
@@ -170,14 +177,13 @@ class SubscriberSubscribeController {
       $data[$consentKey] = $consentValue;
     }
 
-    // make sure we don't allow too many subscriptions with the same ip address
+    // Records the subscription. It can still return a wait time when another subscription from the same IP
+    // was recorded after the check above. The CAPTCHA answer is already used by then, so the form needs a new one.
     $timeout = $this->throttling->throttle();
 
     if ($timeout > 0) {
-      $timeToWait = $this->throttling->secondsToTimeString($timeout);
       $meta['refresh_captcha'] = true;
-      // translators: %s is the amount of time the user has to wait.
-      $meta['error'] = sprintf(__('You need to wait %s before subscribing again.', 'mailpoet'), $timeToWait);
+      $meta['error'] = $this->getWaitErrorMessage($timeout);
       return $meta;
     }
 
@@ -235,6 +241,11 @@ class SubscriberSubscribeController {
     }
 
     return $meta;
+  }
+
+  private function getWaitErrorMessage(int $seconds): string {
+    // translators: %s is the amount of time the user has to wait.
+    return sprintf(__('You need to wait %s before subscribing again.', 'mailpoet'), $this->throttling->secondsToTimeString($seconds));
   }
 
   private function getSuccessPageUrl(int $pageId): ?string {
