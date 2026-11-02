@@ -107,7 +107,7 @@ export const listFields: Field<FormListingItem>[] = [
       { value: 'enabled', label: __('Enabled', 'mailpoet') },
       { value: 'disabled', label: __('Disabled', 'mailpoet') },
     ],
-    filterBy: { operators: ['isAny'] },
+    filterBy: { operators: ['isAny'], isPrimary: true },
     render: ({ item }) => createElement(FormStatusToggle, { form: item }),
   },
   {

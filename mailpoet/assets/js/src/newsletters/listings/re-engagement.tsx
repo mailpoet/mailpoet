@@ -176,7 +176,7 @@ function buildFields(
       enableGlobalSearch: false,
       getValue: ({ item }) => item.status,
       elements: ACTIVATION_STATUS_ELEMENTS,
-      filterBy: { operators: ['isAny'] },
+      filterBy: { operators: ['isAny'], isPrimary: true },
       render: ({ item }) => {
         const totalSent = Number(item.total_sent ?? 0);
         const totalSentMessage = _x(

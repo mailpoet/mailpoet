@@ -34,7 +34,10 @@ describe('logs fields', () => {
     expect(byId.name.elements).to.equal(undefined);
     expect(typeof byId.name.getElements).to.equal('function');
 
-    expect(byId.level.filterBy).to.deep.equal({ operators: ['isAny'] });
+    expect(byId.level.filterBy).to.deep.equal({
+      operators: ['isAny'],
+      isPrimary: true,
+    });
     // Severity offers the full Monolog enum, not only logged levels.
     expect(byId.level.elements).to.deep.equal([
       { value: 100, label: 'Debug' },

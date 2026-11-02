@@ -175,7 +175,7 @@ function buildFields(
   // Only the result column maps to a request filter.
   return fields.map((field) =>
     field.id === RESULT_FIELD
-      ? { ...field, filterBy: { operators: ['isAny'] } }
+      ? { ...field, filterBy: { operators: ['isAny'], isPrimary: true } }
       : { ...field, filterBy: false },
   );
 }

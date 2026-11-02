@@ -222,7 +222,7 @@ function buildFields(
       enableGlobalSearch: false,
       getValue: ({ item }) => item.status,
       elements: ACTIVATION_STATUS_ELEMENTS,
-      filterBy: { operators: ['isAny'] },
+      filterBy: { operators: ['isAny'], isPrimary: true },
       render: ({ item }) => {
         const status = statusOverrides[String(item.id)] ?? item.status;
         return (
