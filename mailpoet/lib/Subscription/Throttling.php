@@ -96,16 +96,16 @@ class Throttling {
   }
 
   public function secondsToTimeString($seconds): string {
-    $hrs = floor($seconds / 3600);
-    $min = floor($seconds % 3600 / 60);
+    $hrs = (int)floor($seconds / 3600);
+    $min = (int)floor($seconds % 3600 / 60);
     $sec = $seconds % 3600 % 60;
     $result = [
-      // translators: %s is the number of hours
-      'hours' => $hrs ? sprintf(__('%d hours', 'mailpoet'), $hrs) : '',
-      // translators: %s is the number of minutes
-      'minutes' => $min ? sprintf(__('%d minutes', 'mailpoet'), $min) : '',
-      // translators: %s is the number of seconds
-      'seconds' => $sec ? sprintf(__('%d seconds', 'mailpoet'), $sec) : '',
+      // translators: %d is the number of hours
+      'hours' => $hrs ? sprintf(_n('%d hour', '%d hours', $hrs, 'mailpoet'), $hrs) : '',
+      // translators: %d is the number of minutes
+      'minutes' => $min ? sprintf(_n('%d minute', '%d minutes', $min, 'mailpoet'), $min) : '',
+      // translators: %d is the number of seconds
+      'seconds' => $sec ? sprintf(_n('%d second', '%d seconds', $sec, 'mailpoet'), $sec) : '',
     ];
     return join(' ', array_filter($result));
   }

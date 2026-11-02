@@ -199,7 +199,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       [
         'getWaitTime' => 60,
         'throttle' => Expected::never(),
-        'secondsToTimeString' => '1 minutes',
+        'secondsToTimeString' => '1 minute',
       ],
       $this
     );
@@ -243,7 +243,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
 
     $result = $testee->subscribe(['form_id' => 1]);
     verify($result)->equals([
-      'error' => 'You need to wait 1 minutes before subscribing again.',
+      'error' => 'You need to wait 1 minute before subscribing again.',
     ]);
   }
 

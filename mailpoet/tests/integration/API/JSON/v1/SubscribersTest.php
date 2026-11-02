@@ -600,7 +600,7 @@ class SubscribersTest extends \MailPoetTest {
     ]);
 
     verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    verify($response->errors[0]['message'])->equals('You need to wait 1 minutes before subscribing again.');
+    verify($response->errors[0]['message'])->equals('You need to wait 1 minute before subscribing again.');
   }
 
   public function testItCannotMassResubscribe() {
@@ -627,7 +627,7 @@ class SubscribersTest extends \MailPoetTest {
     ]);
 
     verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    verify($response->errors[0]['message'])->equals('You need to wait 1 minutes before subscribing again.');
+    verify($response->errors[0]['message'])->equals('You need to wait 1 minute before subscribing again.');
   }
 
   public function testThirdPartiesCanInterruptSubscriptionProcess() {
