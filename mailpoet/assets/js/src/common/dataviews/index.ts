@@ -8,6 +8,7 @@ export {
   getDataViewsPreferenceKey,
   getPersistedDataViewsPreference,
   getStoredDataViewsFieldIds,
+  getValidPerPage,
   persistDataViewsPreference,
   usePersistedDataViewsPreference,
 } from './preferences';

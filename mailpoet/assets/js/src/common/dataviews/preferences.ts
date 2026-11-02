@@ -67,7 +67,7 @@ function getPreferredFields(
   return preferredFields;
 }
 
-function getPreferredPerPage(perPage: unknown): number | undefined {
+export function getValidPerPage(perPage: unknown): number | undefined {
   if (
     typeof perPage !== 'number' ||
     !Number.isInteger(perPage) ||
@@ -146,7 +146,7 @@ export function getDataViewsPreference<T>(
   const persistedView = preference as PersistedView;
   const view: View = { ...defaultView };
 
-  const preferredPerPage = getPreferredPerPage(persistedView.perPage);
+  const preferredPerPage = getValidPerPage(persistedView.perPage);
   if (preferredPerPage) {
     view.perPage = preferredPerPage;
   }

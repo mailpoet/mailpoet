@@ -4,6 +4,7 @@ import {
   getDataViewsPreference,
   getDataViewsPreferenceKey,
   getPersistedDataViewsPreference,
+  getValidPerPage,
   isSameDataViewsPreference,
 } from '../../../../assets/js/src/common/dataviews/preferences';
 
@@ -63,6 +64,13 @@ describe('DataViews preferences', () => {
       window?: Window & typeof globalThis;
     };
     delete globals.window;
+  });
+
+  it('accepts only page sizes the listing endpoints allow', () => {
+    expect(getValidPerPage(50)).to.equal(50);
+    expect(getValidPerPage(200)).to.equal(100);
+    expect(getValidPerPage(0)).to.equal(undefined);
+    expect(getValidPerPage(1.5)).to.equal(undefined);
   });
 
   it('generates Gutenberg-compatible DataViews preference keys', () => {
