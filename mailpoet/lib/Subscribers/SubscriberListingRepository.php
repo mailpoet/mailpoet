@@ -1359,7 +1359,7 @@ class SubscriberListingRepository extends ListingRepository {
 
   /**
    * The tab counts are site totals, like the status links in wp-admin lists:
-   * search and filters don't change them.
+   * search and filters don’t change them.
    */
   public function getGroups(ListingDefinition $definition): array {
     return $this->formatGroups($this->globalStatisticsToCounts());
