@@ -118,7 +118,7 @@ function fetchGitHubCommitVersions(string $repo, string $filePath, int $page = 1
 
 function replaceLatestVersion(string $latestVersion, string $downloadCommand): void {
   replaceVersionInFile(
-    __DIR__ . '/../../../.circleci/config.yml',
+    __DIR__ . '/../../../tests_env/download-test-plugins.sh',
     '/(.\/do ' . $downloadCommand . ' )\d+\.\d+\.\d+/',
     '${1}' . $latestVersion
   );
@@ -133,9 +133,10 @@ function replacePreviousVersion(string $previousVersion, string $configParameter
 }
 
 /**
- * Function replacing the latest and previous versions of a private plugin in the config file.
+ * Function replacing the latest and previous versions of a private plugin in the CI files.
  * The function fetches the tags from the GitHub repository, filters stable versions,
- * gets the latest and previous minor/major versions, and replaces the versions in the CircleCI config file.
+ * gets the latest and previous minor/major versions, and replaces the latest one in tests_env/download-test-plugins.sh
+ * and the previous one in the CircleCI config file.
  * Versions come from the repository tags unless $fetchVersions (page number => list of versions) is given.
  */
 function replacePrivatePluginVersion(
@@ -163,14 +164,14 @@ function replacePrivatePluginVersion(
   echo "Previous version: $previousVersion\n";
 
   if ($latestVersion) {
-    echo "Replacing the latest version in the config file...\n";
+    echo "Replacing the latest version in tests_env/download-test-plugins.sh...\n";
     replaceLatestVersion($latestVersion, $downloadCommand);
   } else {
     echo "No latest version found.\n";
   }
 
   if ($previousVersion) {
-    echo "Replacing the previous version in the config file...\n";
+    echo "Replacing the previous version in the CircleCI config file...\n";
     replacePreviousVersion($previousVersion, $configParameterName);
   } else {
     echo "No previous version found.\n";

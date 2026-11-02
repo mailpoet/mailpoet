@@ -38,7 +38,7 @@ jobs:
         if: env.WORDPRESS_CHANGES == 'true'
         run: |
           git add .
-          git commit -m $'Update used WordPress images in Circle CI'
+          git commit -m $'Update used WordPress images in CI'
 
       # Updating used WooCommerce plugin
       - name: Check WooCommerce Versions
@@ -58,7 +58,7 @@ jobs:
         if: env.WOOCOMMERCE_CHANGES == 'true'
         run: |
           git add .
-          git commit -m $'Update used WooCommerce plugin in Circle CI'
+          git commit -m $'Update used WooCommerce plugin in CI'
 
       # Keeping the PHPStan stubs equal to the minimum WordPress and WooCommerce versions
       - name: Sync PHP stubs
@@ -101,7 +101,7 @@ jobs:
         if: env.AUTOMATE_WOO_CHANGES == 'true'
         run: |
           git add .
-          git commit -m $'Update used Automate Woo plugin in Circle CI'
+          git commit -m $'Update used Automate Woo plugin in CI'
 
       # Updating used WooCommerce Subscriptions plugin
       - name: Check WooCommerce Subscriptions Versions
@@ -123,7 +123,7 @@ jobs:
         if: env.SUBSCRIPTIONS_CHANGES == 'true'
         run: |
           git add .
-          git commit -m $'Update used WooCommerce Subscriptions plugin in Circle CI'
+          git commit -m $'Update used WooCommerce Subscriptions plugin in CI'
 
       # Updating used WooCommerce Memberships plugin
       - name: Check WooCommerce Memberships Versions
@@ -145,7 +145,7 @@ jobs:
         if: env.MEMBERSHIPS_CHANGES == 'true'
         run: |
           git add .
-          git commit -m $'Update used WooCommerce Memberships plugin in Circle CI'
+          git commit -m $'Update used WooCommerce Memberships plugin in CI'
 
       # Push all changes at the end if any changes were detected
       #
