@@ -2,7 +2,6 @@ import type { Filter } from '@wordpress/dataviews';
 import {
   SORT_FIELD_TO_ORDERBY,
   fromOrderby,
-  getExactStatus,
   hasActiveFilters,
   normalizeRequestFilter,
   requestFilterToViewFilters,
@@ -317,17 +316,6 @@ describe('Subscribers filters: request to view', () => {
 });
 
 describe('Subscribers filters: helpers', () => {
-  it('getExactStatus returns a single isAny status only', () => {
-    expect(getExactStatus([f('status', 'isAny', ['unconfirmed'])])).to.equal(
-      'unconfirmed',
-    );
-    expect(getExactStatus([f('status', 'isAny', ['a', 'b'])])).to.equal(null);
-    expect(getExactStatus([f('status', 'isNone', ['bounced'])])).to.equal(null);
-    expect(getExactStatus([f('tags', 'isAny', ['1'])])).to.equal(null);
-    expect(getExactStatus([f('status', 'isAny', [])])).to.equal(null);
-    expect(getExactStatus(undefined)).to.equal(null);
-  });
-
   it('maps sort fields to orderby and back', () => {
     expect(SORT_FIELD_TO_ORDERBY).to.deep.equal({
       statistics: 'engagement_score',
