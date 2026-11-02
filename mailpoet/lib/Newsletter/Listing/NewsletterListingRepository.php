@@ -168,7 +168,28 @@ class NewsletterListingRepository extends ListingRepository {
     $queryBuilder->from(NewsletterEntity::class, 'n');
     $this->applyParameters($queryBuilder, ['type' => $type, 'parentId' => $parentId]);
     $queryBuilder->andWhere($trashed ? 'n.deletedAt IS NOT NULL' : 'n.deletedAt IS NULL');
+    $counts = $this->countByStatus($queryBuilder, $statuses);
 
+    $labels = $this->getStatusLabels($type);
+    $options = [];
+    foreach ($statuses as $status) {
+      $options[] = [
+        // translators: %1$s is the name of a filter option, %2$s is the number of matching items.
+        'label' => sprintf(__('%1$s (%2$s)', 'mailpoet'), $labels[$status], $this->wp->numberFormatI18n($counts[$status] ?? 0)),
+        'value' => $status,
+      ];
+    }
+    return $options;
+  }
+
+  /**
+   * Counts the emails the query matches for each status the way the status filter
+   * selects them: “Sending” excludes and “Paused” includes paused emails.
+   *
+   * @param string[] $statuses
+   * @return array<string, int>
+   */
+  private function countByStatus(QueryBuilder $queryBuilder, array $statuses): array {
     $pausedCount = 0;
     if (in_array(self::FILTER_STATUS_PAUSED, $statuses, true)) {
       $pausedQueryBuilder = clone $queryBuilder;
@@ -187,17 +208,7 @@ class NewsletterListingRepository extends ListingRepository {
     }
     $counts[NewsletterEntity::STATUS_SENDING] = ($counts[NewsletterEntity::STATUS_SENDING] ?? 0) - $pausedCount;
     $counts[self::FILTER_STATUS_PAUSED] = $pausedCount;
-
-    $labels = $this->getStatusLabels($type);
-    $options = [];
-    foreach ($statuses as $status) {
-      $options[] = [
-        // translators: %1$s is the name of a filter option, %2$s is the number of matching items.
-        'label' => sprintf(__('%1$s (%2$s)', 'mailpoet'), $labels[$status], $this->wp->numberFormatI18n($counts[$status] ?? 0)),
-        'value' => $status,
-      ];
-    }
-    return $options;
+    return $counts;
   }
 
   /** @return array<string, string> */
@@ -235,16 +246,6 @@ class NewsletterListingRepository extends ListingRepository {
     $trashedCountQueryBuilder->andWhere('n.deletedAt IS NOT NULL');
     $trashedCount = (int)$trashedCountQueryBuilder->getQuery()->getSingleScalarResult();
 
-    // count-by-status query
-    $queryBuilder->select('n.status, COUNT(n) AS newsletterCount');
-    $queryBuilder->andWhere('n.deletedAt IS NULL');
-    $queryBuilder->groupBy('n.status');
-
-    $map = [];
-    foreach ($queryBuilder->getQuery()->getResult() as $item) {
-      $map[$item['status']] = (int)$item['newsletterCount'];
-    }
-
     $groups = [
       [
         'name' => 'all',
@@ -253,65 +254,20 @@ class NewsletterListingRepository extends ListingRepository {
       ],
     ];
 
+    // The status tabs count like the status filter they set, ignoring search and filters.
     $type = $definition->getParameters()['type'] ?? null;
-    switch ($type) {
-      case NewsletterEntity::TYPE_STANDARD:
-        $groups = array_merge($groups, [
-          [
-            'name' => NewsletterEntity::STATUS_DRAFT,
-            'label' => __('Draft', 'mailpoet'),
-            'count' => $map[NewsletterEntity::STATUS_DRAFT] ?? 0,
-          ],
-          [
-            'name' => NewsletterEntity::STATUS_SCHEDULED,
-            'label' => __('Scheduled', 'mailpoet'),
-            'count' => $map[NewsletterEntity::STATUS_SCHEDULED] ?? 0,
-          ],
-          [
-            'name' => NewsletterEntity::STATUS_SENDING,
-            'label' => __('Sending', 'mailpoet'),
-            'count' => $map[NewsletterEntity::STATUS_SENDING] ?? 0,
-          ],
-          [
-            'name' => NewsletterEntity::STATUS_SENT,
-            'label' => __('Sent', 'mailpoet'),
-            'count' => $map[NewsletterEntity::STATUS_SENT] ?? 0,
-          ],
-        ]);
-        break;
-
-      case NewsletterEntity::TYPE_NOTIFICATION_HISTORY:
-        $groups = array_merge($groups, [
-          [
-            'name' => NewsletterEntity::STATUS_SENDING,
-            'label' => __('Sending', 'mailpoet'),
-            'count' => $map[NewsletterEntity::STATUS_SENDING] ?? 0,
-          ],
-          [
-            'name' => NewsletterEntity::STATUS_SENT,
-            'label' => __('Sent', 'mailpoet'),
-            'count' => $map[NewsletterEntity::STATUS_SENT] ?? 0,
-          ],
-        ]);
-        break;
-
-      case NewsletterEntity::TYPE_WELCOME:
-      case NewsletterEntity::TYPE_RE_ENGAGEMENT:
-      case NewsletterEntity::TYPE_NOTIFICATION:
-      case NewsletterEntity::TYPE_AUTOMATIC:
-        $groups = array_merge($groups, [
-          [
-            'name' => NewsletterEntity::STATUS_ACTIVE,
-            'label' => __('Active', 'mailpoet'),
-            'count' => $map[NewsletterEntity::STATUS_ACTIVE] ?? 0,
-          ],
-          [
-            'name' => NewsletterEntity::STATUS_DRAFT,
-            'label' => __('Not active', 'mailpoet'),
-            'count' => $map[NewsletterEntity::STATUS_DRAFT] ?? 0,
-          ],
-        ]);
-        break;
+    $statuses = is_string($type) ? self::getSupportedStatusesForType($type) : [];
+    if ($statuses) {
+      $queryBuilder->andWhere('n.deletedAt IS NULL');
+      $counts = $this->countByStatus($queryBuilder, $statuses);
+      $labels = $this->getStatusLabels((string)$type);
+      foreach ($statuses as $status) {
+        $groups[] = [
+          'name' => $status,
+          'label' => $labels[$status],
+          'count' => $counts[$status] ?? 0,
+        ];
+      }
     }
 
     $groups[] = [
