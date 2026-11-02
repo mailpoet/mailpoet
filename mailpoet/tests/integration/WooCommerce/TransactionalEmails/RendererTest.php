@@ -200,6 +200,54 @@ class RendererTest extends \MailPoetTest {
     verify($contentStyles)->stringContainsString('font-size:1px');
   }
 
+  public function testItAppliesLinkColorToWooContentLinks(): void {
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'link' => [
+          'fontColor' => '#123456',
+        ],
+        'woocommerce' => [
+          'isSavedWithUpdatedStyles' => true,
+        ],
+      ],
+    ]);
+    $css = $this->getWooEmailStyles('#ffffff');
+    $updatedCss = $this->getRenderer(true)->enhanceCss($css, $this->newsletter);
+    verify($this->getCssDefinitionsForSelector('#mailpoet_woocommerce_container a', $updatedCss))->stringContainsString('color:#123456');
+    verify($this->getCssDefinitionsForSelector('#mailpoet_woocommerce_container .link', $updatedCss))->stringContainsString('color:#123456');
+    verify($this->getCssDefinitionsForSelector('#mailpoet_woocommerce_container h1', $updatedCss))->stringNotContainsString('#123456');
+  }
+
+  public function testItSkipsInvalidLinkColor(): void {
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'link' => [
+          'fontColor' => 'red}td{color:#654321',
+        ],
+        'woocommerce' => [
+          'isSavedWithUpdatedStyles' => true,
+        ],
+      ],
+    ]);
+    $css = $this->getWooEmailStyles();
+    $updatedCss = $this->getRenderer(true)->enhanceCss($css, $this->newsletter);
+    verify($updatedCss)->stringNotContainsString('#654321');
+    verify($this->getCssDefinitionsForSelector('#mailpoet_woocommerce_container a', $updatedCss))->stringContainsString('color:#663399');
+  }
+
+  public function testItDoesntChangeLinkColorWhenNotSavedWithFlag(): void {
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'link' => [
+          'fontColor' => '#123456',
+        ],
+      ],
+    ]);
+    $css = $this->getWooEmailStyles();
+    $updatedCss = $this->getRenderer(true)->enhanceCss($css, $this->newsletter);
+    verify($updatedCss)->stringNotContainsString('#123456');
+  }
+
   public function testItAddCSSForWooHeading() {
     $this->newsletter->setBody([
       'globalStyles' => [
@@ -434,11 +482,11 @@ class RendererTest extends \MailPoetTest {
     );
   }
 
-  private function getWooEmailStyles() {
+  private function getWooEmailStyles(string $baseColor = '#663399') {
     $wp = $this->diContainer->get(WPFunctions::class);
     $wp->updateOption('woocommerce_email_background_color', '#ffffff');
     $wp->updateOption('woocommerce_email_body_background_color', '#ffffff');
-    $wp->updateOption('woocommerce_email_base_color', '#663399');
+    $wp->updateOption('woocommerce_email_base_color', $baseColor);
     $wp->updateOption('woocommerce_email_text_color', '#111111');
     ob_start();
     wc_get_template('emails/email-styles.php');
