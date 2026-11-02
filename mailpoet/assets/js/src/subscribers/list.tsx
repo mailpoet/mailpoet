@@ -49,6 +49,7 @@ import {
   STATUS_FIELD,
   SUBSCRIBER_STATUSES,
   WITHOUT_LIST,
+  filtersWithValues,
   hasActiveFilters,
   requestFilterToViewFilters,
   toOrderby,
@@ -664,7 +665,7 @@ function EmptyContent({
   if (
     group !== 'trash' &&
     getSingleFilterValue(filters, STATUS_FIELD) === 'bounced' &&
-    (filters ?? []).length === 1 &&
+    filtersWithValues(filters).length === 1 &&
     !search &&
     !window.mailpoet_premium_active &&
     !window.mailpoet_mss_active
