@@ -54,6 +54,12 @@ describe('Subscribers hash state: parse', () => {
     });
   });
 
+  it('caps a limit over the listing maximum', () => {
+    expect(parseSubscribersHash('#/group[all]/limit[200]').perPage).to.equal(
+      100,
+    );
+  });
+
   it('turns a legacy status group into status_in', () => {
     [
       'subscribed',

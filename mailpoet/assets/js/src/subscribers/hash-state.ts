@@ -7,6 +7,7 @@
  * the grammar. Legacy links (`filter[segment=ID]`, `filter[tag=ID]`,
  * `group[<status>]`) are still understood. Pure, so it can be unit-tested.
  */
+import { getValidPerPage } from 'common/dataviews';
 import {
   SUBSCRIBER_STATUSES,
   fromOrderby,
@@ -106,8 +107,11 @@ export function parseSubscribersHash(hash: string): SubscribersHashState {
       }
     } else if ((key === 'page' || key === 'paged') && Number(value) > 0) {
       state.page = Number(value);
-    } else if ((key === 'per_page' || key === 'limit') && Number(value) > 0) {
-      state.perPage = Number(value);
+    } else if (key === 'per_page' || key === 'limit') {
+      const perPage = getValidPerPage(Number(value));
+      if (perPage) {
+        state.perPage = perPage;
+      }
     } else if (key === 'sort_by' || key === 'orderby') {
       state.orderby = fromOrderby(value);
     } else if (

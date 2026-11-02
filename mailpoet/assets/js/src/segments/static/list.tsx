@@ -11,6 +11,7 @@ import { MailPoet } from 'mailpoet';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import {
   getDataViewsPreference,
+  getValidPerPage,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
   filterToExtraParams,
@@ -91,8 +92,9 @@ function parseHash(): Partial<{
       if ((key === 'page' || key === 'paged') && Number(value) > 0) {
         return { ...params, page: Number(value) };
       }
-      if ((key === 'per_page' || key === 'limit') && Number(value) > 0) {
-        return { ...params, perPage: Number(value) };
+      if (key === 'per_page' || key === 'limit') {
+        const perPage = getValidPerPage(Number(value));
+        return perPage ? { ...params, perPage } : params;
       }
       if (key === 'sort_by' || key === 'orderby') {
         return { ...params, orderby: value };
