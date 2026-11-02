@@ -123,11 +123,12 @@ class ThrottlingTest extends \MailPoetTest {
 
   public function testItConvertsSecondsToTimeString() {
     verify($this->throttling->secondsToTimeString(122885))->equals('34 hours 8 minutes 5 seconds');
-    verify($this->throttling->secondsToTimeString(3660))->equals('1 hours 1 minutes');
-    verify($this->throttling->secondsToTimeString(3601))->equals('1 hours 1 seconds');
-    verify($this->throttling->secondsToTimeString(3600))->equals('1 hours');
-    verify($this->throttling->secondsToTimeString(61))->equals('1 minutes 1 seconds');
-    verify($this->throttling->secondsToTimeString(60))->equals('1 minutes');
+    verify($this->throttling->secondsToTimeString(3660))->equals('1 hour 1 minute');
+    verify($this->throttling->secondsToTimeString(3601))->equals('1 hour 1 second');
+    verify($this->throttling->secondsToTimeString(3600))->equals('1 hour');
+    verify($this->throttling->secondsToTimeString(61))->equals('1 minute 1 second');
+    verify($this->throttling->secondsToTimeString(60))->equals('1 minute');
+    verify($this->throttling->secondsToTimeString(7320))->equals('2 hours 2 minutes');
     verify($this->throttling->secondsToTimeString(59))->equals('59 seconds');
   }
 
