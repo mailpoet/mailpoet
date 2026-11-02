@@ -2,6 +2,7 @@
 
 namespace integration\Segments\DynamicSegments\Filters;
 
+use Automattic\WooCommerce\Admin\API\Reports\Customers\Stats\DataStore as CustomersStatsDataStore;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCustomerTextField;
 
@@ -189,14 +190,12 @@ class WooCommerceCustomerTextFieldTest extends \MailPoetTest {
   }
 
   private function createCustomer(string $email, string $city, string $postalCode): void {
-    $this->tester->createCustomer($email);
-    $order = $this->tester->createWooCommerceOrder([
-      'billing_email' => $email,
-      'billing_postcode' => $postalCode,
-      'billing_city' => $city,
-      'status' => 'wc-complete',
-    ]);
-    $order->save();
+    $customerId = $this->tester->createCustomer($email);
+    $customer = new \WC_Customer($customerId);
+    $customer->set_billing_city($city);
+    $customer->set_billing_postcode($postalCode);
+    $customer->save();
+    CustomersStatsDataStore::update_registered_customer($customerId);
   }
 
   public function _after() {
