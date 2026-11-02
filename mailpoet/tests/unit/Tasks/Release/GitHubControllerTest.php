@@ -1,0 +1,57 @@
+<?php declare(strict_types = 1);
+
+namespace MailPoet\Test\Tasks\Release;
+
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
+use MailPoetTasks\Release\GitHubController;
+
+class GitHubControllerTest extends \MailPoetUnitTest {
+  public function testItPassesWhenStatusesAndCheckRunsPassed() {
+    $controller = $this->makeController([
+      ['name' => 'PHPStan', 'status' => 'completed', 'conclusion' => 'success'],
+      ['name' => 'Notify Slack on failure', 'status' => 'completed', 'conclusion' => 'skipped'],
+    ]);
+
+    $controller->checkReleasePullRequestPassed('5.1.0');
+  }
+
+  public function testItFailsWhenACheckRunFailed() {
+    $controller = $this->makeController([
+      ['name' => 'PHPStan', 'status' => 'completed', 'conclusion' => 'failure'],
+      ['name' => 'JS tests', 'status' => 'completed', 'conclusion' => 'success'],
+    ]);
+
+    $this->expectExceptionMessage('PHPStan');
+    $controller->checkReleasePullRequestPassed('5.1.0');
+  }
+
+  public function testItFailsWhenACheckRunIsStillRunning() {
+    $controller = $this->makeController([
+      ['name' => 'PHP unit tests', 'status' => 'in_progress', 'conclusion' => null],
+    ]);
+
+    $this->expectExceptionMessage('PHP unit tests');
+    $controller->checkReleasePullRequestPassed('5.1.0');
+  }
+
+  private function makeController(array $checkRuns): GitHubController {
+    $responses = [
+      $this->jsonResponse([[
+        'title' => 'Release 5.1.0',
+        'statuses_url' => 'https://api.github.com/repos/mailpoet/mailpoet/statuses/abc',
+        'head' => ['sha' => 'abc'],
+      ]]),
+      $this->jsonResponse([['context' => 'ci/circleci: build', 'state' => 'success']]),
+      $this->jsonResponse(['total_count' => count($checkRuns), 'check_runs' => $checkRuns]),
+    ];
+    $client = new Client(['handler' => HandlerStack::create(new MockHandler($responses))]);
+    return new GitHubController('mailpoet', 'token', GitHubController::PROJECT_MAILPOET, $client);
+  }
+
+  private function jsonResponse(array $data): Response {
+    return new Response(200, [], (string)json_encode($data));
+  }
+}
