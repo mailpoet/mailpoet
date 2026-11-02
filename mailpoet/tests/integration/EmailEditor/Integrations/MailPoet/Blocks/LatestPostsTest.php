@@ -192,6 +192,7 @@ class LatestPostsTest extends \MailPoetTest {
 
     $html = $this->render(['postType' => 'wp_block']);
 
+    verify($html)->stringContainsString('No posts found.');
     verify($html)->stringNotContainsString('Latest reusable block A');
     verify($html)->stringNotContainsString('Latest posts block C');
   }
