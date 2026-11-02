@@ -1,4 +1,17 @@
 import type { Filter } from '@wordpress/dataviews';
+import type { Category } from 'common/categories/categories-item';
+import type { ListingGroup } from './types';
+
+/** Listing groups as tabs, with the classes and ids the tab bar has always had. */
+export function groupsToTabs(groups: ListingGroup[]): Category[] {
+  return groups.map(({ name, label, count }) => ({
+    name,
+    label,
+    count,
+    automationId: `filters_${name}`,
+    className: `mailpoet-dataviews-group-${name}`,
+  }));
+}
 
 /** The value of an "is any" filter on `field` that holds exactly one value. */
 export function getSingleFilterValue(

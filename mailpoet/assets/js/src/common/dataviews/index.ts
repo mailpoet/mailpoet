@@ -37,9 +37,9 @@ export type {
   ListingQueryParams,
   ListingResponse,
 } from './types';
-export { ListingTabs } from './listing-tabs';
 export {
   getActiveStatusTab,
   getSingleFilterValue,
   getTabChange,
+  groupsToTabs,
 } from './status-tabs';
