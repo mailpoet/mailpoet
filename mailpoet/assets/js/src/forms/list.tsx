@@ -12,7 +12,6 @@ import {
   useDataViewsQuery,
   filterToExtraParams,
   type ListingQueryParams,
-  useShowFiltersWhenActive,
 } from 'common/dataviews';
 import { FormsHeading, onAddNewForm } from './heading';
 import { listFields } from './fields';
@@ -110,8 +109,6 @@ function FormListComponent(): JSX.Element {
     extraParams: (currentView) =>
       filterToExtraParams(viewFiltersToRequestFilter(currentView.filters)),
   });
-  const dataViewsRef = useRef<HTMLDivElement>(null);
-  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
   const handleViewChange = usePersistedDataViewsPreference(
     'forms',
     view,
@@ -346,7 +343,6 @@ function FormListComponent(): JSX.Element {
       >
         {() => (
           <div
-            ref={dataViewsRef}
             className="mailpoet-dataviews mailpoet-forms-dataviews"
             data-automation-id="forms_listing"
           >
