@@ -329,11 +329,17 @@ class ShortcodesTest extends \MailPoetTest {
 
   public function testItLeavesLinkPartEmptyWhenTheUrlBuiltFromShortcodesIsInvalid() {
     $this->newsletter->setSubject('script:void(0)');
-    verify($this->shortcodesObject->replace('<a href="java[newsletter:subject]">x</a>'))->equals('<a href="java">x</a>');
-    verify($this->shortcodesObject->replace('<a href="[date:custom | format:\j\a\v\a][newsletter:subject]">x</a>'))->equals('<a href="java">x</a>');
+    verify($this->shortcodesObject->replace('<a href="java[newsletter:subject]">x</a>'))->equals('<a href="">x</a>');
+    verify($this->shortcodesObject->replace('<a href="[date:custom | format:\j\a\v\a][newsletter:subject]">x</a>'))->equals('<a href="">x</a>');
     $this->newsletter->setSubject('javascript:void(0)');
-    verify($this->shortcodesObject->replace('<a href=" [newsletter:subject]">x</a>'))->equals('<a href=" ">x</a>');
+    verify($this->shortcodesObject->replace('<a href=" [newsletter:subject]">x</a>'))->equals('<a href="">x</a>');
+    verify($this->shortcodesObject->replace("<a class='b' href='" . str_repeat(' ', 2049) . "[newsletter:subject]'>x</a>"))->equals("<a class='b' href=''>x</a>");
     verify($this->shortcodesObject->replace('<a href="https://example.com/?q=[newsletter:subject]">x</a>'))->equals('<a href="https://example.com/?q=javascript:void(0)">x</a>');
+    $this->newsletter->setSubject('javascript');
+    verify($this->shortcodesObject->replace('<a href="[newsletter:subject]:void(0)">x</a>'))->equals('<a href="">x</a>');
+    verify($this->shortcodesObject->replace('<img src=[newsletter:subject]:void(0) alt="x">'))->equals('<img src= alt="x">');
+    $this->newsletter->setSubject("\t");
+    verify($this->shortcodesObject->replace('<a href="java[newsletter:subject]script:void(0)">x</a>'))->equals('<a href="">x</a>');
   }
 
   public function testItShowsNewsletterSubjectAsTextInHtml() {
