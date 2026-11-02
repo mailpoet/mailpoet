@@ -13,8 +13,36 @@ use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
+use MailPoetVendor\Doctrine\DBAL\Logging\DebugStack;
 
 class NewsletterListingRepositoryTest extends \MailPoetTest {
+  public function testStatusCountsRunOncePerListingRequest() {
+    (new Newsletter())->withSubject('Counted draft')->withDraftStatus()->create();
+    $repository = $this->diContainer->get(NewsletterListingRepository::class);
+    $definition = (new Handler())->getListingDefinition(['params' => ['type' => NewsletterEntity::TYPE_STANDARD]]);
+
+    $logger = new DebugStack();
+    $configuration = $this->entityManager->getConnection()->getConfiguration();
+    $previousLogger = $configuration->getSQLLogger();
+    $configuration->setSQLLogger($logger);
+    try {
+      $repository->getFilters($definition);
+      $groups = array_column($repository->getGroups($definition), 'count', 'name');
+    } finally {
+      $configuration->setSQLLogger($previousLogger);
+    }
+    $statusScans = array_filter($logger->queries, function(array $query): bool {
+      return stripos($query['sql'], 'GROUP BY') !== false;
+    });
+    verify(count($statusScans))->equals(1);
+    verify($groups[NewsletterEntity::STATUS_DRAFT])->equals(1);
+
+    (new Newsletter())->withSubject('Second draft')->withDraftStatus()->create();
+    $nextDefinition = (new Handler())->getListingDefinition(['params' => ['type' => NewsletterEntity::TYPE_STANDARD]]);
+    $groups = array_column($repository->getGroups($nextDefinition), 'count', 'name');
+    verify($groups[NewsletterEntity::STATUS_DRAFT])->equals(2);
+  }
+
   public function testItAppliesGroup() {
     $newsletter = new NewsletterEntity();
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);

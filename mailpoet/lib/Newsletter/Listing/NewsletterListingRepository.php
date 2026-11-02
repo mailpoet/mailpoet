@@ -48,6 +48,12 @@ class NewsletterListingRepository extends ListingRepository {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var ListingDefinition|null */
+  private $statusCountsDefinition;
+
+  /** @var array<string, array<string, int>> */
+  private $statusCounts = [];
+
   public function __construct(
     EntityManager $entityManager,
     WPFunctions $wp
@@ -144,7 +150,7 @@ class NewsletterListingRepository extends ListingRepository {
       ];
     }
     $filters = ['segment' => $segmentList];
-    $statusOptions = is_string($typeParam) ? $this->getStatusOptions($typeParam, $parentId ? (int)$parentId : null, $definition->getGroup() === 'trash') : [];
+    $statusOptions = is_string($typeParam) ? $this->getStatusOptions($definition, $typeParam, $definition->getGroup() === 'trash') : [];
     if ($statusOptions) {
       $filters['status'] = $statusOptions;
     }
@@ -158,17 +164,13 @@ class NewsletterListingRepository extends ListingRepository {
    *
    * @return array<int, array{label: string, value: string}>
    */
-  private function getStatusOptions(string $type, ?int $parentId, bool $trashed): array {
+  private function getStatusOptions(ListingDefinition $definition, string $type, bool $trashed): array {
     $statuses = self::getSupportedStatusesForType($type);
     if (!$statuses) {
       return [];
     }
 
-    $queryBuilder = clone $this->queryBuilder;
-    $queryBuilder->from(NewsletterEntity::class, 'n');
-    $this->applyParameters($queryBuilder, ['type' => $type, 'parentId' => $parentId]);
-    $queryBuilder->andWhere($trashed ? 'n.deletedAt IS NOT NULL' : 'n.deletedAt IS NULL');
-    $counts = $this->countByStatus($queryBuilder, $statuses);
+    $counts = $this->getStatusCounts($definition, $type, $trashed);
 
     $labels = $this->getStatusLabels($type);
     $options = [];
@@ -183,13 +185,29 @@ class NewsletterListingRepository extends ListingRepository {
   }
 
   /**
-   * Counts the emails the query matches for each status the way the status filter
-   * selects them: “Sending” excludes and “Paused” includes paused emails.
+   * Counts the trashed or live emails of the type (and parent) for each status the way
+   * the status filter selects them: “Sending” excludes and “Paused” includes paused
+   * emails. getFilters() and getGroups() get the same definition in one listing
+   * request, so the counts are kept for that definition only.
    *
-   * @param string[] $statuses
    * @return array<string, int>
    */
-  private function countByStatus(QueryBuilder $queryBuilder, array $statuses): array {
+  private function getStatusCounts(ListingDefinition $definition, string $type, bool $trashed): array {
+    if ($this->statusCountsDefinition !== $definition) {
+      $this->statusCountsDefinition = $definition;
+      $this->statusCounts = [];
+    }
+    $key = $trashed ? 'trash' : 'live';
+    if (isset($this->statusCounts[$key])) {
+      return $this->statusCounts[$key];
+    }
+
+    $parentId = $definition->getParameters()['parentId'] ?? null;
+    $queryBuilder = clone $this->queryBuilder;
+    $queryBuilder->from(NewsletterEntity::class, 'n');
+    $this->applyParameters($queryBuilder, ['type' => $type, 'parentId' => $parentId ? (int)$parentId : null]);
+    $queryBuilder->andWhere($trashed ? 'n.deletedAt IS NOT NULL' : 'n.deletedAt IS NULL');
+    $statuses = self::getSupportedStatusesForType($type);
     $pausedCount = 0;
     if (in_array(self::FILTER_STATUS_PAUSED, $statuses, true)) {
       $pausedQueryBuilder = clone $queryBuilder;
@@ -208,6 +226,7 @@ class NewsletterListingRepository extends ListingRepository {
     }
     $counts[NewsletterEntity::STATUS_SENDING] = ($counts[NewsletterEntity::STATUS_SENDING] ?? 0) - $pausedCount;
     $counts[self::FILTER_STATUS_PAUSED] = $pausedCount;
+    $this->statusCounts[$key] = $counts;
     return $counts;
   }
 
@@ -258,8 +277,7 @@ class NewsletterListingRepository extends ListingRepository {
     $type = $definition->getParameters()['type'] ?? null;
     $statuses = is_string($type) ? self::getSupportedStatusesForType($type) : [];
     if ($statuses) {
-      $queryBuilder->andWhere('n.deletedAt IS NULL');
-      $counts = $this->countByStatus($queryBuilder, $statuses);
+      $counts = $this->getStatusCounts($definition, (string)$type, false);
       $labels = $this->getStatusLabels((string)$type);
       foreach ($statuses as $status) {
         $groups[] = [
