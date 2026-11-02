@@ -22,16 +22,17 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 
 import { Button } from 'common';
 import {
-  ListingTabs,
   filterToExtraParams,
   getActiveStatusTab,
   getDataViewsPreference,
   getSingleFilterValue,
   getTabChange,
+  groupsToTabs,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
   type ListingQueryParams,
 } from 'common/dataviews';
+import { Categories } from 'common/categories/categories';
 import type { ListingGroup } from 'common/dataviews/types';
 import { MailPoet } from 'mailpoet';
 import { Modal } from 'common/modal/modal';
@@ -1552,9 +1553,9 @@ function SubscriberList() {
         </Notice>
       )}
 
-      <ListingTabs
-        className="mailpoet-subscribers-dataviews__tabs"
-        tabs={tabs}
+      <Categories
+        className="mailpoet-dataviews__tabs mailpoet-subscribers-dataviews__tabs"
+        categories={groupsToTabs(tabs)}
         active={activeTab}
         onSelect={handleTabSelect}
       />

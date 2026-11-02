@@ -5,6 +5,7 @@ export type Category = {
   label: string;
   count?: number | string;
   automationId?: string;
+  className?: string;
 };
 
 type Props = Category & {
@@ -18,11 +19,13 @@ export function CategoriesItem({
   label,
   count,
   automationId,
+  className,
   active,
 }: Props) {
   const classes = classnames(
     'components-button',
     'components-tab-panel__tabs-item',
+    className,
     { 'is-active': !!active },
   );
 
@@ -30,6 +33,8 @@ export function CategoriesItem({
     <a
       key={name}
       href="#"
+      role="tab"
+      aria-selected={!!active}
       className={classes}
       onClick={(event) => {
         event.preventDefault();

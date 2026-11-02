@@ -21,16 +21,17 @@ import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { MailerError } from 'notices/mailer-error';
 import {
-  ListingTabs,
   filterToExtraParams,
   getActiveStatusTab,
   getTabChange,
+  groupsToTabs,
   getDataViewsPreference,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
   type ListingGroup,
   type ListingQueryParams,
 } from 'common/dataviews';
+import { Categories } from 'common/categories/categories';
 import { pollExportStatus } from 'newsletters/statistics-export/poll-export-status';
 import {
   bulkAction,
@@ -756,9 +757,9 @@ export function NewslettersListing({
         </Notice>
       )}
 
-      <ListingTabs
-        className="mailpoet-newsletters-dataviews__tabs"
-        tabs={tabs}
+      <Categories
+        className="mailpoet-dataviews__tabs mailpoet-newsletters-dataviews__tabs"
+        categories={groupsToTabs(tabs)}
         active={activeTab}
         onSelect={handleTabSelect}
       />
