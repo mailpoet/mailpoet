@@ -1357,84 +1357,29 @@ class SubscriberListingRepository extends ListingRepository {
     }
   }
 
+  /**
+   * The tab counts are site totals, like the status links in wp-admin lists:
+   * search and filters don't change them.
+   */
   public function getGroups(ListingDefinition $definition): array {
-    $this->normalizedFilters = [];
-    return $this->formatGroups($this->getGroupCountsForDefinition($definition));
+    return $this->formatGroups($this->globalStatisticsToCounts());
   }
 
   /**
-   * The count of the current group plus the All and Trash tab counts, all under
-   * the active filters and search. Unfiltered and single-list requests are
-   * answered from the cron-warmed statistics. Anything narrower runs live
-   * counts, reusing the current group’s count when it is All or Trash.
-   *
-   * @return array{count: int, groups: array<int, array<string, mixed>>}
+   * The count of the current group under the active filters and search,
+   * read from the cron-warmed statistics when they cover the request.
    */
-  public function getCountAndAllTrashGroups(ListingDefinition $definition): array {
+  public function getListingCount(ListingDefinition $definition): int {
     $this->normalizedFilters = [];
+    $cached = $this->getCachedGroupCounts($definition);
+    if ($cached === null) {
+      return $this->getCount($definition);
+    }
     $group = $definition->getGroup() ?: 'all';
-    $cached = $this->getCachedGroupCounts($definition);
-    if ($cached !== null) {
-      $all = 0;
-      foreach (self::SUPPORTED_STATUSES as $status) {
-        $all += $cached[$status];
-      }
-      $trash = $cached['trash'];
-      if ($group === 'all') {
-        $count = $all;
-      } elseif ($group === 'trash') {
-        $count = $trash;
-      } else {
-        $count = array_key_exists($group, $cached) ? $cached[$group] : $this->getCount($definition);
-      }
-    } else {
-      $count = $this->getCount($definition);
-      $all = $group === 'all' ? $count : $this->getCount($this->withGroup($definition, 'all'));
-      $trash = $group === 'trash' ? $count : $this->getCount($this->withGroup($definition, 'trash'));
+    if ($group === 'all') {
+      return array_sum(array_intersect_key($cached, array_flip(self::SUPPORTED_STATUSES)));
     }
-
-    return [
-      'count' => $count,
-      'groups' => [
-        ['name' => 'all', 'label' => __('All', 'mailpoet'), 'count' => $all],
-        ['name' => 'trash', 'label' => __('Trash', 'mailpoet'), 'count' => $trash],
-      ],
-    ];
-  }
-
-  private function withGroup(ListingDefinition $definition, string $group): ListingDefinition {
-    return new ListingDefinition(
-      $group,
-      $definition->getFilters(),
-      $definition->getSearch(),
-      $definition->getParameters(),
-      $definition->getSortBy(),
-      $definition->getSortOrder(),
-      $definition->getOffset(),
-      $definition->getLimit(),
-      $definition->getSelection()
-    );
-  }
-
-  /**
-   * The status-tab counts. Cheapest first:
-   *
-   *   1. Global cache: the unfiltered “All Lists” view (cron-warmed).
-   *   2. Per-segment cache: a plain single-list filter and nothing else.
-   *   3. Live: anything narrower. A grouped scan on the non-segment path, or
-   *      one count per status when a segment redefines the buckets (a static
-   *      segment uses the per-list status, a dynamic one an id subquery).
-   *
-   * @return array<string, int>
-   */
-  private function getGroupCountsForDefinition(ListingDefinition $definition): array {
-    $cached = $this->getCachedGroupCounts($definition);
-    if ($cached !== null) {
-      return $cached;
-    }
-    return $this->hasSegmentListFilter($definition)
-      ? $this->getGroupCountsPerStatus($definition)
-      : $this->getGroupCounts($definition);
+    return $cached[$group] ?? $this->getCount($definition);
   }
 
   /**
@@ -1591,79 +1536,6 @@ class SubscriberListingRepository extends ListingRepository {
         'count' => $counts['trash'],
       ],
     ];
-  }
-
-  /**
-   * Count every status tab in a single grouped scan plus one trash count,
-   * instead of a separate COUNT per group. Valid whenever each group's
-   * predicate is a plain `s.status` (no static/dynamic segment list filter).
-   *
-   * @return array<string, int>
-   */
-  private function getGroupCounts(ListingDefinition $definition): array {
-    $counts = array_fill_keys(self::SUPPORTED_STATUSES, 0);
-    $counts['trash'] = 0;
-
-    $statusQuery = $this->createGroupCountQueryBuilder($definition);
-    $statusQuery
-      ->andWhere('s.deletedAt IS NULL')
-      ->select('s.status AS status, COUNT(DISTINCT s.id) AS subscribersCount')
-      ->groupBy('s.status');
-    foreach ($statusQuery->getQuery()->getResult() as $row) {
-      if (array_key_exists($row['status'], $counts)) {
-        $counts[$row['status']] = (int)$row['subscribersCount'];
-      }
-    }
-
-    $trashQuery = $this->createGroupCountQueryBuilder($definition);
-    $trashQuery
-      ->andWhere('s.deletedAt IS NOT NULL')
-      ->select('COUNT(DISTINCT s.id)');
-    $counts['trash'] = (int)$trashQuery->getQuery()->getSingleScalarResult();
-
-    return $counts;
-  }
-
-  /**
-   * Shared FROM + active filters/search for the group counts. Deliberately
-   * skips applyGroup so a single query can bucket every status at once.
-   */
-  private function createGroupCountQueryBuilder(ListingDefinition $definition): QueryBuilder {
-    $queryBuilder = clone $this->queryBuilder;
-    $this->applyFromClause($queryBuilder);
-
-    $search = $definition->getSearch();
-    if ($search !== null && strlen(trim($search)) > 0) {
-      $this->applySearch($queryBuilder, $search, $definition->getParameters() ?: []);
-    }
-
-    $filters = $definition->getFilters();
-    if ($filters) {
-      $this->applyFilters($queryBuilder, $filters);
-    }
-
-    $parameters = $definition->getParameters();
-    if ($parameters) {
-      $this->applyParameters($queryBuilder, $parameters);
-    }
-
-    return $queryBuilder;
-  }
-
-  /**
-   * Fallback for static/dynamic segment filters, where a group's predicate is
-   * more than a plain `s.status`. One count per group, scoped to the segment.
-   *
-   * @return array<string, int>
-   */
-  private function getGroupCountsPerStatus(ListingDefinition $definition): array {
-    $counts = array_fill_keys(self::SUPPORTED_STATUSES, 0);
-    $counts['trash'] = 0;
-    foreach (array_keys($counts) as $group) {
-      $groupDefinition = $group === $definition->getGroup() ? $definition : $this->withGroup($definition, $group);
-      $counts[$group] = $this->getCount($groupDefinition);
-    }
-    return $counts;
   }
 
   private function hasSegmentListFilter(ListingDefinition $definition): bool {
