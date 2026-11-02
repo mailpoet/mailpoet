@@ -467,6 +467,25 @@ class NewsletterTest extends \MailPoetTest {
     verify($html)->stringNotContainsString('javascript:');
   }
 
+  public function testItKeepsShortcodeValuesInUntrackedTextLinksAsTheyAre(): void {
+    $this->newsletterTask->trackingEnabled = true;
+    $this->subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $this->entityManager->flush();
+    [$newsletter, $queue] = $this->createNewsletterWithSubjectLink("Don't miss", 'https://example.com/?s=[newsletter:subject]');
+    $result = $this->newsletterTask->prepareNewsletterForSending($newsletter, $this->subscriber, $queue);
+    verify($result['body']['text'])->stringContainsString("?s=Don't miss");
+  }
+
+  public function testItKeepsShortcodeValuesInUntrackedTextLinksAsTheyAreInTemplate(): void {
+    $this->newsletterTask->trackingEnabled = true;
+    $this->subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $this->entityManager->flush();
+    [$newsletter, $queue] = $this->createNewsletterWithSubjectLink("Don't miss", 'https://example.com/?s=[newsletter:subject]');
+    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $this->subscriber, $queue);
+    $text = strtr($templatedNewsletter['newsletter']['body']['text'], $templatedNewsletter['substitutions']['text']);
+    verify($text)->stringContainsString("?s=Don't miss");
+  }
+
   private function prepareTemplatedHtmlWithSubjectLink(string $subject, string $href = '[newsletter:subject]'): string {
     [$newsletter, $queue] = $this->createNewsletterWithSubjectLink($subject, $href);
     $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $this->subscriber, $queue);
