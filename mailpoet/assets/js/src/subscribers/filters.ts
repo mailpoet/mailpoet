@@ -321,14 +321,6 @@ export function requestFilterToViewFilters(
 /**
  * The status when the status filter is "is any of" exactly one value.
  */
-export function getExactStatus(filters: Filter[] | undefined): string | null {
-  const status = (filters ?? []).find(
-    (filter) => filter.field === STATUS_FIELD && filter.operator === 'isAny',
-  );
-  const values = Array.isArray(status?.value) ? status.value : [];
-  return values.length === 1 ? String(values[0]) : null;
-}
-
 export function toOrderby(field: string): string {
   return SORT_FIELD_TO_ORDERBY[field] ?? field;
 }
