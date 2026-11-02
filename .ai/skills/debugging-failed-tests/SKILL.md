@@ -1,11 +1,11 @@
 ---
 name: debugging-failed-tests
-description: Use when investigating a failing test — reported via a CircleCI job/build URL, or output from a local test run. Triggers on phrases like "this test failed", "debug this CI failure", "why did the nightly fail?", "investigate the failure on <branch>", or any message pasting a CircleCI URL with failure context. Guides the investigator to diagnose, fix, and verify the fix locally. Stops there — committing, opening a PR, or writing a changelog is the caller's call (see `creating-pull-requests`, `writing-changelog`).
+description: Use when investigating a failing test — reported via a CircleCI job/build URL, a GitHub Actions run URL, or output from a local test run. Triggers on phrases like "this test failed", "debug this CI failure", "why did the nightly fail?", "investigate the failure on <branch>", or any message pasting a CircleCI URL with failure context. Guides the investigator to diagnose, fix, and verify the fix locally. Stops there — committing, opening a PR, or writing a changelog is the caller's call (see `creating-pull-requests`, `writing-changelog`).
 ---
 
 # Debugging Failed Tests
 
-A test failed. The input is either a CircleCI URL or a failure dump pasted into chat. This skill takes you from “something is red” to “I have a fix and I’ve proven it works.” It stops at “verified locally” — commits, PRs, and changelogs are the caller’s call.
+A test failed. The input is a CircleCI URL, a GitHub Actions run URL, or a failure dump pasted into chat. This skill takes you from “something is red” to “I have a fix and I’ve proven it works.” It stops at “verified locally” — commits, PRs, and changelogs are the caller’s call.
 
 ## Working assumption
 
@@ -26,11 +26,13 @@ A premium-suite failure may originate in the free plugin — keep that possibili
 ## Inputs
 
 - **A CircleCI URL.** Everything else (suite, plugin, WP/WC/PHP versions, beta/RC flag, branch, SHA, failing test) is derivable from the API. See `references/circleci.md`.
+- **A GitHub Actions run URL.** Lint, PHPStan, Semgrep, JS tests, PHP unit tests and the nightly QIT checks run there. `gh run view <run-id> --log-failed` prints the failing steps.
 - **A failure dump from a local run.** Target branch is whatever `git rev-parse --abbrev-ref HEAD` reports.
 
 ## Where to start, by input
 
 - **CircleCI URL** → fetch the tests endpoint first (`references/circleci.md`). It returns one row per test with `name`, `classname`, `result`, `message`. Filter to `result != "success"` to surface every non-passing row (`failure`, `error`, and `skipped`). MailPoet does not allow skipped tests on `trunk` or release branches outside `tests/_support/CheckSkippedTestsExtension`'s allowlist — so on those branches a `skipped` row is itself a signal worth investigating, not noise. If `message` names a `file:line`, jump to it. If the message is empty or generic and the suite is acceptance, fetch `*.fail.png` / `*.fail.html` artifacts before anything else.
+- **GitHub Actions URL** → read the failing step with `gh run view <run-id> --log-failed`, then open the file the error points at.
 - **Local failure dump** → open the file the error points at. You don’t need CircleCI at all.
 - **CircleCI URL, tests endpoint reports 0 failures, job still red** → it’s a _non-test_ CI failure. Common causes: composer/npm install bombed, asset build broke, lint/QA gate caught something, OOM, or `infrastructure_fail`. Read the failing step’s raw output and fix the build/install/lint issue directly. For `infrastructure_fail`, retry the job before investigating — it’s CircleCI’s problem. The investigation flow below doesn’t apply.
 
