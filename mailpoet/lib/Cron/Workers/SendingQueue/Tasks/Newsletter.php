@@ -192,7 +192,10 @@ class Newsletter {
     $content = $this->resolveLinkShortcodes($content, $newsletter, $subscriber, $queue);
     // Only the restored URLs can still carry shortcodes: the pass in prepareNewsletterForSending()
     // ran while every link was a hashed tag.
-    return (string)ShortcodesTask::process($content, null, $newsletter, $subscriber, $queue);
+    [$subject, $html, $text] = Helpers::splitObject($content);
+    $html = (string)ShortcodesTask::process($html, $content, $newsletter, $subscriber, $queue);
+    $text = (string)ShortcodesTask::process($text, $content, $newsletter, $subscriber, $queue, $isPlainText = true);
+    return Helpers::joinObject([$subject, $html, $text]);
   }
 
   /**
