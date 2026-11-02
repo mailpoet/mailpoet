@@ -72,14 +72,32 @@ jobs:
           GH_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
         run: ../tests_env/download-test-plugins.sh
 
-      - name: 'Pull test Docker images'
+      # Docker Hub pulls sometimes time out. Let the daemon retry each layer
+      # more often before a pull fails at all.
+      - name: 'Let Docker retry downloads'
+        run: |
+          config=/etc/docker/daemon.json
+          current=$(sudo cat "$config" 2>/dev/null || echo '{}')
+          echo "$current" | jq '. + {"max-download-attempts": 10}' | sudo tee "$config" > /dev/null
+          sudo systemctl restart docker
+
+      # Retry a failed pull or create a few times, and log each retry as a
+      # warning so the failure rate stays visible when the job ends green.
+      - name: 'Start test containers'
         working-directory: tests_env/docker
         run: |
-          for _ in 1 2 3; do docker compose pull --include-deps codeception_integration && break; sleep 3; done
-
-      - name: 'Create test containers'
-        working-directory: tests_env/docker
-        run: docker compose create codeception_integration || docker compose create codeception_integration
+          attempt=1
+          max_attempts=3
+          until docker compose pull --include-deps codeception_integration \
+            && docker compose create codeception_integration; do
+            if [ "$attempt" -ge "$max_attempts" ]; then
+              echo "::error::Test containers failed to start after $max_attempts attempts"
+              exit 1
+            fi
+            echo "::warning::test-containers-retry attempt=$attempt/$max_attempts, retrying in $((attempt * 15))s"
+            sleep "$((attempt * 15))"
+            attempt=$((attempt + 1))
+          done
 
       # Some tools need a different version for the PHP in the test image.
       - name: 'Install tools for the test image'
