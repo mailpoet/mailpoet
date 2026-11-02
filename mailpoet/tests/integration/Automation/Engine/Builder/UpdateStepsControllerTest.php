@@ -6,6 +6,7 @@ use MailPoet\Automation\Engine\Builder\UpdateStepsController;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Test\DataFactories\Newsletter;
@@ -129,5 +130,41 @@ class UpdateStepsControllerTest extends MailPoetTest {
     $updatedStep = $automation->getStep('a1');
     $this->assertNotNull($updatedStep);
     $this->assertArrayNotHasKey('email_wp_post_id', $updatedStep->getArgs());
+  }
+
+  public function testItDoesNotDuplicateNonAutomationEmailOnStepDuplication(): void {
+    $newsletter = (new Newsletter())
+      ->withType(NewsletterEntity::TYPE_WELCOME)
+      ->withActiveStatus()
+      ->withSubject('Welcome Subject')
+      ->create();
+    $newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+    $newslettersCount = count($newslettersRepository->findAll());
+
+    $step = new Step(
+      'a1',
+      Step::TYPE_ACTION,
+      'mailpoet:send-email',
+      [
+        'email_id' => $newsletter->getId(),
+        'stepDuplicated' => true,
+        'subject' => 'Welcome Subject',
+      ],
+      [new NextStep('end')]
+    );
+    $automation = new Automation('Test automation', [$step->getId() => $step], \wp_get_current_user());
+
+    $updateStepsController = $this->diContainer->get(UpdateStepsController::class);
+    $exception = null;
+    try {
+      $updateStepsController->updateSteps($automation, [
+        $step->getId() => $step->toArray(),
+      ]);
+    } catch (InvalidStateException $e) {
+      $exception = $e;
+    }
+
+    $this->assertInstanceOf(InvalidStateException::class, $exception);
+    $this->assertCount($newslettersCount, $newslettersRepository->findAll());
   }
 }
