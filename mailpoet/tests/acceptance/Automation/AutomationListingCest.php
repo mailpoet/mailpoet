@@ -288,7 +288,7 @@ class AutomationListingCest {
     $sortDescendingItem = ['xpath' => '//*[@role="menuitem" or @role="menuitemradio"][contains(normalize-space(.), "Sort descending")]'];
     $i->click($nameHeaderButton);
     $i->waitForElementClickable($sortDescendingItem);
-    $i->click($sortDescendingItem);
+    $i->clickDataViewsSortItem($sortDescendingItem);
     $i->waitForJS('return window.location.search.includes("orderby=name");', 10);
 
     $i->moveBack();

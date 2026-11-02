@@ -539,6 +539,17 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   /**
+   * DataViews sort items stay open after a click, and the open menu's backdrop takes every click on the page.
+   *
+   * @param string|array $item
+   */
+  public function clickDataViewsSortItem($item): void {
+    $this->click($item);
+    $this->pressKey('body', WebDriverKeys::ESCAPE);
+    $this->waitForElementNotVisible('[data-base-ui-inert]', 5);
+  }
+
+  /**
    * Override waitFor* methods to have a common default timeout
    */
   public function waitForElement($element, $timeout = 10) {

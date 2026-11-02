@@ -96,7 +96,7 @@ class TagsListingCest {
     $i->waitForText($withSubs);
     $i->click(['xpath' => '//th//button[contains(., "Subscribers")]']);
     $i->waitForText('Sort descending');
-    $i->click(['xpath' => '//*[@role="menuitemradio"][contains(normalize-space(.), "Sort descending")]']);
+    $i->clickDataViewsSortItem(['xpath' => '//*[@role="menuitemradio"][contains(normalize-space(.), "Sort descending")]']);
     $i->waitForText($withSubs);
     $i->waitForJS(<<<JS
       const text = Array.from(document.querySelectorAll('.mailpoet-tags-dataviews tbody tr'))
