@@ -1372,11 +1372,7 @@ function SubscriberList() {
   };
 
   const tabs = useMemo(
-    () =>
-      (groups ?? []).filter(
-        (entry) =>
-          !(entry.name === 'trash' && entry.count === 0 && group !== 'trash'),
-      ),
+    () => groupsToTabs(groups ?? [], group),
     [group, groups],
   );
 
@@ -1556,7 +1552,7 @@ function SubscriberList() {
 
       <Categories
         className="mailpoet-dataviews__tabs mailpoet-subscribers-dataviews__tabs"
-        categories={groupsToTabs(tabs)}
+        categories={tabs}
         active={activeTab}
         onSelect={handleTabSelect}
       />

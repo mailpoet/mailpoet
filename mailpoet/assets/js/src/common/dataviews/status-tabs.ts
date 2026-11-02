@@ -2,9 +2,19 @@ import type { Filter } from '@wordpress/dataviews';
 import type { Category } from 'common/categories/categories-item';
 import type { ListingGroup } from './types';
 
-/** Listing groups as tabs, with the classes and ids the tab bar has always had. */
-export function groupsToTabs(groups: ListingGroup[]): Category[] {
-  return groups.map(({ name, label, count }) => ({
+/**
+ * Listing groups as tabs, with the classes and ids the tab bar has always had.
+ * An empty Trash tab shows only while Trash is open.
+ */
+export function groupsToTabs(
+  groups: ListingGroup[],
+  group: string,
+): Category[] {
+  const visible = groups.filter(
+    ({ name, count }) =>
+      !(name === 'trash' && count === 0 && group !== 'trash'),
+  );
+  return visible.map(({ name, label, count }) => ({
     name,
     label,
     count,

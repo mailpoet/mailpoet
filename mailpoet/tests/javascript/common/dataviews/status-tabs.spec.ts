@@ -5,6 +5,7 @@ import {
   getActiveStatusTab,
   getSingleFilterValue,
   getTabChange,
+  groupsToTabs,
   withStatusTab,
 } from '../../../../assets/js/src/common/dataviews/status-tabs';
 
@@ -167,5 +168,35 @@ describe('getTabChange', () => {
     expect(
       getTabChange('sent', 'all', [status(['sent']), listFilter], 'status'),
     ).to.equal(null);
+  });
+});
+
+describe('groupsToTabs', () => {
+  const groups = [
+    { name: 'all', label: 'All', count: 3 },
+    { name: 'sent', label: 'Sent', count: 3 },
+    { name: 'trash', label: 'Trash', count: 0 },
+  ];
+
+  it('hides an empty Trash tab unless Trash is open', () => {
+    expect(groupsToTabs(groups, 'all').map((tab) => tab.name)).to.deep.equal([
+      'all',
+      'sent',
+    ]);
+    expect(groupsToTabs(groups, 'trash').map((tab) => tab.name)).to.deep.equal([
+      'all',
+      'sent',
+      'trash',
+    ]);
+  });
+
+  it('keeps the tab classes and ids the listings use', () => {
+    expect(groupsToTabs(groups, 'all')[1]).to.deep.equal({
+      name: 'sent',
+      label: 'Sent',
+      count: 3,
+      automationId: 'filters_sent',
+      className: 'mailpoet-dataviews-group-sent',
+    });
   });
 });
