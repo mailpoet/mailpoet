@@ -66,10 +66,9 @@ abstract class AbstractListingEndpoint extends Endpoint {
 
   /**
    * Returns `['count' => int, 'groups' => array]`. Split into a hook so an
-   * endpoint whose group counts already include the current group's count can
-   * compute both from a single query and skip the separate getCount(). The
-   * default keeps the two independent queries, unchanged for every other
-   * listing.
+   * endpoint can read the count from cached statistics instead of running
+   * getCount(). The default keeps the two independent queries, unchanged for
+   * every other listing.
    *
    * @return array{count: int, groups: array<int, array<string, mixed>>}
    */
