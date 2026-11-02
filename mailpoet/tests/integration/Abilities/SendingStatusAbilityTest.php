@@ -89,6 +89,20 @@ class SendingStatusAbilityTest extends \MailPoetTest {
     verify($message)->equals('Error (550): Mailbox rejected. Unprocessed subscribers: ([subscriber]: Full), ([subscriber]: Bounced), ([subscriber]: Full), ([subscriber]: Full)');
   }
 
+  public function testItKeepsErrorCodesAndSubscriberCountsInTheLastError(): void {
+    $messages = [
+      'Unprocessed subscribers: (John <john@example.com>), (Jane <jane@example.com>), (Ann <ann@example.com>)' => 'Unprocessed subscribers: ([subscriber]), ([subscriber]), ([subscriber])',
+      'Unprocessed subscribers: (John <john@example.com>: Rejected (550)), (Jane <jane@example.com>: Full)' => 'Unprocessed subscribers: ([subscriber]: Rejected (550)), ([subscriber]: Full)',
+      'SMTP Error (550) Recipient <john@example.com> rejected' => 'SMTP Error (550) [subscriber] rejected',
+      'Error (550): Unprocessed subscriber: (Petr) Svoboda <petr@example.com>: Bounced)' => 'Error (550): Unprocessed subscriber: ([subscriber]: Bounced)',
+    ];
+    foreach ($messages as $error => $expected) {
+      MailerLog::pauseSending(MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_SEND, $error));
+
+      verify($this->executeAbility()['sending']['last_error']['message'])->equals($expected);
+    }
+  }
+
   public function testItReportsAWaitingRetryAfterATemporaryError(): void {
     $mailerLog = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_CONNECT, 'Could not connect to SMTP host');
     $mailerLog['retry_attempt'] = 2;

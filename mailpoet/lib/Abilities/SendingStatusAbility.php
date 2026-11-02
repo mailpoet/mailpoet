@@ -153,22 +153,26 @@ class SendingStatusAbility implements Ability {
    * Mailer errors can quote subscribers. MailPoet formats them as "First Last <address>"
    * without quoting, so a name can contain ",", ":" or brackets.
    *
-   * 1. MailerError lists failed subscribers as "(First Last <address>: reason)". The first
-   *    pattern replaces such an item from its "(" up to the ">" after the address. The name
-   *    may contain any character except "<" and ">", and "(" only in balanced pairs, so an
-   *    earlier "(550)" in the message can't start a match.
-   * 2. A name with an unpaired "(" makes the first pattern start at that "(", which leaves
-   *    the start of the name before "([subscriber]". The second pattern removes it: one or
-   *    more "(" with text up to the masked item, without a ":" that would mean the text
+   * 1. MailerError lists failed subscribers as "(First Last <address>: reason)" after ": "
+   *    and joins them with ", ". The first pattern replaces such an item from its "(" up to
+   *    the ">" after the address. The name may contain any character except "<" and ">",
+   *    and "(" only in balanced pairs. Starting only after ": " or ", " keeps an earlier
+   *    "(550)" in the message from starting a match.
+   * 2. The second pattern replaces any other "(" up to "<...@...>" without crossing a ")",
+   *    so it keeps an error code like "(550)" and the end of the previous item.
+   * 3. A name with an unpaired "(" makes the patterns start at that "(", which leaves the
+   *    start of the name before "([subscriber]". The third pattern removes it: one or more
+   *    "(" with text up to the masked item, without a ":" or ")" that would mean the text
    *    belongs to the message or to the previous item.
-   * 3. Outside that list, the third pattern replaces a name that starts after the nearest
+   * 4. Outside that list, the fourth pattern replaces a name that starts after the nearest
    *    "(", ",", ":" or whitespace and runs up to "<...@...>".
-   * 4. The fourth pattern replaces any remaining address: a local part, "@" and a domain
+   * 5. The fifth pattern replaces any remaining address: a local part, "@" and a domain
    *    (dotless domains included).
    */
   public static function maskPersonalData(string $message): string {
-    $message = (string)preg_replace('/\((?:[^(<>]|\([^()<>]*\))*<[^<>\s]+@[^<>\s]+>/', '([subscriber]', $message);
-    $message = (string)preg_replace('/(?:\([^(<>:]*)+\(\[subscriber\]/', '([subscriber]', $message);
+    $message = (string)preg_replace('/(?<=[:,] )\((?:[^(<>]|\([^()<>]*\))*<[^<>\s]+@[^<>\s]+>/', '([subscriber]', $message);
+    $message = (string)preg_replace('/\((?:[^()<>]|\([^()<>]*\))*<[^<>\s]+@[^<>\s]+>/', '([subscriber]', $message);
+    $message = (string)preg_replace('/(?:\([^()<>:]*)+\(\[subscriber\]/', '([subscriber]', $message);
     $message = (string)preg_replace('/[^(),:\s][^(),:]*<[^<>\s]+@[^<>\s]+>/', '[subscriber]', $message);
     return (string)preg_replace('/[^\s<>"\'(),;:]+@[^\s<>"\'(),;:]+/', '[email]', $message);
   }
