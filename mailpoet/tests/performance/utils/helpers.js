@@ -108,18 +108,35 @@ export async function typeInDataViewsSearch(page, text, options = {}) {
   await page.locator('.dataviews-search input').type(text, options);
 }
 
-// Apply a native DataViews filter (e.g. "Lists") by choosing its options by label.
+// Apply a native DataViews filter (e.g. “Lists”) by choosing its options by label.
+// A primary filter is always shown as a chip; any other one is in the menu.
 export async function applyDataViewsFilter(page, filterName, optionLabels) {
-  await page
-    .locator(
-      'button.dataviews-filters__visibility-toggle[aria-haspopup="menu"]',
-    )
-    .click();
-  await page
-    .locator(
-      `//*[@role="menuitem"][contains(normalize-space(.), "${filterName}")]`,
-    )
-    .click();
+  const chipXpath = `//*[@role="button"][contains(@class, "dataviews-filters__summary-chip")][starts-with(normalize-space(.), "${filterName}")]`;
+  const hasChip = await page.evaluate(
+    (xpath) =>
+      document.evaluate(
+        xpath,
+        document,
+        null,
+        XPathResult.FIRST_ORDERED_NODE_TYPE,
+        null,
+      ).singleNodeValue !== null,
+    chipXpath,
+  );
+  if (hasChip) {
+    await page.locator(chipXpath).click();
+  } else {
+    await page
+      .locator(
+        'button.dataviews-filters__visibility-toggle[aria-haspopup="menu"]',
+      )
+      .click();
+    await page
+      .locator(
+        `//*[@role="menuitem"][contains(normalize-space(.), "${filterName}")]`,
+      )
+      .click();
+  }
   await page.waitForSelector('.dataviews-filters__search-widget-listitem');
   for (const label of optionLabels) {
     await page
