@@ -1,8 +1,7 @@
 import { useCallback, useState } from 'react';
-import { Modal, Notice } from '@wordpress/components';
+import { Button, Modal, Notice } from '@wordpress/components';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
-import { Button } from 'common';
 import { deleteLogs } from './api';
 import type { LogsFilter } from './url-state';
 
@@ -89,19 +88,22 @@ export function DeleteLogsModal({
 
       <div className="mailpoet-logs-delete-modal__actions">
         <Button
-          dimension="small"
-          variant="secondary"
+          __next40pxDefaultSize
+          variant="tertiary"
           onClick={onClose}
-          isDisabled={isDeleting}
+          disabled={isDeleting}
+          accessibleWhenDisabled
         >
           {__('Cancel', 'mailpoet')}
         </Button>
         <Button
-          dimension="small"
-          variant="destructive"
+          __next40pxDefaultSize
+          variant="primary"
+          isDestructive
           onClick={handleDelete}
-          isDisabled={isDeleting}
-          withSpinner={isDeleting}
+          disabled={isDeleting}
+          accessibleWhenDisabled
+          isBusy={isDeleting}
         >
           {sprintf(
             _n('Delete %s log', 'Delete %s logs', count, 'mailpoet'),
