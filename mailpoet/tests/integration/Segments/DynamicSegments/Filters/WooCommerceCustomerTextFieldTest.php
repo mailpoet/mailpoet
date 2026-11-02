@@ -202,6 +202,5 @@ class WooCommerceCustomerTextFieldTest extends \MailPoetTest {
     parent::_after();
     global $wpdb;
     $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
-    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
   }
 }
