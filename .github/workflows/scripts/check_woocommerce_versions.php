@@ -30,14 +30,14 @@ echo "Latest WooCommerce version: $latestVersion\n";
 echo "Previous  WooCommerce version: $previousVersion\n";
 
 if ($latestVersion) {
-  echo "Replacing the latest version in the config file...\n";
+  echo "Replacing the latest version in tests_env/download-test-plugins.sh...\n";
   replaceLatestVersion($latestVersion, $downloadCommand);
 } else {
   echo "No latest version found.\n";
 }
 
 if ($previousVersion) {
-  echo "Replacing the previous version in the config file...\n";
+  echo "Replacing the previous version in the CircleCI config file...\n";
   replacePreviousVersion($previousVersion, $configParameterName);
 } else {
   echo "No previous version found.\n";
