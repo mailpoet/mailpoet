@@ -153,10 +153,16 @@ describe('getTabChange', () => {
     ).to.deep.equal({ group: 'all', filters: [] });
   });
 
-  it('keeps every filter when Trash is picked', () => {
+  it('clears only the status filter when Trash is picked', () => {
     expect(
-      getTabChange('trash', 'all', [status(['sent'])], 'status'),
-    ).to.deep.equal({ group: 'trash', filters: [status(['sent'])] });
+      getTabChange('trash', 'all', [status(['sent']), listFilter], 'status'),
+    ).to.deep.equal({ group: 'trash', filters: [listFilter] });
+  });
+
+  it('keeps a status filter set inside Trash when Trash is picked again', () => {
+    expect(
+      getTabChange('trash', 'trash', [status(['sent'])], 'status'),
+    ).to.equal(null);
   });
 
   it('returns null when the tab changes nothing', () => {

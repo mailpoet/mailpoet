@@ -211,7 +211,7 @@ class NewslettersListingCest {
   }
 
   public function filterByStatusOnAllAndTrashTabs(\AcceptanceTester $i) {
-    $i->wantTo('Keep the status filter across the All and Trash tabs');
+    $i->wantTo('Clear the status with the Trash and All tabs, and filter the Trash by status');
     $sent = (new Newsletter())->withSubject('Tab sent')->withSentStatus()->create();
     $draft = (new Newsletter())->withSubject('Tab draft')->withDraftStatus()->create();
     $trashedSent = (new Newsletter())->withSubject('Tab trashed sent')->withSentStatus()->withDeleted()->create();
@@ -228,8 +228,13 @@ class NewslettersListingCest {
 
     $i->changeGroupInListingFilter('trash');
     $i->waitForElement('[data-automation-id="listing_item_' . $trashedSent->getId() . '"]');
-    $i->dontSeeElement('[data-automation-id="listing_item_' . $trashedDraft->getId() . '"]');
-    $i->waitForElement($this->filterChip('Status'));
+    $i->waitForElement('[data-automation-id="listing_item_' . $trashedDraft->getId() . '"]');
+    $i->dontSeeElement($this->filterChip('Status'));
+
+    $i->applyDataViewsFilter('Status', ['Sent']);
+    $i->waitForElementNotVisible('[data-automation-id="listing_item_' . $trashedDraft->getId() . '"]');
+    $i->seeElement('[data-automation-id="listing_item_' . $trashedSent->getId() . '"]');
+    $i->waitForElement('.mailpoet-dataviews-group-trash.is-active');
     $i->waitForHashFilterValue('status', 'sent');
 
     $i->wantTo('Clear the status with the All tab');

@@ -789,8 +789,8 @@ class SubscribersListingCest {
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
     $i->waitForListingItemsToLoad();
-    $i->applyDataViewsFilter('Status', ['Bounced']);
     $i->changeGroupInListingFilter('trash');
+    $i->applyDataViewsFilter('Status', ['Bounced']);
     $i->waitForText('trash-bounced@example.com');
     $i->dontSee('trash-subscribed@example.com');
 
