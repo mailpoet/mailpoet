@@ -246,62 +246,39 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($groups['6']['count'])->equals(1);
   }
 
-  public function testItCountsGroupsRespectingSearch() {
-    $aliceSubscribed = $this->createSubscriberEntity();
-    $aliceSubscribed->setEmail('alice-group-search-1@example.com');
-    $aliceSubscribed->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
-
-    $aliceUnconfirmed = $this->createSubscriberEntity();
-    $aliceUnconfirmed->setEmail('alice-group-search-2@example.com');
-    $aliceUnconfirmed->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
-
-    $bob = $this->createSubscriberEntity();
-    $bob->setEmail('bob-group-search@example.com');
-    $bob->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
-
+  public function testGetGroupsIgnoresSearchAndFilters() {
+    $list = $this->segmentRepository->createOrUpdate('Group Totals List');
+    $member = $this->createSubscriberEntity();
+    $member->setEmail('alice-group-totals@example.com');
+    $this->createSubscriberSegmentEntity($list, $member);
+    $leftList = $this->createSubscriberEntity();
+    $this->createSubscriberSegmentEntity($list, $leftList)->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $unconfirmed = $this->createSubscriberEntity();
+    $unconfirmed->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
     $this->entityManager->flush();
 
-    $this->listingData['search'] = 'alice-group-search';
-    $groups = $this->repository->getGroups($this->getListingDefinition());
-    $this->listingData['search'] = '';
-
-    $byName = array_column($groups, 'count', 'name');
-    // Only the two "alice" subscribers match the search; bob is excluded from
-    // every bucket, proving the grouped count applies the search.
-    verify($byName['all'])->equals(2);
-    verify($byName['subscribed'])->equals(1);
-    verify($byName['unconfirmed'])->equals(1);
-    verify($byName['unsubscribed'])->equals(0);
+    $totals = $this->repository->getGroups(new ListingDefinition());
+    verify(array_column($totals, 'count', 'name'))->equals([
+      'all' => 3,
+      SubscriberEntity::STATUS_SUBSCRIBED => 2,
+      SubscriberEntity::STATUS_UNCONFIRMED => 1,
+      SubscriberEntity::STATUS_UNSUBSCRIBED => 0,
+      SubscriberEntity::STATUS_INACTIVE => 0,
+      SubscriberEntity::STATUS_BOUNCED => 0,
+      'trash' => 0,
+    ]);
+    $definitions = [
+      new ListingDefinition('all', [], 'alice-group-totals'),
+      new ListingDefinition('all', ['segment_in' => [$list->getId()]]),
+      new ListingDefinition('all', ['status_in' => [SubscriberEntity::STATUS_UNCONFIRMED]]),
+      new ListingDefinition('trash', ['segment_in' => [$list->getId()]], 'alice'),
+    ];
+    foreach ($definitions as $definition) {
+      verify($this->repository->getGroups($definition))->equals($totals);
+    }
   }
 
-  public function testItCountsGroupsForStaticSegmentUsingPerListStatus() {
-    $segment = $this->segmentRepository->createOrUpdate('Group Static Segment');
-
-    // Globally subscribed, but unsubscribed from THIS list.
-    $unsubscribedFromList = $this->createSubscriberEntity();
-    $unsubscribedFromList->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
-    $segmentLink = $this->createSubscriberSegmentEntity($segment, $unsubscribedFromList);
-    $segmentLink->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
-
-    // Subscribed to the list.
-    $subscribedToList = $this->createSubscriberEntity();
-    $subscribedToList->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
-    $this->createSubscriberSegmentEntity($segment, $subscribedToList);
-
-    $this->entityManager->flush();
-
-    $this->listingData['filter'] = ['segment' => $segment->getId()];
-    $groups = $this->repository->getGroups($this->getListingDefinition());
-    $this->listingData['filter'] = [];
-
-    $byName = array_column($groups, 'count', 'name');
-    // Per-list status (fallback path): the globally-subscribed member that left
-    // this list counts as unsubscribed, not subscribed.
-    verify($byName['subscribed'])->equals(1);
-    verify($byName['unsubscribed'])->equals(1);
-  }
-
-  public function testGetCountAndAllTrashGroupsMatchesStandaloneCounts() {
+  public function testGetListingCountMatchesStandaloneCounts() {
     $segment = $this->segmentRepository->createOrUpdate('Count All Trash Segment');
 
     $this->createSubscriberEntity(); // subscribed, no list
@@ -344,31 +321,20 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
       $this->listingData['group'] = $scenario['group'];
       $this->listingData['filter'] = $scenario['filter'];
       $definition = $this->getListingDefinition();
-      $this->listingData['group'] = 'all';
-      $all = $this->repository->getCount($this->getListingDefinition());
-      $this->listingData['group'] = 'trash';
-      $trash = $this->repository->getCount($this->getListingDefinition());
-
-      $result = $this->repository->getCountAndAllTrashGroups($definition);
-
-      verify($result['count'])->equals($this->repository->getCount($definition));
-      verify($result['groups'])->equals([
-        ['name' => 'all', 'label' => 'All', 'count' => $all],
-        ['name' => 'trash', 'label' => 'Trash', 'count' => $trash],
-      ]);
+      verify($this->repository->getListingCount($definition))->equals($this->repository->getCount($definition));
     }
 
     $this->listingData['group'] = 'all';
     $this->listingData['filter'] = $dynamicFilter;
-    verify($this->repository->getCountAndAllTrashGroups($this->getListingDefinition())['count'])->equals(2);
+    verify($this->repository->getListingCount($this->getListingDefinition()))->equals(2);
     $this->listingData['filter'] = ['segment_not_in' => [$dynamicSegment->getId()]];
-    verify($this->repository->getCountAndAllTrashGroups($this->getListingDefinition())['count'])->equals(5);
+    verify($this->repository->getListingCount($this->getListingDefinition()))->equals(5);
 
     $this->listingData['group'] = '';
     $this->listingData['filter'] = [];
   }
 
-  public function testGetCountAndAllTrashGroupsDoesNotUseCachedCountsForAZeroScoreFilter() {
+  public function testGetListingCountDoesNotUseCachedCountsForAZeroScoreFilter() {
     $segment = $this->segmentRepository->createOrUpdate('Zero Score Segment');
     (new Subscriber())->withEmail('zero-score@example.com')->withEngagementScore(0)->withSegments([$segment])->create();
     (new Subscriber())->withEmail('high-score-1@example.com')->withEngagementScore(50)->withSegments([$segment])->create();
@@ -378,14 +344,12 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     foreach ([[], ['segment_in' => [$segment->getId()]]] as $extra) {
       foreach (['score_max' => 0, 'score_lt' => 1, 'score_gt' => '0'] as $key => $value) {
         $expected = $key === 'score_gt' ? ($extra ? 1 : 2) : 1;
-        $result = $this->repository->getCountAndAllTrashGroups(new ListingDefinition('all', [$key => $value] + $extra));
-        verify($result['count'])->equals($expected);
-        verify($result['groups'][0]['count'])->equals($expected);
+        verify($this->repository->getListingCount(new ListingDefinition('all', [$key => $value] + $extra)))->equals($expected);
       }
     }
   }
 
-  public function testGetCountAndAllTrashGroupsRunsAtMostTwoCountQueries() {
+  public function testGetListingCountRunsOneCountQuery() {
     $dynamicSegment = $this->createDynamicSegment([[DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTextField::EMAIL, ['operator' => 'startsWith', 'value' => 'cq-dyn-']]]);
     $tag = (new Tag())->withName('Count Queries Tag')->create();
     (new Subscriber())->withEmail('cq-dyn-1@example.com')->withTags([$tag])->create();
@@ -399,15 +363,15 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     try {
       foreach (['all', 'trash'] as $group) {
         $logger->queries = [];
-        $result = $this->repository->getCountAndAllTrashGroups(new ListingDefinition(
+        $count = $this->repository->getListingCount(new ListingDefinition(
           $group,
           ['segment_in' => [$dynamicSegment->getId()], 'tag_in' => [$tag->getId()]]
         ));
         $countQueries = array_filter($logger->queries, function(array $query): bool {
           return stripos($query['sql'], 'COUNT(') !== false;
         });
-        verify(count($countQueries))->lessThanOrEqual(2);
-        verify(array_column($result['groups'], 'count', 'name'))->equals(['all' => 1, 'trash' => 1]);
+        verify(count($countQueries))->equals(1);
+        verify($count)->equals(1);
       }
     } finally {
       $configuration->setSQLLogger($previousLogger);
@@ -1732,7 +1696,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
 
     $filters = ['segment_in' => [$segment->getId()]];
     verify($this->getIds($filters))->equals([$zero->getId()]);
-    verify($this->repository->getCountAndAllTrashGroups(new ListingDefinition('all', $filters))['count'])->equals(1);
+    verify($this->repository->getListingCount(new ListingDefinition('all', $filters)))->equals(1);
   }
 
   public function testDynamicSegmentListingWorksWithOnlyFullGroupBy() {
@@ -1924,21 +1888,6 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
       SubscriberEntity::STATUS_BOUNCED => 1,
       'trash' => 1,
     ]);
-  }
-
-  public function testGetGroupsWithSeveralListsCountsWithTheGlobalStatus() {
-    $listA = (new SegmentFactory())->withName('List A')->create();
-    $listB = (new SegmentFactory())->withName('List B')->create();
-    (new Subscriber())->withSegments([$listA])->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
-    (new Subscriber())->withSegments([$listB])->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
-    (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
-
-    $definition = new ListingDefinition(null, ['segment_in' => [$listA->getId(), $listB->getId()]]);
-    $groups = array_column($this->repository->getGroups($definition), 'count', 'name');
-
-    verify($groups['all'])->equals(2);
-    verify($groups[SubscriberEntity::STATUS_SUBSCRIBED])->equals(1);
-    verify($groups[SubscriberEntity::STATUS_UNSUBSCRIBED])->equals(1);
   }
 
   public function testItBuildsStatusAndSourceFiltersWithGlobalStatusCounts() {
@@ -2173,10 +2122,10 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
       ->equals([$unconfirmed->getId()]);
     verify($this->getIds(['status_in' => [SubscriberEntity::STATUS_SUBSCRIBED], 'statusInclude' => [SubscriberEntity::STATUS_UNSUBSCRIBED]]))
       ->equals([]);
-    verify($this->repository->getCountAndAllTrashGroups(new ListingDefinition('all', [
+    verify($this->repository->getListingCount(new ListingDefinition('all', [
       'status_in' => [SubscriberEntity::STATUS_SUBSCRIBED],
       'statusInclude' => [SubscriberEntity::STATUS_UNSUBSCRIBED],
-    ]))['count'])->equals(0);
+    ])))->equals(0);
     verify($this->getIds(['status_not_in' => [SubscriberEntity::STATUS_SUBSCRIBED], 'statusExclude' => [SubscriberEntity::STATUS_UNCONFIRMED]]))
       ->equals([$unsubscribed->getId()]);
     verify($this->getIds(['statusInclude' => $all]))->equals([$subscribed->getId(), $unconfirmed->getId()]);
@@ -2195,7 +2144,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
 
     $filters = ['segment_in' => [$dynamic->getId()], 'minUpdatedAt' => new Carbon('2022-10-11 12:00:00')];
     verify($this->getIds($filters))->equals([$recent->getId()]);
-    verify($this->repository->getCountAndAllTrashGroups(new ListingDefinition('all', $filters))['count'])->equals(1);
+    verify($this->repository->getListingCount(new ListingDefinition('all', $filters)))->equals(1);
   }
 
   public function testScoreGtAndLtAreExclusiveAndMinMaxAreInclusive() {
