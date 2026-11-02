@@ -2,11 +2,11 @@
 
 namespace MailPoet\Listing;
 
-use MailPoet\API\REST\AbstractListingEndpoint;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PageLimit {
   const DEFAULT_LIMIT_PER_PAGE = 20;
+  const MAX_LIMIT_PER_PAGE = 100;
 
   /** @var WPFunctions */
   private $wp;
@@ -33,6 +33,6 @@ class PageLimit {
     }
     // Older versions let admins save any value here,
     // but the listing endpoints reject a page size over this maximum.
-    return min($listingPerPage, AbstractListingEndpoint::MAX_PER_PAGE);
+    return min($listingPerPage, self::MAX_LIMIT_PER_PAGE);
   }
 }
