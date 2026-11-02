@@ -159,9 +159,8 @@ class NewsletterListingRepository extends ListingRepository {
   }
 
   /**
-   * Counts the emails of the type that are trashed (Trash group) or not (any other group),
-   * ignoring search and other filters.
-   * “Sending” excludes and “Paused” includes paused emails, like the status filter.
+   * The status filter options, labelled with the counts of trashed emails on the
+   * Trash tab and of the other emails on every other tab.
    *
    * @return array<int, array{label: string, value: string}>
    */
