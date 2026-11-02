@@ -27,9 +27,9 @@ import {
   getActiveStatusTab,
   getDataViewsPreference,
   getSingleFilterValue,
+  getTabChange,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
-  withStatusTab,
   type ListingQueryParams,
 } from 'common/dataviews';
 import type { ListingGroup } from 'common/dataviews/types';
@@ -1355,25 +1355,17 @@ function SubscriberList() {
     SUBSCRIBER_STATUSES,
   );
 
-  // A status tab is a shortcut for the Status filter, so All and the status
-  // tabs change only that filter; Trash keeps every filter.
   const handleTabSelect = (tab: string): void => {
-    if (tab === activeTab) return;
-    setGroup(tab === 'trash' ? 'trash' : 'all');
+    const change = getTabChange(tab, group, view.filters, STATUS_FIELD);
+    if (!change) return;
+    setGroup(change.group);
     setSelection([]);
     setSelectAll(false);
     clearLoadError();
     setView((currentView) => ({
       ...currentView,
       page: 1,
-      filters:
-        tab === 'trash'
-          ? currentView.filters
-          : withStatusTab(
-              currentView.filters,
-              STATUS_FIELD,
-              tab === 'all' ? null : tab,
-            ),
+      filters: change.filters,
     }));
   };
 

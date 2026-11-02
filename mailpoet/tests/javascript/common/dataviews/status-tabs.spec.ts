@@ -4,6 +4,7 @@ import type { Filter } from '@wordpress/dataviews';
 import {
   getActiveStatusTab,
   getSingleFilterValue,
+  getTabChange,
   withStatusTab,
 } from '../../../../assets/js/src/common/dataviews/status-tabs';
 
@@ -126,5 +127,42 @@ describe('withStatusTab', () => {
         null,
       ),
     ).to.deep.equal([listFilter]);
+  });
+});
+
+describe('getTabChange', () => {
+  const status = (value: string[], operator: 'isAny' | 'isNone' = 'isAny') =>
+    ({ field: 'status', operator, value } as Filter);
+
+  it('sets the status filter for a status tab and keeps the others', () => {
+    expect(
+      getTabChange('unconfirmed', 'all', [listFilter], 'status'),
+    ).to.deep.equal({
+      group: 'all',
+      filters: [listFilter, status(['unconfirmed'])],
+    });
+  });
+
+  it('clears a status filter that has no tab when All is picked', () => {
+    expect(
+      getTabChange('all', 'all', [status(['bounced'], 'isNone')], 'status'),
+    ).to.deep.equal({ group: 'all', filters: [] });
+    expect(
+      getTabChange('all', 'all', [status(['a', 'b'])], 'status'),
+    ).to.deep.equal({ group: 'all', filters: [] });
+  });
+
+  it('keeps every filter when Trash is picked', () => {
+    expect(
+      getTabChange('trash', 'all', [status(['sent'])], 'status'),
+    ).to.deep.equal({ group: 'trash', filters: [status(['sent'])] });
+  });
+
+  it('returns null when the tab changes nothing', () => {
+    expect(getTabChange('all', 'all', [listFilter], 'status')).to.equal(null);
+    expect(getTabChange('sent', 'all', [status(['sent'])], 'status')).to.equal(
+      null,
+    );
+    expect(getTabChange('trash', 'trash', [], 'status')).to.equal(null);
   });
 });

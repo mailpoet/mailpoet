@@ -40,3 +40,26 @@ export function withStatusTab(
     ? [...others, { field, operator: 'isAny', value: [status] }]
     : others;
 }
+
+/**
+ * The group and filters after picking a tab, or null when nothing changes.
+ * A status tab sets the status filter, All clears it, Trash keeps every filter.
+ */
+export function getTabChange(
+  tab: string,
+  group: string,
+  filters: Filter[] | undefined,
+  field: string,
+): { group: 'all' | 'trash'; filters: Filter[] } | null {
+  const next =
+    tab === 'trash'
+      ? { group: 'trash' as const, filters: filters ?? [] }
+      : {
+          group: 'all' as const,
+          filters: withStatusTab(filters, field, tab === 'all' ? null : tab),
+        };
+  const unchanged =
+    next.group === group &&
+    JSON.stringify(next.filters) === JSON.stringify(filters ?? []);
+  return unchanged ? null : next;
+}
