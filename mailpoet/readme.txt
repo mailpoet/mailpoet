@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 7.0
 Tested up to: 7.1
-Stable tag: 5.44.0
+Stable tag: 5.45.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,30 +227,25 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.44.0 - 2026-10-26 =
-* Added: Filters by status, list, tag, source, engagement score and dates, and sorting by more columns, on the Subscribers page;
-* Added: Hold campaigns that are late because sending was blocked, and let admins send, reschedule or cancel them from a notice;
-* Added: The Latest Posts block can now show password-protected posts without their content, leave them out, or treat them like any other post;
-* Added: Logs tab on the Help page;
-* Improved: Handling of special characters in author, category and read more text of posts in emails;
-* Improved: Reporting of failed database updates with the error details, and the update now starts right after the plugin is updated;
-* Improved: Syncing of WordPress user email changes to MailPoet subscribers;
-* Improved: Linking of new WordPress accounts to existing subscribers;
-* Improved: Logs are easier to read with readable topic names, severity tags, plain messages with details on expand, and help text. Saved column, sort and page-size choices on the logs page reset once;
-* Improved: Log messages are written in plain language;
-* Changed: Deprecated the automation email personalization filters mailpoet_automation_email_personalize_html_after and mailpoet_automation_email_personalize_text_after in favor of personalization tags;
-* Changed: Newsletters, post notifications and automation emails now wait in the queue on staging, development and local sites until you turn sending on;
-* Fixed: Filter button not hiding active filters on the Forms, Logs, Tags, Custom fields, Lists and Segments pages;
-* Fixed: Name column menu on the Automations listing offering Hide column and Add filter options that did nothing;
-* Fixed: Export downloads not working and a PHP warning logged on every page load on hosts that store uploads remotely, such as WordPress VIP;
-* Fixed: Missing texts on MailPoet admin pages when a translation contains a backslash;
-* Fixed: Title column menu on listings offering Hide column and Add filter options that did nothing;
-* Fixed: Redirect to the MailPoet welcome page after activation sometimes not happening;
-* Fixed: "View in browser" could fail for emails with broken column layouts;
-* Fixed: Compatibility with WordPress 7.2;
-* Fixed: Sending limit notice showing the wrong resume date, or a placeholder instead of the date in some languages;
-* Fixed: Verifying an already activated key no longer switches the sending method to MailPoet Sending Service;
-* Fixed: Date picked in segment conditions and the archive shortcode saved as the previous day in some time zones;
-* Fixed: Horizontal scrollbar under the email list on the Emails page.
+= 5.45.0 - 2026-11-02 =
+* Added: Abilities that let AI agents read MailPoet's sending status, unsubscribe trend and recent newsletter statistics;
+* Updated: Style linting tools used in development;
+* Improved: Rendering of emails opened with View in Browser;
+* Improved: Handling of subscriber names;
+* Improved: Stability of the Welcome Wizard;
+* Improved: Stability of the email editor;
+* Improved: Detection of unused style lint exceptions;
+* Improved: Stability of the Latest Posts and Posts blocks;
+* Improved: Handling of shortcodes and campaign links in emails;
+* Improved: Handling of subscription and checkout requests;
+* Improved: Stability of subscriber tracking;
+* Fixed: Personalization tags inside link addresses not being replaced in the plain-text part of block emails and in tracked links;
+* Fixed: Error in booking automations that count a customer’s recent bookings;
+* Fixed: Options deleted from a radio or select custom field in the form editor coming back after saving;
+* Fixed: Tags page showing “No tags yet.” while the tags are still loading;
+* Fixed: Text area fields in forms going back to one line after updating the custom field in the form editor;
+* Fixed: WooCommerce and email conditions in the segment editor showing in English on translated sites;
+* Fixed: Read More links in the Latest Posts block showing the post title in sent emails;
+* Fixed: Subscribers and Lists pages showing an error instead of items for admins who set more than 100 items per page in an older version.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
