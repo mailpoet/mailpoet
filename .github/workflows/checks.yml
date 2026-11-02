@@ -193,8 +193,8 @@ jobs:
     secrets:
       WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
 
-  # The WooCommerce jobs download paid plugins with a token, which pull requests
-  # from forks and Dependabot don’t get.
+  # The WooCommerce and multisite jobs download paid plugins with a token, which
+  # pull requests from forks and Dependabot don’t get.
   integration_woo_hpos_on:
     name: 'Integration tests (WooCommerce, HPOS on)'
     needs: build
@@ -210,11 +210,10 @@ jobs:
       WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
       WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
 
-  # These three run on trunk and release only, like on CircleCI.
   integration_woo_hpos_sync_on:
     name: 'Integration tests (WooCommerce, HPOS sync on)'
     needs: build
-    if: github.event_name == 'push'
+    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
     uses: ./.github/workflows/integration-tests.yml
     permissions:
       contents: read
@@ -229,7 +228,7 @@ jobs:
   integration_woo_hpos_off:
     name: 'Integration tests (WooCommerce, HPOS off)'
     needs: build
-    if: github.event_name == 'push'
+    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
     uses: ./.github/workflows/integration-tests.yml
     permissions:
       contents: read
@@ -244,7 +243,7 @@ jobs:
   integration_multisite:
     name: 'Integration tests (multisite)'
     needs: build
-    if: github.event_name == 'push'
+    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
     uses: ./.github/workflows/integration-tests.yml
     permissions:
       contents: read
