@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Notice } from '@wordpress/components';
+import { Button, Notice } from '@wordpress/components';
 import { createInterpolateElement } from '@wordpress/element';
 import { DataViews, View } from '@wordpress/dataviews';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
-import { Button } from 'common';
 import {
   getDataViewsPreference,
   usePersistedDataViewsPreference,
@@ -259,10 +258,11 @@ export function List({
           <div className="mailpoet-logs-error">
             <span>{__('Logs could not be loaded.', 'mailpoet')}</span>
             <Button
-              dimension="small"
               variant="secondary"
+              size="compact"
               onClick={retryLoading}
-              isDisabled={isLoading}
+              disabled={isLoading}
+              accessibleWhenDisabled
             >
               {__('Retry', 'mailpoet')}
             </Button>
@@ -295,19 +295,22 @@ export function List({
           <DataViews.FiltersToggle />
           <div className="mailpoet-dataviews__toolbar-end">
             <Button
-              dimension="small"
-              variant="destructive"
+              variant="tertiary"
+              size="compact"
+              isDestructive
               onClick={() => setIsDeleteModalOpen(true)}
-              isDisabled={!canDelete}
+              disabled={!canDelete}
+              accessibleWhenDisabled
             >
               {__('Delete logs...', 'mailpoet')}
             </Button>
             {downloadConfig && (
               <Button
-                dimension="small"
                 variant="tertiary"
+                size="compact"
                 onClick={() => setIsDownloadModalOpen(true)}
-                isDisabled={!canDownload}
+                disabled={!canDownload}
+                accessibleWhenDisabled
               >
                 {__('Download...', 'mailpoet')}
               </Button>
