@@ -581,13 +581,8 @@ export function NewslettersListing({
   ]);
 
   const tabs = useMemo(
-    () =>
-      (groups ?? []).filter(
-        (entry) =>
-          (entry.name in groupCounts || allowedStatuses.includes(entry.name)) &&
-          !(entry.name === 'trash' && entry.count === 0 && group !== 'trash'),
-      ),
-    [allowedStatuses, group, groupCounts, groups],
+    () => groupsToTabs(groups ?? [], group),
+    [group, groups],
   );
 
   const actionHelpers = useMemo<ListingActionHelpers>(
@@ -759,7 +754,7 @@ export function NewslettersListing({
 
       <Categories
         className="mailpoet-dataviews__tabs mailpoet-newsletters-dataviews__tabs"
-        categories={groupsToTabs(tabs)}
+        categories={tabs}
         active={activeTab}
         onSelect={handleTabSelect}
       />
