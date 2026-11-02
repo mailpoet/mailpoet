@@ -35,4 +35,10 @@ class UrlDecoratorTest extends \MailPoetTest {
     verify($this->urlDecorator->decorate('http://example.com/?param=value#hash/?param=val'))
       ->equals('http://example.com/?param=value&ref=abcdefgh#hash/?param=val');
   }
+
+  public function testItDoesNotAddInvalidReferralId() {
+    $this->settings->set(ReferralDetector::REFERRAL_SETTING_NAME, 'invalid referral id');
+    $url = 'http://example.com/';
+    verify($this->urlDecorator->decorate($url))->equals($url);
+  }
 }

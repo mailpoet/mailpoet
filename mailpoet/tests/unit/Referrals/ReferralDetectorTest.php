@@ -67,4 +67,62 @@ class ReferralDetectorTest extends \MailPoetUnitTest {
     $referralDetector = new ReferralDetector($this->wpMock, $this->settingsMock);
     verify($referralDetector->detect())->equals('constant_referral_id');
   }
+
+  public function testItReplacesInvalidSettingsValueWithOptionValue() {
+    $this->settingsMock
+      ->expects($this->once())
+      ->method('get')
+      ->willReturn('invalid referral id');
+    $this->wpMock
+      ->expects($this->once())
+      ->method('getOption')
+      ->willReturn('option_referral_id');
+    $this->settingsMock
+      ->expects($this->once())
+      ->method('set')
+      ->with(ReferralDetector::REFERRAL_SETTING_NAME, 'option_referral_id');
+    $referralDetector = new ReferralDetector($this->wpMock, $this->settingsMock);
+    verify($referralDetector->detect())->equals('option_referral_id');
+  }
+
+  public function testItAcceptsNumericReferralId() {
+    $this->settingsMock
+      ->expects($this->once())
+      ->method('get')
+      ->willReturn(12345);
+    $referralDetector = new ReferralDetector($this->wpMock, $this->settingsMock);
+    verify($referralDetector->detect())->equals(12345);
+  }
+
+  public function testItDoesNotStoreInvalidOptionValue() {
+    $this->settingsMock
+      ->expects($this->once())
+      ->method('get')
+      ->willReturn(null);
+    $this->wpMock
+      ->expects($this->once())
+      ->method('getOption')
+      ->willReturn('invalid referral id');
+    $this->settingsMock
+      ->expects($this->never())
+      ->method('set');
+    $referralDetector = new ReferralDetector($this->wpMock, $this->settingsMock);
+    verify($referralDetector->detect())->null();
+  }
+
+  public function testItRejectsReferralIdWithTrailingNewline() {
+    verify(ReferralDetector::isValid("referral_id\n"))->false();
+  }
+
+  public function testItKeepsSavedZeroReferralId() {
+    $this->settingsMock
+      ->expects($this->once())
+      ->method('get')
+      ->willReturn('0');
+    $this->wpMock
+      ->expects($this->never())
+      ->method('getOption');
+    $referralDetector = new ReferralDetector($this->wpMock, $this->settingsMock);
+    verify($referralDetector->detect())->equals('0');
+  }
 }
