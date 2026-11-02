@@ -66,7 +66,8 @@ export function withStatusTab(
 
 /**
  * The group and filters after picking a tab, or null when nothing changes.
- * A status tab sets the status filter, All clears it, Trash keeps every filter.
+ * A status tab sets the status filter. All and Trash clear it, like the old
+ * status groups they replace, and keep the other filters.
  */
 export function getTabChange(
   tab: string,
@@ -74,13 +75,17 @@ export function getTabChange(
   filters: Filter[] | undefined,
   field: string,
 ): { group: 'all' | 'trash'; filters: Filter[] } | null {
-  const next =
-    tab === 'trash'
-      ? { group: 'trash' as const, filters: filters ?? [] }
-      : {
-          group: 'all' as const,
-          filters: withStatusTab(filters, field, tab === 'all' ? null : tab),
-        };
+  if (tab === 'trash' && group === 'trash') {
+    return null;
+  }
+  const next = {
+    group: tab === 'trash' ? ('trash' as const) : ('all' as const),
+    filters: withStatusTab(
+      filters,
+      field,
+      tab === 'all' || tab === 'trash' ? null : tab,
+    ),
+  };
   const byField = (list: Filter[]) =>
     JSON.stringify([...list].sort((a, b) => a.field.localeCompare(b.field)));
   const unchanged =
