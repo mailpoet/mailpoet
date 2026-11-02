@@ -500,14 +500,32 @@ class NewslettersEndpointsTest extends Test {
     $this->assertIsArray($payload);
     $groupsList = $payload['groups'];
     $this->assertIsArray($groupsList);
-    $groups = array_column($groupsList, 'count', 'name');
+    $this->assertSame(
+      ['all', 'draft', 'scheduled', 'sending', 'paused', 'sent', 'trash'],
+      array_column($groupsList, 'name')
+    );
+  }
 
-    $this->assertArrayHasKey('all', $groups);
-    $this->assertArrayHasKey(NewsletterEntity::STATUS_DRAFT, $groups);
-    $this->assertArrayHasKey(NewsletterEntity::STATUS_SCHEDULED, $groups);
-    $this->assertArrayHasKey(NewsletterEntity::STATUS_SENDING, $groups);
-    $this->assertArrayHasKey(NewsletterEntity::STATUS_SENT, $groups);
-    $this->assertArrayHasKey('trash', $groups);
+  public function testListingGroupsCountLikeTheStatusFilterWhateverTheFilters(): void {
+    $suffix = uniqid();
+    $parent = (new NewsletterFactory())->withSubject("Parent_{$suffix}")->withPostNotificationsType()->create();
+    (new NewsletterFactory())->withSubject("Sent_{$suffix}")->withPostNotificationHistoryType()
+      ->withParent($parent)->withStatus(NewsletterEntity::STATUS_SENT)->create();
+    $this->createSending(ScheduledTaskEntity::STATUS_PAUSED, "Paused_{$suffix}", 'notification_history')->setParent($parent);
+    $this->entityManager->flush();
+
+    $expected = [
+      ['name' => 'all', 'label' => 'All', 'count' => 2],
+      ['name' => 'sending', 'label' => 'Sending', 'count' => 0],
+      ['name' => 'paused', 'label' => 'Paused', 'count' => 1],
+      ['name' => 'sent', 'label' => 'Sent', 'count' => 1],
+      ['name' => 'trash', 'label' => 'Trash', 'count' => 0],
+    ];
+    foreach ([[], ['search' => "Sent_{$suffix}"], ['filter' => ['status' => ['paused']]]] as $query) {
+      $response = $this->get(self::LISTING_PATH, ['query' => $query + ['type' => 'notification_history', 'parent_id' => $parent->getId()]]);
+      $this->assertIsArray($response);
+      $this->assertSame($expected, $this->getPayload($response)['groups'] ?? null);
+    }
   }
 
   public function testBulkTrashMovesSelectionToTrash(): void {
