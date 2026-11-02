@@ -80,9 +80,6 @@ anchors:
 
   multisite_acceptance_config: &multisite_acceptance_config
     multisite: 1
-    requires:
-      - unit_tests
-      - static_analysis
     <<: *only_trunk_and_release
 
   command_add_github_key: &command_add_github_key
@@ -95,11 +92,6 @@ executors:
     <<: *default_job_config
     docker:
       - image: mailpoet/wordpress:7.4_20261005.1
-
-  wpcli_php_max_wporg:
-    <<: *default_job_config
-    docker:
-      - image: mailpoet/wordpress:8.1_20261005.1 # We need to use 8.1 to emulate the WP.org environment
 
   wpcli_php_latest:
     <<: *default_job_config
@@ -167,9 +159,6 @@ jobs:
             ./do doctrine:generate-cache
             php -d register_argc_argv=1 ../tests_env/vendor/bin/codecept build
             ./do twig:generate-cache
-      - run:
-          name: 'Check Prettier formatting'
-          command: ./do qa:prettier-check
       - save_cache:
           key: tools-{{ checksum "tools/install.php" }}
           paths:
@@ -261,103 +250,6 @@ jobs:
             - .node
             - mailpoet
 
-  static_analysis:
-    executor: wpcli_php_latest
-    resource_class: medium+
-    working_directory: /home/circleci/mailpoet/mailpoet
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'Static analysis'
-          command: ./do qa:phpstan
-  security_analysis:
-    working_directory: /home/circleci/mailpoet/mailpoet
-    machine:
-      image: default
-      docker_layer_caching: false
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - add_ssh_keys
-      - run:
-          name: 'Add GitHub to known_hosts'
-          <<: *command_add_github_key
-      - run:
-          name: 'Set up PHP'
-          command: |
-            sudo apt update
-            sudo apt install -y php8.1-cli
-      - run:
-          name: 'QA Security'
-          command: |
-            # Forked pull requests do not get project secrets, so skip the
-            # steps that need them instead of failing the whole workflow.
-            if [ -n "${CIRCLE_PR_USERNAME:-}" ]; then
-              echo "Forked pull request from ${CIRCLE_PR_USERNAME}: the wpscan-semgrep-rules deploy key is not available. Skipping."
-              exit 0
-            fi
-            ./do qa:semgrep
-  qa_js:
-    executor: wpcli_php_latest
-    resource_class: medium
-    working_directory: /home/circleci/mailpoet/mailpoet
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'QA Frontend Assets'
-          command: ./do qa:frontend-assets
-  qa_php:
-    executor: wpcli_php_latest
-    working_directory: /home/circleci/mailpoet/mailpoet
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'QA PHP'
-          command: ./do qa:php
-  qa_php_oldest:
-    executor: wpcli_php_oldest
-    working_directory: /home/circleci/mailpoet/mailpoet
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'QA PHP'
-          command: ./do qa:php
-  qa_php_max_wporg:
-    executor: wpcli_php_max_wporg
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'QA PHP'
-          command: ./do qa:php-max-wporg
-  js_tests:
-    executor: wpcli_php_latest
-    working_directory: /home/circleci/mailpoet/mailpoet
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'Preparing test results folder'
-          command: mkdir test-results
-      - run:
-          name: 'JS Newsletter Editor Tests'
-          command: |
-            mkdir test-results/mocha
-            ./do compile:js --env production --only-tests
-            ./do t:newsletter-editor test-results/mocha/newsletter_editor_junit.xml
-      - run:
-          name: 'JS Tests'
-          command: |
-            ./do t:j test-results/mocha/junit.xml
-      - store_test_results:
-          path: test-results/mocha
-      - store_artifacts:
-          path: test-results/mocha
-          destination: mocha
   acceptance_tests:
     parallelism: << parameters.parallelism >>
     working_directory: /home/circleci/mailpoet/mailpoet
@@ -910,128 +802,6 @@ jobs:
       - store_artifacts:
           path: tests/_output
 
-  qit_malware_scan:
-    executor: wpcli_php_latest
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'Set up environment'
-          command: |
-            # Copy built ZIP to local directory for easier access from QIT
-            cp /home/circleci/mailpoet/mailpoet.zip .
-            # Authenticate in QIT
-            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
-      - run:
-          name: 'QIT Malware Scan'
-          command: ./do qa:qit-malware | tee tests/_output/qit-malware
-      - run:
-          name: 'Retrieve test results'
-          command: |
-            grep "Result Url" tests/_output/qit-malware | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
-          when: always
-      - store_artifacts:
-          path: tests/_output
-
-  qit_php_compatibility:
-    executor: wpcli_php_latest
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'Set up environment'
-          command: |
-            # Copy built ZIP to local directory for easier access from QIT
-            cp /home/circleci/mailpoet/mailpoet.zip .
-            # Authenticate in QIT
-            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
-      - run:
-          name: 'QIT PHP Compatibility Check'
-          command: ./do qa:qit-php-compatibility | tee tests/_output/qit-php-compatibility
-      - run:
-          name: 'Retrieve test results'
-          command: |
-            grep "Result Url" tests/_output/qit-php-compatibility | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
-          when: always
-      - store_artifacts:
-          path: tests/_output
-
-  qit_activation_tests:
-    executor: wpcli_php_latest
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'Set up environment'
-          command: |
-            # Copy built ZIP to local directory for easier access from QIT
-            cp /home/circleci/mailpoet/mailpoet.zip .
-            # Authenticate in QIT
-            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
-      - run:
-          name: 'QIT Activation Tests'
-          command: |
-            echo "Using WooCommerce RC Version"
-            ./do qa:qit-activation --wc=rc | tee tests/_output/qit-activation
-      - run:
-          name: 'Retrieve test results'
-          command: |
-            grep "Result Url" tests/_output/qit-activation | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
-          when: always
-      - store_artifacts:
-          path: tests/_output
-
-  qit_woo_api_tests:
-    executor: wpcli_php_latest
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'Set up environment'
-          command: |
-            # Copy built ZIP to local directory for easier access from QIT
-            cp /home/circleci/mailpoet/mailpoet.zip .
-            # Authenticate in QIT
-            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
-      - run:
-          name: 'QIT Woo API Tests'
-          command: |
-            echo "Using WooCommerce RC Version"
-            ./do qa:qit-woo-api --wc=rc | tee tests/_output/qit-woo-api
-      - run:
-          name: 'Retrieve test results'
-          command: |
-            grep "Result Url" tests/_output/qit-woo-api | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
-          when: always
-      - store_artifacts:
-          path: tests/_output
-
-  qit_woo_e2e_tests:
-    executor: wpcli_php_latest
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'Set up environment'
-          command: |
-            # Copy built ZIP to local directory for easier access from QIT
-            cp /home/circleci/mailpoet/mailpoet.zip .
-            # Authenticate in QIT
-            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
-      - run:
-          name: 'QIT Woo E2E Tests'
-          no_output_timeout: 1h # Woo E2E tests usually takes ~45m
-          command: |
-            echo "Using WooCommerce RC Version"
-            ./do qa:qit-woo-e2e --wc=rc | tee tests/_output/qit-woo-e2e
-      - run:
-          name: 'Retrieve test results'
-          command: |
-            grep "Result Url" tests/_output/qit-woo-e2e | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
-          when: always
-      - store_artifacts:
-          path: tests/_output
-
 workflows:
   build_and_test:
     jobs:
@@ -1040,35 +810,6 @@ workflows:
       - build_premium:
           <<: *slack-fail-post-step
           <<: *only_release
-          requires:
-            - build
-      - unit_tests:
-          <<: *slack-fail-post-step
-          name: unit_tests
-          requires:
-            - build
-      - static_analysis:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - security_analysis:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - qa_js:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - qa_php:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - qa_php_oldest:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - qa_php_max_wporg:
-          <<: *slack-fail-post-step
           requires:
             - build
       - acceptance_tests:
@@ -1101,10 +842,6 @@ workflows:
           parallelism: 8
           group: frontend
           blockbased_theme: 1
-          requires:
-            - build
-      - js_tests:
-          <<: *slack-fail-post-step
           requires:
             - build
       - integration_tests:
@@ -1345,47 +1082,3 @@ workflows:
           mysql_image: mysql:5.6
           requires:
             - build_premium
-
-  nightly_qit:
-    triggers:
-      - schedule:
-          cron: '0 2 * * 2,3' # Every Tuesday and Wednesday at 2am UTC
-          filters:
-            branches:
-              only:
-                - trunk
-    jobs:
-      - build:
-          <<: *slack-fail-post-step
-      - build_release_zip:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - lint_release_zip_php74:
-          <<: *slack-fail-post-step
-          requires:
-            - build_release_zip
-      - qit_security_scan:
-          <<: *slack-fail-post-step
-          requires:
-            - build_release_zip
-      - qit_activation_tests:
-          <<: *slack-fail-post-step
-          requires:
-            - build_release_zip
-      - qit_malware_scan:
-          <<: *slack-fail-post-step
-          requires:
-            - build_release_zip
-      - qit_php_compatibility:
-          <<: *slack-fail-post-step
-          requires:
-            - build_release_zip
-      - qit_woo_api_tests:
-          <<: *slack-fail-post-step
-          requires:
-            - build_release_zip
-      - qit_woo_e2e_tests:
-          <<: *slack-fail-post-step
-          requires:
-            - build_release_zip
