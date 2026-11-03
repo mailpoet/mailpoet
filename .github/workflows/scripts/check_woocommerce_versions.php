@@ -37,7 +37,7 @@ if ($latestVersion) {
 }
 
 if ($previousVersion) {
-  echo "Replacing the previous version in the CircleCI config file...\n";
+  echo "Replacing the previous version in the nightly CI jobs...\n";
   replacePreviousVersion($previousVersion, $configParameterName);
 } else {
   echo "No previous version found.\n";
