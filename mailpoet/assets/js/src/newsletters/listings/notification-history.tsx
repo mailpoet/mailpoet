@@ -176,7 +176,7 @@ function NewsletterListNotificationHistoryComponent({
   );
   return (
     <>
-      <p>
+      <p className="mailpoet-notification-history-back">
         <Link
           className="mailpoet-button button button-secondary button-small"
           to="/notification"
