@@ -75,7 +75,7 @@ GitHub Actions (`.github/workflows/checks.yml`) runs these jobs from `mailpoet/`
 | `PHP lint and code style (PHP 7.4)` | `./do qa:php`                                 | 7.4 |
 | `PHP lint and code style (PHP 8.1)` | `./do qa:php-max-wporg` (lint of the build)   | 8.1 |
 | `PHPStan`                           | `./do qa:phpstan`                             | 8.5 |
-| `Semgrep`                           | `./tools/semgrep.sh lib/ lib-3rd-party/`      | –   |
+| `Security scan (Semgrep)`           | `./tools/semgrep.sh lib/ lib-3rd-party/`      | –   |
 | `JS tests`                          | JS and legacy newsletter editor tests         | –   |
 | `PHP unit tests`                    | `./do t:u`                                    | 8.5 |
 
