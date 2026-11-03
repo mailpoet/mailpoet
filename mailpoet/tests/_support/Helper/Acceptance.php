@@ -19,11 +19,17 @@ class Acceptance extends \Codeception\Module {
    * php-webdriver 1.16 leaves webSocketUrl out of the capabilities it sends, so the
    * WebDriver BiDi session set up in acceptance.suite.yml would never start.
    * Remove once https://github.com/php-webdriver/php-webdriver/pull/1153 is released.
+   *
+   * This runs before every test, not once per suite: WebDriver::amOnUrl() reconfigures
+   * the module, which rebuilds the capabilities from the suite config.
    */
-  public function _beforeSuite($settings = []) {
+  public function _before(TestInterface $test) {
     $webDriver = $this->getModule('WPWebDriver');
     Assert::assertInstanceOf(WebDriver::class, $webDriver);
-    $webDriver->_capabilities(function (array $capabilities): DesiredCapabilities {
+    $webDriver->_capabilities(function ($capabilities): DesiredCapabilities {
+      if ($capabilities instanceof DesiredCapabilities) {
+        $capabilities = $capabilities->toArray();
+      }
       return new class($capabilities) extends DesiredCapabilities {
         public function toW3cCompatibleArray() {
           $w3cCapabilities = parent::toW3cCompatibleArray();
