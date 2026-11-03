@@ -1,7 +1,7 @@
 import { Button, PanelBody, Notice, Fill } from '@wordpress/components';
 import { Button as UiButton, Text, Stack } from '@wordpress/ui';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { useCallback, useEffect, useRef } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { store as editorStore } from '@wordpress/editor';
 import { __, sprintf } from '@wordpress/i18n';
 import { storeName as emailEditorStore } from '@woocommerce/email-editor';
@@ -18,7 +18,7 @@ import { useSendEmail } from './use-send-email';
 import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
 import { useSenderFields } from '../shared/use-sender-fields';
 import { SenderControls } from './sender-controls';
-import { isSendClickTooSoon } from './send-click-guard';
+import { useGuardedSend } from './use-guarded-send';
 
 export function SendPanel() {
   const isOpen = useSelect(
@@ -31,13 +31,6 @@ export function SendPanel() {
   );
   const { closeSendPanel } = useDispatch(emailEditorIntegrationStore);
   const { setEmailPost, togglePreviewModal } = useDispatch(emailEditorStore);
-
-  const openedAtRef = useRef(0);
-  useEffect(() => {
-    if (isOpen) {
-      openedAtRef.current = performance.now();
-    }
-  }, [isOpen]);
 
   const { isScheduled, formattedDate, setScheduledDate, scheduleMode } =
     useScheduledDate();
@@ -74,16 +67,16 @@ export function SendPanel() {
     void closeSendPanel();
   }, [clearError, closeSendPanel]);
 
-  const handleSend = useCallback(async () => {
-    if (isSendClickTooSoon(openedAtRef.current, performance.now())) {
-      return;
-    }
-    const isValid = await validateSenderFields();
-    if (!isValid) {
-      return;
-    }
-    await sendEmail();
-  }, [sendEmail, validateSenderFields]);
+  const handleSend = useGuardedSend(
+    isOpen,
+    useCallback(async () => {
+      const isValid = await validateSenderFields();
+      if (!isValid) {
+        return;
+      }
+      await sendEmail();
+    }, [sendEmail, validateSenderFields]),
+  );
 
   if (!isOpen) {
     return null;
