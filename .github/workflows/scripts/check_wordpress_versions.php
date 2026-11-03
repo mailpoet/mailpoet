@@ -78,14 +78,17 @@ function replaceLatestWordPressVersion(string $latestVersion): void {
 }
 
 /**
- * We use the previous WordPress version only in the CircleCI config file.
+ * We use the previous WordPress version only in the nightly jobs that test the
+ * oldest versions.
  */
 function replacePreviousWordPressVersion(string $previousVersion): void {
-  replaceVersionInFile(
-    __DIR__ . './../../../.circleci/config.yml',
-    '/(wordpress_version: )\d+\.\d+\.?\d*/',
-    '${1}' . $previousVersion
-  );
+  foreach (OLDEST_VERSION_FILES as $file) {
+    replaceVersionInFile(
+      $file,
+      '/(wordpress_version: )\d+\.\d+\.?\d*/',
+      '${1}' . $previousVersion
+    );
+  }
 }
 
 $allVersions = [];
@@ -127,7 +130,7 @@ if ($latestVersion) {
 }
 
 if ($previousVersion) {
-  echo "Replacing the previous version in the config file...\n";
+  echo "Replacing the previous version in the nightly CI jobs...\n";
   // We install previous WordPress version via CLI so we need a version without PHP in the name.
   $previousVersion = preg_replace('/-php\d+\.\d+$/', '', $previousVersion);
   replacePreviousWordPressVersion($previousVersion);

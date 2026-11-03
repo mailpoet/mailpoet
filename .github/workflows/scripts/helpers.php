@@ -119,24 +119,36 @@ function fetchGitHubCommitVersions(string $repo, string $filePath, int $page = 1
 function replaceLatestVersion(string $latestVersion, string $downloadCommand): void {
   replaceVersionInFile(
     __DIR__ . '/../../../tests_env/download-test-plugins.sh',
-    '/(.\/do ' . $downloadCommand . ' )\d+\.\d+\.\d+/',
+    '/(.\/do ' . $downloadCommand . ' "\$\{\w+:-)\d+\.\d+\.\d+/',
     '${1}' . $latestVersion
   );
 }
 
+/**
+ * The files with the oldest supported versions: the CircleCI config (its
+ * Premium nightly jobs) and the file the GitHub nightly tests read. Not a
+ * workflow file, because the updater’s token can’t push changes to those.
+ */
+const OLDEST_VERSION_FILES = [
+  __DIR__ . '/../../../.circleci/config.yml',
+  __DIR__ . '/../../../tests_env/oldest-versions.yml',
+];
+
 function replacePreviousVersion(string $previousVersion, string $configParameterName): void {
-  replaceVersionInFile(
-    __DIR__ . '/../../../.circleci/config.yml',
-    '/(' . $configParameterName . ': )\d+\.\d+\.\d+/',
-    '${1}' . $previousVersion
-  );
+  foreach (OLDEST_VERSION_FILES as $file) {
+    replaceVersionInFile(
+      $file,
+      '/(' . $configParameterName . ': )\d+\.\d+\.\d+/',
+      '${1}' . $previousVersion
+    );
+  }
 }
 
 /**
  * Function replacing the latest and previous versions of a private plugin in the CI files.
  * The function fetches the tags from the GitHub repository, filters stable versions,
  * gets the latest and previous minor/major versions, and replaces the latest one in tests_env/download-test-plugins.sh
- * and the previous one in the CircleCI config file.
+ * and the previous one in the nightly CI jobs (OLDEST_VERSION_FILES).
  * Versions come from the repository tags unless $fetchVersions (page number => list of versions) is given.
  */
 function replacePrivatePluginVersion(
@@ -171,7 +183,7 @@ function replacePrivatePluginVersion(
   }
 
   if ($previousVersion) {
-    echo "Replacing the previous version in the CircleCI config file...\n";
+    echo "Replacing the previous version in the nightly CI jobs...\n";
     replacePreviousVersion($previousVersion, $configParameterName);
   } else {
     echo "No previous version found.\n";
