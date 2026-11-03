@@ -2,4 +2,4 @@
 
 # Description
 
-Double-clicking “Review & send” in the new email editor sending the email right away
+A double-click on “Review & send” or “Send” in the new email editor sending the email right away or twice
