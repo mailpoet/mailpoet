@@ -32,7 +32,7 @@ export function useGuardedSend(
   const isSendingRef = useRef(false);
   const [isSending, setIsSending] = useState(false);
 
-  // Before paint, so the Send button can't be clicked before the time is set.
+  // Before paint, so the Send button can’t be clicked before the time is set.
   useLayoutEffect(() => {
     if (isOpen) {
       openedAtRef.current = performance.now();
