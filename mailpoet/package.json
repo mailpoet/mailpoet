@@ -125,7 +125,7 @@
     "select2": "4.1.0-rc.0",
     "slugify": "^1.6.9",
     "spectrum-colorpicker": "^1.8.1",
-    "tinymce": "^7.9.3",
+    "tinymce": "^8.9.3",
     "underscore": "^1.13.8",
     "velocity-animate": "^1.5.2"
   },
