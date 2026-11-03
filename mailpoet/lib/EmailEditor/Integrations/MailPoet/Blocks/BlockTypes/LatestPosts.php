@@ -51,7 +51,7 @@ class LatestPosts extends AbstractBlock {
    */
   private const PASSWORD_FILTER_PRIORITY = PHP_INT_MAX;
 
-  /** Before the_content formats the text (10) and runs registered shortcodes (11). */
+  /** Before core formats the text, trims the excerpt (10) and runs registered shortcodes (11). */
   private const REMOVE_SHORTCODES_PRIORITY = 9;
 
   /** Template blocks. Not email-enabled by default, so we opt them in. */
@@ -1068,6 +1068,7 @@ class LatestPosts extends AbstractBlock {
     $this->wp->addFilter('render_block_core/read-more', $removeReadMoreScreenReaderText);
     if ($this->innerRenderDepth++ === 0) {
       $this->wp->addFilter('the_content', [$this, 'removeUnregisteredShortcodes'], self::REMOVE_SHORTCODES_PRIORITY);
+      $this->wp->addFilter('get_the_excerpt', [$this, 'removeUnregisteredShortcodes'], self::REMOVE_SHORTCODES_PRIORITY);
     }
     try {
       foreach ($innerBlocks as $innerBlock) {
@@ -1080,6 +1081,7 @@ class LatestPosts extends AbstractBlock {
       $this->wp->removeFilter('render_block_core/read-more', $removeReadMoreScreenReaderText);
       if (--$this->innerRenderDepth === 0) {
         $this->wp->removeFilter('the_content', [$this, 'removeUnregisteredShortcodes'], self::REMOVE_SHORTCODES_PRIORITY);
+        $this->wp->removeFilter('get_the_excerpt', [$this, 'removeUnregisteredShortcodes'], self::REMOVE_SHORTCODES_PRIORITY);
       }
       $this->wp->removeFilter('render_block_context', $injectContext, 1);
       $post = $previousPost; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
