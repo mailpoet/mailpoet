@@ -28,10 +28,7 @@ class CreateAndSendEmailUsingGutenbergCest {
     $this->closeTemplateSelectionModal($i);
 
     $i->wantTo('Compose an email');
-    $i->waitForElement('[name="editor-canvas"]');
-    $i->wait(1); // we need to wait for the iframe to initialize otherwise the switch does not work properly
-    $i->switchToIFrame('[name="editor-canvas"]');
-    $i->waitForElementVisible('.is-root-container', 20);
+    $i->switchToEditorCanvas();
     $i->waitForElementVisible('[aria-label="Block: Image"]');
     $i->waitForElementVisible('[aria-label^="Block: Heading"]');
     $i->click('[aria-label="Block: Paragraph"]');
@@ -107,10 +104,7 @@ class CreateAndSendEmailUsingGutenbergCest {
     $this->closeTemplateSelectionModal($i);
 
     $i->wantTo('Edit an email');
-    $i->waitForElement('[name="editor-canvas"]');
-    $i->wait(1); // we need to wait for the iframe to initialize otherwise the switch does not work properly
-    $i->switchToIFrame('[name="editor-canvas"]');
-    $i->waitForElementVisible('.is-root-container', 20);
+    $i->switchToEditorCanvas();
     $i->waitForElementVisible('[aria-label="Block: Image"]');
     $i->waitForElementVisible('[aria-label^="Block: Heading"]');
     $i->click('[aria-label="Block: Paragraph"]');

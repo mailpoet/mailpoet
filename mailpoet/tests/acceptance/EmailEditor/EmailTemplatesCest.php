@@ -35,10 +35,7 @@ class EmailTemplatesCest {
 
     $textInTemplate = 'Text added to template';
     $i->wantTo('Add some text to the template');
-    $i->waitForElement('[name="editor-canvas"]');
-    $i->wait(1); // we need to wait for the iframe to initialize otherwise the switch does not work properly
-    $i->switchToIFrame('[name="editor-canvas"]');
-    $i->waitForElementVisible('.is-root-container', 20);
+    $i->switchToEditorCanvas();
     $i->pressKey('[aria-label="Block: Paragraph"]', $textInTemplate);
     $i->switchToIFrame();
 
@@ -82,15 +79,13 @@ class EmailTemplatesCest {
   }
 
   private function checkTextIsInEmail(\AcceptanceTester $i, string $text): void {
-    $i->switchToIFrame('[name="editor-canvas"]');
-    $i->waitForElementVisible('.is-root-container');
+    $i->switchToEditorCanvas();
     $i->see($text);
     $i->switchToIFrame();
   }
 
   private function checkTextIsNotInEmail(\AcceptanceTester $i, string $text): void {
-    $i->switchToIFrame('[name="editor-canvas"]');
-    $i->waitForElementVisible('.is-root-container');
+    $i->switchToEditorCanvas();
     $i->dontSee($text);
     $i->switchToIFrame();
   }

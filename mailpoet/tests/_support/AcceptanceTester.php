@@ -1,8 +1,12 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
 use Codeception\Util\Locator;
+use Facebook\WebDriver\Exception\UnknownErrorException;
 use Facebook\WebDriver\Exception\UnrecognizedExceptionException;
 use Facebook\WebDriver\Exception\WebDriverException;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\Cache\TransientCache;
 use MailPoet\DI\ContainerWrapper;
@@ -651,8 +655,55 @@ class AcceptanceTester extends \Codeception\Actor {
     $this->waitForJS('return new RegExp(' . json_encode($pattern) . ').test(decodeURIComponent(window.location.hash));', $timeout);
   }
 
+  /**
+   * While a page is being replaced, ChromeDriver can report “Node with given id does not belong
+   * to the document” instead of a stale element, and the wait only retries on stale elements.
+   */
   public function waitForText($text, $timeout = 10, $selector = null) {
-    return $this->_waitForText($text, $this->getDefaultTimeout($timeout), $selector);
+    $deadline = time() + (int)$this->getDefaultTimeout($timeout);
+    while (true) {
+      try {
+        return $this->_waitForText($text, max(1, $deadline - time()), $selector);
+      } catch (UnknownErrorException $e) {
+        if (strpos($e->getMessage(), 'does not belong to the document') === false || time() >= $deadline) {
+          throw $e;
+        }
+      }
+    }
+  }
+
+  /**
+   * The block editor can replace its canvas iframe after the first render (the email editor
+   * does when it applies a template after the template window closes). So this only stays in
+   * an iframe that is still on the page after a short wait, and starts over otherwise.
+   */
+  public function switchToEditorCanvas(int $timeout = 30): void {
+    $deadline = time() + (int)$this->getDefaultTimeout($timeout);
+    $this->executeInSelenium(function (RemoteWebDriver $webDriver) use ($deadline): void {
+      $iframeLocator = WebDriverBy::cssSelector('iframe[name="editor-canvas"]');
+      while (true) {
+        try {
+          $webDriver->switchTo()->defaultContent();
+          $webDriver->wait(max(1, $deadline - time()))->until(
+            WebDriverExpectedCondition::presenceOfElementLocated($iframeLocator)
+          );
+          $iframe = $webDriver->findElement($iframeLocator);
+          $webDriver->switchTo()->frame($iframe);
+          $webDriver->wait(min(5, max(1, $deadline - time())))->until(
+            WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::cssSelector('.is-root-container'))
+          );
+          sleep(2);
+          $webDriver->switchTo()->defaultContent();
+          $iframe->getTagName(); // throws when the editor has replaced the iframe
+          $webDriver->switchTo()->frame($iframe);
+          return;
+        } catch (\Exception $e) {
+          if (time() >= $deadline) {
+            throw $e;
+          }
+        }
+      }
+    });
   }
 
   public function waitForNoticeAndClose($text, $timeout = 10, $selector = null) {
