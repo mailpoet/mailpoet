@@ -195,154 +195,116 @@ jobs:
     secrets:
       WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
 
-  # The WooCommerce and multisite jobs download paid plugins with a token, which
-  # pull requests from forks don’t get. Dependabot gets it from the Dependabot
-  # secrets.
-  integration_woo_hpos_on:
-    name: 'Integration tests (WooCommerce, HPOS on)'
+  # These variants download paid plugins with a token, which pull requests
+  # from forks don’t get; “All checks” fails for forks instead. Dependabot gets
+  # the token from the Dependabot secrets.
+  integration:
+    name: 'Integration tests (${{ matrix.title }})'
     needs: build
     if: ${{ !github.event.pull_request.head.repo.fork }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {
+              title: 'WooCommerce, HPOS on',
+              name: woo-hpos-on,
+              parts: '[1]',
+              group: woo,
+              enable_hpos: 1,
+            }
+          - {
+              title: 'WooCommerce, HPOS sync on',
+              name: woo-hpos-sync-on,
+              parts: '[1]',
+              group: woo,
+              enable_hpos_sync: 1,
+            }
+          - {
+              title: 'WooCommerce, HPOS off',
+              name: woo-hpos-off,
+              parts: '[1]',
+              group: woo,
+              disable_hpos: 1,
+            }
+          - {
+              title: 'multisite',
+              name: multisite,
+              parts: '[1, 2]',
+              multisite: 1,
+            }
     uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
     with:
       suite: integration
-      name: woo-hpos-on
-      group: woo
-      enable_hpos: 1
-    secrets:
-      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
-      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
-
-  integration_woo_hpos_sync_on:
-    name: 'Integration tests (WooCommerce, HPOS sync on)'
-    needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork }}
-    uses: ./.github/workflows/codeception-tests.yml
-    permissions:
-      contents: read
-    with:
-      suite: integration
-      name: woo-hpos-sync-on
-      group: woo
-      enable_hpos_sync: 1
-    secrets:
-      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
-      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
-
-  integration_woo_hpos_off:
-    name: 'Integration tests (WooCommerce, HPOS off)'
-    needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork }}
-    uses: ./.github/workflows/codeception-tests.yml
-    permissions:
-      contents: read
-    with:
-      suite: integration
-      name: woo-hpos-off
-      group: woo
-      disable_hpos: 1
-    secrets:
-      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
-      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
-
-  integration_multisite:
-    name: 'Integration tests (multisite)'
-    needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork }}
-    uses: ./.github/workflows/codeception-tests.yml
-    permissions:
-      contents: read
-    with:
-      suite: integration
-      name: multisite
-      parts: '[1, 2]'
-      multisite: 1
+      name: ${{ matrix.name }}
+      parts: ${{ matrix.parts }}
+      group: ${{ matrix.group || '' }}
+      enable_hpos: ${{ matrix.enable_hpos || 0 }}
+      enable_hpos_sync: ${{ matrix.enable_hpos_sync || 0 }}
+      disable_hpos: ${{ matrix.disable_hpos || 0 }}
+      multisite: ${{ matrix.multisite || 0 }}
     secrets:
       WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
       WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
 
   # Acceptance tests run in Chrome against the whole plugin, with the paid
   # WooCommerce plugins, so they skip forks like the jobs above.
-  acceptance_base_and_woo:
-    name: 'Acceptance tests'
+  acceptance:
+    name: 'Acceptance tests (${{ matrix.title }})'
     needs: build
     if: ${{ !github.event.pull_request.head.repo.fork }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {
+              title: 'base and WooCommerce',
+              name: base-and-woo,
+              parts: '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]',
+              enable_hpos: 1,
+            }
+          - {
+              title: 'block theme',
+              name: blockbased-theme,
+              parts: '[1, 2, 3, 4, 5, 6, 7, 8]',
+              group: frontend,
+              blockbased_theme: 1,
+            }
+          - {
+              title: 'WooCommerce, HPOS sync on',
+              name: woo-hpos-sync-on,
+              parts: '[1, 2, 3, 4, 5, 6, 7, 8]',
+              group: woo,
+              enable_hpos_sync: 1,
+            }
+          - {
+              title: 'WooCommerce, HPOS off',
+              name: woo-hpos-off,
+              parts: '[1, 2, 3, 4, 5, 6, 7, 8]',
+              group: woo,
+              disable_hpos: 1,
+            }
+          - {
+              title: 'multisite',
+              name: multisite,
+              parts: '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]',
+              multisite: 1,
+            }
     uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
     with:
       suite: acceptance
-      name: base-and-woo
-      parts: '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]'
-      enable_hpos: 1
-    secrets:
-      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
-      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
-
-  acceptance_blockbased_theme:
-    name: 'Acceptance tests (block theme)'
-    needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork }}
-    uses: ./.github/workflows/codeception-tests.yml
-    permissions:
-      contents: read
-    with:
-      suite: acceptance
-      name: blockbased-theme
-      parts: '[1, 2, 3, 4, 5, 6, 7, 8]'
-      group: frontend
-      blockbased_theme: 1
-    secrets:
-      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
-      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
-
-  acceptance_woo_hpos_sync_on:
-    name: 'Acceptance tests (WooCommerce, HPOS sync on)'
-    needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork }}
-    uses: ./.github/workflows/codeception-tests.yml
-    permissions:
-      contents: read
-    with:
-      suite: acceptance
-      name: woo-hpos-sync-on
-      parts: '[1, 2, 3, 4, 5, 6, 7, 8]'
-      group: woo
-      enable_hpos_sync: 1
-    secrets:
-      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
-      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
-
-  acceptance_woo_hpos_off:
-    name: 'Acceptance tests (WooCommerce, HPOS off)'
-    needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork }}
-    uses: ./.github/workflows/codeception-tests.yml
-    permissions:
-      contents: read
-    with:
-      suite: acceptance
-      name: woo-hpos-off
-      parts: '[1, 2, 3, 4, 5, 6, 7, 8]'
-      group: woo
-      disable_hpos: 1
-    secrets:
-      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
-      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
-
-  acceptance_multisite:
-    name: 'Acceptance tests (multisite)'
-    needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork }}
-    uses: ./.github/workflows/codeception-tests.yml
-    permissions:
-      contents: read
-    with:
-      suite: acceptance
-      name: multisite
-      parts: '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]'
-      multisite: 1
+      name: ${{ matrix.name }}
+      parts: ${{ matrix.parts }}
+      group: ${{ matrix.group || '' }}
+      enable_hpos: ${{ matrix.enable_hpos || 0 }}
+      enable_hpos_sync: ${{ matrix.enable_hpos_sync || 0 }}
+      disable_hpos: ${{ matrix.disable_hpos || 0 }}
+      blockbased_theme: ${{ matrix.blockbased_theme || 0 }}
+      multisite: ${{ matrix.multisite || 0 }}
     secrets:
       WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
       WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
@@ -365,15 +327,8 @@ jobs:
       - unit_tests
       - security_analysis
       - integration_base
-      - integration_woo_hpos_on
-      - integration_woo_hpos_sync_on
-      - integration_woo_hpos_off
-      - integration_multisite
-      - acceptance_base_and_woo
-      - acceptance_blockbased_theme
-      - acceptance_woo_hpos_sync_on
-      - acceptance_woo_hpos_off
-      - acceptance_multisite
+      - integration
+      - acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
