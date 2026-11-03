@@ -67,7 +67,8 @@ export function withStatusTab(
 /**
  * The group and filters after picking a tab, or null when nothing changes.
  * A status tab sets the status filter. All and Trash clear it, like the old
- * status groups they replace, and keep the other filters.
+ * status groups they replace, and keep the other filters. Picking Trash while
+ * it is open keeps a status filter set there, so the Trash can be filtered.
  */
 export function getTabChange(
   tab: string,
