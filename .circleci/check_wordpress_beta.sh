@@ -1,10 +1,18 @@
 #!/bin/bash
 
-# Fetch the WordPress releases RSS feed
-RSS_FEED=$(curl -s https://wordpress.org/news/category/releases/feed/)
+# Fetch the WordPress releases RSS feed. Fail when it can’t be fetched or read,
+# so an error isn’t taken for “no beta is out”.
+RSS_FEED=$(curl -sSf --retry 3 https://wordpress.org/news/category/releases/feed/) || {
+  echo "Could not fetch the WordPress releases feed." >&2
+  exit 1
+}
 
 # Release titles, newest first, in lowercase
 TITLES=$(echo "$RSS_FEED" | grep -o '<title>WordPress [^<]*</title>' | sed -E 's/<\/?title>//g' | tr [:upper:] [:lower:])
+if [[ -z $TITLES ]]; then
+  echo "The WordPress releases feed has no releases in it." >&2
+  exit 1
+fi
 
 # A minor release (e.g. 7.1.4) can be published after the current beta, so the newest post isn't always the beta
 LAST_VERSION=$(echo "$TITLES" | grep -E 'beta|release candidate' | head -n 1)
