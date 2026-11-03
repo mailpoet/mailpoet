@@ -145,6 +145,18 @@ class LatestPostsTest extends \MailPoetTest {
     verify(has_filter('get_the_excerpt', [$this->block, 'removeUnregisteredShortcodes']))->false();
   }
 
+  public function testItKeepsEscapedShortcodesInExcerpt(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts escaped shortcode post',
+      'Write [[builder_text layout=1]] or [[builder_box]Box[/builder_box]] in a post'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/post-excerpt')]);
+
+    verify($html)->stringContainsString('Write [[builder_text layout=1]] or [[builder_box]Box[/builder_box]] in a post');
+  }
+
   public function testItRendersDefaultLayoutWhenInsertedWithoutInnerBlocks(): void {
     $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
 
@@ -689,12 +701,14 @@ class LatestPostsTest extends \MailPoetTest {
     $this->postIds[] = $this->createPostWithContent(
       'Latest posts classic builder content',
       '[builder_section layout="1"][builder_text]Builder text [Update] here[/builder_text][builder_divider /][/builder_section]'
+      . ' Write [[builder_text layout=1]] to show a tag.'
     );
     $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
 
     $html = $this->render(['perPage' => 1], [], [$this->block('mailpoet/post-content')]);
 
     verify($html)->stringContainsString('Builder text [Update] here');
+    verify($html)->stringContainsString('[[builder_text layout=1]]');
     verify($html)->stringNotContainsString('[builder_section');
     verify($html)->stringNotContainsString('[/builder_text]');
     verify($html)->stringNotContainsString('builder_divider');
@@ -772,6 +786,19 @@ class LatestPostsTest extends \MailPoetTest {
     verify($html)->stringContainsString('Intro text');
     verify($html)->stringContainsString('[Update] here');
     verify($html)->stringNotContainsString('builder_widget');
+  }
+
+  public function testItKeepsPlainTagsWhenOnlyAnEscapedClosingTagMatches(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts escaped closing tag post',
+      'Type [[/note]] to close and [note] stays'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/post-excerpt', ['excerptLength' => 20])]);
+
+    verify($html)->stringContainsString('[[/note]]');
+    verify($html)->stringContainsString('[note] stays');
   }
 
   public function testItStripsRegisteredShortcodesFromBlockContent(): void {
