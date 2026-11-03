@@ -33,8 +33,7 @@ export function CategoriesItem({
     <a
       key={name}
       href="#"
-      role="tab"
-      aria-selected={!!active}
+      aria-current={active ? 'page' : undefined}
       className={classes}
       onClick={(event) => {
         event.preventDefault();

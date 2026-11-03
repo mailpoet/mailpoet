@@ -20,9 +20,7 @@ function Categories({ onSelect, categories, active, className }: Props) {
 
   return (
     <div className={classnames('mailpoet-categories', className)}>
-      <div className="components-tab-panel__tabs" role="tablist">
-        {cats}
-      </div>
+      <div className="components-tab-panel__tabs">{cats}</div>
     </div>
   );
 }
