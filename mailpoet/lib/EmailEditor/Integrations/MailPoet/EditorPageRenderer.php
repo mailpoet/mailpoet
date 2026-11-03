@@ -7,6 +7,7 @@ use Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller;
 use Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller;
 use Automattic\WooCommerce\EmailEditor\Engine\User_Theme;
 use MailPoet\Analytics\Analytics;
+use MailPoet\API\JSON\AjaxErrorMessages;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
@@ -64,6 +65,8 @@ class EditorPageRenderer {
 
   private TrackingConsentController $trackingConsentController;
 
+  private AjaxErrorMessages $ajaxErrorMessages;
+
   public function __construct(
     WPFunctions $wp,
     CdnAssetUrl $cdnAssetUrl,
@@ -79,7 +82,8 @@ class EditorPageRenderer {
     AuthorizedSenderDomainController $senderDomainController,
     FeaturesController $featuresController,
     CapabilitiesManager $capabilitiesManager,
-    TrackingConsentController $trackingConsentController
+    TrackingConsentController $trackingConsentController,
+    AjaxErrorMessages $ajaxErrorMessages
   ) {
     $this->wp = $wp;
     $this->settingsController = Email_Editor_Container::container()->get(Settings_Controller::class);
@@ -99,6 +103,7 @@ class EditorPageRenderer {
     $this->featuresController = $featuresController;
     $this->capabilitiesManager = $capabilitiesManager;
     $this->trackingConsentController = $trackingConsentController;
+    $this->ajaxErrorMessages = $ajaxErrorMessages;
   }
 
   public function render() {
@@ -245,13 +250,7 @@ class EditorPageRenderer {
       'mailpoet_automation_id' => $automationId,
       'mailpoet_feature_flags' => $this->featuresController->getAllFlags(),
       'mailpoet_capabilities' => $this->capabilitiesManager->getCapabilities(),
-      // MailPoet.Ajax shows these when a request fails. Other admin pages get them from layout.html.
-      'mailpoet_i18n' => [
-        // translators: %d is an HTTP response code, such as 500.
-        'ajaxFailedErrorMessage' => __('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'),
-        // translators: %d is a number of seconds.
-        'ajaxTimeoutErrorMessage' => __('An error has happened while performing a request, the server request has timed out after %d seconds', 'mailpoet'),
-      ],
+      'mailpoet_i18n' => $this->ajaxErrorMessages->getTranslations(),
       'mailpoet_ai_text_generation_available' => $this->wp->currentUserCan(AccessControl::PERMISSION_MANAGE_EMAILS)
         && function_exists('wp_ai_client_prompt')
         && wp_ai_client_prompt('test')->is_supported_for_text_generation(),

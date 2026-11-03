@@ -3,6 +3,7 @@
 namespace MailPoet\AdminPages;
 
 use MailPoet\AdminPages\Pages\WelcomeWizard;
+use MailPoet\API\JSON\AjaxErrorMessages;
 use MailPoet\API\JSON\ResponseBuilders\HeldCampaignsResponseBuilder;
 use MailPoet\Cache\TransientCache;
 use MailPoet\Config\AccessControl;
@@ -92,6 +93,8 @@ class PageRenderer {
 
   private HeldCampaignsResponseBuilder $heldCampaignsResponseBuilder;
 
+  private AjaxErrorMessages $ajaxErrorMessages;
+
   public function __construct(
     Bridge $bridge,
     Renderer $renderer,
@@ -113,7 +116,8 @@ class PageRenderer {
     WooCommerce\WooCommerceBookings\Helper $wooCommerceBookingsHelper,
     CapabilitiesManager $capabilitiesManager,
     OverdueCampaignHold $overdueCampaignHold,
-    HeldCampaignsResponseBuilder $heldCampaignsResponseBuilder
+    HeldCampaignsResponseBuilder $heldCampaignsResponseBuilder,
+    AjaxErrorMessages $ajaxErrorMessages
   ) {
     $this->bridge = $bridge;
     $this->renderer = $renderer;
@@ -136,6 +140,7 @@ class PageRenderer {
     $this->capabilitiesManager = $capabilitiesManager;
     $this->overdueCampaignHold = $overdueCampaignHold;
     $this->heldCampaignsResponseBuilder = $heldCampaignsResponseBuilder;
+    $this->ajaxErrorMessages = $ajaxErrorMessages;
   }
 
   /**
@@ -157,6 +162,7 @@ class PageRenderer {
     }
 
     $defaults = [
+      'ajax_error_messages' => $this->ajaxErrorMessages->getTranslations(),
       'current_page' => sanitize_text_field(wp_unslash(is_string($_GET['page'] ?? null) ? $_GET['page'] : '')),
       'site_name' => $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES),
       'main_page' => Menu::MAIN_PAGE_SLUG,
