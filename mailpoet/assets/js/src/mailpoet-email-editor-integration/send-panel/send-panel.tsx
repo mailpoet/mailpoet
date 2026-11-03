@@ -44,7 +44,7 @@ export function SendPanel() {
     isLoadingRecipientCount,
     recipientCountFailed,
   } = recipients;
-  const { sendEmail, isSending, error, clearError } = useSendEmail();
+  const { sendEmail, error, clearError } = useSendEmail();
   const senderFields = useSenderFields();
   const { hasValidationErrors, validateSenderFields } = senderFields;
 
@@ -67,15 +67,16 @@ export function SendPanel() {
     void closeSendPanel();
   }, [clearError, closeSendPanel]);
 
-  const handleSend = useGuardedSend(
+  const validateAndSend = useCallback(async () => {
+    const isValid = await validateSenderFields();
+    if (!isValid) {
+      return;
+    }
+    await sendEmail();
+  }, [sendEmail, validateSenderFields]);
+  const { send: handleSend, isSending } = useGuardedSend(
     isOpen,
-    useCallback(async () => {
-      const isValid = await validateSenderFields();
-      if (!isValid) {
-        return;
-      }
-      await sendEmail();
-    }, [sendEmail, validateSenderFields]),
+    validateAndSend,
   );
 
   if (!isOpen) {
@@ -113,7 +114,7 @@ export function SendPanel() {
             size="compact"
             isBusy={isSending}
             disabled={isSending || noRecipients || hasValidationErrors}
-            onClick={() => void handleSend()}
+            onClick={(event: { detail: number }) => void handleSend(event)}
             data-automation-id="email_send_panel_send_button"
           >
             {sendButtonLabel}
