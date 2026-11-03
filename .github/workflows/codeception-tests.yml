@@ -165,13 +165,60 @@ jobs:
             echo "::add-mask::$value"
           done < <(../.github/workflows/scripts/wp-test-secret-values.sh)
           while IFS= read -r line; do
-            line=${line%$'\r'}
-            if [[ "$line" == WP_TEST_*=* ]]; then export "${line?}"; fi
-          done <<< "$WP_TEST_ENV"
+            export "${line?}"
+          done < <(../.github/workflows/scripts/wp-test-secret-values.sh --lines)
           # Every part takes every PART_TOTAL-th test from the same sorted list.
-          ../.circleci/list_tests.sh "tests/$SUITE" "$GROUP" \
-            | awk -v total="$PART_TOTAL" -v index_="$PART_INDEX" '(NR - 1) % total == index_' \
-            | ../.circleci/run_split_tests.sh "codeception_$SUITE"
+          tests=$(../.circleci/list_tests.sh "tests/$SUITE" "$GROUP" \
+            | awk -v total="$PART_TOTAL" -v index_="$PART_INDEX" '(NR - 1) % total == index_')
+          if printf '%s\n' "$tests" | ../.circleci/run_split_tests.sh "codeception_$SUITE"; then
+            exit 0
+          else
+            status=$?
+          fi
+          # Acceptance tests that failed get one more run on a fresh site (the
+          # entrypoint recreates the database). A test that passes then is
+          # flaky: it gets a warning so it can be fixed, and the part passes
+          # unless the site wrote a PHP exception page in either run. More than
+          # five failures means a real break, not flakiness, so no second run.
+          # The first attempt’s reports are kept in first-attempt/.
+          if [[ "$SUITE" != acceptance || ! -s tests/_output/failed ]]; then
+            exit "$status"
+          fi
+          # A test that logged a PHP warning or exception failed for a real
+          # reason; a second run would count those log lines as already seen.
+          if [[ -s tests/_output/exceptions/error.log || -s tests/_output/exceptions/exception.log ]]; then
+            echo "::error::The site logged PHP errors, so the failed tests are not run again."
+            exit "$status"
+          fi
+          # One test can be listed once per logged error.
+          failed=$(sort -u tests/_output/failed)
+          if [[ $(printf '%s\n' "$failed" | grep -c '') -gt 5 ]]; then
+            echo "::error::More than five acceptance tests failed, so they are not run again."
+            exit "$status"
+          fi
+          mkdir -p tests/_output/first-attempt
+          # Screenshots and pages are named after the test, so the second run
+          # would overwrite them.
+          find tests/_output -maxdepth 1 \( -name 'report.*' -o -name 'failed' -o -name '*.fail.*' \) \
+            -exec mv {} tests/_output/first-attempt/ \;
+          # Tests with @depends only run after the test they depend on, in the
+          # same run, so run their whole file again, like list_tests.sh lists it.
+          retry=$(while IFS= read -r test; do
+            file=${test%%:*}
+            if grep -q '@depends' "$file"; then echo "$file"; else echo "$test"; fi
+          done <<< "$failed" | sort -u)
+          echo "::group::Running the failed tests again"
+          if ! printf '%s\n' "$retry" | ../.circleci/run_split_tests.sh "codeception_$SUITE"; then
+            echo "::endgroup::"
+            echo "::error::Acceptance tests failed twice; see the reports in the artifact."
+            exit 1
+          fi
+          echo "::endgroup::"
+          echo "### Flaky acceptance tests" >> "$GITHUB_STEP_SUMMARY"
+          while IFS= read -r test; do
+            echo "::warning file=mailpoet/${test%%:*},title=Flaky acceptance test::$test failed, then passed on the second run"
+            echo "- \`$test\` failed, then passed on the second run" >> "$GITHUB_STEP_SUMMARY"
+          done <<< "$failed"
 
       # The site writes an HTML page for every PHP exception it hits, even when
       # the test that caused it passed.
@@ -203,7 +250,7 @@ jobs:
           # can’t reach it, so drop the screenshots of every acceptance test
           # that reads a WP_TEST_* value.
           if [[ -d tests/acceptance ]]; then
-            { grep -rlE "getenv\('WP_TEST_(MAILER|IMPORT)" tests/acceptance || true; } | while IFS= read -r file; do
+            { grep -rlE "getenv\('WP_TEST_(MAILER|IMPORT)|withSendingMethodMail[Pp]oet" tests/acceptance || true; } | while IFS= read -r file; do
               class=$(basename "$file" .php)
               find tests/_output -type f -name "*.${class}.*.fail.png" -delete
             done
