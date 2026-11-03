@@ -70,7 +70,7 @@ describe('send panel guarded send', () => {
     });
   });
 
-  it('ignores the second click of the double-click that opened the panel', async () => {
+  it('ignores a separate click right after the panel opens', async () => {
     clock.tick(150);
     await click();
     expect(sendCalls).to.equal(0);
@@ -95,6 +95,15 @@ describe('send panel guarded send', () => {
     clock.tick(500);
     await click();
     await click();
+    expect(sendCalls).to.equal(1);
+  });
+
+  it('ignores a second click that arrives before the panel re-renders', async () => {
+    clock.tick(500);
+    await React.act(async () => {
+      void guarded.send({ detail: 1 });
+      void guarded.send({ detail: 1 });
+    });
     expect(sendCalls).to.equal(1);
   });
 
