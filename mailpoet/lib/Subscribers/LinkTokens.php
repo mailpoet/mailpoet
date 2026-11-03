@@ -14,7 +14,7 @@ class LinkTokens {
    */
   public const UPGRADED_TOKEN_SEPARATOR = '-';
   public const OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING = 'obsolete_link_tokens_accepted_until';
-  private const OBSOLETE_TOKENS_GRACE_PERIOD_MONTHS = 12;
+  private const OBSOLETE_TOKENS_GRACE_PERIOD_MONTHS = 1;
   /**
    * Once a subscriber reaches this many tokens that don't match the obsolete part, only their whole
    * upgraded token is accepted. Mismatches aren't counted while the limit is reached, so the limit

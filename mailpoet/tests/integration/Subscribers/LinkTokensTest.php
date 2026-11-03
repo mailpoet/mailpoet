@@ -137,7 +137,8 @@ class LinkTokensTest extends \MailPoetTest {
   public function testItStartsGracePeriodOnlyOnce() {
     $this->linkTokens->startObsoleteTokensGracePeriod();
     $acceptedUntil = (int)$this->settings->get(LinkTokens::OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING);
-    verify($acceptedUntil)->greaterThan(Carbon::now()->addMonths(11)->getTimestamp());
+    verify($acceptedUntil)->greaterThan(Carbon::now()->addMonth()->subMinute()->getTimestamp());
+    verify($acceptedUntil)->lessThanOrEqual(Carbon::now()->addMonth()->getTimestamp());
 
     $this->settings->set(LinkTokens::OBSOLETE_TOKENS_ACCEPTED_UNTIL_SETTING, $acceptedUntil - 100);
     $this->linkTokens->startObsoleteTokensGracePeriod();
