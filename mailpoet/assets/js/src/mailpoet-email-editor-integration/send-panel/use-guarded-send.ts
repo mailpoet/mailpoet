@@ -1,4 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import {
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from '@wordpress/element';
 
 const IGNORE_CLICKS_AFTER_OPEN_MS = 500;
 
@@ -27,7 +32,8 @@ export function useGuardedSend(
   const isSendingRef = useRef(false);
   const [isSending, setIsSending] = useState(false);
 
-  useEffect(() => {
+  // Before paint, so the Send button can't be clicked before the time is set.
+  useLayoutEffect(() => {
     if (isOpen) {
       openedAtRef.current = performance.now();
     }
