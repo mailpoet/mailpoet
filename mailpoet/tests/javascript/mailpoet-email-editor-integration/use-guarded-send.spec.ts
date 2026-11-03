@@ -4,17 +4,17 @@ import { createRoot } from 'react-dom/client';
 import * as sinon from 'sinon';
 import { useGuardedSend } from '../../../assets/js/src/mailpoet-email-editor-integration/send-panel/use-guarded-send';
 
-type GuardedSend = () => Promise<void>;
+type GuardedSend = ReturnType<typeof useGuardedSend>;
 
 let dom: JSDOM;
 let root: ReturnType<typeof createRoot>;
 let clock: sinon.SinonFakeTimers;
-let guardedSend: GuardedSend;
+let guarded: GuardedSend;
 let sendCalls: number;
 let finishSend: () => void;
 
 function Panel({ isOpen }: { isOpen: boolean }): null {
-  guardedSend = useGuardedSend(isOpen, async () => {
+  guarded = useGuardedSend(isOpen, async () => {
     sendCalls += 1;
     await new Promise<void>((resolve) => {
       finishSend = resolve;
@@ -29,9 +29,9 @@ const render = async (isOpen: boolean) => {
   });
 };
 
-const click = async () => {
+const click = async (detail = 1) => {
   await React.act(async () => {
-    void guardedSend();
+    void guarded.send({ detail });
   });
 };
 
@@ -96,6 +96,26 @@ describe('send panel guarded send', () => {
     await click();
     await click();
     expect(sendCalls).to.equal(1);
+  });
+
+  it('ignores the second click of a slow double-click', async () => {
+    clock.tick(800);
+    await click(2);
+    expect(sendCalls).to.equal(0);
+  });
+
+  it('accepts a click from the keyboard', async () => {
+    clock.tick(500);
+    await click(0);
+    expect(sendCalls).to.equal(1);
+  });
+
+  it('shows the send as running until it finishes', async () => {
+    clock.tick(500);
+    await click();
+    expect(guarded.isSending).to.equal(true);
+    await finish();
+    expect(guarded.isSending).to.equal(false);
   });
 
   it('allows sending again after a send has finished', async () => {
