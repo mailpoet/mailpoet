@@ -159,10 +159,11 @@ jobs:
 
   security_analysis:
     name: 'Security scan (Semgrep)'
-    # Pull requests from forks and Dependabot get no Actions secrets, so there
-    # is no key to clone the rules with. Everywhere else a missing key must
-    # fail the job.
-    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    # Pull requests from forks get no secrets, so there is no key to clone the
+    # rules with; “All checks” fails for them instead. Dependabot reads the key
+    # from the Dependabot secrets. Everywhere else a missing key must fail the
+    # job.
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -195,11 +196,12 @@ jobs:
       WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
 
   # The WooCommerce and multisite jobs download paid plugins with a token, which
-  # pull requests from forks and Dependabot don’t get.
+  # pull requests from forks don’t get. Dependabot gets it from the Dependabot
+  # secrets.
   integration_woo_hpos_on:
     name: 'Integration tests (WooCommerce, HPOS on)'
     needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
@@ -215,7 +217,7 @@ jobs:
   integration_woo_hpos_sync_on:
     name: 'Integration tests (WooCommerce, HPOS sync on)'
     needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
@@ -231,7 +233,7 @@ jobs:
   integration_woo_hpos_off:
     name: 'Integration tests (WooCommerce, HPOS off)'
     needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
@@ -247,7 +249,7 @@ jobs:
   integration_multisite:
     name: 'Integration tests (multisite)'
     needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
@@ -261,11 +263,11 @@ jobs:
       WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
 
   # Acceptance tests run in Chrome against the whole plugin, with the paid
-  # WooCommerce plugins, so they skip forks and Dependabot like the jobs above.
+  # WooCommerce plugins, so they skip forks like the jobs above.
   acceptance_base_and_woo:
     name: 'Acceptance tests'
     needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
@@ -281,7 +283,7 @@ jobs:
   acceptance_blockbased_theme:
     name: 'Acceptance tests (block theme)'
     needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
@@ -298,7 +300,7 @@ jobs:
   acceptance_woo_hpos_sync_on:
     name: 'Acceptance tests (WooCommerce, HPOS sync on)'
     needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
@@ -315,7 +317,7 @@ jobs:
   acceptance_woo_hpos_off:
     name: 'Acceptance tests (WooCommerce, HPOS off)'
     needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
@@ -332,7 +334,7 @@ jobs:
   acceptance_multisite:
     name: 'Acceptance tests (multisite)'
     needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
