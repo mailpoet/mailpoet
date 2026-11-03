@@ -376,6 +376,14 @@ h1.title.mailpoet-newsletter-listing-heading {
   }
 }
 
+// The tab content around the DataViews listing has no padding (see
+// mailpoet-dataviews.scss), so the button brings its own. The side padding
+// lines it up with the listing toolbar.
+.mailpoet-notification-history-back {
+  margin: 0;
+  padding: $grid-gap $grid-gap-half 0;
+}
+
 .mailpoet-share-email-modal.components-modal__frame {
   max-width: 640px;
   width: calc(100vw - 64px);
