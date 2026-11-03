@@ -50,7 +50,9 @@ describe('send panel guarded send', () => {
   });
 
   beforeEach(async () => {
-    clock = sinon.useFakeTimers({ toFake: ['performance'], now: 10000 });
+    clock = sinon.useFakeTimers({ toFake: ['performance'] });
+    // Start well past 0, so a missing open time can’t pass for a fresh one.
+    clock.tick(10000);
     sendCalls = 0;
     root = createRoot(document.createElement('div'));
     await render(true);
