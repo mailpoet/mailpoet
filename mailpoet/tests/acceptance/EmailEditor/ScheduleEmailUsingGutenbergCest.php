@@ -35,10 +35,7 @@ class ScheduleEmailUsingGutenbergCest {
     $i->click('[data-automation-id="editor_choice_continue"]');
     $this->closeTemplateSelectionModal($i);
 
-    $i->waitForElement('[name="editor-canvas"]');
-    $i->wait(1); // wait for the iframe to initialize, otherwise the switch does not work properly
-    $i->switchToIFrame('[name="editor-canvas"]');
-    $i->waitForElementVisible('.is-root-container', 20);
+    $i->switchToEditorCanvas();
     $i->waitForElementVisible('[aria-label="Block: Image"]');
     $i->switchToIFrame();
 

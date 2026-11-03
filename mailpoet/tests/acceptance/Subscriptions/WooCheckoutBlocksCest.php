@@ -68,8 +68,7 @@ class WooCheckoutBlocksCest {
     $i->wantTo('Check a message when opt-in is disabled');
     $i->login();
     $i->amOnAdminPage("post.php?post={$this->checkoutPostId}&action=edit");
-    $i->waitForElement('iframe[name="editor-canvas"]', 30);
-    $i->switchToIframe('iframe[name="editor-canvas"]');
+    $i->switchToEditorCanvas();
     $i->canSee('MailPoet marketing opt-in would be shown here if enabled. You can enable from the settings page.');
     $i->switchToIframe();
     $i->logOut();
@@ -236,7 +235,7 @@ class WooCheckoutBlocksCest {
     // "Checkout" before the search filters, so a click could land while the list re-renders.
     $i->waitForJS('return !!window.wp?.blocks?.getBlockType("woocommerce/checkout");', 30);
     $i->executeJS('wp.data.dispatch("core/block-editor").insertBlocks(wp.blocks.createBlock("woocommerce/checkout"));');
-    $i->switchToIframe('iframe[name="editor-canvas"]');
+    $i->switchToEditorCanvas();
     $i->waitForElement('[aria-label="Block: Checkout"]');
 
     // Close dialog with Compatibility notice
@@ -244,7 +243,7 @@ class WooCheckoutBlocksCest {
     $this->closeDialog($i);
 
     // Enable registration during the checkout
-    $i->switchToIframe('iframe[name="editor-canvas"]');
+    $i->switchToEditorCanvas();
     $i->click('[aria-label="Block: Contact Information"]');
 
     $i->switchToIframe();

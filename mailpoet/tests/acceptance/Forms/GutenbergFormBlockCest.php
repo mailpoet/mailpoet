@@ -123,8 +123,7 @@ class GutenbergFormBlockCest {
     $i->amEditingPostWithId($postId);
     $i->waitForText('My Gutenberg form');
     $this->closeDialog($i);
-    $i->waitForElement('iframe[name="editor-canvas"]', 30);
-    $i->switchToIframe('iframe[name="editor-canvas"]');
+    $i->switchToEditorCanvas();
     $i->click('[aria-label="Add title"]');
     $i->switchToIFrame();
     $i->click('[aria-label="Block Inserter"]');
@@ -135,7 +134,7 @@ class GutenbergFormBlockCest {
     $i->waitForElementNotVisible(Locator::contains('.block-editor-block-types-list__item-title', 'Paragraph'));
     $i->waitForElement(Locator::contains('button', 'MailPoet Subscription Form'));
     $i->click(Locator::contains('button', 'MailPoet Subscription Form'));
-    $i->switchToIframe('iframe[name="editor-canvas"]');
+    $i->switchToEditorCanvas();
     $i->waitForElement('[aria-label="Block: MailPoet Subscription Form"]');
     $i->selectOption('.mailpoet-block-create-forms-list', 'Acceptance Test Block Form');
     $i->waitForElementVisible('[data-automation-id="form_email"]');

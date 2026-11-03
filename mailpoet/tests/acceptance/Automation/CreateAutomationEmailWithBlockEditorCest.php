@@ -52,10 +52,7 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->click('[data-automation-id="editor_choice_continue"]');
 
     $i->wantTo('Verify we are in the block editor interface with the welcome email content');
-    $i->waitForElement('[name="editor-canvas"]');
-    $i->wait(1); // we need to wait for the iframe to initialize otherwise the switch does not work properly
-    $i->switchToIFrame('[name="editor-canvas"]');
-    $i->waitForElementVisible('.is-root-container', 20);
+    $i->switchToEditorCanvas();
     $i->waitForElementVisible('[aria-label="Block: Image"]');
     $i->waitForElementVisible('[aria-label^="Block: Heading"]');
 
@@ -101,9 +98,7 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->click('Edit content');
 
     $i->wantTo('Verify we return to block editor for editing');
-    $i->waitForElement('[name="editor-canvas"]');
-    $i->wait(1);
-    $i->switchToIFrame('[name="editor-canvas"]');
+    $i->switchToEditorCanvas();
     $i->see('This is automation email content created with block editor');
   }
 
