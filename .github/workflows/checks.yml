@@ -158,7 +158,7 @@ jobs:
           retention-days: 14
 
   security_analysis:
-    name: 'Semgrep'
+    name: 'Security scan (Semgrep)'
     # Pull requests from forks and Dependabot get no Actions secrets, so there
     # is no key to clone the rules with. Everywhere else a missing key must
     # fail the job.

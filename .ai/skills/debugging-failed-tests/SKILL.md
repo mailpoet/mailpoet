@@ -26,7 +26,7 @@ A premium-suite failure may originate in the free plugin — keep that possibili
 ## Inputs
 
 - **A CircleCI URL.** Everything else (suite, plugin, WP/WC/PHP versions, beta/RC flag, branch, SHA, failing test) is derivable from the API. See `references/circleci.md`.
-- **A GitHub Actions run URL.** Lint, PHPStan, Semgrep, JS tests, PHP unit tests, integration tests and the nightly QIT checks run there. `gh run view <run-id> --log-failed` prints the failing steps, and the `integration-*` artifacts hold the Codeception output.
+- **A GitHub Actions run URL.** Lint, PHPStan, the security scan (Semgrep), JS tests, PHP unit tests, integration tests and the nightly QIT checks run there. `gh run view <run-id> --log-failed` prints the failing steps, and the `integration-*` artifacts hold the Codeception output.
 - **A failure dump from a local run.** Target branch is whatever `git rev-parse --abbrev-ref HEAD` reports.
 
 ## Where to start, by input
