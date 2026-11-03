@@ -1095,13 +1095,14 @@ class LatestPosts extends AbstractBlock {
    * Some plugins and themes register their shortcodes only on some requests.
    * When they are not registered, WordPress keeps them in the excerpt as text.
    * Only tags with attributes, a closing tag or a closing slash are removed, so plain text in
-   * square brackets stays.
+   * square brackets stays. Escaped tags like [[tag]] stay too, as in WordPress.
    */
   public function removeUnregisteredShortcodes(string $content): string {
-    preg_match_all('#\[/([a-zA-Z0-9][\w-]*)\]#', $content, $closingTags);
+    preg_match_all('#(?<!\[)\[/([a-zA-Z0-9][\w-]*)\](?!\])#', $content, $closingTags);
     $pairedTags = array_flip($closingTags[1]);
     return (string)preg_replace_callback(
-      '#\[/?([a-zA-Z0-9][\w-]*)(\s[^\[\]]*)?\]#',
+      // [tag attrs] or [/tag], not wrapped in a second pair of brackets.
+      '#(?<!\[)\[/?([a-zA-Z0-9][\w-]*)(\s[^\[\]]*)?\](?!\])#',
       function (array $tag) use ($pairedTags): string {
         $attributes = $tag[2] ?? '';
         $hasAttributes = strpos($attributes, '=') !== false;
