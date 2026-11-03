@@ -94,6 +94,7 @@ class SubscribersListingCest {
     $i->wantTo('Clear the status with the All tab');
     $i->changeGroupInListingFilter('all');
     $i->waitForText('status-bounced@example.com');
+    $i->waitForJS('return decodeURIComponent(window.location.hash).indexOf("status_in") === -1;', 10);
 
     $i->wantTo('Switch the Status filter to "Is none of"');
     $i->clearDataViewsFilters();
