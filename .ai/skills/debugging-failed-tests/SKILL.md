@@ -26,7 +26,7 @@ A premium-suite failure may originate in the free plugin — keep that possibili
 ## Inputs
 
 - **A CircleCI URL.** Everything else (suite, plugin, WP/WC/PHP versions, beta/RC flag, branch, SHA, failing test) is derivable from the API. See `references/circleci.md`.
-- **A GitHub Actions run URL.** Lint, PHPStan, the security scan (Semgrep), JS tests, PHP unit tests, integration and acceptance tests, and the nightly QIT checks run there. `gh run view <run-id> --log-failed` prints the failing steps. The `integration-*` and `acceptance-*` artifacts hold the Codeception output, including the `*.fail.png` screenshots and `*.fail.html` pages of failed acceptance tests. Secret values are replaced with `***`, and the screenshots of the tests that type the sending key (`AddSendingKeyCest`, `WelcomeWizardCest`, `NewsletterCreationCest`) are left out.
+- **A GitHub Actions run URL.** Lint, PHPStan, the security scan (Semgrep), JS tests, PHP unit tests, integration and acceptance tests, and the nightly QIT checks run there. `gh run view <run-id> --log-failed` prints the failing steps. The `integration-*` and `acceptance-*` artifacts hold the Codeception output, including the `*.fail.png` screenshots and `*.fail.html` pages of failed acceptance tests. Secret values are replaced with `***`, and the screenshots of acceptance tests that read a `WP_TEST_*` value (such as `AddSendingKeyCest`) are left out. Acceptance tests that fail get one more run (at most five per part); a “Flaky acceptance test” warning on the run names each one that passed only then, and the first attempt’s reports are in `first-attempt/`.
 - **A failure dump from a local run.** Target branch is whatever `git rev-parse --abbrev-ref HEAD` reports.
 
 ## Where to start, by input
