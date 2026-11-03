@@ -44,6 +44,32 @@ on:
       blockbased_theme:
         type: number
         default: 0
+      # The nightly runs set these; empty means the defaults in
+      # tests_env/docker/docker-compose.yml and the plugin versions in
+      # tests_env/download-test-plugins.sh.
+      oldest:
+        description: 'Test the oldest supported versions from tests_env/oldest-versions.yml'
+        type: boolean
+        default: false
+      mysql_image:
+        type: string
+        default: ''
+      mysql_command:
+        type: string
+        default: ''
+      wordpress_version:
+        type: string
+        default: ''
+      woo_core_version:
+        type: string
+        default: ''
+      gutenberg_version:
+        type: string
+        default: ''
+      skip:
+        description: 'Skip the job, for example a beta job when no beta is out'
+        type: boolean
+        default: false
     secrets:
       WP_GITHUB_WOOCOMMERCE_TOKEN:
         required: false
@@ -55,6 +81,7 @@ permissions: {}
 jobs:
   test:
     name: 'Part ${{ matrix.part }}'
+    if: ${{ !inputs.skip }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
@@ -71,6 +98,50 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
+      # docker-compose.yml, download-test-plugins.sh and run_split_tests.sh read
+      # these. Empty values use their defaults. An oldest run must find every
+      # setting in the file, or it would quietly test the latest versions.
+      - name: 'Pick the versions to test'
+        working-directory: .
+        env:
+          OLDEST: ${{ inputs.oldest }}
+          MYSQL_IMAGE: ${{ inputs.mysql_image }}
+          MYSQL_COMMAND: ${{ inputs.mysql_command }}
+          WORDPRESS_VERSION: ${{ inputs.wordpress_version }}
+          WOO_CORE_VERSION: ${{ inputs.woo_core_version }}
+          GUTENBERG_VERSION: ${{ inputs.gutenberg_version }}
+        run: |
+          declare -A settings=(
+            [mysql_image]=$MYSQL_IMAGE
+            [mysql_command]=$MYSQL_COMMAND
+            [wordpress_version]=$WORDPRESS_VERSION
+            [woo_core_version]=$WOO_CORE_VERSION
+            [gutenberg_version]=$GUTENBERG_VERSION
+          )
+          if [[ "$OLDEST" == true ]]; then
+            # yq comes with the runner and handles quotes and comments.
+            for key in woo_core_version woo_subscriptions_version woo_memberships_version automate_woo_version \
+              wordpress_version codeception_image_version wordpress_image_version mysql_image mysql_command; do
+              settings[$key]=$(yq ".$key // \"\"" tests_env/oldest-versions.yml)
+              if [[ -z "${settings[$key]}" ]]; then
+                echo "::error::tests_env/oldest-versions.yml has no value for $key."
+                exit 1
+              fi
+            done
+          fi
+          {
+            echo "MYSQL_IMAGE=${settings[mysql_image]:-}"
+            echo "MYSQL_COMMAND=${settings[mysql_command]:-}"
+            echo "CODECEPTION_IMAGE_VERSION=${settings[codeception_image_version]:-}"
+            echo "WORDPRESS_IMAGE_VERSION=${settings[wordpress_image_version]:-}"
+            echo "WORDPRESS_VERSION=${settings[wordpress_version]:-}"
+            echo "GUTENBERG_VERSION=${settings[gutenberg_version]:-}"
+            echo "WOO_CORE_VERSION=${settings[woo_core_version]:-}"
+            echo "WOO_SUBSCRIPTIONS_VERSION=${settings[woo_subscriptions_version]:-}"
+            echo "WOO_MEMBERSHIPS_VERSION=${settings[woo_memberships_version]:-}"
+            echo "AUTOMATE_WOO_VERSION=${settings[automate_woo_version]:-}"
+          } | tee -a "$GITHUB_ENV"
 
       - uses: ./.github/actions/restore-build
 
@@ -153,7 +224,7 @@ jobs:
         run: |
           # Without it the mailer and network tests skip, which trunk and release
           # don’t allow; say so once instead of failing each of those tests.
-          if [[ -z "$WP_TEST_ENV" && "$GITHUB_EVENT_NAME" == "push" ]]; then
+          if [[ -z "$WP_TEST_ENV" && ( "$CIRCLE_BRANCH" == trunk || "$CIRCLE_BRANCH" == release ) ]]; then
             echo "::error::The WP_TEST_ENV secret is missing. Add the WP_TEST_* lines from the CircleCI project variables."
             exit 1
           fi
