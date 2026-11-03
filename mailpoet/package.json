@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "NODE_OPTIONS=--max_old_space_size=2048 eslint --max-warnings 0 'assets/js/src/**/*.{js,jsx,ts,tsx}' 'tests/javascript-newsletter-editor/**/*.js'",
     "autoprefixer": "postcss assets/dist/css/*.css --use autoprefixer --no-map --replace",
-    "scss": "sass assets/css/src/:assets/dist/css/ --style compressed",
+    "scss": "sass assets/css/src/:assets/dist/css/ --style compressed --no-charset",
     "stylelint": "stylelint --fix",
     "stylelint-check": "stylelint",
     "test": "env NODE_PATH=$NODE_PATH:./assets/js/src mocha --recursive --require tests/javascript/mocha-env.mjs  tests/javascript --extension spec.ts",
