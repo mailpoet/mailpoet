@@ -349,8 +349,10 @@ jobs:
 
   # The one check branch protection requires. It fails when any job failed or
   # was cancelled, so jobs can be added or renamed without changing the repo
-  # settings. Skipped jobs (forks, Dependabot) count as passed. List every job
-  # of this workflow under needs.
+  # settings. Skipped jobs count as passed, except on pull requests from
+  # forks: they get no secrets, so the security scan and the WooCommerce,
+  # multisite and acceptance tests can’t run, and the check fails. List every
+  # job of this workflow under needs.
   all_checks:
     name: 'All checks'
     if: always()
@@ -378,7 +380,12 @@ jobs:
       - name: 'Check the job results'
         env:
           RESULTS: ${{ toJSON(needs) }}
+          FROM_FORK: ${{ github.event.pull_request.head.repo.fork }}
         run: |
+          if [ "$FROM_FORK" == "true" ]; then
+            echo "::error::Pull requests from forks cannot run the tests that need secrets. Push the branch to mailpoet/mailpoet and open the pull request from there."
+            exit 1
+          fi
           failed=$(echo "$RESULTS" | jq -r 'to_entries[] | select(.value.result != "success" and .value.result != "skipped") | "::error::\(.key): \(.value.result)"')
           if [ -n "$failed" ]; then
             echo "$failed"
