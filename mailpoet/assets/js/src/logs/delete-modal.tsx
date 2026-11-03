@@ -77,6 +77,8 @@ export function DeleteLogsModal({
       title={__('Delete logs', 'mailpoet')}
       onRequestClose={onClose}
       isDismissible={!isDeleting}
+      shouldCloseOnEsc={!isDeleting}
+      shouldCloseOnClickOutside={!isDeleting}
     >
       {errorMessage && (
         <Notice status="error" isDismissible={false}>
