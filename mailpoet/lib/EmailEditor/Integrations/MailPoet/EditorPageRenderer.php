@@ -245,6 +245,13 @@ class EditorPageRenderer {
       'mailpoet_automation_id' => $automationId,
       'mailpoet_feature_flags' => $this->featuresController->getAllFlags(),
       'mailpoet_capabilities' => $this->capabilitiesManager->getCapabilities(),
+      // MailPoet.Ajax shows these when a request fails. Other admin pages get them from layout.html.
+      'mailpoet_i18n' => [
+        // translators: %d is an HTTP response code, such as 500.
+        'ajaxFailedErrorMessage' => __('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'),
+        // translators: %d is a number of seconds.
+        'ajaxTimeoutErrorMessage' => __('An error has happened while performing a request, the server request has timed out after %d seconds', 'mailpoet'),
+      ],
       'mailpoet_ai_text_generation_available' => $this->wp->currentUserCan(AccessControl::PERMISSION_MANAGE_EMAILS)
         && function_exists('wp_ai_client_prompt')
         && wp_ai_client_prompt('test')->is_supported_for_text_generation(),
