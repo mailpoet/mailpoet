@@ -12,7 +12,7 @@
   background: #fff;
   margin-top: $grid-gap-half;
 
-  > [role='tablist'] {
+  > .components-tab-panel__tabs {
     border-bottom: 1px solid #ddd;
     margin: 0;
     padding: 0 8px;
