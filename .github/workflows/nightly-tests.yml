@@ -1,0 +1,263 @@
+name: 'Nightly tests'
+
+# Runs the tests against the latest and oldest supported versions and the
+# WordPress and WooCommerce betas, like the “nightly” workflow in
+# .circleci/config.yml. The Premium jobs stay on CircleCI until Premium moves.
+# The oldest versions come from tests_env/oldest-versions.yml, which the shared
+# test workflow reads for the oldest jobs.
+
+on:
+  schedule:
+    - cron: '0 1 * * 1-5' # Monday to Friday at 1am UTC
+  workflow_dispatch:
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: 'Build'
+    if: github.repository_owner == 'mailpoet'
+    uses: ./.github/workflows/build.yml
+    permissions:
+      contents: read
+
+  # Looks up the betas once for the whole run, so every part tests the same
+  # versions. Each lookup is a step of its own: when one fails, its beta jobs
+  # are skipped, the other lookup still runs, and this job fails at the end,
+  # which alerts Slack. The other nightly tests don’t wait for it.
+  betas:
+    name: 'Betas'
+    if: github.repository_owner == 'mailpoet'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      wordpress_beta: ${{ steps.wordpress.outputs.beta }}
+      woocommerce_beta: ${{ steps.woocommerce.outputs.beta }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: 'Look up the WordPress beta'
+        id: wordpress
+        continue-on-error: true
+        run: |
+          beta=$(.circleci/check_wordpress_beta.sh | sed -n 's/^LATEST_BETA=//p')
+          echo "beta=$beta" >> "$GITHUB_OUTPUT"
+          echo "WordPress beta: ${beta:-none}"
+      - name: 'Look up the WooCommerce beta'
+        id: woocommerce
+        continue-on-error: true
+        run: |
+          beta=$(.circleci/check_woocommerce_beta.sh | sed -n 's/^LATEST_BETA=//p')
+          echo "beta=$beta" >> "$GITHUB_OUTPUT"
+          echo "WooCommerce beta: ${beta:-none}"
+      - name: 'Fail when a lookup failed'
+        if: steps.wordpress.outcome == 'failure' || steps.woocommerce.outcome == 'failure'
+        run: |
+          echo "::error::A beta lookup failed, so its beta jobs were skipped."
+          exit 1
+
+  unit:
+    name: 'PHP unit tests (PHP ${{ matrix.php }})'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.5', '7.4']
+    defaults:
+      run:
+        shell: bash
+        working-directory: mailpoet
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/restore-build
+        with:
+          php-version: ${{ matrix.php }}
+      # Some tools need a different version for the PHP the tests run on.
+      - name: 'Install tools for this PHP version'
+        run: COMPOSER_DEV_MODE=1 php tools/install.php
+      - name: 'PHP Unit tests'
+        run: ./do t:u --xml
+      - name: 'Upload test results'
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unit-nightly-php-${{ matrix.php }}
+          path: mailpoet/tests/_output
+          retention-days: 14
+
+  # Each entry lists its settings; settings it leaves out use the defaults in
+  # tests_env. An oldest entry reads tests_env/oldest-versions.yml. Beta entries
+  # are skipped when no beta or release candidate is out.
+  integration:
+    name: 'Integration tests (${{ matrix.title }})'
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - title: 'latest'
+            name: latest
+            mysql_image: 'mysql:8.3'
+            mysql_command: '--default-authentication-plugin=mysql_native_password'
+          - title: 'oldest'
+            name: oldest
+            oldest: true
+    uses: ./.github/workflows/codeception-tests.yml
+    permissions:
+      contents: read
+    with:
+      suite: integration
+      name: nightly-${{ matrix.name }}
+      mysql_image: ${{ matrix.mysql_image || '' }}
+      mysql_command: ${{ matrix.mysql_command || '' }}
+      oldest: ${{ matrix.oldest || false }}
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+
+  integration_beta:
+    name: 'Integration tests (${{ matrix.title }})'
+    needs: [build, betas]
+    if: ${{ !cancelled() && needs.build.result == 'success' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - title: 'WordPress beta'
+            name: wordpress-beta
+            mysql_image: 'mysql:8.3'
+            mysql_command: '--default-authentication-plugin=mysql_native_password'
+            skip: "${{ needs.betas.outputs.wordpress_beta == '' }}"
+            wordpress_version: '${{ needs.betas.outputs.wordpress_beta }}'
+          - title: 'WooCommerce beta'
+            name: woocommerce-beta
+            mysql_image: 'mysql:8.3'
+            mysql_command: '--default-authentication-plugin=mysql_native_password'
+            skip: "${{ needs.betas.outputs.woocommerce_beta == '' }}"
+            woo_core_version: '${{ needs.betas.outputs.woocommerce_beta }}'
+    uses: ./.github/workflows/codeception-tests.yml
+    permissions:
+      contents: read
+    with:
+      suite: integration
+      name: nightly-${{ matrix.name }}
+      mysql_image: ${{ matrix.mysql_image }}
+      mysql_command: ${{ matrix.mysql_command }}
+      skip: ${{ matrix.skip }}
+      wordpress_version: ${{ matrix.wordpress_version || '' }}
+      woo_core_version: ${{ matrix.woo_core_version || '' }}
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+
+  acceptance:
+    name: 'Acceptance tests (${{ matrix.title }})'
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - title: 'latest'
+            name: latest
+            parts: '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]'
+            mysql_image: 'mysql:8.3'
+            mysql_command: '--default-authentication-plugin=mysql_native_password'
+          - title: 'latest, block theme'
+            name: latest-blockbased-theme
+            parts: '[1, 2, 3, 4, 5, 6, 7, 8]'
+            group: frontend
+            blockbased_theme: 1
+            mysql_image: 'mysql:8.3'
+            mysql_command: '--default-authentication-plugin=mysql_native_password'
+          - title: 'latest Gutenberg'
+            name: gutenberg-latest
+            parts: '[1, 2, 3, 4, 5]'
+            group: gutenberg-latest
+            gutenberg_version: latest
+            mysql_image: 'mysql:8.3'
+            mysql_command: '--default-authentication-plugin=mysql_native_password'
+          - title: 'oldest'
+            name: oldest
+            parts: '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]'
+            oldest: true
+    uses: ./.github/workflows/codeception-tests.yml
+    permissions:
+      contents: read
+    with:
+      suite: acceptance
+      name: nightly-${{ matrix.name }}
+      parts: ${{ matrix.parts }}
+      mysql_image: ${{ matrix.mysql_image || '' }}
+      mysql_command: ${{ matrix.mysql_command || '' }}
+      group: ${{ matrix.group || '' }}
+      blockbased_theme: ${{ matrix.blockbased_theme || 0 }}
+      gutenberg_version: ${{ matrix.gutenberg_version || '' }}
+      oldest: ${{ matrix.oldest || false }}
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+
+  acceptance_beta:
+    name: 'Acceptance tests (${{ matrix.title }})'
+    needs: [build, betas]
+    if: ${{ !cancelled() && needs.build.result == 'success' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - title: 'WordPress beta'
+            name: wordpress-beta
+            parts: '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]'
+            enable_hpos: 1
+            skip: "${{ needs.betas.outputs.wordpress_beta == '' }}"
+            wordpress_version: '${{ needs.betas.outputs.wordpress_beta }}'
+          - title: 'WooCommerce beta'
+            name: woocommerce-beta
+            parts: '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]'
+            enable_hpos: 1
+            skip: "${{ needs.betas.outputs.woocommerce_beta == '' }}"
+            woo_core_version: '${{ needs.betas.outputs.woocommerce_beta }}'
+    uses: ./.github/workflows/codeception-tests.yml
+    permissions:
+      contents: read
+    with:
+      suite: acceptance
+      name: nightly-${{ matrix.name }}
+      parts: ${{ matrix.parts }}
+      enable_hpos: ${{ matrix.enable_hpos }}
+      skip: ${{ matrix.skip }}
+      wordpress_version: ${{ matrix.wordpress_version || '' }}
+      woo_core_version: ${{ matrix.woo_core_version || '' }}
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+
+  notify:
+    name: 'Notify Slack on failure'
+    needs:
+      - build
+      - betas
+      - unit
+      - integration
+      - integration_beta
+      - acceptance
+      - acceptance_beta
+    # Like CircleCI, alert only for trunk, not for manual runs on other branches.
+    # A job that hit its time limit is cancelled, which failure() doesn’t catch.
+    if: ${{ always() && (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) && (github.event_name == 'schedule' || github.ref_name == 'trunk') }}
+    uses: ./.github/workflows/notify-slack.yml
+    secrets:
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

@@ -1,10 +1,10 @@
 # Beta / RC failures (WordPress or WooCommerce)
 
-Nightly CircleCI runs target the latest WordPress and WooCommerce betas / release candidates. A red run on those jobs may be upstream incompatibility, not a regression in our code.
+The nightly runs target the latest WordPress and WooCommerce betas / release candidates: “Nightly tests” on GitHub Actions and, while both CI systems run side by side, CircleCI’s `nightly` workflow. Premium is not run against the betas on either. A red run on those jobs may be upstream incompatibility, not a regression in our code.
 
 ## Spotting a beta/RC run
 
-- The job name often contains `_wordpress_beta` or `_woocommerce_beta`.
+- On GitHub Actions the job name contains “(WordPress beta)” or “(WooCommerce beta)”, followed by “/ Part N”, and the artifacts are named `*-nightly-wordpress-beta-*` or `*-nightly-woocommerce-beta-*`. The run’s “Betas” job prints which betas were tested, and fails when a lookup failed. On CircleCI the job name contains `_wordpress_beta` or `_woocommerce_beta`.
 - The version printed at the start of the failing step is authoritative — `WORDPRESS VERSION: 6.8-RC1`, `9.5.0-beta.1`, etc. (printed by `tests_env/docker/codeception/docker-entrypoint.sh`).
 
 ## Investigating

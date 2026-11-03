@@ -36,4 +36,4 @@ For each relevant scheduled pipeline id:
    ```
 5. For any failed job, fetch the raw `output_url` values, analyze what went wrong, and classify the failure using [error-triage.md](error-triage.md).
 
-Premium compatibility is covered by the premium jobs in the same `nightly` workflow (`*_with_premium_*`). Check those jobs when WooCommerce-specific premium features such as Subscriptions, Bookings, or Memberships are in scope.
+The premium jobs in the same `nightly` workflow (`*_with_premium_*`) run on the latest and oldest versions only, not on the betas, so they don’t cover premium compatibility with a beta. When WooCommerce-specific premium features such as Subscriptions, Bookings, or Memberships are in scope, test them on the beta by hand.
