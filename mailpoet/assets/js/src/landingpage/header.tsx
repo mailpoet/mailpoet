@@ -21,7 +21,7 @@ function Header() {
           <p>
             <strong>
               {__(
-                'Ask a site administrator to finish setting up MailPoet.',
+                'MailPoet isn’t set up yet, and only a site administrator can do the setup. Please ask one to finish it.',
                 'mailpoet',
               )}
             </strong>
