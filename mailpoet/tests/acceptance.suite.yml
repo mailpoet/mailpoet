@@ -36,6 +36,11 @@ modules:
         adminPassword: password
         adminPath: /wp-admin
         log_js_errors: true # Set to true to include possible JavaScript to HTML report, or set to false (default) to deactivate.
+        capabilities:
+          # Outside a WebDriver BiDi session, ChromeDriver accepts "Leave site?" dialogs before a test can see them.
+          webSocketUrl: true
+          unhandledPromptBehavior:
+            beforeUnload: ignore
     - WPCLI:
         path: /wp-core
         throw: true
