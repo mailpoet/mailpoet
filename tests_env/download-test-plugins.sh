@@ -8,7 +8,8 @@ set -euo pipefail
 
 cd "$(dirname "$0")/../mailpoet"
 
-./do download:woo-commerce-zip 11.2.1
-./do download:woo-commerce-subscriptions-zip 9.3.0
-./do download:woo-commerce-memberships-zip 1.30.2
-./do download:automate-woo-zip 6.9.4
+# A run that tests other versions sets these, and gets those instead.
+./do download:woo-commerce-zip "${WOO_CORE_VERSION:-11.2.1}"
+./do download:woo-commerce-subscriptions-zip "${WOO_SUBSCRIPTIONS_VERSION:-9.3.0}"
+./do download:woo-commerce-memberships-zip "${WOO_MEMBERSHIPS_VERSION:-1.30.2}"
+./do download:automate-woo-zip "${AUTOMATE_WOO_VERSION:-6.9.4}"
