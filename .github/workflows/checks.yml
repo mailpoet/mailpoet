@@ -1,7 +1,7 @@
 name: 'Checks'
 
-# Static analysis, linting, JS tests, PHP unit tests and integration tests.
-# Acceptance tests and the release zip run on CircleCI.
+# Static analysis, linting, JS tests, PHP unit tests, and the integration and
+# acceptance tests. The release zip runs on CircleCI.
 
 on:
   pull_request:
@@ -182,10 +182,11 @@ jobs:
   integration_base:
     name: 'Integration tests'
     needs: build
-    uses: ./.github/workflows/integration-tests.yml
+    uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
     with:
+      suite: integration
       name: base
       parts: '[1, 2]'
       skip_group: woo
@@ -199,10 +200,11 @@ jobs:
     name: 'Integration tests (WooCommerce, HPOS on)'
     needs: build
     if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
-    uses: ./.github/workflows/integration-tests.yml
+    uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
     with:
+      suite: integration
       name: woo-hpos-on
       group: woo
       enable_hpos: 1
@@ -214,10 +216,11 @@ jobs:
     name: 'Integration tests (WooCommerce, HPOS sync on)'
     needs: build
     if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
-    uses: ./.github/workflows/integration-tests.yml
+    uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
     with:
+      suite: integration
       name: woo-hpos-sync-on
       group: woo
       enable_hpos_sync: 1
@@ -229,10 +232,11 @@ jobs:
     name: 'Integration tests (WooCommerce, HPOS off)'
     needs: build
     if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
-    uses: ./.github/workflows/integration-tests.yml
+    uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
     with:
+      suite: integration
       name: woo-hpos-off
       group: woo
       disable_hpos: 1
@@ -244,12 +248,98 @@ jobs:
     name: 'Integration tests (multisite)'
     needs: build
     if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
-    uses: ./.github/workflows/integration-tests.yml
+    uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
     with:
+      suite: integration
       name: multisite
       parts: '[1, 2]'
+      multisite: 1
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+
+  # Acceptance tests run in Chrome against the whole plugin, with the paid
+  # WooCommerce plugins, so they skip forks and Dependabot like the jobs above.
+  acceptance_base_and_woo:
+    name: 'Acceptance tests'
+    needs: build
+    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    uses: ./.github/workflows/codeception-tests.yml
+    permissions:
+      contents: read
+    with:
+      suite: acceptance
+      name: base-and-woo
+      parts: '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]'
+      enable_hpos: 1
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+
+  acceptance_blockbased_theme:
+    name: 'Acceptance tests (block theme)'
+    needs: build
+    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    uses: ./.github/workflows/codeception-tests.yml
+    permissions:
+      contents: read
+    with:
+      suite: acceptance
+      name: blockbased-theme
+      parts: '[1, 2, 3, 4, 5, 6, 7, 8]'
+      group: frontend
+      blockbased_theme: 1
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+
+  acceptance_woo_hpos_sync_on:
+    name: 'Acceptance tests (WooCommerce, HPOS sync on)'
+    needs: build
+    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    uses: ./.github/workflows/codeception-tests.yml
+    permissions:
+      contents: read
+    with:
+      suite: acceptance
+      name: woo-hpos-sync-on
+      parts: '[1, 2, 3, 4, 5, 6, 7, 8]'
+      group: woo
+      enable_hpos_sync: 1
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+
+  acceptance_woo_hpos_off:
+    name: 'Acceptance tests (WooCommerce, HPOS off)'
+    needs: build
+    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    uses: ./.github/workflows/codeception-tests.yml
+    permissions:
+      contents: read
+    with:
+      suite: acceptance
+      name: woo-hpos-off
+      parts: '[1, 2, 3, 4, 5, 6, 7, 8]'
+      group: woo
+      disable_hpos: 1
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+
+  acceptance_multisite:
+    name: 'Acceptance tests (multisite)'
+    needs: build
+    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    uses: ./.github/workflows/codeception-tests.yml
+    permissions:
+      contents: read
+    with:
+      suite: acceptance
+      name: multisite
+      parts: '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]'
       multisite: 1
     secrets:
       WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
@@ -275,6 +365,11 @@ jobs:
       - integration_woo_hpos_sync_on
       - integration_woo_hpos_off
       - integration_multisite
+      - acceptance_base_and_woo
+      - acceptance_blockbased_theme
+      - acceptance_woo_hpos_sync_on
+      - acceptance_woo_hpos_off
+      - acceptance_multisite
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
