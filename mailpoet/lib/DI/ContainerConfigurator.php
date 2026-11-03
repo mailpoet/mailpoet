@@ -72,6 +72,7 @@ class ContainerConfigurator implements IContainerConfigurator {
       ->setAutowired(true)
       ->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\ErrorHandler::class)->setPublic(true);
+    $container->autowire(\MailPoet\API\JSON\AjaxErrorMessages::class);
     $container->autowire(\MailPoet\API\MP\v1\CustomFields::class)->setPublic(true);
     $container->autowire(\MailPoet\API\MP\v1\API::class)->setPublic(true);
     $container->autowire(\MailPoet\API\MP\v1\Subscribers::class)->setPublic(true);
