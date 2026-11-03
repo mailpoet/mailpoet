@@ -15,7 +15,18 @@ function Header() {
             'mailpoet',
           )}
         </p>
-        <WelcomeWizardButton />
+        {window.mailpoet_can_manage_settings ? (
+          <WelcomeWizardButton />
+        ) : (
+          <p>
+            <strong>
+              {__(
+                'Ask a site administrator to finish setting up MailPoet.',
+                'mailpoet',
+              )}
+            </strong>
+          </p>
+        )}
       </div>
     </section>
   );
