@@ -2,7 +2,7 @@ import jQuery from 'jquery';
 import { MailPoet } from 'mailpoet';
 import _ from 'underscore';
 
-export function createSelection(segments, onSelectionChange) {
+export function createSelection(segments, onSelectionChange, selectedSegments) {
   const segmentSelectElement = jQuery('select#mailpoet_segments_select');
   if (segmentSelectElement.data('select2')) {
     return;
@@ -42,6 +42,9 @@ export function createSelection(segments, onSelectionChange) {
       const data = _.pluck(segmentSelectElement.select2('data'), 'id');
       onSelectionChange(data);
     });
+  if (selectedSegments.length > 0) {
+    segmentSelectElement.val(selectedSegments).trigger('change');
+  }
 }
 
 export function destroySelection() {

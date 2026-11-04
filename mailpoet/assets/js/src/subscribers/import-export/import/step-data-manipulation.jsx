@@ -117,7 +117,10 @@ export function StepDataManipulation({
         onCreateCustomField={handleCreateCustomField}
       />
       <div className="mailpoet-settings-grid">
-        <SelectSegment setSelectedSegments={setSelectedSegments} />
+        <SelectSegment
+          selectedSegments={selectedSegments}
+          setSelectedSegments={setSelectedSegments}
+        />
         <NewSubscribersStatus
           newSubscribersStatus={newSubscribersStatus}
           setNewSubscribersStatus={setNewSubscribersStatus}
