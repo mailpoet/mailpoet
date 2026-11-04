@@ -202,7 +202,7 @@ class AcceptanceTester extends \Codeception\Actor {
   private function clickListingRowActionWithJavaScript(string $itemName, string $link): bool {
     // Same row XPath as the WebDriver locators. Matching an element's whole
     // textContent misses titles with extra text, like "Name (private)".
-    $encodedRowXpath = json_encode('//tr[.//*[normalize-space(text())="' . $itemName . '"]]');
+    $encodedRowXpath = json_encode('//tr[.//*[normalize-space(text())=' . self::xpathString($itemName) . ']]');
     $encodedLink = json_encode($link);
     return (bool)$this->executeJS(
       <<<JS
@@ -1360,7 +1360,7 @@ class AcceptanceTester extends \Codeception\Actor {
   private function scrollListingRowIntoViewByItemName(string $itemName): void {
     // Same row XPath as the WebDriver locators. Matching an element's whole
     // textContent misses titles with extra text, like "Name (private)".
-    $encodedRowXpath = json_encode('//tr[.//*[normalize-space(text())="' . $itemName . '"]]');
+    $encodedRowXpath = json_encode('//tr[.//*[normalize-space(text())=' . self::xpathString($itemName) . ']]');
     $this->executeJS(
       <<<JS
       const row = document.evaluate({$encodedRowXpath}, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
