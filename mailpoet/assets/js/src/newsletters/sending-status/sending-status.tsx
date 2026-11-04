@@ -487,7 +487,6 @@ export function SendingStatus() {
       {
         id: 'resend',
         label: __('Resend', 'mailpoet'),
-        context: 'single',
         isPrimary: true,
         supportsBulk: false,
         isEligible: (item) => Boolean(item.failed),

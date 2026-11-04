@@ -156,7 +156,6 @@ function NewsletterListNotificationHistoryComponent({
             {
               id: 'preview',
               label: __('Preview', 'mailpoet'),
-              context: 'single',
               supportsBulk: false,
               callback: (targets: NewsletterListingItem[]) => {
                 const target = targets[0];

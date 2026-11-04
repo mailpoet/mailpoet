@@ -328,7 +328,6 @@ function NewsletterListNotificationComponent() {
         {
           id: 'preview',
           label: __('Preview', 'mailpoet'),
-          context: 'single',
           supportsBulk: false,
           callback: (targets: NewsletterListingItem[]) => {
             const target = targets[0];
@@ -344,7 +343,6 @@ function NewsletterListNotificationComponent() {
         {
           id: 'edit',
           label: __('Edit', 'mailpoet'),
-          context: 'single',
           isPrimary: true,
           supportsBulk: false,
           callback: (targets: NewsletterListingItem[]) => {
@@ -354,7 +352,6 @@ function NewsletterListNotificationComponent() {
         {
           id: 'duplicate',
           label: __('Duplicate', 'mailpoet'),
-          context: 'single',
           supportsBulk: false,
           callback: (targets: NewsletterListingItem[]) => {
             const target = targets[0];

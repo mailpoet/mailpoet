@@ -308,7 +308,6 @@ function NewsletterListStandardComponent() {
           {
             id: 'preview',
             label: __('Preview', 'mailpoet'),
-            context: 'single',
             supportsBulk: false,
             callback: (targets: NewsletterListingItem[]) => {
               const target = targets[0];
@@ -324,7 +323,6 @@ function NewsletterListStandardComponent() {
           {
             id: 'edit',
             label: __('Edit', 'mailpoet'),
-            context: 'single',
             isPrimary: true,
             supportsBulk: false,
             callback: (targets: NewsletterListingItem[]) => {
@@ -334,7 +332,6 @@ function NewsletterListStandardComponent() {
           {
             id: 'share',
             label: __('Share', 'mailpoet'),
-            context: 'single',
             isPrimary: true,
             supportsBulk: false,
             // Only sent emails can be shared. The modal still offers
@@ -351,7 +348,6 @@ function NewsletterListStandardComponent() {
           {
             id: 'make-private',
             label: __('Make private', 'mailpoet'),
-            context: 'single',
             supportsBulk: false,
             isEligible: (item: NewsletterListingItem) =>
               Boolean(item.can_share) &&
@@ -365,7 +361,6 @@ function NewsletterListStandardComponent() {
           {
             id: 'duplicate',
             label: __('Duplicate', 'mailpoet'),
-            context: 'single',
             supportsBulk: false,
             callback: (targets: NewsletterListingItem[]) => {
               const target = targets[0];

@@ -514,7 +514,6 @@ function SegmentListComponent(): JSX.Element {
         id: 'delete',
         label: __('Delete permanently', 'mailpoet'),
         supportsBulk: true,
-        isDestructive: true,
         isEligible: (item) => !!item.deleted_at && !isSpecialSegment(item),
         callback: (targets) => {
           setPendingAction({

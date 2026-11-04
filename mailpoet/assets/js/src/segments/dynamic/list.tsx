@@ -496,7 +496,6 @@ export function DynamicSegmentList(): JSX.Element {
         id: 'delete',
         label: __('Delete permanently', 'mailpoet'),
         supportsBulk: true,
-        isDestructive: true,
         isEligible: (item) => !!item.deleted_at,
         callback: (targets) => {
           setPendingAction({ action: 'delete', selected: targets });
