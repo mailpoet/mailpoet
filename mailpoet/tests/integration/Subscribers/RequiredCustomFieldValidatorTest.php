@@ -50,6 +50,15 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
     $this->validator->validate(['cf_' . $this->customField->getId() => '']);
   }
 
+  public function testItSkipsUnsentRequiredField() {
+    $this->validator->validate([], null, true);
+  }
+
+  public function testItValidatesSentEmptyRequiredFieldWhenSkippingUnsentFields() {
+    $this->expectException('Exception');
+    $this->validator->validate(['cf_' . $this->customField->getId() => ''], null, true);
+  }
+
   public function testItValidatesOnlyFieldPresentInForm() {
     $this->customFieldRepository->createOrUpdate([
       'name' => 'custom field 2',

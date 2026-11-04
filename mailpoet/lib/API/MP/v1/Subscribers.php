@@ -137,6 +137,7 @@ class Subscribers {
     $sendConfirmationEmail = !(isset($options['send_confirmation_email']) && $options['send_confirmation_email'] === false);
     $scheduleWelcomeEmail = !(isset($options['schedule_welcome_email']) && $options['schedule_welcome_email'] === false);
     $skipSubscriberNotification = (isset($options['skip_subscriber_notification']) && $options['skip_subscriber_notification'] === true);
+    $skipUnsentRequiredCustomFields = $this->shouldSkipUnsentRequiredCustomFields($options);
 
     // throw exception when subscriber email is missing
     if (empty($data['email'])) {
@@ -156,7 +157,7 @@ class Subscribers {
 
     [$defaultFields, $customFields] = $this->extractCustomFieldsFromFromSubscriberData($data);
 
-    $this->requiredCustomFieldsValidator->validate($customFields);
+    $this->requiredCustomFieldsValidator->validate($customFields, null, $skipUnsentRequiredCustomFields);
 
     // filter out all incoming data that we don't want to change, like status ...
     $defaultFields = array_intersect_key($defaultFields, array_flip(['email', 'first_name', 'last_name', 'subscribed_ip', 'tracking_consent', 'tracking_consent_copy']));
@@ -215,14 +216,14 @@ class Subscribers {
     return $this->subscribersResponseBuilder->build($subscriberEntity);
   }
 
-  public function updateSubscriber($subscriberIdOrEmail, array $data): array {
+  public function updateSubscriber($subscriberIdOrEmail, array $data, array $options = []): array {
     $this->checkSubscriberParam($subscriberIdOrEmail);
 
     $subscriber = $this->findSubscriber($subscriberIdOrEmail);
 
     [$defaultFields, $customFields] = $this->extractCustomFieldsFromFromSubscriberData($data);
 
-    $this->requiredCustomFieldsValidator->validate($customFields);
+    $this->requiredCustomFieldsValidator->validate($customFields, null, $this->shouldSkipUnsentRequiredCustomFields($options));
 
     // filter out all incoming data that we don't want to change, like status ...
     $defaultFields = array_intersect_key($defaultFields, array_flip(['email', 'first_name', 'last_name', 'subscribed_ip', 'tracking_consent', 'tracking_consent_copy']));
@@ -768,6 +769,10 @@ class Subscribers {
       is_string($copy) ? $copy : null
     );
     return $fields;
+  }
+
+  private function shouldSkipUnsentRequiredCustomFields(array $options): bool {
+    return isset($options['skip_unsent_required_custom_fields']) && $options['skip_unsent_required_custom_fields'] === true;
   }
 
   /**

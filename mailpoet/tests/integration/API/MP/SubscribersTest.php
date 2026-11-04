@@ -633,6 +633,37 @@ class SubscribersTest extends \MailPoetTest {
     $this->getApi()->addSubscriber($subscriber);
   }
 
+  public function testItSkipsUnsentMandatoryCustomFieldsWhenAddingSubscriber() {
+    $this->customFieldRepository->createOrUpdate([
+      'name' => 'custom field',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+      'params' => ['required' => '1'],
+    ]);
+
+    $result = $this->getApi()->addSubscriber(
+      ['email' => 'test@example.com'],
+      [],
+      ['skip_unsent_required_custom_fields' => true]
+    );
+    verify($result['email'])->equals('test@example.com');
+  }
+
+  public function testItChecksSentEmptyMandatoryCustomFieldsWhenSkippingUnsentOnAdd() {
+    $customField = $this->customFieldRepository->createOrUpdate([
+      'name' => 'custom field',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+      'params' => ['required' => '1'],
+    ]);
+
+    $this->expectException('Exception');
+    $this->expectExceptionMessage('Missing value for custom field "custom field');
+    $this->getApi()->addSubscriber(
+      ['email' => 'test@example.com', 'cf_' . $customField->getId() => ''],
+      [],
+      ['skip_unsent_required_custom_fields' => true]
+    );
+  }
+
   public function testItSubscribesToSegmentsWhenAddingSubscriber() {
     $segment = $this->getSegment();
     $subscriber = [
@@ -902,6 +933,52 @@ class SubscribersTest extends \MailPoetTest {
       'email' => 'newemail@example.com',
       'first_name' => 'New Name',
     ]);
+  }
+
+  public function testUpdateSubscriberChecksForMandatoryCustomFields() {
+    $subscriber = $this->subscriberFactory->create();
+    $this->customFieldRepository->createOrUpdate([
+      'name' => 'custom field',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+      'params' => ['required' => '1'],
+    ]);
+
+    $this->expectException('Exception');
+    $this->expectExceptionMessage('Missing value for custom field "custom field');
+    $this->getApi()->updateSubscriber($subscriber->getId(), ['first_name' => 'New Name']);
+  }
+
+  public function testUpdateSubscriberSkipsUnsentMandatoryCustomFields() {
+    $subscriber = $this->subscriberFactory->create();
+    $this->customFieldRepository->createOrUpdate([
+      'name' => 'custom field',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+      'params' => ['required' => '1'],
+    ]);
+
+    $result = $this->getApi()->updateSubscriber(
+      $subscriber->getId(),
+      ['first_name' => 'New Name'],
+      ['skip_unsent_required_custom_fields' => true]
+    );
+    verify($result['first_name'])->equals('New Name');
+  }
+
+  public function testUpdateSubscriberChecksSentEmptyMandatoryCustomFieldsWhenSkippingUnsent() {
+    $subscriber = $this->subscriberFactory->create();
+    $customField = $this->customFieldRepository->createOrUpdate([
+      'name' => 'custom field',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+      'params' => ['required' => '1'],
+    ]);
+
+    $this->expectException('Exception');
+    $this->expectExceptionMessage('Missing value for custom field "custom field');
+    $this->getApi()->updateSubscriber(
+      $subscriber->getId(),
+      ['cf_' . $customField->getId() => ''],
+      ['skip_unsent_required_custom_fields' => true]
+    );
   }
 
   public function testItGetsSubscriber() {
