@@ -14,6 +14,13 @@
     border-bottom: 1px solid $color-grey;
   }
 
+  // Keeps the lock icon next to the tab title. The label wrapper is new in
+  // @wordpress/components 44, and core's CSS on older WordPress doesn't style it.
+  .components-tab-panel__tabs-item-label {
+    align-items: center;
+    display: inline-flex;
+  }
+
   .components-tab-panel__tab-content {
     padding: 0;
   }
