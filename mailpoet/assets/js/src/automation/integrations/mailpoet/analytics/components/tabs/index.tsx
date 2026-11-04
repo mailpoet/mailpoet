@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { TabPanel } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __, _x } from '@wordpress/i18n';
-import { Icon, lockSmall } from '@wordpress/icons';
+import { Icon, lock } from '@wordpress/icons';
 import { AutomationFlow } from './automation-flow';
 import { Emails } from './emails';
 import { Orders } from './orders';
@@ -39,7 +39,7 @@ export function Tabs(): JSX.Element {
       ),
       title: (
         <>
-          {__('Subscribers', 'mailpoet')} <Icon icon={lockSmall} />
+          {__('Subscribers', 'mailpoet')} <Icon icon={lock} />
         </>
       ) as unknown as string,
     },
@@ -63,7 +63,7 @@ export function Tabs(): JSX.Element {
         title: (
           <>
             {_x('Orders', 'WooCommerce orders', 'mailpoet')}{' '}
-            <Icon icon={lockSmall} />
+            <Icon icon={lock} />
           </>
         ) as unknown as string,
       });
