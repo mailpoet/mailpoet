@@ -301,6 +301,24 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->see($value, $element);
   }
 
+  /**
+   * Select an option in a SearchableChipSelectControl inside the given container.
+   */
+  public function selectOptionInChipSelect(string $value, string $container): void {
+    $i = $this;
+    $input = "$container input[role='combobox']";
+    $i->waitForElement($input);
+    $i->fillField($input, $value);
+    $i->waitForText($value, 10, "[role='listbox'] [role='option']");
+    $i->pressKey($input, WebDriverKeys::ENTER);
+    $i->seeSelectedInChipSelect($value, $container);
+  }
+
+  public function seeSelectedInChipSelect(string $value, string $container): void {
+    $i = $this;
+    $i->waitForText($value, 10, "$container [role='toolbar']");
+  }
+
   public function selectOptionInReactSelect($value, $selector) {
     $i = $this;
     $i->waitForElement($selector);

@@ -21,7 +21,7 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login, selectInSelect2, waitAndClick } from '../utils/helpers.js';
+import { login, selectInReact, waitAndClick } from '../utils/helpers.js';
 
 export async function formsAdding() {
   const page = await browser.newPage();
@@ -63,7 +63,11 @@ export async function formsAdding() {
 
     // Select the list and save the form
     await page.waitForSelector('[data-automation-id="form_title_input"]');
-    await selectInSelect2(page, defaultListName);
+    await selectInReact(
+      page,
+      '.mailpoet-form-segments input[role="combobox"]',
+      defaultListName,
+    );
     await page.waitForSelector('[data-automation-id="form_save_button"]');
     await page.locator('[data-automation-id="form_save_button"]').click();
     await page.waitForSelector('.components-notice');
