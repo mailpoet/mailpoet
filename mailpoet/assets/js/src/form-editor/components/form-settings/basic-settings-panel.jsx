@@ -8,7 +8,6 @@ import {
 } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { isEqual } from 'lodash';
 import { FormTitle } from '../form-title';
@@ -86,23 +85,19 @@ function BasicSettingsPanel({ onToggle, isOpened }) {
           checked={isFormEnabled}
           onChange={toggleForm}
         />
-        <div
-          className={classnames('mailpoet-form-segments', {
-            'mailpoet-form-missing-lists': shouldDisplayMissingListError,
-          })}
-        >
+        <div className="mailpoet-form-segments">
           <ItemSelectControl
             label={MailPoet.I18n.t('settingsListLabel')}
             placeholder={MailPoet.I18n.t('settingsPleaseSelectList')}
             items={segmentItems}
             selected={selectedSegments.map((seg) => seg.id)}
             onChange={onSegmentsChange}
+            error={
+              shouldDisplayMissingListError
+                ? MailPoet.I18n.t('settingsPleaseSelectList')
+                : undefined
+            }
           />
-          {shouldDisplayMissingListError ? (
-            <span className="mailpoet-form-lists-error">
-              {MailPoet.I18n.t('settingsPleaseSelectList')}
-            </span>
-          ) : null}
         </div>
         <RadioControl
           className="mailpoet-form-inline-radios__control"
