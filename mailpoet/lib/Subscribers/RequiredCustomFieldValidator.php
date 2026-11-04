@@ -19,12 +19,16 @@ class RequiredCustomFieldValidator {
   /**
    * @param array $data
    * @param FormEntity|null $form
+   * @param bool $skipUnsentFields
    *
    * @throws Exception
    */
-  public function validate(array $data, ?FormEntity $form = null) {
+  public function validate(array $data, ?FormEntity $form = null, bool $skipUnsentFields = false) {
     $allCustomFields = $this->getCustomFields($form);
     foreach ($allCustomFields as $customFieldId => $customFieldName) {
+      if ($skipUnsentFields && !$this->isCustomFieldSent($customFieldId, $data)) {
+        continue;
+      }
       if ($this->isCustomFieldMissing($customFieldId, $data)) {
         throw new Exception(
           // translators: %s is the name of the custom field.
@@ -34,8 +38,12 @@ class RequiredCustomFieldValidator {
     }
   }
 
+  private function isCustomFieldSent(int $customFieldId, array $data): bool {
+    return array_key_exists($customFieldId, $data) || array_key_exists('cf_' . $customFieldId, $data);
+  }
+
   private function isCustomFieldMissing(int $customFieldId, array $data): bool {
-    if (!array_key_exists($customFieldId, $data) && !array_key_exists('cf_' . $customFieldId, $data)) {
+    if (!$this->isCustomFieldSent($customFieldId, $data)) {
       return true;
     }
     if (isset($data[$customFieldId]) && !$data[$customFieldId]) {
