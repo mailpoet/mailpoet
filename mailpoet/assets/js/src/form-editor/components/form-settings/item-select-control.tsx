@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { SearchableChipSelectControl } from '@wordpress/ui';
+import { useEffect, useMemo, useRef } from 'react';
+import { ControlWithError, SearchableChipSelectControl } from '@wordpress/ui';
 
 export type SelectItem = {
   id: string;
@@ -18,6 +18,7 @@ type Props = {
   items: SelectItem[];
   selected: (string | number)[];
   onChange: (selected: string[]) => void;
+  error?: string;
 };
 
 const isSameOption = (option: Option, value: Option): boolean =>
@@ -30,7 +31,9 @@ export function ItemSelectControl({
   items,
   selected,
   onChange,
+  error,
 }: Props): JSX.Element {
+  const inputRef = useRef<HTMLInputElement>(null);
   const options = useMemo(
     () =>
       items.map((item) => ({
@@ -49,18 +52,30 @@ export function ItemSelectControl({
       .filter((option) => option !== undefined);
   }, [options, selected]);
 
+  useEffect(() => {
+    if (error) {
+      inputRef.current?.dispatchEvent(new Event('invalid'));
+    }
+  }, [error]);
+
   return (
-    <SearchableChipSelectControl
-      label={label}
-      hideLabelFromVision={hideLabelFromVision}
-      searchPlaceholder={placeholder}
-      items={options}
-      value={value}
-      onValueChange={(newValue: Option[]): void =>
-        onChange(newValue.map((option) => option.value))
-      }
-      isItemEqualToValue={isSameOption}
-      autoHighlight
-    />
+    <ControlWithError
+      getValidityTarget={() => inputRef.current}
+      customValidity={error ? { type: 'invalid', message: error } : undefined}
+    >
+      <SearchableChipSelectControl
+        ref={inputRef}
+        label={label}
+        hideLabelFromVision={hideLabelFromVision}
+        searchPlaceholder={placeholder}
+        items={options}
+        value={value}
+        onValueChange={(newValue: Option[]): void =>
+          onChange(newValue.map((option) => option.value))
+        }
+        isItemEqualToValue={isSameOption}
+        autoHighlight
+      />
+    </ControlWithError>
   );
 }

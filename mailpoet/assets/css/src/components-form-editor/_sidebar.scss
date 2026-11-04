@@ -2,18 +2,6 @@
 @use '../settings/form-editor' as *;
 @use '../settings/grid' as *;
 
-.components-panel {
-  .mailpoet-form-missing-lists {
-    [role='toolbar'] {
-      border-color: red;
-    }
-
-    .mailpoet-form-lists-error {
-      color: red;
-    }
-  }
-}
-
 // Restore spacing between sidebar controls — the old @wordpress/components
 // had margin-bottom: 8px on .components-base-control, v32+ dropped it
 .interface-interface-skeleton__sidebar .components-panel__body > * + * {
