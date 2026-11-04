@@ -77,6 +77,7 @@ class ImportExportFactory {
           'last_subscribed_at' => __('Last subscribed on', 'mailpoet'),
           'list_status' => _x('List status', 'Subscription status', 'mailpoet'),
           'global_status' => _x('Global status', 'Subscription status', 'mailpoet'),
+          'source' => __('Source', 'mailpoet'),
         ]
       );
     }
