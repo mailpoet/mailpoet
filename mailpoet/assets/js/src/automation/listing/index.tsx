@@ -602,7 +602,6 @@ export function AutomationListing(): JSX.Element {
         id: 'delete',
         label: __('Delete permanently', 'mailpoet'),
         supportsBulk: true,
-        isDestructive: true,
         isEligible: (item) => item.status === AutomationStatus.TRASH,
         callback: (targets) => {
           const actionTargets = getAutomationActionTargets('delete', targets);

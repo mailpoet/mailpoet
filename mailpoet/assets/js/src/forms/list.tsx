@@ -258,7 +258,6 @@ function FormListComponent(): JSX.Element {
         id: 'delete',
         label: __('Delete permanently', 'mailpoet'),
         supportsBulk: true,
-        isDestructive: true,
         isEligible: (item) => !!item.deleted_at,
         callback: (targets) => {
           void handleBulkAction('delete', targets);

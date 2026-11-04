@@ -1180,7 +1180,6 @@ function SubscriberList() {
       {
         id: 'statistics',
         label: __('Statistics', 'mailpoet'),
-        context: 'single',
         supportsBulk: false,
         isEligible: () => group !== 'trash',
         callback: (targets) => {
@@ -1195,7 +1194,6 @@ function SubscriberList() {
       {
         id: 'edit',
         label: __('Edit', 'mailpoet'),
-        context: 'single',
         isPrimary: true,
         supportsBulk: false,
         isEligible: () => group !== 'trash',
@@ -1211,7 +1209,6 @@ function SubscriberList() {
       {
         id: 'sendConfirmationEmail',
         label: __('Resend confirmation email', 'mailpoet'),
-        context: 'single',
         supportsBulk: false,
         isEligible: (item) =>
           group !== 'trash' &&
@@ -1253,7 +1250,6 @@ function SubscriberList() {
         id: 'delete',
         label: __('Delete permanently', 'mailpoet'),
         supportsBulk: true,
-        isDestructive: true,
         isEligible: (item) => group === 'trash' && isItemDeletable(item),
         callback: (targets) => {
           if (selectAll) {
