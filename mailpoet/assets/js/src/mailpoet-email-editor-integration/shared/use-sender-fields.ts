@@ -6,14 +6,7 @@ import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { MailPoet } from 'mailpoet';
 import { extractEmailDomain, isEmail } from 'common/functions';
 import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
-
-type MailPoetEmailData = {
-  type?: string;
-  sender_name?: string;
-  sender_address?: string;
-  reply_to_name?: string;
-  reply_to_address?: string;
-};
+import type { MailPoetEmailData } from './mailpoet-email-data';
 
 type AjaxStringListResponse = {
   data?: string[];
