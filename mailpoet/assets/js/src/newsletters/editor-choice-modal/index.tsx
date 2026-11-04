@@ -94,7 +94,7 @@ export function EditorChoiceModal({
           <Dialog.Title>
             {__('Choose an email editor', 'mailpoet')}
           </Dialog.Title>
-          <Dialog.CloseIcon disabled={isCreating} />
+          <Dialog.CloseIconButton disabled={isCreating} />
         </Dialog.Header>
         <Dialog.Content>
           <Stack direction="column" gap="xl">
