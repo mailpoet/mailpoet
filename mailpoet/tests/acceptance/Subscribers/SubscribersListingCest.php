@@ -422,28 +422,28 @@ class SubscribersListingCest {
     $i->amOnMailpoetPage('Subscribers');
 
     $this->selectSubscriberForBulkAction($i, $subscribers['all']);
-    $i->dontSee('Resend confirmation emails', '.dataviews-bulk-actions-footer__action-buttons');
+    $i->dontSee('Resend confirmation emails', '.dataviews-bulk-actions__actions');
 
     foreach (['subscribed', 'unsubscribed', 'inactive', 'bounced'] as $group) {
       $this->openSubscribersGroup($i, $group);
       $this->selectSubscriberForBulkAction($i, $subscribers[$group]);
-      $i->dontSee('Resend confirmation emails', '.dataviews-bulk-actions-footer__action-buttons');
+      $i->dontSee('Resend confirmation emails', '.dataviews-bulk-actions__actions');
     }
 
     $this->openSubscribersGroup($i, 'trash');
     $i->checkWooTableCheckboxForItemName($subscribers['trash']->getEmail());
-    $i->dontSee('Resend confirmation emails', '.dataviews-bulk-actions-footer__action-buttons');
+    $i->dontSee('Resend confirmation emails', '.dataviews-bulk-actions__actions');
 
     $this->openSubscribersGroup($i, 'unconfirmed');
     $this->selectSubscriberForBulkAction($i, $unconfirmedSubscriber);
-    $i->see('Resend confirmation emails', '.dataviews-bulk-actions-footer__action-buttons');
+    $i->see('Resend confirmation emails', '.dataviews-bulk-actions__actions');
 
     $settings->withConfirmationEmailDisabled();
     // The setting is page bootstrap data, so reload to pick it up.
     $i->reloadPage();
     $this->openSubscribersGroup($i, 'unconfirmed');
     $this->selectSubscriberForBulkAction($i, $unconfirmedSubscriber);
-    $i->dontSee('Resend confirmation emails', '.dataviews-bulk-actions-footer__action-buttons');
+    $i->dontSee('Resend confirmation emails', '.dataviews-bulk-actions__actions');
     $settings->withConfirmationEmailEnabled();
   }
 
@@ -590,7 +590,7 @@ class SubscribersListingCest {
     $i->amOnMailpoetPage('Subscribers');
     $i->applyDataViewsFilter('Status', ['Unconfirmed']);
     $i->waitForText('bulk-resend-all-pages-');
-    $i->click(['xpath' => '//table//thead//input[@type="checkbox"]']);
+    $i->click(['xpath' => '//table//thead//*[@role="checkbox"]']);
     $i->dontSee('Select all items on all pages');
     $this->openBulkResendConfirmationModal($i);
     $this->confirmBulkResendConfirmationEmailRequest($i);
@@ -997,7 +997,7 @@ class SubscribersListingCest {
   private function selectSubscriberForBulkAction(\AcceptanceTester $i, $subscriber): void {
     $i->waitForText($subscriber->getEmail());
     $i->checkWooTableCheckboxForItemName($subscriber->getEmail());
-    $i->waitForElement('.dataviews-bulk-actions-footer__container');
+    $i->waitForElement('.dataviews-bulk-actions-footer__item-count');
   }
 
   private function openBulkResendConfirmationModal(\AcceptanceTester $i): void {
