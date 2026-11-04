@@ -12,6 +12,7 @@ use MailPoet\Router\Endpoints\ExportDownload;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\ImportExport\ImportExportRepository;
+use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberCustomFieldRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -297,6 +298,19 @@ class ExportTest extends \MailPoetTest {
     verify($result['totalExported'])->equals(4);
     verify($result['exportFileURL'])->notEmpty();
     verify($this->getSubscriberDownloadFormat($result['exportFileURL']))->equals('xlsx');
+  }
+
+  public function testItExportsTheSubscriberSource() {
+    $this->subscriber1->setSource(Source::WOOCOMMERCE_CHECKOUT);
+    $this->subscriber2->setSource(Source::FORM);
+    $this->subscribersRepository->flush();
+    $this->export = $this->createExport(['subscriber_fields' => ['email', 'source']] + $this->jSONData);
+
+    $rows = $this->exportAndParseCsv();
+
+    verify($rows[0])->equals(['Email', 'Source', 'List']);
+    verify($this->findRowByEmail($rows, 'adam@smith.com')[1])->equals(Source::WOOCOMMERCE_CHECKOUT);
+    verify($this->findRowByEmail($rows, 'mary@jane.com')[1])->equals(Source::FORM);
   }
 
   public function testItGuardsExportedValuesASpreadsheetWouldEvaluate() {

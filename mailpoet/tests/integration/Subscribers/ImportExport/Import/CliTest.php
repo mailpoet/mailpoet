@@ -9,6 +9,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\ImportExport\Export\Export;
 use MailPoet\Subscribers\ImportExport\ImportExportRepository;
+use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberCustomFieldRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
@@ -225,6 +226,25 @@ class CliTest extends \MailPoetTest {
     $this->expectException(\RuntimeException::class);
     $this->expectExceptionMessage('Unrecognized CSV column(s): favourite_colour');
     $this->cli->run($file, self::DEFAULT_OPTIONS);
+  }
+
+  public function testItIgnoresTheSourceColumnOfAnExport(): void {
+    $messages = [];
+    $file = $this->writeCsv([
+      ['email', 'Source'],
+      ['exported.source@example.com', Source::FORM],
+    ]);
+
+    $this->cli->run($file, self::DEFAULT_OPTIONS, function (string $message) use (&$messages): void {
+      $messages[] = $message;
+    });
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => 'exported.source@example.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertSame(Source::IMPORTED, $subscriber->getSource());
+    $this->assertNotEmpty(array_filter($messages, function (string $m): bool {
+      return strpos($m, 'cannot import: Source.') !== false;
+    }));
   }
 
   public function testItThrowsOnCaseInsensitiveDuplicateColumn(): void {

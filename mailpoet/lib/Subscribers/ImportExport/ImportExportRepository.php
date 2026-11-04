@@ -274,6 +274,7 @@ class ImportExportRepository {
         {$subscriberTable}.tracking_consent_method,
         {$subscriberTable}.tracking_consent_copy,
         {$subscriberTable}.status AS global_status,
+        {$subscriberTable}.source,
         {$subscriberSegmentTable}.status AS list_status
       ")
       ->from($subscriberTable)
