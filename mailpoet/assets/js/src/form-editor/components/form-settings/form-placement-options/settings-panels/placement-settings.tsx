@@ -3,8 +3,9 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { ToggleControl } from '@wordpress/components';
 import { assocPath, compose, cond, identity, isEqual, sortBy } from 'lodash/fp';
 import { withBoundary } from 'common';
-import { Selection } from '../../selection';
+import { ItemSelectControl } from '../../item-select-control';
 import { storeName } from '../../../../store';
+import { FormSettingsType } from '../../../../store/form-data-types';
 
 type Props = {
   settingsPlacementKey: string;
@@ -46,16 +47,36 @@ function PlacementSettings({ settingsPlacementKey }: Props): JSX.Element {
       ),
     [],
   );
-  const isPreviewShown = useSelect(
-    (select) => select(storeName).getIsPreviewShown(),
-    [],
-  );
   const { changeFormSettings } = useDispatch(storeName);
 
-  let prefix = 'no-preview';
-  if (isPreviewShown) {
-    prefix = 'preview';
-  }
+  const placement: FormSettingsType['formPlacement']['belowPosts'] =
+    formSettings.formPlacement[settingsPlacementKey];
+  const placementPath = `formPlacement.${settingsPlacementKey}`;
+
+  // Selecting specific items turns off the related "All ..." toggles.
+  const changeSelected = (
+    key: string,
+    current: (string | number)[],
+    selected: string[],
+    allKeys: string[],
+  ): void => {
+    if (isEqual(current, selected)) {
+      return;
+    }
+    let newSettings = assocPath(
+      `${placementPath}.${key}`,
+      selected,
+    )(formSettings);
+    if (selected.length) {
+      allKeys.forEach((allKey) => {
+        newSettings = assocPath(
+          `${placementPath}.${allKey}`,
+          false,
+        )(newSettings);
+      });
+    }
+    changeFormSettings(newSettings);
+  };
 
   const placementSupportsArchives = settingsPlacementKey !== 'belowPosts';
 
@@ -109,50 +130,20 @@ function PlacementSettings({ settingsPlacementKey }: Props): JSX.Element {
       />
       <div data-automation-id="form-placement-select-page">
         <div className="form-editor-placement-selection">
-          <Selection
-            dropDownParent={
-              isPreviewShown ? '.mailpoet-modal-content' : undefined
+          <ItemSelectControl
+            label={MailPoet.I18n.t('displayOnPages')}
+            hideLabelFromVision
+            placeholder={MailPoet.I18n.t('selectPage')}
+            items={pages}
+            selected={placement.pages.selected}
+            onChange={(selected): void =>
+              changeSelected(
+                'pages.selected',
+                placement.pages.selected,
+                selected,
+                ['pages.all'],
+              )
             }
-            item={{
-              id: `${prefix}${formSettings.formPlacement[
-                settingsPlacementKey
-              ].pages.selected.join()}`,
-            }}
-            onValueChange={(e): void => {
-              const selected =
-                formSettings.formPlacement[settingsPlacementKey].pages.selected;
-              if (isEqual(selected, e.target.value)) {
-                return;
-              }
-              compose([
-                changeFormSettings,
-                assocPath(
-                  `formPlacement.${settingsPlacementKey}.pages.selected`,
-                  e.target.value,
-                ),
-                cond([
-                  [
-                    // only disable "All pages" toggle if not empty
-                    (): boolean => !!e.target.value.length,
-                    assocPath(
-                      `formPlacement.${settingsPlacementKey}.pages.all`,
-                      false,
-                    ), // disable all if some pages are selected
-                  ],
-                  [(): boolean => !e.target.value.length, identity],
-                ]),
-              ])(formSettings);
-            }}
-            field={{
-              id: `${prefix}pages`,
-              name: 'pages',
-              values: pages,
-              multiple: true,
-              placeholder: MailPoet.I18n.t('selectPage'),
-              getLabel: (page): void => page.name,
-              selected: (): void =>
-                formSettings.formPlacement[settingsPlacementKey].pages.selected,
-            }}
           />
         </div>
       </div>
@@ -187,167 +178,49 @@ function PlacementSettings({ settingsPlacementKey }: Props): JSX.Element {
         }}
       />
       <div className="form-editor-placement-selection">
-        <Selection
-          dropDownParent={
-            isPreviewShown ? '.mailpoet-modal-content' : undefined
+        <ItemSelectControl
+          label={MailPoet.I18n.t('displayOnPosts')}
+          hideLabelFromVision
+          placeholder={MailPoet.I18n.t('selectPage')}
+          items={posts}
+          selected={placement.posts.selected}
+          onChange={(selected): void =>
+            changeSelected(
+              'posts.selected',
+              placement.posts.selected,
+              selected,
+              ['posts.all'],
+            )
           }
-          item={{
-            id: `${prefix}${formSettings.formPlacement[
-              settingsPlacementKey
-            ].posts.selected.join()}`,
-          }}
-          onValueChange={(e): void => {
-            const selected =
-              formSettings.formPlacement[settingsPlacementKey].posts.selected;
-            if (isEqual(selected, e.target.value)) {
-              return;
-            }
-            compose([
-              changeFormSettings,
-              assocPath(
-                `formPlacement.${settingsPlacementKey}.posts.selected`,
-                e.target.value,
-              ),
-              cond([
-                [
-                  // only disable "All pages" toggle if not empty
-                  (): boolean => !!e.target.value.length,
-                  assocPath(
-                    `formPlacement.${settingsPlacementKey}.posts.all`,
-                    false,
-                  ), // disable all if some pages are selected
-                ],
-                [(): boolean => !e.target.value.length, identity],
-              ]),
-            ])(formSettings);
-          }}
-          field={{
-            id: `${prefix}posts`,
-            name: 'posts',
-            values: posts,
-            multiple: true,
-            placeholder: MailPoet.I18n.t('selectPage'),
-            getLabel: (page): string => page.name,
-            selected: (): Array<string> =>
-              formSettings.formPlacement[settingsPlacementKey].posts.selected,
-          }}
         />
       </div>
-      <div>
-        <p className="form-editor-sidebar-heading">
-          {MailPoet.I18n.t('displayOnCategories')}
-        </p>
-        <div className="form-editor-placement-selection">
-          <Selection
-            dropDownParent={
-              isPreviewShown ? '.mailpoet-modal-content' : undefined
-            }
-            item={{
-              id: `${prefix}${formSettings.formPlacement[
-                settingsPlacementKey
-              ].categories.join()}`,
-            }}
-            onValueChange={(e): void => {
-              const selected =
-                formSettings.formPlacement[settingsPlacementKey].categories;
-              if (isEqual(selected, e.target.value)) {
-                return;
-              }
-              compose([
-                changeFormSettings,
-                assocPath(
-                  `formPlacement.${settingsPlacementKey}.categories`,
-                  e.target.value,
-                ),
-                cond([
-                  [
-                    // only disable "All pages" toggle if not empty
-                    (): boolean => !!e.target.value.length,
-                    compose([
-                      assocPath(
-                        `formPlacement.${settingsPlacementKey}.pages.all`,
-                        false,
-                      ),
-                      assocPath(
-                        `formPlacement.${settingsPlacementKey}.posts.all`,
-                        false,
-                      ), // disable all if some posts are selected
-                    ]),
-                  ],
-                  [(): boolean => !e.target.value.length, identity],
-                ]),
-              ])(formSettings);
-            }}
-            field={{
-              id: `${prefix}categories`,
-              name: 'categories',
-              values: categories,
-              multiple: true,
-              placeholder: MailPoet.I18n.t('selectPage'),
-              getLabel: (category): string => category.name,
-              selected: (): Array<string> =>
-                formSettings.formPlacement[settingsPlacementKey].categories,
-            }}
-          />
-        </div>
+      <div className="form-editor-placement-selection">
+        <ItemSelectControl
+          label={MailPoet.I18n.t('displayOnCategories')}
+          placeholder={MailPoet.I18n.t('selectPage')}
+          items={categories}
+          selected={placement.categories}
+          onChange={(selected): void =>
+            changeSelected('categories', placement.categories, selected, [
+              'pages.all',
+              'posts.all',
+            ])
+          }
+        />
       </div>
-      <div>
-        <p className="form-editor-sidebar-heading">
-          {MailPoet.I18n.t('displayOnTags')}
-        </p>
-        <div className="form-editor-placement-selection">
-          <Selection
-            dropDownParent={
-              isPreviewShown ? '.mailpoet-modal-content' : undefined
-            }
-            item={{
-              id: `${prefix}${formSettings.formPlacement[
-                settingsPlacementKey
-              ].tags.join()}`,
-            }}
-            onValueChange={(e): void => {
-              const selected =
-                formSettings.formPlacement[settingsPlacementKey].tags;
-              if (isEqual(selected, e.target.value)) {
-                return;
-              }
-              compose([
-                changeFormSettings,
-                assocPath(
-                  `formPlacement.${settingsPlacementKey}.tags`,
-                  e.target.value,
-                ),
-                cond([
-                  [
-                    // only disable "All pages" toggle if not empty
-                    (): boolean => !!e.target.value.length,
-                    compose([
-                      assocPath(
-                        `formPlacement.${settingsPlacementKey}.pages.all`,
-                        false,
-                      ),
-                      assocPath(
-                        `formPlacement.${settingsPlacementKey}.posts.all`,
-                        false,
-                      ), // disable all if some posts are selected
-                    ]),
-                  ],
-                  [(): boolean => !e.target.value.length, identity],
-                ]),
-              ])(formSettings);
-            }}
-            field={{
-              id: `${prefix}tags`,
-              name: 'tags',
-              values: tags,
-              multiple: true,
-              placeholder: MailPoet.I18n.t('selectPage'),
-              getLabel: (tag): string => tag.name,
-              selected: (): Array<string> =>
-                formSettings.formPlacement[settingsPlacementKey].tags,
-            }}
-          />
-        </div>
+      <div className="form-editor-placement-selection">
+        <ItemSelectControl
+          label={MailPoet.I18n.t('displayOnTags')}
+          placeholder={MailPoet.I18n.t('selectPage')}
+          items={tags}
+          selected={placement.tags}
+          onChange={(selected): void =>
+            changeSelected('tags', placement.tags, selected, [
+              'pages.all',
+              'posts.all',
+            ])
+          }
+        />
       </div>
       {placementSupportsArchives && (
         <>
@@ -381,52 +254,20 @@ function PlacementSettings({ settingsPlacementKey }: Props): JSX.Element {
           />
           <div data-automation-id="form-placement-select-archive-tags">
             <div className="form-editor-placement-selection">
-              <Selection
-                dropDownParent={
-                  isPreviewShown ? '.mailpoet-modal-content' : undefined
+              <ItemSelectControl
+                label={MailPoet.I18n.t('selectSpecificArchiveTags')}
+                hideLabelFromVision
+                placeholder={MailPoet.I18n.t('selectSpecificArchiveTags')}
+                items={tags}
+                selected={placement.tagArchives.selected}
+                onChange={(selected): void =>
+                  changeSelected(
+                    'tagArchives.selected',
+                    placement.tagArchives.selected,
+                    selected,
+                    ['tagArchives.all'],
+                  )
                 }
-                item={{
-                  id: `${prefix}${formSettings.formPlacement[
-                    settingsPlacementKey
-                  ].tagArchives.selected.join()}`,
-                }}
-                onValueChange={(e): void => {
-                  const selected =
-                    formSettings.formPlacement[settingsPlacementKey].tagArchives
-                      .selected;
-                  if (isEqual(selected, e.target.value)) {
-                    return;
-                  }
-                  compose([
-                    changeFormSettings,
-                    assocPath(
-                      `formPlacement.${settingsPlacementKey}.tagArchives.selected`,
-                      e.target.value,
-                    ),
-                    cond([
-                      [
-                        // only disable "All pages" toggle if not empty
-                        (): boolean => !!e.target.value.length,
-                        assocPath(
-                          `formPlacement.${settingsPlacementKey}.tagArchives.all`,
-                          false,
-                        ), // disable all if some pages are selected
-                      ],
-                      [(): boolean => !e.target.value.length, identity],
-                    ]),
-                  ])(formSettings);
-                }}
-                field={{
-                  id: `${prefix}tagArchives`,
-                  name: 'tagArchives',
-                  values: tags,
-                  multiple: true,
-                  placeholder: MailPoet.I18n.t('selectSpecificArchiveTags'),
-                  getLabel: (tag): void => tag.name,
-                  selected: (): void =>
-                    formSettings.formPlacement[settingsPlacementKey].tagArchives
-                      .selected,
-                }}
               />
             </div>
           </div>
@@ -461,54 +302,20 @@ function PlacementSettings({ settingsPlacementKey }: Props): JSX.Element {
           />
           <div data-automation-id="form-placement-select-archive-categories">
             <div className="form-editor-placement-selection">
-              <Selection
-                dropDownParent={
-                  isPreviewShown ? '.mailpoet-modal-content' : undefined
+              <ItemSelectControl
+                label={MailPoet.I18n.t('selectSpecificArchiveCategories')}
+                hideLabelFromVision
+                placeholder={MailPoet.I18n.t('selectSpecificArchiveCategories')}
+                items={categories}
+                selected={placement.categoryArchives.selected}
+                onChange={(selected): void =>
+                  changeSelected(
+                    'categoryArchives.selected',
+                    placement.categoryArchives.selected,
+                    selected,
+                    ['categoryArchives.all'],
+                  )
                 }
-                item={{
-                  id: `${prefix}${formSettings.formPlacement[
-                    settingsPlacementKey
-                  ].categoryArchives.selected.join()}`,
-                }}
-                onValueChange={(e): void => {
-                  const selected =
-                    formSettings.formPlacement[settingsPlacementKey]
-                      .categoryArchives.selected;
-                  if (isEqual(selected, e.target.value)) {
-                    return;
-                  }
-                  compose([
-                    changeFormSettings,
-                    assocPath(
-                      `formPlacement.${settingsPlacementKey}.categoryArchives.selected`,
-                      e.target.value,
-                    ),
-                    cond([
-                      [
-                        // only disable "All pages" toggle if not empty
-                        (): boolean => !!e.target.value.length,
-                        assocPath(
-                          `formPlacement.${settingsPlacementKey}.categoryArchives.all`,
-                          false,
-                        ), // disable all if some pages are selected
-                      ],
-                      [(): boolean => !e.target.value.length, identity],
-                    ]),
-                  ])(formSettings);
-                }}
-                field={{
-                  id: `${prefix}categoryArchives`,
-                  name: 'categoryArchives',
-                  values: categories,
-                  multiple: true,
-                  placeholder: MailPoet.I18n.t(
-                    'selectSpecificArchiveCategories',
-                  ),
-                  getLabel: (tag): void => tag.name,
-                  selected: (): void =>
-                    formSettings.formPlacement[settingsPlacementKey]
-                      .categoryArchives.selected,
-                }}
               />
             </div>
           </div>
