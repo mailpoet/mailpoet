@@ -169,10 +169,8 @@ class ManageImportExportCest {
     $i->seeInField('input#new_segment_name', $newListName);
     $i->seeInField('textarea#new_segment_description', 'This is just a simple list.');
     $i->click('input#new_segment_process');
-    // trigger dropdown to display selections and search for recently created list
-    $i->waitForElementVisible('textarea.select2-search__field');
-    $i->wait(0.5); // We need to give select 2 some time to rerender after the new list was added
-    $i->selectOptionInSelect2($newListName);
+    $i->wantTo('See the new list selected without picking it');
+    $i->waitForText($newListName, 10, '.select2-selection__choice');
     $i->click('[data-automation-id="import-next-step"]');
     $i->waitForText('Import again');
   }
