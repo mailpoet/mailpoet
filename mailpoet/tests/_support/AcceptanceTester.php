@@ -200,14 +200,14 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   private function clickListingRowActionWithJavaScript(string $itemName, string $link): bool {
-    $encodedItemName = json_encode($itemName);
+    // Same row XPath as the WebDriver locators. Matching an element's whole
+    // textContent misses titles with extra text, like "Name (private)".
+    $encodedRowXpath = json_encode('//tr[.//*[normalize-space(text())="' . $itemName . '"]]');
     $encodedLink = json_encode($link);
     return (bool)$this->executeJS(
       <<<JS
-      const itemName = {$encodedItemName};
       const link = {$encodedLink};
-      const rows = Array.from(document.querySelectorAll('tr'));
-      const row = rows.find((tableRow) => Array.from(tableRow.querySelectorAll('*')).some((element) => element.textContent.trim() === itemName));
+      const row = document.evaluate({$encodedRowXpath}, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
       if (!row) return false;
       const action = Array.from(row.querySelectorAll('a, button')).find((element) => element.textContent.trim() === link);
       if (!action) return false;
@@ -1369,12 +1369,12 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   private function scrollListingRowIntoViewByItemName(string $itemName): void {
-    $encodedItemName = json_encode($itemName);
+    // Same row XPath as the WebDriver locators. Matching an element's whole
+    // textContent misses titles with extra text, like "Name (private)".
+    $encodedRowXpath = json_encode('//tr[.//*[normalize-space(text())="' . $itemName . '"]]');
     $this->executeJS(
       <<<JS
-      const itemName = {$encodedItemName};
-      const rows = Array.from(document.querySelectorAll('tr'));
-      const row = rows.find((tableRow) => Array.from(tableRow.querySelectorAll('*')).some((element) => element.textContent.trim() === itemName));
+      const row = document.evaluate({$encodedRowXpath}, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
       if (row) row.scrollIntoView({ block: 'center', inline: 'nearest' });
       JS
     );
