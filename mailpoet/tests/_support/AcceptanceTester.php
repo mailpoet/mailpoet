@@ -373,14 +373,14 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function selectAllListingItems() {
     $i = $this;
-    $dataViewsSelectAll = ['xpath' => '//*[contains(concat(" ", normalize-space(@class), " "), " mailpoet-dataviews ")]//table//thead//input[@type="checkbox"]'];
+    $dataViewsSelectAll = ['xpath' => '//*[contains(concat(" ", normalize-space(@class), " "), " mailpoet-dataviews ")]//table//thead//*[@role="checkbox"]'];
     $i->waitForElementVisible($dataViewsSelectAll);
     $i->click($dataViewsSelectAll);
     $i->waitForJS(<<<'JS'
       const root = document.querySelector('.mailpoet-dataviews');
       if (!root) return false;
-      return root.querySelector('.dataviews-bulk-actions-footer') !== null
-        || Array.from(root.querySelectorAll('tbody input[type="checkbox"]')).some((checkbox) => checkbox.checked);
+      return root.querySelector('.dataviews-bulk-actions-footer__item-count') !== null
+        || root.querySelector('tbody [role="checkbox"][aria-checked="true"]') !== null;
     JS);
   }
 
@@ -1292,9 +1292,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $i = $this;
     $i->openDataViewsFilter($filterName);
     if ($operator !== '') {
-      $operatorSelect = '.dataviews-filters__summary-operators-filter-select select';
-      $i->waitForElement($operatorSelect);
-      $i->selectOption($operatorSelect, $operator);
+      $i->selectDataViewsOption('.dataviews-filters__summary-operators-filter-select [role="combobox"]', $operator);
     }
     $i->waitForElement('.dataviews-filters__search-widget-listitem');
     foreach ($optionLabels as $label) {
@@ -1304,6 +1302,23 @@ class AcceptanceTester extends \Codeception\Actor {
     if ($i->executeJS('return document.querySelector(".mailpoet-dataviews") !== null;')) {
       $i->waitForListingItemsToLoad();
     }
+  }
+
+  /**
+   * Picks an option in a DataViews select. They are comboboxes with a popup
+   * list, not native selects.
+   *
+   * @param string|array $trigger
+   */
+  public function selectDataViewsOption($trigger, string $label): void {
+    $i = $this;
+    $i->waitForElementVisible($trigger);
+    $i->click($trigger);
+    $triggerId = $i->grabAttributeFrom($trigger, 'id');
+    Assert::assertIsString($triggerId);
+    $list = '//*[@id=' . self::xpathString($triggerId . '-list') . ']';
+    $i->click(['xpath' => $list . '//*[@role="option"][normalize-space(.)=' . self::xpathString($label) . ']']);
+    $i->waitForElementNotVisible(['xpath' => $list]);
   }
 
   /**
@@ -1424,7 +1439,8 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function checkWooTableCheckboxForItemName(string $itemName): void {
     $i = $this;
-    $xpath = ['xpath' => '//tr[.//*[normalize-space(text())=' . self::xpathString($itemName) . ']]//input[@type="checkbox"]'];
+    // DataViews rows use a role="checkbox" element over a hidden input, other tables a plain input.
+    $xpath = ['xpath' => '(//tr[.//*[normalize-space(text())=' . self::xpathString($itemName) . ']]//*[@role="checkbox" or self::input[@type="checkbox"]])[1]'];
     $i->scrollListingRowIntoViewByItemName($itemName);
     $i->click($xpath);
   }
@@ -1469,7 +1485,7 @@ class AcceptanceTester extends \Codeception\Actor {
       $i->click(['css' => 'input[value="Apply"], button[value="Apply"]']);
       return;
     } catch (Exception $exception) {
-      $dataViewsAction = ['xpath' => '//div[contains(@class, "dataviews-bulk-actions-footer__action-buttons")]//button[normalize-space(.)="' . $actionName . '"]'];
+      $dataViewsAction = ['xpath' => '//*[contains(concat(" ", normalize-space(@class), " "), " dataviews-bulk-actions__actions ")]//button[normalize-space(.)="' . $actionName . '"]'];
       $i->waitForElementClickable($dataViewsAction);
       $i->click($dataViewsAction);
     }

@@ -202,7 +202,7 @@ class ManageSubscribersCest {
 
     $i->wantTo('Add a subscriber to a list from the listing page');
     $i->checkWooTableCheckboxForItemName($newSubscriberEmail);
-    $i->selectListingBulkAction('Add to list...');
+    $i->selectListingBulkAction('Add to list');
     $triggerAutomationsCheckbox = '[data-automation-id="bulk-trigger-automations-checkbox"]';
     $i->waitForElement($triggerAutomationsCheckbox);
     $i->see('Trigger automations', $triggerAutomationsCheckbox);
@@ -263,7 +263,7 @@ class ManageSubscribersCest {
     $i->waitForListingItemsToLoad();
     $i->waitForText($newSubscriberEmail);
     $i->checkWooTableCheckboxForItemName($newSubscriberEmail);
-    $i->selectListingBulkAction('Remove from list...');
+    $i->selectListingBulkAction('Remove from list');
     $i->waitForElement('#remove_from_segment');
     $i->dontSeeElement('[data-automation-id="bulk-trigger-automations-checkbox"]');
     $this->setPickerModalSegment($i, 'remove_from_segment', self::SINGLE_SEGMENT_NAME);

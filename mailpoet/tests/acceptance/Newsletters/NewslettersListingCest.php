@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Test\DataFactories\Newsletter;
@@ -58,10 +59,12 @@ class NewslettersListingCest {
 
     $i->wantTo('See Date created selected and Last modified offered in Sort by');
     $i->click(['xpath' => '//button[@aria-label="View options"]']);
-    $sortBySelect = ['xpath' => '//select[option[normalize-space()="Date sent"]]'];
-    $i->waitForElement($sortBySelect);
-    $i->seeOptionIsSelected($sortBySelect, 'Date created');
-    $i->seeElement(['xpath' => '//select/option[normalize-space()="Last modified"]']);
+    $sortBy = ['xpath' => '//*[@role="combobox"][@aria-labelledby=//label[normalize-space(.)="Sort by"]/@id]'];
+    $i->waitForElementVisible($sortBy);
+    $i->see('Date created', $sortBy);
+    $i->click($sortBy);
+    $i->waitForElementVisible(['xpath' => '//*[@role="listbox"]//*[@role="option"][normalize-space(.)="Last modified"]']);
+    $i->pressKey('body', WebDriverKeys::ESCAPE);
 
     $i->wantTo('Sort newsletters by Last modified, newest first');
     $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/standard/sort_by[updated_at]/sort_order[desc]');
@@ -379,7 +382,7 @@ class NewslettersListingCest {
     $i->waitForElementClickable($addFilter);
     $i->click($addFilter);
     $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "Date sent")]']);
-    $i->waitForJS('var select = document.querySelector(".dataviews-filters__summary-operators-filter-select select"); return !!select && select.value === "between";', 10);
+    $i->waitForJS('var select = document.querySelector(".dataviews-filters__summary-operators-filter-select [role=combobox]"); return !!select && select.textContent.trim() === "Between (inc)";', 10);
   }
 
   public function filterNotificationHistoryBySentOn(\AcceptanceTester $i) {

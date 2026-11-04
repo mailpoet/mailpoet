@@ -152,10 +152,10 @@ export async function selectDataViewsPage(
   page,
   rootSelector = '.mailpoet-dataviews',
 ) {
-  await page
-    .locator(`${rootSelector} table thead input[type="checkbox"]`)
-    .click();
-  await page.waitForSelector(`${rootSelector} .dataviews-bulk-actions-footer`);
+  await page.locator(`${rootSelector} table thead [role="checkbox"]`).click();
+  await page.waitForSelector(
+    `${rootSelector} .dataviews-bulk-actions-footer__item-count`,
+  );
 }
 
 export async function clickDataViewsAction(
@@ -180,7 +180,7 @@ export async function clickDataViewsAction(
         return true;
       };
 
-      const bulkFooter = root.querySelector('.dataviews-bulk-actions-footer');
+      const bulkFooter = root.querySelector('.dataviews-bulk-actions');
       if (bulkFooter && clickMatching(bulkFooter)) return true;
 
       const menuToggle = bulkFooter?.querySelector(
