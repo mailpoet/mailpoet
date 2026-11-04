@@ -1,5 +1,4 @@
 import {
-  BaseControl,
   Panel,
   PanelBody,
   RadioControl,
@@ -12,9 +11,9 @@ import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { isEqual } from 'lodash';
-import { Selection } from './selection.jsx';
 import { FormTitle } from '../form-title';
 import { storeName } from '../../store';
+import { ItemSelectControl } from './item-select-control';
 
 function BasicSettingsPanel({ onToggle, isOpened }) {
   const { settings, segments, pages, missingListError, isFormEnabled } =
@@ -31,16 +30,20 @@ function BasicSettingsPanel({ onToggle, isOpened }) {
 
   const { changeFormSettings, toggleForm } = useDispatch(storeName);
 
-  const onSegmentsChange = (e) => {
-    // We don't want to update state when is same
-    // It's a workaround because selection.jsx call handleChange,
-    // when segments are restored from history
-    if (isEqual(settings.segments, e.target.value)) {
+  const segmentItems = segments
+    .filter((seg) => !seg.deleted_at && seg.type === 'default')
+    .map((seg) => ({
+      id: seg.id.toString(),
+      name: `${seg.name} (${parseInt(seg.subscribers, 10).toLocaleString()})`,
+    }));
+
+  const onSegmentsChange = (segmentIds) => {
+    if (isEqual(settings.segments, segmentIds)) {
       return;
     }
     changeFormSettings({
       ...settings,
-      segments: e.target.value,
+      segments: segmentIds,
     });
   };
 
@@ -66,7 +69,7 @@ function BasicSettingsPanel({ onToggle, isOpened }) {
   };
 
   const selectedSegments = settings.segments
-    ? segments.filter((seg) => settings.segments.includes(seg.id.toString()))
+    ? segmentItems.filter((seg) => settings.segments.includes(seg.id))
     : [];
   const shouldDisplayMissingListError =
     missingListError && !selectedSegments.length;
@@ -83,37 +86,24 @@ function BasicSettingsPanel({ onToggle, isOpened }) {
           checked={isFormEnabled}
           onChange={toggleForm}
         />
-        <BaseControl
-          label={MailPoet.I18n.t('settingsListLabel')}
-          className={classnames({
+        <div
+          className={classnames('mailpoet-form-segments', {
             'mailpoet-form-missing-lists': shouldDisplayMissingListError,
           })}
         >
+          <ItemSelectControl
+            label={MailPoet.I18n.t('settingsListLabel')}
+            placeholder={MailPoet.I18n.t('settingsPleaseSelectList')}
+            items={segmentItems}
+            selected={selectedSegments.map((seg) => seg.id)}
+            onChange={onSegmentsChange}
+          />
           {shouldDisplayMissingListError ? (
             <span className="mailpoet-form-lists-error">
               {MailPoet.I18n.t('settingsPleaseSelectList')}
             </span>
           ) : null}
-          <Selection
-            item={{
-              segments: selectedSegments,
-            }}
-            onValueChange={onSegmentsChange}
-            field={{
-              id: 'segments',
-              name: 'segments',
-              values: segments,
-              multiple: true,
-              placeholder: MailPoet.I18n.t('settingsPleaseSelectList'),
-              getLabel: (seg) =>
-                `${seg.name} (${parseInt(
-                  seg.subscribers,
-                  10,
-                ).toLocaleString()})`,
-              filter: (seg) => !!(!seg.deleted_at && seg.type === 'default'),
-            }}
-          />
-        </BaseControl>
+        </div>
         <RadioControl
           className="mailpoet-form-inline-radios__control"
           onChange={onSuccessTypeChange}
