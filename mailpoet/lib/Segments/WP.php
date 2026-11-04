@@ -637,7 +637,8 @@ class WP {
     // The email-based joins can cross a collation boundary when wp_users.user_email and
     // mailpoet_subscribers.email use different (but compatible) collations — force a
     // matching collation to avoid "Illegal mix of collations" errors. Use the subscribers
-    // email collation, which is what the unique key behind the insert uses.
+    // email collation, which is what the unique key behind the insert uses. Apply it to
+    // wu.user_email, because on the subscribers column MariaDB can't use that key for lookups.
     // Users whose address already belongs to a subscriber get linked to it below,
     // so mark them first, as the per-user sync does.
     $subscriberEmailCollation = $this->collationChecker->getCollateIfNeeded(
@@ -656,7 +657,7 @@ class WP {
       "SELECT wu.id, wu.user_email AS email
         FROM {$wpdb->users} wu
         LEFT JOIN {$this->subscribersTable} s ON wu.id = s.wp_user_id
-        INNER JOIN {$this->subscribersTable} existingSubscriber ON wu.user_email = existingSubscriber.email {$subscriberEmailCollation}
+        INNER JOIN {$this->subscribersTable} existingSubscriber ON wu.user_email {$subscriberEmailCollation} = existingSubscriber.email
         {$linkedUserJoins}
         WHERE s.wp_user_id IS NULL AND wu.user_email != ''
         AND {$canLink}";
@@ -672,7 +673,7 @@ class WP {
         SELECT wu.id, wu.user_email, :subscriberStatus, CURRENT_TIMESTAMP(), :source, {$deletedAt}
         FROM {$wpdb->users} wu
         LEFT JOIN {$this->subscribersTable} s ON wu.id = s.wp_user_id
-        LEFT JOIN {$this->subscribersTable} existingSubscriber ON wu.user_email = existingSubscriber.email {$subscriberEmailCollation}
+        LEFT JOIN {$this->subscribersTable} existingSubscriber ON wu.user_email {$subscriberEmailCollation} = existingSubscriber.email
         {$linkedUserJoins}
         WHERE s.wp_user_id IS NULL AND wu.user_email != ''
         ON DUPLICATE KEY UPDATE
