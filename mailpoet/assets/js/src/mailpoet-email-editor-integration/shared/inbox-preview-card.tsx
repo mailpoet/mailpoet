@@ -2,6 +2,7 @@ import { Card } from '@wordpress/components';
 import { useEntityProp } from '@wordpress/core-data';
 import { __ } from '@wordpress/i18n';
 import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
+import type { MailPoetEmailData } from './mailpoet-email-data';
 
 function formatSender(name = '', address = ''): string {
   if (name && address) {
@@ -16,14 +17,14 @@ function formatSender(name = '', address = ''): string {
  * sidebar panel and the review & send panel.
  */
 export function InboxPreviewCard() {
-  const [mailpoetEmailData] = useEntityProp(
+  const [mailpoetEmailData] = useEntityProp<MailPoetEmailData>(
     'postType',
     MAILPOET_EMAIL_POST_TYPE,
     'mailpoet_data',
   );
 
-  const senderName = (mailpoetEmailData?.sender_name as string) || '';
-  const senderAddress = (mailpoetEmailData?.sender_address as string) || '';
+  const senderName = mailpoetEmailData?.sender_name || '';
+  const senderAddress = mailpoetEmailData?.sender_address || '';
 
   return (
     <Card className="mailpoet-inbox-preview-panel__card">

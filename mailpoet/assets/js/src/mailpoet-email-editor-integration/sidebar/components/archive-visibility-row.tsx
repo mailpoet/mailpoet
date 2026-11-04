@@ -9,16 +9,15 @@ import { store as editorStore } from '@wordpress/editor';
 import { __ } from '@wordpress/i18n';
 import { isNewsletterShownInArchiveFromEditorValue } from 'common/newsletter-archive-visibility';
 import { MAILPOET_EMAIL_POST_TYPE } from '../../constants';
+import type { MailPoetEmailData } from '../../shared/mailpoet-email-data';
 
 export function ArchiveVisibilityRow() {
-  const [mailpoetEmailData] = useEntityProp(
+  const [mailpoetEmailData] = useEntityProp<MailPoetEmailData>(
     'postType',
     MAILPOET_EMAIL_POST_TYPE,
     'mailpoet_data',
   );
-  const currentShowInArchive = mailpoetEmailData?.show_in_archive as
-    | boolean
-    | undefined;
+  const currentShowInArchive = mailpoetEmailData?.show_in_archive;
 
   const updateShowInArchive = (showInArchive: boolean) => {
     const postId = select(editorStore).getCurrentPostId();

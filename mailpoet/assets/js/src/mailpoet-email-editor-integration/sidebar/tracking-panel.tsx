@@ -8,9 +8,10 @@ import {
 } from '@wordpress/editor';
 import { __ } from '@wordpress/i18n';
 import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
+import type { MailPoetEmailData } from '../shared/mailpoet-email-data';
 
 export function TrackingPanel() {
-  const [mailpoetEmailData] = useEntityProp(
+  const [mailpoetEmailData] = useEntityProp<MailPoetEmailData>(
     'postType',
     MAILPOET_EMAIL_POST_TYPE,
     'mailpoet_data',
