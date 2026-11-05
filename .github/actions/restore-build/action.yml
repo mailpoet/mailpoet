@@ -48,3 +48,11 @@ runs:
       if: inputs.install-js == 'true'
       shell: bash
       run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+
+    # Premium is a separate pnpm workspace, checked out next to Free by its
+    # own workflows.
+    - name: 'Install Premium JS dependencies'
+      if: inputs.install-js == 'true' && hashFiles('mailpoet-premium/pnpm-lock.yaml') != ''
+      shell: bash
+      working-directory: mailpoet-premium
+      run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
