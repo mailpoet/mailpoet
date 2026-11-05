@@ -18,7 +18,8 @@ updates:
     labels:
       - 'dependencies'
 
-  # The Porter handles the PHP stubs PRs. New stubs arrive only through a lock
+  # The PHP stubs PRs merge on their own once the required checks pass
+  # (dependabot-php-stubs-auto-merge.yml). New stubs arrive only through a lock
   # update, so Dependabot is limited to woocommerce/php-stubs.
   - package-ecosystem: 'composer'
     directory: '/mailpoet/tasks/phpstan'
