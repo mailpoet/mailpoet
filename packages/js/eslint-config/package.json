@@ -8,6 +8,9 @@
     "eslint": "./node_modules/eslint/bin/eslint.js"
   },
   "scripts": {},
+  "peerDependencies": {
+    "eslint": "^9.0.0"
+  },
   "devDependencies": {
     "@babel/eslint-parser": "^7.29.9",
     "@eslint/eslintrc": "^3.3.1",
