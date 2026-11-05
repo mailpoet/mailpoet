@@ -273,6 +273,7 @@ class AmazonSESTest extends \MailPoetTest {
   }
 
   public function testItCatchesSendingErrors() {
+    if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $this->mailer->sender['from_name_email'] = 'invalid';
     $result = $this->mailer->send($this->newsletter, 'test@example.com');
     verify($result['response'])->false();
