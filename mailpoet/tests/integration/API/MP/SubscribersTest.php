@@ -628,7 +628,8 @@ class SubscribersTest extends \MailPoetTest {
       'email' => 'test@example.com',
     ];
 
-    $this->expectException('Exception');
+    $this->expectException(APIException::class);
+    $this->expectExceptionCode(APIException::CUSTOM_FIELD_VALUE_REQUIRED);
     $this->expectExceptionMessage('Missing value for custom field "custom field');
     $this->getApi()->addSubscriber($subscriber);
   }
@@ -655,7 +656,8 @@ class SubscribersTest extends \MailPoetTest {
       'params' => ['required' => '1'],
     ]);
 
-    $this->expectException('Exception');
+    $this->expectException(APIException::class);
+    $this->expectExceptionCode(APIException::CUSTOM_FIELD_VALUE_REQUIRED);
     $this->expectExceptionMessage('Missing value for custom field "custom field');
     $this->getApi()->addSubscriber(
       ['email' => 'test@example.com', 'cf_' . $customField->getId() => ''],
@@ -671,7 +673,8 @@ class SubscribersTest extends \MailPoetTest {
       'params' => ['required' => '1'],
     ]);
 
-    $this->expectException('Exception');
+    $this->expectException(APIException::class);
+    $this->expectExceptionCode(APIException::CUSTOM_FIELD_VALUE_REQUIRED);
     $this->expectExceptionMessage('Missing value for custom field "custom field');
     $this->getApi()->addSubscriber(
       ['email' => 'test@example.com', 'cf_' . $customField->getId() => null],
@@ -959,7 +962,8 @@ class SubscribersTest extends \MailPoetTest {
       'params' => ['required' => '1'],
     ]);
 
-    $this->expectException('Exception');
+    $this->expectException(APIException::class);
+    $this->expectExceptionCode(APIException::CUSTOM_FIELD_VALUE_REQUIRED);
     $this->expectExceptionMessage('Missing value for custom field "custom field');
     $this->getApi()->updateSubscriber($subscriber->getId(), ['first_name' => 'New Name']);
   }
@@ -988,7 +992,8 @@ class SubscribersTest extends \MailPoetTest {
       'params' => ['required' => '1'],
     ]);
 
-    $this->expectException('Exception');
+    $this->expectException(APIException::class);
+    $this->expectExceptionCode(APIException::CUSTOM_FIELD_VALUE_REQUIRED);
     $this->expectExceptionMessage('Missing value for custom field "custom field');
     $this->getApi()->updateSubscriber(
       $subscriber->getId(),

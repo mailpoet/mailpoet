@@ -86,6 +86,7 @@ Codes description:
 | 17   | Welcome email failed to send.                                                         |
 | 25   | A `tags` entry resolved to an empty/missing tag name.                                 |
 | 29   | A `tags` entry referenced a tag id that does not exist.                               |
+| 32   | A required custom field is missing or has an empty value.                             |
 
 ## Example
 
