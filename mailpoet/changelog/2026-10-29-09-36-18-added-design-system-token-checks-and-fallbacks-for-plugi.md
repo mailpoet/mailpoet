@@ -1,5 +1,5 @@
-# Type: Added
+# Type: Improved
 
 # Description
 
-Design system token checks and fallbacks for plugin styles
+Consistency of plugin styles with the WordPress admin
