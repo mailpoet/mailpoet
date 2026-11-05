@@ -342,8 +342,8 @@ importers:
         specifier: ^1.8.1
         version: 1.8.1(patch_hash=160c884314aee911fb608e377fd0a78a9dfcb223d3f6f2c3888efe479ed208b1)
       tinymce:
-        specifier: ^7.9.3
-        version: 7.9.3
+        specifier: ^8.10.1
+        version: 8.10.1
       underscore:
         specifier: ^1.13.8
         version: 1.13.8
@@ -11100,8 +11100,8 @@ packages:
     resolution: {integrity: sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g==}
     engines: {node: '>=12.0.0'}
 
-  tinymce@7.9.3:
-    resolution: {integrity: sha512-Mtm54U5YJ6Pyo/GaAx+JSHXTGEuxrg2AowVWCD9zy1eBolp5Ub7S1rTtsyQdxhPegfhLuR3VLiTKGw1tacv09g==}
+  tinymce@8.10.1:
+    resolution: {integrity: sha512-Mgdnx8HuEPRlLqKTyHcy7+JJn9reXH7b7L/1ywPCzKAyjaq8fzEPE+CYBLW42GgBlaaoIOd0dTOcYHUlPZyV2A==}
 
   tldts-core@7.4.14:
     resolution: {integrity: sha512-KYkjfJHnIC5t+Gy7hPrMHgJmWc/N9FfmS+fggRPSlpFckidpB9HD6OzPsSTkfDH+MpZgcu2tJPGgLfHl979N1Q==}
@@ -26009,7 +26009,7 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.4)
       picomatch: 4.0.4
 
-  tinymce@7.9.3: {}
+  tinymce@8.10.1: {}
 
   tldts-core@7.4.14: {}
 
