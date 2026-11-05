@@ -56,6 +56,7 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
   }
 
   public function testItSkipsUnsentRequiredField() {
+    $this->expectNotToPerformAssertions();
     $this->validator->validate([], null, true);
   }
 
