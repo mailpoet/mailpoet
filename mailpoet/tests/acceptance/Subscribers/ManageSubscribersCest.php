@@ -204,7 +204,7 @@ class ManageSubscribersCest {
     $i->checkWooTableCheckboxForItemName($newSubscriberEmail);
     $i->selectListingBulkAction('Add to list');
     $triggerAutomationsCheckbox = '[data-automation-id="bulk-trigger-automations-checkbox"]';
-    $i->waitForElement($triggerAutomationsCheckbox);
+    $i->waitForElementVisible($triggerAutomationsCheckbox);
     $i->see('Trigger automations', $triggerAutomationsCheckbox);
     $i->see('Matching automations may send emails', $triggerAutomationsCheckbox);
     $i->dontSeeCheckboxIsChecked($triggerAutomationsCheckbox . ' input');
