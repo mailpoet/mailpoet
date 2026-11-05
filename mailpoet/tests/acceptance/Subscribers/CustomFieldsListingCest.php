@@ -28,8 +28,8 @@ class CustomFieldsListingCest {
     $i->waitForElement('.dataviews-filters__search-widget-listitem');
     $i->click(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][.//text()[contains(., "Date")]]']);
     $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+    $i->waitForElementNotVisible(['xpath' => '//tr[.//*[normalize-space(text())="' . $textField . '"]]']);
     $i->waitForText($dateField);
-    $i->dontSee($textField);
     $i->seeInCurrentUrl('type=date');
 
     $i->wantTo('Sort the custom fields by name descending');
