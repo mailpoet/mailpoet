@@ -84,22 +84,6 @@ module.exports = [
     },
   },
 
-  // ESLint 9 reports unused caught errors by default, ESLint 8 did not
-  {
-    files: ['assets/js/src/**/*.{js,jsx}'],
-    rules: {
-      'no-unused-vars': [
-        'error',
-        {
-          vars: 'all',
-          args: 'after-used',
-          ignoreRestSiblings: true,
-          caughtErrors: 'none',
-        },
-      ],
-    },
-  },
-
   // File-specific overrides
   // (These are existing violations that we should fix at some point.)
   {
