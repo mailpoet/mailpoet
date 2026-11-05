@@ -1,8 +1,12 @@
 name: 'Dependabot PHP stubs auto-merge'
 
-# The weekly php-stubs group bumps only woocommerce/php-stubs, which only
-# PHPStan reads. Its PR merges once the required checks pass. Other Dependabot
-# PRs wait for a person.
+# The weekly php-stubs group bumps only woocommerce/php-stubs, which only the
+# PHPStan job reads. Its PR merges once the required checks pass. Other
+# Dependabot PRs wait for a person.
+#
+# The merge is made with GITHUB_TOKEN, which starts no workflows, so the trunk
+# push runs of checks.yml and codeql-analysis.yml skip that commit. The next
+# push to trunk runs them.
 on:
   pull_request:
 
