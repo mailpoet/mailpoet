@@ -190,6 +190,7 @@ class SubscriberSaveController {
       }
     }
 
+    $this->subscribersRepository->invalidateGlobalStatusStatisticsCache();
     return $subscriber;
   }
 

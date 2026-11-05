@@ -3,6 +3,7 @@
 namespace MailPoet\Subscribers;
 
 use DateTimeInterface;
+use MailPoet\Cache\TransientCache;
 use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\SegmentEntity;
@@ -49,13 +50,17 @@ class SubscribersRepository extends Repository {
   /** @var WPUserSubscriberLink */
   private $wpUserSubscriberLink;
 
+  /** @var TransientCache */
+  private $transientCache;
+
   public function __construct(
     EntityManager $entityManager,
     SubscriberChangesNotifier $changesNotifier,
     WPFunctions $wp,
     SegmentsRepository $segmentsRepository,
     SegmentsCountRecalculator $segmentsCountRecalculator,
-    WPUserSubscriberLink $wpUserSubscriberLink
+    WPUserSubscriberLink $wpUserSubscriberLink,
+    TransientCache $transientCache
   ) {
     $this->wp = $wp;
     parent::__construct($entityManager);
@@ -63,6 +68,7 @@ class SubscribersRepository extends Repository {
     $this->segmentsRepository = $segmentsRepository;
     $this->segmentsCountRecalculator = $segmentsCountRecalculator;
     $this->wpUserSubscriberLink = $wpUserSubscriberLink;
+    $this->transientCache = $transientCache;
   }
 
   protected function getEntityClassName() {
@@ -136,6 +142,19 @@ class SubscribersRepository extends Repository {
     $this->wp->deleteTransient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY);
   }
 
+  /**
+   * Call this after admin changes only, not from invalidateTotalSubscribersCache():
+   * the WordPress and WooCommerce syncs call that from cron, and rebuilding these
+   * counts after each sync would defeat the cache on large sites.
+   */
+  public function invalidateGlobalStatusStatisticsCache(): void {
+    $this->transientCache->invalidateItems(TransientCache::SUBSCRIBERS_GLOBAL_STATISTICS_COUNT_KEY);
+  }
+
+  public function invalidateSegmentStatisticsCache(int $segmentId): void {
+    $this->transientCache->invalidateItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, $segmentId);
+  }
+
   public function findBySegment(int $segmentId): array {
     return $this->entityManager
     ->createQueryBuilder()
@@ -196,6 +215,7 @@ class SubscribersRepository extends Repository {
     $this->changesNotifier->subscribersUpdated($ids);
     $this->changesNotifier->subscribersCountChanged($ids);
     $this->invalidateTotalSubscribersCache();
+    $this->invalidateGlobalStatusStatisticsCache();
     return count($ids);
   }
 
@@ -218,6 +238,7 @@ class SubscribersRepository extends Repository {
     $this->changesNotifier->subscribersUpdated($ids);
     $this->changesNotifier->subscribersCountChanged($ids);
     $this->invalidateTotalSubscribersCache();
+    $this->invalidateGlobalStatusStatisticsCache();
     return count($ids);
   }
 
@@ -271,6 +292,7 @@ class SubscribersRepository extends Repository {
 
     $this->changesNotifier->subscribersDeleted($ids);
     $this->invalidateTotalSubscribersCache();
+    $this->invalidateGlobalStatusStatisticsCache();
     return $count;
   }
 
@@ -797,6 +819,7 @@ class SubscribersRepository extends Repository {
 
     $this->segmentsCountRecalculator->recalculateForSubscribers($ids);
     $this->changesNotifier->subscribersUpdated($ids);
+    $this->invalidateSegmentStatisticsCache((int)$segment->getId());
     return $count;
   }
 
@@ -815,6 +838,7 @@ class SubscribersRepository extends Repository {
   public function bulkAddToSegment(SegmentEntity $segment, array $ids, bool $skipHooks = true): int {
     $subscriberSegments = $this->addSubscribersToSegment($segment, $ids);
     $this->changesNotifier->subscribersUpdated($ids);
+    $this->invalidateSegmentStatisticsCache((int)$segment->getId());
     if (!$skipHooks) {
       $this->fireSegmentSubscribedHooks($subscriberSegments);
     }
@@ -851,6 +875,7 @@ class SubscribersRepository extends Repository {
     $subscriberSegments = $this->addSubscribersToSegment($segment, $ids);
 
     $this->changesNotifier->subscribersUpdated($ids);
+    $this->invalidateSegmentStatisticsCache((int)$segment->getId());
     if (!$skipHooks) {
       $this->fireSegmentSubscribedHooks($subscriberSegments, $subscriberIdsAlreadyInSegment);
     }
@@ -869,6 +894,7 @@ class SubscribersRepository extends Repository {
     $this->changesNotifier->subscribersUpdated($ids);
     $this->changesNotifier->subscribersCountChanged($ids);
     $this->invalidateTotalSubscribersCache();
+    $this->invalidateGlobalStatusStatisticsCache();
     return count($ids);
   }
 
