@@ -5,6 +5,7 @@ import {
   useState,
 } from '@wordpress/element';
 
+// AcceptanceTester::clickSendPanelSendButton() waits this long; keep in sync.
 const IGNORE_CLICKS_AFTER_OPEN_MS = 500;
 
 type GuardedSend = {

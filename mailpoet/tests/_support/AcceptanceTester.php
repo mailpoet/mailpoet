@@ -391,6 +391,18 @@ class AcceptanceTester extends \Codeception\Actor {
     }
   }
 
+  /**
+   * The send panel ignores clicks on Send in the first 500 ms after it opens,
+   * so a double-click on “Review & send” doesn’t send (use-guarded-send.ts).
+   * A fast test run can get there sooner, so wait out that window first.
+   */
+  public function clickSendPanelSendButton(): void {
+    $i = $this;
+    $i->waitForElementClickable('[data-automation-id="email_send_panel_send_button"]');
+    $i->wait(0.5);
+    $i->click('[data-automation-id="email_send_panel_send_button"]');
+  }
+
   public function waitForEmailSendingOrSent() {
     $i = $this;
     $i->waitForElement('.mailpoet-listing-status:not(.mailpoet-listing-status-unknown)', 30);

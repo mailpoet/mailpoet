@@ -75,8 +75,7 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->waitForElementVisible('.mailpoet-status-panel__recipients-segments');
     $i->fillField('.mailpoet-status-panel__recipients-segments input', $segmentName);
     $i->pressKey('.mailpoet-status-panel__recipients-segments input', \Facebook\WebDriver\WebDriverKeys::ENTER);
-    $i->waitForElementClickable('[data-automation-id="email_send_panel_send_button"]');
-    $i->click('[data-automation-id="email_send_panel_send_button"]');
+    $i->clickSendPanelSendButton();
     $i->waitForEmailSendingOrSent();
 
     $i->triggerMailPoetActionScheduler();
