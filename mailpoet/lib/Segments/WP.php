@@ -653,8 +653,11 @@ class WP {
       "LEFT JOIN {$wpdb->users} linkedUser ON linkedUser.ID = existingSubscriber.wp_user_id
         LEFT JOIN {$wpdb->usermeta} linkedUserMark ON linkedUserMark.user_id = existingSubscriber.wp_user_id
           AND linkedUserMark.meta_key = :unconfirmedLinkMetaKey";
+    // STRAIGHT_JOIN pins the join order to users -> subscribers, so each unlinked user is looked
+    // up by email. Without it MariaDB 11 may lead with all subscribers and compare them against
+    // every user, which takes about a minute with 350k users.
     $linkingSql =
-      "SELECT wu.id, wu.user_email AS email
+      "SELECT STRAIGHT_JOIN wu.id, wu.user_email AS email
         FROM {$wpdb->users} wu
         LEFT JOIN {$this->subscribersTable} s ON wu.id = s.wp_user_id
         INNER JOIN {$this->subscribersTable} existingSubscriber ON wu.user_email {$subscriberEmailCollation} = existingSubscriber.email
