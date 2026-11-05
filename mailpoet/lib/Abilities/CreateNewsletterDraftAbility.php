@@ -70,7 +70,7 @@ class CreateNewsletterDraftAbility implements Ability {
   public function getRegistrationArgs(): array {
     return [
       'label' => __('Create MailPoet newsletter draft', 'mailpoet'),
-      'description' => __('Creates one standard MailPoet newsletter as a draft from structured content and returns edit_url for a person to review. It never sends, schedules or chooses recipients. Use it only when the user asks for a newsletter draft.', 'mailpoet'),
+      'description' => __('Creates one standard MailPoet newsletter as a draft from structured content and returns edit_url for a person to review. It never sends or schedules. Use it only when the user asks for a newsletter draft. Make it look designed: use sections with background colors, a colored button, images and short paragraphs.', 'mailpoet'),
       'input_schema' => $this->getInputSchema(),
       'output_schema' => $this->getOutputSchema(),
       'execute_callback' => [$this, 'execute'],
@@ -243,32 +243,7 @@ class CreateNewsletterDraftAbility implements Ability {
       'properties' => [
         'subject' => ['type' => 'string', 'minLength' => 1, 'maxLength' => 250],
         'preheader' => ['type' => 'string', 'maxLength' => 250],
-        'blocks' => [
-          'type' => 'array',
-          'minItems' => 1,
-          'maxItems' => 50,
-          'items' => [
-            'type' => 'object',
-            'required' => ['type'],
-            'additionalProperties' => false,
-            'properties' => [
-              'type' => [
-                'type' => 'string',
-                'enum' => [
-                  NewsletterDraftBlocks::TYPE_HEADING,
-                  NewsletterDraftBlocks::TYPE_PARAGRAPH,
-                  NewsletterDraftBlocks::TYPE_BUTTON,
-                  NewsletterDraftBlocks::TYPE_IMAGE,
-                ],
-                'description' => __('heading: text (at most 300 characters), optional level. paragraph: text, which may use strong, em and a href. button: text (at most 100 characters), url. image: url, alt. Other fields are rejected.', 'mailpoet'),
-              ],
-              'text' => ['type' => 'string', 'maxLength' => 5000],
-              'level' => ['type' => 'integer', 'enum' => [1, 2, 3]],
-              'url' => ['type' => 'string', 'format' => 'uri'],
-              'alt' => ['type' => 'string', 'maxLength' => 300],
-            ],
-          ],
-        ],
+        'blocks' => $this->draftBlocks->getBlocksSchema(),
         'client_reference' => [
           'type' => 'string',
           'minLength' => 1,

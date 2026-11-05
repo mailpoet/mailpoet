@@ -1069,6 +1069,10 @@ class Functions {
     return sanitize_key($key);
   }
 
+  public function sanitizeHexColor(string $color): string {
+    return (string)sanitize_hex_color($color);
+  }
+
   public function sanitizeTextField(string $text): string {
     return sanitize_text_field($text);
   }
