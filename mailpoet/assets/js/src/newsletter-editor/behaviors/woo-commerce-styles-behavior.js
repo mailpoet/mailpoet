@@ -14,24 +14,33 @@ BL.WooCommerceStylesBehavior = Marionette.Behavior.extend({
     return {
       // eslint-disable-next-line func-names
       'change #mailpoet_wc_branding_color': function (event) {
-        let linkFontColor;
         const brandingColor = event.target.value;
-        const headingFontColor = this.wcHexIsLight(brandingColor)
-          ? '#202020'
-          : '#ffffff';
-        if (this.wcHexIsLight(this.view.model.get('wrapper.backgroundColor'))) {
-          linkFontColor = this.wcHexIsLight(brandingColor)
-            ? headingFontColor
-            : brandingColor;
-        } else {
-          linkFontColor = this.wcHexIsLight(brandingColor)
-            ? brandingColor
-            : headingFontColor;
-        }
         this.view.model.set('woocommerce.brandingColor', brandingColor);
-        this.view.model.set('woocommerce.headingFontColor', headingFontColor);
-        this.view.model.set('link.fontColor', linkFontColor);
+        this.view.model.set(
+          'woocommerce.headingFontColor',
+          this.getHeadingFontColor(brandingColor),
+        );
+        this.view.model.set(
+          'link.fontColor',
+          this.getLinkFontColor(
+            brandingColor,
+            this.view.model.get('wrapper.backgroundColor'),
+          ),
+        );
       },
+      'change #mailpoet_newsletter_background_color':
+        function changeContentBackgroundColor(event) {
+          if (!this.view.isWoocommerceTransactional) {
+            return;
+          }
+          this.view.model.set(
+            'link.fontColor',
+            this.getLinkFontColor(
+              this.view.model.get('woocommerce.brandingColor'),
+              event.target.value,
+            ),
+          );
+        },
       'change #mailpoet_wc_heading_font_family':
         function changeHeadingfFontFamily(event) {
           this.view.model.set(
@@ -47,6 +56,18 @@ BL.WooCommerceStylesBehavior = Marionette.Behavior.extend({
           );
         },
     };
+  },
+  getHeadingFontColor(brandingColor) {
+    return this.wcHexIsLight(brandingColor) ? '#202020' : '#ffffff';
+  },
+  // Keep in sync with TransactionalEmails::getWCEmailSettings(), which sets the link color on editor load.
+  getLinkFontColor(brandingColor, backgroundColor) {
+    const isBrandingLight = this.wcHexIsLight(brandingColor);
+    const headingFontColor = this.getHeadingFontColor(brandingColor);
+    if (this.wcHexIsLight(backgroundColor)) {
+      return isBrandingLight ? headingFontColor : brandingColor;
+    }
+    return isBrandingLight ? brandingColor : headingFontColor;
   },
   // This is the wc_hex_is_light() WooCommerce function ported from PHP to JS.
   // Taken from https://stackoverflow.com/a/51567564
