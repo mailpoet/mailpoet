@@ -1,0 +1,477 @@
+{
+  "assets/js/src/ajax.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 3
+    }
+  },
+  "assets/js/src/automation/editor/components/header/index.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/automation/editor/components/header/inserter-toggle.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/automation/editor/components/inserter-listbox/listbox-item.tsx": {
+    "@typescript-eslint/no-redundant-type-constituents": {
+      "count": 1
+    }
+  },
+  "assets/js/src/automation/editor/components/sidebar/automation/index.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 3
+    }
+  },
+  "assets/js/src/automation/editor/filters/integer.ts": {
+    "@typescript-eslint/no-base-to-string": {
+      "count": 1
+    }
+  },
+  "assets/js/src/automation/editor/filters/number.ts": {
+    "@typescript-eslint/no-base-to-string": {
+      "count": 1
+    }
+  },
+  "assets/js/src/automation/editor/filters/string.ts": {
+    "@typescript-eslint/no-base-to-string": {
+      "count": 1
+    }
+  },
+  "assets/js/src/automation/editor/index.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 2
+    },
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/automation/editor/store/actions.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 3
+    }
+  },
+  "assets/js/src/automation/integrations/core/steps/delay/edit.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/automation/integrations/mailpoet/steps/send-email/edit/email-panel.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 4
+    }
+  },
+  "assets/js/src/automation/integrations/mailpoet/steps/send-email/edit/reply-to-panel.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 2
+    }
+  },
+  "assets/js/src/automation/integrations/mailpoet/steps/send-email/index.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/automation/listing/store/reducer.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/common/button/button.tsx": {
+    "@typescript-eslint/no-redundant-type-constituents": {
+      "count": 4
+    }
+  },
+  "assets/js/src/common/error-boundary/utils.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/common/form/token-field/token-field.tsx": {
+    "@typescript-eslint/no-base-to-string": {
+      "count": 1
+    }
+  },
+  "assets/js/src/common/functions/parsley-helper-functions.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 2
+    }
+  },
+  "assets/js/src/common/listings/newsletter-stats/badge.tsx": {
+    "@typescript-eslint/no-base-to-string": {
+      "count": 1
+    }
+  },
+  "assets/js/src/common/listings/newsletter-stats/stats.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 2
+    }
+  },
+  "assets/js/src/common/listings/newsletter-status.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 3
+    }
+  },
+  "assets/js/src/common/top-bar/mailpoet-logo-responsive.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/date.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 7
+    }
+  },
+  "assets/js/src/form-editor/components/form-settings/form-placement-options/settings-panels/placement-settings.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 12
+    }
+  },
+  "assets/js/src/form-editor/components/image-settings.tsx": {
+    "@typescript-eslint/unbound-method": {
+      "count": 1
+    }
+  },
+  "assets/js/src/form-editor/form-preview.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/form-editor/store/blocks-to-form-body.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 3
+    }
+  },
+  "assets/js/src/form-editor/store/controls.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 2
+    }
+  },
+  "assets/js/src/form-editor/store/reducers/change-active-sidebar.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/form-editor/store/reducers/toggle-form.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 2
+    }
+  },
+  "assets/js/src/form-editor/store/reducers/toggle-fullscreen.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/form-editor/store/reducers/toggle-sidebar.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 3
+    }
+  },
+  "assets/js/src/form-editor/store/reducers/tutorial-dismiss.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/form-editor/store/selectors.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 7
+    }
+  },
+  "assets/js/src/form/fields/token-field.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/homepage/components/product-discovery.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/homepage/components/task-list.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/mailpoet-email-editor-integration/middleware/strip-post-status-on-save.ts": {
+    "@typescript-eslint/return-await": {
+      "count": 1
+    },
+    "react-hooks/rules-of-hooks": {
+      "count": 1
+    }
+  },
+  "assets/js/src/newsletter-editor/behaviors/text-editor-behavior.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/newsletter-editor/blocks/coupon.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 5
+    }
+  },
+  "assets/js/src/newsletter-editor/blocks/coupon/settings.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 2
+    }
+  },
+  "assets/js/src/newsletter-editor/blocks/coupon/types.ts": {
+    "@typescript-eslint/no-redundant-type-constituents": {
+      "count": 1
+    }
+  },
+  "assets/js/src/newsletters/api.ts": {
+    "@typescript-eslint/no-redundant-type-constituents": {
+      "count": 4
+    }
+  },
+  "assets/js/src/newsletters/automatic-emails/events/event-options.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/newsletters/listings/heading-steps.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 3
+    }
+  },
+  "assets/js/src/newsletters/send.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 15
+    },
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 14
+    }
+  },
+  "assets/js/src/newsletters/send/congratulate/success-pitch-mss.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/newsletters/send/ga-tracking.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/newsletters/send/standard.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/automations.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 2
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/email.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 5
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/automations/general-automations-fields.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 6
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/date-fields.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 20
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/email/email-statistics-clicks.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 4
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/email/email-statistics-opens.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 7
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/subscriber/subscribed-via-form.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 4
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/subscriber/subscriber-score.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 24
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/subscriber/subscriber-subscribed-to-list.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 6
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/subscriber/subscriber-tag.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 2
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/subscriber/subscriber-wordpress-role.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 4
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/woocommerce/customer-in-country.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 2
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/woocommerce/purchased-category.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 3
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/woocommerce/purchased-product-variation.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 3
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/woocommerce/purchased-product.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 3
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/woocommerce/purchased-tag.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 3
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/woocommerce/purchased-with-attribute.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 3
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/woocommerce/used-payment-method.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 3
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/woocommerce/used-shipping-method.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 3
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/woocommerce/woocommerce-membership.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 2
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/fields/woocommerce/woocommerce-subscription.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 2
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/subscriber.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 7
+    }
+  },
+  "assets/js/src/segments/dynamic/dynamic-segments-filters/woocommerce.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 16
+    }
+  },
+  "assets/js/src/segments/dynamic/store/selectors.ts": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 1
+    }
+  },
+  "assets/js/src/segments/dynamic/subscribers-counter.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 2
+    }
+  },
+  "assets/js/src/segments/dynamic/templates/index.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 1
+    }
+  },
+  "assets/js/src/segments/dynamic/tracking-consent-notice.tsx": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 3
+    }
+  },
+  "assets/js/src/segments/dynamic/validator.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/sending-paused-notices-resume-button.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 2
+    }
+  },
+  "assets/js/src/settings/pages/basics/stats-notifications.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 2
+    }
+  },
+  "assets/js/src/settings/pages/basics/subscribe-on.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/settings/pages/signup-confirmation/confirmation-email-customizer.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/settings/pages/woo-commerce/checkout-optin.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/settings/pages/woo-commerce/email-customizer.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/settings/pages/woo-commerce/subscribe-old-customers.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/settings/store/actions/settings.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/settings/store/hooks/use-selector.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 2
+    }
+  },
+  "assets/js/src/settings/store/hooks/use-setting.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 2
+    }
+  },
+  "assets/js/src/settings/store/normalize-settings.ts": {
+    "@typescript-eslint/no-base-to-string": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    },
+    "@typescript-eslint/restrict-template-expressions": {
+      "count": 1
+    }
+  },
+  "assets/js/src/subscribers/form.tsx": {
+    "@typescript-eslint/no-redundant-type-constituents": {
+      "count": 4
+    }
+  },
+  "assets/js/src/subscribers/import-export/export.ts": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "assets/js/src/wizard/welcome-wizard-controller.tsx": {
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 2
+    }
+  }
+}
