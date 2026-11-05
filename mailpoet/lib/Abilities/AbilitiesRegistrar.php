@@ -9,7 +9,8 @@ if (!defined('ABSPATH')) exit;
 
 /**
  * Registers MailPoet abilities through the core Abilities API, independent of
- * WooCommerce. Write abilities stay behind the mcp_write_abilities feature flag.
+ * WooCommerce. The abilities for newsletter drafts stay behind the
+ * mcp_write_abilities feature flag.
  */
 class AbilitiesRegistrar {
   public const CATEGORY = 'mailpoet';
@@ -20,8 +21,9 @@ class AbilitiesRegistrar {
     RecentNewslettersAbility::NAME,
   ];
 
-  public const WRITE_ABILITY_NAMES = [
+  public const EXPERIMENTAL_ABILITY_NAMES = [
     CreateNewsletterDraftAbility::NAME,
+    NewsletterDraftOptionsAbility::NAME,
   ];
 
   /** @var WPFunctions */
@@ -34,7 +36,7 @@ class AbilitiesRegistrar {
   private $abilities;
 
   /** @var Ability[] */
-  private $writeAbilities;
+  private $experimentalAbilities;
 
   public function __construct(
     WPFunctions $wp,
@@ -42,7 +44,8 @@ class AbilitiesRegistrar {
     SendingStatusAbility $sendingStatusAbility,
     UnsubscribeTrendAbility $unsubscribeTrendAbility,
     RecentNewslettersAbility $recentNewslettersAbility,
-    CreateNewsletterDraftAbility $createNewsletterDraftAbility
+    CreateNewsletterDraftAbility $createNewsletterDraftAbility,
+    NewsletterDraftOptionsAbility $newsletterDraftOptionsAbility
   ) {
     $this->wp = $wp;
     $this->featuresController = $featuresController;
@@ -51,8 +54,9 @@ class AbilitiesRegistrar {
       $unsubscribeTrendAbility,
       $recentNewslettersAbility,
     ];
-    $this->writeAbilities = [
+    $this->experimentalAbilities = [
       $createNewsletterDraftAbility,
+      $newsletterDraftOptionsAbility,
     ];
   }
 
@@ -64,14 +68,14 @@ class AbilitiesRegistrar {
   public function registerCategory(): void {
     $this->wp->registerAbilityCategory(self::CATEGORY, [
       'label' => __('MailPoet', 'mailpoet'),
-      'description' => __('Read MailPoet email marketing data: sending health, subscriber limits, and email statistics.', 'mailpoet'),
+      'description' => __('MailPoet email marketing: sending health, subscriber limits, email statistics and, when enabled, newsletter drafts.', 'mailpoet'),
     ]);
   }
 
   public function registerAbilities(): void {
     $abilities = $this->abilities;
     if ($this->featuresController->isSupported(FeaturesController::FEATURE_MCP_WRITE_ABILITIES)) {
-      $abilities = array_merge($abilities, $this->writeAbilities);
+      $abilities = array_merge($abilities, $this->experimentalAbilities);
     }
     foreach ($abilities as $ability) {
       $this->wp->registerAbility(

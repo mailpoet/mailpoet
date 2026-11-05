@@ -24,8 +24,8 @@ class CreateNewsletterDraftAbility implements Ability {
   // because it leaves out "sent", and a retry would then create a second newsletter.
   private const CLIENT_REFERENCE_POST_STATUSES = ['draft', 'pending', 'private', 'publish', 'future', NewsletterEntity::STATUS_SENT];
 
-  /** @var NewsletterDraftBlocks */
-  private $draftBlocks;
+  /** @var NewsletterDrafts */
+  private $drafts;
 
   /** @var NewsletterSaveController */
   private $saveController;
@@ -46,7 +46,7 @@ class CreateNewsletterDraftAbility implements Ability {
   private $wp;
 
   public function __construct(
-    NewsletterDraftBlocks $draftBlocks,
+    NewsletterDrafts $drafts,
     NewsletterSaveController $saveController,
     NewsletterDeleteController $deleteController,
     NewslettersRepository $newslettersRepository,
@@ -54,7 +54,7 @@ class CreateNewsletterDraftAbility implements Ability {
     LoggerFactory $loggerFactory,
     WPFunctions $wp
   ) {
-    $this->draftBlocks = $draftBlocks;
+    $this->drafts = $drafts;
     $this->saveController = $saveController;
     $this->deleteController = $deleteController;
     $this->newslettersRepository = $newslettersRepository;
@@ -70,7 +70,7 @@ class CreateNewsletterDraftAbility implements Ability {
   public function getRegistrationArgs(): array {
     return [
       'label' => __('Create MailPoet newsletter draft', 'mailpoet'),
-      'description' => __('Creates one standard MailPoet newsletter as a draft from structured content and returns edit_url for a person to review. It never sends or schedules. Use it only when the user asks for a newsletter draft. Make it look designed: use sections with background colors, a colored button, images and short paragraphs.', 'mailpoet'),
+      'description' => __('Creates one standard MailPoet newsletter as a draft from structured content and returns edit_url for a person to review. It never sends or schedules. Use it only when the user asks for a newsletter draft. First call mailpoet/get-newsletter-draft-options for the lists and site colors. Make it look designed: use sections with background colors, a colored button, images and short paragraphs.', 'mailpoet'),
       'input_schema' => $this->getInputSchema(),
       'output_schema' => $this->getOutputSchema(),
       'execute_callback' => [$this, 'execute'],
@@ -97,36 +97,18 @@ class CreateNewsletterDraftAbility implements Ability {
       );
     }
 
-    $draft = $this->draftBlocks->prepare((array)($input['blocks'] ?? []));
-    $errors = $draft['errors'];
-    $warnings = $draft['warnings'];
-
-    $subjectChanged = false;
-    $subject = $this->draftBlocks->sanitizeText((string)($input['subject'] ?? ''), $subjectChanged);
-    if ($subjectChanged) {
-      array_unshift($warnings, $this->draftBlocks->getRemovedContentWarning('subject'));
-    }
-    if ($subject === '') {
-      array_unshift($errors, ['field' => 'subject', 'message' => __('subject is empty after removing unsupported content.', 'mailpoet')]);
-    }
-
-    $preheaderChanged = false;
-    $preheader = $this->draftBlocks->sanitizeText((string)($input['preheader'] ?? ''), $preheaderChanged);
-    if ($preheaderChanged) {
-      array_unshift($warnings, $this->draftBlocks->getRemovedContentWarning('preheader'));
-    }
-
-    if ($errors) {
-      return new \WP_Error('mailpoet_invalid_blocks', $this->getErrorMessage($errors), ['status' => 400, 'errors' => $errors]);
+    $prepared = $this->drafts->prepareInput($input);
+    if ($prepared['errors']) {
+      return $this->drafts->getInvalidInputError($prepared['errors']);
     }
 
     $clientReference = isset($input['client_reference']) ? (string)$input['client_reference'] : null;
     $existing = $clientReference === null ? null : $this->findByClientReference($clientReference);
     if ($existing) {
-      return $this->buildOutput($existing, false, $warnings);
+      return array_merge($this->drafts->buildOutput($existing, $prepared['warnings']), ['created' => false]);
     }
 
-    $newsletter = $this->createDraft($subject, $preheader, $draft['markup'], $clientReference);
+    $newsletter = $this->createDraft($prepared, $clientReference);
     if (!$newsletter) {
       return new \WP_Error(
         'mailpoet_draft_not_created',
@@ -134,17 +116,19 @@ class CreateNewsletterDraftAbility implements Ability {
         ['status' => 500]
       );
     }
-    return $this->buildOutput($newsletter, true, $warnings);
+    return array_merge($this->drafts->buildOutput($newsletter, $prepared['warnings']), ['created' => true]);
   }
 
-  private function createDraft(string $subject, string $preheader, string $content, ?string $clientReference): ?NewsletterEntity {
+  /** @param array{subject: ?string, preheader: ?string, markup: ?string, segments: ?array<int, array{id: int}>} $prepared */
+  private function createDraft(array $prepared, ?string $clientReference): ?NewsletterEntity {
     $newsletter = null;
     try {
       $newsletter = $this->saveController->save([
-        'subject' => $subject,
-        'preheader' => $preheader,
+        'subject' => (string)$prepared['subject'],
+        'preheader' => (string)$prepared['preheader'],
         'type' => NewsletterEntity::TYPE_STANDARD,
         'new_editor' => true,
+        'segments' => $prepared['segments'] ?? [],
       ]);
       // The save controller doesn't report a failed post insert, it leaves post ID 0.
       $postId = (int)$newsletter->getWpPostId();
@@ -153,8 +137,8 @@ class CreateNewsletterDraftAbility implements Ability {
       }
       $result = $this->wp->wpUpdatePost($this->wp->wpSlash([
         'ID' => $postId,
-        'post_title' => $subject,
-        'post_content' => $content,
+        'post_title' => (string)$prepared['subject'],
+        'post_content' => (string)$prepared['markup'],
       ]), true);
       if ($this->wp->isWpError($result)) {
         throw new \RuntimeException('The post was not updated.');
@@ -213,71 +197,33 @@ class CreateNewsletterDraftAbility implements Ability {
     return $this->newslettersRepository->findOneBy(['wpPost' => $postIds[0]]);
   }
 
-  /** @param array<int, array{field: string, message: string}> $errors */
-  private function getErrorMessage(array $errors): string {
-    $messages = array_map(function (array $error): string {
-      return $error['field'] . ': ' . $error['message'];
-    }, $errors);
-    return __('No draft was created. Fix these fields and try again.', 'mailpoet') . ' ' . implode(' ', $messages);
-  }
-
-  /** @param string[] $warnings */
-  private function buildOutput(NewsletterEntity $newsletter, bool $created, array $warnings): array {
-    $postId = (int)$newsletter->getWpPostId();
-    return [
-      'id' => (int)$newsletter->getId(),
-      'wp_post_id' => $postId,
-      'subject' => $newsletter->getSubject(),
-      'status' => $newsletter->getStatus(),
-      'edit_url' => $this->wp->adminUrl('post.php?post=' . $postId . '&action=edit'),
-      'created' => $created,
-      'warnings' => $warnings,
-    ];
-  }
-
   private function getInputSchema(): array {
     return [
       'type' => 'object',
       'required' => ['subject', 'blocks'],
       'additionalProperties' => false,
-      'properties' => [
-        'subject' => ['type' => 'string', 'minLength' => 1, 'maxLength' => 250],
-        'preheader' => ['type' => 'string', 'maxLength' => 250],
-        'blocks' => $this->draftBlocks->getBlocksSchema(),
+      'properties' => array_merge($this->drafts->getInputProperties(), [
         'client_reference' => [
           'type' => 'string',
           'minLength' => 1,
           'maxLength' => 64,
           'description' => __('Your own ID for this draft. A repeated call with the same value returns the same draft instead of creating another.', 'mailpoet'),
         ],
-      ],
+      ]),
     ];
   }
 
   private function getOutputSchema(): array {
     return [
       'type' => 'object',
-      'required' => ['id', 'wp_post_id', 'subject', 'status', 'edit_url', 'created', 'warnings'],
+      'required' => ['id', 'wp_post_id', 'subject', 'status', 'edit_url', 'created', 'list_ids', 'warnings'],
       'additionalProperties' => false,
-      'properties' => [
-        'id' => ['type' => 'integer'],
-        'wp_post_id' => ['type' => 'integer'],
-        'subject' => ['type' => 'string'],
-        'status' => [
-          'type' => 'string',
-          'description' => __('The newsletter status. A new draft is always draft, but a repeated client_reference returns the current status.', 'mailpoet'),
-        ],
-        'edit_url' => ['type' => 'string'],
+      'properties' => array_merge($this->drafts->getOutputProperties(), [
         'created' => [
           'type' => 'boolean',
           'description' => __('False when client_reference matched an existing newsletter.', 'mailpoet'),
         ],
-        'warnings' => [
-          'type' => 'array',
-          'items' => ['type' => 'string'],
-          'description' => __('Which fields lost personalization tags, shortcodes or HTML comments. Tell the user about them.', 'mailpoet'),
-        ],
-      ],
+      ]),
     ];
   }
 }
