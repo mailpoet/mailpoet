@@ -73,6 +73,7 @@ class DaemonRunTest extends \MailPoetTest {
 
   public function testItDoesNotContinueWhenThePreviousRunSuspiciouslyShort() {
     $this->diContainer->get(SettingsController::class)->set('logging', 'everything');
+    $this->diContainer->get(LoggerFactory::class)->clearLoggerInstances();
     $triggerMock = $this->createMock(WordPress::class);
     $triggerMock->method('checkExecutionRequirements')
       ->willReturn(true);
@@ -93,6 +94,7 @@ class DaemonRunTest extends \MailPoetTest {
     $this->assertInstanceOf(LogEntity::class, $log);
     verify($log->getMessage())->stringContainsString('Daemon run ended too early! The background task runner stopped while time was left, so no new run was started right away.');
     $this->diContainer->get(SettingsController::class)->set('logging', 'errors');
+    $this->diContainer->get(LoggerFactory::class)->clearLoggerInstances();
   }
 
   public function testItDoesScheduleNextRun() {
