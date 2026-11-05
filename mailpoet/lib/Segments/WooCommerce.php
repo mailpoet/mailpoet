@@ -4,6 +4,7 @@ namespace MailPoet\Segments;
 
 use MailPoet\Config\Env;
 use MailPoet\Config\SubscriberChangesNotifier;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Services\Validator;
@@ -118,6 +119,15 @@ class WooCommerce {
 
   public function shouldShowWooCommerceSegment(): bool {
     return $this->woocommerceHelper->isWooCommerceActive();
+  }
+
+  /**
+   * The segment types a newsletter can be sent to. Empty means all types.
+   *
+   * @return string[]
+   */
+  public function getNewsletterSegmentTypes(): array {
+    return $this->shouldShowWooCommerceSegment() ? [] : SegmentEntity::NON_WOO_RELATED_TYPES;
   }
 
   public function synchronizeRegisteredCustomer(int $wpUserId, ?string $currentFilter = null): bool {
