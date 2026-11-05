@@ -1,7 +1,15 @@
 name: 'Build MailPoet'
 description: 'Install dependencies, compile the plugin and upload the result as the “mailpoet-build” artifact.'
 
-# Used by .github/workflows/build.yml.
+# Used by .github/workflows/build.yml and by MailPoet Premium’s workflows.
+# Premium checks out Free (from the branch with the same name, if there is
+# one) and Premium in mailpoet-premium/, then runs this action from that Free
+# checkout, so a Premium branch builds with its paired Free branch’s steps.
+
+inputs:
+  premium:
+    description: 'Also build MailPoet Premium, checked out in mailpoet-premium/'
+    default: 'false'
 
 runs:
   using: composite
@@ -80,18 +88,48 @@ runs:
         php -d register_argc_argv=1 ../tests_env/vendor/bin/codecept build
         ./do twig:generate-cache
 
+    - name: 'Cache Premium Composer dependencies'
+      if: inputs.premium == 'true'
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: |
+          mailpoet-premium/tools/vendor
+          mailpoet-premium/vendor
+        key: premium-composer-${{ hashFiles('mailpoet-premium/tools/install.php', 'mailpoet-premium/composer.lock') }}
+
+    - name: 'Install and compile Premium'
+      if: inputs.premium == 'true'
+      shell: bash
+      working-directory: mailpoet-premium
+      run: |
+        COMPOSER_DEV_MODE=1 php tools/install.php
+        echo "MAILPOET_FREE_PATH=../mailpoet" > .env
+        ./tools/vendor/composer.phar validate --no-check-all --no-check-publish
+        ./do install
+        ./do compile:all --env production
+        ./do twig:generate-cache
+        php -d register_argc_argv=1 ../tests_env/vendor/bin/codecept build
+
+    # Premium checks only its own files, like its CircleCI build.
     - name: 'Check Prettier formatting'
       shell: bash
-      working-directory: mailpoet
+      working-directory: ${{ inputs.premium == 'true' && 'mailpoet-premium' || 'mailpoet' }}
       run: ./do qa:prettier-check
 
     # Pack only what git ignores (dependencies and build output). The other
     # jobs check out the same commit and install node_modules themselves.
+    # Free ignores the whole Premium checkout, so Premium’s ignored files are
+    # listed from its own repository.
     - name: 'Pack build'
       shell: bash
       run: |
         git ls-files -z --others --ignored --exclude-standard --directory \
-          | grep -zv 'node_modules/$' > "$RUNNER_TEMP/build-files"
+          | grep -zv -e 'node_modules/$' -e '^mailpoet-premium/$' > "$RUNNER_TEMP/build-files"
+        if [[ -d mailpoet-premium ]]; then
+          git -C mailpoet-premium ls-files -z --others --ignored --exclude-standard --directory \
+            | grep -zv 'node_modules/$' \
+            | sed -z 's|^|mailpoet-premium/|' >> "$RUNNER_TEMP/build-files"
+        fi
         tar --zstd -cf "$RUNNER_TEMP/build.tar.zst" --null -T "$RUNNER_TEMP/build-files"
         ls -lh "$RUNNER_TEMP/build.tar.zst"
 
