@@ -1030,7 +1030,8 @@ class RoboFile extends \Robo\Tasks {
         return $callback();
       } catch (\Exception $e) {
         $this->yell($e->getMessage(), 40, 'red');
-        return \Robo\Result::error($this, $e->getMessage(), ['exception' => $e]);
+        // Robo wraps a returned exit code in a Result. Result::error() needs a task, and RoboFile isn't one.
+        return \Robo\Result::EXITCODE_ERROR;
       }
     };
   }
