@@ -71,7 +71,6 @@ const baseConfig = {
       }
 
       if (warnings) {
-        // eslint-disable-next-line
         console.warn(warnings);
         process.emitWarning(warnings); // emit for listeners
         process.exit(1);
@@ -331,7 +330,6 @@ function requestToFormEditorExternal(request) {
   // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
   // packages, for that handling to kick in, we must not return anything from
   // function.
-  /* eslint-disable-next-line consistent-return, no-useless-return */
   return;
 }
 
@@ -519,7 +517,6 @@ function requestToExternal(request) {
   // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
   // packages, for that handling to kick in, we must not return anything from
   // function.
-  /* eslint-disable-next-line consistent-return, no-useless-return */
   return;
 }
 
@@ -534,7 +531,6 @@ function requestToHandle(request) {
   // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
   // packages, for that handling to kick in, we must not return anything from
   // function.
-  /* eslint-disable-next-line consistent-return, no-useless-return */
   return;
 }
 const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
