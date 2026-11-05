@@ -130,7 +130,7 @@ class NewsletterTemplatesComponent extends Component {
       categories = JSON.parse(template.categories).filter(
         (name) => categoriesNames.indexOf(name) !== -1,
       );
-    } catch (err) {
+    } catch {
       categories = [];
     }
 

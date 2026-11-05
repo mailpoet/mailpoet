@@ -27,7 +27,7 @@ class ImportTemplate extends Component {
       try {
         this.saveTemplate(JSON.parse(evt.target.result));
         MailPoet.trackEvent('Emails > Template imported');
-      } catch (err) {
+      } catch {
         this.context.notices.error(
           <p>
             {__(
@@ -54,7 +54,7 @@ class ImportTemplate extends Component {
 
     try {
       template.categories = JSON.parse(template.categories);
-    } catch (err) {
+    } catch {
       template.categories = [];
     }
 

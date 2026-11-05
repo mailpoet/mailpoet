@@ -175,7 +175,7 @@ Handlebars.registerHelper('escapeURL', function escapeURLHelper(url) {
       return '';
     }
     return escapedURL.href;
-  } catch (e) {
+  } catch {
     return '';
   }
 });
