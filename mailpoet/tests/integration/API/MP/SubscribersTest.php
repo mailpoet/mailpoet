@@ -664,6 +664,22 @@ class SubscribersTest extends \MailPoetTest {
     );
   }
 
+  public function testItChecksSentNullMandatoryCustomFieldsWhenSkippingUnsentOnAdd() {
+    $customField = $this->customFieldRepository->createOrUpdate([
+      'name' => 'custom field',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+      'params' => ['required' => '1'],
+    ]);
+
+    $this->expectException('Exception');
+    $this->expectExceptionMessage('Missing value for custom field "custom field');
+    $this->getApi()->addSubscriber(
+      ['email' => 'test@example.com', 'cf_' . $customField->getId() => null],
+      [],
+      ['skip_unsent_required_custom_fields' => true]
+    );
+  }
+
   public function testItSubscribesToSegmentsWhenAddingSubscriber() {
     $segment = $this->getSegment();
     $subscriber = [
