@@ -46,10 +46,10 @@ class RequiredCustomFieldValidator {
     if (!$this->isCustomFieldSent($customFieldId, $data)) {
       return true;
     }
-    if (isset($data[$customFieldId]) && !$data[$customFieldId]) {
+    if (array_key_exists($customFieldId, $data) && !$data[$customFieldId]) {
       return true;
     }
-    if (isset($data['cf_' . $customFieldId]) && !$data['cf_' . $customFieldId]) {
+    if (array_key_exists('cf_' . $customFieldId, $data) && !$data['cf_' . $customFieldId]) {
       return true;
     }
     return false;
