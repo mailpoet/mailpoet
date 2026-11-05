@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 5.45.1 - 2026-11-05 =
+* Improved: Logs page buttons that match the WordPress admin style;
+* Fixed: MailPoet version update getting stuck and slowing down large sites using MariaDB.
+
 = 5.45.0 - 2026-11-02 =
 * Added: Abilities that let AI agents read MailPoet's sending status, unsubscribe trend and recent newsletter statistics;
 * Updated: Style linting tools used in development;
