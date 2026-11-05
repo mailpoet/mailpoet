@@ -262,7 +262,9 @@ class WooCheckoutBlocksCest {
 
     if ($closeButton) {
       $i->click('button[aria-label="Close"]');
-      $i->waitForElementNotVisible('button[aria-label="Close"]');
+      // A closing modal is hidden a moment before it leaves the DOM. Wait until it is gone, or the
+      // next call finds its Close button and then fails to click it.
+      $i->waitForJS('return document.querySelectorAll("button[aria-label=\'Close\']").length === 0;', 10);
     }
   }
 
