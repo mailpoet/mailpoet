@@ -184,6 +184,34 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
     verify($warnings)->stringNotContainsString('blocks[3]');
   }
 
+  public function testItSanitizesBlocksInsideASectionAndNamesThemInWarnings(): void {
+    $result = $this->createDraft([
+      'subject' => 'Nested',
+      'blocks' => [
+        ['type' => 'section', 'blocks' => [
+          ['type' => 'paragraph', 'text' => 'Inside<script>alert(1)</script> [subscriber:email]'],
+          ['type' => 'list', 'items' => ['Item [subscriber:email]']],
+        ]],
+      ],
+    ]);
+
+    $content = $this->getPostContent($result);
+    verify($content)->stringNotContainsString('<script');
+    verify($content)->stringNotContainsString('subscriber:email');
+    verify(implode("\n", $result['warnings']))->stringContainsString('blocks[0].blocks[0]');
+    verify(implode("\n", $result['warnings']))->stringContainsString('blocks[0].blocks[1]');
+  }
+
+  public function testASectionCannotHoldAnotherSection(): void {
+    $result = $this->execute([
+      'subject' => 'Too deep',
+      'blocks' => [['type' => 'section', 'blocks' => [['type' => 'section', 'blocks' => [['type' => 'paragraph', 'text' => 'x']]]]]],
+    ]);
+
+    $this->assertInstanceOf(\WP_Error::class, $result);
+    verify($result->get_error_code())->equals('ability_invalid_input');
+  }
+
   public function testRemovingAShortcodeKeepsTheEscapedTextAroundIt(): void {
     $result = $this->createDraft([
       'subject' => 'Escaped',
@@ -213,6 +241,8 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
         ['type' => 'paragraph', 'text' => 'ok', 'url' => 'https://example.com'],
         ['type' => 'image', 'url' => 'https://example.com/a.png'],
         ['type' => 'image', 'url' => '//example.com/a.png', 'alt' => 'No scheme'],
+        ['type' => 'heading', 'text' => 'Bad color', 'text_color' => 'red'],
+        ['type' => 'section', 'blocks' => [['type' => 'heading'], ['type' => 'paragraph', 'text' => 'fine']]],
         ['type' => 'paragraph', 'text' => 'fine'],
       ],
     ]);
@@ -223,7 +253,7 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
     $this->assertIsArray($data);
     verify($data['status'])->equals(400);
     $this->assertIsArray($data['errors']);
-    verify(array_column($data['errors'], 'field'))->equals(['subject', 'blocks[0]', 'blocks[1]', 'blocks[2]', 'blocks[3]', 'blocks[4]']);
+    verify(array_column($data['errors'], 'field'))->equals(['subject', 'blocks[0]', 'blocks[1]', 'blocks[2]', 'blocks[3]', 'blocks[4]', 'blocks[5]', 'blocks[6].blocks[0]']);
     verify($result->get_error_message())->stringContainsString('blocks[3]');
     verify($this->newslettersRepository->findAll())->empty();
     verify($this->countEmailPosts())->equals($postCount);
@@ -248,7 +278,13 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
         ['type' => 'heading', 'text' => 'Title'],
         ['type' => 'paragraph', 'text' => '<strong>Bold</strong> <em>em</em> <a href="https://example.com/a?b=1&c=2">link</a>'],
         ['type' => 'image', 'url' => 'https://example.com/a.png', 'alt' => 'Alt "quoted"'],
-        ['type' => 'button', 'text' => 'Read', 'url' => 'https://example.com/read?a=1&b=2'],
+        ['type' => 'button', 'text' => 'Read', 'url' => 'https://example.com/read?a=1&b=2', 'align' => 'center', 'text_color' => '#ffffff', 'background_color' => '#0a7d33'],
+        ['type' => 'list', 'items' => ['One', 'Two']],
+        ['type' => 'quote', 'text' => 'Quoted', 'text_color' => '#333333'],
+        ['type' => 'spacer', 'height' => 30],
+        ['type' => 'section', 'background_color' => '#eef2ff', 'text_color' => '#111111', 'blocks' => [
+          ['type' => 'heading', 'text' => 'Inside', 'align' => 'center', 'background_color' => '#fff3cd'],
+        ]],
       ],
     ];
     $withUnfilteredHtml = $this->createDraft($input);
