@@ -290,8 +290,9 @@ const adminConfig = {
           to: 'skins/ui/oxide',
           // TinyMCE switches to the .min.css files when any part of the page
           // script URL contains ".min" (e.g. a domain like mindvalley.com),
-          // so both CSS variants ship. The .js files are never loaded.
-          globOptions: { ignore: ['**/*.js'] },
+          // so both CSS variants ship. The .js files are never loaded and the
+          // .ts files are only type definitions.
+          globOptions: { ignore: ['**/*.js', '**/*.ts'] },
           info: { minimized: true },
         },
         {
