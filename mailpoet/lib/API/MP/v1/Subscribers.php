@@ -157,7 +157,11 @@ class Subscribers {
 
     [$defaultFields, $customFields] = $this->extractCustomFieldsFromFromSubscriberData($data);
 
-    $this->requiredCustomFieldsValidator->validate($customFields, null, $skipUnsentRequiredCustomFields);
+    try {
+      $this->requiredCustomFieldsValidator->validate($customFields, null, $skipUnsentRequiredCustomFields);
+    } catch (\Exception $e) {
+      throw new APIException($e->getMessage(), APIException::CUSTOM_FIELD_VALUE_REQUIRED, $e);
+    }
 
     // filter out all incoming data that we don't want to change, like status ...
     $defaultFields = array_intersect_key($defaultFields, array_flip(['email', 'first_name', 'last_name', 'subscribed_ip', 'tracking_consent', 'tracking_consent_copy']));
@@ -223,7 +227,11 @@ class Subscribers {
 
     [$defaultFields, $customFields] = $this->extractCustomFieldsFromFromSubscriberData($data);
 
-    $this->requiredCustomFieldsValidator->validate($customFields, null, $this->shouldSkipUnsentRequiredCustomFields($options));
+    try {
+      $this->requiredCustomFieldsValidator->validate($customFields, null, $this->shouldSkipUnsentRequiredCustomFields($options));
+    } catch (\Exception $e) {
+      throw new APIException($e->getMessage(), APIException::CUSTOM_FIELD_VALUE_REQUIRED, $e);
+    }
 
     // filter out all incoming data that we don't want to change, like status ...
     $defaultFields = array_intersect_key($defaultFields, array_flip(['email', 'first_name', 'last_name', 'subscribed_ip', 'tracking_consent', 'tracking_consent_copy']));
