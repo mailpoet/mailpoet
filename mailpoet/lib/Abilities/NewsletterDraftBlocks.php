@@ -10,6 +10,9 @@ if (!defined('ABSPATH')) exit;
 /**
  * Turns the flat blocks an agent sends into the block markup of a newsletter.
  * The markup has to match what the core blocks save, otherwise the editor offers block recovery.
+ *
+ * @phpstan-type DraftError array{field: string, message: string}
+ * @phpstan-type BlockColors array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]}
  */
 class NewsletterDraftBlocks {
   public const TYPE_HEADING = 'heading';
@@ -20,6 +23,7 @@ class NewsletterDraftBlocks {
   public const TYPE_QUOTE = 'quote';
   public const TYPE_SPACER = 'spacer';
   public const TYPE_SECTION = 'section';
+  public const ALIGNMENTS = ['left', 'center', 'right'];
 
   private const NESTED_TYPES = [
     self::TYPE_HEADING,
@@ -103,7 +107,7 @@ class NewsletterDraftBlocks {
         'level' => ['type' => 'integer', 'enum' => [1, 2, 3]],
         'url' => ['type' => 'string', 'format' => 'uri'],
         'alt' => ['type' => 'string', 'maxLength' => 300],
-        'align' => ['type' => 'string', 'enum' => ['left', 'center', 'right']],
+        'align' => ['type' => 'string', 'enum' => self::ALIGNMENTS],
         'text_color' => $color,
         'background_color' => $color,
         'items' => ['type' => 'array', 'minItems' => 1, 'maxItems' => 50, 'items' => ['type' => 'string', 'maxLength' => 1000]],
@@ -115,7 +119,7 @@ class NewsletterDraftBlocks {
 
   /**
    * @param array<int, array<string, mixed>> $blocks
-   * @return array{markup: string, errors: array<int, array{field: string, message: string}>, warnings: string[]}
+   * @return array{markup: string, errors: DraftError[], warnings: string[]}
    */
   public function prepare(array $blocks): array {
     $errors = [];
@@ -130,7 +134,7 @@ class NewsletterDraftBlocks {
 
   /**
    * @param array<int, array<string, mixed>> $blocks
-   * @param array<int, array{field: string, message: string}> $errors
+   * @param DraftError[] $errors
    * @param string[] $warnings
    * @return string[]
    */
@@ -144,9 +148,7 @@ class NewsletterDraftBlocks {
         $warnings[] = $this->getRemovedContentWarning($field);
       }
       if (is_array($result)) {
-        if ($result) {
-          $errors[] = ['field' => $field, 'message' => implode(' ', $result)];
-        }
+        $errors[] = ['field' => $field, 'message' => implode(' ', $result)];
       } else {
         $markup[] = $result;
       }
@@ -165,7 +167,7 @@ class NewsletterDraftBlocks {
 
   /**
    * @param array<string, mixed> $block
-   * @param array<int, array{field: string, message: string}> $errors
+   * @param DraftError[] $errors
    * @param string[] $warnings
    * @return string|string[] the block markup, or the errors
    */
@@ -224,7 +226,7 @@ class NewsletterDraftBlocks {
 
   /**
    * @param array<string, mixed> $block
-   * @return array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]}
+   * @return BlockColors
    */
   private function prepareColors(array $block): array {
     $colors = ['attributes' => [], 'classes' => [], 'styles' => [], 'errors' => []];
@@ -237,7 +239,8 @@ class NewsletterDraftBlocks {
         continue;
       }
       $color = $this->wp->sanitizeHexColor($this->stringField($block, $field));
-      if ($color === '') {
+      // The core check lets a trailing newline through.
+      if ($color === '' || $color !== trim($color)) {
         // translators: %s is a field name.
         $colors['errors'][] = sprintf(__('%s must be a hex color like #1a2b3c.', 'mailpoet'), $field);
         continue;
@@ -256,7 +259,8 @@ class NewsletterDraftBlocks {
 
   /** @param array<string, mixed> $block */
   private function intField(array $block, string $field, int $default): int {
-    return is_int($block[$field] ?? null) ? $block[$field] : $default;
+    // The input schema also accepts integers written as strings.
+    return is_numeric($block[$field] ?? null) ? (int)$block[$field] : $default;
   }
 
   /** @param array<string, mixed> $attributes */
@@ -271,11 +275,16 @@ class NewsletterDraftBlocks {
    */
   private function htmlAttributes(array $classes, array $styles): string {
     $html = $classes ? ' class="' . implode(' ', $classes) . '"' : '';
-    return $html . ($styles ? ' style="' . implode(';', $styles) . '"' : '');
+    return $html . $this->styleAttribute($styles);
+  }
+
+  /** @param string[] $styles */
+  private function styleAttribute(array $styles): string {
+    return $styles ? ' style="' . implode(';', $styles) . '"' : '';
   }
 
   /**
-   * @param array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]} $colors
+   * @param BlockColors $colors
    * @return array<string, mixed>
    */
   private function colorAttributes(array $colors): array {
@@ -284,7 +293,7 @@ class NewsletterDraftBlocks {
 
   /**
    * @param array<string, mixed> $block
-   * @param array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]} $colors
+   * @param BlockColors $colors
    * @return string|string[]
    */
   private function buildHeading(array $block, array $colors, bool &$removed) {
@@ -306,7 +315,7 @@ class NewsletterDraftBlocks {
 
   /**
    * @param array<string, mixed> $block
-   * @param array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]} $colors
+   * @param BlockColors $colors
    * @return string|string[]
    */
   private function buildParagraph(array $block, array $colors, bool &$removed) {
@@ -324,7 +333,7 @@ class NewsletterDraftBlocks {
 
   /**
    * @param array<string, mixed> $block
-   * @param array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]} $colors
+   * @param BlockColors $colors
    * @return string|string[]
    */
   private function buildButton(array $block, array $colors, bool &$removed) {
@@ -336,7 +345,7 @@ class NewsletterDraftBlocks {
     }
     $buttonsAttributes = isset($block['align']) ? ['layout' => ['type' => 'flex', 'justifyContent' => $this->stringField($block, 'align')]] : [];
     $classes = array_merge(['wp-block-button__link'], $colors['classes'], ['wp-element-button']);
-    $styles = $colors['styles'] ? ' style="' . implode(';', $colors['styles']) . '"' : '';
+    $styles = $this->styleAttribute($colors['styles']);
     return $this->openingDelimiter('buttons', $buttonsAttributes) . "\n"
       . '<div class="wp-block-buttons">' . $this->openingDelimiter('button', $this->colorAttributes($colors)) . "\n"
       . '<div class="wp-block-button"><a class="' . implode(' ', $classes) . '" href="' . $this->wp->escAttr($url) . '"' . $styles . '>' . $this->wp->escHtml($text) . "</a></div>\n"
@@ -355,14 +364,14 @@ class NewsletterDraftBlocks {
     if ($errors) {
       return $errors;
     }
-    return "<!-- wp:image -->\n"
+    return $this->openingDelimiter('image', []) . "\n"
       . '<figure class="wp-block-image"><img src="' . $this->wp->escAttr($url) . '" alt="' . $this->wp->escAttr($alt) . "\"/></figure>\n"
       . '<!-- /wp:image -->';
   }
 
   /**
    * @param array<string, mixed> $block
-   * @param array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]} $colors
+   * @param BlockColors $colors
    * @return string|string[]
    */
   private function buildList(array $block, array $colors, bool &$removed) {
@@ -379,15 +388,17 @@ class NewsletterDraftBlocks {
     $ordered = !empty($block['ordered']);
     $tag = $ordered ? 'ol' : 'ul';
     $attributes = $ordered ? ['ordered' => true] : [];
-    $classes = array_merge(['wp-block-list'], $colors['classes']);
+    $classes = implode(' ', array_merge(['wp-block-list'], $colors['classes']));
+    // The list block saves its style before its class.
+    $style = $this->styleAttribute($colors['styles']);
     return $this->openingDelimiter('list', array_merge($attributes, $this->colorAttributes($colors))) . "\n"
-      . "<$tag" . $this->htmlAttributes($classes, $colors['styles']) . '>' . implode("\n\n", $items) . "</$tag>\n"
+      . "<$tag$style class=\"$classes\">" . implode("\n\n", $items) . "</$tag>\n"
       . '<!-- /wp:list -->';
   }
 
   /**
    * @param array<string, mixed> $block
-   * @param array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]} $colors
+   * @param BlockColors $colors
    * @return string|string[]
    */
   private function buildQuote(array $block, array $colors, bool &$removed) {
@@ -405,22 +416,22 @@ class NewsletterDraftBlocks {
   /** @param array<string, mixed> $block */
   private function buildSpacer(array $block): string {
     $height = $this->intField($block, 'height', 0) . 'px';
-    return '<!-- wp:spacer {"height":"' . $height . "\"} -->\n"
+    return $this->openingDelimiter('spacer', ['height' => $height]) . "\n"
       . '<div style="height:' . $height . "\" aria-hidden=\"true\" class=\"wp-block-spacer\"></div>\n"
       . '<!-- /wp:spacer -->';
   }
 
   /**
    * @param string[] $inner
-   * @param array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]} $colors
+   * @param BlockColors $colors
    */
   private function buildSection(array $inner, array $colors): string {
     $style = $colors['attributes'] ? ['color' => $colors['attributes']] : [];
     $style['spacing'] = ['padding' => ['top' => self::SECTION_PADDING, 'right' => self::SECTION_PADDING, 'bottom' => self::SECTION_PADDING, 'left' => self::SECTION_PADDING]];
-    $styles = array_merge(array_reverse($colors['styles']), array_map(function (string $side): string {
+    $styles = array_merge($colors['styles'], array_map(function (string $side): string {
       return "padding-$side:" . self::SECTION_PADDING;
     }, ['top', 'right', 'bottom', 'left']));
-    $classes = array_merge(['wp-block-group'], array_reverse($colors['classes']));
+    $classes = array_merge(['wp-block-group'], $colors['classes']);
     return $this->openingDelimiter('group', ['style' => $style, 'layout' => ['type' => 'constrained']]) . "\n"
       . '<div' . $this->htmlAttributes($classes, $styles) . '>' . implode("\n\n", $inner) . "</div>\n"
       . '<!-- /wp:group -->';
@@ -524,7 +535,8 @@ class NewsletterDraftBlocks {
   }
 
   private function wrapInGroup(string $content): string {
-    return '<!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->' . "\n"
+    $padding = ['right' => 'var:preset|spacing|40', 'left' => 'var:preset|spacing|40'];
+    return $this->openingDelimiter('group', ['style' => ['spacing' => ['padding' => $padding]], 'layout' => ['type' => 'constrained']]) . "\n"
       . '<div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">'
       . $content
       . "</div>\n"

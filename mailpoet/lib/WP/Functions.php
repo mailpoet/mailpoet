@@ -332,6 +332,15 @@ class Functions {
     return get_post($post, $output, $filter);
   }
 
+  /**
+   * @param string $field
+   * @param int $postId
+   * @return mixed
+   */
+  public function getPostField(string $field, int $postId) {
+    return get_post_field($field, $postId, 'raw');
+  }
+
   public function getTerm(int $termId, string $taxonomy = '') {
     return get_term($termId, $taxonomy);
   }

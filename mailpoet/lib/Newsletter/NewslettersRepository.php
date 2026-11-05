@@ -140,11 +140,6 @@ class NewslettersRepository extends Repository {
     return $qb->getQuery()->getResult();
   }
 
-  /**
-   * @param string[] $types
-   * @return NewsletterEntity[]
-   */
-
   /** @return NewsletterEntity[] */
   public function findRecentBlockEditorDrafts(int $limit): array {
     return $this->entityManager
@@ -163,6 +158,10 @@ class NewslettersRepository extends Repository {
       ->getResult();
   }
 
+  /**
+   * @param string[] $types
+   * @return NewsletterEntity[]
+   */
   public function findDraftByTypes($types) {
     return $this->entityManager
       ->createQueryBuilder()

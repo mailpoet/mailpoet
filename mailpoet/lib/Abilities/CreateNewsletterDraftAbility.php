@@ -16,6 +16,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
+/** @phpstan-import-type PreparedDraft from NewsletterDrafts */
 class CreateNewsletterDraftAbility implements Ability {
   public const NAME = 'mailpoet/create-newsletter-draft';
 
@@ -105,7 +106,7 @@ class CreateNewsletterDraftAbility implements Ability {
     $clientReference = isset($input['client_reference']) ? (string)$input['client_reference'] : null;
     $existing = $clientReference === null ? null : $this->findByClientReference($clientReference);
     if ($existing) {
-      return array_merge($this->drafts->buildOutput($existing, $prepared['warnings']), ['created' => false]);
+      return array_merge($this->drafts->buildOutput($existing), ['created' => false, 'warnings' => $prepared['warnings']]);
     }
 
     $newsletter = $this->createDraft($prepared, $clientReference);
@@ -116,10 +117,10 @@ class CreateNewsletterDraftAbility implements Ability {
         ['status' => 500]
       );
     }
-    return array_merge($this->drafts->buildOutput($newsletter, $prepared['warnings']), ['created' => true]);
+    return array_merge($this->drafts->buildOutput($newsletter), ['created' => true, 'warnings' => $prepared['warnings']]);
   }
 
-  /** @param array{subject: ?string, preheader: ?string, markup: ?string, segments: ?array<int, array{id: int}>} $prepared */
+  /** @param PreparedDraft $prepared */
   private function createDraft(array $prepared, ?string $clientReference): ?NewsletterEntity {
     $newsletter = null;
     try {
@@ -135,14 +136,10 @@ class CreateNewsletterDraftAbility implements Ability {
       if ($postId <= 0) {
         throw new \RuntimeException('The newsletter has no post.');
       }
-      $result = $this->wp->wpUpdatePost($this->wp->wpSlash([
-        'ID' => $postId,
+      $this->drafts->updatePost($postId, [
         'post_title' => (string)$prepared['subject'],
         'post_content' => (string)$prepared['markup'],
-      ]), true);
-      if ($this->wp->isWpError($result)) {
-        throw new \RuntimeException('The post was not updated.');
-      }
+      ]);
       $this->wp->updatePostMeta($postId, '_wp_page_template', $this->templatesController->getDefaultTemplateSlug());
       if ($clientReference !== null) {
         $this->wp->updatePostMeta($postId, self::CLIENT_REFERENCE_META_KEY, $this->wp->wpSlash($clientReference));
@@ -150,23 +147,21 @@ class CreateNewsletterDraftAbility implements Ability {
       return $newsletter;
     } catch (\Throwable $e) {
       $this->logFailure($e);
-      $this->deleteNewsletter($newsletter);
+      if ($newsletter) {
+        $this->deleteNewsletter($newsletter);
+      }
       return null;
     }
   }
 
-  private function deleteNewsletter(?NewsletterEntity $newsletter): void {
-    $id = $newsletter ? $newsletter->getId() : null;
-    if (!$newsletter || !$id) {
-      return;
-    }
+  private function deleteNewsletter(NewsletterEntity $newsletter): void {
     try {
       // A failed post insert leaves post ID 0, which core refuses to delete.
       if (!$newsletter->getWpPostId()) {
         $newsletter->setWpPost(null);
         $this->newslettersRepository->flush();
       }
-      $this->deleteController->bulkDelete([$id]);
+      $this->deleteController->bulkDelete([(int)$newsletter->getId()]);
     } catch (\Throwable $e) {
       $this->logFailure($e);
     }
@@ -216,9 +211,14 @@ class CreateNewsletterDraftAbility implements Ability {
   private function getOutputSchema(): array {
     return [
       'type' => 'object',
-      'required' => ['id', 'wp_post_id', 'subject', 'status', 'edit_url', 'created', 'list_ids', 'warnings'],
+      'required' => ['id', 'wp_post_id', 'subject', 'status', 'edit_url', 'created', 'list_ids', 'version', 'warnings'],
       'additionalProperties' => false,
       'properties' => array_merge($this->drafts->getOutputProperties(), [
+        'status' => [
+          'type' => 'string',
+          'description' => __('The newsletter status. A new draft is always draft, but a repeated client_reference returns the current status.', 'mailpoet'),
+        ],
+        'warnings' => $this->drafts->getWarningsProperty(),
         'created' => [
           'type' => 'boolean',
           'description' => __('False when client_reference matched an existing newsletter.', 'mailpoet'),
