@@ -2,13 +2,14 @@
 
 namespace MailPoet\Abilities;
 
+use MailPoet\Features\FeaturesController;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
 /**
- * Registers read-only MailPoet abilities through the core Abilities API,
- * independent of WooCommerce.
+ * Registers MailPoet abilities through the core Abilities API, independent of
+ * WooCommerce. Write abilities stay behind the mcp_write_abilities feature flag.
  */
 class AbilitiesRegistrar {
   public const CATEGORY = 'mailpoet';
@@ -19,23 +20,39 @@ class AbilitiesRegistrar {
     RecentNewslettersAbility::NAME,
   ];
 
+  public const WRITE_ABILITY_NAMES = [
+    CreateNewsletterDraftAbility::NAME,
+  ];
+
   /** @var WPFunctions */
   private $wp;
+
+  /** @var FeaturesController */
+  private $featuresController;
 
   /** @var Ability[] */
   private $abilities;
 
+  /** @var Ability[] */
+  private $writeAbilities;
+
   public function __construct(
     WPFunctions $wp,
+    FeaturesController $featuresController,
     SendingStatusAbility $sendingStatusAbility,
     UnsubscribeTrendAbility $unsubscribeTrendAbility,
-    RecentNewslettersAbility $recentNewslettersAbility
+    RecentNewslettersAbility $recentNewslettersAbility,
+    CreateNewsletterDraftAbility $createNewsletterDraftAbility
   ) {
     $this->wp = $wp;
+    $this->featuresController = $featuresController;
     $this->abilities = [
       $sendingStatusAbility,
       $unsubscribeTrendAbility,
       $recentNewslettersAbility,
+    ];
+    $this->writeAbilities = [
+      $createNewsletterDraftAbility,
     ];
   }
 
@@ -52,7 +69,11 @@ class AbilitiesRegistrar {
   }
 
   public function registerAbilities(): void {
-    foreach ($this->abilities as $ability) {
+    $abilities = $this->abilities;
+    if ($this->featuresController->isSupported(FeaturesController::FEATURE_MCP_WRITE_ABILITIES)) {
+      $abilities = array_merge($abilities, $this->writeAbilities);
+    }
+    foreach ($abilities as $ability) {
       $this->wp->registerAbility(
         $ability->getName(),
         array_merge($ability->getRegistrationArgs(), ['category' => self::CATEGORY])
@@ -71,6 +92,21 @@ class AbilitiesRegistrar {
         'readonly' => true,
         'destructive' => false,
         'idempotent' => true,
+      ],
+    ];
+  }
+
+  public static function getWriteMeta(): array {
+    return [
+      'show_in_rest' => true,
+      'mcp' => [
+        'public' => true,
+        'type' => 'tool',
+      ],
+      'annotations' => [
+        'readonly' => false,
+        'destructive' => false,
+        'idempotent' => false,
       ],
     ];
   }
