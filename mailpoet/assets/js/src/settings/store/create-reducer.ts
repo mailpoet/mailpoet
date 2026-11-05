@@ -1,4 +1,4 @@
-import { setWith, clone, isEqual } from 'lodash';
+import { setWith, clone, get, isEqual } from 'lodash';
 import {
   State,
   Action,
@@ -60,6 +60,48 @@ export function createReducer(defaultValue: State) {
           ...state,
           save: { inProgress: false, error: null, hasUnsavedChanges: false },
         };
+      case 'FULL_SAVE_DONE':
+        return {
+          ...state,
+          originalData: state.data,
+          save: { inProgress: false, error: null, hasUnsavedChanges: false },
+        };
+      case 'MARK_SETTINGS_SAVED': {
+        let { originalData } = state;
+        action.paths.forEach((path) => {
+          originalData = setWith(
+            clone(originalData),
+            path,
+            get(state.data, path),
+            clone,
+          );
+        });
+        return {
+          ...state,
+          originalData,
+          save: {
+            ...state.save,
+            hasUnsavedChanges: !isEqual(state.data, originalData),
+          },
+        };
+      }
+      case 'PARTIAL_SAVE_DONE': {
+        let { data, originalData } = state;
+        action.values.forEach(({ path, value }) => {
+          data = setWith(clone(data), path, value, clone);
+          originalData = setWith(clone(originalData), path, value, clone);
+        });
+        return {
+          ...state,
+          data,
+          originalData,
+          save: {
+            inProgress: false,
+            error: null,
+            hasUnsavedChanges: !isEqual(data, originalData),
+          },
+        };
+      }
       case 'SAVE_FAILED':
         return {
           ...state,

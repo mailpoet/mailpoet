@@ -13,11 +13,11 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
+use MailPoet\Mailer\SuperSendingController;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\Newsletter\Sending\OverdueCampaignHold;
 use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
@@ -103,8 +103,8 @@ class SendingQueue {
   /** @var AuthorizedEmailsController */
   private $authorizedEmailsController;
 
-  /** @var FeaturesController */
-  private $featuresController;
+  /** @var SuperSendingController */
+  private $superSendingController;
 
   /** @var TimeZoneCampaignScheduler|null */
   private $timeZoneCampaignScheduler;
@@ -133,7 +133,7 @@ class SendingQueue {
     EntityManager $entityManager,
     StatisticsNewslettersRepository $statisticsNewslettersRepository,
     AuthorizedEmailsController $authorizedEmailsController,
-    FeaturesController $featuresController,
+    SuperSendingController $superSendingController,
     ?TimeZoneCampaignScheduler $timeZoneCampaignScheduler = null,
     $newsletterTask = false,
     ?NewsletterUrl $newsletterUrl = null,
@@ -158,7 +158,7 @@ class SendingQueue {
     $this->entityManager = $entityManager;
     $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
     $this->authorizedEmailsController = $authorizedEmailsController;
-    $this->featuresController = $featuresController;
+    $this->superSendingController = $superSendingController;
     $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
     $this->newsletterUrl = $newsletterUrl ?? ContainerWrapper::getInstance()->get(NewsletterUrl::class);
     $this->overdueCampaignHold = $overdueCampaignHold ?? ContainerWrapper::getInstance()->get(OverdueCampaignHold::class);
@@ -457,7 +457,7 @@ class SendingQueue {
 
   private function shouldUseTemplatedSending(NewsletterEntity $newsletter, SendingQueueEntity $queue, ?string $processingMethod): bool {
     return $processingMethod === 'bulk'
-      && $this->featuresController->isSupported(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING)
+      && $this->superSendingController->isEnabled()
       && empty(($queue->getMeta() ?? [])[SendingQueueEntity::META_TEMPLATED_SENDING_DISABLED])
       && !(
         $newsletter->getWpPostId() !== null

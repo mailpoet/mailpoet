@@ -49,12 +49,16 @@ export function KeyActivation({ subscribersCount }: Props) {
   const [unauthorizedAddresses, setUnauthorizedAddresses] = useSetting(
     'authorized_emails_addresses_check',
   );
-  const setSaveDone = useAction('setSaveDone');
+  const markSettingsSaved = useAction('markSettingsSaved');
+  // The modal saved the address
   const setAuthorizedAddress = async (address: string) => {
     sessionStorage.removeItem('mailpoet_from_address_modal_can_be_shown');
     await setSenderAddress(address);
     await setUnauthorizedAddresses(null);
-    void setSaveDone();
+    void markSettingsSaved([
+      ['sender', 'address'],
+      ['authorized_emails_addresses_check'],
+    ]);
   };
 
   const showFromAddressModal =
