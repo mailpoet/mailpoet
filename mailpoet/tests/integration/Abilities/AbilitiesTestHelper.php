@@ -21,7 +21,7 @@ class AbilitiesTestHelper {
   }
 
   private static function removeRegistrations(): void {
-    foreach (array_merge(AbilitiesRegistrar::ABILITY_NAMES, AbilitiesRegistrar::WRITE_ABILITY_NAMES) as $name) {
+    foreach (array_merge(AbilitiesRegistrar::ABILITY_NAMES, AbilitiesRegistrar::EXPERIMENTAL_ABILITY_NAMES) as $name) {
       if (wp_has_ability($name)) {
         wp_unregister_ability($name);
       }

@@ -144,6 +144,25 @@ class NewslettersRepository extends Repository {
    * @param string[] $types
    * @return NewsletterEntity[]
    */
+
+  /** @return NewsletterEntity[] */
+  public function findRecentBlockEditorDrafts(int $limit): array {
+    return $this->entityManager
+      ->createQueryBuilder()
+      ->select('n')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.status = :status')
+      ->setParameter('status', NewsletterEntity::STATUS_DRAFT)
+      ->andWhere('n.type = :type')
+      ->setParameter('type', NewsletterEntity::TYPE_STANDARD)
+      ->andWhere('n.deletedAt IS NULL')
+      ->andWhere('n.wpPost IS NOT NULL')
+      ->orderBy('n.updatedAt', 'DESC')
+      ->setMaxResults($limit)
+      ->getQuery()
+      ->getResult();
+  }
+
   public function findDraftByTypes($types) {
     return $this->entityManager
       ->createQueryBuilder()
