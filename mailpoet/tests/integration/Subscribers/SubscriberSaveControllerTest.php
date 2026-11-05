@@ -9,6 +9,7 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -98,6 +99,27 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
 
     $subscriber = $this->saveController->save(['email' => 'source-plugin-form@test.com', 'source' => 'form', 'source_plugin' => 'my-plugin']);
     verify($subscriber->getSourcePlugin())->null();
+  }
+
+  public function testSavingAStatusChangeUpdatesCachedStatusCounts(): void {
+    $subscriber = $this->saveController->save([
+      'email' => 'status-change@test.com',
+      'status' => SubscriberEntity::STATUS_UNCONFIRMED,
+    ]);
+    $counts = $this->getServiceWithOverrides(SubscribersCountsController::class, [
+      'subscribersFeature' => $this->make(SubscribersFeature::class, ['isSubscribersCountEnoughForCache' => true]),
+    ]);
+    $counts->recalculateGlobalStatusStatisticsCache();
+
+    $this->saveController->save([
+      'id' => $subscriber->getId(),
+      'email' => 'status-change@test.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+    ]);
+
+    $statusCounts = $counts->getGlobalStatusStatisticsCount();
+    verify($statusCounts[SubscriberEntity::STATUS_UNCONFIRMED])->equals(0);
+    verify($statusCounts[SubscriberEntity::STATUS_SUBSCRIBED])->equals(1);
   }
 
   public function testItStripsClientSuppliedTrackingConsentProofFields(): void {
