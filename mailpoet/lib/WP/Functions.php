@@ -999,6 +999,10 @@ class Functions {
     return wp_kses($string, $allowedHtml, $allowedProtocols);
   }
 
+  public function forceBalanceTags(string $text): string {
+    return force_balance_tags($text);
+  }
+
   public function wpKsesAllowedHtml($context = '') {
     return wp_kses_allowed_html($context);
   }
@@ -1083,6 +1087,14 @@ class Functions {
    */
   public function wpUnslash($value) {
     return wp_unslash($value);
+  }
+
+  /**
+   * @param string|array $value
+   * @return string|array
+   */
+  public function wpSlash($value) {
+    return wp_slash($value);
   }
 
   public function restUrl(string $path = '', string $scheme = 'rest'): string {
