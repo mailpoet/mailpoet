@@ -22,20 +22,3 @@
 @use './components-automation-integrations/core' as *;
 @use './components-automation-integrations/mailpoet' as *;
 @use './components-automation-integrations/woocommerce' as *;
-
-// The editor fills the screen like the site editor. Edit-site styles used to
-// hide the admin bar here, but they no longer do since @wordpress/edit-site 7.
-// The variables are what edit-site 7 uses to hide it in distraction-free mode.
-body.js.admin_page_mailpoet-automation-editor {
-  // stylelint-disable-next-line length-zero-no-unit -- core uses it in calc(), which needs a unit
-  --wp-admin--admin-bar--height: 0px;
-  --wp-editor-admin-bar-display: none;
-
-  #wpadminbar {
-    display: none;
-  }
-
-  #wpbody {
-    padding-top: 0;
-  }
-}
