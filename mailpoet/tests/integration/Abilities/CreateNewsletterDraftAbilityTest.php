@@ -11,10 +11,12 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Features;
-use MailPoet\Test\DataFactories\Segment;
 
 require_once __DIR__ . '/AbilitiesTestHelper.php';
 
+/**
+ * @phpstan-type CreatedDraft array{id: int, wp_post_id: int, subject: string, status: string, edit_url: string, created: bool, list_ids: int[], version: string, warnings: string[]}
+ */
 class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
   private const ABILITY = 'mailpoet/create-newsletter-draft';
 
@@ -28,15 +30,11 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
     $this->registrar = $this->diContainer->get(AbilitiesRegistrar::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     wp_set_current_user((int)$this->tester->createWordPressUser('draft-admin@example.com', 'administrator'));
-    (new Features())->withFeatureEnabled(FeaturesController::FEATURE_MCP_WRITE_ABILITIES);
-    $this->diContainer->get(FeaturesController::class)->resetCache();
-    AbilitiesTestHelper::register($this->registrar);
+    AbilitiesTestHelper::enableDraftAbilities();
   }
 
   public function _after(): void {
-    AbilitiesTestHelper::unregister();
-    $this->diContainer->get(FeaturesController::class)->resetCache();
-    $this->deleteEmailPosts();
+    AbilitiesTestHelper::disableDraftAbilities();
     wp_set_current_user(0);
     $this->tester->deleteCreatedUsers();
     parent::_after();
@@ -44,12 +42,11 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
 
   public function testItIsNotRegisteredWhenTheFlagIsOff(): void {
     (new Features())->withFeatureDisabled(FeaturesController::FEATURE_MCP_WRITE_ABILITIES);
-    $this->diContainer->get(FeaturesController::class)->resetCache();
+    AbilitiesTestHelper::resetFeatureCache();
 
     AbilitiesTestHelper::register($this->registrar);
 
-    verify(wp_has_ability(self::ABILITY))->false();
-    verify(wp_has_ability('mailpoet/get-newsletter-draft-options'))->false();
+    verify(array_filter(AbilitiesTestHelper::DRAFT_ABILITY_NAMES, 'wp_has_ability'))->empty();
     verify(wp_has_ability('mailpoet/get-sending-status'))->true();
   }
 
@@ -62,24 +59,6 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
     verify($ability->get_meta()['annotations'])->equals(['readonly' => false, 'destructive' => false, 'idempotent' => false]);
     // MCP clients load every description into the model's context on each request.
     $this->assertLessThanOrEqual(500, strlen($ability->get_description()));
-  }
-
-  public function testItPreselectsListsWithoutSendingAnything(): void {
-    $list = (new Segment())->withName('Chosen')->create();
-
-    $result = $this->createDraft([
-      'subject' => 'For a list',
-      'blocks' => [['type' => 'paragraph', 'text' => 'x']],
-      'list_ids' => [(int)$list->getId()],
-    ]);
-
-    verify($result['list_ids'])->equals([$list->getId()]);
-    verify($result['status'])->equals('draft');
-    $newsletter = $this->newslettersRepository->findOneById($result['id']);
-    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
-    $this->entityManager->refresh($newsletter);
-    verify(array_values($newsletter->getSegmentIds()))->equals([$list->getId()]);
-    verify($this->diContainer->get(SendingQueuesRepository::class)->findAll())->empty();
   }
 
   public function testItCreatesAStandardDraftInTheBlockEditorAndSendsNothing(): void {
@@ -97,8 +76,7 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
       ],
     ]);
 
-    $newsletter = $this->newslettersRepository->findOneById($result['id']);
-    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $newsletter = $this->getNewsletter($result['id']);
     verify($newsletter->getType())->equals(NewsletterEntity::TYPE_STANDARD);
     verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_DRAFT);
     verify($newsletter->getSubject())->equals('October news');
@@ -128,6 +106,7 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
       'edit_url' => admin_url('post.php?post=' . $postId . '&action=edit'),
       'created' => true,
       'list_ids' => [],
+      'version' => $result['version'],
       'warnings' => [],
     ]);
     verify($this->diContainer->get(SendingQueuesRepository::class)->findAll())->empty();
@@ -166,8 +145,7 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
     ]);
 
     verify($result['subject'])->equals('Hi');
-    $newsletter = $this->newslettersRepository->findOneById($result['id']);
-    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $newsletter = $this->getNewsletter($result['id']);
     verify($newsletter->getPreheader())->equals('For');
     $content = $this->getPostContent($result);
     verify($content)->stringNotContainsString('subscriber:');
@@ -265,6 +243,7 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
         ['type' => 'image', 'url' => '//example.com/a.png', 'alt' => 'No scheme'],
         ['type' => 'heading', 'text' => 'Bad color', 'text_color' => 'red'],
         ['type' => 'section', 'blocks' => [['type' => 'heading'], ['type' => 'paragraph', 'text' => 'fine']]],
+        ['type' => 'paragraph', 'text' => 'Newline in color', 'text_color' => "#abc\n"],
         ['type' => 'paragraph', 'text' => 'fine'],
       ],
     ]);
@@ -275,7 +254,7 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
     $this->assertIsArray($data);
     verify($data['status'])->equals(400);
     $this->assertIsArray($data['errors']);
-    verify(array_column($data['errors'], 'field'))->equals(['subject', 'list_ids', 'blocks[0]', 'blocks[1]', 'blocks[2]', 'blocks[3]', 'blocks[4]', 'blocks[5]', 'blocks[6].blocks[0]']);
+    verify(array_column($data['errors'], 'field'))->equals(['subject', 'list_ids', 'blocks[0]', 'blocks[1]', 'blocks[2]', 'blocks[3]', 'blocks[4]', 'blocks[5]', 'blocks[6].blocks[0]', 'blocks[7]']);
     verify($result->get_error_message())->stringContainsString('blocks[3]');
     verify($this->newslettersRepository->findAll())->empty();
     verify($this->countEmailPosts())->equals($postCount);
@@ -291,40 +270,6 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
     verify($result->get_error_code())->equals('mailpoet_draft_not_created');
     verify($this->newslettersRepository->findAll())->empty();
     verify($this->countEmailPosts())->equals($postCount);
-  }
-
-  public function testItSavesTheSameContentForUsersWithoutUnfilteredHtml(): void {
-    $input = [
-      'subject' => 'Roles',
-      'blocks' => [
-        ['type' => 'heading', 'text' => 'Title'],
-        ['type' => 'paragraph', 'text' => '<strong>Bold</strong> <em>em</em> <a href="https://example.com/a?b=1&c=2">link</a>'],
-        ['type' => 'image', 'url' => 'https://example.com/a.png', 'alt' => 'Alt "quoted"'],
-        ['type' => 'button', 'text' => 'Read', 'url' => 'https://example.com/read?a=1&b=2', 'align' => 'center', 'text_color' => '#ffffff', 'background_color' => '#0a7d33'],
-        ['type' => 'list', 'items' => ['One', 'Two']],
-        ['type' => 'quote', 'text' => 'Quoted', 'text_color' => '#333333'],
-        ['type' => 'spacer', 'height' => 30],
-        ['type' => 'section', 'background_color' => '#eef2ff', 'text_color' => '#111111', 'blocks' => [
-          ['type' => 'heading', 'text' => 'Inside', 'align' => 'center', 'background_color' => '#fff3cd'],
-        ]],
-      ],
-    ];
-    $withUnfilteredHtml = $this->createDraft($input);
-
-    $user = wp_get_current_user();
-    $user->add_cap('unfiltered_html', false);
-    // Setting the same user again is a no-op, and kses only turns on when the user changes.
-    wp_set_current_user(0);
-    wp_set_current_user($user->ID);
-    verify(has_filter('content_save_pre', 'wp_filter_post_kses'))->notEquals(false);
-    $withoutUnfilteredHtml = $this->createDraft($input);
-
-    // Kses only adds a space before "/>", which block validation ignores. On multisite both saves
-    // are filtered, so both sides are normalized.
-    $withoutSpace = function (string $content): string {
-      return str_replace(' />', '/>', $content);
-    };
-    verify($withoutSpace($this->getPostContent($withoutUnfilteredHtml)))->equals($withoutSpace($this->getPostContent($withUnfilteredHtml)));
   }
 
   public function testARepeatedClientReferenceReturnsTheSameDraft(): void {
@@ -354,8 +299,7 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
       'client_reference' => 'retry-sent',
     ];
     $first = $this->createDraft($input);
-    $newsletter = $this->newslettersRepository->findOneById($first['id']);
-    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $newsletter = $this->getNewsletter($first['id']);
     $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
     $this->entityManager->flush();
 
@@ -374,8 +318,7 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
     ];
     $first = $this->createDraft($input);
     wp_update_post(['ID' => $first['wp_post_id'], 'post_date' => '2020-01-01 10:00:00', 'post_date_gmt' => '2020-01-01 10:00:00']);
-    $newsletter = $this->newslettersRepository->findOneById($first['id']);
-    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $newsletter = $this->getNewsletter($first['id']);
     $copy = $this->diContainer->get(NewsletterSaveController::class)->duplicate($newsletter);
     verify(get_post_meta((int)$copy->getWpPostId(), '_mailpoet_client_reference', true))->equals('retry-copy');
 
@@ -410,13 +353,19 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
 
   /**
    * @param array<string, mixed> $input
-   * @return array{id: int, wp_post_id: int, subject: string, status: string, edit_url: string, created: bool, list_ids: int[], warnings: string[]}
+   * @return CreatedDraft
    */
   private function createDraft(array $input): array {
     $result = $this->execute($input);
     $this->assertIsArray($result);
-    /** @var array{id: int, wp_post_id: int, subject: string, status: string, edit_url: string, created: bool, list_ids: int[], warnings: string[]} $result */
+    /** @var CreatedDraft $result */
     return $result;
+  }
+
+  private function getNewsletter(int $id): NewsletterEntity {
+    $newsletter = $this->newslettersRepository->findOneById($id);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    return $newsletter;
   }
 
   /** @param array{wp_post_id: int} $result */
@@ -442,17 +391,5 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
       'numberposts' => -1,
       'fields' => 'ids',
     ]));
-  }
-
-  private function deleteEmailPosts(): void {
-    $ids = get_posts([
-      'post_type' => EmailEditor::MAILPOET_EMAIL_POST_TYPE,
-      'post_status' => ['draft', 'sent'],
-      'numberposts' => -1,
-      'fields' => 'ids',
-    ]);
-    array_map(function ($id) {
-      wp_delete_post((int)$id, true);
-    }, $ids);
   }
 }

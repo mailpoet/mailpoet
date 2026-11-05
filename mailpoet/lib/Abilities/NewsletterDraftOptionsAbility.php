@@ -40,11 +40,10 @@ class NewsletterDraftOptionsAbility implements Ability {
   public function getRegistrationArgs(): array {
     return [
       'label' => __('Get MailPoet newsletter draft options', 'mailpoet'),
-      'description' => __('Call this before writing a newsletter draft. Returns the subscriber lists with their subscribed counts, so you can ask the user which list the draft is for, the site colors to design with, and recent drafts.', 'mailpoet'),
+      'description' => __('Call this before writing a newsletter draft. Returns the subscriber lists with their subscribed counts, so you can ask the user which list the draft is for, the site colors to design with, and recent drafts to open with mailpoet/get-newsletter-draft.', 'mailpoet'),
       'input_schema' => [
         'type' => 'object',
         'additionalProperties' => false,
-        'properties' => [],
         'default' => [],
       ],
       'output_schema' => $this->getOutputSchema(),

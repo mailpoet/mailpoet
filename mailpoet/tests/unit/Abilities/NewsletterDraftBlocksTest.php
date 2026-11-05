@@ -49,9 +49,9 @@ class NewsletterDraftBlocksTest extends \MailPoetUnitTest {
       ['type' => 'heading', 'text' => 'Title', 'align' => 'center', 'text_color' => '#111111', 'background_color' => '#eeeeee'],
       ['type' => 'paragraph', 'text' => 'Text', 'align' => 'right', 'text_color' => '#222222'],
       ['type' => 'button', 'text' => 'Go', 'url' => 'https://example.com/g', 'align' => 'center', 'text_color' => '#ffffff', 'background_color' => '#0a7d33'],
-      ['type' => 'list', 'items' => ['One', 'Two <strong>bold</strong>'], 'ordered' => true],
+      ['type' => 'list', 'items' => ['One', 'Two <strong>bold</strong>'], 'ordered' => true, 'text_color' => '#7a003c'],
       ['type' => 'quote', 'text' => 'Quoted', 'background_color' => '#fafafa'],
-      ['type' => 'spacer', 'height' => 30],
+      ['type' => 'spacer', 'height' => '30'],
       ['type' => 'section', 'background_color' => '#eef2ff', 'blocks' => [['type' => 'paragraph', 'text' => 'Inside']]],
     ]);
 
@@ -74,8 +74,8 @@ class NewsletterDraftBlocksTest extends \MailPoetUnitTest {
       . '<!-- /wp:buttons -->'
     );
     verify($result['markup'])->stringContainsString(
-      '<!-- wp:list {"ordered":true} -->' . "\n"
-      . '<ol class="wp-block-list"><!-- wp:list-item -->' . "\n"
+      '<!-- wp:list {"ordered":true,"style":{"color":{"text":"#7a003c"}}} -->' . "\n"
+      . '<ol style="color:#7a003c" class="wp-block-list has-text-color"><!-- wp:list-item -->' . "\n"
       . '<li>One</li>' . "\n"
       . '<!-- /wp:list-item -->' . "\n\n"
       . '<!-- wp:list-item -->' . "\n"
@@ -105,31 +105,23 @@ class NewsletterDraftBlocksTest extends \MailPoetUnitTest {
   }
 
   private function getDraftBlocks(): NewsletterDraftBlocks {
+    $passThrough = function (string $text): string {
+      return $text;
+    };
+    $escape = function (string $text): string {
+      return htmlspecialchars($text, ENT_QUOTES);
+    };
     $wp = Stub::make(WPFunctions::class, [
-      'sanitizeTextField' => function (string $text): string {
-        return $text;
-      },
-      'sanitizeHexColor' => function (string $color): string {
-        return $color;
-      },
-      'wpKses' => function (string $text): string {
-        return $text;
-      },
-      'forceBalanceTags' => function (string $text): string {
-        return $text;
-      },
-      'escUrlRaw' => function (string $url): string {
-        return $url;
-      },
+      'sanitizeTextField' => $passThrough,
+      'sanitizeHexColor' => $passThrough,
+      'wpKses' => $passThrough,
+      'forceBalanceTags' => $passThrough,
+      'escUrlRaw' => $passThrough,
       'wpParseUrl' => function (string $url) {
         return parse_url($url);
       },
-      'escHtml' => function (string $text): string {
-        return htmlspecialchars($text, ENT_QUOTES);
-      },
-      'escAttr' => function (string $text): string {
-        return htmlspecialchars($text, ENT_QUOTES);
-      },
+      'escHtml' => $escape,
+      'escAttr' => $escape,
     ]);
     return new NewsletterDraftBlocks($wp, Stub::makeEmptyExcept(Shortcodes::class, 'extract'));
   }
