@@ -16,10 +16,24 @@ class NewsletterDraftBlocks {
   public const TYPE_PARAGRAPH = 'paragraph';
   public const TYPE_BUTTON = 'button';
   public const TYPE_IMAGE = 'image';
+  public const TYPE_LIST = 'list';
+  public const TYPE_QUOTE = 'quote';
+  public const TYPE_SPACER = 'spacer';
+  public const TYPE_SECTION = 'section';
 
+  private const NESTED_TYPES = [
+    self::TYPE_HEADING,
+    self::TYPE_PARAGRAPH,
+    self::TYPE_BUTTON,
+    self::TYPE_IMAGE,
+    self::TYPE_LIST,
+    self::TYPE_QUOTE,
+    self::TYPE_SPACER,
+  ];
   private const HEADING_MAX_LENGTH = 300;
   private const BUTTON_TEXT_MAX_LENGTH = 100;
   private const DEFAULT_HEADING_LEVEL = 2;
+  private const SECTION_PADDING = '20px';
   private const URL_PROTOCOLS = ['http', 'https'];
   private const PARAGRAPH_LINK_PROTOCOLS = ['http', 'https', 'mailto'];
   private const PARAGRAPH_HTML = [
@@ -34,12 +48,20 @@ class NewsletterDraftBlocks {
     self::TYPE_PARAGRAPH => ['text'],
     self::TYPE_BUTTON => ['text', 'url'],
     self::TYPE_IMAGE => ['url', 'alt'],
+    self::TYPE_LIST => ['items'],
+    self::TYPE_QUOTE => ['text'],
+    self::TYPE_SPACER => ['height'],
+    self::TYPE_SECTION => ['blocks'],
   ];
   private const OPTIONAL_FIELDS = [
-    self::TYPE_HEADING => ['level'],
-    self::TYPE_PARAGRAPH => [],
-    self::TYPE_BUTTON => [],
+    self::TYPE_HEADING => ['level', 'align', 'text_color', 'background_color'],
+    self::TYPE_PARAGRAPH => ['align', 'text_color', 'background_color'],
+    self::TYPE_BUTTON => ['align', 'text_color', 'background_color'],
     self::TYPE_IMAGE => [],
+    self::TYPE_LIST => ['ordered', 'text_color', 'background_color'],
+    self::TYPE_QUOTE => ['text_color', 'background_color'],
+    self::TYPE_SPACER => [],
+    self::TYPE_SECTION => ['text_color', 'background_color'],
   ];
 
   /** @var WPFunctions */
@@ -57,31 +79,79 @@ class NewsletterDraftBlocks {
   }
 
   /**
-   * @param array<int, array<string, int|string>> $blocks
+   * The schema of the blocks field. Sections hold one level of other blocks, so the inner blocks
+   * are spelled out once: the core validator has no recursive references.
+   */
+  public function getBlocksSchema(): array {
+    $nestedBlock = $this->getBlockSchema(self::NESTED_TYPES);
+    $block = $this->getBlockSchema(array_merge(self::NESTED_TYPES, [self::TYPE_SECTION]));
+    $block['properties']['type']['description'] = __('heading: text (at most 300 characters), optional level, align. paragraph: text, which may use strong, em and a href, optional align. button: text (at most 100 characters), url, optional align. image: url, alt. list: items, each may use strong, em and a href, optional ordered. quote: text. spacer: height in pixels. section: blocks, one level, shown on a shared background. text_color and background_color work on all but image and spacer. Other fields are rejected.', 'mailpoet');
+    $block['properties']['blocks'] = ['type' => 'array', 'minItems' => 1, 'maxItems' => 20, 'items' => $nestedBlock];
+    return ['type' => 'array', 'minItems' => 1, 'maxItems' => 50, 'items' => $block];
+  }
+
+  /** @param string[] $types */
+  private function getBlockSchema(array $types): array {
+    $color = ['type' => 'string', 'maxLength' => 7];
+    return [
+      'type' => 'object',
+      'required' => ['type'],
+      'additionalProperties' => false,
+      'properties' => [
+        'type' => ['type' => 'string', 'enum' => $types],
+        'text' => ['type' => 'string', 'maxLength' => 5000],
+        'level' => ['type' => 'integer', 'enum' => [1, 2, 3]],
+        'url' => ['type' => 'string', 'format' => 'uri'],
+        'alt' => ['type' => 'string', 'maxLength' => 300],
+        'align' => ['type' => 'string', 'enum' => ['left', 'center', 'right']],
+        'text_color' => $color,
+        'background_color' => $color,
+        'items' => ['type' => 'array', 'minItems' => 1, 'maxItems' => 50, 'items' => ['type' => 'string', 'maxLength' => 1000]],
+        'ordered' => ['type' => 'boolean'],
+        'height' => ['type' => 'integer', 'minimum' => 4, 'maximum' => 120],
+      ],
+    ];
+  }
+
+  /**
+   * @param array<int, array<string, mixed>> $blocks
    * @return array{markup: string, errors: array<int, array{field: string, message: string}>, warnings: string[]}
    */
   public function prepare(array $blocks): array {
-    $markup = [];
     $errors = [];
     $warnings = [];
-    foreach ($blocks as $index => $block) {
-      $field = "blocks[$index]";
-      $removed = false;
-      $result = $this->prepareBlock($block, $removed);
-      if ($removed) {
-        $warnings[] = $this->getRemovedContentWarning($field);
-      }
-      if (is_array($result)) {
-        $errors[] = ['field' => $field, 'message' => implode(' ', $result)];
-      } else {
-        $markup[] = $result;
-      }
-    }
+    $markup = $this->prepareBlocks($blocks, 'blocks', $errors, $warnings);
     return [
       'markup' => $this->wrapInGroup(implode("\n\n", $markup)),
       'errors' => $errors,
       'warnings' => $warnings,
     ];
+  }
+
+  /**
+   * @param array<int, array<string, mixed>> $blocks
+   * @param array<int, array{field: string, message: string}> $errors
+   * @param string[] $warnings
+   * @return string[]
+   */
+  private function prepareBlocks(array $blocks, string $parentField, array &$errors, array &$warnings): array {
+    $markup = [];
+    foreach ($blocks as $index => $block) {
+      $field = $parentField . "[$index]";
+      $removed = false;
+      $result = $this->prepareBlock($block, $field, $removed, $errors, $warnings);
+      if ($removed) {
+        $warnings[] = $this->getRemovedContentWarning($field);
+      }
+      if (is_array($result)) {
+        if ($result) {
+          $errors[] = ['field' => $field, 'message' => implode(' ', $result)];
+        }
+      } else {
+        $markup[] = $result;
+      }
+    }
+    return $markup;
   }
 
   public function sanitizeText(string $text, bool &$removed): string {
@@ -94,29 +164,46 @@ class NewsletterDraftBlocks {
   }
 
   /**
-   * @param array<string, int|string> $block
+   * @param array<string, mixed> $block
+   * @param array<int, array{field: string, message: string}> $errors
+   * @param string[] $warnings
    * @return string|string[] the block markup, or the errors
    */
-  private function prepareBlock(array $block, bool &$removed) {
-    $type = (string)$block['type'];
-    $errors = $this->validateFields($type, $block);
-    if ($errors) {
-      return $errors;
+  private function prepareBlock(array $block, string $field, bool &$removed, array &$errors, array &$warnings) {
+    $type = $this->stringField($block, 'type');
+    $fieldErrors = $this->validateFields($type, $block);
+    if ($fieldErrors) {
+      return $fieldErrors;
+    }
+    $colors = $this->prepareColors($block);
+    if ($colors['errors']) {
+      return $colors['errors'];
     }
     switch ($type) {
       case self::TYPE_HEADING:
-        return $this->buildHeading($block, $removed);
+        return $this->buildHeading($block, $colors, $removed);
       case self::TYPE_PARAGRAPH:
-        return $this->buildParagraph($block, $removed);
+        return $this->buildParagraph($block, $colors, $removed);
       case self::TYPE_BUTTON:
-        return $this->buildButton($block, $removed);
+        return $this->buildButton($block, $colors, $removed);
+      case self::TYPE_LIST:
+        return $this->buildList($block, $colors, $removed);
+      case self::TYPE_QUOTE:
+        return $this->buildQuote($block, $colors, $removed);
+      case self::TYPE_SPACER:
+        return $this->buildSpacer($block);
+      case self::TYPE_SECTION:
+        /** @var array<int, array<string, mixed>> $innerBlocks The input schema allows only objects here. */
+        $innerBlocks = is_array($block['blocks']) ? $block['blocks'] : [];
+        $inner = $this->prepareBlocks($innerBlocks, $field . '.blocks', $errors, $warnings);
+        return $this->buildSection($inner, $colors);
       default:
         return $this->buildImage($block, $removed);
     }
   }
 
   /**
-   * @param array<string, int|string> $block
+   * @param array<string, mixed> $block
    * @return string[]
    */
   private function validateFields(string $type, array $block): array {
@@ -136,63 +223,134 @@ class NewsletterDraftBlocks {
   }
 
   /**
-   * @param array<string, int|string> $block
+   * @param array<string, mixed> $block
+   * @return array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]}
+   */
+  private function prepareColors(array $block): array {
+    $colors = ['attributes' => [], 'classes' => [], 'styles' => [], 'errors' => []];
+    $fields = [
+      'text_color' => ['text', 'has-text-color', 'color'],
+      'background_color' => ['background', 'has-background', 'background-color'],
+    ];
+    foreach ($fields as $field => [$attribute, $class, $property]) {
+      if (!isset($block[$field])) {
+        continue;
+      }
+      $color = $this->wp->sanitizeHexColor($this->stringField($block, $field));
+      if ($color === '') {
+        // translators: %s is a field name.
+        $colors['errors'][] = sprintf(__('%s must be a hex color like #1a2b3c.', 'mailpoet'), $field);
+        continue;
+      }
+      $colors['attributes'][$attribute] = $color;
+      $colors['classes'][] = $class;
+      $colors['styles'][] = "$property:$color";
+    }
+    return $colors;
+  }
+
+  /** @param array<string, mixed> $block */
+  private function stringField(array $block, string $field): string {
+    return is_string($block[$field] ?? null) ? $block[$field] : '';
+  }
+
+  /** @param array<string, mixed> $block */
+  private function intField(array $block, string $field, int $default): int {
+    return is_int($block[$field] ?? null) ? $block[$field] : $default;
+  }
+
+  /** @param array<string, mixed> $attributes */
+  private function openingDelimiter(string $name, array $attributes): string {
+    $json = $attributes ? ' ' . json_encode($attributes, JSON_UNESCAPED_SLASHES) : '';
+    return "<!-- wp:$name$json -->";
+  }
+
+  /**
+   * @param string[] $classes
+   * @param string[] $styles
+   */
+  private function htmlAttributes(array $classes, array $styles): string {
+    $html = $classes ? ' class="' . implode(' ', $classes) . '"' : '';
+    return $html . ($styles ? ' style="' . implode(';', $styles) . '"' : '');
+  }
+
+  /**
+   * @param array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]} $colors
+   * @return array<string, mixed>
+   */
+  private function colorAttributes(array $colors): array {
+    return $colors['attributes'] ? ['style' => ['color' => $colors['attributes']]] : [];
+  }
+
+  /**
+   * @param array<string, mixed> $block
+   * @param array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]} $colors
    * @return string|string[]
    */
-  private function buildHeading(array $block, bool &$removed) {
-    $text = $this->sanitizeText((string)$block['text'], $removed);
+  private function buildHeading(array $block, array $colors, bool &$removed) {
+    $text = $this->sanitizeText($this->stringField($block, 'text'), $removed);
     $errors = $this->validateText($text, self::HEADING_MAX_LENGTH);
     if ($errors) {
       return $errors;
     }
-    $level = (int)($block['level'] ?? self::DEFAULT_HEADING_LEVEL);
-    $attributes = $level === self::DEFAULT_HEADING_LEVEL ? '' : ' {"level":' . $level . '}';
-    return "<!-- wp:heading$attributes -->\n"
-      . "<h$level class=\"wp-block-heading\">" . $this->wp->escHtml($text) . "</h$level>\n"
+    $level = $this->intField($block, 'level', self::DEFAULT_HEADING_LEVEL);
+    $attributes = isset($block['align']) ? ['textAlign' => $this->stringField($block, 'align')] : [];
+    if ($level !== self::DEFAULT_HEADING_LEVEL) {
+      $attributes['level'] = $level;
+    }
+    $classes = array_merge(['wp-block-heading'], $this->alignClass($block), $colors['classes']);
+    return $this->openingDelimiter('heading', array_merge($attributes, $this->colorAttributes($colors))) . "\n"
+      . "<h$level" . $this->htmlAttributes($classes, $colors['styles']) . '>' . $this->wp->escHtml($text) . "</h$level>\n"
       . '<!-- /wp:heading -->';
   }
 
   /**
-   * @param array<string, int|string> $block
+   * @param array<string, mixed> $block
+   * @param array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]} $colors
    * @return string|string[]
    */
-  private function buildParagraph(array $block, bool &$removed) {
-    $text = $this->sanitize((string)$block['text'], function (string $text): string {
-      // Unbalanced tags would make the editor offer block recovery.
-      return $this->wp->forceBalanceTags($this->wp->wpKses($text, self::PARAGRAPH_HTML, self::PARAGRAPH_LINK_PROTOCOLS));
-    }, $removed);
+  private function buildParagraph(array $block, array $colors, bool &$removed) {
+    $text = $this->sanitizeInlineHtml($this->stringField($block, 'text'), $removed);
     $errors = $this->validateText($text, null);
     if ($errors) {
       return $errors;
     }
-    return "<!-- wp:paragraph -->\n<p>$text</p>\n<!-- /wp:paragraph -->";
+    $attributes = isset($block['align']) ? ['align' => $this->stringField($block, 'align')] : [];
+    $classes = array_merge($this->alignClass($block), $colors['classes']);
+    return $this->openingDelimiter('paragraph', array_merge($attributes, $this->colorAttributes($colors))) . "\n"
+      . '<p' . $this->htmlAttributes($classes, $colors['styles']) . ">$text</p>\n"
+      . '<!-- /wp:paragraph -->';
   }
 
   /**
-   * @param array<string, int|string> $block
+   * @param array<string, mixed> $block
+   * @param array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]} $colors
    * @return string|string[]
    */
-  private function buildButton(array $block, bool &$removed) {
-    $text = $this->sanitizeText((string)$block['text'], $removed);
-    $url = $this->sanitizeUrl((string)$block['url'], $removed);
+  private function buildButton(array $block, array $colors, bool &$removed) {
+    $text = $this->sanitizeText($this->stringField($block, 'text'), $removed);
+    $url = $this->sanitizeUrl($this->stringField($block, 'url'), $removed);
     $errors = array_merge($this->validateText($text, self::BUTTON_TEXT_MAX_LENGTH), $this->validateUrl($url));
     if ($errors) {
       return $errors;
     }
-    return "<!-- wp:buttons -->\n"
-      . "<div class=\"wp-block-buttons\"><!-- wp:button -->\n"
-      . '<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="' . $this->wp->escAttr($url) . '">' . $this->wp->escHtml($text) . "</a></div>\n"
+    $buttonsAttributes = isset($block['align']) ? ['layout' => ['type' => 'flex', 'justifyContent' => $this->stringField($block, 'align')]] : [];
+    $classes = array_merge(['wp-block-button__link'], $colors['classes'], ['wp-element-button']);
+    $styles = $colors['styles'] ? ' style="' . implode(';', $colors['styles']) . '"' : '';
+    return $this->openingDelimiter('buttons', $buttonsAttributes) . "\n"
+      . '<div class="wp-block-buttons">' . $this->openingDelimiter('button', $this->colorAttributes($colors)) . "\n"
+      . '<div class="wp-block-button"><a class="' . implode(' ', $classes) . '" href="' . $this->wp->escAttr($url) . '"' . $styles . '>' . $this->wp->escHtml($text) . "</a></div>\n"
       . "<!-- /wp:button --></div>\n"
       . '<!-- /wp:buttons -->';
   }
 
   /**
-   * @param array<string, int|string> $block
+   * @param array<string, mixed> $block
    * @return string|string[]
    */
   private function buildImage(array $block, bool &$removed) {
-    $url = $this->sanitizeUrl((string)$block['url'], $removed);
-    $alt = $this->sanitizeText((string)$block['alt'], $removed);
+    $url = $this->sanitizeUrl($this->stringField($block, 'url'), $removed);
+    $alt = $this->sanitizeText($this->stringField($block, 'alt'), $removed);
     $errors = $this->validateUrl($url);
     if ($errors) {
       return $errors;
@@ -200,6 +358,87 @@ class NewsletterDraftBlocks {
     return "<!-- wp:image -->\n"
       . '<figure class="wp-block-image"><img src="' . $this->wp->escAttr($url) . '" alt="' . $this->wp->escAttr($alt) . "\"/></figure>\n"
       . '<!-- /wp:image -->';
+  }
+
+  /**
+   * @param array<string, mixed> $block
+   * @param array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]} $colors
+   * @return string|string[]
+   */
+  private function buildList(array $block, array $colors, bool &$removed) {
+    $items = [];
+    $blockItems = is_array($block['items']) ? $block['items'] : [];
+    foreach ($blockItems as $item) {
+      $text = $this->sanitizeInlineHtml(is_string($item) ? $item : '', $removed);
+      $errors = $this->validateText($text, null);
+      if ($errors) {
+        return $errors;
+      }
+      $items[] = "<!-- wp:list-item -->\n<li>$text</li>\n<!-- /wp:list-item -->";
+    }
+    $ordered = !empty($block['ordered']);
+    $tag = $ordered ? 'ol' : 'ul';
+    $attributes = $ordered ? ['ordered' => true] : [];
+    $classes = array_merge(['wp-block-list'], $colors['classes']);
+    return $this->openingDelimiter('list', array_merge($attributes, $this->colorAttributes($colors))) . "\n"
+      . "<$tag" . $this->htmlAttributes($classes, $colors['styles']) . '>' . implode("\n\n", $items) . "</$tag>\n"
+      . '<!-- /wp:list -->';
+  }
+
+  /**
+   * @param array<string, mixed> $block
+   * @param array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]} $colors
+   * @return string|string[]
+   */
+  private function buildQuote(array $block, array $colors, bool &$removed) {
+    $text = $this->sanitizeInlineHtml($this->stringField($block, 'text'), $removed);
+    $errors = $this->validateText($text, null);
+    if ($errors) {
+      return $errors;
+    }
+    $classes = array_merge(['wp-block-quote'], $colors['classes']);
+    return $this->openingDelimiter('quote', $this->colorAttributes($colors)) . "\n"
+      . '<blockquote' . $this->htmlAttributes($classes, $colors['styles']) . "><!-- wp:paragraph -->\n<p>$text</p>\n<!-- /wp:paragraph --></blockquote>\n"
+      . '<!-- /wp:quote -->';
+  }
+
+  /** @param array<string, mixed> $block */
+  private function buildSpacer(array $block): string {
+    $height = $this->intField($block, 'height', 0) . 'px';
+    return '<!-- wp:spacer {"height":"' . $height . "\"} -->\n"
+      . '<div style="height:' . $height . "\" aria-hidden=\"true\" class=\"wp-block-spacer\"></div>\n"
+      . '<!-- /wp:spacer -->';
+  }
+
+  /**
+   * @param string[] $inner
+   * @param array{attributes: array<string, string>, classes: string[], styles: string[], errors: string[]} $colors
+   */
+  private function buildSection(array $inner, array $colors): string {
+    $style = $colors['attributes'] ? ['color' => $colors['attributes']] : [];
+    $style['spacing'] = ['padding' => ['top' => self::SECTION_PADDING, 'right' => self::SECTION_PADDING, 'bottom' => self::SECTION_PADDING, 'left' => self::SECTION_PADDING]];
+    $styles = array_merge(array_reverse($colors['styles']), array_map(function (string $side): string {
+      return "padding-$side:" . self::SECTION_PADDING;
+    }, ['top', 'right', 'bottom', 'left']));
+    $classes = array_merge(['wp-block-group'], array_reverse($colors['classes']));
+    return $this->openingDelimiter('group', ['style' => $style, 'layout' => ['type' => 'constrained']]) . "\n"
+      . '<div' . $this->htmlAttributes($classes, $styles) . '>' . implode("\n\n", $inner) . "</div>\n"
+      . '<!-- /wp:group -->';
+  }
+
+  /**
+   * @param array<string, mixed> $block
+   * @return string[]
+   */
+  private function alignClass(array $block): array {
+    return isset($block['align']) ? ['has-text-align-' . $this->stringField($block, 'align')] : [];
+  }
+
+  private function sanitizeInlineHtml(string $text, bool &$removed): string {
+    return $this->sanitize($text, function (string $text): string {
+      // Unbalanced tags would make the editor offer block recovery.
+      return $this->wp->forceBalanceTags($this->wp->wpKses($text, self::PARAGRAPH_HTML, self::PARAGRAPH_LINK_PROTOCOLS));
+    }, $removed);
   }
 
   /** @return string[] */
