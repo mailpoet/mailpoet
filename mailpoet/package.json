@@ -5,7 +5,6 @@
   ],
   "scripts": {
     "lint": "NODE_OPTIONS=--max_old_space_size=2048 eslint --max-warnings 0 'assets/js/src/**/*.{js,jsx,ts,tsx}' 'tests/javascript-newsletter-editor/**/*.js'",
-    "lint:fix": "NODE_OPTIONS=--max_old_space_size=2048 eslint --max-warnings 0 --fix 'assets/js/src/**/*.{js,jsx,ts,tsx}' 'tests/javascript-newsletter-editor/**/*.js'",
     "lint:prune-suppressions": "NODE_OPTIONS=--max_old_space_size=2048 eslint --prune-suppressions 'assets/js/src/**/*.{js,jsx,ts,tsx}' 'tests/javascript-newsletter-editor/**/*.js'",
     "autoprefixer": "postcss assets/dist/css/*.css --no-map --replace",
     "scss": "sass assets/css/src/:assets/dist/css/ --style compressed --no-charset",
