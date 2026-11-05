@@ -308,7 +308,7 @@ class ExportTest extends \MailPoetTest {
 
     $rows = $this->exportAndParseCsv();
 
-    verify($rows[0])->equals(['Email', 'Source', 'List']);
+    verify($rows[0])->equals(['Email', 'Subscription source', 'List']);
     verify($this->findRowByEmail($rows, 'adam@smith.com')[1])->equals(Source::WOOCOMMERCE_CHECKOUT);
     verify($this->findRowByEmail($rows, 'mary@jane.com')[1])->equals(Source::FORM);
   }

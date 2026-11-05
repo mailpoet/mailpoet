@@ -2,4 +2,4 @@
 
 # Description
 
-Source column in the subscriber export
+Subscription source column in the subscriber export
