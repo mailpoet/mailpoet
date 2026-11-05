@@ -122,11 +122,6 @@
       "count": 7
     }
   },
-  "assets/js/src/form-editor/components/form-settings/form-placement-options/settings-panels/placement-settings.tsx": {
-    "@typescript-eslint/no-unsafe-return": {
-      "count": 12
-    }
-  },
   "assets/js/src/form-editor/components/image-settings.tsx": {
     "@typescript-eslint/unbound-method": {
       "count": 1
