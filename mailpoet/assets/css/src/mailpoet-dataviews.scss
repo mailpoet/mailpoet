@@ -76,3 +76,11 @@
   margin-top: 4px;
   max-width: 680px;
 }
+
+// DataViews marks rows that can't be selected with `aria-disabled`, but the
+// checkbox only has disabled styles for `[data-disabled]`.
+.dataviews-wrapper .dataviews-selection-checkbox[aria-disabled='true'] {
+  background-color: var(--wpds-color-background-interactive-neutral-disabled);
+  border-color: var(--wpds-color-stroke-interactive-neutral-disabled);
+  cursor: default;
+}
