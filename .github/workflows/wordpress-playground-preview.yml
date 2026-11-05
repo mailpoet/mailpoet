@@ -8,6 +8,10 @@ jobs:
   add-wp-playground-link:
     if: github.event.pull_request.head.repo.full_name == 'mailpoet/mailpoet'
     runs-on: ubuntu-latest
+    # Dependabot runs get a read-only token unless the job asks for more.
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
