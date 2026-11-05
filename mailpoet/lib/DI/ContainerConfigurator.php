@@ -31,6 +31,8 @@ class ContainerConfigurator implements IContainerConfigurator {
       ]);
     // Abilities
     $container->autowire(\MailPoet\Abilities\AbilitiesRegistrar::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\CreateNewsletterDraftAbility::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\NewsletterDraftBlocks::class)->setPublic(true);
     $container->autowire(\MailPoet\Abilities\RecentNewslettersAbility::class)->setPublic(true);
     $container->autowire(\MailPoet\Abilities\SendingStatusAbility::class)->setPublic(true);
     $container->autowire(\MailPoet\Abilities\UnsubscribeTrendAbility::class)->setPublic(true);
