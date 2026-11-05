@@ -78,9 +78,10 @@ if (class_exists(\MailPoet\API\API::class)) {
     ]);
 
     // To leave tags untouched, simply omit the 'tags' key.
+    // The option skips required custom fields that are not sent, such as cf_1.
     $mailpoet_api->updateSubscriber($subscriber['id'], [
       'last_name' => 'Doe-Smith',
-    ]);
+    ], ['skip_unsent_required_custom_fields' => true]);
   } catch (\MailPoet\API\MP\v1\APIException $e) {
     error_log(sprintf('MailPoet updateSubscriber failed [%d]: %s', $e->getCode(), $e->getMessage()));
   }
