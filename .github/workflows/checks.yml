@@ -338,7 +338,7 @@ jobs:
           FROM_FORK: ${{ github.event.pull_request.head.repo.fork }}
         run: |
           if [ "$FROM_FORK" == "true" ]; then
-            echo "::notice::Pull requests from forks skip the jobs that need secrets (Semgrep, WooCommerce extension, multisite and acceptance tests). They run on trunk after the merge."
+            echo "::notice::Pull requests from forks skip the jobs that need secrets (Semgrep, WooCommerce, multisite and acceptance tests). They run on trunk after the merge."
           fi
           failed=$(echo "$RESULTS" | jq -r 'to_entries[] | select(.value.result != "success" and .value.result != "skipped") | "::error::\(.key): \(.value.result)"')
           if [ -n "$failed" ]; then
