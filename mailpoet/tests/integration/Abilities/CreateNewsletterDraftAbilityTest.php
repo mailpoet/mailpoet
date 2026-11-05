@@ -11,6 +11,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Features;
+use MailPoet\Test\DataFactories\Segment;
 
 require_once __DIR__ . '/AbilitiesTestHelper.php';
 
@@ -48,6 +49,7 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
     AbilitiesTestHelper::register($this->registrar);
 
     verify(wp_has_ability(self::ABILITY))->false();
+    verify(wp_has_ability('mailpoet/get-newsletter-draft-options'))->false();
     verify(wp_has_ability('mailpoet/get-sending-status'))->true();
   }
 
@@ -60,6 +62,24 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
     verify($ability->get_meta()['annotations'])->equals(['readonly' => false, 'destructive' => false, 'idempotent' => false]);
     // MCP clients load every description into the model's context on each request.
     $this->assertLessThanOrEqual(500, strlen($ability->get_description()));
+  }
+
+  public function testItPreselectsListsWithoutSendingAnything(): void {
+    $list = (new Segment())->withName('Chosen')->create();
+
+    $result = $this->createDraft([
+      'subject' => 'For a list',
+      'blocks' => [['type' => 'paragraph', 'text' => 'x']],
+      'list_ids' => [(int)$list->getId()],
+    ]);
+
+    verify($result['list_ids'])->equals([$list->getId()]);
+    verify($result['status'])->equals('draft');
+    $newsletter = $this->newslettersRepository->findOneById($result['id']);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $this->entityManager->refresh($newsletter);
+    verify(array_values($newsletter->getSegmentIds()))->equals([$list->getId()]);
+    verify($this->diContainer->get(SendingQueuesRepository::class)->findAll())->empty();
   }
 
   public function testItCreatesAStandardDraftInTheBlockEditorAndSendsNothing(): void {
@@ -107,6 +127,7 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
       'status' => 'draft',
       'edit_url' => admin_url('post.php?post=' . $postId . '&action=edit'),
       'created' => true,
+      'list_ids' => [],
       'warnings' => [],
     ]);
     verify($this->diContainer->get(SendingQueuesRepository::class)->findAll())->empty();
@@ -235,6 +256,7 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
 
     $result = $this->execute([
       'subject' => '[subscriber:firstname]',
+      'list_ids' => [999999],
       'blocks' => [
         ['type' => 'button', 'text' => 'x', 'url' => 'javascript:alert(1)'],
         ['type' => 'heading'],
@@ -253,7 +275,7 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
     $this->assertIsArray($data);
     verify($data['status'])->equals(400);
     $this->assertIsArray($data['errors']);
-    verify(array_column($data['errors'], 'field'))->equals(['subject', 'blocks[0]', 'blocks[1]', 'blocks[2]', 'blocks[3]', 'blocks[4]', 'blocks[5]', 'blocks[6].blocks[0]']);
+    verify(array_column($data['errors'], 'field'))->equals(['subject', 'list_ids', 'blocks[0]', 'blocks[1]', 'blocks[2]', 'blocks[3]', 'blocks[4]', 'blocks[5]', 'blocks[6].blocks[0]']);
     verify($result->get_error_message())->stringContainsString('blocks[3]');
     verify($this->newslettersRepository->findAll())->empty();
     verify($this->countEmailPosts())->equals($postCount);
@@ -388,12 +410,12 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
 
   /**
    * @param array<string, mixed> $input
-   * @return array{id: int, wp_post_id: int, subject: string, status: string, edit_url: string, created: bool, warnings: string[]}
+   * @return array{id: int, wp_post_id: int, subject: string, status: string, edit_url: string, created: bool, list_ids: int[], warnings: string[]}
    */
   private function createDraft(array $input): array {
     $result = $this->execute($input);
     $this->assertIsArray($result);
-    /** @var array{id: int, wp_post_id: int, subject: string, status: string, edit_url: string, created: bool, warnings: string[]} $result */
+    /** @var array{id: int, wp_post_id: int, subject: string, status: string, edit_url: string, created: bool, list_ids: int[], warnings: string[]} $result */
     return $result;
   }
 
