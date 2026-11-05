@@ -272,11 +272,11 @@ class WooCommerceDynamicSegmentsCest {
 
   private function seeDisabledEditAction(\AcceptanceTester $i, SegmentEntity $segmentEntity): void {
     $i->clickWooTableMoreButtonByItemName($segmentEntity->getName());
-    $menu = ['xpath' => '//*[@role="menu"]'];
-    $i->waitForElementVisible($menu);
     // DataViews renders disabled actions as regular menu items without
     // aria-disabled; verify Edit is replaced by the unavailable label.
-    $i->see('Edit unavailable', $menu);
+    // Wait for the item itself, not for a visible menu: the admin bar menus also
+    // have role="menu", and this one fades in.
+    $i->waitForElementVisible(['xpath' => '//*[@role="menu"]//*[@role="menuitem"][normalize-space(.)="Edit unavailable"]']);
     $i->dontSee('Edit', ['xpath' => '//*[@role="menu"]//*[@role="menuitem"][normalize-space(.)="Edit"]']);
     $i->pressKey('body', WebDriverKeys::ESCAPE);
   }
