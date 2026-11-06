@@ -20,7 +20,7 @@ on:
         required: false
         type: string
       script_ref:
-        description: 'Branch of mailpoet/mailpoet to take the script from'
+        description: 'Branch of mailpoet/mailpoet to take the script from, to test a change to it'
         required: false
         type: string
         default: 'trunk'

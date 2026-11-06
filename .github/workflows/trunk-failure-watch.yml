@@ -18,7 +18,7 @@ permissions: {}
 jobs:
   alert:
     name: 'Alert'
-    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'failure') }}
+    if: ${{ github.repository_owner == 'mailpoet' && (github.event_name != 'workflow_run' || (github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'failure')) }}
     permissions:
       actions: write
       contents: read
