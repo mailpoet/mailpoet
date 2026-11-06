@@ -175,6 +175,13 @@ run_script 1
 grep -q 'channel_not_found' "$tmp/out.log"
 expect 'refused post: reason logged' 0 $?
 
+# A cancelled job is what broke the run when nothing else failed.
+set_up
+echo '{"jobs":[{"name":"Integration","conclusion":"cancelled"},{"name":"All checks","conclusion":"failure"},{"name":"Skipped","conclusion":"skipped"}]}' > "$tmp/jobs.json"
+run_script 1
+expect_text 'cancelled job: named' 'Integration'
+expect_no_text 'cancelled job: skipped left out' 'Skipped'
+
 # A long list of failing jobs stays short.
 set_up
 jq -n '{jobs: [range(7) | {name: "Job\(.)", conclusion: "failure"}]}' > "$tmp/jobs.json"
