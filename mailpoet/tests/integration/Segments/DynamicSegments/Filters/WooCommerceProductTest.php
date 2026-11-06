@@ -215,5 +215,9 @@ class WooCommerceProductTest extends \MailPoetTest {
     $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
     $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
     $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_product_lookup");
+    // AutomatedLatestContentAPITest empties the posts table, so order IDs start again, and
+    // old line items would then attach to this test’s new orders.
+    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}woocommerce_order_items");
+    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}woocommerce_order_itemmeta");
   }
 }
