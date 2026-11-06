@@ -70,14 +70,9 @@ export function ItemSelectControl({
         searchPlaceholder={placeholder}
         items={options}
         value={value}
-        onValueChange={(newValue: Option[], eventDetails): void => {
-          // Base UI clears all chips on Escape when the list is closed.
-          if (eventDetails.reason === 'escape-key') {
-            eventDetails.allowPropagation();
-            return;
-          }
-          onChange(newValue.map((option) => option.value));
-        }}
+        onValueChange={(newValue: Option[]): void =>
+          onChange(newValue.map((option) => option.value))
+        }
         isItemEqualToValue={isSameOption}
         autoHighlight
       />
