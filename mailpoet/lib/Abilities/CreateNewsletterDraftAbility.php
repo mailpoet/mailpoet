@@ -178,7 +178,7 @@ class CreateNewsletterDraftAbility implements Ability {
     $postIds = $this->wp->getPosts([
       'post_type' => EmailEditor::MAILPOET_EMAIL_POST_TYPE,
       'post_status' => self::CLIENT_REFERENCE_POST_STATUSES,
-      'posts_per_page' => 1,
+      'posts_per_page' => -1,
       // Duplicating a newsletter copies its post meta, so the oldest post is the original.
       'orderby' => 'ID',
       'order' => 'ASC',
@@ -186,10 +186,13 @@ class CreateNewsletterDraftAbility implements Ability {
       'meta_key' => self::CLIENT_REFERENCE_META_KEY,
       'meta_value' => $clientReference,
     ]);
-    if (!$postIds) {
-      return null;
+    foreach ($postIds as $postId) {
+      // The query follows the column's collation, which usually ignores case.
+      if ($this->wp->getPostMeta((int)$postId, self::CLIENT_REFERENCE_META_KEY, true) === $clientReference) {
+        return $this->newslettersRepository->findOneBy(['wpPost' => $postId]);
+      }
     }
-    return $this->newslettersRepository->findOneBy(['wpPost' => $postIds[0]]);
+    return null;
   }
 
   private function getInputSchema(): array {
