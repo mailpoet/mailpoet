@@ -14,6 +14,7 @@ use MailPoet\Newsletter\Shortcodes\Shortcodes as NewsletterShortcodes;
 use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\csstidy;
+use MailPoetVendor\Pelago\Emogrifier\CssInliner;
 
 /**
  * @group woo
@@ -198,6 +199,73 @@ class RendererTest extends \MailPoetTest {
     $contentStyles = $this->getCssDefinitionsForSelector('#mailpoet_woocommerce_container #body_content_inner', $updatedCss);
     verify($contentStyles)->stringContainsString('font-family:Comic Sans MS');
     verify($contentStyles)->stringContainsString('font-size:1px');
+  }
+
+  public function testItAppliesLinkColorToWooContentLinks(): void {
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'link' => [
+          'fontColor' => '#123456',
+        ],
+        'woocommerce' => [
+          'isSavedWithUpdatedStyles' => true,
+        ],
+      ],
+    ]);
+    $css = $this->getWooEmailStyles('#ffffff');
+    $html = $this->inlineIntoWooContent($this->getRenderer(true)->enhanceCss($css, $this->newsletter));
+    verify($this->getInlineStyle($html, 'plain-link'))->stringContainsString('color: #123456');
+    verify($this->getInlineStyle($html, 'class-link'))->stringContainsString('color: #123456');
+    verify($this->getInlineStyle($html, 'heading'))->stringNotContainsString('#123456');
+    verify($this->getInlineStyle($html, 'outside-link'))->stringNotContainsString('#123456');
+  }
+
+  public function testItAppliesLinkColorOverGroupedAndRepeatedLinkSelectors(): void {
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'link' => [
+          'fontColor' => '#123456',
+        ],
+        'woocommerce' => [
+          'isSavedWithUpdatedStyles' => true,
+        ],
+      ],
+    ]);
+    // Theme overrides of emails/email-styles.php can group, repeat or combine the link selectors
+    $css = $this->getWooEmailStyles() . 'a, .link { color: #ffffff; } a { color: #eeeeee; } a.link { color: #dddddd; }';
+    $html = $this->inlineIntoWooContent($this->getRenderer(true)->enhanceCss($css, $this->newsletter));
+    verify($this->getInlineStyle($html, 'plain-link'))->stringContainsString('color: #123456');
+    verify($this->getInlineStyle($html, 'class-link'))->stringContainsString('color: #123456');
+  }
+
+  public function testItSkipsInvalidLinkColor(): void {
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'link' => [
+          'fontColor' => 'red}td{color:#654321',
+        ],
+        'woocommerce' => [
+          'isSavedWithUpdatedStyles' => true,
+        ],
+      ],
+    ]);
+    $css = $this->getWooEmailStyles('#123abc');
+    $updatedCss = $this->getRenderer(true)->enhanceCss($css, $this->newsletter);
+    verify($updatedCss)->stringNotContainsString('#654321');
+    verify($this->getInlineStyle($this->inlineIntoWooContent($updatedCss), 'plain-link'))->stringContainsString('color: #123abc');
+  }
+
+  public function testItDoesntChangeLinkColorWhenNotSavedWithFlag(): void {
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'link' => [
+          'fontColor' => '#123456',
+        ],
+      ],
+    ]);
+    $css = $this->getWooEmailStyles();
+    $updatedCss = $this->getRenderer(true)->enhanceCss($css, $this->newsletter);
+    verify($updatedCss)->stringNotContainsString('#123456');
   }
 
   public function testItAddCSSForWooHeading() {
@@ -434,15 +502,33 @@ class RendererTest extends \MailPoetTest {
     );
   }
 
-  private function getWooEmailStyles() {
+  private function getWooEmailStyles(string $baseColor = '#663399') {
     $wp = $this->diContainer->get(WPFunctions::class);
     $wp->updateOption('woocommerce_email_background_color', '#ffffff');
     $wp->updateOption('woocommerce_email_body_background_color', '#ffffff');
-    $wp->updateOption('woocommerce_email_base_color', '#663399');
+    $wp->updateOption('woocommerce_email_base_color', $baseColor);
     $wp->updateOption('woocommerce_email_text_color', '#111111');
     ob_start();
     wc_get_template('emails/email-styles.php');
     return ob_get_clean();
+  }
+
+  private function inlineIntoWooContent(string $css): string {
+    $html = '<html><body><div id="' . Renderer::CONTENT_CONTAINER_ID . '">'
+      . '<h1 id="heading">Heading</h1>'
+      . '<p><a id="plain-link" href="#">Link</a> <a id="class-link" class="link" href="#">Link</a></p>'
+      . '</div><p><a id="outside-link" href="#">Link</a></p></body></html>';
+    return CssInliner::fromHtml($html)->inlineCss($css)->render();
+  }
+
+  private function getInlineStyle(string $html, string $id): string {
+    $processor = new \WP_HTML_Tag_Processor($html);
+    while ($processor->next_tag()) {
+      if ($processor->get_attribute('id') === $id) {
+        return (string)$processor->get_attribute('style');
+      }
+    }
+    return '';
   }
 
   private function getCssDefinitionsForSelector(string $selector, string $css) {

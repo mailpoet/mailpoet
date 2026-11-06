@@ -207,5 +207,41 @@ describe('Sidebar', function () {
         expect(model.get('link.textDecoration')).to.equal('underline');
       });
     });
+
+    describe('content background change', function () {
+      function renderStylesView(brandingColor, isWoocommerceTransactional) {
+        var styles = new Backbone.SuperModel({
+          link: { fontColor: '#123456' },
+          wrapper: { backgroundColor: '#ffffff' },
+          woocommerce: { brandingColor: brandingColor },
+        });
+        var stylesView = new SidebarComponent.SidebarStylesView({
+          model: styles,
+          availableStyles: new Backbone.SuperModel({}),
+          isWoocommerceTransactional: isWoocommerceTransactional,
+        });
+        stylesView.render();
+        stylesView
+          .$('#mailpoet_newsletter_background_color')
+          .val('#111111')
+          .trigger('change');
+        return styles;
+      }
+
+      it('makes a light brand the link color on a dark background in WooCommerce emails', function () {
+        var styles = renderStylesView('#ffffff', true);
+        expect(styles.get('link.fontColor')).to.equal('#ffffff');
+      });
+
+      it('makes the heading color the link color for a dark brand on a dark background in WooCommerce emails', function () {
+        var styles = renderStylesView('#7a00ff', true);
+        expect(styles.get('link.fontColor')).to.equal('#ffffff');
+      });
+
+      it('keeps the link color in other emails', function () {
+        var styles = renderStylesView('#ffffff', false);
+        expect(styles.get('link.fontColor')).to.equal('#123456');
+      });
+    });
   });
 });
