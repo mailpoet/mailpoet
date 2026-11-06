@@ -96,7 +96,7 @@ alert() {
   if [[ "$attempt" -eq 1 ]] && gh run rerun "$RUN_ID" -R "$REPO" --failed; then
     while :; do
       sleep 60
-      run=$(gh api "repos/$REPO/actions/runs/$RUN_ID")
+      run=$(gh api "repos/$REPO/actions/runs/$RUN_ID") || continue
       if [[ "$(jq -r '.run_attempt' <<<"$run")" -gt 1 && "$(jq -r '.status' <<<"$run")" == 'completed' ]]; then
         break
       fi
