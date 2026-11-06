@@ -71,7 +71,6 @@ const baseConfig = {
       }
 
       if (warnings) {
-        // eslint-disable-next-line
         console.warn(warnings);
         process.emitWarning(warnings); // emit for listeners
         process.exit(1);
@@ -291,8 +290,9 @@ const adminConfig = {
           to: 'skins/ui/oxide',
           // TinyMCE switches to the .min.css files when any part of the page
           // script URL contains ".min" (e.g. a domain like mindvalley.com),
-          // so both CSS variants ship. The .js files are never loaded.
-          globOptions: { ignore: ['**/*.js'] },
+          // so both CSS variants ship. The .js files are never loaded and the
+          // .ts files are only type definitions.
+          globOptions: { ignore: ['**/*.js', '**/*.ts'] },
           info: { minimized: true },
         },
         {
@@ -331,7 +331,6 @@ function requestToFormEditorExternal(request) {
   // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
   // packages, for that handling to kick in, we must not return anything from
   // function.
-  /* eslint-disable-next-line consistent-return, no-useless-return */
   return;
 }
 
@@ -519,7 +518,6 @@ function requestToExternal(request) {
   // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
   // packages, for that handling to kick in, we must not return anything from
   // function.
-  /* eslint-disable-next-line consistent-return, no-useless-return */
   return;
 }
 
@@ -534,7 +532,6 @@ function requestToHandle(request) {
   // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
   // packages, for that handling to kick in, we must not return anything from
   // function.
-  /* eslint-disable-next-line consistent-return, no-useless-return */
   return;
 }
 const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
