@@ -36,4 +36,4 @@ For each relevant scheduled pipeline id:
    ```
 5. For any failed job, fetch the raw `output_url` values, analyze what went wrong, and classify the failure using [error-triage.md](error-triage.md).
 
-The premium jobs in the same `nightly` workflow (`*_with_premium_*`) run on the latest and oldest versions only, not on the betas, so they don’t cover premium compatibility with a beta. When WooCommerce-specific premium features such as Subscriptions, Bookings, or Memberships are in scope, test them on the beta by hand.
+The premium jobs in the same `nightly` workflow (`*_with_premium_*`) run on the latest and oldest versions only, not on the betas, so they don’t cover premium compatibility with a beta. Premium’s own CircleCI and GitHub Actions nightlies run its acceptance tests against both betas, but no CI runs its integration tests or Free’s tests with Premium on a beta. When WooCommerce-specific premium features such as Subscriptions, Bookings, or Memberships are in scope, test them on the beta by hand.

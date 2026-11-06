@@ -78,7 +78,7 @@ Summarize pass/fail status and highlight any failures with details.
 
 ### Step 3 — Check the nightly beta runs
 
-The scheduled “Nightly tests” workflow on GitHub Actions (`.github/workflows/nightly-tests.yml`) picks up the latest WooCommerce and WordPress beta or RC automatically. Confirm its beta jobs (“Integration tests (WordPress beta)”, “Integration tests (WooCommerce beta)” and the two acceptance beta jobs) passed, and that its “Betas” job looked up the expected versions: `gh run list --workflow nightly-tests.yml -L 3`, then `gh run view <run-id> --log | grep 'WordPress beta:'`. A beta job shows as skipped when no beta is out. A run can be started by hand from the Actions tab or with `gh workflow run nightly-tests.yml`. CircleCI’s `nightly` workflow still runs the same free-plugin beta jobs (`integration_tests_wordpress_beta` and the like) while both CI systems run side by side. Premium is not tested against the betas in CI: its `*_with_premium_*` jobs run on the latest and oldest versions only, so when premium features are in scope, test Premium on the beta by hand ([circleci-beta-jobs.md](circleci-beta-jobs.md) has the CircleCI API calls).
+The scheduled “Nightly tests” workflow on GitHub Actions (`.github/workflows/nightly-tests.yml`) picks up the latest WooCommerce and WordPress beta or RC automatically. Confirm its beta jobs (“Integration tests (WordPress beta)”, “Integration tests (WooCommerce beta)” and the two acceptance beta jobs) passed, and that its “Betas” job looked up the expected versions: `gh run list --workflow nightly-tests.yml -L 3`, then `gh run view <run-id> --log | grep 'WordPress beta:'`. A beta job shows as skipped when no beta is out. A run can be started by hand from the Actions tab or with `gh workflow run nightly-tests.yml`. CircleCI’s `nightly` workflow still runs the same free-plugin beta jobs (`integration_tests_wordpress_beta` and the like) while both CI systems run side by side. Premium’s own “Nightly tests” workflow (`mailpoet-premium/.github/workflows/nightly-tests.yml`) runs its acceptance tests against both betas: check it the same way with `-R mailpoet/mailpoet-premium`. Its integration tests and Free’s tests with Premium active run on the latest versions, and Free’s also on the oldest, not on the betas, so when premium features are in scope, test the rest on the beta by hand ([circleci-beta-jobs.md](circleci-beta-jobs.md) has the CircleCI API calls).
 
 ### Step 4 — Smoke tests in local wp-env
 
@@ -125,19 +125,20 @@ Report the result of each check. Provide a screenshot of any failure and capture
 
 Summarize all results in a table:
 
-| Test                                 | Status | Notes |
-| ------------------------------------ | ------ | ----- |
-| QIT Activation                       | ✅/❌  |       |
-| QIT Woo API                          | ✅/❌  |       |
-| QIT Woo E2E                          | ✅/❌  |       |
-| Nightly tests: free plugin beta jobs | ✅/❌  |       |
-| Premium on the beta (by hand)        | ✅/❌  |       |
-| Smoke: MailPoet menu loads           | ✅/❌  |       |
-| Smoke: Subscribers list              | ✅/❌  |       |
-| Smoke: Send a standard newsletter    | ✅/❌  |       |
-| Smoke: Subscription form             | ✅/❌  |       |
-| Smoke: Automation                    | ✅/❌  |       |
-| Smoke: WooCommerce integration       | ✅/❌  |       |
+| Test                                        | Status | Notes |
+| ------------------------------------------- | ------ | ----- |
+| QIT Activation                              | ✅/❌  |       |
+| QIT Woo API                                 | ✅/❌  |       |
+| QIT Woo E2E                                 | ✅/❌  |       |
+| Nightly tests: free plugin beta jobs        | ✅/❌  |       |
+| Nightly tests: Premium acceptance beta jobs | ✅/❌  |       |
+| Premium on the beta (by hand)               | ✅/❌  |       |
+| Smoke: MailPoet menu loads                  | ✅/❌  |       |
+| Smoke: Subscribers list                     | ✅/❌  |       |
+| Smoke: Send a standard newsletter           | ✅/❌  |       |
+| Smoke: Subscription form                    | ✅/❌  |       |
+| Smoke: Automation                           | ✅/❌  |       |
+| Smoke: WooCommerce integration              | ✅/❌  |       |
 
 ## Error triage
 
