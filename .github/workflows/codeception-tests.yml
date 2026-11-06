@@ -90,248 +90,31 @@ jobs:
       fail-fast: false
       matrix:
         part: ${{ fromJSON(inputs.parts) }}
-    defaults:
-      run:
-        shell: bash
-        working-directory: mailpoet
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      # docker-compose.yml, download-test-plugins.sh and run_split_tests.sh read
-      # these. Empty values use their defaults. An oldest run must find every
-      # setting in the file, or it would quietly test the latest versions.
-      - name: 'Pick the versions to test'
-        working-directory: .
-        env:
-          OLDEST: ${{ inputs.oldest }}
-          MYSQL_IMAGE: ${{ inputs.mysql_image }}
-          MYSQL_COMMAND: ${{ inputs.mysql_command }}
-          WORDPRESS_VERSION: ${{ inputs.wordpress_version }}
-          WOO_CORE_VERSION: ${{ inputs.woo_core_version }}
-          GUTENBERG_VERSION: ${{ inputs.gutenberg_version }}
-        run: |
-          declare -A settings=(
-            [mysql_image]=$MYSQL_IMAGE
-            [mysql_command]=$MYSQL_COMMAND
-            [wordpress_version]=$WORDPRESS_VERSION
-            [woo_core_version]=$WOO_CORE_VERSION
-            [gutenberg_version]=$GUTENBERG_VERSION
-          )
-          if [[ "$OLDEST" == true ]]; then
-            # yq comes with the runner and handles quotes and comments.
-            for key in woo_core_version woo_subscriptions_version woo_memberships_version automate_woo_version \
-              wordpress_version codeception_image_version wordpress_image_version mysql_image mysql_command; do
-              settings[$key]=$(yq ".$key // \"\"" tests_env/oldest-versions.yml)
-              if [[ -z "${settings[$key]}" ]]; then
-                echo "::error::tests_env/oldest-versions.yml has no value for $key."
-                exit 1
-              fi
-            done
-          fi
-          {
-            echo "MYSQL_IMAGE=${settings[mysql_image]:-}"
-            echo "MYSQL_COMMAND=${settings[mysql_command]:-}"
-            echo "CODECEPTION_IMAGE_VERSION=${settings[codeception_image_version]:-}"
-            echo "WORDPRESS_IMAGE_VERSION=${settings[wordpress_image_version]:-}"
-            echo "WORDPRESS_VERSION=${settings[wordpress_version]:-}"
-            echo "GUTENBERG_VERSION=${settings[gutenberg_version]:-}"
-            echo "WOO_CORE_VERSION=${settings[woo_core_version]:-}"
-            echo "WOO_SUBSCRIPTIONS_VERSION=${settings[woo_subscriptions_version]:-}"
-            echo "WOO_MEMBERSHIPS_VERSION=${settings[woo_memberships_version]:-}"
-            echo "AUTOMATE_WOO_VERSION=${settings[automate_woo_version]:-}"
-          } | tee -a "$GITHUB_ENV"
-
-      - uses: ./.github/actions/restore-build
-
-      - name: 'Download plugins for the WooCommerce tests'
-        if: inputs.skip_plugins != 1
-        env:
-          GH_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
-        run: |
-          ../tests_env/download-test-plugins.sh
-          # Every part downloads with the same token, so log how much of its
-          # hourly API limit is left.
-          gh api rate_limit --jq '.resources.core | "API calls left: \(.remaining) of \(.limit)"' || true
-
-      # The site runs as www-data and compiles Twig templates into
-      # generated/twig. The build unpacks as the runner user with 755 folders,
-      # so let every user write there.
-      - name: 'Let the site write its template cache'
-        run: chmod -R a+rwX generated
-
-      # Docker Hub pulls sometimes time out. Let the daemon retry each layer
-      # more often before a pull fails at all.
-      - name: 'Let Docker retry downloads'
-        run: |
-          config=/etc/docker/daemon.json
-          current=$(sudo cat "$config" 2>/dev/null || echo '{}')
-          echo "$current" | jq '. + {"max-download-attempts": 10}' | sudo tee "$config" > /dev/null
-          sudo systemctl restart docker
-
-      # Retry a failed pull or create a few times, and log each retry as a
-      # warning so the failure rate stays visible when the job ends green.
-      - name: 'Start test containers'
-        working-directory: tests_env/docker
-        env:
-          SUITE: ${{ inputs.suite }}
-        run: |
-          attempt=1
-          max_attempts=3
-          until docker compose pull --include-deps "codeception_$SUITE" \
-            && docker compose create "codeception_$SUITE"; do
-            if [ "$attempt" -ge "$max_attempts" ]; then
-              echo "::error::Test containers failed to start after $max_attempts attempts"
-              exit 1
-            fi
-            echo "::warning::test-containers-retry attempt=$attempt/$max_attempts, retrying in $((attempt * 15))s"
-            sleep "$((attempt * 15))"
-            attempt=$((attempt + 1))
-          done
-
-      # Some tools need a different version for the PHP in the test image.
-      - name: 'Install tools for the test image'
-        working-directory: tests_env/docker
-        env:
-          SUITE: ${{ inputs.suite }}
-        run: docker compose run --rm -w /project -e COMPOSER_DEV_MODE=1 --entrypoint "php tools/install.php" "codeception_$SUITE"
-
-      - name: 'Run the ${{ inputs.suite }} tests'
-        env:
-          SUITE: ${{ inputs.suite }}
-          BLOCKBASED_THEME: ${{ inputs.blockbased_theme }}
-          WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
-          WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
-          # tests/_support/CheckSkippedTestsExtension.php reads it to forbid
-          # skipped tests on trunk and release. A fork’s branch can be called
-          # trunk too, so fork pull requests get pull/<number>, like on CircleCI.
-          CIRCLE_BRANCH: ${{ github.event.pull_request.head.repo.fork && format('pull/{0}', github.event.number) || github.head_ref || github.ref_name }}
-          # The acceptance entrypoint removes Doctrine Annotations when it is set,
-          # to prove the plugin runs without them. Don’t use _with_premium_ in a
-          # name: the entrypoint would try to activate Premium, which isn’t
-          # checked out here.
-          CIRCLE_JOB: ${{ inputs.suite }}_tests_${{ inputs.name }}
-          SKIP_GROUP: ${{ inputs.skip_group }}
-          SKIP_PLUGINS: ${{ inputs.skip_plugins }}
-          MULTISITE: ${{ inputs.multisite }}
-          ENABLE_HPOS: ${{ inputs.enable_hpos }}
-          ENABLE_HPOS_SYNC: ${{ inputs.enable_hpos_sync }}
-          DISABLE_HPOS: ${{ inputs.disable_hpos }}
-          GROUP: ${{ inputs.group }}
-          PART_INDEX: ${{ strategy.job-index }}
-          PART_TOTAL: ${{ strategy.job-total }}
-        run: |
-          # Without it the mailer and network tests skip, which trunk and release
-          # don’t allow; say so once instead of failing each of those tests.
-          if [[ -z "$WP_TEST_ENV" && ( "$CIRCLE_BRANCH" == trunk || "$CIRCLE_BRANCH" == release ) ]]; then
-            echo "::error::The WP_TEST_ENV secret is missing. Add the WP_TEST_* lines from the CircleCI project variables."
-            exit 1
-          fi
-          mkdir -p tests/_output/exceptions
-          chmod 777 tests/_output/exceptions
-          # WP_TEST_ENV holds the WP_TEST_* lines CircleCI has as project variables.
-          # GitHub masks each whole line of the secret, so mask the values too.
-          while IFS= read -r value; do
-            echo "::add-mask::$value"
-          done < <(../.github/workflows/scripts/wp-test-secret-values.sh)
-          while IFS= read -r line; do
-            export "${line?}"
-          done < <(../.github/workflows/scripts/wp-test-secret-values.sh --lines)
-          # Every part takes every PART_TOTAL-th test from the same sorted list.
-          tests=$(../.circleci/list_tests.sh "tests/$SUITE" "$GROUP" \
-            | awk -v total="$PART_TOTAL" -v index_="$PART_INDEX" '(NR - 1) % total == index_')
-          if printf '%s\n' "$tests" | ../.circleci/run_split_tests.sh "codeception_$SUITE"; then
-            exit 0
-          else
-            status=$?
-          fi
-          # Acceptance tests that failed get one more run on a fresh site (the
-          # entrypoint recreates the database). A test that passes then is
-          # flaky: it gets a warning so it can be fixed, and the part passes
-          # unless the site wrote a PHP exception page in either run. More than
-          # five failures means a real break, not flakiness, so no second run.
-          # The first attempt’s reports are kept in first-attempt/.
-          if [[ "$SUITE" != acceptance || ! -s tests/_output/failed ]]; then
-            exit "$status"
-          fi
-          # A test that logged a PHP warning or exception failed for a real
-          # reason; a second run would count those log lines as already seen.
-          if [[ -s tests/_output/exceptions/error.log || -s tests/_output/exceptions/exception.log ]]; then
-            echo "::error::The site logged PHP errors, so the failed tests are not run again."
-            exit "$status"
-          fi
-          # One test can be listed once per logged error.
-          failed=$(sort -u tests/_output/failed)
-          if [[ $(printf '%s\n' "$failed" | grep -c '') -gt 5 ]]; then
-            echo "::error::More than five acceptance tests failed, so they are not run again."
-            exit "$status"
-          fi
-          mkdir -p tests/_output/first-attempt
-          # Screenshots and pages are named after the test, so the second run
-          # would overwrite them.
-          find tests/_output -maxdepth 1 \( -name 'report.*' -o -name 'failed' -o -name '*.fail.*' \) \
-            -exec mv {} tests/_output/first-attempt/ \;
-          # Tests with @depends only run after the test they depend on, in the
-          # same run, so run their whole file again, like list_tests.sh lists it.
-          retry=$(while IFS= read -r test; do
-            file=${test%%:*}
-            if grep -q '@depends' "$file"; then echo "$file"; else echo "$test"; fi
-          done <<< "$failed" | sort -u)
-          echo "::group::Running the failed tests again"
-          if ! printf '%s\n' "$retry" | ../.circleci/run_split_tests.sh "codeception_$SUITE"; then
-            echo "::endgroup::"
-            echo "::error::Acceptance tests failed twice; see the reports in the artifact."
-            exit 1
-          fi
-          echo "::endgroup::"
-          echo "### Flaky acceptance tests" >> "$GITHUB_STEP_SUMMARY"
-          while IFS= read -r test; do
-            echo "::warning file=mailpoet/${test%%:*},title=Flaky acceptance test::$test failed, then passed on the second run"
-            echo "- \`$test\` failed, then passed on the second run" >> "$GITHUB_STEP_SUMMARY"
-          done <<< "$failed"
-
-      # The site writes an HTML page for every PHP exception it hits, even when
-      # the test that caused it passed.
-      - name: 'Check for PHP exceptions'
-        if: inputs.suite == 'acceptance'
-        run: |
-          if compgen -G 'tests/_output/exceptions/*.html' > /dev/null; then
-            echo "::error::The site hit PHP exceptions during the tests; see tests/_output/exceptions in the artifact."
-            exit 1
-          fi
-
-      # Artifacts of a public repo can be downloaded by anyone, and masking
-      # only covers the log. Codeception’s HTML report prints step arguments,
-      # so replace the WP_TEST_* values in the text output, and leave out the
-      # failure screenshots of the tests that use them.
-      - name: 'Remove secret values from the test results'
-        id: scrub
-        if: ${{ !cancelled() }}
-        env:
-          WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
-        run: |
-          while IFS= read -r value; do
-            # grep exits 1 when no file holds the value, which is fine.
-            { grep -rlIF -- "$value" tests/_output || true; } | while IFS= read -r file; do
-              SECRET="$value" perl -pi -e 's/\Q$ENV{SECRET}\E/***/g' "$file"
-            done
-          done < <(../.github/workflows/scripts/wp-test-secret-values.sh)
-          # A screenshot can show a value on screen, where text replacement
-          # can’t reach it, so drop the screenshots of every acceptance test
-          # that reads a WP_TEST_* value.
-          if [[ -d tests/acceptance ]]; then
-            { grep -rlE "getenv\('WP_TEST_(MAILER|IMPORT)|withSendingMethodMail[Pp]oet" tests/acceptance || true; } | while IFS= read -r file; do
-              class=$(basename "$file" .php)
-              find tests/_output -type f -name "*.${class}.*.fail.png" -delete
-            done
-          fi
-
-      # Only after the secret values are gone.
-      - name: 'Upload test results'
-        if: ${{ !cancelled() && steps.scrub.outcome == 'success' }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      - uses: ./.github/actions/codeception-tests
         with:
-          name: ${{ inputs.suite }}-${{ inputs.name }}-part-${{ matrix.part }}
-          path: mailpoet/tests/_output
-          retention-days: 14
+          suite: ${{ inputs.suite }}
+          name: ${{ inputs.name }}
+          part: ${{ matrix.part }}
+          part_index: ${{ strategy.job-index }}
+          part_total: ${{ strategy.job-total }}
+          group: ${{ inputs.group }}
+          skip_group: ${{ inputs.skip_group }}
+          skip_plugins: ${{ inputs.skip_plugins }}
+          enable_hpos: ${{ inputs.enable_hpos }}
+          enable_hpos_sync: ${{ inputs.enable_hpos_sync }}
+          disable_hpos: ${{ inputs.disable_hpos }}
+          multisite: ${{ inputs.multisite }}
+          blockbased_theme: ${{ inputs.blockbased_theme }}
+          oldest: ${{ inputs.oldest }}
+          mysql_image: ${{ inputs.mysql_image }}
+          mysql_command: ${{ inputs.mysql_command }}
+          wordpress_version: ${{ inputs.wordpress_version }}
+          woo_core_version: ${{ inputs.woo_core_version }}
+          gutenberg_version: ${{ inputs.gutenberg_version }}
+          wp_github_woocommerce_token: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+          wp_test_env: ${{ secrets.WP_TEST_ENV }}
