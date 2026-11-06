@@ -36,7 +36,7 @@ class GetNewsletterDraftAbility implements Ability {
   public function getRegistrationArgs(): array {
     return [
       'label' => __('Get MailPoet newsletter draft', 'mailpoet'),
-      'description' => __('Reads a newsletter draft in the block format that mailpoet/create-newsletter-draft takes, with the version mailpoet/update-newsletter-draft needs. Find ids in mailpoet/get-newsletter-draft-options. If editable is false, reason says why and the person has to change it in the editor at edit_url.', 'mailpoet'),
+      'description' => __('Reads a newsletter draft in the block format that mailpoet/create-newsletter-draft takes, with the version mailpoet/update-newsletter-draft needs. Find ids in mailpoet/get-newsletter-draft-options. If editable is false, reason says why. If it is still a draft, a person can change it in the editor at edit_url.', 'mailpoet'),
       'input_schema' => [
         'type' => 'object',
         'required' => ['id'],

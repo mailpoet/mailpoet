@@ -3,6 +3,7 @@
 namespace MailPoet\Abilities;
 
 use MailPoet\Config\AccessControl;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -101,7 +102,13 @@ class UpdateNewsletterDraftAbility implements Ability {
     }
 
     try {
-      $post = array_filter(['post_title' => $prepared['subject'], 'post_content' => $prepared['markup']]);
+      $post = [];
+      if ($prepared['subject'] !== null && $this->campaignNameFollowsSubject($newsletter)) {
+        $post['post_title'] = $prepared['subject'];
+      }
+      if ($prepared['markup'] !== null) {
+        $post['post_content'] = $prepared['markup'];
+      }
       if ($post) {
         $this->drafts->updatePost((int)$newsletter->getWpPostId(), $post);
       }
@@ -124,5 +131,11 @@ class UpdateNewsletterDraftAbility implements Ability {
         ['status' => 500]
       );
     }
+  }
+
+  /** The same rule as the editor's: the name follows the subject until a person picks one. */
+  private function campaignNameFollowsSubject(NewsletterEntity $newsletter): bool {
+    $name = $this->wp->getPostField('post_title', (int)$newsletter->getWpPostId());
+    return in_array($name, ['', __('New Email', 'mailpoet'), $newsletter->getSubject()], true);
   }
 }
