@@ -9,6 +9,7 @@ const checkFilePlugin = require('eslint-plugin-check-file');
 const noOnlyTestsPlugin = require('eslint-plugin-no-only-tests');
 const reactJsxRuntimeConfig = require('eslint-plugin-react/configs/jsx-runtime');
 const reactHooksPlugin = require('eslint-plugin-react-hooks');
+const wordpressPlugin = require('@wordpress/eslint-plugin');
 const globals = require('globals');
 
 // fix @typescript-eslint/eslint-plugin configs to work with the new ESLint config format
@@ -74,6 +75,7 @@ module.exports = [
       'react-hooks': reactHooksPlugin,
       'check-file': checkFilePlugin,
       'no-only-tests': noOnlyTestsPlugin,
+      '@wordpress': wordpressPlugin,
     },
     rules: {
       // PropTypes
@@ -83,6 +85,11 @@ module.exports = [
       // Hooks
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
+      // Prefer the recommended WordPress UI components
+      '@wordpress/use-recommended-components': [
+        'error',
+        { allowUseWithCaution: true },
+      ],
       // Exceptions
       '@typescript-eslint/no-explicit-any': 'error', // make it an error instead of warning - we treat them the same, this is more visible
       'no-void': 0, // can conflict with @typescript-eslint/no-floating-promises
