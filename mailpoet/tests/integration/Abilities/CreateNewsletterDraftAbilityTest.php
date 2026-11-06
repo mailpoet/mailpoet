@@ -313,6 +313,19 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
     verify($this->newslettersRepository->findAll())->arrayCount(2);
   }
 
+  public function testClientReferencesThatDifferOnlyInCaseAreDifferentDrafts(): void {
+    $input = ['subject' => 'Case', 'blocks' => [['type' => 'paragraph', 'text' => 'x']]];
+
+    $first = $this->createDraft(array_merge($input, ['client_reference' => 'Campaign-A']));
+    $second = $this->createDraft(array_merge($input, ['client_reference' => 'campaign-a']));
+    $repeated = $this->createDraft(array_merge($input, ['client_reference' => 'campaign-a']));
+
+    verify($second['created'])->true();
+    verify($second['id'])->notEquals($first['id']);
+    verify($repeated['created'])->false();
+    verify($repeated['id'])->equals($second['id']);
+  }
+
   public function testARepeatedClientReferenceReportsTheCurrentStatusOfASentNewsletter(): void {
     $input = [
       'subject' => 'Sent later',
