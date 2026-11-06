@@ -261,6 +261,14 @@ run_script 1
 grep -q 'commits/new/pulls' "$tmp/gh.log"
 expect 'skips a cancelled run' 0 $?
 
+# When a newer merge passed during the retry, trunk is already green: no post.
+set_up
+jq -n --argjson green "$(run_json 2 1 completed success pusher newer)" \
+  --argjson run "$(run_json 1 1 completed failure pusher)" \
+  '{workflow_runs: [$green, $run]}' > "$tmp/runs.json"
+run_script 1
+expect 'newer green run: posts' 0 "$(posts)"
+
 # With no run history to read, the failed run itself is the cause.
 set_up
 echo '{"workflow_runs":[]}' > "$tmp/runs.json"
