@@ -38,7 +38,7 @@ class NewsletterDraftReader {
     if (count($parsed) !== 1 || $parsed[0]['blockName'] !== 'core/group') {
       return null;
     }
-    $blocks = $this->toFlatBlocks($this->getInnerBlocks($parsed[0]), false);
+    $blocks = $this->toFlatBlocks($this->getInnerBlocks($parsed[0]));
     if ($blocks === null) {
       return null;
     }
@@ -144,10 +144,10 @@ class NewsletterDraftReader {
    * @param array<int, array<string, mixed>> $blocks
    * @return array<int, array<string, mixed>>|null
    */
-  private function toFlatBlocks(array $blocks, bool $inSection): ?array {
+  private function toFlatBlocks(array $blocks): ?array {
     $flatBlocks = [];
     foreach ($blocks as $block) {
-      $flat = $this->toFlatBlock($block, $inSection);
+      $flat = $this->toFlatBlock($block);
       if ($flat === null) {
         return null;
       }
@@ -160,7 +160,7 @@ class NewsletterDraftReader {
    * @param array<string, mixed> $block
    * @return array<string, mixed>|null
    */
-  private function toFlatBlock(array $block, bool $inSection): ?array {
+  private function toFlatBlock(array $block): ?array {
     switch ($block['blockName'] ?? '') {
       case 'core/heading':
         return $this->readHeading($block);
@@ -177,7 +177,7 @@ class NewsletterDraftReader {
       case 'core/spacer':
         return $this->readSpacer($block);
       case 'core/group':
-        return $inSection ? null : $this->readSection($block);
+        return $this->readSection($block);
       default:
         return null;
     }
@@ -298,7 +298,7 @@ class NewsletterDraftReader {
    * @return array<string, mixed>|null
    */
   private function readSection(array $block): ?array {
-    $inner = $this->toFlatBlocks($this->getInnerBlocks($block), true);
+    $inner = $this->toFlatBlocks($this->getInnerBlocks($block));
     if ($inner === null) {
       return null;
     }

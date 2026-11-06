@@ -116,8 +116,11 @@ class NewsletterDrafts {
 
   /** @param array<int, array<string, mixed>>|null $blocks The draft's blocks, null if they can't be read. */
   public function getNotEditableReason(NewsletterEntity $newsletter, ?array $blocks): ?string {
-    if ($newsletter->getStatus() !== NewsletterEntity::STATUS_DRAFT || $newsletter->getLatestQueue()) {
+    if ($newsletter->getStatus() !== NewsletterEntity::STATUS_DRAFT) {
       return __('This newsletter is no longer a draft, so it cannot be changed.', 'mailpoet');
+    }
+    if ($newsletter->getLatestQueue()) {
+      return __('This newsletter has started sending, so it cannot be changed.', 'mailpoet');
     }
     if ($blocks === null) {
       return __('This draft has content the block format cannot hold, such as a pattern, a personalization tag or extra styling. A person has to change it in the editor.', 'mailpoet');
@@ -148,6 +151,9 @@ class NewsletterDrafts {
    * @return PreparedDraft
    */
   public function prepareInput(array $input): array {
+    // Validation lets through values it can convert, like a comma separated string for a list.
+    /** @var array<string, mixed> $input */
+    $input = $this->wp->restSanitizeValueFromSchema($input, ['type' => 'object', 'properties' => $this->getInputProperties()]);
     $warnings = [];
     $errors = [];
     $subject = $this->sanitizeField($input, 'subject', $warnings);

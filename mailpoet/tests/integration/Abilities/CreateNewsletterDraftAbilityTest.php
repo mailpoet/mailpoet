@@ -11,6 +11,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Features;
+use MailPoet\Test\DataFactories\Segment;
 
 require_once __DIR__ . '/AbilitiesTestHelper.php';
 
@@ -168,6 +169,8 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
         ['type' => 'button', 'text' => 'Plain', 'url' => 'https://example.com/plain?e=[mailpoet/subscriber-email]'],
         ['type' => 'button', 'text' => 'Encoded', 'url' => 'https://example.com/encoded?e=%5Bmailpoet/subscriber-email%5D'],
         ['type' => 'paragraph', 'text' => '<a href="https://example.com/p?e=[mailpoet/subscriber-email default=&quot;x&quot;]">a</a> <a href="https://example.com/q?e=%5bmailpoet/subscriber-email%5d">b</a>'],
+        ['type' => 'button', 'text' => 'Entity percent', 'url' => 'https://example.com/b?e=&#37;5Bmailpoet/subscriber-email&#37;5D'],
+        ['type' => 'button', 'text' => 'Double entity', 'url' => 'https://example.com/c?e=&amp;#91;mailpoet/subscriber-email&amp;#93;'],
         ['type' => 'button', 'text' => 'Clean', 'url' => 'https://example.com/clean?a=1'],
       ],
     ]);
@@ -180,7 +183,9 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
     verify($warnings)->stringContainsString('blocks[0]');
     verify($warnings)->stringContainsString('blocks[1]');
     verify($warnings)->stringContainsString('blocks[2]');
-    verify($warnings)->stringNotContainsString('blocks[3]');
+    verify($warnings)->stringContainsString('blocks[3]');
+    verify($warnings)->stringContainsString('blocks[4]');
+    verify($warnings)->stringNotContainsString('blocks[5]');
   }
 
   public function testItSanitizesBlocksInsideASectionAndNamesThemInWarnings(): void {
@@ -209,6 +214,22 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
 
     $this->assertInstanceOf(\WP_Error::class, $result);
     verify($result->get_error_code())->equals('ability_invalid_input');
+  }
+
+  public function testItReadsLooseValuesTheInputSchemaLetsThrough(): void {
+    $list = (new Segment())->withName('Loose')->create();
+
+    $result = $this->createDraft([
+      'subject' => 'Loose',
+      'list_ids' => (string)$list->getId(),
+      'blocks' => [['type' => 'list', 'items' => 'One, Two', 'ordered' => 'false']],
+    ]);
+
+    verify($result['list_ids'])->equals([$list->getId()]);
+    $content = $this->getPostContent($result);
+    verify($content)->stringContainsString('<ul class="wp-block-list">');
+    verify($content)->stringContainsString('<li>One</li>');
+    verify($content)->stringContainsString('<li>Two</li>');
   }
 
   public function testRemovingAShortcodeKeepsTheEscapedTextAroundIt(): void {
