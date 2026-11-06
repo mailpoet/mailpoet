@@ -34,6 +34,7 @@ FAKE
 cat > "$tmp/bin/curl" <<'FAKE'
 #!/usr/bin/env bash
 if [[ -f "$TMP/slack-refused" ]]; then
+  cat > /dev/null
   echo '{"ok":false,"error":"channel_not_found"}'
   exit 0
 fi
