@@ -85,6 +85,9 @@ message() {
   printf ':red_circle: *%s*: `%s` %s: <%s|%s>\nFailing: %s\nCaused by: %s' \
     "$REPO" "$(jq -r '.head_branch' <<<"$run")" "$headline" "$url" "$name" \
     "$(failing_jobs "$id")" "$(cause "$run")"
+  if [[ -n "${NOTE:-}" ]]; then
+    printf '\n%s' "$NOTE"
+  fi
 }
 
 alert() {

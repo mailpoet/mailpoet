@@ -57,6 +57,7 @@ run_json() {
 
 set_up() {
   user_map='{"merger":"U1"}'
+  note=''
   expected_status=0
   rm -f "$tmp"/*.json "$tmp"/*.log "$tmp/rerun-refused" "$tmp/slack-refused" "$tmp/gh-fails-once" "$tmp/slept" "$tmp/runs-fail"
   run_json 1 1 completed failure pusher > "$tmp/run.json"
@@ -69,7 +70,7 @@ set_up() {
 
 run_script() {
   TMP="$tmp" PATH="$tmp/bin:$PATH" GH_TOKEN=x SLACK_BOT_TOKEN=x REPO=o/r CHANNEL=C1 \
-    SLACK_USER_MAP="$user_map" WORKFLOWS=$'Checks' RUN_ID="$1" bash "$script" > "$tmp/out.log" 2>&1
+    SLACK_USER_MAP="$user_map" WORKFLOWS=$'Checks' NOTE="$note" RUN_ID="$1" bash "$script" > "$tmp/out.log" 2>&1
   status=$?
   if [[ $status -ne $expected_status ]]; then
     echo "FAIL: script exited with $status, expected $expected_status"; cat "$tmp/out.log"; failures=$((failures + 1))
@@ -166,6 +167,15 @@ run_json 1 2 completed failure someone > "$tmp/run.json"
 run_script 1
 expect 'manual re-run: rerun' 0 "$(rerun_calls)"
 expect 'manual re-run: posts' 1 "$(posts)"
+
+# A repo’s note ends the post, for the failing run and for the hourly one.
+set_up
+note='Check Free too.'
+run_script 1
+expect 'note: failing run' 'Check Free too.' "$(text | tail -1)"
+rm "$tmp/posts.json"
+run_script ''
+expect 'note: hourly' 'Check Free too.' "$(text | tail -1)"
 
 # Slack refusing the message fails the job and says why.
 set_up
