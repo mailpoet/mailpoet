@@ -91,6 +91,41 @@ add_filter('action_scheduler_logger_class', static function () {
 }, 200);
 PHP
 
+# Messages from outside our code that the site logs as PHP errors, which fail the tests.
+cat > /wp-core/wp-content/mu-plugins/mailpoet-test-ignored-errors.php <<'PHP'
+<?php
+// Don’t check WordPress.org for updates; an unreachable WordPress.org logs a warning.
+remove_action('admin_init', '_maybe_update_core');
+remove_action('admin_init', '_maybe_update_plugins');
+remove_action('admin_init', '_maybe_update_themes');
+remove_action('load-plugins.php', 'wp_update_plugins');
+remove_action('load-themes.php', 'wp_update_themes');
+
+// An Action Scheduler runner throws this when its action was deleted while it ran.
+// CleanupExtension waits for running actions before it restores the database, but a
+// runner can still lose its action that way (seen once at the start of a test).
+// Keep only this message out of the error log.
+add_action('plugins_loaded', static function () {
+  if (!class_exists(\Tracy\Debugger::class) || !\Tracy\Debugger::$productionMode) {
+    return;
+  }
+  \Tracy\Debugger::setLogger(new class(\Tracy\Debugger::getLogger()) implements \Tracy\ILogger {
+    private $logger;
+
+    public function __construct(\Tracy\ILogger $logger) {
+      $this->logger = $logger;
+    }
+
+    public function log($value, $level = self::INFO) {
+      if ($value instanceof \Throwable && strpos($value->getMessage(), 'we were unable to mark this action as having failed') !== false) {
+        return null;
+      }
+      return $this->logger->log($value, $level);
+    }
+  });
+});
+PHP
+
 # Load Composer dependencies
 # Set SKIP_DEPS environment flag to not download them. E.g. you have downloaded them yourself
 # Example: docker compose run -e SKIP_DEPS=1 codeception ...
