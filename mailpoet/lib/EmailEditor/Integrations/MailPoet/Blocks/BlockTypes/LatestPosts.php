@@ -51,6 +51,9 @@ class LatestPosts extends AbstractBlock {
    */
   private const PASSWORD_FILTER_PRIORITY = PHP_INT_MAX;
 
+  /** Before core formats the text, trims the excerpt (10) and runs registered shortcodes (11). */
+  private const REMOVE_SHORTCODES_PRIORITY = 9;
+
   /** Template blocks. Not email-enabled by default, so we opt them in. */
   private const TEMPLATE_CORE_BLOCKS = [
     'core/post-featured-image',
@@ -135,6 +138,9 @@ class LatestPosts extends AbstractBlock {
   private $renderedPostsByRequest = [];
 
   private bool $isRenderingPostContent = false;
+
+  /** Nested Latest Posts blocks share the shortcode filters, so only the outermost render adds and removes them. */
+  private int $innerRenderDepth = 0;
 
   private AutomatedLatestContent $automatedLatestContent;
   private NewsletterPostsRepository $newsletterPostsRepository;
@@ -1060,6 +1066,10 @@ class LatestPosts extends AbstractBlock {
     $content = '';
     $this->wp->addFilter('render_block_context', $injectContext, 1);
     $this->wp->addFilter('render_block_core/read-more', $removeReadMoreScreenReaderText);
+    if ($this->innerRenderDepth++ === 0) {
+      $this->wp->addFilter('the_content', [$this, 'removeUnregisteredShortcodes'], self::REMOVE_SHORTCODES_PRIORITY);
+      $this->wp->addFilter('get_the_excerpt', [$this, 'removeUnregisteredShortcodes'], self::REMOVE_SHORTCODES_PRIORITY);
+    }
     try {
       foreach ($innerBlocks as $innerBlock) {
         if (!is_array($innerBlock)) {
@@ -1069,12 +1079,39 @@ class LatestPosts extends AbstractBlock {
       }
     } finally {
       $this->wp->removeFilter('render_block_core/read-more', $removeReadMoreScreenReaderText);
+      if (--$this->innerRenderDepth === 0) {
+        $this->wp->removeFilter('the_content', [$this, 'removeUnregisteredShortcodes'], self::REMOVE_SHORTCODES_PRIORITY);
+        $this->wp->removeFilter('get_the_excerpt', [$this, 'removeUnregisteredShortcodes'], self::REMOVE_SHORTCODES_PRIORITY);
+      }
       $this->wp->removeFilter('render_block_context', $injectContext, 1);
       $post = $previousPost; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
       $wp_query = $previousQuery; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
     }
 
     return $this->withPostId($content, $postId);
+  }
+
+  /**
+   * Some plugins and themes register their shortcodes only on some requests.
+   * When they are not registered, WordPress keeps them in the excerpt as text.
+   * Only tags with attributes, a closing tag or a closing slash are removed, so plain text in
+   * square brackets stays. Escaped tags like [[tag]] stay too, as in WordPress.
+   */
+  public function removeUnregisteredShortcodes(string $content): string {
+    preg_match_all('#(?<!\[)\[/([a-zA-Z0-9][\w-]*)\](?!\])#', $content, $closingTags);
+    $pairedTags = array_flip($closingTags[1]);
+    return (string)preg_replace_callback(
+      // [tag attrs] or [/tag], not wrapped in a second pair of brackets.
+      '#(?<!\[)\[/?([a-zA-Z0-9][\w-]*)(\s[^\[\]]*)?\](?!\])#',
+      function (array $tag) use ($pairedTags): string {
+        $attributes = $tag[2] ?? '';
+        $hasAttributes = strpos($attributes, '=') !== false;
+        $isSelfClosing = substr(rtrim($attributes), -1) === '/';
+        $isShortcode = $hasAttributes || $isSelfClosing || isset($pairedTags[$tag[1]]);
+        return $isShortcode && !$this->wp->shortcodeExists($tag[1]) ? '' : $tag[0];
+      },
+      $content
+    );
   }
 
   /**
