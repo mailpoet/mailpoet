@@ -56,7 +56,7 @@ cause() {
 
 failing_jobs() {
   gh api "repos/$REPO/actions/runs/$1/jobs?per_page=100" | jq -r '
-    [.jobs[] | select(.conclusion == "failure" and .name != "All checks") | .name] |
+    [.jobs[] | select(.conclusion != "success" and .conclusion != "skipped" and .name != "All checks") | .name] |
     if length > 5 then (.[:5] | join(", ")) + ", and \(length - 5) more" else join(", ") end'
 }
 
