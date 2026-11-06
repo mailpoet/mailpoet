@@ -70,6 +70,7 @@ runs:
       shell: bash
       env:
         OLDEST: ${{ inputs.oldest }}
+        PREMIUM: ${{ inputs.premium }}
         MYSQL_IMAGE: ${{ inputs.mysql_image }}
         MYSQL_COMMAND: ${{ inputs.mysql_command }}
         WORDPRESS_VERSION: ${{ inputs.wordpress_version }}
@@ -105,6 +106,10 @@ runs:
           echo "WOO_SUBSCRIPTIONS_VERSION=${settings[woo_subscriptions_version]:-}"
           echo "WOO_MEMBERSHIPS_VERSION=${settings[woo_memberships_version]:-}"
           echo "AUTOMATE_WOO_VERSION=${settings[automate_woo_version]:-}"
+          # Docker Compose reads it when the site’s container is created.
+          if [[ "$PREMIUM" == true ]]; then
+            echo "TRACY_LOG_DIR=/var/www/html/wp-content/plugins/mailpoet-premium/tests/_output/exceptions"
+          fi
         } | tee -a "$GITHUB_ENV"
 
     - uses: ./.github/actions/restore-build
@@ -112,11 +117,10 @@ runs:
     - name: 'Download plugins for the WooCommerce tests'
       if: inputs.skip_plugins != '1'
       shell: bash
-      working-directory: ${{ inputs.premium == 'true' && 'mailpoet-premium' || 'mailpoet' }}
       env:
         GH_TOKEN: ${{ inputs.wp_github_woocommerce_token }}
       run: |
-        ../tests_env/download-test-plugins.sh
+        tests_env/download-test-plugins.sh
         # Every part downloads with the same token, so log how much of its
         # hourly API limit is left.
         gh api rate_limit --jq '.resources.core | "API calls left: \(.remaining) of \(.limit)"' || true
@@ -126,14 +130,12 @@ runs:
     # so let every user write there.
     - name: 'Let the site write its template cache'
       shell: bash
-      working-directory: ${{ inputs.premium == 'true' && 'mailpoet-premium' || 'mailpoet' }}
-      run: chmod -R a+rwX generated
+      run: chmod -R a+rwX mailpoet/generated
 
     # Docker Hub pulls sometimes time out. Let the daemon retry each layer
     # more often before a pull fails at all.
     - name: 'Let Docker retry downloads'
       shell: bash
-      working-directory: ${{ inputs.premium == 'true' && 'mailpoet-premium' || 'mailpoet' }}
       run: |
         config=/etc/docker/daemon.json
         current=$(sudo cat "$config" 2>/dev/null || echo '{}')
@@ -183,9 +185,10 @@ runs:
         CIRCLE_BRANCH: ${{ github.event.pull_request.head.repo.fork && format('pull/{0}', github.event.number) || github.head_ref || github.ref_name }}
         # The acceptance entrypoint removes Doctrine Annotations when it is set,
         # to prove the plugin runs without them. Don’t use _with_premium_ in a
-        # name: the entrypoint would try to activate Premium, which isn’t
-        # checked out here.
+        # name: the entrypoint would activate Premium, which is what
+        # WITH_PREMIUM is for.
         CIRCLE_JOB: ${{ inputs.suite }}_tests_${{ inputs.name }}
+        WITH_PREMIUM: ${{ inputs.premium == 'true' && '1' || '' }}
         SKIP_GROUP: ${{ inputs.skip_group }}
         SKIP_PLUGINS: ${{ inputs.skip_plugins }}
         MULTISITE: ${{ inputs.multisite }}
@@ -198,7 +201,7 @@ runs:
       run: |
         # Without it the mailer and network tests skip, which trunk and release
         # don’t allow; say so once instead of failing each of those tests.
-        if [[ -z "$WP_TEST_ENV" && ( "$CIRCLE_BRANCH" == trunk || "$CIRCLE_BRANCH" == release ) ]]; then
+        if [[ -z "$WITH_PREMIUM" && -z "$WP_TEST_ENV" && ( "$CIRCLE_BRANCH" == trunk || "$CIRCLE_BRANCH" == release ) ]]; then
           echo "::error::The WP_TEST_ENV secret is missing. Add the WP_TEST_* lines from the CircleCI project variables."
           exit 1
         fi
@@ -260,8 +263,13 @@ runs:
         fi
         echo "::endgroup::"
         echo "### Flaky acceptance tests" >> "$GITHUB_STEP_SUMMARY"
+        # Annotation paths start at the root of the repository the run belongs to.
+        repo_path=mailpoet/
+        if [[ -n "$WITH_PREMIUM" ]]; then
+          repo_path=
+        fi
         while IFS= read -r test; do
-          echo "::warning file=mailpoet/${test%%:*},title=Flaky acceptance test::$test failed, then passed on the second run"
+          echo "::warning file=${repo_path}${test%%:*},title=Flaky acceptance test::$test failed, then passed on the second run"
           echo "- \`$test\` failed, then passed on the second run" >> "$GITHUB_STEP_SUMMARY"
         done <<< "$failed"
 
@@ -311,5 +319,5 @@ runs:
       uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: ${{ inputs.suite }}-${{ inputs.name }}-part-${{ inputs.part }}
-        path: mailpoet/tests/_output
+        path: ${{ inputs.premium == 'true' && 'mailpoet-premium' || 'mailpoet' }}/tests/_output
         retention-days: 14
