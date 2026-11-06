@@ -2,7 +2,8 @@ name: 'Nightly tests'
 
 # Runs the tests against the latest and oldest supported versions and the
 # WordPress and WooCommerce betas, like the “nightly” workflow in
-# .circleci/config.yml. The Premium jobs stay on CircleCI until Premium moves.
+# .circleci/config.yml. Premium’s private nightly runs the jobs with Premium,
+# so Premium’s code stays out of this public repository’s logs.
 # The oldest versions come from tests_env/oldest-versions.yml, which the shared
 # test workflow reads for the oldest jobs.
 

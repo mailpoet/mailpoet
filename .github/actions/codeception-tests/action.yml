@@ -184,9 +184,9 @@ runs:
         # trunk too, so fork pull requests get pull/<number>, like on CircleCI.
         CIRCLE_BRANCH: ${{ github.event.pull_request.head.repo.fork && format('pull/{0}', github.event.number) || github.head_ref || github.ref_name }}
         # The acceptance entrypoint removes Doctrine Annotations when it is set,
-        # to prove the plugin runs without them. Don’t use _with_premium_ in a
-        # name: the entrypoint would activate Premium, which is what
-        # WITH_PREMIUM is for.
+        # to prove the plugin runs without them. With _with_premium_ in the name
+        # the entrypoint activates Premium but still runs Free’s tests, which
+        # Premium’s nightly uses. WITH_PREMIUM runs Premium’s own tests.
         CIRCLE_JOB: ${{ inputs.suite }}_tests_${{ inputs.name }}
         WITH_PREMIUM: ${{ inputs.premium == 'true' && '1' || '' }}
         SKIP_GROUP: ${{ inputs.skip_group }}
