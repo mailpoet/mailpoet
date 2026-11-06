@@ -13,6 +13,7 @@ use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Test\DataFactories\Tag as TagFactory;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
@@ -162,6 +163,133 @@ class BulkActionControllerTest extends \MailPoetTest {
     );
     verify($removeAllResult['count'])->equals(1);
     verify($this->subscribedSegmentIds($subscriberId))->equals([]);
+  }
+
+  public function testTrashUpdatesCachedAllAndTrashCounts(): void {
+    $this->createSubscriber('kept@example.com', SubscriberEntity::STATUS_SUBSCRIBED);
+    $trashed = $this->createSubscriber('trashed@example.com', SubscriberEntity::STATUS_SUBSCRIBED);
+    $counts = $this->cacheEnabledCountsController();
+    $counts->recalculateGlobalStatusStatisticsCache();
+
+    $this->controller->execute(BulkActionController::ACTION_TRASH, $this->definition([(int)$trashed->getId()]));
+
+    verify($this->tabCounts($counts))->equals(['all' => 1, 'trash' => 1]);
+  }
+
+  public function testRestoreUpdatesCachedAllAndTrashCounts(): void {
+    $restored = $this->createSubscriber('restored@example.com', SubscriberEntity::STATUS_SUBSCRIBED);
+    $restoredId = (int)$restored->getId();
+    $this->subscribersRepository->bulkTrash([$restoredId]);
+    $counts = $this->cacheEnabledCountsController();
+    $counts->recalculateGlobalStatusStatisticsCache();
+
+    $this->controller->execute(BulkActionController::ACTION_RESTORE, $this->definition([$restoredId], 'trash'));
+
+    verify($this->tabCounts($counts))->equals(['all' => 1, 'trash' => 0]);
+  }
+
+  public function testEmptyingTheTrashUpdatesCachedTrashCount(): void {
+    $deleted = $this->createSubscriber('deleted@example.com', SubscriberEntity::STATUS_SUBSCRIBED);
+    $deletedId = (int)$deleted->getId();
+    $this->subscribersRepository->bulkTrash([$deletedId]);
+    $counts = $this->cacheEnabledCountsController();
+    $counts->recalculateGlobalStatusStatisticsCache();
+
+    $this->controller->execute(BulkActionController::ACTION_DELETE, $this->definition([$deletedId], 'trash'));
+
+    verify($this->tabCounts($counts))->equals(['all' => 0, 'trash' => 0]);
+  }
+
+  public function testUnsubscribeUpdatesCachedStatusCounts(): void {
+    $subscriber = $this->createSubscriber('leaving@example.com', SubscriberEntity::STATUS_SUBSCRIBED);
+    $counts = $this->cacheEnabledCountsController();
+    $counts->recalculateGlobalStatusStatisticsCache();
+
+    $this->controller->execute(BulkActionController::ACTION_UNSUBSCRIBE, $this->definition([(int)$subscriber->getId()]));
+
+    $statusCounts = $counts->getGlobalStatusStatisticsCount();
+    verify($statusCounts[SubscriberEntity::STATUS_SUBSCRIBED])->equals(0);
+    verify($statusCounts[SubscriberEntity::STATUS_UNSUBSCRIBED])->equals(1);
+  }
+
+  public function testTrashInAListViewUpdatesThatListsCachedCounts(): void {
+    $segment = (new SegmentFactory())->withName('Viewed list')->create();
+    $this->createSubscriber('kept-in-list@example.com', SubscriberEntity::STATUS_SUBSCRIBED, [$segment]);
+    $trashed = $this->createSubscriber('trashed-from-list@example.com', SubscriberEntity::STATUS_SUBSCRIBED, [$segment]);
+    $counts = $this->cacheEnabledCountsController();
+    $counts->recalculateSegmentStatisticsCache($segment);
+
+    $this->controller->execute(
+      BulkActionController::ACTION_TRASH,
+      $this->definition([(int)$trashed->getId()], 'all', ['segment_in' => [(int)$segment->getId()]])
+    );
+
+    verify($this->listItemCounts($counts, $segment))->equals(['all' => 1, 'trash' => 1]);
+  }
+
+  public function testMoveToListUpdatesTargetListsCachedCounts(): void {
+    $target = (new SegmentFactory())->withName('Target list')->create();
+    $this->createSubscriber('already-in-target@example.com', SubscriberEntity::STATUS_SUBSCRIBED, [$target]);
+    $moved = $this->createSubscriber('moved@example.com', SubscriberEntity::STATUS_SUBSCRIBED);
+    $counts = $this->cacheEnabledCountsController();
+    $counts->recalculateSegmentStatisticsCache($target);
+
+    $this->controller->execute(
+      BulkActionController::ACTION_MOVE_TO_LIST,
+      $this->definition([(int)$moved->getId()]),
+      ['segment_id' => (int)$target->getId()]
+    );
+
+    verify($this->listItemCounts($counts, $target))->equals(['all' => 2, 'trash' => 0]);
+  }
+
+  public function testAddToListUpdatesTargetListsCachedCounts(): void {
+    $target = (new SegmentFactory())->withName('Add target list')->create();
+    $this->createSubscriber('already-in-add-target@example.com', SubscriberEntity::STATUS_SUBSCRIBED, [$target]);
+    $added = $this->createSubscriber('added@example.com', SubscriberEntity::STATUS_SUBSCRIBED);
+    $counts = $this->cacheEnabledCountsController();
+    $counts->recalculateSegmentStatisticsCache($target);
+
+    $this->controller->execute(
+      BulkActionController::ACTION_ADD_TO_LIST,
+      $this->definition([(int)$added->getId()]),
+      ['segment_id' => (int)$target->getId()]
+    );
+
+    verify($this->listItemCounts($counts, $target))->equals(['all' => 2, 'trash' => 0]);
+  }
+
+  public function testRemoveFromListUpdatesThatListsCachedCounts(): void {
+    $segment = (new SegmentFactory())->withName('Remove source list')->create();
+    $this->createSubscriber('stays-in-list@example.com', SubscriberEntity::STATUS_SUBSCRIBED, [$segment]);
+    $removed = $this->createSubscriber('removed-from-list@example.com', SubscriberEntity::STATUS_SUBSCRIBED, [$segment]);
+    $counts = $this->cacheEnabledCountsController();
+    $counts->recalculateSegmentStatisticsCache($segment);
+
+    $this->controller->execute(
+      BulkActionController::ACTION_REMOVE_FROM_LIST,
+      $this->definition([(int)$removed->getId()]),
+      ['segment_id' => (int)$segment->getId()]
+    );
+
+    verify($this->listItemCounts($counts, $segment))->equals(['all' => 1, 'trash' => 0]);
+  }
+
+  public function testAddTagInAListViewKeepsThatListsCachedCounts(): void {
+    $segment = (new SegmentFactory())->withName('Tagged list')->create();
+    $tagged = $this->createSubscriber('tagged-cached@example.com', SubscriberEntity::STATUS_SUBSCRIBED, [$segment]);
+    $tag = (new TagFactory())->withName('Cached')->create();
+    $counts = $this->cacheEnabledCountsController();
+    $counts->recalculateSegmentStatisticsCache($segment);
+    $this->createSubscriber('not-yet-counted@example.com', SubscriberEntity::STATUS_SUBSCRIBED, [$segment]);
+
+    $this->controller->execute(
+      BulkActionController::ACTION_ADD_TAG,
+      $this->definition([(int)$tagged->getId()], 'all', ['segment_in' => [(int)$segment->getId()]]),
+      ['tag_id' => (int)$tag->getId()]
+    );
+
+    verify($this->listItemCounts($counts, $segment))->equals(['all' => 1, 'trash' => 0]);
   }
 
   public function testItAddsAndRemovesTags(): void {
@@ -363,16 +491,52 @@ class BulkActionControllerTest extends \MailPoetTest {
   /**
    * @param int[] $selection
    */
-  private function definition(array $selection, string $group = 'all'): ListingDefinition {
+  private function definition(array $selection, string $group = 'all', array $filter = []): ListingDefinition {
     return $this->listingHandler->getListingDefinition([
       'offset' => 0,
       'limit' => 0,
       'sort_by' => 'id',
       'sort_order' => 'desc',
       'group' => $group,
-      'filter' => [],
+      'filter' => $filter,
       'selection' => $selection,
       'params' => [],
+    ]);
+  }
+
+  /**
+   * The counts cache is only used above 2,000 subscribers.
+   */
+  private function cacheEnabledCountsController(): SubscribersCountsController {
+    return $this->getServiceWithOverrides(SubscribersCountsController::class, [
+      'subscribersFeature' => $this->make(SubscribersFeature::class, ['isSubscribersCountEnoughForCache' => true]),
+    ]);
+  }
+
+  /**
+   * @return array<mixed> The All and Trash tab counts (site totals), keyed by tab name.
+   */
+  private function tabCounts(SubscribersCountsController $counts): array {
+    $groups = $this->listingRepository($counts)->getGroups(new ListingDefinition('all'));
+    $countsByTab = array_column($groups, 'count', 'name');
+    return ['all' => $countsByTab['all'], 'trash' => $countsByTab['trash']];
+  }
+
+  /**
+   * @return array<string, int> The item counts of a single-list view in the All and Trash tabs.
+   */
+  private function listItemCounts(SubscribersCountsController $counts, SegmentEntity $segment): array {
+    $listingRepository = $this->listingRepository($counts);
+    $listFilter = ['segment_in' => [(int)$segment->getId()]];
+    return [
+      'all' => $listingRepository->getListingCount(new ListingDefinition('all', $listFilter)),
+      'trash' => $listingRepository->getListingCount(new ListingDefinition('trash', $listFilter)),
+    ];
+  }
+
+  private function listingRepository(SubscribersCountsController $counts): SubscriberListingRepository {
+    return $this->getServiceWithOverrides(SubscriberListingRepository::class, [
+      'subscribersCountsController' => $counts,
     ]);
   }
 
