@@ -20,11 +20,15 @@ slack_escape() {
   jq -Rr 'gsub("&"; "&amp;") | gsub("<"; "&lt;") | gsub(">"; "&gt;")' <<<"$1"
 }
 
-# A real mention for a person in the map, the plain GitHub name for anyone else.
-# Bots are never in the map.
+# A real mention for a person in SLACK_USER_MAP, the plain GitHub name for anyone
+# else. The map is JSON, GitHub login to Slack member ID: {"octocat":"U0123456"}.
+# Bots are never in it.
 person() {
-  local slack_id
-  slack_id=$(jq -r --arg login "$1" '.[$login | ascii_downcase] // empty' <<<"${SLACK_USER_MAP:-"{}"}" 2>/dev/null)
+  local slack_id=''
+  if [[ -z "${SLACK_USER_MAP:-}" ]] || ! slack_id=$(jq -r --arg login "$1" \
+    'with_entries(.key |= ascii_downcase)[$login | ascii_downcase] // empty' <<<"$SLACK_USER_MAP" 2>/dev/null); then
+    echo '::warning::SLACK_USER_MAP is missing or is not valid JSON, so this post has no mention.' >&2
+  fi
   if [[ -n "$slack_id" ]]; then
     printf '<@%s>' "$slack_id"
   else

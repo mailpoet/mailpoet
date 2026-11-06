@@ -216,6 +216,22 @@ user_map='not json'
 run_script 1
 expect 'broken map: posts' 1 "$(posts)"
 expect_text 'broken map: name' 'Merger'
+grep -q '::warning::' "$tmp/out.log"
+expect 'broken map: warns' 0 $?
+
+# A missing map warns too, or nobody finds out why there are no mentions.
+set_up
+user_map=''
+run_script 1
+expect 'missing map: posts' 1 "$(posts)"
+grep -q '::warning::' "$tmp/out.log"
+expect 'missing map: warns' 0 $?
+
+# The case of a GitHub login doesn’t matter, on either side.
+set_up
+user_map='{"MERGER":"U1"}'
+run_script 1
+expect_text 'map key case' '<@U1>'
 
 # A push without a PR names the person who pushed and links the commit.
 set_up
