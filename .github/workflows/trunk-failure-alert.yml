@@ -19,6 +19,10 @@ on:
         description: 'The failed run. Empty checks whether trunk is still red.'
         required: false
         type: string
+      note:
+        description: 'A line to add at the end of each post'
+        required: false
+        type: string
       script_ref:
         description: 'Branch of mailpoet/mailpoet to take the script from, to test a change to it'
         required: false
@@ -57,5 +61,6 @@ jobs:
           CHANNEL: ${{ inputs.channel }}
           WORKFLOWS: ${{ inputs.workflows }}
           RUN_ID: ${{ inputs.run_id }}
+          NOTE: ${{ inputs.note }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_USER_MAP: ${{ secrets.SLACK_USER_MAP }}
