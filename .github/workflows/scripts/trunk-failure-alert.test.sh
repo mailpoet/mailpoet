@@ -18,6 +18,10 @@ if [[ "$1 $2" == "run rerun" ]]; then
   [[ -f "$TMP/run-after.json" ]] && cp "$TMP/run-after.json" "$TMP/run.json"
   exit 0
 fi
+if [[ -f "$TMP/gh-fails-once" && "$2" == repos/o/r/actions/runs/1 && -f "$TMP/slept" ]]; then
+  rm "$TMP/gh-fails-once"
+  exit 1
+fi
 case "$2" in
   repos/o/r/actions/runs/1/jobs*) cat "$TMP/jobs.json" ;;
   repos/o/r/actions/runs/1) cat "$TMP/run.json" ;;
@@ -29,6 +33,10 @@ esac
 FAKE
 cat > "$tmp/bin/curl" <<'FAKE'
 #!/usr/bin/env bash
+if [[ -f "$TMP/slack-refused" ]]; then
+  echo '{"ok":false,"error":"channel_not_found"}'
+  exit 0
+fi
 cat >> "$TMP/posts.json"
 echo '{"ok":true}'
 FAKE
@@ -49,7 +57,8 @@ run_json() {
 
 set_up() {
   user_map='{"merger":"U1"}'
-  rm -f "$tmp"/*.json "$tmp"/*.log "$tmp/rerun-refused"
+  expected_status=0
+  rm -f "$tmp"/*.json "$tmp"/*.log "$tmp/rerun-refused" "$tmp/slack-refused" "$tmp/gh-fails-once" "$tmp/slept"
   run_json 1 1 completed failure pusher > "$tmp/run.json"
   run_json 1 2 completed failure 'github-actions[bot]' > "$tmp/run-after.json"
   run_json 1 1 completed failure pusher | jq '{workflow_runs: [.]}' > "$tmp/runs.json"
@@ -62,8 +71,8 @@ run_script() {
   TMP="$tmp" PATH="$tmp/bin:$PATH" GH_TOKEN=x SLACK_BOT_TOKEN=x REPO=o/r CHANNEL=C1 \
     SLACK_USER_MAP="$user_map" WORKFLOWS=$'Checks' RUN_ID="$1" bash "$script" > "$tmp/out.log" 2>&1
   status=$?
-  if [[ $status -ne 0 ]]; then
-    echo "FAIL: script exited with $status"; cat "$tmp/out.log"; failures=$((failures + 1))
+  if [[ $status -ne $expected_status ]]; then
+    echo "FAIL: script exited with $status, expected $expected_status"; cat "$tmp/out.log"; failures=$((failures + 1))
   fi
 }
 
@@ -114,19 +123,30 @@ expect_text 'PR link, escaped' '<https://example.test/pull/7|#7 Fix &lt;a&gt; &a
 expect_text 'says it retried' 'after a retry'
 expect 'channel' C1 "$(jq -r '.channel' "$tmp/posts.json")"
 
-# The retry waits for the new attempt to finish.
+# The retry waits for the new attempt to finish, reading it again until it has.
 set_up
 run_json 1 2 in_progress '' 'github-actions[bot]' > "$tmp/run-after.json"
 cat > "$tmp/bin/sleep" <<'FAKE'
 #!/usr/bin/env bash
-jq '.status = "completed" | .conclusion = "failure"' "$TMP/run.json" > "$TMP/next.json"
-mv "$TMP/next.json" "$TMP/run.json"
+if [[ -f "$TMP/slept" ]]; then
+  jq '.status = "completed" | .conclusion = "failure"' "$TMP/run.json" > "$TMP/next.json"
+  mv "$TMP/next.json" "$TMP/run.json"
+fi
+touch "$TMP/slept"
 FAKE
 run_script 1
-printf '#!/usr/bin/env bash\n' > "$tmp/bin/sleep"
+expect 'waits for the retry: reads' 3 "$(grep -c 'api repos/o/r/actions/runs/1$' "$tmp/gh.log")"
 expect 'waits for the retry: posts' 1 "$(posts)"
 
-# When the retry can't start, it posts at once.
+# One failed read while waiting doesn’t lose the post.
+set_up
+run_json 1 2 in_progress '' 'github-actions[bot]' > "$tmp/run-after.json"
+touch "$tmp/gh-fails-once"
+run_script 1
+expect 'failed read: posts' 1 "$(posts)"
+printf '#!/usr/bin/env bash\n' > "$tmp/bin/sleep"
+
+# When the retry can’t start, it posts at once.
 set_up
 touch "$tmp/rerun-refused"
 run_script 1
@@ -146,6 +166,27 @@ run_json 1 2 completed failure someone > "$tmp/run.json"
 run_script 1
 expect 'manual re-run: rerun' 0 "$(rerun_calls)"
 expect 'manual re-run: posts' 1 "$(posts)"
+
+# Slack refusing the message fails the job and says why.
+set_up
+touch "$tmp/slack-refused"
+expected_status=1
+run_script 1
+grep -q 'channel_not_found' "$tmp/out.log"
+expect 'refused post: reason logged' 0 $?
+
+# A long list of failing jobs stays short.
+set_up
+jq -n '{jobs: [range(7) | {name: "Job\(.)", conclusion: "failure"}]}' > "$tmp/jobs.json"
+run_script 1
+expect_text 'capped jobs: count' 'and 2 more'
+expect_no_text 'capped jobs: list' 'Job5'
+
+# A PR that was closed without merging is not the cause.
+set_up
+echo '[{"number":99,"merged_at":null},{"number":7,"merged_at":"2020-01-01T00:00:00Z"}]' > "$tmp/pulls.json"
+run_script 1
+expect_text 'unmerged PR skipped' '#7 '
 
 # A bot merge posts without a mention.
 set_up
@@ -178,16 +219,33 @@ expect_text 'no PR: commit' 'abc'
 
 # The first failure since the last success is the one that broke trunk.
 set_up
-jq -n --argjson new "$(run_json 3 1 completed failure pusher new)" \
-  --argjson old "$(run_json 2 1 completed failure pusher culprit)" \
-  --argjson good "$(run_json 4 1 completed success pusher good)" \
-  --argjson older "$(run_json 5 1 completed failure pusher ancient)" \
+jq -n --argjson new "$(run_json 1 1 completed failure pusher new)" \
+  --argjson old "$(run_json 0 1 completed failure pusher culprit)" \
+  --argjson good "$(run_json -1 1 completed success pusher good)" \
+  --argjson older "$(run_json -2 1 completed failure pusher ancient)" \
   '{workflow_runs: [$new, $old, $good, $older]}' > "$tmp/runs.json"
 run_script 1
 grep -q 'commits/culprit/pulls' "$tmp/gh.log"
 expect 'blames the first failure' 0 $?
 
-# Hourly: a trunk still red after the wait pings again and doesn't retry.
+# A cancelled run says nothing about whether trunk was fixed.
+set_up
+jq -n --argjson new "$(run_json 1 1 completed failure pusher new)" \
+  --argjson cancelled "$(run_json 0 1 completed cancelled pusher skipped)" \
+  --argjson old "$(run_json -1 1 completed failure pusher culprit)" \
+  '{workflow_runs: [$new, $cancelled, $old]}' > "$tmp/runs.json"
+run_script 1
+grep -q 'commits/culprit/pulls' "$tmp/gh.log"
+expect 'skips a cancelled run' 0 $?
+
+# With no run history to read, the failed run itself is the cause.
+set_up
+echo '{"workflow_runs":[]}' > "$tmp/runs.json"
+run_script 1
+grep -q 'commits/abc/pulls' "$tmp/gh.log"
+expect 'no history: uses the failed run' 0 $?
+
+# Hourly: a trunk still red after the wait pings again and doesn’t retry.
 set_up
 run_script ''
 expect 'still red: rerun' 0 "$(grep -c 'run rerun' "$tmp/gh.log")"
@@ -215,7 +273,7 @@ run_json 1 2 completed failure pusher abc "$(jq -nr 'now | todate')" | jq '{work
 run_script ''
 expect 'fresh failure: posts' 0 "$(posts)"
 
-# Hourly: workflows that aren't watched don't count.
+# Hourly: workflows that aren’t watched don’t count.
 set_up
 run_json 1 1 completed failure pusher | jq '.name = "CodeQL" | {workflow_runs: [.]}' > "$tmp/runs.json"
 run_script ''
