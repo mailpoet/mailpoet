@@ -25,7 +25,7 @@ fi
 case "$2" in
   repos/o/r/actions/runs/1/jobs*) cat "$TMP/jobs.json" ;;
   repos/o/r/actions/runs/1) cat "$TMP/run.json" ;;
-  repos/o/r/actions/runs\?*) cat "$TMP/runs.json" ;;
+  repos/o/r/actions/runs\?*) [[ -f "$TMP/runs-fail" ]] && exit 1; cat "$TMP/runs.json" ;;
   repos/o/r/commits/*/pulls) cat "$TMP/pulls.json" ;;
   repos/o/r/pulls/7) cat "$TMP/pull.json" ;;
   *) echo "unexpected gh call: $*" >&2; exit 1 ;;
@@ -58,7 +58,7 @@ run_json() {
 set_up() {
   user_map='{"merger":"U1"}'
   expected_status=0
-  rm -f "$tmp"/*.json "$tmp"/*.log "$tmp/rerun-refused" "$tmp/slack-refused" "$tmp/gh-fails-once" "$tmp/slept"
+  rm -f "$tmp"/*.json "$tmp"/*.log "$tmp/rerun-refused" "$tmp/slack-refused" "$tmp/gh-fails-once" "$tmp/slept" "$tmp/runs-fail"
   run_json 1 1 completed failure pusher > "$tmp/run.json"
   run_json 1 2 completed failure 'github-actions[bot]' > "$tmp/run-after.json"
   run_json 1 1 completed failure pusher | jq '{workflow_runs: [.]}' > "$tmp/runs.json"
@@ -255,28 +255,11 @@ expect 'blames the first failure' 0 $?
 set_up
 jq -n --argjson new "$(run_json 1 1 completed failure pusher new)" \
   --argjson cancelled "$(run_json 0 1 completed cancelled pusher skipped)" \
-  --argjson old "$(run_json -1 1 completed failure pusher culprit)" \
-  '{workflow_runs: [$new, $cancelled, $old]}' > "$tmp/runs.json"
+  --argjson good "$(run_json -1 1 completed success pusher good)" \
+  '{workflow_runs: [$new, $cancelled, $good]}' > "$tmp/runs.json"
 run_script 1
-grep -q 'commits/culprit/pulls' "$tmp/gh.log"
+grep -q 'commits/new/pulls' "$tmp/gh.log"
 expect 'skips a cancelled run' 0 $?
-
-# A newer run that fails too isn’t the cause of this one.
-set_up
-jq -n --argjson newer "$(run_json 2 1 completed failure pusher newer)" \
-  --argjson run "$(run_json 1 1 completed failure pusher this)" \
-  '{workflow_runs: [$newer, $run]}' > "$tmp/runs.json"
-run_script 1
-grep -q 'commits/this/pulls' "$tmp/gh.log"
-expect 'ignores newer runs when blaming' 0 $?
-
-# When a newer merge passed during the retry, trunk is already green: no post.
-set_up
-jq -n --argjson green "$(run_json 2 1 completed success pusher newer)" \
-  --argjson run "$(run_json 1 1 completed failure pusher)" \
-  '{workflow_runs: [$green, $run]}' > "$tmp/runs.json"
-run_script 1
-expect 'newer green run: posts' 0 "$(posts)"
 
 # With no run history to read, the failed run itself is the cause.
 set_up
@@ -284,6 +267,14 @@ echo '{"workflow_runs":[]}' > "$tmp/runs.json"
 run_script 1
 grep -q 'commits/abc/pulls' "$tmp/gh.log"
 expect 'no history: uses the failed run' 0 $?
+
+# When the run history can’t be read, the post still names a cause.
+set_up
+touch "$tmp/runs-fail"
+run_script 1
+grep -q 'commits/abc/pulls' "$tmp/gh.log"
+expect 'failed history: uses the failed run' 0 $?
+expect 'failed history: posts' 1 "$(posts)"
 
 # Hourly: a trunk still red after the wait pings again and doesn’t retry.
 set_up

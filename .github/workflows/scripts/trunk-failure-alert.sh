@@ -43,9 +43,9 @@ cause() {
   name=$(jq -r '.name' <<<"$run")
   branch=$(jq -r '.head_branch' <<<"$run")
   culprit=$(branch_runs "$name" "$branch" | jq --argjson fallback "$run" '
-    map(select(.id <= $fallback.id and (.conclusion == "success" or .conclusion == "failure"))) |
+    map(select(.conclusion == "success" or .conclusion == "failure")) |
     (map(.conclusion) | index("success")) as $last_good |
-    (.[:$last_good] | last) // $fallback')
+    (.[:$last_good] | last) // $fallback') || culprit=$run
   sha=$(jq -r '.head_sha' <<<"$culprit")
   pr_number=$(gh api "repos/$REPO/commits/$sha/pulls" | jq -r '[.[] | select(.merged_at)][0].number // empty') || pr_number=''
   if [[ -n "$pr_number" ]] && pull=$(gh api "repos/$REPO/pulls/$pr_number"); then
@@ -111,7 +111,7 @@ alert() {
   fi
 
   # A newer merge passed while the retry ran, so trunk is already green.
-  if branch_runs "$(jq -r '.name' <<<"$run")" "$(jq -r '.head_branch' <<<"$run")" |
+  if branch_runs "$(jq -r '.name' <<<"$run")" "$(jq -r '.head_branch' <<<"$run")" 2>/dev/null |
     jq -e --argjson id "$RUN_ID" 'any(.[]; .id > $id and .conclusion == "success")' >/dev/null; then
     return
   fi
