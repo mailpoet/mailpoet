@@ -2,10 +2,18 @@
 
 namespace MailPoet\Test\Abilities;
 
+use MailPoet\Abilities\NewsletterDraftBlocks;
+use MailPoet\Abilities\NewsletterDrafts;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Segments\SegmentsSimpleListRepository;
+use MailPoet\Segments\WooCommerce;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 require_once __DIR__ . '/AbilitiesTestHelper.php';
@@ -79,6 +87,22 @@ class NewsletterDraftOptionsAbilityTest extends \MailPoetTest {
 
     verify(array_column($result['recent_drafts'], 'id'))->equals([$newer->getId(), $older->getId()]);
     verify($result['recent_drafts'][0]['subject'])->equals('Newer draft');
+  }
+
+  public function testAWooCommerceListCannotBePreselectedWhenItIsHidden(): void {
+    $wooCommerceList = $this->diContainer->get(SegmentsRepository::class)->getWooCommerceSegment();
+    $drafts = new NewsletterDrafts(
+      $this->diContainer->get(NewsletterDraftBlocks::class),
+      $this->diContainer->get(SegmentsSimpleListRepository::class),
+      $this->diContainer->get(SegmentsRepository::class),
+      $this->make(WooCommerce::class, ['getNewsletterSegmentTypes' => SegmentEntity::NON_WOO_RELATED_TYPES]),
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(WPFunctions::class)
+    );
+
+    $prepared = $drafts->prepareInput(['list_ids' => [(int)$wooCommerceList->getId()]]);
+
+    verify(array_column($prepared['errors'], 'field'))->equals(['list_ids']);
   }
 
   public function testItIsRefusedWithoutTheEmailCapability(): void {

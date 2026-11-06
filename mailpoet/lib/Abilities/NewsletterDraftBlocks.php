@@ -509,22 +509,23 @@ class NewsletterDraftBlocks {
 
   /**
    * Sending replaces shortcodes in the rendered email, and rendering decodes entities. In links,
-   * the email editor replaces personalization tags after decoding entities and URL encoding.
-   * So the decoded forms count too, but they are used only when they contain a tag, because
-   * decoding changes the text around it.
+   * the email editor replaces personalization tags after decoding entities and URL encoding, and
+   * the layers can be mixed. So every decoded form counts, layer by layer, but a decoded form is
+   * used only when it contains a tag, because decoding changes the text around it.
    */
   private function removeTags(string $text): string {
-    $candidates = [
-      $text,
-      html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
-      html_entity_decode(urldecode($text), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
-    ];
-    foreach ($candidates as $candidate) {
+    $candidate = $text;
+    do {
       $tags = $this->findTags($candidate);
       if ($tags) {
         return $this->removeTags(str_replace($tags, '', $candidate));
       }
-    }
+      $previous = $candidate;
+      $candidate = html_entity_decode($candidate, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+      if ($candidate === $previous) {
+        $candidate = urldecode($candidate);
+      }
+    } while ($candidate !== $previous);
     return $text;
   }
 

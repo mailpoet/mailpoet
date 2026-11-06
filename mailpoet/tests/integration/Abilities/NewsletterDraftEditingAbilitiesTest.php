@@ -102,6 +102,17 @@ class NewsletterDraftEditingAbilitiesTest extends \MailPoetTest {
     verify($draft['preheader'])->equals('Changed pre');
   }
 
+  public function testUpdateKeepsACampaignNameAPersonPicked(): void {
+    $created = $this->createDraft();
+    wp_update_post(['ID' => $created['wp_post_id'], 'post_title' => 'My campaign']);
+
+    $updated = $this->update($created['id'], ['version' => $this->get($created['id'])['version'], 'subject' => 'New subject']);
+
+    $this->assertIsArray($updated);
+    verify($updated['subject'])->equals('New subject');
+    verify(get_post_field('post_title', $created['wp_post_id']))->equals('My campaign');
+  }
+
   public function testUpdateChangesOnlyTheFieldsItIsGiven(): void {
     $list = (new Segment())->withName('Readers')->create();
     $created = $this->createDraft(['list_ids' => [(int)$list->getId()], 'preheader' => 'Pre']);
@@ -124,7 +135,7 @@ class NewsletterDraftEditingAbilitiesTest extends \MailPoetTest {
 
   public function testADraftSavedByTheEditorCanStillBeRead(): void {
     $created = $this->createDraft();
-    // Copied from a real save. The editor writes alignment, apostrophes and some attributes
+    // Based on a real save. The editor writes alignment, apostrophes and some attributes
     // differently from this ability.
     $saved = '<!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)"><!-- wp:heading {"level":3,"style":{"typography":{"textAlign":"left"}}} -->
