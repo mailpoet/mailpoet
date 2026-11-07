@@ -280,6 +280,18 @@ jq -n --argjson green "$(run_json 2 1 completed success pusher newer)" \
 run_script 1
 expect 'newer green run: posts' 0 "$(posts)"
 
+# With no green run in the history, the start of the red streak is unknown, so
+# the failed run itself is named and not the oldest run on the page.
+set_up
+jq -n --argjson run "$(run_json 1 1 completed failure pusher this)" \
+  --argjson old "$(run_json 0 1 completed failure pusher old)" \
+  '{workflow_runs: [$run, $old]}' > "$tmp/runs.json"
+jq '.head_sha = "this"' "$tmp/run-after.json" > "$tmp/next.json"
+mv "$tmp/next.json" "$tmp/run-after.json"
+run_script 1
+grep -q 'commits/this/pulls' "$tmp/gh.log"
+expect 'no green run: uses the failed run' 0 $?
+
 # With no run history to read, the failed run itself is the cause.
 set_up
 echo '{"workflow_runs":[]}' > "$tmp/runs.json"

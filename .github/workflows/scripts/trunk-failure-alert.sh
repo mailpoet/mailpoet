@@ -45,7 +45,7 @@ cause() {
   culprit=$(branch_runs "$name" "$branch" | jq --argjson fallback "$run" '
     map(select(.conclusion == "success" or .conclusion == "failure")) |
     (map(.conclusion) | index("success")) as $last_good |
-    (.[:$last_good] | last) // $fallback') || culprit=$run
+    if $last_good then (.[:$last_good] | last) // $fallback else $fallback end') || culprit=$run
   sha=$(jq -r '.head_sha' <<<"$culprit")
   pr_number=$(gh api "repos/$REPO/commits/$sha/pulls" | jq -r '[.[] | select(.merged_at)][0].number // empty') || pr_number=''
   if [[ -n "$pr_number" ]] && pull=$(gh api "repos/$REPO/pulls/$pr_number"); then
