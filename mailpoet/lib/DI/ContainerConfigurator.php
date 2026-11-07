@@ -30,9 +30,18 @@ class ContainerConfigurator implements IContainerConfigurator {
         'getInstance',
       ]);
     // Abilities
-    $container->autowire(\MailPoet\Abilities\AbilitiesRegistrar::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\AbilitiesRegistrar::class)
+      ->setPublic(true)
+      ->setArgument('$container', new Reference(ContainerWrapper::class));
+    $container->autowire(\MailPoet\Abilities\CreateNewsletterDraftAbility::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\GetNewsletterDraftAbility::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\NewsletterDraftBlocks::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\NewsletterDraftOptionsAbility::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\NewsletterDraftReader::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\NewsletterDrafts::class)->setPublic(true);
     $container->autowire(\MailPoet\Abilities\RecentNewslettersAbility::class)->setPublic(true);
     $container->autowire(\MailPoet\Abilities\SendingStatusAbility::class)->setPublic(true);
+    $container->autowire(\MailPoet\Abilities\UpdateNewsletterDraftAbility::class)->setPublic(true);
     $container->autowire(\MailPoet\Abilities\UnsubscribeTrendAbility::class)->setPublic(true);
     // AdminPages
     $container->autowire(\MailPoet\AdminPages\AssetsController::class)->setPublic(true);

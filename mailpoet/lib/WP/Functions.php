@@ -332,6 +332,15 @@ class Functions {
     return get_post($post, $output, $filter);
   }
 
+  /**
+   * @param string $field
+   * @param int $postId
+   * @return mixed
+   */
+  public function getPostField(string $field, int $postId) {
+    return get_post_field($field, $postId, 'raw');
+  }
+
   public function getTerm(int $termId, string $taxonomy = '') {
     return get_term($termId, $taxonomy);
   }
@@ -995,6 +1004,10 @@ class Functions {
     return wp_kses($string, $allowedHtml, $allowedProtocols);
   }
 
+  public function forceBalanceTags(string $text): string {
+    return force_balance_tags($text);
+  }
+
   public function wpKsesAllowedHtml($context = '') {
     return wp_kses_allowed_html($context);
   }
@@ -1061,6 +1074,10 @@ class Functions {
     return sanitize_key($key);
   }
 
+  public function sanitizeHexColor(string $color): string {
+    return (string)sanitize_hex_color($color);
+  }
+
   public function sanitizeTextField(string $text): string {
     return sanitize_text_field($text);
   }
@@ -1079,6 +1096,14 @@ class Functions {
    */
   public function wpUnslash($value) {
     return wp_unslash($value);
+  }
+
+  /**
+   * @param string|array $value
+   * @return string|array
+   */
+  public function wpSlash($value) {
+    return wp_slash($value);
   }
 
   public function restUrl(string $path = '', string $scheme = 'rest'): string {
