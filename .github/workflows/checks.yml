@@ -157,6 +157,19 @@ jobs:
           path: mailpoet/tests/_output
           retention-days: 14
 
+  trunk_alert_tests:
+    name: 'Trunk failure alert tests'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: 'Run the tests'
+        run: bash .github/workflows/scripts/trunk-failure-alert.test.sh
+
   security_analysis:
     name: 'Security scan (Semgrep)'
     # Pull requests from forks get no secrets, so there is no key to clone the
@@ -325,6 +338,7 @@ jobs:
       - qa_js
       - js_tests
       - unit_tests
+      - trunk_alert_tests
       - security_analysis
       - integration_base
       - integration
@@ -350,7 +364,8 @@ jobs:
   notify:
     name: 'Notify Slack on failure'
     needs: all_checks
-    if: ${{ failure() && github.event_name == 'push' }}
+    # trunk-failure-watch.yml posts for trunk, after a retry.
+    if: ${{ failure() && github.event_name == 'push' && github.ref_name != 'trunk' }}
     uses: ./.github/workflows/notify-slack.yml
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

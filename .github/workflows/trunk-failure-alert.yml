@@ -1,0 +1,66 @@
+name: 'Trunk failure alert'
+
+# Shared by the repos in trunk-failure-watch.yml: Slack mention for the person
+# who merged a change that breaks trunk. It runs from this repo’s trunk so a fix
+# reaches every repo at once.
+
+on:
+  workflow_call:
+    inputs:
+      channel:
+        description: 'Slack channel ID to post in'
+        required: true
+        type: string
+      workflows:
+        description: 'Names of the workflows that count as the trunk build, one per line'
+        required: true
+        type: string
+      run_id:
+        description: 'The failed run. Empty checks whether trunk is still red.'
+        required: false
+        type: string
+      note:
+        description: 'A line to add at the end of each post'
+        required: false
+        type: string
+      script_ref:
+        description: 'Branch of mailpoet/mailpoet to take the script from, to test a change to it'
+        required: false
+        type: string
+        default: 'trunk'
+    secrets:
+      SLACK_BOT_TOKEN:
+        required: true
+      SLACK_USER_MAP:
+        required: true
+
+jobs:
+  alert:
+    name: 'Alert'
+    # The hourly check is short. A retry waits for the failed jobs, which is too
+    # long for the slim runner.
+    runs-on: ${{ inputs.run_id && 'ubuntu-latest' || 'ubuntu-slim' }}
+    timeout-minutes: ${{ inputs.run_id && 180 || 10 }}
+    permissions:
+      actions: write
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: mailpoet/mailpoet
+          ref: ${{ inputs.script_ref }}
+          sparse-checkout: .github/workflows/scripts
+          filter: blob:none
+          persist-credentials: false
+      - name: 'Retry or post to Slack'
+        run: bash .github/workflows/scripts/trunk-failure-alert.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          CHANNEL: ${{ inputs.channel }}
+          WORKFLOWS: ${{ inputs.workflows }}
+          RUN_ID: ${{ inputs.run_id }}
+          NOTE: ${{ inputs.note }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_USER_MAP: ${{ secrets.SLACK_USER_MAP }}
