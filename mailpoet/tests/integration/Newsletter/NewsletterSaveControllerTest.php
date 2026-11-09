@@ -505,6 +505,16 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     verify($newsletter->getCampaignName())->equals('Winter sale');
   }
 
+  public function testItFollowsSubjectWhenStoredNameHasEncodedEmoji() {
+    $newsletter = $this->createNewsletterWithPost('Sunny &#x2600;');
+    $newsletter->setSubject('Sunny ☀');
+    $this->entityManager->flush();
+
+    $newsletter = $this->saveController->save(['id' => $newsletter->getId(), 'subject' => 'Winter sale']);
+
+    verify($newsletter->getCampaignName())->equals('Winter sale');
+  }
+
   public function testItLeavesCampaignNameAloneWhenSubjectDoesNotChange() {
     $newsletter = $this->createNewsletterWithPost('New Email');
 

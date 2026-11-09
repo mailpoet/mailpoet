@@ -1,8 +1,32 @@
+import { JSDOM } from 'jsdom';
 import { getCampaignNameForSubject } from '../../../assets/js/src/mailpoet-email-editor-integration/sidebar/campaign-name';
 
 const defaultName = 'New Email';
 
 describe('getCampaignNameForSubject', () => {
+  let previousDocument: Document;
+
+  // decodeEntities needs a document.
+  before(() => {
+    previousDocument = globalThis.document;
+    globalThis.document = new JSDOM('').window.document;
+  });
+
+  after(() => {
+    globalThis.document = previousDocument;
+  });
+
+  it('follows the subject while a stored name is an encoded copy of it', () => {
+    expect(
+      getCampaignNameForSubject({
+        name: 'Sale &amp; more',
+        previousSubject: 'Sale & more',
+        newSubject: 'Winter sale',
+        defaultName,
+      }),
+    ).to.equal('Winter sale');
+  });
+
   it('follows the subject while the name is the default name', () => {
     expect(
       getCampaignNameForSubject({
