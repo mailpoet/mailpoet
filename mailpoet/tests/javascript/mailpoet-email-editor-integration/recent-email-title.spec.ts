@@ -1,6 +1,7 @@
 import { getRecentEmailTitle } from '../../../assets/js/src/mailpoet-email-editor-integration/recent-email-title';
 
 const defaultName = 'New Email';
+const defaultSubject = 'Subject';
 
 describe('getRecentEmailTitle', () => {
   [
@@ -35,6 +36,18 @@ describe('getRecentEmailTitle', () => {
       expected: 'October promo',
     },
     {
+      about: 'shows only the name when the subject is the default subject',
+      name: 'Template Two',
+      subject: defaultSubject,
+      expected: 'Template Two',
+    },
+    {
+      about: 'returns nothing when name and subject are both defaults',
+      name: defaultName,
+      subject: defaultSubject,
+      expected: '',
+    },
+    {
       about: 'returns nothing when there is no name or subject',
       name: defaultName,
       subject: '',
@@ -42,9 +55,9 @@ describe('getRecentEmailTitle', () => {
     },
   ].forEach(({ about, name, subject, expected }) => {
     it(about, () => {
-      expect(getRecentEmailTitle({ name, subject, defaultName })).to.equal(
-        expected,
-      );
+      expect(
+        getRecentEmailTitle({ name, subject, defaultName, defaultSubject }),
+      ).to.equal(expected);
     });
   });
 });
