@@ -25,4 +25,4 @@ download() {
 download ./do download:woo-commerce-zip "${WOO_CORE_VERSION:-11.2.2}"
 download ./do download:woo-commerce-subscriptions-zip "${WOO_SUBSCRIPTIONS_VERSION:-9.3.0}"
 download ./do download:woo-commerce-memberships-zip "${WOO_MEMBERSHIPS_VERSION:-1.30.2}"
-download ./do download:automate-woo-zip "${AUTOMATE_WOO_VERSION:-6.9.4}"
+download ./do download:automate-woo-zip "${AUTOMATE_WOO_VERSION:-6.9.5}"
