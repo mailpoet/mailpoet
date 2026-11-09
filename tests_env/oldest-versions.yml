@@ -3,7 +3,7 @@
 # the same values for the Premium jobs. .github/workflows/scripts/ updates the
 # plugin and WordPress versions in both.
 woo_core_version: 11.1.2
-woo_subscriptions_version: 9.2.0
+woo_subscriptions_version: 9.3.0
 woo_memberships_version: 1.29.2
 automate_woo_version: 6.8.3
 wordpress_version: 7.0.4
