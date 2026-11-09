@@ -28,7 +28,7 @@ abstract class AbstractBlock {
       return;
     }
     $screen = function_exists('get_current_screen') ? get_current_screen() : null;
-    $isEmailEditor = $screen && $screen->post_type === EmailEditor::MAILPOET_EMAIL_POST_TYPE; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $isEmailEditor = $screen && in_array($screen->post_type, EmailEditor::EDITOR_POST_TYPES, true); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     wp_add_inline_script(
       $handle,
       'window.mailpoet_is_email_editor = ' . ($isEmailEditor ? 'true' : 'false') . ';',

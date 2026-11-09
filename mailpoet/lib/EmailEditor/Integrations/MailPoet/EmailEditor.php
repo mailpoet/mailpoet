@@ -4,6 +4,9 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use MailPoet\API\REST\API;
 use MailPoet\Config\AccessControl;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\EmailPresetPatterns;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\EmailPresetPostType;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\RestApi\Api as EmailPresetsApi;
 use MailPoet\EmailEditor\Integrations\MailPoet\Endpoints\GenerateSubjectSuggestionsEndpoint;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\PatternsController;
 use MailPoet\EmailEditor\Integrations\MailPoet\Templates\TemplatesController;
@@ -12,6 +15,23 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditor {
   const MAILPOET_EMAIL_POST_TYPE = 'mailpoet_email';
+  // Post types that MailPoet's templates, patterns and personalization tags support.
+  const EDITOR_POST_TYPES = [self::MAILPOET_EMAIL_POST_TYPE, EmailPresetPostType::NAME];
+
+  private const POST_TYPE_CAPABILITIES = [
+    'read' => AccessControl::PERMISSION_MANAGE_EMAILS,
+    'edit_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+    'edit_others_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+    'edit_published_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+    'edit_private_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+    'publish_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+    'read_private_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+    'delete_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+    'delete_others_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+    'delete_published_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+    'delete_private_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+    'create_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
+  ];
 
   private WPFunctions $wp;
 
@@ -31,6 +51,12 @@ class EmailEditor {
 
   private NewslettersRepository $newslettersRepository;
 
+  private EmailPresetPostType $emailPresetPostType;
+
+  private EmailPresetPatterns $emailPresetPatterns;
+
+  private EmailPresetsApi $emailPresetsApi;
+
   private bool $editorAlreadyRendered = false;
 
   public function __construct(
@@ -42,7 +68,10 @@ class EmailEditor {
     TemplatesController $templatesController,
     Cli $cli,
     PersonalizationTagManager $personalizationTagManager,
-    NewslettersRepository $newslettersRepository
+    NewslettersRepository $newslettersRepository,
+    EmailPresetPostType $emailPresetPostType,
+    EmailPresetPatterns $emailPresetPatterns,
+    EmailPresetsApi $emailPresetsApi
   ) {
     $this->wp = $wp;
     $this->emailApiController = $emailApiController;
@@ -53,6 +82,9 @@ class EmailEditor {
     $this->emailEditorPreviewEmail = $emailEditorPreviewEmail;
     $this->personalizationTagManager = $personalizationTagManager;
     $this->newslettersRepository = $newslettersRepository;
+    $this->emailPresetPostType = $emailPresetPostType;
+    $this->emailPresetPatterns = $emailPresetPatterns;
+    $this->emailPresetsApi = $emailPresetsApi;
   }
 
   public function initialize(): void {
@@ -70,6 +102,11 @@ class EmailEditor {
     $this->extendEmailPostApi();
     $this->registerApiRoutes();
     $this->personalizationTagManager->initialize();
+    if ($this->emailPresetPostType->isEnabled()) {
+      $this->emailPresetPostType->registerMeta();
+      $this->emailPresetPatterns->initialize();
+      $this->emailPresetsApi->initialize();
+    }
   }
 
   public function addEmailPostType(array $postTypes): array {
@@ -82,22 +119,12 @@ class EmailEditor {
         ],
         'rewrite' => ['slug' => self::MAILPOET_EMAIL_POST_TYPE],
         'map_meta_cap' => true,
-        'capabilities' => [
-          'read' => AccessControl::PERMISSION_MANAGE_EMAILS,
-          'edit_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
-          'edit_others_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
-          'edit_published_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
-          'edit_private_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
-          'publish_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
-          'read_private_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
-          'delete_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
-          'delete_others_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
-          'delete_published_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
-          'delete_private_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
-          'create_posts' => AccessControl::PERMISSION_MANAGE_EMAILS,
-        ],
+        'capabilities' => self::POST_TYPE_CAPABILITIES,
       ],
     ];
+    if ($this->emailPresetPostType->isEnabled()) {
+      $postTypes[] = $this->emailPresetPostType->getDefinition(self::POST_TYPE_CAPABILITIES);
+    }
     return $postTypes;
   }
 
@@ -108,7 +135,7 @@ class EmailEditor {
     // We need to check early if we are on the email editor page. The check runs early so we can't use current_screen() here.
     if ($this->wp->isAdmin() && isset($_GET['post']) && isset($_GET['action']) && $_GET['action'] === 'edit' && is_numeric($_GET['post'])) {
       $post = $this->wp->getPost((int)$_GET['post']);
-      return $post && $post->post_type === self::MAILPOET_EMAIL_POST_TYPE; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      return $this->isEditorPost($post);
     }
     return false;
   }
@@ -122,6 +149,16 @@ class EmailEditor {
     });
   }
 
+  /**
+   * @param \WP_Post|mixed $post
+   */
+  public function isEditorPost($post): bool {
+    if (!$post instanceof \WP_Post) {
+      return false;
+    }
+    return $post->post_type === self::MAILPOET_EMAIL_POST_TYPE || $this->emailPresetPostType->isPreset($post); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  }
+
   public function extendEmailPostApi() {
     $this->wp->registerRestField(self::MAILPOET_EMAIL_POST_TYPE, 'mailpoet_data', [
       'get_callback' => [$this->emailApiController, 'getEmailData'],
@@ -132,7 +169,7 @@ class EmailEditor {
 
   public function replaceEditor($replace, $post) {
     $currentScreen = $this->wp->getCurrentScreen();
-    if ($post->post_type === self::MAILPOET_EMAIL_POST_TYPE && $currentScreen) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if ($currentScreen && $this->isEditorPost($post)) {
       // The no-arg WP_Screen::get() re-fires this filter, and some plugins (e.g. Yoast SEO
       // Premium) call it during admin_enqueue_scripts — while render() is still printing
       // the admin header. Rendering again would echo a second editor container into <head>
@@ -157,6 +194,12 @@ class EmailEditor {
   public function extendPreviewPersonalizerContext(array $context): array {
     // Get the current post being previewed
     $post = $this->wp->getPost();
+    if ($this->emailPresetPostType->isPreset($post)) {
+      // A preset has no newsletter, so the current user is the recipient.
+      $context['recipient_email'] = $context['recipient_email'] ?? $this->wp->wpGetCurrentUser()->user_email;
+      $context['is_preview'] = true;
+      return $context;
+    }
     if (!$post || $post->post_type !== self::MAILPOET_EMAIL_POST_TYPE) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       return $context;
     }

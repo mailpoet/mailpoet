@@ -171,8 +171,8 @@ class Functions {
     return wp_register_ability($name, $args);
   }
 
-  public function currentUserCan($capability) {
-    return current_user_can($capability);
+  public function currentUserCan($capability, ...$args) {
+    return current_user_can($capability, ...$args);
   }
 
   public function wpDoingCron(): bool {
@@ -745,6 +745,40 @@ class Functions {
     return wp_delete_post($id, $force);
   }
 
+  /**
+   * @return \WP_Post|false|null
+   */
+  public function wpTrashPost(int $id) {
+    return wp_trash_post($id);
+  }
+
+  /**
+   * @return \WP_Post|false|null
+   */
+  public function wpUntrashPost(int $id) {
+    return wp_untrash_post($id);
+  }
+
+  public function wpCountPosts(string $type = 'post', string $perm = ''): \stdClass {
+    return wp_count_posts($type, $perm);
+  }
+
+  public function wpQuery(array $args): \WP_Query {
+    return new \WP_Query($args);
+  }
+
+  public function registerPostMeta(string $postType, string $metaKey, array $args = []): bool {
+    return register_post_meta($postType, $metaKey, $args);
+  }
+
+  public function registerBlockPattern(string $name, array $properties): bool {
+    return register_block_pattern($name, $properties);
+  }
+
+  public function registerBlockPatternCategory(string $name, array $properties): bool {
+    return register_block_pattern_category($name, $properties);
+  }
+
   public function wpJsonEncode($data, $options = 0, $depth = 512) {
     return wp_json_encode($data, $options, $depth);
   }
@@ -1104,7 +1138,7 @@ class Functions {
 
   /**
    * @param string|array $value
-   * @return string|array
+   * @return ($value is array ? array : string)
    */
   public function wpSlash($value) {
     return wp_slash($value);

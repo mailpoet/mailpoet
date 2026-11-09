@@ -13,6 +13,7 @@ use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as EditorInitController;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\EmailPresetPostType;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -67,6 +68,8 @@ class EditorPageRenderer {
 
   private AjaxErrorMessages $ajaxErrorMessages;
 
+  private EmailPresetPostType $emailPresetPostType;
+
   public function __construct(
     WPFunctions $wp,
     CdnAssetUrl $cdnAssetUrl,
@@ -83,7 +86,8 @@ class EditorPageRenderer {
     FeaturesController $featuresController,
     CapabilitiesManager $capabilitiesManager,
     TrackingConsentController $trackingConsentController,
-    AjaxErrorMessages $ajaxErrorMessages
+    AjaxErrorMessages $ajaxErrorMessages,
+    EmailPresetPostType $emailPresetPostType
   ) {
     $this->wp = $wp;
     $this->settingsController = Email_Editor_Container::container()->get(Settings_Controller::class);
@@ -104,6 +108,7 @@ class EditorPageRenderer {
     $this->capabilitiesManager = $capabilitiesManager;
     $this->trackingConsentController = $trackingConsentController;
     $this->ajaxErrorMessages = $ajaxErrorMessages;
+    $this->emailPresetPostType = $emailPresetPostType;
   }
 
   public function render() {
@@ -111,13 +116,20 @@ class EditorPageRenderer {
     $rawPostId = $_GET['post'] ?? null;
     $postId = is_numeric($rawPostId) ? intval($rawPostId) : 0;
     $post = $this->wp->getPost($postId);
-    if (!$post instanceof \WP_Post || $post->post_type !== EditorInitController::MAILPOET_EMAIL_POST_TYPE) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if (!$post instanceof \WP_Post) {
       return;
     }
     $currentPostType = $post->post_type; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    $newsletter = $this->newslettersRepository->findOneBy(['wpPost' => $postId]);
-    if (!$newsletter instanceof NewsletterEntity) {
-      return;
+    $isEmailPreset = $this->emailPresetPostType->isPreset($post);
+    // A preset has no newsletter row; an email must have one.
+    $newsletter = null;
+    if (!$isEmailPreset) {
+      $newsletter = $currentPostType === EditorInitController::MAILPOET_EMAIL_POST_TYPE
+        ? $this->newslettersRepository->findOneBy(['wpPost' => $postId])
+        : null;
+      if (!$newsletter instanceof NewsletterEntity) {
+        return;
+      }
     }
     $this->dependencyNotice->checkDependenciesAndEventuallyShowNotice();
 
@@ -171,11 +183,11 @@ class EditorPageRenderer {
 
     $currentUserEmail = $this->wp->wpGetCurrentUser()->user_email;
 
-    $isAutomationNewsletter = $newsletter->isAutomation() || $newsletter->isAutomationTransactional();
-    $automationId = $newsletter->getOptionValue('automationId');
+    $isAutomationNewsletter = $newsletter && ($newsletter->isAutomation() || $newsletter->isAutomationTransactional());
+    $automationId = $newsletter ? $newsletter->getOptionValue('automationId') : null;
 
     $listingUrl = 'page=mailpoet-newsletters';
-    $sendUrl = 'page=mailpoet-newsletters#/send/' . $newsletter->getId();
+    $sendUrl = $newsletter ? 'page=mailpoet-newsletters#/send/' . $newsletter->getId() : $listingUrl;
     $backUrl = 'page=mailpoet-newsletters';
 
     if ($isAutomationNewsletter) {
@@ -290,18 +302,19 @@ JS;
     // Enqueue media library scripts
     $this->wp->wpEnqueueMedia();
 
-    $this->preloadRestApiData($post);
+    $this->preloadRestApiData($post, $newsletter);
 
     require_once ABSPATH . 'wp-admin/admin-header.php';
     echo '<div id="mailpoet-email-editor" class="block-editor block-editor__container hide-if-no-js"></div>';
   }
 
-  private function preloadRestApiData(\WP_Post $post): void {
+  private function preloadRestApiData(\WP_Post $post, ?NewsletterEntity $newsletter): void {
     $userThemePostId = $this->userTheme->get_user_theme_post()->ID;
     $templateSlug = get_post_meta($post->ID, '_wp_page_template', true);
+    $postType = $post->post_type; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $routes = [
-      '/wp/v2/mailpoet_email/' . intval($post->ID) . '?context=edit',
-      '/wp/v2/types/mailpoet_email?context=edit',
+      '/wp/v2/' . $postType . '/' . intval($post->ID) . '?context=edit',
+      '/wp/v2/types/' . $postType . '?context=edit',
       '/wp/v2/global-styles/' . intval($userThemePostId) . '?context=edit', // Global email styles
       '/wp/v2/block-patterns/patterns',
       '/wp/v2/templates?context=edit',
@@ -313,7 +326,7 @@ JS;
 
     if (is_string($templateSlug) && $templateSlug !== '') {
       $routes[] = '/wp/v2/templates/lookup?slug=' . $templateSlug;
-    } else {
+    } elseif ($newsletter) {
       // Keep the query in sync with the woocommerce_email_editor_recent_emails_query filter
       // in assets/js/src/mailpoet-email-editor-integration/index.ts. If the two differ,
       // the editor asks for a different path and the preloaded data is not used.
@@ -323,7 +336,6 @@ JS;
     // Preload personalization tags for automation emails
     // Note: The registry is already extended in render() before preloading.
     // We include post_id to match the WooCommerce Email Editor's request URL.
-    $newsletter = $this->newslettersRepository->findOneBy(['wpPost' => $post->ID]);
     if ($newsletter && ($newsletter->isAutomation() || $newsletter->isAutomationTransactional())) {
       $routes[] = '/woocommerce-email-editor/v1/personalization_tags?context=view&per_page=-1&post_id=' . intval($post->ID);
     }

@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Patterns;
 
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AbandonedCartPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AbandonedCartReminderPattern;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\AbandonedCartWithDiscountPattern;
@@ -195,6 +196,10 @@ class PatternsController {
     foreach ($this->patterns as $pattern) {
       $patternName = $pattern->get_namespace() . '/' . $pattern->get_name();
       $patternProperties = $pattern->get_properties();
+      // Patterns for block emails are also offered when editing a preset.
+      if (in_array(EmailEditor::MAILPOET_EMAIL_POST_TYPE, $patternProperties['postTypes'] ?? [], true)) {
+        $patternProperties['postTypes'] = array_values(array_unique(array_merge($patternProperties['postTypes'], EmailEditor::EDITOR_POST_TYPES)));
+      }
 
       /**
        * Filters pattern data before it is registered as a block pattern.
