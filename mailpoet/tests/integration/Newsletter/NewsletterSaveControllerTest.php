@@ -515,6 +515,16 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     verify($newsletter->getCampaignName())->equals('Winter sale');
   }
 
+  public function testItFollowsSubjectWhenNameAndSubjectHaveTheSameEntityText() {
+    $newsletter = $this->createNewsletterWithPost('Fish &amp; Chips');
+    $newsletter->setSubject('Fish &amp; Chips');
+    $this->entityManager->flush();
+
+    $newsletter = $this->saveController->save(['id' => $newsletter->getId(), 'subject' => 'Winter sale']);
+
+    verify($newsletter->getCampaignName())->equals('Winter sale');
+  }
+
   public function testItLeavesCampaignNameAloneWhenSubjectDoesNotChange() {
     $newsletter = $this->createNewsletterWithPost('New Email');
 

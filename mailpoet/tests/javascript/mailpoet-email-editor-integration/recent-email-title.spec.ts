@@ -37,6 +37,12 @@ describe('getRecentEmailTitle', () => {
       expected: 'Sale & more',
     },
     {
+      about: 'shows one label when name and subject have the same entity text',
+      name: 'Fish &amp; Chips',
+      subject: 'Fish &amp; Chips',
+      expected: 'Fish &amp; Chips',
+    },
+    {
       about: 'decodes a stored name that differs from the subject',
       name: 'Tips &amp; tricks',
       subject: 'Autumn sale',

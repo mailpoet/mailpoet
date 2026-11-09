@@ -21,11 +21,11 @@ export function getCampaignNameForSubject({
   defaultName,
 }: CampaignNameForSubjectArgs): string | null {
   // Titles are stored entity-encoded for users without unfiltered_html.
-  const decodedName = decodeEntities(name);
+  const names = [name, decodeEntities(name)];
   const followsSubject =
-    decodedName === '' ||
-    decodedName === defaultName ||
-    decodedName === previousSubject;
+    name === '' ||
+    names.includes(defaultName) ||
+    names.includes(previousSubject);
   if (!followsSubject) {
     return null;
   }

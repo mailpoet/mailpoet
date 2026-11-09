@@ -543,8 +543,9 @@ class NewsletterSaveController {
       return;
     }
     // WordPress can store titles entity-encoded: markup for users without unfiltered_html, emoji on utf8 tables.
-    $name = html_entity_decode($post->getPostTitle(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
-    if ($name !== '' && $name !== $this->getDefaultEmailName() && $name !== $previousSubject) {
+    $title = $post->getPostTitle();
+    $names = [$title, html_entity_decode($title, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401)];
+    if ($title !== '' && !in_array($this->getDefaultEmailName(), $names, true) && !in_array($previousSubject, $names, true)) {
       return;
     }
     $this->wp->wpUpdatePost([
