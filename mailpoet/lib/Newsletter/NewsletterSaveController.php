@@ -542,7 +542,8 @@ class NewsletterSaveController {
     if (!$post || $newSubject === $previousSubject) {
       return;
     }
-    $name = $post->getPostTitle();
+    // Titles are stored entity-encoded for users without unfiltered_html.
+    $name = htmlspecialchars_decode($post->getPostTitle(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
     if ($name !== '' && $name !== $this->getDefaultEmailName() && $name !== $previousSubject) {
       return;
     }
