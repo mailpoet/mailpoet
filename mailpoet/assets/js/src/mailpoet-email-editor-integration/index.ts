@@ -27,6 +27,12 @@ import { registerLatestPostsTemplateBlocks } from './latest-posts-template-block
 import { registerOrderProductCollectionsWhenAvailable } from './order-product-collections';
 import { store as emailEditorIntegrationStore } from './store';
 import { MAILPOET_EMAIL_POST_TYPE } from './constants';
+import { getRecentEmailTitle } from './recent-email-title';
+
+type RecentEmailPost = {
+  title?: { raw?: string };
+  mailpoet_data?: { subject?: string };
+};
 
 registerTranslations();
 registerCouponCodeRestrictToSubscriberExtension();
@@ -190,15 +196,15 @@ addFilter(
   () => !!window.mailpoet_analytics_enabled,
 );
 
-// use mailpoet data subject if available
 addFilter(
   'woocommerce_email_editor_preferred_template_title',
   'mailpoet/email-editor-integration',
-  (...args) => {
-    const [, post] = args;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return post?.mailpoet_data?.subject || ''; // use MailPoet subject as title
-  },
+  (_title: string, post: RecentEmailPost): string =>
+    getRecentEmailTitle({
+      name: post?.title?.raw || '',
+      subject: post?.mailpoet_data?.subject || '',
+      defaultName: __('New Email', 'mailpoet'),
+    }),
 );
 
 // Also list draft, scheduled and sending emails. They all use the `draft` post status.
