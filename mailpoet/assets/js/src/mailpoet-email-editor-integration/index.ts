@@ -28,10 +28,12 @@ import { registerOrderProductCollectionsWhenAvailable } from './order-product-co
 import { store as emailEditorIntegrationStore } from './store';
 import { MAILPOET_EMAIL_POST_TYPE } from './constants';
 import { getRecentEmailTitle } from './recent-email-title';
+import { getDefaultEmailName } from './sidebar/campaign-name';
+import type { MailPoetEmailData } from './shared/mailpoet-email-data';
 
 type RecentEmailPost = {
   title?: { raw?: string };
-  mailpoet_data?: { subject?: string };
+  mailpoet_data?: Pick<MailPoetEmailData, 'subject'>;
 };
 
 registerTranslations();
@@ -203,7 +205,7 @@ addFilter(
     getRecentEmailTitle({
       name: post?.title?.raw || '',
       subject: post?.mailpoet_data?.subject || '',
-      defaultName: __('New Email', 'mailpoet'),
+      defaultName: getDefaultEmailName(),
     }),
 );
 
