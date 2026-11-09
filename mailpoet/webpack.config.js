@@ -252,6 +252,16 @@ const baseConfig = {
   },
 };
 
+// React from WordPress, mapped like @wordpress/dependency-extraction-webpack-plugin
+// does. The PHP that registers these bundles lists the matching script
+// handles: react, react-dom, react-jsx-runtime.
+const wordPressReactExternals = {
+  react: 'React',
+  'react-dom': 'ReactDOM',
+  'react-dom/client': 'ReactDOM',
+  'react/jsx-runtime': 'ReactJSXRuntime',
+};
+
 // Admin config
 const adminConfig = {
   name: 'admin',
@@ -321,6 +331,7 @@ const adminConfig = {
   },
   externals: {
     jquery: 'jQuery',
+    ...wordPressReactExternals,
   },
 };
 
@@ -504,6 +515,7 @@ const postEditorBlock = {
   entry: {
     post_editor_block: 'post-editor-block/blocks.jsx',
   },
+  externals: wordPressReactExternals,
 };
 
 // Marketing Optin config

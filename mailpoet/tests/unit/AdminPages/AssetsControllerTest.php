@@ -124,6 +124,28 @@ class AssetsControllerTest extends \MailPoetUnitTest {
     $this->assertSame('mailpoet-version', $result['enqueuedScripts'][1][3]);
   }
 
+  public function testAdminScriptsLoadReactFromWordPress(): void {
+    $renderer = $this->createMock(Renderer::class);
+    $renderer->method('getJsAsset')->willReturnArgument(0);
+    $wp = $this->createMock(WPFunctions::class);
+    $registeredScriptDeps = [];
+    $registerScriptCallback =
+      /**
+       * @param string|false $src
+       * @param array<int, string> $deps
+       */
+      function (string $handle, $src = '', array $deps = []) use (&$registeredScriptDeps): bool {
+        $registeredScriptDeps[$handle] = $deps;
+        return true;
+      };
+    $wp->method('wpRegisterScript')
+      ->willReturnCallback($registerScriptCallback);
+
+    (new AssetsController($renderer, $wp))->setupAdminPagesDependencies();
+
+    $this->assertSame(['react', 'react-dom', 'react-jsx-runtime'], $registeredScriptDeps['mailpoet_runtime']);
+  }
+
   /**
    * @dataProvider woocommerceComponentsStyleUsers
    */
