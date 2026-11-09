@@ -206,6 +206,7 @@ addFilter(
       name: post?.title?.raw || '',
       subject: post?.mailpoet_data?.subject || '',
       defaultName: getDefaultEmailName(),
+      defaultSubject: __('Subject', 'mailpoet'),
     }),
 );
 
