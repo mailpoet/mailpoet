@@ -77,7 +77,7 @@ class ManageSubscriptionLinkCest {
     $i->selectOption($formStatusElement, 'Unsubscribed');
     $i->dontSeeElement('.mailpoet-manage-subscription-list-fields');
     $i->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -$approximateSaveButtonHeight);
-    $i->click('Save changes');
+    $i->clickAndWaitForPageReload('Save changes');
     $i->waitForElement($formStatusElement);
     $i->seeOptionIsSelected($formStatusElement, 'Unsubscribed');
     $i->dontSeeElement('.mailpoet-manage-subscription-list-fields');
@@ -87,7 +87,7 @@ class ManageSubscriptionLinkCest {
     $i->selectOption($formStatusElement, 'Subscribed');
     $i->seeElement('.mailpoet-manage-subscription-list-fields');
     $i->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -$approximateSaveButtonHeight);
-    $i->click('Save changes');
+    $i->clickAndWaitForPageReload('Save changes');
     $i->waitForElement($formStatusElement);
     $i->seeOptionIsSelected($formStatusElement, 'Subscribed');
     $i->seeNoJSErrors();
@@ -97,7 +97,7 @@ class ManageSubscriptionLinkCest {
     $secondListYes = $this->getListChoiceSelector(self::ADDITIONAL_SECOND_FANCY_LIST, 'subscribed');
     $i->checkOption($firstListYes);
     $i->checkOption($secondListYes);
-    $i->click('Save changes');
+    $i->clickAndWaitForPageReload('Save changes');
     $i->waitForElement($formStatusElement);
     $i->canSeeCheckboxIsChecked($firstListYes);
     $i->canSeeCheckboxIsChecked($secondListYes);
@@ -165,7 +165,7 @@ class ManageSubscriptionLinkCest {
     $i->selectOption($formStatusElement, 'Subscribed');
     $approximateSaveButtonHeight = 50; // Used for scroll offset to ensure that button is not hidden above the top fold
     $i->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -$approximateSaveButtonHeight);
-    $i->click('Save changes');
+    $i->clickAndWaitForPageReload('Save changes');
     $i->waitForElement($formStatusElement);
     $i->seeOptionIsSelected($formStatusElement, 'Subscribed');
 
@@ -177,7 +177,7 @@ class ManageSubscriptionLinkCest {
     $i->selectOption($formStatusElement, 'Subscribed');
     $approximateSaveButtonHeight = 50; // Used for scroll offset to ensure that button is not hidden above the top fold
     $i->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -$approximateSaveButtonHeight);
-    $i->click('Save changes');
+    $i->clickAndWaitForPageReload('Save changes');
     $i->waitForElement($formStatusElement);
     $i->seeOptionIsSelected($formStatusElement, 'Subscribed');
 
