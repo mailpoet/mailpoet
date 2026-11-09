@@ -19,7 +19,7 @@ export function getRecentEmailTitle({
   defaultSubject,
 }: RecentEmailTitleArgs): string {
   // Titles are stored entity-encoded for users without unfiltered_html.
-  const decodedName = decodeEntities(name);
+  const decodedName = name === subject ? name : decodeEntities(name);
   const usefulName = decodedName === defaultName ? '' : decodedName;
   const usefulSubject = subject === defaultSubject ? '' : subject;
   if (usefulName === usefulSubject) {

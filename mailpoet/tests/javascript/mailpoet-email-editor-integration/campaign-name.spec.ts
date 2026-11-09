@@ -16,6 +16,17 @@ describe('getCampaignNameForSubject', () => {
     globalThis.document = previousDocument;
   });
 
+  it('follows the subject while name and subject have the same entity text', () => {
+    expect(
+      getCampaignNameForSubject({
+        name: 'Fish &amp; Chips',
+        previousSubject: 'Fish &amp; Chips',
+        newSubject: 'Winter sale',
+        defaultName,
+      }),
+    ).to.equal('Winter sale');
+  });
+
   it('follows the subject while a stored name is an encoded copy of it', () => {
     expect(
       getCampaignNameForSubject({
