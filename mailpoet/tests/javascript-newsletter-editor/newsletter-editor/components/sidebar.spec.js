@@ -208,39 +208,83 @@ describe('Sidebar', function () {
       });
     });
 
-    describe('content background change', function () {
-      function renderStylesView(brandingColor, isWoocommerceTransactional) {
+    describe('background change', function () {
+      var contentBackground = '#mailpoet_newsletter_background_color';
+      var globalBackground = '#mailpoet_background_color';
+
+      function renderStylesView(options) {
         var styles = new Backbone.SuperModel({
           link: { fontColor: '#123456' },
-          wrapper: { backgroundColor: '#ffffff' },
-          woocommerce: { brandingColor: brandingColor },
+          wrapper: {
+            backgroundColor: options.contentBackgroundColor || '#ffffff',
+          },
+          body: { backgroundColor: '#ffffff' },
+          woocommerce: { brandingColor: options.brandingColor },
         });
         var stylesView = new SidebarComponent.SidebarStylesView({
           model: styles,
           availableStyles: new Backbone.SuperModel({}),
-          isWoocommerceTransactional: isWoocommerceTransactional,
+          isWoocommerceTransactional: options.isWoocommerceTransactional,
         });
         stylesView.render();
-        stylesView
-          .$('#mailpoet_newsletter_background_color')
-          .val('#111111')
-          .trigger('change');
-        return styles;
+        return { styles: styles, view: stylesView };
       }
 
-      it('makes a light brand the link color on a dark background in WooCommerce emails', function () {
-        var styles = renderStylesView('#ffffff', true);
-        expect(styles.get('link.fontColor')).to.equal('#ffffff');
+      function changeColor(rendered, field, color) {
+        rendered.view.$(field).val(color).trigger('change');
+        return rendered.styles.get('link.fontColor');
+      }
+
+      it('makes a light brand the link color on a dark content background in WooCommerce emails', function () {
+        var rendered = renderStylesView({
+          brandingColor: '#ffffff',
+          isWoocommerceTransactional: true,
+        });
+        expect(changeColor(rendered, contentBackground, '#111111')).to.equal(
+          '#ffffff',
+        );
       });
 
-      it('makes the heading color the link color for a dark brand on a dark background in WooCommerce emails', function () {
-        var styles = renderStylesView('#7a00ff', true);
-        expect(styles.get('link.fontColor')).to.equal('#ffffff');
+      it('makes the heading color the link color for a dark brand on a dark content background in WooCommerce emails', function () {
+        var rendered = renderStylesView({
+          brandingColor: '#7a00ff',
+          isWoocommerceTransactional: true,
+        });
+        expect(changeColor(rendered, contentBackground, '#111111')).to.equal(
+          '#ffffff',
+        );
+      });
+
+      it('picks the link color for the global background when the content background is cleared in WooCommerce emails', function () {
+        var rendered = renderStylesView({
+          brandingColor: '#333333',
+          isWoocommerceTransactional: true,
+        });
+        expect(changeColor(rendered, contentBackground, '')).to.equal(
+          '#333333',
+        );
+      });
+
+      it('recomputes the link color on a global background change when the content background is cleared in WooCommerce emails', function () {
+        var rendered = renderStylesView({
+          brandingColor: '#333333',
+          contentBackgroundColor: 'transparent',
+          isWoocommerceTransactional: true,
+        });
+        expect(changeColor(rendered, globalBackground, '#111111')).to.equal(
+          '#ffffff',
+        );
       });
 
       it('keeps the link color in other emails', function () {
-        var styles = renderStylesView('#ffffff', false);
-        expect(styles.get('link.fontColor')).to.equal('#123456');
+        var rendered = renderStylesView({
+          brandingColor: '#ffffff',
+          isWoocommerceTransactional: false,
+        });
+        changeColor(rendered, contentBackground, '#111111');
+        expect(changeColor(rendered, globalBackground, '#111111')).to.equal(
+          '#123456',
+        );
       });
     });
   });

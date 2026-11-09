@@ -162,7 +162,9 @@ class TransactionalEmails {
       $result[$key] = $value ?: $default;
     }
     $result['base_text_color'] = $this->woocommerceHelper->wcLightOrDark($result['base_color'], '#202020', '#ffffff');
-    if ($this->woocommerceHelper->wcHexIsLight($result['body_background_color'])) {
+    // A cleared content background shows the global background behind the text.
+    $contentBackgroundColor = $result['body_background_color'] === 'transparent' ? $result['background_color'] : $result['body_background_color'];
+    if ($this->woocommerceHelper->wcHexIsLight($contentBackgroundColor)) {
       $result['link_color'] = $this->woocommerceHelper->wcHexIsLight($result['base_color']) ? $result['base_text_color'] : $result['base_color'];
     } else {
       $result['link_color'] = $this->woocommerceHelper->wcHexIsLight($result['base_color']) ? $result['base_color'] : $result['base_text_color'];

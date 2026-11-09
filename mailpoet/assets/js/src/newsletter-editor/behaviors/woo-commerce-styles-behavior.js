@@ -20,27 +20,23 @@ BL.WooCommerceStylesBehavior = Marionette.Behavior.extend({
           'woocommerce.headingFontColor',
           this.getHeadingFontColor(brandingColor),
         );
-        this.view.model.set(
-          'link.fontColor',
-          this.getLinkFontColor(
-            brandingColor,
-            this.view.model.get('wrapper.backgroundColor'),
-          ),
-        );
+        this.setLinkFontColor({ brandingColor });
       },
       'change #mailpoet_newsletter_background_color':
         function changeContentBackgroundColor(event) {
-          if (!this.view.isWoocommerceTransactional) {
-            return;
+          if (this.view.isWoocommerceTransactional) {
+            this.setLinkFontColor({
+              contentBackgroundColor: event.target.value,
+            });
           }
-          this.view.model.set(
-            'link.fontColor',
-            this.getLinkFontColor(
-              this.view.model.get('woocommerce.brandingColor'),
-              event.target.value,
-            ),
-          );
         },
+      'change #mailpoet_background_color': function changeGlobalBackgroundColor(
+        event,
+      ) {
+        if (this.view.isWoocommerceTransactional) {
+          this.setLinkFontColor({ globalBackgroundColor: event.target.value });
+        }
+      },
       'change #mailpoet_wc_heading_font_family':
         function changeHeadingfFontFamily(event) {
           this.view.model.set(
@@ -60,8 +56,28 @@ BL.WooCommerceStylesBehavior = Marionette.Behavior.extend({
   getHeadingFontColor(brandingColor) {
     return this.wcHexIsLight(brandingColor) ? '#202020' : '#ffffff';
   },
+  // Pass the changed color from the event: the view may update the model after this behavior runs.
+  setLinkFontColor(changedColors) {
+    const model = this.view.model;
+    const colors = {
+      brandingColor: model.get('woocommerce.brandingColor'),
+      contentBackgroundColor: model.get('wrapper.backgroundColor'),
+      globalBackgroundColor: model.get('body.backgroundColor'),
+      ...changedColors,
+    };
+    model.set('link.fontColor', this.getLinkFontColor(colors));
+  },
   // Keep in sync with TransactionalEmails::getWCEmailSettings(), which sets the link color on editor load.
-  getLinkFontColor(brandingColor, backgroundColor) {
+  getLinkFontColor({
+    brandingColor,
+    contentBackgroundColor,
+    globalBackgroundColor,
+  }) {
+    // A cleared content background shows the global background behind the text.
+    const backgroundColor =
+      contentBackgroundColor && contentBackgroundColor !== 'transparent'
+        ? contentBackgroundColor
+        : globalBackgroundColor;
     const isBrandingLight = this.wcHexIsLight(brandingColor);
     const headingFontColor = this.getHeadingFontColor(brandingColor);
     if (this.wcHexIsLight(backgroundColor)) {
