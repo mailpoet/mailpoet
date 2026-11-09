@@ -114,6 +114,32 @@ class LinksTest extends \MailPoetTest {
     );
   }
 
+  public function testItHashesLinksWithHtmlEncodedAmpersandsByTheirUrl() {
+    // the HTML part writes "&" as "&amp;", the text part as "&"
+    $template = '<a name="top"></a><a href="https://example.com/page?a=1&amp;b=2">some site</a> [some site](https://example.com/page?a=1&b=2)';
+    [$updatedContent, $hashedLinks] = $this->links->process($template, 0, 0);
+
+    verify($hashedLinks)->arrayCount(1);
+    verify($hashedLinks[0]['link'])->equals('https://example.com/page?a=1&b=2');
+    $dataTag = Links::DATA_TAG_CLICK . '-' . $hashedLinks[0]['hash'];
+    verify($updatedContent)->equals('<a name="top"></a><a href="' . $dataTag . '">some site</a> [some site](' . $dataTag . ')');
+  }
+
+  public function testItDoesNotRehashLinksSavedWithHtmlEncodedAmpersands() {
+    // links saved before they were stored with plain ampersands keep "&amp;"
+    $link = $this->newsletterLinkFactory
+      ->withHash('123')
+      ->withUrl('https://example.com/page?a=1&amp;b=2')
+      ->create();
+
+    $template = '<a href="https://example.com/page?a=1&amp;b=2">some site</a> [some site](https://example.com/page?a=1&b=2)';
+    [$updatedContent, $hashedLinks] = $this->links->process($template, $link->getNewsletter()->getId(), $link->getQueue()->getId());
+
+    $dataTag = Links::DATA_TAG_CLICK . '-123';
+    verify($updatedContent)->equals('<a href="' . $dataTag . '">some site</a> [some site](' . $dataTag . ')');
+    verify($hashedLinks)->arrayCount(1);
+  }
+
   public function testItDoesNotReplaceUnprocessedLinks() {
     $template = '<a href="http://example.com">some site</a> [link:some_link_shortcode]';
 

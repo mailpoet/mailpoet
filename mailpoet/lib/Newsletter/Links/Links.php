@@ -87,17 +87,27 @@ class Links {
       if (!$link->href) continue;
       $extractedLinks[] = [
         'type' => self::LINK_TYPE_URL,
-        'link' => $link->href,
+        'link' => self::decodeAmpersands($link->href),
       ];
     }
     return array_unique($extractedLinks, SORT_REGULAR);
+  }
+
+  /**
+   * An href is read from the HTML as it is written there, where "&" is usually "&amp;" ("&#038;" by
+   * esc_url()), while the text part has a plain "&". Links are stored and matched with plain ampersands;
+   * only ampersands are decoded, once.
+   */
+  public static function decodeAmpersands(string $url): string {
+    return strtr($url, ['&amp;' => '&', '&#038;' => '&', '&#38;' => '&']);
   }
 
   public function replace($content, $processedLinks) {
     // replace HTML anchor tags
     $DOM = DomParser::parseStr($content);
     foreach ($DOM->query('a') as $link) {
-      $linkToReplace = $link->href;
+      if (!is_string($link->href)) continue;
+      $linkToReplace = self::decodeAmpersands($link->href);
       $replacementLink = (!empty($processedLinks[$linkToReplace]['processed_link'])) ?
         $processedLinks[$linkToReplace]['processed_link'] :
         null;
@@ -342,7 +352,7 @@ class Links {
   private function hash($extractedLinks, $savedLinks) {
     $processedLinks = array_map(function($link) {
       $link['type'] = Links::LINK_TYPE_URL;
-      $link['link'] = $link['url'];
+      $link['link'] = self::decodeAmpersands($link['url']);
       $link['processed_link'] = self::DATA_TAG_CLICK . '-' . $link['hash'];
       return $link;
     }, $savedLinks);
@@ -364,7 +374,8 @@ class Links {
 
     $savedLinks = [];
     foreach ($links as $link) {
-      $savedLinks[$link->getUrl()] = $link->toArray();
+      // keyed like extract() returns links; links saved earlier keep "&amp;"
+      $savedLinks[self::decodeAmpersands($link->getUrl())] = $link->toArray();
     }
     return $savedLinks;
   }

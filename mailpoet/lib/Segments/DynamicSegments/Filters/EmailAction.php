@@ -12,6 +12,7 @@ use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
+use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Util\Security;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
@@ -168,7 +169,7 @@ class EmailAction implements Filter {
   private function buildSelectedLinkWhere(EmailLinkFilter $linkFilter, string $parameterSuffix): string {
     if ($linkFilter->matchesByUrl()) {
       $alias = $linkFilter->getStatsLinkAlias();
-      return "LOWER($alias.url) IN (:linkUrls$parameterSuffix)";
+      return $this->normalizeUrlColumnForMatching("$alias.url") . " IN (:linkUrls$parameterSuffix)";
     }
     return 'stats.link_id IN (:links' . $parameterSuffix . ')';
   }
@@ -176,7 +177,7 @@ class EmailAction implements Filter {
   private function buildClickedAllHavingClause(EmailLinkFilter $linkFilter, int $newsletterId, string $linksTable): string {
     if ($linkFilter->matchesByUrl()) {
       $alias = $linkFilter->getStatsLinkAlias();
-      return "COUNT(DISTINCT LOWER($alias.url)) = " . count($linkFilter->getLinkUrls());
+      return 'COUNT(DISTINCT ' . $this->normalizeUrlColumnForMatching("$alias.url") . ') = ' . count($linkFilter->getLinkUrls());
     }
     if ($linkFilter->getLinkIds()) {
       return 'COUNT(DISTINCT stats.link_id) = ' . count($linkFilter->getLinkIds());
@@ -184,13 +185,13 @@ class EmailAction implements Filter {
     // User selected "all of" but no specific links — they need to have clicked every link of the newsletter.
     $alias = $linkFilter->getStatsLinkAlias();
     $totalLinkCount = $this->countNewsletterLinks($linksTable, $newsletterId, $linkFilter->isAutomationNewsletter());
-    $clickCountSelect = $linkFilter->aggregatesAllLinksByUrl() ? "COUNT(DISTINCT LOWER($alias.url))" : 'COUNT(1)';
+    $clickCountSelect = $linkFilter->aggregatesAllLinksByUrl() ? 'COUNT(DISTINCT ' . $this->normalizeUrlColumnForMatching("$alias.url") . ')' : 'COUNT(1)';
     return $clickCountSelect . ' = ' . $totalLinkCount;
   }
 
   private function countNewsletterLinks(string $linksTable, int $newsletterId, bool $isAutomationNewsletter): int {
     $linksQueryBuilder = $this->entityManager->getConnection()->createQueryBuilder();
-    $linkCountSelect = $isAutomationNewsletter ? 'COUNT(DISTINCT LOWER(url))' : 'COUNT(id)';
+    $linkCountSelect = $isAutomationNewsletter ? 'COUNT(DISTINCT ' . $this->normalizeUrlColumnForMatching('url') . ')' : 'COUNT(id)';
     $linkCount = $linksQueryBuilder->select($linkCountSelect)
       ->from($linksTable)
       ->where('newsletter_id = :newsletter_id')
@@ -271,7 +272,7 @@ class EmailAction implements Filter {
       $statsLinkAlias = 'notstatslinks' . $parameterSuffix;
       $clause .= " AND stats.link_id IN (SELECT $statsLinkAlias.id FROM $linksTable $statsLinkAlias";
       $clause .= " WHERE $statsLinkAlias.newsletter_id = :newsletter" . $parameterSuffix;
-      $clause .= ' AND LOWER(' . $statsLinkAlias . '.url) IN (:linkUrls' . $parameterSuffix . '))';
+      $clause .= ' AND ' . $this->normalizeUrlColumnForMatching($statsLinkAlias . '.url') . ' IN (:linkUrls' . $parameterSuffix . '))';
     } elseif ($linkIds) {
       $clause .= ' AND stats.link_id IN (:links' . $parameterSuffix . ')';
     }
@@ -407,8 +408,21 @@ class EmailAction implements Filter {
     );
   }
 
+  /**
+   * Links sent before they were stored with plain ampersands keep "&amp;" (see Links::decodeAmpersands()),
+   * so both forms of a URL are matched as one.
+   */
   private function normalizeUrlForMatching(string $url): string {
-    return strtolower(trim($url));
+    return strtolower(trim(Links::decodeAmpersands($url)));
+  }
+
+  /**
+   * The SQL counterpart of normalizeUrlForMatching(). The numeric forms are replaced first, so "&amp;#38;"
+   * is decoded once, as in PHP. The two differ only when a numeric "&" is followed by "amp;" ("&#38;amp;"),
+   * that is for a URL that itself contains the text "&amp;".
+   */
+  private function normalizeUrlColumnForMatching(string $column): string {
+    return "LOWER(REPLACE(REPLACE(REPLACE($column, '&#038;', '&'), '&#38;', '&'), '&amp;', '&'))";
   }
 
   /**

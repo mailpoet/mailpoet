@@ -438,6 +438,60 @@ class EmailActionTest extends \MailPoetTest {
     );
   }
 
+  public function testGetClickedAutomationEmailMatchesUrlsStoredWithHtmlEncodedAmpersands(): void {
+    // earlier sends stored the URL with "&amp;", as written in the email HTML
+    $automationEmail = $this->createNewsletterWithQueue(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    $subscriberClickedEncoded = $this->createSubscriber('automation_clicked_encoded@example.com');
+    $subscriberClickedDecoded = $this->createSubscriber('automation_clicked_decoded@example.com');
+    $subscriberClickedOther = $this->createSubscriber('automation_clicked_other@example.com');
+    $this->createStatsNewsletter($subscriberClickedEncoded, $automationEmail);
+    $this->createStatsNewsletter($subscriberClickedDecoded, $automationEmail);
+    $this->createStatsNewsletter($subscriberClickedOther, $automationEmail);
+    $this->createClickedLink('https://example.com/page?a=1&amp;b=2', $automationEmail, $subscriberClickedEncoded);
+    $this->createClickedLink('https://example.com/page?a=1&b=2', $automationEmail, $subscriberClickedDecoded);
+    $this->createClickedLink('https://example.com/other', $automationEmail, $subscriberClickedOther);
+
+    foreach (['https://example.com/page?a=1&amp;b=2', 'https://example.com/page?a=1&b=2'] as $selectedUrl) {
+      $operators = [
+        DynamicSegmentFilterData::OPERATOR_ANY => ['automation_clicked_encoded@example.com', 'automation_clicked_decoded@example.com'],
+        DynamicSegmentFilterData::OPERATOR_NONE => ['automation_clicked_other@example.com'],
+      ];
+      foreach ($operators as $operator => $expectedEmails) {
+        $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_CLICKED, [
+          'newsletter_id' => (int)$automationEmail->getId(),
+          'link_ids' => [$selectedUrl],
+          'operator' => $operator,
+        ]);
+        $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+        $this->assertEqualsCanonicalizing($expectedEmails, $emails);
+      }
+    }
+  }
+
+  public function testGetClickedAutomationEmailWithAllLinksCountsUrlsStoredWithHtmlEncodedAmpersandsOnce(): void {
+    $automationEmail = $this->createNewsletterWithQueue(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    $subscriberClickedAll = $this->createSubscriber('automation_clicked_all_links@example.com');
+    $subscriberClickedOne = $this->createSubscriber('automation_clicked_one_link@example.com');
+    $this->createStatsNewsletter($subscriberClickedAll, $automationEmail);
+    $this->createStatsNewsletter($subscriberClickedOne, $automationEmail);
+    // clicked the same link in an earlier and a later send, so two rows count as one link
+    $this->createClickedLink('https://example.com/page?a=1&amp;b=2', $automationEmail, $subscriberClickedAll);
+    $this->createClickedLink('https://example.com/page?a=1&b=2', $automationEmail, $subscriberClickedAll);
+    $this->createClickedLink('https://example.com/other', $automationEmail, $subscriberClickedAll);
+    $this->createClickedLink('https://example.com/page?a=1&b=2', $automationEmail, $subscriberClickedOne);
+
+    $selections = [[], ['https://example.com/page?a=1&b=2', 'https://example.com/other']];
+    foreach ($selections as $linkIds) {
+      $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_CLICKED, [
+        'newsletter_id' => (int)$automationEmail->getId(),
+        'link_ids' => $linkIds,
+        'operator' => DynamicSegmentFilterData::OPERATOR_ALL,
+      ]);
+      $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+      $this->assertEqualsCanonicalizing(['automation_clicked_all_links@example.com'], $emails);
+    }
+  }
+
   public function testGetClickedAutomationEmailWithNoneOfUrlLinks(): void {
     $automationEmail = $this->createNewsletterWithQueue(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
     $subscriberClickedSelected = $this->createSubscriber('automation_clicked_selected@example.com');
