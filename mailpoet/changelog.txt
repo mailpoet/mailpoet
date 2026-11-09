@@ -1,5 +1,25 @@
 == Changelog ==
 
+= 5.45.2 - 2026-11-09 =
+* Added: Option for other plugins to add or update subscribers without sending every required custom field;
+* Added: Subscription source column in the subscriber export;
+* Improved: Styling of admin screens that use WordPress design system components;
+* Improved: Main filters stay visible on the Subscribers, Emails, Sending status, Forms and Logs pages;
+* Improved: Status tabs with counts on the Subscribers and Emails pages, so one status is a click away;
+* Improved: Handling of subscriber links in emails;
+* Improved: Stability of several admin features;
+* Improved: Landing page guidance for users who can't run the setup wizard;
+* Improved: Form editor list and placement pickers that match the WordPress admin style;
+* Improved: Show the admin bar and align the activate panel in the automation editor;
+* Fixed: Links in customized WooCommerce emails taking the branding color, which made them hard to read with a light branding color;
+* Fixed: Subscription forms showing a wait time that never counts down and a new CAPTCHA when a visitor subscribes again too soon;
+* Fixed: A double-click on “Review & send” or “Send” in the new email editor sending the email right away or twice;
+* Fixed: Unreadable error message in the new email editor’s send panel when a send request fails;
+* Fixed: Revenue from orders placed shortly after an email click being credited incorrectly on sites with a timezone other than UTC;
+* Fixed: Spacing around the "Back to Post notifications" button on the post notification history page;
+* Fixed: Missing Subscribers table background and other styles on sites that combine CSS files, such as WordPress VIP;
+* Fixed: Subscriber import clearing the selected lists instead of selecting a newly created list.
+
 = 5.45.1 - 2026-11-05 =
 * Improved: Logs page buttons that match the WordPress admin style;
 * Fixed: MailPoet version update getting stuck and slowing down large sites using MariaDB.
