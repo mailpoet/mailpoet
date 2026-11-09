@@ -41,9 +41,9 @@ Adding or removing a tag fires the `mailpoet_subscriber_tag_added` or `mailpoet_
 
 All options are optional. If omitted a default value is used.
 
-| Option                             | Type    | Default | Description                                                                                                                                                                                                                   |
-| ---------------------------------- | ------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| skip_unsent_required_custom_fields | boolean | false   | Can be used to check only the required custom fields that are sent in `$subscriber`. A required custom field that is not sent is not checked. A required custom field that is sent with an empty value still causes an error. |
+| Option                             | Type    | Default | Description                                                                                                                                                                                                                                      |
+| ---------------------------------- | ------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| skip_unsent_required_custom_fields | boolean | false   | Can be used to check only the required custom fields that are sent in `$subscriber`. A required custom field that is not sent is not checked. A required custom field that is sent as an empty string still causes an error. `null` is accepted. |
 
 ## Error handling
 

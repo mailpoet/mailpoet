@@ -666,21 +666,32 @@ class SubscribersTest extends \MailPoetTest {
     );
   }
 
-  public function testItChecksSentNullMandatoryCustomFieldsWhenSkippingUnsentOnAdd() {
+  public function testItAcceptsNullMandatoryCustomFieldsOnAdd() {
     $customField = $this->customFieldRepository->createOrUpdate([
       'name' => 'custom field',
       'type' => CustomFieldEntity::TYPE_TEXT,
       'params' => ['required' => '1'],
     ]);
 
-    $this->expectException(APIException::class);
-    $this->expectExceptionCode(APIException::CUSTOM_FIELD_VALUE_REQUIRED);
-    $this->expectExceptionMessage('Missing value for custom field "custom field');
-    $this->getApi()->addSubscriber(
+    $result = $this->getApi()->addSubscriber(
+      ['email' => 'test@example.com', 'cf_' . $customField->getId() => null]
+    );
+    verify($result['email'])->equals('test@example.com');
+  }
+
+  public function testItAcceptsNullMandatoryCustomFieldsWhenSkippingUnsentOnAdd() {
+    $customField = $this->customFieldRepository->createOrUpdate([
+      'name' => 'custom field',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+      'params' => ['required' => '1'],
+    ]);
+
+    $result = $this->getApi()->addSubscriber(
       ['email' => 'test@example.com', 'cf_' . $customField->getId() => null],
       [],
       ['skip_unsent_required_custom_fields' => true]
     );
+    verify($result['email'])->equals('test@example.com');
   }
 
   public function testItSubscribesToSegmentsWhenAddingSubscriber() {

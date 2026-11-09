@@ -50,8 +50,8 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
     $this->validator->validate(['cf_' . $this->customField->getId() => '']);
   }
 
-  public function testItValidatesDataWithNullCustomField() {
-    $this->expectException('Exception');
+  public function testItAcceptsNullCustomField() {
+    $this->expectNotToPerformAssertions();
     $this->validator->validate(['cf_' . $this->customField->getId() => null]);
   }
 
@@ -70,8 +70,8 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
     $this->validator->validate([$this->customField->getId() => ''], null, true);
   }
 
-  public function testItValidatesSentNullRequiredFieldWhenSkippingUnsentFields() {
-    $this->expectException('Exception');
+  public function testItAcceptsSentNullRequiredFieldWhenSkippingUnsentFields() {
+    $this->expectNotToPerformAssertions();
     $this->validator->validate(['cf_' . $this->customField->getId() => null], null, true);
   }
 
