@@ -3,6 +3,8 @@
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use MailPoet\Config\AccessControl;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\EmailPresetPostType;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\EmailPresetsController;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
@@ -15,14 +17,22 @@ class EmailEditorPreviewEmail {
 
   private WPFunctions $wp;
 
+  private EmailPresetPostType $emailPresetPostType;
+
+  private EmailPresetsController $emailPresetsController;
+
   public function __construct(
     NewslettersRepository $newslettersRepository,
     SendPreviewController $sendPreviewController,
-    WPFunctions $wp
+    WPFunctions $wp,
+    EmailPresetPostType $emailPresetPostType,
+    EmailPresetsController $emailPresetsController
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->sendPreviewController = $sendPreviewController;
     $this->wp = $wp;
+    $this->emailPresetPostType = $emailPresetPostType;
+    $this->emailPresetsController = $emailPresetsController;
   }
 
   /**
@@ -32,7 +42,12 @@ class EmailEditorPreviewEmail {
    * @throws \Exception
    */
   public function sendPreviewEmail($postData) {
-    if (is_bool($postData) || !isset($postData['postId']) || get_post_type((int)$postData['postId']) !== EmailEditor::MAILPOET_EMAIL_POST_TYPE) {
+    if (is_bool($postData) || !isset($postData['postId'])) {
+      return $postData;
+    }
+    $post = $this->wp->getPost((int)$postData['postId']);
+    $isPreset = $this->emailPresetPostType->isPreset($post);
+    if (!$isPreset && (!$post || $post->post_type !== EmailEditor::MAILPOET_EMAIL_POST_TYPE)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       return $postData;
     }
 
@@ -41,6 +56,15 @@ class EmailEditorPreviewEmail {
     }
 
     $this->validateData($postData);
+
+    if ($isPreset) {
+      $preset = $this->emailPresetsController->getPreset((int)$postData['postId']);
+      if (!$preset) {
+        throw new \Exception(esc_html__('This email preset does not exist.', 'mailpoet'));
+      }
+      $this->emailPresetsController->sendPreview($preset, $postData['email']);
+      return true;
+    }
 
     $newsletter = $this->fetchNewsletter($postData);
     $subscriber = $postData['email'];

@@ -137,7 +137,7 @@ class PersonalizationTagManager {
         [$this->subscriber, 'getFirstName'],
         ['default' => __('subscriber', 'mailpoet')],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+        EmailEditor::EDITOR_POST_TYPES,
         Personalization_Tag::VALUE_TYPE_TEXT
       ));
       $registry->register(new Personalization_Tag(
@@ -147,7 +147,7 @@ class PersonalizationTagManager {
         [$this->subscriber, 'getLastName'],
         ['default' => __('subscriber', 'mailpoet')],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+        EmailEditor::EDITOR_POST_TYPES,
         Personalization_Tag::VALUE_TYPE_TEXT
       ));
       $registry->register(new Personalization_Tag(
@@ -157,7 +157,7 @@ class PersonalizationTagManager {
         [$this->subscriber, 'getEmail'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+        EmailEditor::EDITOR_POST_TYPES,
         Personalization_Tag::VALUE_TYPE_TEXT
       ));
       $registry->register(new Personalization_Tag(
@@ -167,7 +167,7 @@ class PersonalizationTagManager {
         [$this->subscriber, 'getActivationLink'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+        EmailEditor::EDITOR_POST_TYPES
       ));
       $registry->register(new Personalization_Tag(
         __('WordPress User Display Name', 'mailpoet'),
@@ -176,7 +176,7 @@ class PersonalizationTagManager {
         [$this->subscriber, 'getDisplayName'],
         ['default' => __('member', 'mailpoet')],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+        EmailEditor::EDITOR_POST_TYPES,
         Personalization_Tag::VALUE_TYPE_TEXT
       ));
       $registry->register(new Personalization_Tag(
@@ -186,7 +186,7 @@ class PersonalizationTagManager {
         [$this->subscriber, 'getCount'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+        EmailEditor::EDITOR_POST_TYPES,
         Personalization_Tag::VALUE_TYPE_TEXT
       ));
       $this->registerSubscriberCustomFieldTags($registry);
@@ -199,7 +199,7 @@ class PersonalizationTagManager {
         [$this->newsletter, 'getSubject'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+        EmailEditor::EDITOR_POST_TYPES,
         Personalization_Tag::VALUE_TYPE_TEXT
       ));
 
@@ -211,7 +211,7 @@ class PersonalizationTagManager {
         [$this->date, 'getDay'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+        EmailEditor::EDITOR_POST_TYPES,
         Personalization_Tag::VALUE_TYPE_TEXT
       ));
       $registry->register(new Personalization_Tag(
@@ -221,7 +221,7 @@ class PersonalizationTagManager {
         [$this->date, 'getDayOrdinal'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+        EmailEditor::EDITOR_POST_TYPES,
         Personalization_Tag::VALUE_TYPE_TEXT
       ));
       $registry->register(new Personalization_Tag(
@@ -231,7 +231,7 @@ class PersonalizationTagManager {
         [$this->date, 'getDayName'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+        EmailEditor::EDITOR_POST_TYPES,
         Personalization_Tag::VALUE_TYPE_TEXT
       ));
       $registry->register(new Personalization_Tag(
@@ -241,7 +241,7 @@ class PersonalizationTagManager {
         [$this->date, 'getMonth'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+        EmailEditor::EDITOR_POST_TYPES,
         Personalization_Tag::VALUE_TYPE_TEXT
       ));
       $registry->register(new Personalization_Tag(
@@ -251,7 +251,7 @@ class PersonalizationTagManager {
         [$this->date, 'getMonthName'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+        EmailEditor::EDITOR_POST_TYPES,
         Personalization_Tag::VALUE_TYPE_TEXT
       ));
       $registry->register(new Personalization_Tag(
@@ -261,7 +261,7 @@ class PersonalizationTagManager {
         [$this->date, 'getYear'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+        EmailEditor::EDITOR_POST_TYPES,
         Personalization_Tag::VALUE_TYPE_TEXT
       ));
 
@@ -273,7 +273,7 @@ class PersonalizationTagManager {
         [$this->site, 'getTitle'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+        EmailEditor::EDITOR_POST_TYPES,
         Personalization_Tag::VALUE_TYPE_TEXT
       ));
       $registry->register(new Personalization_Tag(
@@ -283,7 +283,7 @@ class PersonalizationTagManager {
         [$this->site, 'getDescription'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+        EmailEditor::EDITOR_POST_TYPES,
         Personalization_Tag::VALUE_TYPE_TEXT
       ));
       $registry->register(new Personalization_Tag(
@@ -293,7 +293,7 @@ class PersonalizationTagManager {
         [$this->site, 'getHomepageURL'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+        EmailEditor::EDITOR_POST_TYPES
       ));
 
       // Links registration
@@ -304,7 +304,7 @@ class PersonalizationTagManager {
         [$this->link, 'getSubscriptionUnsubscribeUrl'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+        EmailEditor::EDITOR_POST_TYPES
       ));
       $registry->register(new Personalization_Tag(
         __('Manage subscription URL', 'mailpoet'),
@@ -313,7 +313,7 @@ class PersonalizationTagManager {
         [$this->link, 'getSubscriptionManageUrl'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+        EmailEditor::EDITOR_POST_TYPES
       ));
       $registry->register(new Personalization_Tag(
         __('View in browser URL', 'mailpoet'),
@@ -322,7 +322,7 @@ class PersonalizationTagManager {
         [$this->link, 'getNewsletterViewInBrowserUrl'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+        EmailEditor::EDITOR_POST_TYPES
       ));
       $registry->register(new Personalization_Tag(
         __('Tracking opt-out URL', 'mailpoet'),
@@ -331,7 +331,7 @@ class PersonalizationTagManager {
         [$this->link, 'getSubscriptionTrackingOptOutUrl'],
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+        EmailEditor::EDITOR_POST_TYPES
       ));
       return $registry;
     });
@@ -363,7 +363,7 @@ class PersonalizationTagManager {
         },
         [],
         null,
-        [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
+        EmailEditor::EDITOR_POST_TYPES,
         Personalization_Tag::VALUE_TYPE_TEXT
       ));
     }
@@ -443,8 +443,8 @@ class PersonalizationTagManager {
         $shouldExtend = $this->shouldExtendTagCategory($category, $availableSubjects);
 
         if ($shouldExtend) {
-          // Add mailpoet_email to the list of supported post types
-          $postTypes[] = EmailEditor::MAILPOET_EMAIL_POST_TYPE;
+          // Add MailPoet post types to the list of supported post types
+          $postTypes = array_values(array_unique(array_merge($postTypes, EmailEditor::EDITOR_POST_TYPES)));
 
           $registry->unregister($tag);
           // Re-register the tag with extended post types
@@ -490,7 +490,7 @@ class PersonalizationTagManager {
       [$this->orderReviewUrl, 'getUrl'],
       [],
       null,
-      [EmailEditor::MAILPOET_EMAIL_POST_TYPE]
+      EmailEditor::EDITOR_POST_TYPES
     ));
   }
 

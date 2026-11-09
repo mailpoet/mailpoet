@@ -26,12 +26,16 @@ import { registerLatestPostsProtectedContent } from './latest-posts-protected-co
 import { registerLatestPostsTemplateBlocks } from './latest-posts-template-blocks';
 import { registerOrderProductCollectionsWhenAvailable } from './order-product-collections';
 import { store as emailEditorIntegrationStore } from './store';
-import { MAILPOET_EMAIL_POST_TYPE } from './constants';
+import {
+  MAILPOET_EMAIL_POST_TYPE,
+  MAILPOET_EMAIL_PRESET_POST_TYPE,
+} from './constants';
 import { getRecentEmailTitle } from './recent-email-title';
 import { getDefaultEmailName } from './sidebar/campaign-name';
 import type { MailPoetEmailData } from './shared/mailpoet-email-data';
 
 type RecentEmailPost = {
+  type?: string;
   title?: { raw?: string };
   mailpoet_data?: Pick<MailPoetEmailData, 'subject'>;
 };
@@ -77,11 +81,21 @@ addFilter(
 );
 
 const isAutomationNewsletter = window?.mailpoet_is_automation_newsletter;
+// A preset is never sent, so the send button saves it instead.
+const isPreset =
+  window.WooCommerceEmailEditor?.current_post_type ===
+  MAILPOET_EMAIL_PRESET_POST_TYPE;
+const isEmailPresetsEnabled = MailPoet.FeaturesController.isSupported(
+  MailPoet.FeaturesController.FEATURE_EMAIL_PRESETS,
+);
 
 addFilter(
   'woocommerce_email_editor_send_button_label',
   'mailpoet/email-editor-integration',
   () => {
+    if (isPreset) {
+      return __('Save preset', 'mailpoet');
+    }
     if (isAutomationNewsletter) {
       return __('Return back to the Automation', 'mailpoet');
     }
@@ -113,6 +127,12 @@ addFilter(
   (defaultAction: () => void) => {
     if (isAutomationNewsletter) {
       return defaultAction;
+    }
+
+    if (isPreset) {
+      return () => {
+        void dispatch(editorStore).savePost();
+      };
     }
 
     return () => {
@@ -153,10 +173,14 @@ addFilter(
   'mailpoet/email-editor-integration',
   (
     isDisabled: boolean,
-    flags: { hasEmptyContent: boolean; isEmailSent: boolean },
+    flags: { hasEmptyContent: boolean; isEmailSent: boolean; isDirty: boolean },
   ) => {
     if (isAutomationNewsletter) {
       return isDisabled;
+    }
+    // hasEmptyContent checks the saved post, so it would block the first save of a new preset.
+    if (isPreset) {
+      return !flags.isDirty;
     }
     return flags.hasEmptyContent || flags.isEmailSent;
   },
@@ -201,13 +225,17 @@ addFilter(
 addFilter(
   'woocommerce_email_editor_preferred_template_title',
   'mailpoet/email-editor-integration',
-  (_title: string, post: RecentEmailPost): string =>
-    getRecentEmailTitle({
+  (_title: string, post: RecentEmailPost): string => {
+    if (post?.type === MAILPOET_EMAIL_PRESET_POST_TYPE) {
+      return ''; // a preset keeps its own title
+    }
+    return getRecentEmailTitle({
       name: post?.title?.raw || '',
       subject: post?.mailpoet_data?.subject || '',
       defaultName: getDefaultEmailName(),
       defaultSubject: __('Subject', 'mailpoet'),
-    }),
+    });
+  },
 );
 
 // Also list draft, scheduled and sending emails. They all use the `draft` post status.
@@ -241,16 +269,52 @@ type EmailSidebarExtensionModule = typeof import('./email-sidebar-extension');
 type AutomationSaveButtonModule =
   typeof import('./components/automation-save-button');
 type SentEmailNoticeModule = typeof import('./components/sent-email-notice');
+type PresetSettingsPanelModule =
+  typeof import('./email-presets/preset-settings-panel');
+type SaveAsPresetActionModule =
+  typeof import('./email-presets/save-as-preset-action');
 
 /* eslint-disable global-require, @typescript-eslint/no-var-requires -- These imports must run after the MailPoet coupon block extension registers its block-type filter, but must stay in this bundle instead of creating async chunks. */
 const initializeMailPoetEmailEditor = (): void => {
-  const { initializeEditor } =
+  const { initializeEditor, registerEntityAction } =
     require('@woocommerce/email-editor') as EmailEditorModule;
   const { initStripPostStatusOnSaveMiddleware } =
     require('./middleware/strip-post-status-on-save') as StripPostStatusMiddlewareModule;
 
+  if (isPreset) {
+    const { PresetSettingsPanel } =
+      require('./email-presets/preset-settings-panel') as PresetSettingsPanelModule;
+
+    registerPlugin('mailpoet-email-preset-settings', {
+      render: PresetSettingsPanel,
+      scope: 'woocommerce-email-editor',
+    });
+  }
+
+  if (isEmailPresetsEnabled && !isPreset) {
+    const { saveAsPresetAction } =
+      require('./email-presets/save-as-preset-action') as SaveAsPresetActionModule;
+
+    // The editor registers its own post actions on these hooks, so ours lands in the same dropdown.
+    const registerSaveAsPresetAction = (postType: string) => {
+      if (postType === MAILPOET_EMAIL_POST_TYPE) {
+        registerEntityAction('postType', postType, saveAsPresetAction);
+      }
+    };
+    addAction(
+      'core.registerPostTypeSchema',
+      'mailpoet/email-editor-integration/save-as-preset',
+      registerSaveAsPresetAction,
+    );
+    addAction(
+      'core.registerPostTypeActions',
+      'mailpoet/email-editor-integration/save-as-preset',
+      registerSaveAsPresetAction,
+    );
+  }
+
   // Register MailPoet sidebar panels component
-  if (!isAutomationNewsletter) {
+  if (!isAutomationNewsletter && !isPreset) {
     const { EmailSidebarExtension } =
       require('./email-sidebar-extension') as EmailSidebarExtensionModule;
 

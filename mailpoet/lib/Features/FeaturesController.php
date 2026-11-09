@@ -9,6 +9,7 @@ class FeaturesController {
   const FEATURE_SEND_BY_TIMEZONE = 'send_by_timezone';
   const FEATURE_MSS_TEMPLATED_SENDING = 'mss_templated_sending';
   const FEATURE_MCP_WRITE_ABILITIES = 'mcp_write_abilities';
+  const FEATURE_EMAIL_PRESETS = 'email_presets';
 
   // Define feature defaults in the array below in the following form:
   //   self::FEATURE_NAME_OF_FEATURE => true,
@@ -17,6 +18,7 @@ class FeaturesController {
     self::FEATURE_SEND_BY_TIMEZONE => false,
     self::FEATURE_MSS_TEMPLATED_SENDING => false,
     self::FEATURE_MCP_WRITE_ABILITIES => false,
+    self::FEATURE_EMAIL_PRESETS => false,
   ];
 
   /** @var array|null */

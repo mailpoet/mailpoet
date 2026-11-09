@@ -5,7 +5,11 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet;
 use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Email_Editor;
 use MailPoet\Config\AccessControl;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\EmailPresetPostType;
+use MailPoet\Entities\FeatureFlagEntity;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Features\FeatureFlagsRepository;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 
 class EmailEditorTest extends \MailPoetTest {
@@ -24,6 +28,28 @@ class EmailEditorTest extends \MailPoetTest {
     Email_Editor_Container::container()->get(Email_Editor::class)->initialize();
     $postTypes = get_post_types();
     $this->assertArrayHasKey('mailpoet_email', $postTypes);
+  }
+
+  public function testItRegistersThePresetPostTypeOnlyWhenTheFeatureIsEnabled() {
+    $postTypes = array_column($this->emailEditor->addEmailPostType([]), 'name');
+    verify($postTypes)->equals([EmailEditor::MAILPOET_EMAIL_POST_TYPE]);
+
+    $this->setEmailPresetsFlag(true);
+    $definitions = array_column($this->emailEditor->addEmailPostType([]), null, 'name');
+    verify(array_keys($definitions))->equals([EmailEditor::MAILPOET_EMAIL_POST_TYPE, EmailPresetPostType::NAME]);
+    verify($definitions[EmailPresetPostType::NAME]['args']['capabilities'])->equals($definitions[EmailEditor::MAILPOET_EMAIL_POST_TYPE]['args']['capabilities']);
+  }
+
+  public function testItOpensTheEditorForPresetsOnlyWhenTheFeatureIsEnabled() {
+    $renderer = $this->createMock(EditorPageRenderer::class);
+    $emailEditor = $this->getServiceWithOverrides(EmailEditor::class, ['editorPageRenderer' => $renderer]);
+    $this->setCurrentScreen('post');
+    $preset = new \WP_Post((object)['post_type' => EmailPresetPostType::NAME]);
+    $renderer->expects($this->once())->method('render');
+
+    $this->assertFalse($emailEditor->replaceEditor(false, $preset));
+    $this->setEmailPresetsFlag(true);
+    $this->assertTrue($emailEditor->replaceEditor(false, $preset));
   }
 
   public function testItRendersEditorOnlyOnceWhenReplaceEditorFilterIsReentered() {
@@ -180,6 +206,14 @@ class EmailEditorTest extends \MailPoetTest {
     return $wp_rest_server;
   }
 
+  private function setEmailPresetsFlag(bool $value): void {
+    $this->diContainer->get(FeatureFlagsRepository::class)->createOrUpdate([
+      'name' => FeaturesController::FEATURE_EMAIL_PRESETS,
+      'value' => $value,
+    ]);
+    $this->diContainer->get(FeaturesController::class)->resetCache();
+  }
+
   private function setCurrentScreen(string $hookName): void {
     if (!function_exists('set_current_screen')) {
       require_once ABSPATH . 'wp-admin/includes/class-wp-screen.php';
@@ -195,6 +229,8 @@ class EmailEditorTest extends \MailPoetTest {
     }
     remove_filter('woocommerce_email_editor_post_types', [$this->emailEditor, 'addEmailPostType']);
     $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(FeatureFlagEntity::class);
+    $this->diContainer->get(FeaturesController::class)->resetCache();
     global $wp_rest_server;
     $wp_rest_server = null;
     foreach ($this->wpPostIds as $wpPostId) {

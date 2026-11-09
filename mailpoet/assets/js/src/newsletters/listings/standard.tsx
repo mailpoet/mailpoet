@@ -7,6 +7,7 @@ import { MailPoet } from 'mailpoet';
 import { FilterSegmentTag, SegmentTags } from 'common/tag/tags';
 import { ErrorBoundary, withBoundary } from 'common';
 import type { NewsLetter } from 'common/newsletter';
+import { createEmailPreset, SaveAsPresetForm } from 'common/email-presets';
 import { NewsletterTypes } from 'newsletters/types';
 import { QueueStatus } from 'newsletters/listings/queue-status';
 import { isTimezoneCampaignQueue } from 'newsletters/timezone-campaign';
@@ -39,6 +40,52 @@ import {
 import { getAllowedStatuses } from './filters';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
+const isEmailPresetsEnabled = MailPoet.FeaturesController.isSupported(
+  MailPoet.FeaturesController.FEATURE_EMAIL_PRESETS,
+);
+
+async function saveAsPreset(
+  item: NewsletterListingItem,
+  title: string,
+): Promise<boolean> {
+  try {
+    const preset = await createEmailPreset(title, Number(item.wp_post_id));
+    MailPoet.Notice.success(
+      __('Email saved as preset "%1$s". [link]Edit preset[/link]', 'mailpoet')
+        .replace('%1$s', escapeHTML(preset.title))
+        .replace(
+          '[link]',
+          `<a class="mailpoet-link" href="${escapeHTML(preset.edit_url)}">`,
+        )
+        .replace('[/link]', '</a>'),
+    );
+    return true;
+  } catch (error) {
+    MailPoet.Notice.error(
+      (error as NewsletterApiError).message ||
+        __('The preset could not be saved.', 'mailpoet'),
+      { scroll: true },
+    );
+    return false;
+  }
+}
+
+const saveAsPresetAction: Action<NewsletterListingItem> = {
+  id: 'save-as-preset',
+  label: __('Save as preset', 'mailpoet'),
+  supportsBulk: false,
+  // Only block emails can be saved as presets.
+  isEligible: (item) => Boolean(item.wp_post_id) && !item.deleted_at,
+  modalHeader: __('Save as preset', 'mailpoet'),
+  modalFocusOnMount: 'firstContentElement',
+  RenderModal: ({ items, closeModal }) => (
+    <SaveAsPresetForm
+      defaultTitle={items[0].subject}
+      onSubmit={(title) => saveAsPreset(items[0], title)}
+      onClose={closeModal}
+    />
+  ),
+};
 
 function isDetailedAnalyticsRestricted(): boolean {
   const capability = MailPoet.capabilities?.detailedAnalytics;
@@ -386,6 +433,7 @@ function NewsletterListStandardComponent() {
               })();
             },
           },
+          ...(isEmailPresetsEnabled ? [saveAsPresetAction] : []),
         ],
         helpers.navigate,
       ) as Action<NewsletterListingItem>[],
