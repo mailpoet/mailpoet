@@ -1,9 +1,22 @@
+import { JSDOM } from 'jsdom';
 import { getRecentEmailTitle } from '../../../assets/js/src/mailpoet-email-editor-integration/recent-email-title';
 
 const defaultName = 'New Email';
 const defaultSubject = 'Subject';
 
 describe('getRecentEmailTitle', () => {
+  let previousDocument: Document;
+
+  // decodeEntities needs a document.
+  before(() => {
+    previousDocument = globalThis.document;
+    globalThis.document = new JSDOM('').window.document;
+  });
+
+  after(() => {
+    globalThis.document = previousDocument;
+  });
+
   [
     {
       about: 'shows both when name and subject differ',
@@ -16,6 +29,18 @@ describe('getRecentEmailTitle', () => {
       name: 'Autumn sale',
       subject: 'Autumn sale',
       expected: 'Autumn sale',
+    },
+    {
+      about: 'treats a stored entity-encoded name as matching the subject',
+      name: 'Sale &amp; more',
+      subject: 'Sale & more',
+      expected: 'Sale & more',
+    },
+    {
+      about: 'decodes a stored name that differs from the subject',
+      name: 'Tips &amp; tricks',
+      subject: 'Autumn sale',
+      expected: 'Tips & tricks – Autumn sale',
     },
     {
       about: 'shows the subject when the name is the default name',

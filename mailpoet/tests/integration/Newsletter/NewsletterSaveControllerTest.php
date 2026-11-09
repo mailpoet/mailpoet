@@ -495,6 +495,16 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     ];
   }
 
+  public function testItFollowsSubjectWhenStoredNameIsEntityEncoded() {
+    $newsletter = $this->createNewsletterWithPost('Sale &amp; more');
+    $newsletter->setSubject('Sale & more');
+    $this->entityManager->flush();
+
+    $newsletter = $this->saveController->save(['id' => $newsletter->getId(), 'subject' => 'Winter sale']);
+
+    verify($newsletter->getCampaignName())->equals('Winter sale');
+  }
+
   public function testItLeavesCampaignNameAloneWhenSubjectDoesNotChange() {
     $newsletter = $this->createNewsletterWithPost('New Email');
 

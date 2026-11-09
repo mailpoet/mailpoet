@@ -1,3 +1,5 @@
+import { decodeEntities } from '@wordpress/html-entities';
+
 type RecentEmailTitleArgs = {
   name: string;
   subject: string;
@@ -16,7 +18,9 @@ export function getRecentEmailTitle({
   defaultName,
   defaultSubject,
 }: RecentEmailTitleArgs): string {
-  const usefulName = name === defaultName ? '' : name;
+  // Titles are stored entity-encoded for users without unfiltered_html.
+  const decodedName = decodeEntities(name);
+  const usefulName = decodedName === defaultName ? '' : decodedName;
   const usefulSubject = subject === defaultSubject ? '' : subject;
   if (usefulName === usefulSubject) {
     return usefulSubject;
