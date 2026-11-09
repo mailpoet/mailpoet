@@ -6,7 +6,10 @@ import { store as editorStore } from '@wordpress/editor';
 import { __ } from '@wordpress/i18n';
 import classNames from 'classnames';
 import { AiSubjectSuggestions } from './ai-subject-suggestions';
-import { getCampaignNameForSubject } from '../campaign-name';
+import {
+  getCampaignNameForSubject,
+  getDefaultEmailName,
+} from '../campaign-name';
 import { MAILPOET_EMAIL_POST_TYPE } from '../../constants';
 import type { MailPoetEmailData } from '../../shared/mailpoet-email-data';
 
@@ -46,7 +49,7 @@ function updateEmailTextFields(changes: EmailTextFields) {
       name: currentName,
       previousSubject: mailpoetData.subject ?? '',
       newSubject: changes.subject,
-      defaultName: __('New Email', 'mailpoet'),
+      defaultName: getDefaultEmailName(),
     });
     if (newName !== null && newName !== currentName) {
       edits.title = newName;

@@ -1,3 +1,7 @@
+import { __ } from '@wordpress/i18n';
+
+export const getDefaultEmailName = (): string => __('New Email', 'mailpoet');
+
 type CampaignNameForSubjectArgs = {
   name: string;
   previousSubject: string;
