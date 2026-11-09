@@ -6,7 +6,7 @@ type RecentEmailTitleArgs = {
 };
 
 /**
- * Returns the label for an email in the "Recent" preset list. A name or subject
+ * Returns the label for an email in the “Recent” preset list. A name or subject
  * that was never changed from its default says nothing about the email, so it
  * is left out.
  */
