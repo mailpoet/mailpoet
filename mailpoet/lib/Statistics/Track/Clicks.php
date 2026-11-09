@@ -8,6 +8,7 @@ use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\TrackingConfig;
@@ -205,7 +206,9 @@ class Clicks {
       }
       $url = $this->appendRequestMethod($processedUrl);
     } else {
-      $url = $this->decodeAmpersands($url);
+      // Links sent before they were stored with plain ampersands keep "&amp;". Decoded before shortcodes
+      // and tags are resolved, so the checks below compare the URL the redirect sends.
+      $url = NewsletterLinks::decodeAmpersands($url);
       $this->shortcodes->setQueue($queue);
       $this->shortcodes->setNewsletter($newsletter);
       $this->shortcodes->setSubscriber($subscriber);
@@ -220,15 +223,6 @@ class Clicks {
       $url = $processedUrl;
     }
     return $url;
-  }
-
-  /**
-   * Links are stored as they are written in the email HTML, where "&" is usually written as "&amp;"
-   * ("&#038;" by esc_url()). Only ampersands are decoded, once, and before shortcodes and tags are
-   * resolved, so the checks below compare the URL the redirect sends.
-   */
-  private function decodeAmpersands(string $url): string {
-    return strtr($url, ['&amp;' => '&', '&#038;' => '&', '&#38;' => '&']);
   }
 
   private function validateRedirect(string $url): string {

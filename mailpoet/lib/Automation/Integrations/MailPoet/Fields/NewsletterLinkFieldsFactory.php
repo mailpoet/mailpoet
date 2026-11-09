@@ -4,6 +4,7 @@ namespace MailPoet\Automation\Integrations\MailPoet\Fields;
 
 use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\NewsletterLinkPayload;
+use MailPoet\Newsletter\Links\Links;
 
 class NewsletterLinkFieldsFactory {
   public function getFields(): array {
@@ -13,7 +14,8 @@ class NewsletterLinkFieldsFactory {
         Field::TYPE_STRING,
         __('Link URL', 'mailpoet'),
         function(NewsletterLinkPayload $payload) {
-          return $payload->getLink()->getUrl();
+          // links sent before they were stored with plain ampersands keep "&amp;"
+          return Links::decodeAmpersands($payload->getLink()->getUrl());
         }
       ),
       new Field(

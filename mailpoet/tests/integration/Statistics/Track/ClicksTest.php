@@ -900,13 +900,14 @@ class ClicksTest extends \MailPoetTest {
   }
 
   public function testItRedirectsToUrlsStoredWithHtmlEncodedAmpersands() {
-    // block emails store the href as it is in the HTML, where "&" is written as "&amp;"
+    // links sent before they were stored with plain ampersands keep "&amp;", as written in the HTML
+    $this->subscriber->setFirstName('Tom &amp; Jerry');
     $urls = [
       'https://example.com/page?a=1&amp;b=2' => 'https://example.com/page?a=1&b=2',
       'https://example.com/page?a=1&#038;b=2&#38;c=3' => 'https://example.com/page?a=1&b=2&c=3',
-      'https://example.com/page?a=1&amp;b=2&utm_source=mailpoet' => 'https://example.com/page?a=1&b=2&utm_source=mailpoet',
       'https://example.com/page?q=&amp;amp;' => 'https://example.com/page?q=&amp;',
-      'https://example.com/page?a=1&amp;email=[subscriber:email]' => 'https://example.com/page?a=1&email=test@example.com',
+      // shortcode values are kept as they are
+      'https://example.com/page?a=1&amp;name=[subscriber:firstname]' => 'https://example.com/page?a=1&name=Tom &amp; Jerry',
     ];
     foreach ($urls as $url => $expected) {
       $link = $this->clicks->processUrl($url, $this->newsletter, $this->subscriber, $this->queue, false);
