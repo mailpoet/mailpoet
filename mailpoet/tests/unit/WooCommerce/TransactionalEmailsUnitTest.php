@@ -79,4 +79,38 @@ class TransactionalEmailsUnitTest extends \MailPoetUnitTest {
     $wooCommerceLink = '<a href="https://woocommerce.com">WooCommerce</a>';
     verify($footerText)->equals("Test - 123 Main St, Springfield - store@example.com - test.loc - $wooCommerceLink - $wooCommerceLink");
   }
+
+  public function testGetWCEmailSettingsPicksLinkColorForGlobalBackgroundWhenContentBackgroundIsCleared() {
+    $options = [
+      'woocommerce_email_background_color' => '#ffffff',
+      'woocommerce_email_base_color' => '#333333',
+      'woocommerce_email_body_background_color' => 'transparent',
+    ];
+    $wp = Stub::make(new WPFunctions, [
+      'getOption' => function($name) use ($options) {
+        return $options[$name] ?? false;
+      },
+      'homeUrl' => 'http://test.loc',
+      'wpSpecialcharsDecode' => function($text) {
+        return $text;
+      },
+      'wpParseUrl' => function($url) {
+        return 'test.loc';
+      },
+    ]);
+    $woocommerceHelper = Stub::make(WooCommerceHelper::class, [
+      'wcLightOrDark' => '#ffffff',
+      'wcHexIsLight' => function($color) {
+        return $color === '#ffffff';
+      },
+    ]);
+    $transactionalEmails = new TransactionalEmails(
+      $wp,
+      Stub::make(SettingsController::class),
+      Stub::make(Template::class),
+      $woocommerceHelper,
+      Stub::make(NewslettersRepository::class)
+    );
+    verify($transactionalEmails->getWCEmailSettings()['link_color'])->equals('#333333');
+  }
 }
