@@ -1,6 +1,7 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
 use Codeception\Util\Locator;
+use Facebook\WebDriver\Exception\StaleElementReferenceException;
 use Facebook\WebDriver\Exception\UnknownErrorException;
 use Facebook\WebDriver\Exception\UnrecognizedExceptionException;
 use Facebook\WebDriver\Exception\WebDriverException;
@@ -549,6 +550,41 @@ class AcceptanceTester extends \Codeception\Actor {
         throw $e;
       }
     }
+  }
+
+  /**
+   * For a click that loads a new page, such as a form submit. Until the new page loads,
+   * waitForElement() and other checks still find elements on the old page, and those
+   * elements go stale when the new page loads.
+   *
+   * Don't use WebDriverExpectedCondition::stalenessOf() here: while the page is being replaced,
+   * ChromeDriver can report “Node with given id does not belong to the document” instead of
+   * a stale element, and stalenessOf() throws on it.
+   *
+   * @param string|array $link
+   * @param string|array|null $context
+   */
+  public function clickAndWaitForPageReload($link, $context = null, int $timeout = 10): void {
+    $timeout = $this->getDefaultTimeout($timeout);
+    $oldPage = $this->executeInSelenium(function (RemoteWebDriver $webDriver) {
+      return $webDriver->findElement(WebDriverBy::tagName('html'));
+    });
+    $this->click($link, $context);
+    $this->executeInSelenium(function (RemoteWebDriver $webDriver) use ($oldPage, $timeout): void {
+      $webDriver->wait($timeout)->until(function () use ($oldPage): bool {
+        try {
+          $oldPage->isEnabled();
+          return false;
+        } catch (StaleElementReferenceException $e) {
+          return true;
+        } catch (UnknownErrorException $e) {
+          if (strpos($e->getMessage(), 'does not belong to the document') === false) {
+            throw $e;
+          }
+          return true;
+        }
+      });
+    });
   }
 
   /**
