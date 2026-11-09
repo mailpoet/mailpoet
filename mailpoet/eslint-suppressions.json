@@ -269,7 +269,57 @@
       "count": 7
     }
   },
+  "assets/js/src/form-editor/blocks/add-custom-field/add-custom-field-form.jsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 1
+    }
+  },
   "assets/js/src/form-editor/blocks/close/edit.tsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 1
+    }
+  },
+  "assets/js/src/form-editor/blocks/custom-checkbox/custom-field-settings.jsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 3
+    }
+  },
+  "assets/js/src/form-editor/blocks/custom-checkbox/edit.jsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 1
+    }
+  },
+  "assets/js/src/form-editor/blocks/custom-date/custom-field-settings.jsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 2
+    }
+  },
+  "assets/js/src/form-editor/blocks/custom-radio/custom-field-settings.jsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 2
+    }
+  },
+  "assets/js/src/form-editor/blocks/custom-radio/edit.jsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 1
+    }
+  },
+  "assets/js/src/form-editor/blocks/custom-select/edit.jsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 1
+    }
+  },
+  "assets/js/src/form-editor/blocks/custom-text/custom-field-settings.jsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 2
+    }
+  },
+  "assets/js/src/form-editor/blocks/custom-text/edit.jsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 1
+    }
+  },
+  "assets/js/src/form-editor/blocks/custom-textarea/edit.jsx": {
     "@wordpress/use-recommended-components": {
       "count": 1
     }
@@ -279,7 +329,37 @@
       "count": 1
     }
   },
+  "assets/js/src/form-editor/blocks/email/edit.jsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 2
+    }
+  },
+  "assets/js/src/form-editor/blocks/first-name/edit.jsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 2
+    }
+  },
+  "assets/js/src/form-editor/blocks/html/edit.jsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 2
+    }
+  },
   "assets/js/src/form-editor/blocks/input-styles-settings.tsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 1
+    }
+  },
+  "assets/js/src/form-editor/blocks/last-name/edit.jsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 2
+    }
+  },
+  "assets/js/src/form-editor/blocks/segment-select/settings-preview.jsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 1
+    }
+  },
+  "assets/js/src/form-editor/blocks/segment-select/settings.jsx": {
     "@wordpress/use-recommended-components": {
       "count": 1
     }
@@ -294,9 +374,19 @@
       "count": 1
     }
   },
+  "assets/js/src/form-editor/blocks/tracking-consent/edit.jsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 1
+    }
+  },
   "assets/js/src/form-editor/components/close-button-settings.tsx": {
     "@wordpress/use-recommended-components": {
       "count": 1
+    }
+  },
+  "assets/js/src/form-editor/components/form-settings/basic-settings-panel.jsx": {
+    "@wordpress/use-recommended-components": {
+      "count": 3
     }
   },
   "assets/js/src/form-editor/components/form-settings/form-placement-options/settings-panels/below-posts-settings.tsx": {
