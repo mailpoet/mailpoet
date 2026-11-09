@@ -205,6 +205,7 @@ class Clicks {
       }
       $url = $this->appendRequestMethod($processedUrl);
     } else {
+      $url = $this->decodeAmpersands($url);
       $this->shortcodes->setQueue($queue);
       $this->shortcodes->setNewsletter($newsletter);
       $this->shortcodes->setSubscriber($subscriber);
@@ -219,6 +220,15 @@ class Clicks {
       $url = $processedUrl;
     }
     return $url;
+  }
+
+  /**
+   * Links are stored as they are written in the email HTML, where "&" is usually written as "&amp;"
+   * ("&#038;" by esc_url()). Only ampersands are decoded, once, and before shortcodes and tags are
+   * resolved, so the checks below compare the URL the redirect sends.
+   */
+  private function decodeAmpersands(string $url): string {
+    return strtr($url, ['&amp;' => '&', '&#038;' => '&', '&#38;' => '&']);
   }
 
   private function validateRedirect(string $url): string {
