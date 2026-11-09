@@ -196,7 +196,11 @@ class AssetsController {
 
   private function registerAdminDeps(): void {
     // runtime
-    $this->registerFooterScript('mailpoet_runtime', $this->getScriptUrl('runtime.js'));
+    $this->registerFooterScript(
+      'mailpoet_runtime',
+      $this->getScriptUrl('runtime.js'),
+      ['react', 'react-dom', 'react-jsx-runtime']
+    );
 
     // vendor
     $this->registerFooterScript('mailpoet_vendor', $this->getScriptUrl('vendor.js'));
