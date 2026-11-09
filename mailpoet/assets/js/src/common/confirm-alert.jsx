@@ -1,6 +1,6 @@
+import { renderToString } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
-import ReactDOMServer from 'react-dom/server';
 
 import { MailPoet } from 'mailpoet';
 
@@ -44,7 +44,7 @@ function ConfirmAlert({
     returnFocus,
     // The template below is already rendered HTML, so it is shown as it is.
     renderer: 'html',
-    template: ReactDOMServer.renderToString(
+    template: renderToString(
       <>
         <p>{message}</p>
         <button
@@ -96,7 +96,7 @@ ConfirmAlert.propTypes = {
 
 export function confirmAlert(props) {
   // the below render is only to invoke proptypes on ConfirmAlert
-  ReactDOMServer.renderToString(
+  renderToString(
     <ConfirmAlert
       title={props.title}
       message={props.message}
