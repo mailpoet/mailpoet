@@ -6,3 +6,4 @@ export * from './parsley-helper-functions';
 export * from './extract-email-domain';
 export * from './extract-page-name-from-url';
 export * from './restore-stripped-location-hash';
+export * from './decode-ampersands';
