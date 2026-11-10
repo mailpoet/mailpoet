@@ -125,8 +125,15 @@ class NewsletterDraftEditingAbilitiesTest extends \MailPoetTest {
     verify($draft['preheader'])->equals('Pre');
     verify($draft['list_ids'])->equals([$list->getId()]);
 
+    $table = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement("UPDATE $table SET updated_at = '2026-01-01 10:00:00' WHERE id = ?", [$created['id']]);
+    $this->entityManager->clear();
     $updated = $this->update($created['id'], ['version' => $draft['version'], 'blocks' => [['type' => 'paragraph', 'text' => 'Only blocks']]]);
     $this->assertIsArray($updated);
+    $this->entityManager->clear();
+    $newsletter = $this->newslettersRepository->findOneById($created['id']);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    verify($newsletter->getUpdatedAt())->greaterThan(new Carbon('2026-01-02'));
     $draft = $this->get($created['id']);
     verify($draft['blocks'])->equals([['type' => 'paragraph', 'text' => 'Only blocks']]);
     verify($draft['subject'])->equals('Only subject');

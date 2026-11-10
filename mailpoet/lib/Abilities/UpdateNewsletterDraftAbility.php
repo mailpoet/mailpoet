@@ -7,6 +7,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 if (!defined('ABSPATH')) exit;
 
@@ -112,6 +113,8 @@ class UpdateNewsletterDraftAbility implements Ability {
       if ($post) {
         $this->drafts->updatePost((int)$newsletter->getWpPostId(), $post);
       }
+      // A blocks-only change leaves the entity unchanged, so Doctrine wouldn't update the timestamp.
+      $newsletter->setUpdatedAt(Carbon::now()->millisecond(0));
       $saved = $this->saveController->save(['id' => $newsletter->getId()] + array_filter([
         'subject' => $prepared['subject'],
         'preheader' => $prepared['preheader'],
