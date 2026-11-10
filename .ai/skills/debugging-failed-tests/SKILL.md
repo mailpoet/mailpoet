@@ -50,7 +50,7 @@ gh api repos/mailpoet/mailpoet/compare/<last-green-sha>...<failing-sha>
 
 Lists every file changed across the range without needing a local checkout of the failing SHA. The last-green SHA comes from the CircleCI insights endpoint (`references/circleci.md`).
 
-**Environment drift.** WP/WC/PHP versions print at the start of the failing step in the job log (CircleCI or GitHub Actions) — the Codeception entrypoint logs `WORDPRESS VERSION:`, `TEST RUNNER PHP VERSION:`, and the WooCommerce version. If the run is against a WordPress or WooCommerce beta/RC (job name often contains `_wordpress_beta` / `_woocommerce_beta`, or the version string ends in `-beta.N` / `-RC1`), see `references/beta-rc-failures.md`.
+**Environment drift.** WP/WC/PHP versions print at the start of the failing step in the job log (CircleCI or GitHub Actions) — the Codeception entrypoint logs `WORDPRESS VERSION:`, `TEST RUNNER PHP VERSION:`, and the WooCommerce version. If the run is against a WordPress or WooCommerce beta/RC (the GitHub Actions job name contains “(WordPress beta)” or “(WooCommerce beta)”, or the version string ends in `-beta.N` / `-RC1`), see `references/beta-rc-failures.md`.
 
 **Frequency check (transient-looking failures).** When the failure looks environmental — network blip, external service 4xx/5xx, container-level glitch — the rerun-vs-fix call depends on how often it’s happening. Hit the CircleCI insights endpoint (`references/circleci.md`) for the same workflow on the same branch: if the same failure shape recurs across multiple recent runs, fix it at the source (mock the outbound call, stub the service, filter the gate). If it’s a one-off in months of green runs, recommend a rerun and move on.
 
