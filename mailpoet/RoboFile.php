@@ -1354,7 +1354,7 @@ class RoboFile extends \Robo\Tasks {
       return;
     }
     $result = $this->createCircleCiController()->rerunLatestWorkflow(\MailPoetTasks\Release\CircleCiController::PROJECT_PREMIUM);
-    $this->say('Rerunning the CircleCI workflow for Premium ... ' . ($result ? 'done' : 'not needed, it passed'));
+    $this->say('Rerunning the CircleCI workflow for Premium ... ' . ($result ? 'done' : 'nothing to rerun (it passed, or is in a state that cannot be rerun)'));
   }
 
   public function downloadWooCommerceMembershipsZip(?string $version = null): void {

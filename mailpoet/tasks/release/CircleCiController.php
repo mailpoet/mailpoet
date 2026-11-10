@@ -74,8 +74,8 @@ class CircleCiController {
   }
 
   /**
-   * Returns true when the Circle workflow was started from the beginning
-   * and false when the last workflow was successful.
+   * Returns true when the Circle workflow was started from the beginning, and false when
+   * the last workflow passed or is in a state that can't be rerun (error, on hold, not run).
    */
   public function rerunLatestWorkflow(?string $project = null): bool {
     $circleCiProject = null;
