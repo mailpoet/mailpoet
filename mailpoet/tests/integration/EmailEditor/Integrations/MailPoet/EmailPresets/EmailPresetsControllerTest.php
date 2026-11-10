@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets;
 
 use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Email_Editor;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlock;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Entities\FeatureFlagEntity;
 use MailPoet\Entities\NewsletterEntity;
@@ -178,6 +179,17 @@ class EmailPresetsControllerTest extends \MailPoetTest {
     verify($rendered['subject'])->equals('Preview subject');
     verify($rendered['html'])->stringContainsString('Hi ' . $userEmail);
     verify($rendered['text'])->stringContainsString('Hi ' . $userEmail);
+  }
+
+  public function testItRendersTheCouponPlaceholder(): void {
+    $presetId = $this->controller->create('Coupon');
+    $content = '<!-- wp:woocommerce/coupon-code {"source":"createNew"} --><div class="wp-block-woocommerce-coupon-code"><strong>' . CouponBlock::SAFE_PLACEHOLDER . '</strong></div><!-- /wp:woocommerce/coupon-code -->';
+    wp_update_post(['ID' => $presetId, 'post_content' => wp_slash($content)]);
+
+    $rendered = $this->controller->render($this->getPost($presetId));
+
+    verify($rendered['html'])->stringContainsString(CouponBlock::SAFE_PLACEHOLDER);
+    verify(get_posts(['post_type' => 'shop_coupon', 'post_status' => 'any', 'numberposts' => -1]))->empty();
   }
 
   private function getPost(int $postId): \WP_Post {
