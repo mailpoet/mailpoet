@@ -193,6 +193,61 @@ jobs:
         working-directory: mailpoet
         run: ./tools/semgrep.sh lib/ lib-3rd-party/
 
+  release_zip:
+    name: 'Release zip'
+    needs: build
+    uses: ./.github/workflows/release-zip.yml
+    permissions:
+      contents: read
+    with:
+      # A release can wait a few days between the build and the publish.
+      retention-days: 14
+
+  qit_security:
+    name: 'QIT security scan'
+    needs: release_zip
+    # Pull requests from forks get no secrets, so there are no QIT credentials; the
+    # scan runs on trunk after the merge. Dependabot reads them from the Dependabot
+    # secrets.
+    if: ${{ !github.event.pull_request.head.repo.fork }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    defaults:
+      run:
+        # Job defaults replace the workflow ones, so set the shell again
+        shell: bash
+        working-directory: mailpoet
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/restore-build
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: mailpoet-zip
+          path: mailpoet
+      - name: 'Authenticate in QIT'
+        env:
+          QIT_PARTNER_USER: ${{ secrets.QIT_PARTNER_USER }}
+          QIT_TOKEN: ${{ secrets.QIT_TOKEN }}
+        run: ./vendor/bin/qit partner:add --user="$QIT_PARTNER_USER" --qit_token="$QIT_TOKEN"
+      - name: 'Run the QIT security scan'
+        run: |
+          mkdir -p tests/_output
+          ./do qa:qit-security | tee tests/_output/qit-security
+      - name: 'Retrieve test results'
+        if: ${{ !cancelled() }}
+        run: grep "Result Url" tests/_output/qit-security | awk '{ print $3 }' | xargs curl -sSfo tests/_output/report.html
+      - name: 'Upload results'
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: qit-security
+          path: mailpoet/tests/_output
+          retention-days: 14
+
   integration_base:
     name: 'Integration tests'
     needs: build
@@ -340,6 +395,8 @@ jobs:
       - unit_tests
       - trunk_alert_tests
       - security_analysis
+      - release_zip
+      - qit_security
       - integration_base
       - integration
       - acceptance
@@ -352,7 +409,7 @@ jobs:
           FROM_FORK: ${{ github.event.pull_request.head.repo.fork }}
         run: |
           if [ "$FROM_FORK" == "true" ]; then
-            echo "::notice::Pull requests from forks skip the jobs that need secrets (Semgrep, WooCommerce, multisite and acceptance tests). They run on trunk after the merge."
+            echo "::notice::Pull requests from forks skip the jobs that need secrets (Semgrep, the QIT security scan, WooCommerce, multisite and acceptance tests). They run on trunk after the merge."
           fi
           failed=$(echo "$RESULTS" | jq -r 'to_entries[] | select(.value.result != "success" and .value.result != "skipped") | "::error::\(.key): \(.value.result)"')
           if [ -n "$failed" ]; then
