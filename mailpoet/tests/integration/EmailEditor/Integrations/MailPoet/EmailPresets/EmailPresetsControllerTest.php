@@ -55,6 +55,20 @@ class EmailPresetsControllerTest extends \MailPoetTest {
     verify(get_post_meta($presetId, EmailPresetPostType::META_PREHEADER, true))->equals('Only today');
   }
 
+  public function testItKeepsPersonalizationTagsInSubjectAndPreheader(): void {
+    $emailId = $this->createBlockEmail('');
+    (new Newsletter())
+      ->withSubject('Hi <!--[user/firstname default="there"]-->, <b>sale</b>')
+      ->withPreheader('For <!--[user/email]--> only<script>alert(1)</script>')
+      ->withWpPostId($emailId)
+      ->create();
+
+    $presetId = $this->controller->create('Copy', $this->getPost($emailId));
+
+    verify(get_post_meta($presetId, EmailPresetPostType::META_SUBJECT, true))->equals('Hi <!--[user/firstname default="there"]-->, sale');
+    verify(get_post_meta($presetId, EmailPresetPostType::META_PREHEADER, true))->equals('For <!--[user/email]--> only');
+  }
+
   public function testItKeepsEscapedCharactersWhenCopyingAnEmail(): void {
     if (is_multisite()) {
       // Without unfiltered_html, kses also encodes "&" in block attributes.

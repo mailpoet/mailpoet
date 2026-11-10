@@ -60,8 +60,8 @@ class EmailPresetPostType {
   public function registerMeta(): void {
     $sanitizeCallbacks = [
       self::META_DESCRIPTION => 'sanitize_textarea_field',
-      self::META_SUBJECT => 'sanitize_text_field',
-      self::META_PREHEADER => 'sanitize_text_field',
+      self::META_SUBJECT => [$this, 'sanitizeTextWithTags'],
+      self::META_PREHEADER => [$this, 'sanitizeTextWithTags'],
     ];
     foreach ($sanitizeCallbacks as $metaKey => $sanitizeCallback) {
       $this->wp->registerPostMeta(self::NAME, $metaKey, [
@@ -75,5 +75,30 @@ class EmailPresetPostType {
         },
       ]);
     }
+  }
+
+  /**
+   * Like sanitize_text_field(), but keeps personalization tags such as <!--[user/firstname]-->.
+   */
+  public function sanitizeTextWithTags($value): string {
+    $value = (string)$value;
+    $tags = [];
+    $offset = 0;
+    while (($start = strpos($value, '<!--[', $offset)) !== false) {
+      $end = strpos($value, ']-->', $start);
+      if ($end === false) {
+        break;
+      }
+      $tag = substr($value, $start, $end + 4 - $start);
+      if (strpbrk(substr($tag, 4, -3), '<>') !== false) {
+        $offset = $start + 1;
+        continue;
+      }
+      $placeholder = '{{mailpoet_preset_tag_' . count($tags) . '}}';
+      $tags[$placeholder] = $tag;
+      $value = substr_replace($value, $placeholder, $start, strlen($tag));
+      $offset = $start + strlen($placeholder);
+    }
+    return strtr($this->wp->sanitizeTextField($value), $tags);
   }
 }
