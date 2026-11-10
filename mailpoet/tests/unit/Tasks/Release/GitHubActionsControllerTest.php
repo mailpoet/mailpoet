@@ -277,8 +277,7 @@ class GitHubActionsControllerTest extends \MailPoetUnitTest {
     if ($history) {
       $stack->push(Middleware::history($history));
     }
-    $repository = $project === GitHubController::PROJECT_PREMIUM ? 'mailpoet-premium' : 'mailpoet';
-    $client = new Client(['handler' => $stack, 'base_uri' => "https://api.github.com/repos/mailpoet/$repository/"]);
+    $client = new Client(['handler' => $stack]);
     $githubController = $this->createMock(GitHubController::class);
     $githubController->method('getLatestCommitRevisionOnBranch')->willReturn('abc123');
     return new class('token', $githubController, $client, $timeout, $project) extends GitHubActionsController {
