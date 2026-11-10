@@ -232,6 +232,35 @@ class CreateNewsletterDraftAbilityTest extends \MailPoetTest {
     verify($content)->stringContainsString('<li>Two</li>');
   }
 
+  public function testItRemovesShortcodesTheEmailRendererWouldRun(): void {
+    add_shortcode('mailpoet_test_code', function (): string {
+      return 'Shortcode output';
+    });
+    try {
+      $result = $this->createDraft([
+        'subject' => 'Shortcodes',
+        'blocks' => [
+          ['type' => 'heading', 'text' => 'H [mailpoet_test_code] [[mailpoet_test_code]]'],
+          ['type' => 'paragraph', 'text' => 'P &#91;mailpoet_test_code&#93; [not_registered] <a href="https://example.com/p?a=[mailpoet_test_code]">link</a>'],
+          ['type' => 'image', 'url' => 'https://example.com/i.png?a=%5Bmailpoet_test_code%5D', 'alt' => 'I [mailpoet_test_code]x[/mailpoet_test_code]'],
+          ['type' => 'button', 'text' => 'B', 'url' => 'https://example.com/b'],
+        ],
+      ]);
+    } finally {
+      remove_shortcode('mailpoet_test_code');
+    }
+
+    $content = $this->getPostContent($result);
+    verify($content)->stringNotContainsString('mailpoet_test_code');
+    verify($content)->stringContainsString('[not_registered]');
+    verify($content)->stringContainsString('alt="I"');
+    $warnings = implode("\n", $result['warnings']);
+    verify($warnings)->stringContainsString('blocks[0]');
+    verify($warnings)->stringContainsString('blocks[1]');
+    verify($warnings)->stringContainsString('blocks[2]');
+    verify($warnings)->stringNotContainsString('blocks[3]');
+  }
+
   public function testRemovingAShortcodeKeepsTheEscapedTextAroundIt(): void {
     $result = $this->createDraft([
       'subject' => 'Escaped',

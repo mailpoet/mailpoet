@@ -532,7 +532,23 @@ class NewsletterDraftBlocks {
   /** @return string[] */
   private function findTags(string $text): array {
     preg_match_all(self::PERSONALIZATION_TAG_PATTERN, $text, $matches);
-    return array_merge($this->shortcodes->extract($text) ?: [], $matches[0]);
+    return array_merge($this->shortcodes->extract($text) ?: [], $matches[0], $this->findWordPressShortcodes($text));
+  }
+
+  /**
+   * The email renderer runs registered WordPress shortcodes, also in attributes, after it has
+   * decoded the text. Core's pattern matches only the registered ones, and with none registered
+   * it would match other text in brackets.
+   *
+   * @return string[]
+   */
+  private function findWordPressShortcodes(string $text): array {
+    $registered = $GLOBALS['shortcode_tags'] ?? null;
+    if (!is_array($registered) || !$registered || strpos($text, '[') === false) {
+      return [];
+    }
+    preg_match_all('/' . $this->wp->getShortcodeRegex(array_keys($registered)) . '/', $text, $matches);
+    return $matches[0];
   }
 
   private function wrapInGroup(string $content): string {
