@@ -1343,32 +1343,18 @@ class RoboFile extends \Robo\Tasks {
     $this->say($result ? 'Rerunning the checks on the release branch ... done' : 'The checks on the release branch passed, nothing to rerun');
   }
 
-  public function releaseRerunCircleWorkflow(?string $project = null) {
-    // The free plugin's release build runs on GitHub Actions; Premium's still runs on CircleCI.
-    if ($project === null || strtoupper($project) === \MailPoetTasks\Release\CircleCiController::PROJECT_MAILPOET) {
-      $this->releaseRerunChecks();
-      return;
-    }
-    $circleciController = $this->createCircleCiController();
-    $result = $circleciController->rerunLatestWorkflow($project);
-    // Sometimes can be useful to know which Circle project workflow was restarted
-    $project = $project ? " for the project '{$project}'" : '';
-    if (!$result) {
-      $this->say("Rerunning the CircleCI workflow{$project} ... failed");
-    } else {
-      $this->say("Rerunning the CircleCI workflow{$project} ... done");
-    }
-  }
-
+  // Premium still builds its release on CircleCI; the free plugin re-runs its checks with release:rerun-checks.
   public function releaseRerunCircleWorkflowForPremium() {
     $isPremiumReleased = $this->createGitHubController()->projectBranchExists(
       \MailPoetTasks\Release\GitHubController::PROJECT_PREMIUM,
       \MailPoetTasks\Release\GitHubController::RELEASE_SOURCE_BRANCH
     );
 
-    if ($isPremiumReleased) {
-      $this->releaseRerunCircleWorkflow(\MailPoetTasks\Release\CircleCiController::PROJECT_PREMIUM);
+    if (!$isPremiumReleased) {
+      return;
     }
+    $result = $this->createCircleCiController()->rerunLatestWorkflow(\MailPoetTasks\Release\CircleCiController::PROJECT_PREMIUM);
+    $this->say('Rerunning the CircleCI workflow for Premium ... ' . ($result ? 'done' : 'not needed, it passed'));
   }
 
   public function downloadWooCommerceMembershipsZip(?string $version = null): void {
