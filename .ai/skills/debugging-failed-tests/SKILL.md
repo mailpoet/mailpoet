@@ -48,11 +48,11 @@ Pick whichever the failure signal makes cheapest. Not a sequence.
 gh api repos/mailpoet/mailpoet/compare/<last-green-sha>...<failing-sha>
 ```
 
-Lists every file changed across the range without needing a local checkout of the failing SHA. The last-green SHA comes from the CircleCI insights endpoint (`references/circleci.md`).
+Lists every file changed across the range without needing a local checkout of the failing SHA. For the free plugin’s tests, the last green trunk SHA comes from GitHub Actions: `gh run list -R mailpoet/mailpoet --workflow checks.yml --branch trunk --status success -L 1 --json headSha` (use `nightly-tests.yml` for a nightly failure). For a CircleCI job (the release zip, QIT, or the tests with Premium active), use the CircleCI insights endpoint (`references/circleci.md`).
 
 **Environment drift.** WP/WC/PHP versions print at the start of the failing step in the job log (CircleCI or GitHub Actions) — the Codeception entrypoint logs `WORDPRESS VERSION:`, `TEST RUNNER PHP VERSION:`, and the WooCommerce version. If the run is against a WordPress or WooCommerce beta/RC (the GitHub Actions job name contains “(WordPress beta)” or “(WooCommerce beta)”, or the version string ends in `-beta.N` / `-RC1`), see `references/beta-rc-failures.md`.
 
-**Frequency check (transient-looking failures).** When the failure looks environmental — network blip, external service 4xx/5xx, container-level glitch — the rerun-vs-fix call depends on how often it’s happening. Hit the CircleCI insights endpoint (`references/circleci.md`) for the same workflow on the same branch: if the same failure shape recurs across multiple recent runs, fix it at the source (mock the outbound call, stub the service, filter the gate). If it’s a one-off in months of green runs, recommend a rerun and move on.
+**Frequency check (transient-looking failures).** When the failure looks environmental — network blip, external service 4xx/5xx, container-level glitch — the rerun-vs-fix call depends on how often it’s happening. List recent runs of the same workflow on the same branch (`gh run list -R mailpoet/mailpoet --workflow checks.yml --branch trunk -L 20`, or the CircleCI insights endpoint in `references/circleci.md` for a CircleCI job): if the same failure shape recurs across multiple recent runs, fix it at the source (mock the outbound call, stub the service, filter the gate). If it’s a one-off in months of green runs, recommend a rerun and move on.
 
 **`git bisect` between last-green and failing SHA.** Only when eyeballing the diff didn’t work. The form wired to project commands:
 
