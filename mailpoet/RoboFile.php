@@ -7,10 +7,11 @@ use MailPoetVendor\Twig\Loader\FilesystemLoader as TwigFileSystem;
 
 class RoboFile extends \Robo\Tasks {
   const ZIP_BUILD_PATH = __DIR__ . '/mailpoet.zip';
-  const ZIP_BUILD_JOB_PATH = __DIR__ . '/mailpoet.zip.job';
+  // The GitHub Actions run the ZIP came from, so mailpoet.pot is taken from the same build
+  const ZIP_BUILD_RUN_PATH = __DIR__ . '/mailpoet.zip.run';
 
   /** @var int|null */
-  private $releaseZipJobNumber;
+  private $releaseZipRunId;
 
   public function __construct() {
 
@@ -296,11 +297,11 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function translationsGetPotFileFromBuild() {
-    $jobNumber = $this->releaseZipJobNumber;
-    if ($jobNumber === null && is_file(self::ZIP_BUILD_JOB_PATH)) {
-      $jobNumber = (int)trim((string)file_get_contents(self::ZIP_BUILD_JOB_PATH)) ?: null;
+    $runId = $this->releaseZipRunId;
+    if ($runId === null && is_file(self::ZIP_BUILD_RUN_PATH)) {
+      $runId = (int)trim((string)file_get_contents(self::ZIP_BUILD_RUN_PATH)) ?: null;
     }
-    if ($jobNumber === null) {
+    if ($runId === null) {
       throw new \Exception('The build to take mailpoet.pot from is unknown. Run `./do release:download-zip` first.');
     }
 
@@ -309,8 +310,8 @@ class RoboFile extends \Robo\Tasks {
       $this->taskExec('mkdir -p ' . __DIR__ . '/lang')->run();
     }
 
-    $this->createCircleCiController()->downloadPotFile($jobNumber, $potFilePath);
-    $this->say('mailpoet.pot of build ' . $jobNumber . ' downloaded to ' . $potFilePath);
+    $this->createGitHubActionsController()->downloadPotFile($runId, $potFilePath);
+    $this->say('mailpoet.pot of run ' . $runId . ' downloaded to ' . $potFilePath);
   }
 
   public function translationsPush() {
@@ -1304,18 +1305,18 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function releaseDownloadZip() {
-    $circleciController = $this->createCircleCiController();
-    $path = $circleciController->downloadLatestBuild(self::ZIP_BUILD_PATH);
+    $actionsController = $this->createGitHubActionsController();
+    $path = $actionsController->downloadLatestBuild(self::ZIP_BUILD_PATH);
     // The .pot must come from the same build as this ZIP.
-    $this->releaseZipJobNumber = $circleciController->getDownloadedJobNumber();
-    file_put_contents(self::ZIP_BUILD_JOB_PATH, (string)$this->releaseZipJobNumber);
+    $this->releaseZipRunId = $actionsController->getDownloadedRunId();
+    file_put_contents(self::ZIP_BUILD_RUN_PATH, (string)$this->releaseZipRunId);
     $this->say('Release ZIP downloaded to: ' . $path);
     $this->say(sprintf('Release ZIP file size: %.2F MB', filesize($path) / pow(1024, 2)));
   }
 
   public function releaseDeleteDownloadedZip() {
     $this->say('Delete downloaded ZIP: ' . self::ZIP_BUILD_PATH);
-    $this->taskExec('rm -f ' . self::ZIP_BUILD_PATH . ' ' . self::ZIP_BUILD_JOB_PATH)->run();
+    $this->taskExec('rm -f ' . self::ZIP_BUILD_PATH . ' ' . self::ZIP_BUILD_RUN_PATH)->run();
     $this->say('ZIP file was deleted');
   }
 
@@ -1337,7 +1338,17 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Release '$version' info was published on Slack.");
   }
 
+  public function releaseRerunChecks() {
+    $result = $this->createGitHubActionsController()->rerunLatestWorkflow();
+    $this->say($result ? 'Rerunning the checks on the release branch ... done' : 'The checks on the release branch passed, nothing to rerun');
+  }
+
   public function releaseRerunCircleWorkflow(?string $project = null) {
+    // The free plugin's release build runs on GitHub Actions; Premium's still runs on CircleCI.
+    if ($project === null || strtoupper($project) === \MailPoetTasks\Release\CircleCiController::PROJECT_MAILPOET) {
+      $this->releaseRerunChecks();
+      return;
+    }
     $circleciController = $this->createCircleCiController();
     $result = $circleciController->rerunLatestWorkflow($project);
     // Sometimes can be useful to know which Circle project workflow was restarted
@@ -1616,6 +1627,14 @@ class RoboFile extends \Robo\Tasks {
       $this->getEnv('WP_CIRCLECI_USERNAME', $help),
       $this->getEnv('WP_CIRCLECI_TOKEN', $help),
       \MailPoetTasks\Release\CircleCiController::PROJECT_MAILPOET,
+      $this->createGitHubController()
+    );
+  }
+
+  protected function createGitHubActionsController() {
+    $help = "Use your GitHub username and a token from https://github.com/settings/tokens with 'repo' scopes.";
+    return new \MailPoetTasks\Release\GitHubActionsController(
+      $this->getEnv('WP_GITHUB_TOKEN', $help),
       $this->createGitHubController()
     );
   }
