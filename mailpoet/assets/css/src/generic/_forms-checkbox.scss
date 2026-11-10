@@ -61,10 +61,3 @@
     display: block;
   }
 }
-
-// We bundle the components JS but use core's components CSS. On older
-// WordPress, that CSS sets `fill`, but the check icon now needs `color`.
-svg.components-checkbox-control__checked,
-svg.components-checkbox-control__indeterminate {
-  color: var(--wpds-color-foreground-interactive-brand-strong);
-}
