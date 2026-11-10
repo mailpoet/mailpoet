@@ -237,21 +237,12 @@ jobs:
             - mailpoet
 
   acceptance_tests:
-    parallelism: << parameters.parallelism >>
+    parallelism: 20
     working_directory: /home/circleci/mailpoet/mailpoet
     machine:
       image: default
       docker_layer_caching: false
     parameters:
-      parallelism:
-        type: integer
-        default: 20
-      multisite:
-        type: integer
-        default: 0
-      group:
-        type: string
-        default: ''
       mysql_command:
         type: string
         default: ''
@@ -276,28 +267,7 @@ jobs:
       automate_woo_version:
         type: string
         default: ''
-      blockbased_theme:
-        type: integer
-        default: 0
-      enable_hpos:
-        type: integer
-        default: 0
-      enable_hpos_sync:
-        type: integer
-        default: 0
-      disable_hpos:
-        type: integer
-        default: 0
-      use_wordpress_beta:
-        type: boolean
-        default: false
-      use_woocommerce_beta:
-        type: boolean
-        default: false
       wordpress_version:
-        type: string
-        default: ''
-      gutenberg_version:
         type: string
         default: ''
     environment:
@@ -306,7 +276,6 @@ jobs:
       CODECEPTION_IMAGE_VERSION: << parameters.codeception_image_version >>
       WORDPRESS_IMAGE_VERSION: << parameters.wordpress_image_version >>
       WORDPRESS_VERSION: << parameters.wordpress_version >>
-      GUTENBERG_VERSION: << parameters.gutenberg_version >>
     steps:
       - attach_workspace:
           at: /home/circleci
@@ -314,36 +283,8 @@ jobs:
           name: 'Set up virtual host'
           command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
       - run:
-          name: Check for Latest WordPress Beta Version
-          command: |
-            if [ "<< parameters.use_wordpress_beta >>" == "true" ]; then
-              LATEST_WP_BETA=$(../.circleci/check_wordpress_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
-              if [ -z "$LATEST_WP_BETA" ]; then
-                echo "No latest beta version found. Ending job early."
-                circleci-agent step halt
-              else
-                echo "export WORDPRESS_VERSION=$LATEST_WP_BETA" >> $BASH_ENV
-                echo "Using WordPress Beta Version: $LATEST_WP_BETA"
-              fi
-            else
-              echo "Not using WordPress Beta Version"
-            fi
-      - run:
-          name: Check for Latest WooCommerce Beta Version
-          command: |
-            if [ "<< parameters.use_woocommerce_beta >>" == "true" ]; then
-              LATEST_WC_BETA=$(../.circleci/check_woocommerce_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
-              if [ -z "$LATEST_WC_BETA" ]; then
-                echo "No WooCommerce Beta version found. Ending job early."
-                circleci-agent step halt
-              else
-                echo "export WOOCOMMERCE_VERSION=$LATEST_WC_BETA" >> $BASH_ENV
-                echo "Using WooCommerce Beta Version: $LATEST_WC_BETA"
-              fi
-            else
-              echo "export WOOCOMMERCE_VERSION=<< parameters.woo_core_version >>" >> $BASH_ENV
-              echo "Not using WooCommerce Beta Version"
-            fi
+          name: Set the WooCommerce version
+          command: echo "export WOOCOMMERCE_VERSION=<< parameters.woo_core_version >>" >> $BASH_ENV
       - run:
           name: 'Pull test docker images'
           # Pull docker images with 3 retries
@@ -410,15 +351,10 @@ jobs:
             if [ -e $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json ]; then
               sed -i.bak 's#/wp-core/wp-content/plugins/mailpoet/##g' $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json
             fi
-            export MULTISITE=<< parameters.multisite >>
-            export BLOCKBASED_THEME=<< parameters.blockbased_theme >>
-            export ENABLE_HPOS=<< parameters.enable_hpos >>
-            export ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >>
-            export DISABLE_HPOS=<< parameters.disable_hpos >>
             # `circleci tests run` splits the list and launches the tests itself, which is what
             # lets CircleCI offer "Rerun failed tests" on this job. `circleci tests split` cannot.
             # The tests are listed one per Cest method, so the split balances by test, not by file.
-            ../.circleci/list_tests.sh tests/acceptance '<< parameters.group >>' | circleci tests run \
+            ../.circleci/list_tests.sh tests/acceptance '' | circleci tests run \
               --command='../.circleci/run_split_tests.sh codeception_acceptance' \
               --split-by=timings \
               --timings-type=filename \
@@ -505,7 +441,7 @@ jobs:
       - store_test_results:
           path: tests/performance/_output
   integration_tests:
-    parallelism: << parameters.parallelism >>
+    parallelism: 1
     working_directory: /home/circleci/mailpoet/mailpoet
     machine:
       image: default
@@ -517,36 +453,12 @@ jobs:
       WORDPRESS_IMAGE_VERSION: << parameters.wordpress_image_version >>
       WORDPRESS_VERSION: << parameters.wordpress_version >>
     parameters:
-      parallelism:
-        type: integer
-        default: 1
       codeception_image_version:
         type: string
         default: ''
       wordpress_image_version:
         type: string
         default: ''
-      group:
-        type: string
-        default: ''
-      skip_group:
-        type: string
-        default: ''
-      skip_plugins:
-        type: integer
-        default: 0
-      enable_hpos:
-        type: integer
-        default: 0
-      enable_hpos_sync:
-        type: integer
-        default: 0
-      disable_hpos:
-        type: integer
-        default: 0
-      multisite:
-        type: integer
-        default: 0
       mysql_command:
         type: string
         default: ''
@@ -565,12 +477,6 @@ jobs:
       automate_woo_version:
         type: string
         default: ''
-      use_wordpress_beta:
-        type: boolean
-        default: false
-      use_woocommerce_beta:
-        type: boolean
-        default: false
       wordpress_version:
         type: string
         default: ''
@@ -578,36 +484,8 @@ jobs:
       - attach_workspace:
           at: /home/circleci
       - run:
-          name: Check for Latest WordPress Beta Version
-          command: |
-            if [ "<< parameters.use_wordpress_beta >>" == "true" ]; then
-              LATEST_WP_BETA=$(../.circleci/check_wordpress_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
-              if [ -z "$LATEST_WP_BETA" ]; then
-                echo "No latest beta version found. Ending job early."
-                circleci-agent step halt
-              else
-                echo "export WORDPRESS_VERSION=$LATEST_WP_BETA" >> $BASH_ENV
-                echo "Using WordPress Beta Version: $LATEST_WP_BETA"
-              fi
-            else
-              echo "Not using WordPress Beta Version"
-            fi
-      - run:
-          name: Check for Latest WooCommerce Beta Version
-          command: |
-            if [ "<< parameters.use_woocommerce_beta >>" == "true" ]; then
-              LATEST_WC_BETA=$(../.circleci/check_woocommerce_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
-              if [ -z "$LATEST_WC_BETA" ]; then
-                echo "No WooCommerce Beta version found. Ending job early."
-                circleci-agent step halt
-              else
-                echo "export WOOCOMMERCE_VERSION=$LATEST_WC_BETA" >> $BASH_ENV
-                echo "Using WooCommerce Beta Version: $LATEST_WC_BETA"
-              fi
-            else
-              echo "export WOOCOMMERCE_VERSION=<< parameters.woo_core_version >>" >> $BASH_ENV
-              echo "Not using WooCommerce Beta Version"
-            fi
+          name: Set the WooCommerce version
+          command: echo "export WOOCOMMERCE_VERSION=<< parameters.woo_core_version >>" >> $BASH_ENV
       - run:
           name: 'Pull test docker images'
           # Pull docker images with 3 retries
@@ -669,16 +547,9 @@ jobs:
             if [ -e $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json ]; then
               sed -i.bak 's#/wp-core/wp-content/plugins/mailpoet/##g' $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json
             fi
-            export SKIP_GROUP='<< parameters.skip_group >>'
-            export SKIP_PLUGINS=<< parameters.skip_plugins >>
-            export MULTISITE=<< parameters.multisite >>
-            export ENABLE_HPOS=<< parameters.enable_hpos >>
-            export ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >>
-            export DISABLE_HPOS=<< parameters.disable_hpos >>
             # `circleci tests run` splits the files over the job’s containers by their stored timings
             # and launches the tests itself, which is what lets CircleCI offer “Rerun failed tests”.
-            # With a group, only the tests in that group are listed.
-            ../.circleci/list_tests.sh tests/integration '<< parameters.group >>' | circleci tests run \
+            ../.circleci/list_tests.sh tests/integration '' | circleci tests run \
               --command='../.circleci/run_split_tests.sh codeception_integration' \
               --split-by=timings \
               --timings-type=filename \
