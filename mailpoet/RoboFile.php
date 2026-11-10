@@ -1054,7 +1054,7 @@ class RoboFile extends \Robo\Tasks {
         $this->releaseCreatePullRequest($version);
       }))
       ->addCode($this->withErrorOutput(function () {
-        $this->releaseRerunCircleWorkflowForPremium();
+        $this->releaseRerunChecksForPremium();
       }))
       ->addCode($this->withErrorOutput(function () use ($version) {
         $this->translationsPrepareLanguagePacks($version);
@@ -1192,7 +1192,7 @@ class RoboFile extends \Robo\Tasks {
 
   public function releaseMergePullRequest(string $branch) {
     $this->createGitHubController()
-      ->mergePullRequest(\MailPoetTasks\Release\CircleCiController::PROJECT_MAILPOET, $branch);
+      ->mergePullRequest(\MailPoetTasks\Release\GitHubController::PROJECT_MAILPOET, $branch);
     $this->say("Pull request for branch: '{$branch}' was successfully merged");
   }
 
@@ -1343,8 +1343,9 @@ class RoboFile extends \Robo\Tasks {
     $this->say($result ? 'Rerunning the checks on the release branch ... done' : 'The checks on the release branch passed, nothing to rerun');
   }
 
-  // Premium still builds its release on CircleCI; the free plugin re-runs its checks with release:rerun-checks.
-  public function releaseRerunCircleWorkflowForPremium() {
+  // Premium’s release branch checks build against the free plugin’s branch of the same name,
+  // so once the free release branch exists, run Premium’s release checks again.
+  public function releaseRerunChecksForPremium() {
     $isPremiumReleased = $this->createGitHubController()->projectBranchExists(
       \MailPoetTasks\Release\GitHubController::PROJECT_PREMIUM,
       \MailPoetTasks\Release\GitHubController::RELEASE_SOURCE_BRANCH
@@ -1353,8 +1354,8 @@ class RoboFile extends \Robo\Tasks {
     if (!$isPremiumReleased) {
       return;
     }
-    $result = $this->createCircleCiController()->rerunLatestWorkflow(\MailPoetTasks\Release\CircleCiController::PROJECT_PREMIUM);
-    $this->say('Rerunning the CircleCI workflow for Premium ... ' . ($result ? 'done' : 'nothing to rerun (it passed, or is in a state that cannot be rerun)'));
+    $result = $this->createGitHubActionsController(\MailPoetTasks\Release\GitHubController::PROJECT_PREMIUM)->rerunLatestWorkflow();
+    $this->say('Rerunning the checks on Premium’s release branch ... ' . ($result ? 'done' : 'not needed, they passed'));
   }
 
   public function downloadWooCommerceMembershipsZip(?string $version = null): void {
@@ -1607,21 +1608,13 @@ class RoboFile extends \Robo\Tasks {
     );
   }
 
-  protected function createCircleCiController() {
-    $help = "Use 'mailpoet' username and a token from https://circleci.com/gh/mailpoet/mailpoet/edit#api.";
-    return new \MailPoetTasks\Release\CircleCiController(
-      $this->getEnv('WP_CIRCLECI_USERNAME', $help),
-      $this->getEnv('WP_CIRCLECI_TOKEN', $help),
-      \MailPoetTasks\Release\CircleCiController::PROJECT_MAILPOET,
-      $this->createGitHubController()
-    );
-  }
-
-  protected function createGitHubActionsController() {
+  protected function createGitHubActionsController($project = \MailPoetTasks\Release\GitHubController::PROJECT_MAILPOET) {
     $help = "Use your GitHub username and a token from https://github.com/settings/tokens with 'repo' scopes.";
     return new \MailPoetTasks\Release\GitHubActionsController(
       $this->getEnv('WP_GITHUB_TOKEN', $help),
-      $this->createGitHubController()
+      $this->createGitHubController($project),
+      null,
+      $project
     );
   }
 
