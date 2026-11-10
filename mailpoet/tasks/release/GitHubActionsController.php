@@ -5,22 +5,26 @@ namespace MailPoetTasks\Release;
 use GuzzleHttp\Client;
 
 /**
- * Takes the release ZIP and mailpoet.pot of the free plugin from GitHub Actions:
- * the mailpoet-zip artifact of a successful .github/workflows/checks.yml run for the
- * latest commit on the release branch.
+ * Takes the release ZIP (and, for the free plugin, mailpoet.pot) from GitHub Actions:
+ * the zip artifact of a successful .github/workflows/checks.yml run for the latest commit
+ * on the release branch of mailpoet/mailpoet or mailpoet/mailpoet-premium.
  */
 class GitHubActionsController {
   const RELEASE_BRANCH = 'release';
   const WORKFLOW = 'checks.yml';
-  const ARTIFACT_NAME = 'mailpoet-zip';
-  const ZIP_FILENAME = 'mailpoet.zip';
   const POT_FILENAME = 'lang/mailpoet.pot';
+
+  // Per project: the repository, the artifact checks.yml uploads, and the ZIP inside it.
+  private const PROJECTS = [
+    GitHubController::PROJECT_MAILPOET => ['mailpoet', 'mailpoet-zip', 'mailpoet.zip'],
+    GitHubController::PROJECT_PREMIUM => ['mailpoet-premium', 'mailpoet-premium-zip', 'mailpoet-premium.zip'],
+  ];
 
   // The checks with the integration and acceptance tests take about half an hour.
   const RERUN_WAIT_TIMEOUT_SECONDS = 2700;
   const RERUN_POLL_INTERVAL_SECONDS = 30;
 
-  private const API_BASE_URI = 'https://api.github.com/repos/mailpoet/mailpoet/';
+  private const API_BASE_URI = 'https://api.github.com/repos/mailpoet/';
 
   /** @var Client */
   private $httpClient;
@@ -31,18 +35,35 @@ class GitHubActionsController {
   /** @var int|null */
   private $downloadedRunId;
 
+  /** @var string */
+  private $repository;
+
+  /** @var string */
+  private $artifactName;
+
+  /** @var string */
+  private $zipFilename;
+
+  /**
+   * @param GitHubController $githubController for the same project, to find the release commit
+   */
   public function __construct(
     string $token,
     GitHubController $githubController,
-    ?Client $httpClient = null
+    ?Client $httpClient = null,
+    string $project = GitHubController::PROJECT_MAILPOET
   ) {
+    if (!isset(self::PROJECTS[$project])) {
+      throw new \Exception("Unsupported project '$project'");
+    }
+    [$this->repository, $this->artifactName, $this->zipFilename] = self::PROJECTS[$project];
     $this->githubController = $githubController;
     $this->httpClient = $httpClient ?? new Client([
       'headers' => [
         'Accept' => 'application/vnd.github+json',
         'Authorization' => 'Bearer ' . $token,
       ],
-      'base_uri' => self::API_BASE_URI,
+      'base_uri' => self::API_BASE_URI . $this->repository . '/',
     ]);
   }
 
@@ -52,7 +73,7 @@ class GitHubActionsController {
    */
   public function downloadLatestBuild(string $targetPath): string {
     $run = $this->getSuccessfulReleaseRun();
-    $this->extractFromArtifact((int)$run['id'], self::ZIP_FILENAME, $targetPath, false);
+    $this->extractFromArtifact((int)$run['id'], $this->zipFilename, $targetPath, false);
     $this->downloadedRunId = (int)$run['id'];
     return $targetPath;
   }
@@ -125,17 +146,17 @@ class GitHubActionsController {
    */
   private function extractFromArtifact(int $runId, string $entry, string $targetPath, bool $requireContent): void {
     $response = $this->httpClient->get("actions/runs/$runId/artifacts", [
-      'query' => ['name' => self::ARTIFACT_NAME],
+      'query' => ['name' => $this->artifactName],
     ]);
     $artifacts = $this->decode($response)['artifacts'] ?? [];
     $artifact = reset($artifacts);
     if (!is_array($artifact) || !isset($artifact['id'])) {
-      throw new \Exception("No '" . self::ARTIFACT_NAME . "' artifact found in run $runId");
+      throw new \Exception("No '" . $this->artifactName . "' artifact found in run $runId");
     }
     if (!empty($artifact['expired'])) {
       throw new \Exception(
-        "The '" . self::ARTIFACT_NAME . "' artifact of run $runId has expired. Run it again to build a new one: "
-        . "`gh run rerun $runId -R mailpoet/mailpoet`, or https://github.com/mailpoet/mailpoet/actions/runs/$runId"
+        "The '" . $this->artifactName . "' artifact of run $runId has expired. Run it again to build a new one: "
+        . "`gh run rerun $runId -R mailpoet/{$this->repository}`, or https://github.com/mailpoet/{$this->repository}/actions/runs/$runId"
       );
     }
 
@@ -145,12 +166,12 @@ class GitHubActionsController {
       $this->httpClient->get('actions/artifacts/' . (int)$artifact['id'] . '/zip', ['sink' => $artifactPath]);
       $zip = new \ZipArchive();
       if ($zip->open($artifactPath) !== true) {
-        throw new \Exception("The '" . self::ARTIFACT_NAME . "' artifact of run $runId could not be opened.");
+        throw new \Exception("The '" . $this->artifactName . "' artifact of run $runId could not be opened.");
       }
       $content = $zip->getFromName($entry);
       $zip->close();
       if ($content === false) {
-        throw new \Exception("The '" . self::ARTIFACT_NAME . "' artifact of run $runId has no '$entry'.");
+        throw new \Exception("The '" . $this->artifactName . "' artifact of run $runId has no '$entry'.");
       }
       if ($requireContent && $content === '') {
         throw new \Exception("'$entry' in run $runId is empty.");
