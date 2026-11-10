@@ -443,17 +443,29 @@ class EmailActionTest extends \MailPoetTest {
     $automationEmail = $this->createNewsletterWithQueue(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
     $subscriberClickedEncoded = $this->createSubscriber('automation_clicked_encoded@example.com');
     $subscriberClickedDecoded = $this->createSubscriber('automation_clicked_decoded@example.com');
+    $subscriberClickedEscUrl = $this->createSubscriber('automation_clicked_esc_url@example.com');
+    $subscriberClickedNumeric = $this->createSubscriber('automation_clicked_numeric@example.com');
     $subscriberClickedOther = $this->createSubscriber('automation_clicked_other@example.com');
     $this->createStatsNewsletter($subscriberClickedEncoded, $automationEmail);
     $this->createStatsNewsletter($subscriberClickedDecoded, $automationEmail);
+    $this->createStatsNewsletter($subscriberClickedEscUrl, $automationEmail);
+    $this->createStatsNewsletter($subscriberClickedNumeric, $automationEmail);
     $this->createStatsNewsletter($subscriberClickedOther, $automationEmail);
     $this->createClickedLink('https://example.com/page?a=1&amp;b=2', $automationEmail, $subscriberClickedEncoded);
     $this->createClickedLink('https://example.com/page?a=1&b=2', $automationEmail, $subscriberClickedDecoded);
+    // esc_url() writes "&#038;"
+    $this->createClickedLink('https://example.com/page?a=1&#038;b=2', $automationEmail, $subscriberClickedEscUrl);
+    $this->createClickedLink('https://example.com/page?a=1&#38;b=2', $automationEmail, $subscriberClickedNumeric);
     $this->createClickedLink('https://example.com/other', $automationEmail, $subscriberClickedOther);
 
     foreach (['https://example.com/page?a=1&amp;b=2', 'https://example.com/page?a=1&b=2'] as $selectedUrl) {
       $operators = [
-        DynamicSegmentFilterData::OPERATOR_ANY => ['automation_clicked_encoded@example.com', 'automation_clicked_decoded@example.com'],
+        DynamicSegmentFilterData::OPERATOR_ANY => [
+          'automation_clicked_encoded@example.com',
+          'automation_clicked_decoded@example.com',
+          'automation_clicked_esc_url@example.com',
+          'automation_clicked_numeric@example.com',
+        ],
         DynamicSegmentFilterData::OPERATOR_NONE => ['automation_clicked_other@example.com'],
       ];
       foreach ($operators as $operator => $expectedEmails) {
