@@ -659,8 +659,8 @@ workflows:
             - build_premium
       - build_release_zip:
           <<: *slack-fail-post-step
-          # A release needs a green workflow: tasks/release/CircleCiController.php checks it
-          # before downloading the zip.
+          # Only the Playground previews of pull requests read this zip. Releases take it from
+          # GitHub Actions (.github/workflows/checks.yml).
           requires:
             - build
       - lint_release_zip_php74:
