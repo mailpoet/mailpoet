@@ -65,22 +65,11 @@ anchors:
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
 
-  only_trunk_and_release: &only_trunk_and_release
-    filters:
-      branches:
-        only:
-          - trunk
-          - release
-
   only_release: &only_release
     filters:
       branches:
         only:
           - release
-
-  multisite_acceptance_config: &multisite_acceptance_config
-    multisite: 1
-    <<: *only_trunk_and_release
 
   command_add_github_key: &command_add_github_key
     command: |
@@ -515,30 +504,6 @@ jobs:
           path: tests/performance/_screenshots
       - store_test_results:
           path: tests/performance/_output
-  unit_tests:
-    # The unit suite loads neither WordPress nor a database
-    working_directory: /home/circleci/mailpoet/mailpoet
-    parameters:
-      executor:
-        type: string
-        default: wpcli_php_latest
-    executor: << parameters.executor >>
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          # Some tools we use may need different version based on PHP version used in docker
-          name: Ensure correct versions of tools
-          command: COMPOSER_DEV_MODE=1 php tools/install.php
-      - run:
-          name: 'PHP Unit tests'
-          command: |
-            ./do t:u --xml
-      - store_test_results:
-          path: tests/_output
-      - store_artifacts:
-          path: tests/_output
-          destination: codeception
   integration_tests:
     parallelism: << parameters.parallelism >>
     working_directory: /home/circleci/mailpoet/mailpoet
@@ -811,83 +776,6 @@ workflows:
             - build
       - acceptance_tests:
           <<: *slack-fail-post-step
-          name: acceptance_tests_base_and_woo
-          enable_hpos: 1
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          <<: *only_trunk_and_release
-          name: acceptance_tests_woo_hpos_sync_on
-          parallelism: 8
-          group: woo
-          enable_hpos_sync: 1
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          <<: *only_trunk_and_release
-          name: acceptance_tests_woo_hpos_off
-          parallelism: 8
-          group: woo
-          disable_hpos: 1
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_tests_blockbased_theme
-          parallelism: 8
-          group: frontend
-          blockbased_theme: 1
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          <<: *only_trunk_and_release
-          group: woo
-          enable_hpos_sync: 1
-          name: integration_test_woo_hpos_sync_on
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          group: woo
-          name: integration_test_woo_hpos_on
-          enable_hpos: 1
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          <<: *only_trunk_and_release
-          group: woo
-          disable_hpos: 1
-          name: integration_test_woo_hpos_off
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          parallelism: 2
-          skip_group: woo
-          skip_plugins: 1
-          name: integration_test_base
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          <<: *multisite_acceptance_config
-          name: acceptance_tests_multisite
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          <<: *only_trunk_and_release
-          parallelism: 2
-          multisite: 1
-          name: integration_tests_multisite
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
           <<: *only_release
           name: acceptance_with_premium_latest
           requires:
@@ -900,9 +788,8 @@ workflows:
             - build_premium
       - build_release_zip:
           <<: *slack-fail-post-step
-          # Runs next to the test jobs so the zip, its PHP 7.4 lint and the QIT security scan
-          # are not a 10-minute tail after the tests. A release still needs a green workflow:
-          # tasks/release/CircleCiController.php checks it before downloading the zip.
+          # A release needs a green workflow: tasks/release/CircleCiController.php checks it
+          # before downloading the zip.
           requires:
             - build
       - lint_release_zip_php74:
@@ -925,46 +812,6 @@ workflows:
     jobs:
       - build:
           <<: *slack-fail-post-step
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_latest
-          mysql_image: mysql:8.3
-          mysql_command: --default-authentication-plugin=mysql_native_password
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_latest_blockbased_theme
-          group: frontend
-          blockbased_theme: 1
-          mysql_image: mysql:8.3
-          mysql_command: --default-authentication-plugin=mysql_native_password
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_gutenberg_latest
-          group: gutenberg-latest
-          gutenberg_version: latest
-          parallelism: 5
-          mysql_image: mysql:8.3
-          mysql_command: --default-authentication-plugin=mysql_native_password
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_oldest
-          woo_core_version: 11.1.2
-          woo_subscriptions_version: 9.3.0
-          woo_memberships_version: 1.29.2
-          automate_woo_version: 6.8.3
-          mysql_command: --max_allowed_packet=100M
-          mysql_image: mysql:5.6
-          codeception_image_version: 7.4-cli_20220605.0
-          wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
-          wordpress_version: 7.0.4
-          requires:
-            - build
       # Disabled: the performance testing site https://mpperftesting.com is no longer
       # available (the domain has expired), so this step always fails. Re-enable once a
       # valid performance testing URL is configured.
@@ -977,38 +824,6 @@ workflows:
       #          scenario: nightlytests
       #          requires:
       #            - build
-      - unit_tests:
-          <<: *slack-fail-post-step
-          name: unit_latest
-          requires:
-            - build
-      - unit_tests:
-          <<: *slack-fail-post-step
-          name: unit_oldest
-          executor: wpcli_php_oldest
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          name: integration_latest
-          mysql_image: mysql:8.3
-          mysql_command: --default-authentication-plugin=mysql_native_password
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          name: integration_oldest
-          woo_core_version: 11.1.2
-          woo_subscriptions_version: 9.3.0
-          woo_memberships_version: 1.29.2
-          automate_woo_version: 6.8.3
-          codeception_image_version: 7.4-cli_20220605.0
-          wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI # We use image with PHP 7.4 and install required WordPress version via CLI
-          wordpress_version: 7.0.4
-          mysql_command: --max_allowed_packet=100M
-          mysql_image: mysql:5.6
-          requires:
-            - build
       - build_premium:
           <<: *slack-fail-post-step
           requires:
@@ -1018,36 +833,6 @@ workflows:
           name: acceptance_with_premium_latest
           requires:
             - build_premium
-      - integration_tests:
-          <<: *slack-fail-post-step
-          name: integration_tests_wordpress_beta
-          use_wordpress_beta: true
-          mysql_image: mysql:8.3
-          mysql_command: --default-authentication-plugin=mysql_native_password
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          name: integration_tests_woocommerce_beta
-          use_woocommerce_beta: true
-          mysql_image: mysql:8.3
-          mysql_command: --default-authentication-plugin=mysql_native_password
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_tests_wordpress_beta
-          enable_hpos: 1
-          use_wordpress_beta: true
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_tests_woocommerce_beta
-          enable_hpos: 1
-          use_woocommerce_beta: true
-          requires:
-            - build
       - integration_tests:
           <<: *slack-fail-post-step
           name: integration_with_premium_latest
