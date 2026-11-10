@@ -16,8 +16,8 @@ class GitHubActionsController {
 
   // Per project: the repository, the artifact checks.yml uploads, and the ZIP inside it.
   private const PROJECTS = [
-    GitHubController::PROJECT_MAILPOET => ['mailpoet', 'mailpoet-zip', 'mailpoet.zip'],
-    GitHubController::PROJECT_PREMIUM => ['mailpoet-premium', 'mailpoet-premium-zip', 'mailpoet-premium.zip'],
+    GitHubController::PROJECT_MAILPOET => ['mailpoet', 'mailpoet-zip', GitHubController::FREE_ZIP_FILENAME],
+    GitHubController::PROJECT_PREMIUM => ['mailpoet-premium', 'mailpoet-premium-zip', GitHubController::PREMIUM_ZIP_FILENAME],
   ];
 
   // The checks with the integration and acceptance tests take about half an hour.
@@ -63,7 +63,6 @@ class GitHubActionsController {
         'Accept' => 'application/vnd.github+json',
         'Authorization' => 'Bearer ' . $token,
       ],
-      'base_uri' => self::API_BASE_URI . $this->repository . '/',
     ]);
   }
 
@@ -91,7 +90,7 @@ class GitHubActionsController {
    * false when it had passed.
    */
   public function rerunLatestWorkflow(): bool {
-    $response = $this->httpClient->get('actions/workflows/' . self::WORKFLOW . '/runs', [
+    $response = $this->httpClient->get($this->url('actions/workflows/' . self::WORKFLOW . '/runs'), [
       'query' => ['branch' => self::RELEASE_BRANCH, 'event' => 'push', 'per_page' => 1],
     ]);
     $runs = $this->decode($response)['workflow_runs'] ?? [];
@@ -105,10 +104,10 @@ class GitHubActionsController {
     $runId = (int)$run['id'];
     if (($run['status'] ?? null) !== 'completed') {
       // A run can only be started again once it has finished.
-      $this->httpClient->post("actions/runs/$runId/cancel");
+      $this->httpClient->post($this->url("actions/runs/$runId/cancel"));
       $this->waitForRunToComplete($runId);
     }
-    $this->httpClient->post("actions/runs/$runId/rerun");
+    $this->httpClient->post($this->url("actions/runs/$runId/rerun"));
     return true;
   }
 
@@ -119,7 +118,7 @@ class GitHubActionsController {
     }
     // Only the push run builds the release branch itself. The release pull request’s run
     // has the same head commit but builds it merged with the current trunk.
-    $response = $this->httpClient->get('actions/workflows/' . self::WORKFLOW . '/runs', [
+    $response = $this->httpClient->get($this->url('actions/workflows/' . self::WORKFLOW . '/runs'), [
       'query' => ['head_sha' => $revision, 'event' => 'push', 'branch' => self::RELEASE_BRANCH, 'per_page' => 100],
     ]);
     $runs = $this->decode($response)['workflow_runs'] ?? [];
@@ -133,7 +132,7 @@ class GitHubActionsController {
     }
     $latest = reset($runs);
     $state = ($latest['status'] ?? null) === 'completed' ? ($latest['conclusion'] ?? 'unknown') : ($latest['status'] ?? 'unknown');
-    // A run passes only when all its jobs passed: the tests, the release zip, its PHP 7.4 lint and the QIT scan.
+    // A run passes only when all its jobs passed, the release zip and the tests among them.
     throw new \Exception(
       'The release ZIP is only taken from a ' . self::WORKFLOW . " run where every job passed. The latest run for $revision is '$state': "
       . ($latest['html_url'] ?? '')
@@ -141,11 +140,11 @@ class GitHubActionsController {
   }
 
   /**
-   * Writes one file from the run's mailpoet-zip artifact to $targetPath. It goes through
+   * Writes one file from the run's zip artifact to $targetPath. It goes through
    * temporary files, so a failed download never leaves a partial file at $targetPath.
    */
   private function extractFromArtifact(int $runId, string $entry, string $targetPath, bool $requireContent): void {
-    $response = $this->httpClient->get("actions/runs/$runId/artifacts", [
+    $response = $this->httpClient->get($this->url("actions/runs/$runId/artifacts"), [
       'query' => ['name' => $this->artifactName],
     ]);
     $artifacts = $this->decode($response)['artifacts'] ?? [];
@@ -163,7 +162,7 @@ class GitHubActionsController {
     $artifactPath = $targetPath . '.' . uniqid('', true) . '.artifact.zip';
     $tempPath = $targetPath . '.' . uniqid('', true) . '.tmp';
     try {
-      $this->httpClient->get('actions/artifacts/' . (int)$artifact['id'] . '/zip', ['sink' => $artifactPath]);
+      $this->httpClient->get($this->url('actions/artifacts/' . (int)$artifact['id'] . '/zip'), ['sink' => $artifactPath]);
       $zip = new \ZipArchive();
       if ($zip->open($artifactPath) !== true) {
         throw new \Exception("The '" . $this->artifactName . "' artifact of run $runId could not be opened.");
@@ -192,7 +191,7 @@ class GitHubActionsController {
     $timeout = $this->getRerunWaitTimeoutSeconds();
     $deadline = time() + $timeout;
     while (true) {
-      $run = $this->decode($this->httpClient->get("actions/runs/$runId"));
+      $run = $this->decode($this->httpClient->get($this->url("actions/runs/$runId")));
       $status = $run['status'] ?? null;
       if ($status === 'completed') {
         return;
@@ -207,6 +206,10 @@ class GitHubActionsController {
       }
       $this->sleep(self::RERUN_POLL_INTERVAL_SECONDS);
     }
+  }
+
+  private function url(string $path): string {
+    return self::API_BASE_URI . $this->repository . '/' . $path;
   }
 
   private function decode($response): array {
