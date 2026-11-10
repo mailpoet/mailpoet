@@ -64,6 +64,39 @@ class GitHubActionsControllerTest extends \MailPoetUnitTest {
     verify($controller->getDownloadedRunId())->equals(12);
   }
 
+  public function testItDownloadsThePremiumZipFromThePremiumRepository() {
+    $history = new \ArrayObject();
+    $controller = $this->makeController([
+      $this->jsonResponse(['workflow_runs' => [$this->workflowRun(22, 'completed', 'success')]]),
+      $this->jsonResponse(['artifacts' => [['id' => 9, 'expired' => false]]]),
+      $this->artifactResponse(['mailpoet-premium.zip' => 'premium zip']),
+    ], $history, 60, GitHubController::PROJECT_PREMIUM);
+    $target = $this->tempPath();
+
+    $controller->downloadLatestBuild($target);
+
+    verify(file_get_contents($target))->equals('premium zip');
+    verify($this->requestLines($history))->equals([
+      'GET /repos/mailpoet/mailpoet-premium/actions/workflows/checks.yml/runs?head_sha=abc123&event=push&branch=release&per_page=100',
+      'GET /repos/mailpoet/mailpoet-premium/actions/runs/22/artifacts?name=mailpoet-premium-zip',
+      'GET /repos/mailpoet/mailpoet-premium/actions/artifacts/9/zip',
+    ]);
+  }
+
+  public function testItRerunsThePremiumChecks() {
+    $history = new \ArrayObject();
+    $controller = $this->makeController([
+      $this->jsonResponse(['workflow_runs' => [$this->workflowRun(22, 'completed', 'failure')]]),
+      new Response(201),
+    ], $history, 60, GitHubController::PROJECT_PREMIUM);
+
+    verify($controller->rerunLatestWorkflow())->true();
+    verify($this->requestLines($history))->equals([
+      'GET /repos/mailpoet/mailpoet-premium/actions/workflows/checks.yml/runs?branch=release&event=push&per_page=1',
+      'POST /repos/mailpoet/mailpoet-premium/actions/runs/22/rerun',
+    ]);
+  }
+
   /**
    * @dataProvider unsuccessfulRuns
    */
@@ -234,15 +267,21 @@ class GitHubActionsControllerTest extends \MailPoetUnitTest {
     }
   }
 
-  private function makeController(array $responses, ?\ArrayObject $history = null, int $timeout = 60): GitHubActionsController {
+  private function makeController(
+    array $responses,
+    ?\ArrayObject $history = null,
+    int $timeout = 60,
+    string $project = GitHubController::PROJECT_MAILPOET
+  ): GitHubActionsController {
     $stack = HandlerStack::create(new MockHandler($responses));
     if ($history) {
       $stack->push(Middleware::history($history));
     }
-    $client = new Client(['handler' => $stack, 'base_uri' => 'https://api.github.com/repos/mailpoet/mailpoet/']);
+    $repository = $project === GitHubController::PROJECT_PREMIUM ? 'mailpoet-premium' : 'mailpoet';
+    $client = new Client(['handler' => $stack, 'base_uri' => "https://api.github.com/repos/mailpoet/$repository/"]);
     $githubController = $this->createMock(GitHubController::class);
     $githubController->method('getLatestCommitRevisionOnBranch')->willReturn('abc123');
-    return new class('token', $githubController, $client, $timeout) extends GitHubActionsController {
+    return new class('token', $githubController, $client, $timeout, $project) extends GitHubActionsController {
       /** @var int */
       private $timeout;
 
@@ -250,9 +289,10 @@ class GitHubActionsControllerTest extends \MailPoetUnitTest {
         string $token,
         GitHubController $githubController,
         Client $client,
-        int $timeout
+        int $timeout,
+        string $project
       ) {
-        parent::__construct($token, $githubController, $client);
+        parent::__construct($token, $githubController, $client, $project);
         $this->timeout = $timeout;
       }
 
