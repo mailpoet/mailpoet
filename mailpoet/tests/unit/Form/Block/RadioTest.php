@@ -52,6 +52,12 @@ class RadioTest extends \MailPoetUnitTest {
     parent::_before();
     $this->rendererHelperMock = $this->createMock(WPFunctions::class);
     $this->rendererHelperMock->method('escAttr')->will($this->returnArgument(0));
+    // A real ID: libxml 2.15 warns about the empty id="" an unstubbed mock gives.
+    $uniqueId = 0;
+    $this->rendererHelperMock->method('wpUniqueId')->willReturnCallback(function($prefix) use (&$uniqueId) {
+      $uniqueId++;
+      return $prefix . $uniqueId;
+    });
     $this->wrapperMock = $this->createMock(BlockWrapperRenderer::class);
     $this->wrapperMock->method('render')->will($this->returnArgument(1));
     $this->baseMock = $this->createMock(BlockRendererHelper::class);
