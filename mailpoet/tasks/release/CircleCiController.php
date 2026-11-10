@@ -13,7 +13,6 @@ class CircleCiController {
   // CircleCI reports a passed job and a passed workflow alike
   const STATUS_SUCCESS = 'success';
 
-  const FREE_ZIP_FILENAME = 'mailpoet.zip';
   const PREMIUM_ZIP_FILENAME = 'mailpoet-premium.zip';
 
   const TERMINAL_WORKFLOW_STATUSES = ['success', 'failed', 'error', 'canceled', 'unauthorized'];
@@ -28,9 +27,6 @@ class CircleCiController {
 
   /** @var string */
   private $username;
-
-  /** @var string */
-  private $zipFilename;
 
   /** @var string */
   private $project;
@@ -52,7 +48,6 @@ class CircleCiController {
     $this->token = $token;
     $this->project = $project;
     $circleCiProject = $this->getCircleCiProject($project);
-    $this->zipFilename = $project === self::PROJECT_MAILPOET ? self::FREE_ZIP_FILENAME : self::PREMIUM_ZIP_FILENAME;
     $this->httpClient = $httpClient ?? new Client([
       'auth' => [$token, ''],
       'headers' => [
@@ -74,7 +69,7 @@ class CircleCiController {
       throw new \Exception('No release ZIP build found');
     }
     $this->assertSuccess("Job '" . self::RELEASE_ZIP_JOB_NAME . "'", $job['status'] ?? null);
-    $this->downloadArtifact((int)$job['job_number'], $this->zipFilename, $targetPath);
+    $this->downloadArtifact((int)$job['job_number'], self::PREMIUM_ZIP_FILENAME, $targetPath);
     return $targetPath;
   }
 
