@@ -202,7 +202,7 @@ jobs:
       contents: read
     with:
       # A release can wait a few days between the build and the publish.
-      retention-days: 14
+      retention-days: ${{ github.ref_name == 'release' && 14 || 7 }}
 
   qit_security:
     name: 'QIT security scan'
