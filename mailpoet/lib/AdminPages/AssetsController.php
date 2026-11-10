@@ -199,7 +199,7 @@ class AssetsController {
     $this->registerFooterScript(
       'mailpoet_runtime',
       $this->getScriptUrl('runtime.js'),
-      ['react', 'react-dom', 'react-jsx-runtime']
+      ['react', 'react-dom', 'react-jsx-runtime', 'wp-components', 'wp-private-apis']
     );
 
     // vendor

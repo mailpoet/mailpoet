@@ -143,7 +143,7 @@ class AssetsControllerTest extends \MailPoetUnitTest {
 
     (new AssetsController($renderer, $wp))->setupAdminPagesDependencies();
 
-    $this->assertSame(['react', 'react-dom', 'react-jsx-runtime'], $registeredScriptDeps['mailpoet_runtime']);
+    $this->assertSame(['react', 'react-dom', 'react-jsx-runtime', 'wp-components', 'wp-private-apis'], $registeredScriptDeps['mailpoet_runtime']);
   }
 
   /**

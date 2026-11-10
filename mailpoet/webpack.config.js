@@ -329,10 +329,25 @@ const adminConfig = {
       },
     },
   },
-  externals: {
-    jquery: 'jQuery',
-    ...wordPressReactExternals,
-  },
+  externals: [
+    {
+      jquery: 'jQuery',
+      ...wordPressReactExternals,
+      '@wordpress/components': ['wp', 'components'],
+    },
+    // Our code unlocks private APIs of core's components, so it needs core's
+    // private-apis. Bundled packages keep their own copy, because core's
+    // allowlist rejects some of them (e.g. @wordpress/notices).
+    ({ context, request }, callback) => {
+      if (
+        request === '@wordpress/private-apis' &&
+        !context.includes(`${path.sep}node_modules${path.sep}`)
+      ) {
+        return callback(null, ['wp', 'privateApis'], 'window');
+      }
+      return callback();
+    },
+  ],
 };
 
 function requestToFormEditorExternal(request) {
