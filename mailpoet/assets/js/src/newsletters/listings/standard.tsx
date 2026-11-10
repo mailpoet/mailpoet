@@ -51,7 +51,8 @@ async function saveAsPreset(
   try {
     const preset = await createEmailPreset(title, Number(item.wp_post_id));
     MailPoet.Notice.success(
-      __('Email saved as preset "%1$s". [link]Edit preset[/link]', 'mailpoet')
+      // translators: %1$s is the preset name. [link] and [/link] wrap the "Edit preset" link.
+      __('Email saved as preset “%1$s”. [link]Edit preset[/link]', 'mailpoet')
         .replace('%1$s', escapeHTML(preset.title))
         .replace(
           '[link]',
