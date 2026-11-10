@@ -10,13 +10,11 @@ class CircleCiController {
 
   const RELEASE_BRANCH = 'release';
   const RELEASE_ZIP_JOB_NAME = 'build_release_zip';
-  const LINT_ZIP_JOB_NAME = 'lint_release_zip_php74';
   // CircleCI reports a passed job and a passed workflow alike
   const STATUS_SUCCESS = 'success';
 
   const FREE_ZIP_FILENAME = 'mailpoet.zip';
   const PREMIUM_ZIP_FILENAME = 'mailpoet-premium.zip';
-  const POT_FILENAME = 'mailpoet.pot';
 
   const TERMINAL_WORKFLOW_STATUSES = ['success', 'failed', 'error', 'canceled', 'unauthorized'];
   const RERUNNABLE_WORKFLOW_STATUSES = ['running', 'failed', 'failing', 'canceled'];
@@ -43,9 +41,6 @@ class CircleCiController {
   /** @var GitHubController */
   private $githubController;
 
-  /** @var int|null */
-  private $downloadedJobNumber;
-
   public function __construct(
     $username,
     $token,
@@ -69,8 +64,8 @@ class CircleCiController {
   }
 
   /**
-   * Downloads the release ZIP of the latest build to $targetPath.
-   * The number of the job it came from is available via getDownloadedJobNumber().
+   * Downloads the release ZIP of the latest build to $targetPath. Only Premium releases
+   * from CircleCI; the free plugin takes its ZIP from GitHub Actions (GitHubActionsController).
    */
   public function downloadLatestBuild($targetPath) {
     $jobs = $this->getLatestWorkflowJobs();
@@ -79,22 +74,8 @@ class CircleCiController {
       throw new \Exception('No release ZIP build found');
     }
     $this->assertSuccess("Job '" . self::RELEASE_ZIP_JOB_NAME . "'", $job['status'] ?? null);
-    if ($this->project === self::PROJECT_MAILPOET) {
-      $lintJob = $this->findJob($jobs, self::LINT_ZIP_JOB_NAME);
-      $this->assertSuccess("Job '" . self::LINT_ZIP_JOB_NAME . "'", $lintJob['status'] ?? null, 'The release ZIP was not verified on PHP 7.4.');
-    }
-
     $this->downloadArtifact((int)$job['job_number'], $this->zipFilename, $targetPath);
-    $this->downloadedJobNumber = (int)$job['job_number'];
     return $targetPath;
-  }
-
-  public function getDownloadedJobNumber(): ?int {
-    return $this->downloadedJobNumber;
-  }
-
-  public function downloadPotFile(int $jobNumber, string $targetPath): void {
-    $this->downloadArtifact($jobNumber, self::POT_FILENAME, $targetPath, true);
   }
 
   /**
@@ -164,9 +145,8 @@ class CircleCiController {
     if ($latestWorkFlowId === null) {
       throw new \Exception('No release ZIP build found');
     }
-    // The zip job runs next to the lint, the QIT scan and, on release, the tests with Premium
-    // active (.circleci/config.yml), so a green zip job alone is not enough. Only a workflow
-    // where every job passed may be released. GitHubController checks the free plugin’s tests.
+    // The zip job runs next to the tests, so a green zip job alone is not enough. Only a
+    // workflow where every job passed may be released.
     $this->assertSuccess('Workflow', $latestWorkflow['status'] ?? null, 'The release ZIP is only taken from a workflow where every job passed.');
 
     $responseJob = $this->httpClient->get('https://circleci.com/api/v2/workflow/' . urlencode($latestWorkFlowId) . '/job');
@@ -197,7 +177,7 @@ class CircleCiController {
    * Downloads to a temporary file next to the target and moves it into place only on success,
    * so a failed request never leaves a partial or error-body file at $targetPath.
    */
-  private function downloadArtifact(int $buildNumber, string $filename, string $targetPath, bool $requireContent = false): void {
+  private function downloadArtifact(int $buildNumber, string $filename, string $targetPath): void {
     $url = $this->getArtifactUrl($buildNumber, $filename);
     $tempPath = $targetPath . '.' . uniqid('', true) . '.tmp';
     try {
@@ -207,9 +187,6 @@ class CircleCiController {
           'circle-token' => $this->token, // artifact download requires token as query param
         ],
       ]);
-      if ($requireContent && (!is_file($tempPath) || filesize($tempPath) === 0)) {
-        throw new \Exception("Downloaded '$filename' from build $buildNumber is missing or empty.");
-      }
       if (!rename($tempPath, $targetPath)) {
         throw new \Exception("Couldn't move downloaded '$filename' to $targetPath.");
       }
