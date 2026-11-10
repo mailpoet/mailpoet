@@ -1,7 +1,8 @@
 name: 'Checks'
 
-# Static analysis, linting, JS tests, PHP unit tests, and the integration and
-# acceptance tests. The release zip runs on CircleCI.
+# Static analysis, linting, JS tests, PHP unit tests, the integration and
+# acceptance tests, and the release zip with its PHP 7.4 lint and QIT security
+# scan. The release tooling takes the zip from the run on the release branch.
 
 on:
   pull_request:
