@@ -14,8 +14,9 @@ class GitHubController {
 
   const RELEASE_SOURCE_BRANCH = 'release';
 
-  // Jobs of .github/workflows/checks.yml a release can’t go out without
-  const REQUIRED_CHECK_RUNS = ['PHPStan', 'PHP unit tests', 'JS tests'];
+  // The gate job of .github/workflows/checks.yml; it fails when any job of that workflow
+  // failed, including the integration and acceptance tests.
+  const REQUIRED_CHECK_RUNS = ['All checks'];
 
   private const API_BASE_URI = 'https://api.github.com/repos/mailpoet';
   private const API_SEARCH_URI = 'https://api.github.com/search/issues';
@@ -104,25 +105,29 @@ class GitHubController {
     }
   }
 
-  // GitHub Actions jobs report check runs, not commit statuses.
+  // GitHub Actions jobs report check runs, not commit statuses. A release pull request has
+  // more check runs than one page holds, so ask for each required one by name.
   private function checkPullRequestCheckRuns(string $sha): void {
-    $response = $this->httpClient->get('commits/' . urlencode($sha) . '/check-runs', [
-      'query' => ['per_page' => 100],
-    ]);
-    $response = json_decode($response->getBody()->getContents(), true);
-
-    $checkRuns = $response['check_runs'] ?? [];
-    $missing = array_values(array_diff(self::REQUIRED_CHECK_RUNS, array_column($checkRuns, 'name')));
+    $missing = [];
+    $failed = [];
+    foreach (self::REQUIRED_CHECK_RUNS as $name) {
+      $response = $this->httpClient->get('commits/' . urlencode($sha) . '/check-runs', [
+        'query' => ['check_name' => $name, 'per_page' => 100],
+      ]);
+      $response = json_decode($response->getBody()->getContents(), true);
+      $checkRuns = $response['check_runs'] ?? [];
+      if (empty($checkRuns)) {
+        $missing[] = $name;
+      }
+      foreach ($checkRuns as $checkRun) {
+        // A run that hasn't finished has no conclusion yet.
+        if (!in_array($checkRun['conclusion'], ['success', 'skipped', 'neutral'], true)) {
+          $failed[] = $checkRun['name'];
+        }
+      }
+    }
     if (!empty($missing)) {
       throw new \Exception('Release pull request is missing GitHub Actions checks: ' . join(', ', $missing));
-    }
-
-    $failed = [];
-    foreach ($checkRuns as $checkRun) {
-      // A run that hasn't finished has no conclusion yet.
-      if (!in_array($checkRun['conclusion'], ['success', 'skipped', 'neutral'], true)) {
-        $failed[] = $checkRun['name'];
-      }
     }
     if (!empty($failed)) {
       throw new \Exception('Release pull request checks failed or are still running: ' . join(', ', $failed));
