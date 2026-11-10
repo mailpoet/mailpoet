@@ -9,6 +9,7 @@ use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
 use MailPoetTasks\Release\GitHubActionsController;
 use MailPoetTasks\Release\GitHubController;
+use Psr\Http\Message\RequestInterface;
 
 class GitHubActionsControllerTest extends \MailPoetUnitTest {
   /** @var string[] */
@@ -31,10 +32,36 @@ class GitHubActionsControllerTest extends \MailPoetUnitTest {
     verify(file_get_contents($target))->equals('zip content');
     verify($controller->getDownloadedRunId())->equals(12);
     verify($this->requestLines($history))->equals([
-      'GET /repos/mailpoet/mailpoet/actions/workflows/checks.yml/runs?head_sha=abc123&per_page=100',
+      'GET /repos/mailpoet/mailpoet/actions/workflows/checks.yml/runs?head_sha=abc123&event=push&branch=release&per_page=100',
       'GET /repos/mailpoet/mailpoet/actions/runs/12/artifacts?name=mailpoet-zip',
       'GET /repos/mailpoet/mailpoet/actions/artifacts/7/zip',
     ]);
+  }
+
+  public function testItTakesThePushRunNotThePullRequestRunOfTheReleaseCommit() {
+    // The release pull request’s run builds the release branch merged with trunk.
+    $runs = [
+      $this->workflowRun(13, 'completed', 'success', 'pull_request', 'release'),
+      $this->workflowRun(12, 'completed', 'success', 'push', 'release'),
+    ];
+    $runsResponse = function (RequestInterface $request) use ($runs): Response {
+      parse_str($request->getUri()->getQuery(), $query);
+      $runs = array_values(array_filter($runs, function (array $run) use ($query): bool {
+        return (!isset($query['event']) || $run['event'] === $query['event'])
+          && (!isset($query['branch']) || $run['head_branch'] === $query['branch']);
+      }));
+      return $this->jsonResponse(['workflow_runs' => $runs]);
+    };
+    $controller = $this->makeController([
+      $runsResponse,
+      $this->jsonResponse(['artifacts' => [['id' => 7, 'expired' => false]]]),
+      $this->artifactResponse(['mailpoet.zip' => 'release branch zip', 'lang/mailpoet.pot' => 'pot']),
+    ]);
+    $target = $this->tempPath();
+
+    $controller->downloadLatestBuild($target);
+
+    verify($controller->getDownloadedRunId())->equals(12);
   }
 
   /**
@@ -238,8 +265,15 @@ class GitHubActionsControllerTest extends \MailPoetUnitTest {
     };
   }
 
-  private function workflowRun(int $id, string $status, ?string $conclusion): array {
-    return ['id' => $id, 'status' => $status, 'conclusion' => $conclusion, 'html_url' => "https://github.com/mailpoet/mailpoet/actions/runs/$id"];
+  private function workflowRun(int $id, string $status, ?string $conclusion, string $event = 'push', string $branch = 'release'): array {
+    return [
+      'id' => $id,
+      'status' => $status,
+      'conclusion' => $conclusion,
+      'event' => $event,
+      'head_branch' => $branch,
+      'html_url' => "https://github.com/mailpoet/mailpoet/actions/runs/$id",
+    ];
   }
 
   private function artifactResponse(array $files): Response {
