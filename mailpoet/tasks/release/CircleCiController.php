@@ -164,8 +164,9 @@ class CircleCiController {
     if ($latestWorkFlowId === null) {
       throw new \Exception('No release ZIP build found');
     }
-    // The zip job runs next to the test jobs (.circleci/config.yml), so a green zip job alone
-    // does not mean the tests passed. Only a workflow where every job passed may be released.
+    // The zip job runs next to the lint, the QIT scan and, on release, the tests with Premium
+    // active (.circleci/config.yml), so a green zip job alone is not enough. Only a workflow
+    // where every job passed may be released. GitHubController checks the free plugin’s tests.
     $this->assertSuccess('Workflow', $latestWorkflow['status'] ?? null, 'The release ZIP is only taken from a workflow where every job passed.');
 
     $responseJob = $this->httpClient->get('https://circleci.com/api/v2/workflow/' . urlencode($latestWorkFlowId) . '/job');
