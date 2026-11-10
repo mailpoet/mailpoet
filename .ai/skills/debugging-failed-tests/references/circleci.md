@@ -82,7 +82,7 @@ When other parallel jobs failed alongside yours and the symptom looks the same (
 
 ## Test history (is this a long-running flake?)
 
-For the CircleCI jobs only: the release zip, its PHP 7.4 lint and QIT scan, and the tests with Premium active. The free plugin’s tests run on GitHub Actions; use `gh run list` there.
+For the CircleCI jobs only: the tests with Premium active, and the copy of the release zip the Playground previews read. The free plugin’s tests, its release zip and the QIT scan run on GitHub Actions; use `gh run list` there.
 
 ```
 .ai/skills/debugging-failed-tests/circleci-api.sh "/api/v2/insights/gh/mailpoet/mailpoet/workflows/<workflow-name>?branch=trunk"

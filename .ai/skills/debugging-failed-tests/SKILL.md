@@ -48,7 +48,7 @@ Pick whichever the failure signal makes cheapest. Not a sequence.
 gh api repos/mailpoet/mailpoet/compare/<last-green-sha>...<failing-sha>
 ```
 
-Lists every file changed across the range without needing a local checkout of the failing SHA. For the free plugin’s tests, the last green trunk SHA comes from GitHub Actions: `gh run list -R mailpoet/mailpoet --workflow checks.yml --branch trunk --status success -L 1 --json headSha` (use `nightly-tests.yml` for a nightly failure). For a CircleCI job (the release zip, QIT, or the tests with Premium active), use the CircleCI insights endpoint (`references/circleci.md`).
+Lists every file changed across the range without needing a local checkout of the failing SHA. For the free plugin’s tests, the last green trunk SHA comes from GitHub Actions: `gh run list -R mailpoet/mailpoet --workflow checks.yml --branch trunk --status success -L 1 --json headSha` (use `nightly-tests.yml` for a nightly failure). For a CircleCI job (the tests with Premium active), use the CircleCI insights endpoint (`references/circleci.md`).
 
 **Environment drift.** WP/WC/PHP versions print at the start of the failing step in the job log (CircleCI or GitHub Actions) — the Codeception entrypoint logs `WORDPRESS VERSION:`, `TEST RUNNER PHP VERSION:`, and the WooCommerce version. If the run is against a WordPress or WooCommerce beta/RC (the GitHub Actions job name contains “(WordPress beta)” or “(WooCommerce beta)”, or the version string ends in `-beta.N` / `-RC1`), see `references/beta-rc-failures.md`.
 
