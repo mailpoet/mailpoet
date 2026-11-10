@@ -225,6 +225,18 @@ class GitHubActionsControllerTest extends \MailPoetUnitTest {
     ]);
   }
 
+  public function testItRerunsAPassedRunWhenForced() {
+    // Premium’s passed run was built against the free plugin’s trunk, not its new release branch.
+    $history = new \ArrayObject();
+    $controller = $this->makeController([
+      $this->jsonResponse(['workflow_runs' => [$this->workflowRun(22, 'completed', 'success')]]),
+      new Response(201),
+    ], $history, 60, GitHubController::PROJECT_PREMIUM);
+
+    verify($controller->rerunLatestWorkflow(true))->true();
+    verify($this->requestLines($history)[1])->equals('POST /repos/mailpoet/mailpoet-premium/actions/runs/22/rerun');
+  }
+
   public function testItCancelsARunningRunAndWaitsBeforeRerunningIt() {
     $history = new \ArrayObject();
     $controller = $this->makeController([

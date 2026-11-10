@@ -86,10 +86,10 @@ class GitHubActionsController {
   }
 
   /**
-   * Returns true when the latest run on the release branch was started again and
-   * false when it had passed.
+   * Returns true when the latest run on the release branch was started again, and false
+   * when it had passed. With $force, a passed run is started again too.
    */
-  public function rerunLatestWorkflow(): bool {
+  public function rerunLatestWorkflow(bool $force = false): bool {
     $response = $this->httpClient->get($this->url('actions/workflows/' . self::WORKFLOW . '/runs'), [
       'query' => ['branch' => self::RELEASE_BRANCH, 'event' => 'push', 'per_page' => 1],
     ]);
@@ -98,7 +98,7 @@ class GitHubActionsController {
     if (!is_array($run) || !isset($run['id'])) {
       throw new \Exception('No ' . self::WORKFLOW . ' run found on the ' . self::RELEASE_BRANCH . ' branch');
     }
-    if (($run['status'] ?? null) === 'completed' && ($run['conclusion'] ?? null) === 'success') {
+    if (!$force && ($run['status'] ?? null) === 'completed' && ($run['conclusion'] ?? null) === 'success') {
       return false;
     }
     $runId = (int)$run['id'];
