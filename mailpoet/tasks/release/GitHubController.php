@@ -99,10 +99,7 @@ class GitHubController {
     // Verify the CI builds passed. The release-PR approval requirement was removed when
     // MailPoet stopped using a dedicated QA reviewer; the Porter owns release verification.
     $this->checkPullRequestChecks($releasePullRequest['statuses_url']);
-    // Premium’s tests run on CircleCI, which the statuses check above covers.
-    if ($this->project === self::PROJECT_MAILPOET) {
-      $this->checkPullRequestCheckRuns($releasePullRequest['head']['sha']);
-    }
+    $this->checkPullRequestCheckRuns($releasePullRequest['head']['sha']);
   }
 
   // GitHub Actions jobs report check runs, not commit statuses. A release pull request has

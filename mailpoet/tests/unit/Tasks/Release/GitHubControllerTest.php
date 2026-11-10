@@ -68,12 +68,12 @@ class GitHubControllerTest extends \MailPoetUnitTest {
     $controller->checkReleasePullRequestPassed('5.1.0');
   }
 
-  public function testItDoesNotRequireGitHubChecksForPremium() {
-    // Premium’s tests run on CircleCI; its GitHub workflows never gated a release.
+  public function testItRequiresAllChecksForPremiumToo() {
     $controller = $this->makeController([
-      $this->checkRun('Plugin Check', 'failure'),
+      $this->checkRun('All checks', 'failure'),
     ], GitHubController::PROJECT_PREMIUM);
 
+    $this->expectExceptionMessage('checks failed or are still running: All checks');
     $controller->checkReleasePullRequestPassed('5.1.0');
   }
 
