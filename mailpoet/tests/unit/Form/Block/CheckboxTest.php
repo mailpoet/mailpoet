@@ -54,6 +54,12 @@ class CheckboxTest extends \MailPoetUnitTest {
     $this->wpMock->method('escAttr')->will($this->returnArgument(0));
     $this->wpMock->method('escHtml')->will($this->returnArgument(0));
     $this->wpMock->method('wpKses')->will($this->returnArgument(0));
+    // A real ID: libxml 2.15 warns about the empty id="" an unstubbed mock gives.
+    $uniqueId = 0;
+    $this->wpMock->method('wpUniqueId')->willReturnCallback(function($prefix) use (&$uniqueId) {
+      $uniqueId++;
+      return $prefix . $uniqueId;
+    });
     $this->checkbox = new Checkbox($this->rendererHelperMock, $this->wrapperMock, $this->wpMock);
     $this->htmlParser = new HtmlParser();
   }
