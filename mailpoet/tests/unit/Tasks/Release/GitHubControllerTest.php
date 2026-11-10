@@ -7,60 +7,94 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use MailPoetTasks\Release\GitHubController;
+use Psr\Http\Message\RequestInterface;
 
 class GitHubControllerTest extends \MailPoetUnitTest {
-  public function testItPassesWhenStatusesAndCheckRunsPassed() {
+  public function testItPassesWhenStatusesAndAllChecksPassed() {
+    // checks.yml runs for the push to release and for the pull request.
     $controller = $this->makeController([
-      ['name' => 'PHPStan', 'status' => 'completed', 'conclusion' => 'success'],
-      ['name' => 'PHP unit tests', 'status' => 'completed', 'conclusion' => 'success'],
-      ['name' => 'JS tests', 'status' => 'completed', 'conclusion' => 'success'],
-      ['name' => 'Notify Slack on failure', 'status' => 'completed', 'conclusion' => 'skipped'],
+      $this->checkRun('All checks', 'success'),
+      $this->checkRun('All checks', 'success'),
+      $this->checkRun('Notify Slack on failure', 'skipped'),
     ]);
 
     $controller->checkReleasePullRequestPassed('5.1.0');
   }
 
-  public function testItFailsWhenACheckRunFailed() {
+  public function testItFailsWhenAllChecksFailed() {
     $controller = $this->makeController([
-      ['name' => 'PHPStan', 'status' => 'completed', 'conclusion' => 'failure'],
-      ['name' => 'PHP unit tests', 'status' => 'completed', 'conclusion' => 'success'],
-      ['name' => 'JS tests', 'status' => 'completed', 'conclusion' => 'success'],
+      $this->checkRun('All checks', 'success'),
+      $this->checkRun('All checks', 'failure'),
     ]);
 
-    $this->expectExceptionMessage('PHPStan');
+    $this->expectExceptionMessage('All checks');
     $controller->checkReleasePullRequestPassed('5.1.0');
   }
 
-  public function testItFailsWhenACheckRunIsStillRunning() {
+  public function testItFailsWhenAllChecksIsStillRunning() {
     $controller = $this->makeController([
-      ['name' => 'PHPStan', 'status' => 'completed', 'conclusion' => 'success'],
-      ['name' => 'PHP unit tests', 'status' => 'in_progress', 'conclusion' => null],
-      ['name' => 'JS tests', 'status' => 'completed', 'conclusion' => 'success'],
+      ['name' => 'All checks', 'status' => 'in_progress', 'conclusion' => null],
     ]);
 
-    $this->expectExceptionMessage('PHP unit tests');
+    $this->expectExceptionMessage('All checks');
     $controller->checkReleasePullRequestPassed('5.1.0');
   }
 
-  public function testItFailsWhenTheGitHubChecksDidNotRun() {
+  public function testItFailsWhenAllChecksDidNotRun() {
     $controller = $this->makeController([
-      ['name' => 'CodeQL', 'status' => 'completed', 'conclusion' => 'success'],
+      $this->checkRun('CodeQL', 'success'),
     ]);
 
-    $this->expectExceptionMessage('PHPStan, PHP unit tests, JS tests');
+    $this->expectExceptionMessage('missing GitHub Actions checks: All checks');
+    $controller->checkReleasePullRequestPassed('5.1.0');
+  }
+
+  public function testItSeesAFailureAfterTheFirstHundredCheckRuns() {
+    // A release pull request has more check runs than one page of the API returns.
+    $checkRuns = array_fill(0, 150, $this->checkRun('Acceptance tests / Part 1', 'success'));
+    $checkRuns[] = $this->checkRun('All checks', 'failure');
+    $controller = $this->makeController($checkRuns);
+
+    $this->expectExceptionMessage('checks failed or are still running: All checks');
+    $controller->checkReleasePullRequestPassed('5.1.0');
+  }
+
+  public function testItIgnoresChecksOutsideTheChecksWorkflow() {
+    $controller = $this->makeController([
+      $this->checkRun('All checks', 'success'),
+      $this->checkRun('WP.org Plugin Check', 'failure'),
+    ]);
+
     $controller->checkReleasePullRequestPassed('5.1.0');
   }
 
   public function testItDoesNotRequireGitHubChecksForPremium() {
     // Premium’s tests run on CircleCI; its GitHub workflows never gated a release.
     $controller = $this->makeController([
-      ['name' => 'Plugin Check', 'status' => 'completed', 'conclusion' => 'failure'],
+      $this->checkRun('Plugin Check', 'failure'),
     ], GitHubController::PROJECT_PREMIUM);
 
     $controller->checkReleasePullRequestPassed('5.1.0');
   }
 
+  private function checkRun(string $name, string $conclusion): array {
+    return ['name' => $name, 'status' => 'completed', 'conclusion' => $conclusion];
+  }
+
+  /**
+   * Answers like GitHub: check runs filtered by check_name, at most 100 per page.
+   */
   private function makeController(array $checkRuns, string $project = GitHubController::PROJECT_MAILPOET): GitHubController {
+    $checkRunsResponse = function (RequestInterface $request) use ($checkRuns): Response {
+      parse_str($request->getUri()->getQuery(), $query);
+      if (isset($query['check_name'])) {
+        $checkRuns = array_values(array_filter($checkRuns, function (array $checkRun) use ($query): bool {
+          return $checkRun['name'] === $query['check_name'];
+        }));
+      }
+      $page = array_slice($checkRuns, 0, min(100, (int)($query['per_page'] ?? 30)));
+      return $this->jsonResponse(['total_count' => count($checkRuns), 'check_runs' => $page]);
+    };
     $responses = [
       $this->jsonResponse([[
         'title' => 'Release 5.1.0',
@@ -68,7 +102,9 @@ class GitHubControllerTest extends \MailPoetUnitTest {
         'head' => ['sha' => 'abc'],
       ]]),
       $this->jsonResponse([['context' => 'ci/circleci: build', 'state' => 'success']]),
-      $this->jsonResponse(['total_count' => count($checkRuns), 'check_runs' => $checkRuns]),
+      $checkRunsResponse,
+      $checkRunsResponse,
+      $checkRunsResponse,
     ];
     $client = new Client(['handler' => HandlerStack::create(new MockHandler($responses))]);
     return new GitHubController('mailpoet', 'token', $project, $client);
