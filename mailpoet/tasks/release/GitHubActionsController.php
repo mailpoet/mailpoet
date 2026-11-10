@@ -96,8 +96,10 @@ class GitHubActionsController {
     if ($revision === null) {
       throw new \Exception("Couldn't find a GitHub revision for " . self::RELEASE_BRANCH . '. Does the branch exist?');
     }
+    // Only the push run builds the release branch itself. The release pull request’s run
+    // has the same head commit but builds it merged with the current trunk.
     $response = $this->httpClient->get('actions/workflows/' . self::WORKFLOW . '/runs', [
-      'query' => ['head_sha' => $revision, 'per_page' => 100],
+      'query' => ['head_sha' => $revision, 'event' => 'push', 'branch' => self::RELEASE_BRANCH, 'per_page' => 100],
     ]);
     $runs = $this->decode($response)['workflow_runs'] ?? [];
     if (empty($runs)) {
