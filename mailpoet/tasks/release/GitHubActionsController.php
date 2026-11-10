@@ -133,7 +133,10 @@ class GitHubActionsController {
       throw new \Exception("No '" . self::ARTIFACT_NAME . "' artifact found in run $runId");
     }
     if (!empty($artifact['expired'])) {
-      throw new \Exception("The '" . self::ARTIFACT_NAME . "' artifact of run $runId has expired. Re-run the checks on the release branch.");
+      throw new \Exception(
+        "The '" . self::ARTIFACT_NAME . "' artifact of run $runId has expired. Run it again to build a new one: "
+        . "`gh run rerun $runId -R mailpoet/mailpoet`, or https://github.com/mailpoet/mailpoet/actions/runs/$runId"
+      );
     }
 
     $artifactPath = $targetPath . '.' . uniqid('', true) . '.artifact.zip';

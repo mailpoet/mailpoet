@@ -105,7 +105,7 @@ class GitHubActionsControllerTest extends \MailPoetUnitTest {
       $this->jsonResponse(['artifacts' => [['id' => 7, 'expired' => true]]]),
     ]);
 
-    $this->expectExceptionMessage('has expired');
+    $this->expectExceptionMessage('has expired. Run it again to build a new one: `gh run rerun 12 -R mailpoet/mailpoet`');
     $controller->downloadLatestBuild($this->tempPath());
   }
 
