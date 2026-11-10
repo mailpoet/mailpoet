@@ -95,17 +95,14 @@ class GitHubControllerTest extends \MailPoetUnitTest {
       $page = array_slice($checkRuns, 0, min(100, (int)($query['per_page'] ?? 30)));
       return $this->jsonResponse(['total_count' => count($checkRuns), 'check_runs' => $page]);
     };
-    $responses = [
+    $responses = array_merge([
       $this->jsonResponse([[
         'title' => 'Release 5.1.0',
         'statuses_url' => 'https://api.github.com/repos/mailpoet/mailpoet/statuses/abc',
         'head' => ['sha' => 'abc'],
       ]]),
       $this->jsonResponse([['context' => 'ci/circleci: build', 'state' => 'success']]),
-      $checkRunsResponse,
-      $checkRunsResponse,
-      $checkRunsResponse,
-    ];
+    ], array_fill(0, count(GitHubController::REQUIRED_CHECK_RUNS), $checkRunsResponse));
     $client = new Client(['handler' => HandlerStack::create(new MockHandler($responses))]);
     return new GitHubController('mailpoet', 'token', $project, $client);
   }
