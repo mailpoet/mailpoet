@@ -1344,7 +1344,8 @@ class RoboFile extends \Robo\Tasks {
   }
 
   // Premium’s release branch checks build against the free plugin’s branch of the same name,
-  // so once the free release branch exists, run Premium’s release checks again.
+  // so once the free release branch exists, run Premium’s release checks again, even when
+  // they passed: they were built against the free plugin’s trunk.
   public function releaseRerunChecksForPremium() {
     $isPremiumReleased = $this->createGitHubController()->projectBranchExists(
       \MailPoetTasks\Release\GitHubController::PROJECT_PREMIUM,
@@ -1354,8 +1355,8 @@ class RoboFile extends \Robo\Tasks {
     if (!$isPremiumReleased) {
       return;
     }
-    $result = $this->createGitHubActionsController(\MailPoetTasks\Release\GitHubController::PROJECT_PREMIUM)->rerunLatestWorkflow();
-    $this->say('Rerunning the checks on Premium’s release branch ... ' . ($result ? 'done' : 'not needed, they passed'));
+    $this->createGitHubActionsController(\MailPoetTasks\Release\GitHubController::PROJECT_PREMIUM)->rerunLatestWorkflow(true);
+    $this->say('Rerunning the checks on Premium’s release branch ... done');
   }
 
   public function downloadWooCommerceMembershipsZip(?string $version = null): void {
