@@ -77,6 +77,15 @@ class GitHubControllerTest extends \MailPoetUnitTest {
     $controller->checkReleasePullRequestPassed('5.1.0');
   }
 
+  public function testItFailsWhenAllChecksDidNotRunForPremium() {
+    $controller = $this->makeController([
+      $this->checkRun('CodeQL', 'success'),
+    ], GitHubController::PROJECT_PREMIUM);
+
+    $this->expectExceptionMessage('missing GitHub Actions checks: All checks');
+    $controller->checkReleasePullRequestPassed('5.1.0');
+  }
+
   private function checkRun(string $name, string $conclusion): array {
     return ['name' => $name, 'status' => 'completed', 'conclusion' => $conclusion];
   }
