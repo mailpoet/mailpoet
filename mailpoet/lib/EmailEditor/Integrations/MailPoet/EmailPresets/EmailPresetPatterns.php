@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets;
 
+use MailPoet\Config\AccessControl;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -14,6 +15,7 @@ class EmailPresetPatterns {
   const NAME_PREFIX = 'mailpoet/saved-preset-';
   // The modal renders a live preview of each preset, so it can't show many of them.
   const LIMIT = 100;
+  private const PATTERNS_ROUTE = '/wp/v2/block-patterns/patterns';
 
   private WPFunctions $wp;
 
@@ -24,9 +26,25 @@ class EmailPresetPatterns {
   }
 
   public function initialize(): void {
-    // The editor loads patterns over REST, so other requests don't need to query presets.
-    $this->wp->addAction('rest_api_init', [$this, 'registerPatterns']);
+    $this->wp->addFilter('rest_pre_dispatch', [$this, 'registerPatternsForRequest'], 10, 3);
     $this->wp->addFilter('rest_request_after_callbacks', [$this, 'moveSavedPresetsFirst'], 10, 3);
+  }
+
+  /**
+   * The patterns route only needs edit_posts, so presets are added to it only
+   * for users who can manage emails. The user is already authenticated here.
+   *
+   * @param mixed $result
+   * @return mixed
+   */
+  public function registerPatternsForRequest($result, $server, \WP_REST_Request $request) {
+    if (
+      $request->get_route() === self::PATTERNS_ROUTE
+      && $this->wp->currentUserCan(AccessControl::PERMISSION_MANAGE_EMAILS)
+    ) {
+      $this->registerPatterns();
+    }
+    return $result;
   }
 
   public function registerPatterns(): void {
@@ -70,7 +88,7 @@ class EmailPresetPatterns {
    * @return \WP_REST_Response|\WP_HTTP_Response|\WP_Error|mixed
    */
   public function moveSavedPresetsFirst($response, $handler, \WP_REST_Request $request) {
-    if ($request->get_route() !== '/wp/v2/block-patterns/patterns' || !$response instanceof \WP_REST_Response) {
+    if ($request->get_route() !== self::PATTERNS_ROUTE || !$response instanceof \WP_REST_Response) {
       return $response;
     }
     $patterns = $response->get_data();
