@@ -118,108 +118,21 @@ class CircleCiControllerTest extends \MailPoetUnitTest {
     $controller->rerunLatestWorkflow(CircleCiController::PROJECT_PREMIUM);
   }
 
-  public function testItDownloadsPotFileFromGivenJob() {
-    $history = new \ArrayObject();
-    $controller = $this->makeController([
-      $this->jsonResponse(['items' => [
-        ['path' => 'home/circleci/mailpoet/mailpoet/mailpoet.zip', 'url' => 'https://artifacts.test/zip'],
-        ['path' => 'home/circleci/mailpoet/mailpoet/lang/mailpoet.pot', 'url' => 'https://artifacts.test/pot'],
-      ]]),
-      new Response(200, [], 'msgid "Hello"'),
-    ], $history);
-    $target = $this->tempFile();
-
-    $controller->downloadPotFile(1234, $target);
-
-    verify($this->requestLines($history))->equals([
-      'GET 1234/artifacts',
-      'GET /pot',
-    ]);
-    verify(file_get_contents($target))->equals('msgid "Hello"');
-  }
-
-  public function testItMatchesBarePotArtifactPath() {
-    $history = new \ArrayObject();
-    $controller = $this->makeController([
-      $this->jsonResponse(['items' => [['path' => 'mailpoet.pot', 'url' => 'https://artifacts.test/bare']]]),
-      new Response(200, [], 'content'),
-    ], $history);
-
-    $controller->downloadPotFile(1, $this->tempFile());
-
-    verify($this->requestLines($history)[1])->equals('GET /bare');
-  }
-
-  public function testItDoesNotMatchSimilarlyNamedArtifacts() {
-    $controller = $this->makeController([
-      $this->jsonResponse(['items' => [
-        ['path' => 'home/circleci/lang/mailpoet.pot.bak', 'url' => 'https://artifacts.test/bak'],
-        ['path' => 'home/circleci/lang/foo-mailpoet.pot', 'url' => 'https://artifacts.test/foo'],
-      ]]),
-    ], new \ArrayObject());
-
-    $this->expectException(\Exception::class);
-    $this->expectExceptionMessage("No artifact 'mailpoet.pot' found in build 7");
-    $controller->downloadPotFile(7, $this->tempFile());
-  }
-
-  public function testItThrowsAndLeavesNoFileWhenPotFileIsEmpty() {
-    $controller = $this->makeController([
-      $this->jsonResponse(['items' => [['path' => 'mailpoet.pot', 'url' => 'https://artifacts.test/pot']]]),
-      new Response(200, [], ''),
-    ], new \ArrayObject());
-    $target = $this->tempFile();
-
-    $caught = null;
-    try {
-      $controller->downloadPotFile(1, $target);
-    } catch (\Exception $e) {
-      $caught = $e;
-    }
-    $this->assertInstanceOf(\Exception::class, $caught);
-    verify($caught->getMessage())->stringContainsString('empty');
-    verify(file_exists($target))->false();
-  }
-
-  public function testItDownloadsZipWhenLintJobSucceeded() {
-    $history = new \ArrayObject();
+  public function testItDownloadsThePremiumZip() {
     $controller = $this->makeZipController([
       ['name' => 'build_release_zip', 'status' => 'success', 'job_number' => 55],
-      ['name' => 'lint_release_zip_php74', 'status' => 'success', 'job_number' => 56],
-    ], $history);
+    ], new \ArrayObject());
     $target = $this->tempFile();
 
     $controller->downloadLatestBuild($target);
 
     verify(file_get_contents($target))->equals('zip');
-    verify($controller->getDownloadedJobNumber())->equals(55);
-  }
-
-  /** @dataProvider lintJobProvider */
-  public function testItRefusesZipWhenLintJobIsNotSuccessful(array $lintJobs, string $expectedMessage) {
-    $controller = $this->makeZipController(array_merge(
-      [['name' => 'build_release_zip', 'status' => 'success', 'job_number' => 55]],
-      $lintJobs
-    ), new \ArrayObject());
-    $target = $this->tempFile();
-
-    $caught = null;
-    try {
-      $controller->downloadLatestBuild($target);
-    } catch (\Exception $e) {
-      $caught = $e;
-    }
-    $this->assertInstanceOf(\Exception::class, $caught);
-    verify($caught->getMessage())->stringContainsString($expectedMessage);
-    verify(file_exists($target))->false();
-    verify($controller->getDownloadedJobNumber())->null();
   }
 
   /** @dataProvider workflowStatusProvider */
   public function testItRefusesZipWhenWorkflowIsNotSuccessful(array $workflow, string $expectedMessage) {
     $controller = $this->makeZipController([
       ['name' => 'build_release_zip', 'status' => 'success', 'job_number' => 55],
-      ['name' => 'lint_release_zip_php74', 'status' => 'success', 'job_number' => 56],
     ], new \ArrayObject(), $workflow);
     $target = $this->tempFile();
 
@@ -232,12 +145,11 @@ class CircleCiControllerTest extends \MailPoetUnitTest {
     $this->assertInstanceOf(\Exception::class, $caught);
     verify($caught->getMessage())->stringContainsString($expectedMessage);
     verify(file_exists($target))->false();
-    verify($controller->getDownloadedJobNumber())->null();
   }
 
   public function workflowStatusProvider(): array {
     return [
-      // the zip and lint jobs are green in every case; a test job failed, or is still running
+      // the zip job is green in every case; a test job failed, or is still running
       'failed' => [['id' => 'w1', 'status' => 'failed'], "Workflow has status 'failed'"],
       'failing' => [['id' => 'w1', 'status' => 'failing'], "has status 'failing'"],
       'running' => [['id' => 'w1', 'status' => 'running'], "has status 'running'"],
@@ -245,24 +157,15 @@ class CircleCiControllerTest extends \MailPoetUnitTest {
     ];
   }
 
-  public function lintJobProvider(): array {
-    return [
-      'failed' => [[['name' => 'lint_release_zip_php74', 'status' => 'failed']], "'lint_release_zip_php74' has status 'failed'"],
-      'running' => [[['name' => 'lint_release_zip_php74', 'status' => 'running']], "has status 'running'"],
-      'missing' => [[], "has status 'missing'"],
-    ];
-  }
-
   /** @dataProvider httpErrorProvider */
   public function testItLeavesNoFileWhenDownloadFails(int $status) {
-    $controller = $this->makeController([
-      $this->jsonResponse(['items' => [['path' => 'mailpoet.pot', 'url' => 'https://artifacts.test/pot']]]),
-      new Response($status, [], 'error body'),
-    ], new \ArrayObject());
+    $controller = $this->makeZipController([
+      ['name' => 'build_release_zip', 'status' => 'success', 'job_number' => 55],
+    ], new \ArrayObject(), ['id' => 'w1', 'status' => 'success'], new Response($status, [], 'error body'));
     $target = $this->tempFile();
 
     try {
-      $controller->downloadPotFile(1, $target);
+      $controller->downloadLatestBuild($target);
       $this->fail('Expected an exception.');
     } catch (\GuzzleHttp\Exception\RequestException $e) {
       verify($e->getCode())->equals($status);
@@ -275,15 +178,14 @@ class CircleCiControllerTest extends \MailPoetUnitTest {
   }
 
   public function testItKeepsExistingFileWhenDownloadFails() {
-    $controller = $this->makeController([
-      $this->jsonResponse(['items' => [['path' => 'mailpoet.pot', 'url' => 'https://artifacts.test/pot']]]),
-      new Response(500, [], 'error body'),
-    ], new \ArrayObject());
+    $controller = $this->makeZipController([
+      ['name' => 'build_release_zip', 'status' => 'success', 'job_number' => 55],
+    ], new \ArrayObject(), ['id' => 'w1', 'status' => 'success'], new Response(500, [], 'error body'));
     $target = $this->tempFile();
     file_put_contents($target, 'old');
 
     try {
-      $controller->downloadPotFile(1, $target);
+      $controller->downloadLatestBuild($target);
       $this->fail('Expected an exception.');
     } catch (\GuzzleHttp\Exception\RequestException $e) {
       verify(file_get_contents($target))->equals('old');
@@ -294,18 +196,23 @@ class CircleCiControllerTest extends \MailPoetUnitTest {
   /**
    * @param array<int, array<string, mixed>> $jobs
    */
-  private function makeZipController(array $jobs, \ArrayObject $history, array $workflow = ['id' => 'w1', 'status' => 'success']): CircleCiController {
+  private function makeZipController(
+    array $jobs,
+    \ArrayObject $history,
+    array $workflow = ['id' => 'w1', 'status' => 'success'],
+    ?Response $zipResponse = null
+  ): CircleCiController {
     return $this->makeController([
       $this->jsonResponse(['items' => [['id' => 'p1', 'vcs' => ['revision' => 'abc']]]]),
       $this->jsonResponse(['items' => [$workflow]]),
       $this->jsonResponse(['items' => $jobs]),
-      $this->jsonResponse(['items' => [['path' => 'mailpoet.zip', 'url' => 'https://artifacts.test/zip']]]),
-      new Response(200, [], 'zip'),
-    ], $history, 600, CircleCiController::PROJECT_MAILPOET);
+      $this->jsonResponse(['items' => [['path' => 'mailpoet-premium.zip', 'url' => 'https://artifacts.test/zip']]]),
+      $zipResponse ?? new Response(200, [], 'zip'),
+    ], $history);
   }
 
   private function tempFile(): string {
-    $path = sys_get_temp_dir() . '/mailpoet-pot-test-' . uniqid('', true) . '.pot';
+    $path = sys_get_temp_dir() . '/mailpoet-zip-test-' . uniqid('', true) . '.zip';
     $this->tempFiles[] = $path;
     return $path;
   }
