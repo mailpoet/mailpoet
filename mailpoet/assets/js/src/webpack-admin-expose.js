@@ -3,9 +3,6 @@
 
 // libs
 export * as ClassNames from 'classnames';
-export * as React from 'react';
-export * as ReactDom from 'react-dom';
-export * as ReactJsxRuntime from 'react/jsx-runtime';
 export * as ReactRouter from 'react-router-dom';
 export * as ReactTooltip from 'react-tooltip';
 export * as ReactStringReplace from 'react-string-replace';
