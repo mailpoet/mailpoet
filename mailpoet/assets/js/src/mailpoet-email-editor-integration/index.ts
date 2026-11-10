@@ -64,27 +64,34 @@ addFilter(
   (editor) => withSatismeterSurvey(editor),
 );
 
-// validate email editor content using the defined validation rules
-// content is first validated when the "Send" button is clicked and revalidated on "Save Draft"
-addFilter(
-  'woocommerce_email_editor_content_validation_rules',
-  'mailpoet/email-editor-integration',
-  (rules: EmailContentValidationRule[]) => [
-    ...(rules || []),
-    emailValidationRule,
-    // Only sites that ask every subscriber need the opt-out link, so the rule is
-    // added rather than always registered and conditionally skipped.
-    ...(window?.mailpoet_tracking_consent_ask_all
-      ? [trackingOptOutValidationRule]
-      : []),
-  ],
-);
-
 const isAutomationNewsletter = window?.mailpoet_is_automation_newsletter;
 // A preset is never sent, so the send button saves it instead.
 const isPreset =
   window.WooCommerceEmailEditor?.current_post_type ===
   MAILPOET_EMAIL_PRESET_POST_TYPE;
+
+// validate email editor content using the defined validation rules
+// content is first validated when the "Send" button is clicked and revalidated on "Save Draft"
+addFilter(
+  'woocommerce_email_editor_content_validation_rules',
+  'mailpoet/email-editor-integration',
+  (rules: EmailContentValidationRule[]) => {
+    // A preset is never sent. Emails started from it are checked before sending.
+    if (isPreset) {
+      return rules || [];
+    }
+    return [
+      ...(rules || []),
+      emailValidationRule,
+      // Only sites that ask every subscriber need the opt-out link, so the rule is
+      // added rather than always registered and conditionally skipped.
+      ...(window?.mailpoet_tracking_consent_ask_all
+        ? [trackingOptOutValidationRule]
+        : []),
+    ];
+  },
+);
+
 const isEmailPresetsEnabled = MailPoet.FeaturesController.isSupported(
   MailPoet.FeaturesController.FEATURE_EMAIL_PRESETS,
 );
