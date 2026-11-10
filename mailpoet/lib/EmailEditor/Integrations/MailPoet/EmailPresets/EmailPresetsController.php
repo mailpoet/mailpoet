@@ -169,13 +169,26 @@ class EmailPresetsController {
     }
     $preheader = (string)$this->wp->getPostMeta($preset->ID, EmailPresetPostType::META_PREHEADER, true);
 
-    $rendered = Email_Editor_Container::container()->get(Renderer::class)->render(
-      $preset,
-      $subject,
-      $preheader,
-      (string)$this->wp->getBloginfo('language'),
-      '<meta name="robots" content="noindex, nofollow" />'
-    );
+    // Without the MailPoet context, the coupon block renders nothing instead of its placeholder.
+    $contextFilter = function (array $context): array {
+      return array_merge($context, [
+        'integration' => 'mailpoet',
+        'is_real_send' => false,
+        'is_preview' => true,
+      ]);
+    };
+    $this->wp->addFilter('woocommerce_email_editor_rendering_email_context', $contextFilter);
+    try {
+      $rendered = Email_Editor_Container::container()->get(Renderer::class)->render(
+        $preset,
+        $subject,
+        $preheader,
+        (string)$this->wp->getBloginfo('language'),
+        '<meta name="robots" content="noindex, nofollow" />'
+      );
+    } finally {
+      $this->wp->removeFilter('woocommerce_email_editor_rendering_email_context', $contextFilter);
+    }
 
     $context = [
       'recipient_email' => $this->wp->wpGetCurrentUser()->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
