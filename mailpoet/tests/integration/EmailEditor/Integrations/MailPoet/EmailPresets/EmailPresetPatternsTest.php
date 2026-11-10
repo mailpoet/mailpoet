@@ -33,6 +33,24 @@ class EmailPresetPatternsTest extends \MailPoetTest {
     verify(\WP_Block_Pattern_Categories_Registry::get_instance()->is_registered(EmailPresetPatterns::CATEGORY))->true();
   }
 
+  public function testItRegistersSavedPresetsOnlyForThePatternsRouteAndEmailManagers(): void {
+    $presetId = $this->createPreset('Launch', '<!-- wp:paragraph --><p>Launch day</p><!-- /wp:paragraph -->');
+    $name = EmailPresetPatterns::NAME_PREFIX . $presetId;
+    $registry = \WP_Block_Patterns_Registry::get_instance();
+    $patternsRequest = new \WP_REST_Request('GET', '/wp/v2/block-patterns/patterns');
+
+    wp_set_current_user((int)$this->tester->createWordPressUser('email-presets-contributor-' . uniqid() . '@localhost.test', 'contributor'));
+    $this->patterns->registerPatternsForRequest(null, null, $patternsRequest);
+    verify($registry->is_registered($name))->false();
+
+    wp_set_current_user(1);
+    $this->patterns->registerPatternsForRequest(null, null, new \WP_REST_Request('GET', '/wp/v2/posts'));
+    verify($registry->is_registered($name))->false();
+
+    $this->patterns->registerPatternsForRequest(null, null, $patternsRequest);
+    verify($registry->is_registered($name))->true();
+  }
+
   public function testItSkipsEmptyAndTrashedPresets(): void {
     $emptyId = $this->createPreset('Empty', '');
     $trashedId = $this->createPreset('Trashed', '<!-- wp:paragraph --><p>Gone</p><!-- /wp:paragraph -->', 'trash');
@@ -85,6 +103,7 @@ class EmailPresetPatternsTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
+    wp_set_current_user(0);
     $registry = \WP_Block_Patterns_Registry::get_instance();
     foreach ($this->presetIds as $presetId) {
       $name = EmailPresetPatterns::NAME_PREFIX . $presetId;
