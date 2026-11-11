@@ -125,30 +125,24 @@ function replaceLatestVersion(string $latestVersion, string $downloadCommand): v
 }
 
 /**
- * The files with the oldest supported versions: the CircleCI config (its
- * Premium nightly jobs) and the file the GitHub nightly tests read. Not a
+ * The file with the oldest supported versions, which the nightly tests read. Not a
  * workflow file, because the updater’s token can’t push changes to those.
  */
-const OLDEST_VERSION_FILES = [
-  __DIR__ . '/../../../.circleci/config.yml',
-  __DIR__ . '/../../../tests_env/oldest-versions.yml',
-];
+const OLDEST_VERSIONS_FILE = __DIR__ . '/../../../tests_env/oldest-versions.yml';
 
 function replacePreviousVersion(string $previousVersion, string $configParameterName): void {
-  foreach (OLDEST_VERSION_FILES as $file) {
-    replaceVersionInFile(
-      $file,
-      '/(' . $configParameterName . ': )\d+\.\d+\.\d+/',
-      '${1}' . $previousVersion
-    );
-  }
+  replaceVersionInFile(
+    OLDEST_VERSIONS_FILE,
+    '/(' . $configParameterName . ': )\d+\.\d+\.\d+/',
+    '${1}' . $previousVersion
+  );
 }
 
 /**
  * Function replacing the latest and previous versions of a private plugin in the CI files.
  * The function fetches the tags from the GitHub repository, filters stable versions,
  * gets the latest and previous minor/major versions, and replaces the latest one in tests_env/download-test-plugins.sh
- * and the previous one in the nightly CI jobs (OLDEST_VERSION_FILES).
+ * and the previous one in OLDEST_VERSIONS_FILE.
  * Versions come from the repository tags unless $fetchVersions (page number => list of versions) is given.
  */
 function replacePrivatePluginVersion(

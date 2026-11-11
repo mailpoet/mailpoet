@@ -82,13 +82,11 @@ function replaceLatestWordPressVersion(string $latestVersion): void {
  * oldest versions.
  */
 function replacePreviousWordPressVersion(string $previousVersion): void {
-  foreach (OLDEST_VERSION_FILES as $file) {
-    replaceVersionInFile(
-      $file,
-      '/(wordpress_version: )\d+\.\d+\.?\d*/',
-      '${1}' . $previousVersion
-    );
-  }
+  replaceVersionInFile(
+    OLDEST_VERSIONS_FILE,
+    '/(wordpress_version: )\d+\.\d+\.?\d*/',
+    '${1}' . $previousVersion
+  );
 }
 
 $allVersions = [];
