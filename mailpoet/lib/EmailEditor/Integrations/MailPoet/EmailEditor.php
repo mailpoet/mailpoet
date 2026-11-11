@@ -198,6 +198,7 @@ class EmailEditor {
       // A preset has no newsletter, so the current user is the recipient.
       $context['recipient_email'] = $context['recipient_email'] ?? $this->wp->wpGetCurrentUser()->user_email;
       $context['is_preview'] = true;
+      $this->personalizationTagManager->extendPersonalizationTagsByAllSubjects();
       return $context;
     }
     if (!$post || $post->post_type !== self::MAILPOET_EMAIL_POST_TYPE) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
