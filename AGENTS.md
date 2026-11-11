@@ -39,7 +39,6 @@ Paths are relative to `mailpoet/`.
 - `lib/Automation/` – the automation engine. `lib/EmailEditor/` – the block email editor integration.
 - `assets/js/src/` – admin and public frontend, compiled to `assets/dist/`. `views/` – Twig templates.
 - `tests/` – `unit/`, `integration/`, `acceptance/`, `javascript/`, `performance/`; data factories in `tests/DataFactories/`.
-- `tools/mcp-server/` (repo root) is an experimental, dev-only MCP server that exposes local MailPoet tooling to agents; see its README.
 
 ## Code rules
 
@@ -86,7 +85,6 @@ Verify through the real flow when you can, letting WP-Cron or Action Scheduler p
 - PHP packages may need prefixer configuration, so ask before adding Composer or npm dependencies.
 - All pnpm `overrides` live in `pnpm-workspace.yaml`. Never add a `pnpm` field to the root `package.json`: pnpm then silently ignores the workspace overrides.
 - For `pnpm audit` fixes, prefer a lockfile bump (`pnpm -r update <pkg>`); add an override only when a parent’s range excludes the patched version. Removing an override does not move a locked version that still satisfies its parents; pair the removal with the update command.
-- `tools/mcp-server` has its own lockfile and overrides. Run pnpm there with `--ignore-workspace`, or it operates on the root workspace.
 
 ## Gotchas
 
