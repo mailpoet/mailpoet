@@ -27,8 +27,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
-use MailPoet\Features\FeatureFlagsController;
-use MailPoet\Features\FeaturesController;
 use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\Mailer;
@@ -36,6 +34,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\SubscriberError;
+use MailPoet\Mailer\SuperSendingController;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
@@ -129,11 +128,8 @@ class SendingQueueTest extends \MailPoetTest {
   /** @var AuthorizedEmailsController */
   private $authorizedEmailsController;
 
-  /** @var FeatureFlagsController */
-  private $featureFlagsController;
-
-  /** @var FeaturesController */
-  private $featuresController;
+  /** @var SuperSendingController */
+  private $superSendingController;
 
   public function _before() {
     parent::_before();
@@ -186,8 +182,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->statisticsNewslettersRepository = $this->diContainer->get(StatisticsNewslettersRepository::class);
-    $this->featureFlagsController = $this->diContainer->get(FeatureFlagsController::class);
-    $this->featuresController = $this->diContainer->get(FeaturesController::class);
+    $this->superSendingController = $this->diContainer->get(SuperSendingController::class);
     $this->sendingQueueWorker = $this->getSendingQueueWorker();
   }
 
@@ -254,7 +249,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->entityManager,
       $this->statisticsNewslettersRepository,
       $this->authorizedEmailsController,
-      $this->featuresController
+      $this->superSendingController
     );
     try {
       $sendingQueueWorker->process();
@@ -294,7 +289,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->entityManager,
       $this->statisticsNewslettersRepository,
       $this->authorizedEmailsController,
-      $this->featuresController
+      $this->superSendingController
     );
     $sendingQueueWorker->sendNewsletters(
       $this->scheduledTask,
@@ -346,7 +341,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->entityManager,
       $this->statisticsNewslettersRepository,
       $this->authorizedEmailsController,
-      $this->featuresController
+      $this->superSendingController
     );
     $sendingQueueWorker->sendNewsletters(
       $this->scheduledTask,
@@ -391,7 +386,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->entityManager,
       $this->statisticsNewslettersRepository,
       $this->authorizedEmailsController,
-      $this->featuresController
+      $this->superSendingController
     );
     $sendingQueueWorker->process();
   }
@@ -1045,7 +1040,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->entityManager,
       $this->statisticsNewslettersRepository,
       $this->authorizedEmailsController,
-      $this->featuresController
+      $this->superSendingController
     );
 
     $sendingQueueWorker->sendNewsletters(
@@ -1762,7 +1757,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->entityManager,
       $this->statisticsNewslettersRepository,
       $this->authorizedEmailsController,
-      $this->featuresController
+      $this->superSendingController
     );
     try {
       $sendingQueueWorker->sendNewsletters(
@@ -2755,7 +2750,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->entityManager,
       $this->statisticsNewslettersRepository,
       $authorizedEmailControllerMock ?? $this->authorizedEmailsController,
-      $this->featuresController,
+      $this->superSendingController,
       $this->diContainer->get(TimeZoneCampaignScheduler::class),
       false,
       null,
@@ -2764,13 +2759,11 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   private function enableMssTemplatedSending(): void {
-    $this->featureFlagsController->set(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING, true);
-    $this->featuresController->resetCache();
+    $this->settings->set(SuperSendingController::SETTING_NAME . '.enabled', '1');
   }
 
   private function disableMssTemplatedSending(): void {
-    $this->featureFlagsController->set(FeaturesController::FEATURE_MSS_TEMPLATED_SENDING, false);
-    $this->featuresController->resetCache();
+    $this->settings->set(SuperSendingController::SETTING_NAME . '.enabled', '');
   }
 
   private function createListWithSubscriber(): array {

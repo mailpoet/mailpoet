@@ -1,9 +1,12 @@
+import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 
 import { useSelector, useAction, useSetting } from 'settings/store/hooks';
 import { MssStatus, PremiumStatus } from 'settings/store/types';
 import { t } from 'common/functions';
+import { Checkbox } from 'common/form/checkbox/checkbox';
+import { GlobalContext, GlobalContextValue } from 'context';
 
 interface SendWithChoiceWindow extends Window {
   mailpoet_free_plan_url: string;
@@ -14,20 +17,44 @@ declare let window: SendWithChoiceWindow;
 export function SendWithChoice() {
   const navigate = useNavigate();
   const isMssActive = useSelector('isMssActive');
+  const isSaving = useSelector('isSaving');
   const [key] = useSetting('mta', 'mailpoet_api_key');
+  const [superSending, setSuperSending] = useSetting(
+    'mss_super_sending',
+    'enabled',
+  );
   const { mssStatus, premiumStatus } = useSelector('getKeyActivationState');
   const isMssKeyValid = mssStatus !== null && mssStatus !== MssStatus.INVALID;
   const isPremiumKeyValid =
     premiumStatus !== null && premiumStatus !== PremiumStatus.INVALID;
   const freePlanUrl = window.mailpoet_free_plan_url;
   const setSetting = useAction('setSetting');
-  const saveSettings = useAction('saveSettings');
+  const saveSettingPaths = useAction('saveSettingPaths');
+  const { notices } = useContext<GlobalContextValue>(GlobalContext);
+
+  // This tab has no Save button to report the result, so show save errors here.
+  const showSaveErrors = (result: { type: string; error?: unknown }) => {
+    if (result.type === 'SAVE_FAILED' && Array.isArray(result.error)) {
+      notices.error(
+        result.error.map((err: string) => <p key={err}>{err}</p>),
+        { scroll: true },
+      );
+    }
+  };
+
   const activateMss = async () => {
     await setSetting(['mta_group'], 'mailpoet');
     await setSetting(['mta', 'method'], 'MailPoet');
     await setSetting(['mta', 'mailpoet_api_key'], key);
     await setSetting(['signup_confirmation', 'enabled'], '1');
-    return saveSettings();
+    showSaveErrors(
+      await saveSettingPaths([
+        ['mta_group'],
+        ['mta', 'method'],
+        ['mta', 'mailpoet_api_key'],
+        ['signup_confirmation', 'enabled'],
+      ]),
+    );
   };
 
   const mssChosen = async (e) => {
@@ -38,6 +65,15 @@ export function SendWithChoice() {
     if (!isMssActive && isMssKeyValid) {
       await activateMss();
     }
+  };
+
+  const superSendingChanged = async (isChecked: boolean) => {
+    // Not `disabled`: it would take keyboard focus away from the checkbox
+    if (isSaving) {
+      return;
+    }
+    await setSuperSending(isChecked ? '1' : '');
+    showSaveErrors(await saveSettingPaths([['mss_super_sending', 'enabled']]));
   };
 
   const otherChosen = (e) => {
@@ -102,6 +138,19 @@ export function SendWithChoice() {
             </div>
           )}
         </label>
+        {isMssActive && (
+          <div className="mailpoet-sending-method-option">
+            <Checkbox
+              id="mss-super-sending"
+              checked={superSending === '1'}
+              onCheck={superSendingChanged}
+            />
+            <label htmlFor="mss-super-sending">
+              <strong>{t('mssSuperSendingLabel')}</strong>
+            </label>
+            <p>{t('mssSuperSendingDescription')}</p>
+          </div>
+        )}
       </li>
       <li>
         <label className="mailpoet-sending-method mailpoet-form-checkbox">

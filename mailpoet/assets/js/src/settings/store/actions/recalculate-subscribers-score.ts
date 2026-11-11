@@ -12,5 +12,6 @@ export function* recalculateSubscribersScore(): Generator<{
     action: 'recalculateSubscribersScore',
   };
   MailPoet.Modal.loading(false);
-  return { type: 'SAVE_DONE' };
+  // Not SAVE_DONE: it would switch off the warning for unsaved edits
+  return null;
 }

@@ -93,6 +93,9 @@ export type Settings = {
     };
   };
   logging: 'everything' | 'errors' | 'nothing';
+  mss_super_sending: {
+    enabled: '' | '1';
+  };
   mta_group: 'mailpoet' | 'website' | 'smtp';
   mta: {
     method: 'MailPoet' | 'AmazonSES' | 'SendGrid' | 'PHPMail' | 'SMTP';
@@ -335,6 +338,9 @@ export type Action =
   | { type: 'SET_ERROR_FLAG'; value: boolean }
   | { type: 'SAVE_STARTED' }
   | { type: 'SAVE_DONE' }
+  | { type: 'FULL_SAVE_DONE' }
+  | { type: 'MARK_SETTINGS_SAVED'; paths: string[][] }
+  | { type: 'PARTIAL_SAVE_DONE'; values: { path: string[]; value: unknown }[] }
   | { type: 'SAVE_FAILED'; error: string[] }
   | { type: 'UPDATE_KEY_ACTIVATION_STATE'; fields: Partial<KeyActivationState> }
   | { type: 'SET_RE_ENGAGEMENT_NOTICE'; value: ReEngagement }
