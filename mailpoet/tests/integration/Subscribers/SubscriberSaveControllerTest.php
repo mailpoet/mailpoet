@@ -122,6 +122,34 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     verify($statusCounts[SubscriberEntity::STATUS_SUBSCRIBED])->equals(1);
   }
 
+  public function testMovingASubscriberToAnotherListUpdatesBothListsCachedCounts(): void {
+    $listA = $this->segmentsRepository->createOrUpdate('List A');
+    $listB = $this->segmentsRepository->createOrUpdate('List B');
+    $subscriber = $this->saveController->save([
+      'email' => 'moved@test.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segments' => [$listA->getId()],
+    ]);
+    $counts = $this->getServiceWithOverrides(SubscribersCountsController::class, [
+      'subscribersFeature' => $this->make(SubscribersFeature::class, ['isSubscribersCountEnoughForCache' => true]),
+    ]);
+    $counts->recalculateSegmentStatisticsCache($listA);
+    $counts->recalculateSegmentStatisticsCache($listB);
+
+    $this->saveController->save([
+      'id' => $subscriber->getId(),
+      'email' => 'moved@test.com',
+      'segments' => [$listB->getId()],
+    ]);
+
+    $listACounts = $counts->getSegmentStatisticsCount($listA);
+    verify($listACounts[SubscriberEntity::STATUS_SUBSCRIBED])->equals(0);
+    verify($listACounts[SubscriberEntity::STATUS_UNSUBSCRIBED])->equals(1);
+    $listBCounts = $counts->getSegmentStatisticsCount($listB);
+    verify($listBCounts['all'])->equals(1);
+    verify($listBCounts[SubscriberEntity::STATUS_SUBSCRIBED])->equals(1);
+  }
+
   public function testItStripsClientSuppliedTrackingConsentProofFields(): void {
     // A client (admin/API) can change the consent state but must not be able to
     // forge the proof-of-consent method/copy; those are stamped server-side only.
