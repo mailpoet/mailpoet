@@ -110,7 +110,7 @@ runs:
         ./do twig:generate-cache
         php -d register_argc_argv=1 ../tests_env/vendor/bin/codecept build
 
-    # Premium checks only its own files, like its CircleCI build.
+    # Premium checks only its own files.
     - name: 'Check Prettier formatting'
       shell: bash
       working-directory: ${{ inputs.premium == 'true' && 'mailpoet-premium' || 'mailpoet' }}

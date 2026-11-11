@@ -14,7 +14,7 @@ on:
 
 permissions: {}
 
-# Run steps with pipefail, like CircleCI does.
+# Run steps with pipefail.
 defaults:
   run:
     shell: bash

@@ -1,7 +1,6 @@
 name: 'Notify Slack'
 
-# Posts a failed run to #mailpoet-dev-feeds, like the slack/notify post-step
-# in .circleci/config.yml. Callers decide when to call it.
+# Posts a failed run to #mailpoet-dev-feeds. Callers decide when to call it.
 
 on:
   workflow_call:

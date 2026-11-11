@@ -9,7 +9,7 @@ on:
 
 permissions: {}
 
-# Run steps with pipefail, like CircleCI does.
+# Run steps with pipefail.
 defaults:
   run:
     shell: bash
@@ -89,7 +89,7 @@ jobs:
   notify:
     name: 'Notify Slack on failure'
     needs: [build, release_zip, qit]
-    # Like CircleCI, alert only for trunk, not for manual runs on other branches.
+    # Alert only for trunk, not for manual runs on other branches.
     if: ${{ failure() && (github.event_name == 'schedule' || github.ref_name == 'trunk') }}
     uses: ./.github/workflows/notify-slack.yml
     secrets:

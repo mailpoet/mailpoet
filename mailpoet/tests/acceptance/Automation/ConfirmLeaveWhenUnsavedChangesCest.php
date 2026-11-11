@@ -32,7 +32,7 @@ class ConfirmLeaveWhenUnsavedChangesCest {
     $i->click('Start with a template');
     $i->see('Start with a template', 'h1');
     $i->click($automationTitle);
-    // The template preview can take over 10 s on the oldest WordPress with Premium (CircleCI job 451016).
+    // The template preview can take over 10 s on the oldest WordPress with Premium.
     $i->waitForElementVisible('.mailpoet-automation-editor-automation-flow', 30);
     $i->click('Start building');
 

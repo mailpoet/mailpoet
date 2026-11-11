@@ -67,22 +67,22 @@ Hooks see only staged files, so still run `pnpm qa` before pushing. Do not use `
 
 GitHub Actions (`.github/workflows/checks.yml`) runs these jobs from `mailpoet/` on every pull request:
 
-| Job                                 | Command                                       | PHP |
-| ----------------------------------- | --------------------------------------------- | --- |
-| `Build / Build`                     | `./do qa:prettier-check`                      | 8.5 |
-| `JS and CSS lint`                   | `./do qa:frontend-assets` (ESLint, Stylelint) | –   |
-| `PHP lint and code style (PHP 8.5)` | `./do qa:php` (lint + PHPCS)                  | 8.5 |
-| `PHP lint and code style (PHP 7.4)` | `./do qa:php`                                 | 7.4 |
-| `PHP lint and code style (PHP 8.1)` | `./do qa:php-max-wporg` (lint of the build)   | 8.1 |
-| `PHPStan`                           | `./do qa:phpstan`                             | 8.5 |
-| `Security scan (Semgrep)`           | `./tools/semgrep.sh lib/ lib-3rd-party/`      | –   |
-| `JS tests`                          | JS and legacy newsletter editor tests         | –   |
-| `PHP unit tests`                    | `./do t:u`                                    | 8.5 |
-| `Release zip / Build`               | `./build.sh` (the release zip and `.pot`)     | 8.5 |
-| `Release zip / Lint on PHP 7.4`     | `.circleci/lint-release-zip.sh` on the zip    | 7.4 |
-| `QIT security scan`                 | `./do qa:qit-security` on the zip             | –   |
+| Job                                 | Command                                         | PHP |
+| ----------------------------------- | ----------------------------------------------- | --- |
+| `Build / Build`                     | `./do qa:prettier-check`                        | 8.5 |
+| `JS and CSS lint`                   | `./do qa:frontend-assets` (ESLint, Stylelint)   | –   |
+| `PHP lint and code style (PHP 8.5)` | `./do qa:php` (lint + PHPCS)                    | 8.5 |
+| `PHP lint and code style (PHP 7.4)` | `./do qa:php`                                   | 7.4 |
+| `PHP lint and code style (PHP 8.1)` | `./do qa:php-max-wporg` (lint of the build)     | 8.1 |
+| `PHPStan`                           | `./do qa:phpstan`                               | 8.5 |
+| `Security scan (Semgrep)`           | `./tools/semgrep.sh lib/ lib-3rd-party/`        | –   |
+| `JS tests`                          | JS and legacy newsletter editor tests           | –   |
+| `PHP unit tests`                    | `./do t:u`                                      | 8.5 |
+| `Release zip / Build`               | `./build.sh` (the release zip and `.pot`)       | 8.5 |
+| `Release zip / Lint on PHP 7.4`     | `.github/workflows/scripts/lint-release-zip.sh` | 7.4 |
+| `QIT security scan`                 | `./do qa:qit-security` on the zip               | –   |
 
-Integration and acceptance tests run in `checks.yml` too (the “Integration tests” and “Acceptance tests” jobs, through `.github/workflows/codeception-tests.yml`). The release tooling (`./do release:publish`) takes the zip and `.pot` from the checks run on the `release` branch. CircleCI (`.circleci/config.yml`) still builds a copy of the zip, which the Playground previews of pull requests read, and runs the tests with Premium active (on `release`, and nightly). `.github/workflows/nightly-qit.yml` builds the release zip with the same workflow (`.github/workflows/release-zip.yml`) and runs all six QIT checks on Tuesdays and Wednesdays. `.github/workflows/nightly-tests.yml` runs the unit, integration and acceptance tests every weekday night on the latest and oldest supported versions (from `tests_env/oldest-versions.yml`) and on the WordPress and WooCommerce betas.
+Integration and acceptance tests run in `checks.yml` too (the “Integration tests” and “Acceptance tests” jobs, through `.github/workflows/codeception-tests.yml`). The release tooling (`./do release:publish`) takes the zip and `.pot` from the checks run on the `release` branch. The Playground previews of pull requests use the zip of the branch’s latest successful checks run. Premium’s nightly workflow runs Free’s tests with Premium active. `.github/workflows/nightly-qit.yml` builds the release zip with the same workflow (`.github/workflows/release-zip.yml`) and runs all six QIT checks on Tuesdays and Wednesdays. `.github/workflows/nightly-tests.yml` runs the unit, integration and acceptance tests every weekday night on the latest and oldest supported versions (from `tests_env/oldest-versions.yml`) and on the WordPress and WooCommerce betas.
 
 `pnpm qa` does not run Semgrep, the PHP 7.4 lint, the WP.org build lint or the newsletter editor tests.
 

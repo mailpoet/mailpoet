@@ -115,7 +115,7 @@ When you run a single test script, there will be a default k6 output in the end,
 
 ### HTML Output with k6 Reporter
 
-The k6 reporter should have already been implemented. There's generated file called `k6report.html` inside `performance` folder after every suite/scenario execution. You can find the path and open it in a local browser or see it as artefact in CircleCI.
+The k6 reporter should have already been implemented. There’s generated file called `k6report.html` inside `performance` folder after every suite/scenario execution. You can find the path and open it in a local browser.
 
 [See this guide for more details](https://github.com/benc-uk/k6-reporter)
 
