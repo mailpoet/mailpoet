@@ -9,7 +9,7 @@ describe('MailPoetDate', () => {
     });
 
     it('Should work correctly for present', () => {
-      expect(MailPoetDate.isInFuture(now.toISOString(), now)).to.be.false;
+      expect(MailPoetDate.isInFuture(now.toISOString(), now)).to.equal(false);
     });
 
     it('Should work correctly for future dates', () => {
@@ -21,8 +21,8 @@ describe('MailPoetDate', () => {
           now,
         ),
         '1 second in future',
-      ).to.be.true;
-      expect(MailPoetDate.isInFuture(tomorrow, now.valueOf())).to.be.true;
+      ).to.equal(true);
+      expect(MailPoetDate.isInFuture(tomorrow, now.valueOf())).to.equal(true);
     });
 
     it('Should work correctly for past dates ', () => {
@@ -34,9 +34,11 @@ describe('MailPoetDate', () => {
           now,
         ),
         '1 second in the past',
-      ).to.be.false;
-      expect(MailPoetDate.isInFuture(yesterday.toISOString(), now), 'yesterday')
-        .to.be.false;
+      ).to.equal(false);
+      expect(
+        MailPoetDate.isInFuture(yesterday.toISOString(), now),
+        'yesterday',
+      ).to.equal(false);
     });
   });
 });
