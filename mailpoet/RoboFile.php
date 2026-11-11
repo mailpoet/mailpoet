@@ -1059,6 +1059,11 @@ class RoboFile extends \Robo\Tasks {
       ->addCode($this->withErrorOutput(function () use ($version) {
         $this->translationsPrepareLanguagePacks($version);
       }))
+      // Last, so a failed start doesn't skip the translations. release:publish says how
+      // to start it again.
+      ->addCode($this->withErrorOutput(function () {
+        $this->releaseTestFreeWithPremium();
+      }))
       ->run();
   }
 
@@ -1197,8 +1202,9 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function releaseCheckPullRequest($version) {
-    $this->createGitHubController()
-      ->checkReleasePullRequestPassed($version);
+    $releaseSha = $this->createGitHubController()->checkReleasePullRequestPassed($version);
+    $this->createGitHubActionsController(\MailPoetTasks\Release\GitHubController::PROJECT_PREMIUM)
+      ->checkFreeReleaseTestsPassed($releaseSha);
   }
 
   public function releaseVersionGetLatest($version = null) {
@@ -1347,16 +1353,33 @@ class RoboFile extends \Robo\Tasks {
   // so once the free release branch exists, run Premium’s release checks again, even when
   // they passed: they were built against the free plugin’s trunk.
   public function releaseRerunChecksForPremium() {
-    $isPremiumReleased = $this->createGitHubController()->projectBranchExists(
-      \MailPoetTasks\Release\GitHubController::PROJECT_PREMIUM,
-      \MailPoetTasks\Release\GitHubController::RELEASE_SOURCE_BRANCH
-    );
-
-    if (!$isPremiumReleased) {
+    if (!$this->isPremiumReleased()) {
       return;
     }
     $this->createGitHubActionsController(\MailPoetTasks\Release\GitHubController::PROJECT_PREMIUM)->rerunLatestWorkflow(true);
     $this->say('Rerunning the checks on Premium’s release branch ... done');
+  }
+
+  // Runs Free's tests with Premium active on the head of the release branch, in Premium's
+  // repository, with Premium's release branch when Premium is released too.
+  // release:check-pull-request refuses to publish until they have passed.
+  public function releaseTestFreeWithPremium() {
+    $freeSha = $this->createGitHubController()
+      ->getLatestCommitRevisionOnBranch(\MailPoetTasks\Release\GitHubController::RELEASE_SOURCE_BRANCH);
+    if (!$freeSha) {
+      throw new \Exception('The release branch does not exist.');
+    }
+    $premiumRef = $this->isPremiumReleased() ? \MailPoetTasks\Release\GitHubController::RELEASE_SOURCE_BRANCH : 'trunk';
+    $this->createGitHubActionsController(\MailPoetTasks\Release\GitHubController::PROJECT_PREMIUM)
+      ->startFreeReleaseTests($freeSha, $premiumRef);
+    $this->say("Running Free’s tests with Premium active on $freeSha ... started");
+  }
+
+  private function isPremiumReleased(): bool {
+    return $this->createGitHubController()->projectBranchExists(
+      \MailPoetTasks\Release\GitHubController::PROJECT_PREMIUM,
+      \MailPoetTasks\Release\GitHubController::RELEASE_SOURCE_BRANCH
+    );
   }
 
   public function downloadWooCommerceMembershipsZip(?string $version = null): void {

@@ -97,6 +97,73 @@ class GitHubActionsControllerTest extends \MailPoetUnitTest {
     ]);
   }
 
+  public function testItStartsTheFreeReleaseTestsInPremium() {
+    $history = new \ArrayObject();
+    $controller = $this->makeController([new Response(204)], $history, 60, GitHubController::PROJECT_PREMIUM);
+
+    $controller->startFreeReleaseTests('abc123', 'release');
+
+    verify($this->requestLines($history))->equals([
+      'POST /repos/mailpoet/mailpoet-premium/actions/workflows/free-release-tests.yml/dispatches',
+    ]);
+    /** @var array<int, array{request: RequestInterface}> $transactions */
+    $transactions = $history->getArrayCopy();
+    verify(json_decode((string)$transactions[0]['request']->getBody(), true))->equals([
+      'ref' => 'release',
+      'inputs' => ['free_sha' => 'abc123'],
+    ]);
+  }
+
+  public function testItPassesWhenTheFreeReleaseTestsPassedForTheCommit() {
+    $history = new \ArrayObject();
+    $controller = $this->makeController([
+      $this->jsonResponse(['workflow_runs' => [
+        $this->freeReleaseTestsRun(31, 'other456', 'completed', 'failure'),
+        $this->freeReleaseTestsRun(30, 'abc123', 'completed', 'success'),
+      ]]),
+    ], $history, 60, GitHubController::PROJECT_PREMIUM);
+
+    $controller->checkFreeReleaseTestsPassed('abc123');
+
+    verify($this->requestLines($history))->equals([
+      'GET /repos/mailpoet/mailpoet-premium/actions/workflows/free-release-tests.yml/runs?event=workflow_dispatch&per_page=100',
+    ]);
+  }
+
+  /**
+   * @dataProvider unfinishedFreeReleaseTestsRuns
+   */
+  public function testItFailsWhenTheLatestFreeReleaseTestsRunDidNotPass(string $status, ?string $conclusion, string $expectedState) {
+    // An older run passed, but the newest one decides.
+    $controller = $this->makeController([
+      $this->jsonResponse(['workflow_runs' => [
+        $this->freeReleaseTestsRun(32, 'abc123', $status, $conclusion),
+        $this->freeReleaseTestsRun(30, 'abc123', 'completed', 'success'),
+      ]]),
+    ], null, 60, GitHubController::PROJECT_PREMIUM);
+
+    $this->expectExceptionMessage("is '$expectedState': https://github.com/mailpoet/mailpoet-premium/actions/runs/32");
+    $controller->checkFreeReleaseTestsPassed('abc123');
+  }
+
+  public function unfinishedFreeReleaseTestsRuns(): array {
+    return [
+      'running' => ['in_progress', null, 'in_progress'],
+      'failed' => ['completed', 'failure', 'failure'],
+    ];
+  }
+
+  public function testItFailsWhenTheFreeReleaseTestsDidNotRunForTheCommit() {
+    $controller = $this->makeController([
+      $this->jsonResponse(['workflow_runs' => [
+        $this->freeReleaseTestsRun(31, 'other456', 'completed', 'success'),
+      ]]),
+    ], null, 60, GitHubController::PROJECT_PREMIUM);
+
+    $this->expectExceptionMessage('./do release:test-free-with-premium');
+    $controller->checkFreeReleaseTestsPassed('abc123');
+  }
+
   /**
    * @dataProvider unsuccessfulRuns
    */
@@ -324,6 +391,16 @@ class GitHubActionsControllerTest extends \MailPoetUnitTest {
       'event' => $event,
       'head_branch' => $branch,
       'html_url' => "https://github.com/mailpoet/mailpoet/actions/runs/$id",
+    ];
+  }
+
+  private function freeReleaseTestsRun(int $id, string $freeSha, string $status, ?string $conclusion): array {
+    return [
+      'id' => $id,
+      'status' => $status,
+      'conclusion' => $conclusion,
+      'display_title' => "Free release tests with Premium ($freeSha)",
+      'html_url' => "https://github.com/mailpoet/mailpoet-premium/actions/runs/$id",
     ];
   }
 

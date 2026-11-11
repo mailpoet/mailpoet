@@ -19,7 +19,8 @@ class GitHubControllerTest extends \MailPoetUnitTest {
       $this->checkRun('Notify Slack on failure', 'skipped'),
     ]);
 
-    $controller->checkReleasePullRequestPassed('5.1.0');
+    // The commit the checks passed for, so later checks look at the same one.
+    verify($controller->checkReleasePullRequestPassed('5.1.0'))->equals('abc');
   }
 
   public function testItFailsWhenAllChecksFailed() {

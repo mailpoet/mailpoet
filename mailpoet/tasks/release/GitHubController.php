@@ -76,7 +76,7 @@ class GitHubController {
     ]);
   }
 
-  public function checkReleasePullRequestPassed($version) {
+  public function checkReleasePullRequestPassed($version): string {
     $response = $this->httpClient->get('pulls', [
       'query' => [
         'state' => 'all',
@@ -99,6 +99,7 @@ class GitHubController {
     // Verify the CI builds passed. The release-PR approval requirement was removed when
     // MailPoet stopped using a dedicated QA reviewer; the Porter owns release verification.
     $this->checkPullRequestCheckRuns($releasePullRequest['head']['sha']);
+    return $releasePullRequest['head']['sha'];
   }
 
   // A release pull request has more check runs than one page holds, so ask for each

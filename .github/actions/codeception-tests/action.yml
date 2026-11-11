@@ -43,6 +43,9 @@ inputs:
   oldest:
     description: 'Test the oldest supported versions from tests_env/oldest-versions.yml'
     default: 'false'
+  branch:
+    description: 'The Free branch the tests run for, when it is not the branch of this run'
+    default: ''
   mysql_image:
     default: ''
   mysql_command:
@@ -182,7 +185,7 @@ runs:
         # tests/_support/CheckSkippedTestsExtension.php reads it to forbid
         # skipped tests on trunk and release. A fork’s branch can be called
         # trunk too, so fork pull requests get pull/<number>.
-        CIRCLE_BRANCH: ${{ github.event.pull_request.head.repo.fork && format('pull/{0}', github.event.number) || github.head_ref || github.ref_name }}
+        CIRCLE_BRANCH: ${{ inputs.branch || (github.event.pull_request.head.repo.fork && format('pull/{0}', github.event.number)) || github.head_ref || github.ref_name }}
         # The acceptance entrypoint removes Doctrine Annotations when it is set,
         # to prove the plugin runs without them. With _with_premium_ in the name
         # the entrypoint activates Premium but still runs Free’s tests, which
