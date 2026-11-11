@@ -5,6 +5,70 @@ export interface DateOptions {
   offset?: number;
 }
 
+const MILLISECONDS_IN_HOUR = 3600000;
+const siteTimeFormatters: Record<string, Intl.DateTimeFormat | null> = {};
+
+// Null when the site uses a manual UTC offset, or the browser does not know its time zone.
+function getSiteTimeFormatter(): Intl.DateTimeFormat | null {
+  const timeZone = window.mailpoet_date_timezone;
+  if (!timeZone) {
+    return null;
+  }
+  if (siteTimeFormatters[timeZone] === undefined) {
+    try {
+      siteTimeFormatters[timeZone] = new Intl.DateTimeFormat('en-US', {
+        timeZone,
+        hourCycle: 'h23',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+      });
+    } catch {
+      siteTimeFormatters[timeZone] = null;
+    }
+  }
+  return siteTimeFormatters[timeZone];
+}
+
+// Hours between site time and UTC at the given moment. WordPress's gmt_offset
+// is this value for today only, so it is wrong for a date across a clock change.
+function getSiteOffset(timestamp: number): number {
+  const formatter = getSiteTimeFormatter();
+  if (!formatter || Number.isNaN(timestamp)) {
+    return parseFloat(window.mailpoet_date_offset || '0');
+  }
+  const siteTime: Record<string, number> = {};
+  formatter.formatToParts(timestamp).forEach(({ type, value }) => {
+    siteTime[type] = Number(value);
+  });
+  const siteTimestamp = Date.UTC(
+    siteTime.year,
+    siteTime.month - 1,
+    siteTime.day,
+    siteTime.hour,
+    siteTime.minute,
+    siteTime.second,
+  );
+  return (
+    (siteTimestamp - Math.floor(timestamp / 1000) * 1000) / MILLISECONDS_IN_HOUR
+  );
+}
+
+// The offset that applies to a site time, given as a timestamp of its clock values.
+function getOffsetOfSiteTime(siteTimestamp: number): number {
+  const day = 24 * MILLISECONDS_IN_HOUR;
+  const before = getSiteOffset(siteTimestamp - day);
+  const after = getSiteOffset(siteTimestamp + day);
+  const applies = (offset: number) =>
+    getSiteOffset(siteTimestamp - offset * MILLISECONDS_IN_HOUR) === offset;
+  // A time the clocks skip moves to the hour after, and a time that comes
+  // twice means the first one. Both take the offset from before the change.
+  return !applies(before) && applies(after) ? after : before;
+}
+
 export const MailPoetDate: {
   version: number;
   options: object;
@@ -60,12 +124,14 @@ export const MailPoetDate: {
   },
   format: function format(date: MomentInput, opts?: DateOptions): string {
     const options = opts || {};
+    // Read before init(), which fills in today's offset.
+    const offset = options.offset ?? getSiteOffset(Moment.utc(date).valueOf());
     let momentDate;
     this.init(options);
 
     momentDate = Moment.utc(date);
-    if (this.options.offset) {
-      momentDate = momentDate.utcOffset(this.options.offset);
+    if (offset) {
+      momentDate = momentDate.utcOffset(offset);
     }
     return momentDate.format(this.convertFormat(this.options.format));
   },
@@ -91,9 +157,11 @@ export const MailPoetDate: {
     return this.format(date, { format: 'Y-m-d H:i:s' });
   },
   toGmtDatetimeString: function siteToGmtTimestamp(date: MomentInput): string {
-    return this.format(date, {
+    const siteTimestamp = Moment.utc(date).valueOf();
+    const offset = getOffsetOfSiteTime(siteTimestamp);
+    return this.format(siteTimestamp - offset * MILLISECONDS_IN_HOUR, {
       format: 'Y-m-d H:i:s',
-      offset: parseFloat(window.mailpoet_date_offset || '0') * -1,
+      offset: 0,
     });
   },
   convertFormat: function convertFormat(format: string): string {

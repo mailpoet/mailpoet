@@ -148,5 +148,14 @@ describe('email volume limit notice', () => {
     it('shows the first day of the next month in the site time zone', () => {
       expect(render()).to.include('<b>November 1, 2026</b>');
     });
+
+    it('shows the first day of the next month when the clocks change before it', () => {
+      globalWithWindow.window = {
+        mailpoet_date_timezone: 'Europe/Prague',
+        mailpoet_date_offset: '2',
+        mailpoet_date_format: 'F j, Y',
+      };
+      expect(render()).to.include('<b>November 1, 2026</b>');
+    });
   });
 });

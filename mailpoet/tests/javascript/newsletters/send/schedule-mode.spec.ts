@@ -102,10 +102,11 @@ describe('getDefaultScheduledAt', () => {
   const globalWithWindow = global as unknown as { window?: unknown };
   const originalWindow = globalWithWindow.window;
 
-  const setSite = (tomorrow: string, offset: string) => {
+  const setSite = (tomorrow: string, offset: string, timezone = '') => {
     globalWithWindow.window = {
       mailpoet_tomorrow_date: tomorrow,
       mailpoet_date_offset: offset,
+      mailpoet_date_timezone: timezone,
     };
   };
 
@@ -121,5 +122,10 @@ describe('getDefaultScheduledAt', () => {
   it('keeps the local time when the site is on GMT', () => {
     setSite('2026-10-20', '0');
     expect(getDefaultScheduledAt()).to.equal('2026-10-20 08:00:00');
+  });
+
+  it('uses the offset of tomorrow when the clocks change overnight', () => {
+    setSite('2026-11-01', '-4', 'America/New_York');
+    expect(getDefaultScheduledAt()).to.equal('2026-11-01 13:00:00');
   });
 });

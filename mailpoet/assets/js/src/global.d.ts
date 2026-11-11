@@ -183,6 +183,7 @@ interface Window {
   mailpoet_mss_key_valid: boolean;
   mailpoet_mta_method: string;
   mailpoet_date_offset: string;
+  mailpoet_date_timezone: string;
   mailpoet_time_format: string;
   mailpoet_date_format: string;
   mailpoet_listing_per_page: string;

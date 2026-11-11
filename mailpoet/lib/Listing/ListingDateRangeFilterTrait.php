@@ -55,9 +55,8 @@ trait ListingDateRangeFilterTrait {
   /**
    * Returns the UTC `Y-m-d H:i:s` start of a site-local `yyyy-MM-dd` day, shifted by
    * `$addDays` days (1 gives the exclusive end of the day), or null for an invalid day.
-   * Filter bounds use the offset in force on that date (DST aware), while the listing
-   * display uses the site’s current gmt_offset, so close to a DST change a row can land
-   * on the neighbouring day. This is intentional.
+   * Filter bounds use the offset in force on that date (DST aware), as the listing
+   * display does.
    */
   protected function getSiteDayStartInUtc(string $day, int $addDays = 0): ?string {
     $date = \DateTimeImmutable::createFromFormat('!Y-m-d', $day, WPFunctions::get()->wpTimezone());
