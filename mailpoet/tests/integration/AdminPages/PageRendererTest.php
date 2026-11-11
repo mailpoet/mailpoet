@@ -48,6 +48,20 @@ class PageRendererTest extends \MailPoetTest {
     $this->assertStringContainsString('var mailpoet_referral_id = "valid_referral-id";', $output);
   }
 
+  public function testItPassesSiteTimeZoneToPage(): void {
+    $originalTimeZone = get_option('timezone_string');
+    update_option('timezone_string', 'America/New_York');
+
+    try {
+      $output = $this->renderBlankPage();
+    } finally {
+      update_option('timezone_string', $originalTimeZone);
+    }
+
+    // The date helper in JS reads this name to get the UTC offset of each date.
+    $this->assertStringContainsString('var mailpoet_date_timezone = "America/New_York";', $output);
+  }
+
   private function renderBlankPage(): string {
     ob_start();
     try {
