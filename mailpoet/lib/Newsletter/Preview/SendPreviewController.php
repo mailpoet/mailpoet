@@ -130,7 +130,7 @@ class SendPreviewController {
    * @param array<string, mixed> $context Existing context
    * @return array<string, mixed> Context with sample data added
    */
-  private function addSampleDataToContext(array $context): array {
+  public function addSampleDataToContext(array $context): array {
     $order = $this->wooCommerceDummyData->getOrder();
     if ($order instanceof \WC_Order) {
       $context['order'] = $order;
