@@ -8,9 +8,8 @@ set -eo pipefail
 service=$1
 GROUP_FILE=tests/acceptance/_groups/split_group
 
-# Codeception reads one entry per line, so put each name on its own. Blank lines would make it run with
-# an empty group.
-tr '[:space:]' '\n' | sed '/^[[:space:]]*$/d' > "$GROUP_FILE"
+# Blank lines would make Codeception run with an empty group.
+sed '/^[[:space:]]*$/d' > "$GROUP_FILE"
 
 if [ ! -s "$GROUP_FILE" ]; then
   echo "No tests were assigned to this part."
