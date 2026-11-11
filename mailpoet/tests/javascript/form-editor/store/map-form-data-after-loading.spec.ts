@@ -124,6 +124,17 @@ describe('Form Data Load Mapper', () => {
       expect(map(mapData).settings).to.have.property('inputPadding', 20);
     });
 
+    it('Keeps cleared input padding unset', () => {
+      const mapData = {
+        ...data,
+        settings: {
+          ...data.settings,
+          input_padding: '',
+        },
+      };
+      expect(map(mapData).settings).to.have.property('inputPadding', undefined);
+    });
+
     it('Sets default placements styles', () => {
       expect(map(data).settings.formPlacement.belowPosts)
         .to.have.property('styles')

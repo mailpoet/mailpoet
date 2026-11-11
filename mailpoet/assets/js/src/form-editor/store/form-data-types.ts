@@ -62,7 +62,7 @@ export type FormSettingsType = {
     };
   };
   gradient?: string;
-  inputPadding: number;
+  inputPadding?: number;
   otherStyles: PlacementStyles;
   placeFixedBarFormOnAllPages: boolean;
   placeFixedBarFormOnAllPosts: boolean;
