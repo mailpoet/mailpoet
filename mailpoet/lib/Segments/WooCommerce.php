@@ -157,11 +157,16 @@ class WooCommerce {
         }
 
         $isReturningFormerCustomer = !$subscriber->getIsWoocommerceUser() && $subscriber->getDeletedAt() !== null;
+        $isLinkUnconfirmed = $this->wpUserSubscriberLink->isUnconfirmed($wpUserId);
+        if ($isReturningFormerCustomer && $isLinkUnconfirmed) {
+          // Stays in the trash with the flag at 0 until the account confirms the address or an order
+          // with the address comes in. Either one restores them, but only while the flag is still 0.
+          break;
+        }
         $data = [
           'is_woocommerce_user' => 1,
         ];
         // Until the account confirms the address, keep the subscriber's own source and name.
-        $isLinkUnconfirmed = $this->wpUserSubscriberLink->isUnconfirmed($wpUserId);
         if (!empty($newCustomer) && !$isLinkUnconfirmed) {
           $data['source'] = Source::WOOCOMMERCE_USER;
         }
@@ -173,8 +178,9 @@ class WooCommerce {
           $data['last_name'] = $wpUser->last_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         }
         $subscriber = $this->subscriberSaveController->createOrUpdate($data, $subscriber);
-        if ($isReturningFormerCustomer && !$isLinkUnconfirmed) {
-          // The list sync trashed them when they stopped being a customer; becoming one again restores them.
+        if ($isReturningFormerCustomer) {
+          // A trashed subscriber with the flag at 0 is restored on becoming a customer. That covers former
+          // customers the list sync trashed and subscribers an admin trashed while they weren't a customer.
           $subscriber->setDeletedAt(null);
           $this->subscribersRepository->flush();
         }
@@ -191,6 +197,25 @@ class WooCommerce {
     }
 
     return true;
+  }
+
+  /**
+   * Runs once an account has confirmed the address of its subscriber. A customer's trashed subscriber
+   * with the flag at 0 waits in the trash for that, and is restored here like the next list sync would.
+   */
+  public function synchronizeConfirmedCustomer(int $wpUserId): void {
+    if (!$this->woocommerceHelper->isWooCommerceActive() || $this->wpUserSubscriberLink->isUnconfirmed($wpUserId)) {
+      return;
+    }
+    $wpUser = $this->wp->getUserdata($wpUserId);
+    if (!$wpUser instanceof \WP_User || !in_array('customer', (array)$wpUser->roles, true)) {
+      return;
+    }
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $wpUserId]);
+    if (!$subscriber instanceof SubscriberEntity || $subscriber->getIsWoocommerceUser() || $subscriber->getDeletedAt() === null) {
+      return;
+    }
+    $this->synchronizeRegisteredCustomer($wpUserId, 'woocommerce_update_customer');
   }
 
   /**
@@ -343,8 +368,9 @@ class WooCommerce {
     // Mark WP users having a customer role as WooCommerce subscribers
     global $wpdb;
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    // A former customer the list sync trashed (flag 0) is restored when they become a customer again,
-    // unless their account hasn't confirmed the subscriber's address yet
+    // A trashed subscriber with the flag at 0 is restored on becoming a customer, unless their account hasn't
+    // confirmed the subscriber's address yet. That covers former customers the list sync trashed and
+    // subscribers an admin trashed while they weren't a customer.
     $this->connection->executeQuery("
       UPDATE LOW_PRIORITY {$subscribersTable} mps
         JOIN {$wpdb->users} wu ON mps.wp_user_id = wu.id
@@ -357,7 +383,8 @@ class WooCommerce {
       'capabilities' => $wpdb->prefix . 'capabilities',
       'unconfirmedLinkMetaKey' => $this->wpUserSubscriberLink->getUnconfirmedMetaKey(),
     ]);
-    // Users who haven't confirmed the address of their linked subscriber keep its source
+    // Users who haven't confirmed the address of their linked subscriber keep its source. A trashed one with
+    // the flag at 0 also keeps the flag, so confirming the address or an order can still restore them.
     $this->connection->executeQuery("
       UPDATE LOW_PRIORITY {$subscribersTable} mps
         JOIN {$wpdb->users} wu ON mps.wp_user_id = wu.id
@@ -365,6 +392,7 @@ class WooCommerce {
         LEFT JOIN {$wpdb->usermeta} linkMark ON wu.id = linkMark.user_id AND linkMark.meta_key = :unconfirmedLinkMetaKey
       SET is_woocommerce_user = 1, source = IF(linkMark.umeta_id IS NULL, :source, mps.source)
         WHERE wpum.meta_value LIKE '%\"customer\"%'
+          AND (linkMark.umeta_id IS NULL OR mps.is_woocommerce_user = 1 OR mps.deleted_at IS NULL)
     ", [
       'capabilities' => $wpdb->prefix . 'capabilities',
       'unconfirmedLinkMetaKey' => $this->wpUserSubscriberLink->getUnconfirmedMetaKey(),
@@ -445,7 +473,8 @@ class WooCommerce {
 
     // Save timestamp about changes before insert
     $this->subscriberChangesNotifier->subscribersBatchUpdate();
-    // A former customer the list sync trashed (flag 0) is restored when they become a customer again
+    // A trashed subscriber with the flag at 0 is restored on becoming a customer. That covers former
+    // customers the list sync trashed and subscribers an admin trashed while they weren't a customer.
     $this->connection->executeQuery('
       UPDATE ' . $subscribersTable . ' mps
       SET mps.deleted_at = NULL

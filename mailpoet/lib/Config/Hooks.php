@@ -538,6 +538,17 @@ class Hooks {
       [$this->hooksWooCommerce, 'synchronizeDeletedWpUser'],
       2
     );
+    // Priority 11: runs after WPUserSubscriberLink confirms the address on priority 10.
+    $this->wp->addAction(
+      'password_reset',
+      [$this->hooksWooCommerce, 'synchronizeCustomerOnPasswordReset'],
+      11
+    );
+    $this->wp->addAction(
+      'woocommerce_customer_email_verified',
+      [$this->hooksWooCommerce, 'synchronizeConfirmedCustomer'],
+      11
+    );
     $this->wp->addAction(
       'woocommerce_checkout_update_order_meta',
       [$this->hooksWooCommerce, 'synchronizeGuestCustomer'],

@@ -12,6 +12,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\AssetsController;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Settings\Pages as SettingsPages;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
@@ -115,6 +116,9 @@ class Pages {
   /** @var WPUserSubscriberLink */
   private $wpUserSubscriberLink;
 
+  /** @var WooCommerceSegment */
+  private $wooCommerceSegment;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
@@ -138,7 +142,8 @@ class Pages {
     UnsubscribeReasonTracker $unsubscribeReasonTracker,
     Request $request,
     TrackingConsentController $trackingConsentController,
-    WPUserSubscriberLink $wpUserSubscriberLink
+    WPUserSubscriberLink $wpUserSubscriberLink,
+    WooCommerceSegment $wooCommerceSegment
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
@@ -163,6 +168,7 @@ class Pages {
     $this->request = $request;
     $this->trackingConsentController = $trackingConsentController;
     $this->wpUserSubscriberLink = $wpUserSubscriberLink;
+    $this->wooCommerceSegment = $wooCommerceSegment;
   }
 
   public function init($action = false, $data = [], $initShortcodes = false, $initPageFilters = false) {
@@ -708,8 +714,9 @@ class Pages {
    */
   private function confirmCurrentWpUserLink(SubscriberEntity $subscriber): void {
     $wpUserId = (int)$this->wp->getCurrentUserId();
-    if ($wpUserId && $subscriber->getWpUserId() === $wpUserId) {
+    if ($wpUserId && $subscriber->getWpUserId() === $wpUserId && $this->wpUserSubscriberLink->isUnconfirmed($wpUserId)) {
       $this->wpUserSubscriberLink->confirm($wpUserId);
+      $this->wooCommerceSegment->synchronizeConfirmedCustomer($wpUserId);
     }
   }
 

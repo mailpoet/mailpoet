@@ -741,7 +741,71 @@ class WooCommerceTest extends \MailPoetTest {
     verify($user->user_email)->equals($guest['email']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $this->synchronizeAllCustomers();
 
-    verify($this->findSubscriberByEmail($guest['email'])->getDeletedAt())->notNull();
+    $subscriber = $this->findSubscriberByEmail($guest['email']);
+    verify($subscriber->getDeletedAt())->notNull();
+    // The flag stays at 0, so a later order or the account confirming the address can still restore them
+    verify($subscriber->getIsWoocommerceUser())->false();
+  }
+
+  public function testItRestoresTrashedFormerCustomerWhoCreatesAnAccountAtClassicCheckout(): void {
+    $number = mt_rand();
+    $email = $this->trashFormerGuestCustomer($number);
+
+    // The classic checkout creates the account before the order (WC_Checkout::process_customer() runs before create_order())
+    wp_set_current_user(0);
+    $wpUserId = wc_create_new_customer($email, 'user-sync-test' . $number, 'password');
+    $this->assertIsInt($wpUserId);
+    verify($this->diContainer->get(WPUserSubscriberLink::class)->isUnconfirmed($wpUserId))->true();
+    $orderId = $this->createOrder(['email' => $email, 'user_id' => $wpUserId]);
+    do_action('woocommerce_checkout_update_order_meta', $orderId, ['billing_email' => $email]);
+
+    $subscriber = $this->findSubscriberByEmail($email);
+    verify($subscriber->getWpUserId())->equals($wpUserId);
+    verify($subscriber->getDeletedAt())->null();
+    verify($subscriber->getIsWoocommerceUser())->true();
+  }
+
+  public function testItRestoresTrashedFormerCustomerWhenTheNewAccountConfirmsTheAddressByPasswordReset(): void {
+    $number = mt_rand();
+    $email = $this->trashFormerGuestCustomer($number);
+    $wpUserId = $this->registerOnMyAccount($email, $number);
+    $wpUser = get_userdata($wpUserId);
+    $this->assertInstanceOf(\WP_User::class, $wpUser);
+
+    do_action('password_reset', $wpUser, 'new-password');
+
+    $subscriber = $this->findSubscriberByEmail($email);
+    verify($subscriber->getDeletedAt())->null();
+    verify($subscriber->getIsWoocommerceUser())->true();
+    verify($this->isOnWooCommerceSegment($subscriber))->true();
+  }
+
+  public function testItRestoresTrashedFormerCustomerWhenTheNewAccountConfirmsTheAddressByEmailVerification(): void {
+    $number = mt_rand();
+    $email = $this->trashFormerGuestCustomer($number);
+    $wpUserId = $this->registerOnMyAccount($email, $number);
+
+    do_action('woocommerce_customer_email_verified', $wpUserId);
+
+    $subscriber = $this->findSubscriberByEmail($email);
+    verify($subscriber->getDeletedAt())->null();
+    verify($subscriber->getIsWoocommerceUser())->true();
+    verify($this->isOnWooCommerceSegment($subscriber))->true();
+  }
+
+  public function testItKeepsAdminTrashedCustomerInTrashWhenTheAccountConfirmsTheAddress(): void {
+    $user = $this->insertRegisteredCustomer();
+    $this->synchronizeAllCustomers();
+    $subscriber = $this->findSubscriberByEmail($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($subscriber->getIsWoocommerceUser())->true();
+    $subscriber->setDeletedAt(Carbon::now());
+    $this->entityManager->flush();
+    $wpUser = get_userdata($user->ID);
+    $this->assertInstanceOf(\WP_User::class, $wpUser);
+
+    do_action('password_reset', $wpUser, 'new-password');
+
+    verify($this->findSubscriberByEmail($user->user_email)->getDeletedAt())->notNull(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function testItSkipsDeletedWpUserCheckWhenWooCommerceIsInactive(): void {
@@ -1430,5 +1494,34 @@ class WooCommerceTest extends \MailPoetTest {
 
   private function synchronizeAllCustomers(): void {
     $this->wooCommerceSegment->synchronizeCustomers(0, null, PHP_INT_MAX);
+  }
+
+  /**
+   * A guest customer whose only order is gone, so the list sync trashes them and clears their flag.
+   */
+  private function trashFormerGuestCustomer(int $number): string {
+    $guest = $this->insertGuestCustomer($number);
+    $this->synchronizeAllCustomers();
+    $this->tester->deleteTestWooOrder((int)$guest['order_id']);
+    $this->synchronizeAllCustomers();
+    $subscriber = $this->findSubscriberByEmail($guest['email']);
+    verify($subscriber->getDeletedAt())->notNull();
+    verify($subscriber->getIsWoocommerceUser())->false();
+    return $guest['email'];
+  }
+
+  /**
+   * Registers the way the My Account form does, which links the existing subscriber
+   * without confirming the address. The subscriber stays in the trash until it's confirmed.
+   */
+  private function registerOnMyAccount(string $email, int $number): int {
+    wp_set_current_user(0);
+    $wpUserId = wc_create_new_customer($email, 'user-sync-test' . $number, 'password');
+    $this->assertIsInt($wpUserId);
+    verify($this->diContainer->get(WPUserSubscriberLink::class)->isUnconfirmed($wpUserId))->true();
+    $subscriber = $this->findSubscriberByEmail($email);
+    verify($subscriber->getWpUserId())->equals($wpUserId);
+    verify($subscriber->getDeletedAt())->notNull();
+    return $wpUserId;
   }
 }

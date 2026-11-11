@@ -20,6 +20,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsClicksRepository;
@@ -647,6 +648,23 @@ class PagesTest extends \MailPoetTest {
     verify($this->wpUserSubscriberLink->isUnconfirmed($wpUserId))->false();
   }
 
+  public function testOpeningManagePageWithValidLinkRestoresTrashedFormerWooCommerceCustomer(): void {
+    $wpUserId = $this->createWpUserLinkedToSubscriber();
+    (new \WP_User($wpUserId))->set_role('customer');
+    // A former customer the WooCommerce Customers sync trashed
+    $this->subscriber->setIsWoocommerceUser(false);
+    $this->subscriber->setDeletedAt(Carbon::now());
+    $this->entityManager->flush();
+    $this->wpUserSubscriberLink->markUnconfirmed($wpUserId, (string)$this->subscriber->getEmail());
+    wp_set_current_user($wpUserId);
+
+    $this->getPages()->init(Pages::ACTION_MANAGE, $this->testData)->getManageContent();
+
+    $this->entityManager->refresh($this->subscriber);
+    verify($this->subscriber->getDeletedAt())->null();
+    verify($this->subscriber->getIsWoocommerceUser())->true();
+  }
+
   public function testOpeningManagePageOfAnotherSubscriberKeepsWpUserLinkUnconfirmed(): void {
     $wpUserId = $this->createWpUserLinkedToSubscriber();
     $this->wpUserSubscriberLink->markUnconfirmed($wpUserId, (string)$this->subscriber->getEmail());
@@ -747,7 +765,8 @@ class PagesTest extends \MailPoetTest {
       $container->get(UnsubscribeReasonTracker::class),
       $container->get(Request::class),
       $container->get(TrackingConsentController::class),
-      $container->get(WPUserSubscriberLink::class)
+      $container->get(WPUserSubscriberLink::class),
+      $container->get(WooCommerceSegment::class)
     );
   }
 
