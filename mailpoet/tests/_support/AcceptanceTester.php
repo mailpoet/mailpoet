@@ -589,7 +589,7 @@ class AcceptanceTester extends \Codeception\Actor {
 
   /**
    * A menu that closes while it is still opening can stay in the page as `inert`, with a
-   * full-page backdrop that takes every click (CircleCI job 451249). Let clicks pass through
+   * full-page backdrop that takes every click. Let clicks pass through
    * such backdrops, and close a menu that is really open.
    */
   public function clearMenuBackdrops(): void {
@@ -1086,7 +1086,7 @@ class AcceptanceTester extends \Codeception\Actor {
   public function registerCustomerOnMyAccountPage(string $email, $optIn = false) {
     $i = $this;
     $i->amOnPage('my-account');
-    // The form can render after the 2 s implicit wait on block themes (CircleCI jobs 450504, 451272).
+    // The form can render after the 2 s implicit wait on block themes.
     $i->waitForElementVisible('#reg_email');
     $i->fillField('#reg_email', $email);
     if ($optIn) {

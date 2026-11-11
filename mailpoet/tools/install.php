@@ -36,7 +36,7 @@ if (!file_exists($vendorDir)) {
  * re-downloads at least one of these, because the cached copy records a different
  * URL. On PHP 8.4+ that is php-scoper, on every acceptance run. A single hiccup
  * reaching GitHub therefore killed the whole job before a test had run, so the
- * download is retried the way the CircleCI config already retries docker pulls.
+ * download is retried.
  */
 function downloadFile($url, $filePath, $fileInfoPath, $attempts = 5) {
   fwrite(STDERR, "Downloading '$url'...");

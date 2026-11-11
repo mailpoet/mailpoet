@@ -21,7 +21,7 @@ const stats = {
 
 // A custom plugin to copy a file without Webpack processing it in
 // production mode. This is needed for the happiness-assistant-widget.js
-// because it would occasionally fail to process in CircleCI.
+// because it would occasionally fail to process in CI.
 class DirectCopyPlugin {
   constructor(options) {
     this.options = options;

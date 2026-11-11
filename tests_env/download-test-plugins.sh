@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Downloads the paid plugins the WooCommerce tests need into mailpoet/tests/plugins.
-# CircleCI and GitHub Actions both call it, so they test the same versions.
 # .github/workflows/scripts/helpers.php updates the versions below.
 # Needs GH_TOKEN with access to the private plugin repositories.
 

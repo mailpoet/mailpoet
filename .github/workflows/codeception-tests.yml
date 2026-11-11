@@ -1,7 +1,6 @@
 name: 'Codeception tests'
 
-# Runs the integration or acceptance suite in the tests_env Docker stack, like
-# the integration_tests and acceptance_tests jobs in .circleci/config.yml.
+# Runs the integration or acceptance suite in the tests_env Docker stack.
 # Callers pick the suite, the group, the WooCommerce, theme or multisite set-up,
 # and how many parts to split the tests into.
 

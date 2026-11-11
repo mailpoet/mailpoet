@@ -268,8 +268,8 @@ add_filter('mailpoet_behavioral_signals_looks_human', '__return_true');
 PHP
 
 # Hide the login language switcher. With German installed, the login page builds it from
-# a WordPress.org request, and a failed request logs a warning that fails the test
-# (CircleCI job 451244). No test uses the switcher.
+# a WordPress.org request, and a failed request logs a warning that fails the test.
+# No test uses the switcher.
 cat > /wp-core/wp-content/mu-plugins/mailpoet-test-login-language-dropdown.php <<'PHP'
 <?php
 add_filter('login_display_language_dropdown', '__return_false');

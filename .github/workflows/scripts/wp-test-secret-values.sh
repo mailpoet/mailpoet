@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Reads the WP_TEST_ENV secret (the WP_TEST_* lines CircleCI has as project
-# variables).
+# Reads the WP_TEST_ENV secret (WP_TEST_*=value lines).
 #   --lines  prints the WP_TEST_*=value lines, to export them.
 #   default  prints the secret values, one per line, to mask them in the log
 #            and remove them from uploaded test results. Flags and numbers are
