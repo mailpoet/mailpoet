@@ -1,8 +1,8 @@
 name: 'Checks'
 
-# Static analysis, linting, JS tests and PHP unit tests. Moved from the
-# “build_and_test” workflow in .circleci/config.yml. Acceptance and
-# integration tests and the release zip still run on CircleCI.
+# Static analysis, linting, JS tests, PHP unit tests, the integration and
+# acceptance tests, and the release zip with its PHP 7.4 lint and QIT security
+# scan. The release tooling takes the zip from the run on the release branch.
 
 on:
   pull_request:
@@ -44,6 +44,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/restore-build
+      - name: 'Check PHP stubs match the minimum versions'
+        run: php .github/workflows/scripts/sync_php_stubs.php --check
       - name: 'Static analysis'
         working-directory: mailpoet
         run: ./do qa:phpstan
@@ -104,6 +106,8 @@ jobs:
       contents: read
     defaults:
       run:
+        # Job defaults replace the workflow ones, so set the shell again
+        shell: bash
         working-directory: mailpoet
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -136,19 +140,15 @@ jobs:
       contents: read
     defaults:
       run:
+        # Job defaults replace the workflow ones, so set the shell again
+        shell: bash
         working-directory: mailpoet
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: ./.github/actions/restore-build
-      # Unit tests load some WordPress files (PHPMailer) but need no database.
-      - name: 'Download WordPress'
-        working-directory: .
-        run: curl -sSfL https://wordpress.org/latest.tar.gz | tar -xz
       - name: 'PHP Unit tests'
-        env:
-          WP_ROOT: ${{ github.workspace }}/wordpress
         run: ./do t:u --xml
       - name: 'Upload test results'
         if: ${{ !cancelled() }}
@@ -158,12 +158,26 @@ jobs:
           path: mailpoet/tests/_output
           retention-days: 14
 
+  trunk_alert_tests:
+    name: 'Trunk failure alert tests'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: 'Run the tests'
+        run: bash .github/workflows/scripts/trunk-failure-alert.test.sh
+
   security_analysis:
-    name: 'Semgrep'
-    # Pull requests from forks and Dependabot get no Actions secrets, so there
-    # is no key to clone the rules with. Everywhere else a missing key must
-    # fail the job.
-    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    name: 'Security scan (Semgrep)'
+    # Pull requests from forks get no secrets, so there is no key to clone the
+    # rules with; the scan runs on trunk after the merge. Dependabot reads the key
+    # from the Dependabot secrets. Everywhere else a missing key must fail the
+    # job.
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -180,8 +194,199 @@ jobs:
         working-directory: mailpoet
         run: ./tools/semgrep.sh lib/ lib-3rd-party/
 
-  notify:
-    name: 'Notify Slack on failure'
+  release_zip:
+    name: 'Release zip'
+    needs: build
+    uses: ./.github/workflows/release-zip.yml
+    permissions:
+      contents: read
+    with:
+      # A release can wait a few days between the build and the publish.
+      retention-days: ${{ github.ref_name == 'release' && 14 || 7 }}
+
+  qit_security:
+    name: 'QIT security scan'
+    needs: release_zip
+    # Pull requests from forks get no secrets, so there are no QIT credentials; the
+    # scan runs on trunk after the merge. Dependabot reads them from the Dependabot
+    # secrets.
+    if: ${{ !github.event.pull_request.head.repo.fork }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    defaults:
+      run:
+        # Job defaults replace the workflow ones, so set the shell again
+        shell: bash
+        working-directory: mailpoet
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/restore-build
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: mailpoet-zip
+          path: mailpoet
+      - name: 'Authenticate in QIT'
+        env:
+          QIT_PARTNER_USER: ${{ secrets.QIT_PARTNER_USER }}
+          QIT_TOKEN: ${{ secrets.QIT_TOKEN }}
+        run: ./vendor/bin/qit partner:add --user="$QIT_PARTNER_USER" --qit_token="$QIT_TOKEN"
+      - name: 'Run the QIT security scan'
+        run: |
+          mkdir -p tests/_output
+          ./do qa:qit-security | tee tests/_output/qit-security
+      - name: 'Retrieve test results'
+        if: ${{ !cancelled() }}
+        run: grep "Result Url" tests/_output/qit-security | awk '{ print $3 }' | xargs curl -sSfo tests/_output/report.html
+      - name: 'Upload results'
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: qit-security
+          path: mailpoet/tests/_output
+          retention-days: 14
+
+  integration_base:
+    name: 'Integration tests'
+    needs: build
+    uses: ./.github/workflows/codeception-tests.yml
+    permissions:
+      contents: read
+    with:
+      suite: integration
+      name: base
+      parts: '[1, 2]'
+      skip_group: woo
+      skip_plugins: 1
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+
+  # These variants download paid plugins with a token, which pull requests
+  # from forks don’t get; they run on trunk after the merge. Dependabot gets
+  # the token from the Dependabot secrets.
+  integration:
+    name: 'Integration tests (${{ matrix.title }})'
+    needs: build
+    if: ${{ !github.event.pull_request.head.repo.fork }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {
+              title: 'WooCommerce, HPOS on',
+              name: woo-hpos-on,
+              parts: '[1]',
+              group: woo,
+              enable_hpos: 1,
+            }
+          - {
+              title: 'WooCommerce, HPOS sync on',
+              name: woo-hpos-sync-on,
+              parts: '[1]',
+              group: woo,
+              enable_hpos_sync: 1,
+            }
+          - {
+              title: 'WooCommerce, HPOS off',
+              name: woo-hpos-off,
+              parts: '[1]',
+              group: woo,
+              disable_hpos: 1,
+            }
+          - {
+              title: 'multisite',
+              name: multisite,
+              parts: '[1, 2]',
+              multisite: 1,
+            }
+    uses: ./.github/workflows/codeception-tests.yml
+    permissions:
+      contents: read
+    with:
+      suite: integration
+      name: ${{ matrix.name }}
+      parts: ${{ matrix.parts }}
+      group: ${{ matrix.group || '' }}
+      enable_hpos: ${{ matrix.enable_hpos || 0 }}
+      enable_hpos_sync: ${{ matrix.enable_hpos_sync || 0 }}
+      disable_hpos: ${{ matrix.disable_hpos || 0 }}
+      multisite: ${{ matrix.multisite || 0 }}
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+
+  # Acceptance tests run in Chrome against the whole plugin, with the paid
+  # WooCommerce plugins, so they skip forks like the jobs above.
+  acceptance:
+    name: 'Acceptance tests (${{ matrix.title }})'
+    needs: build
+    if: ${{ !github.event.pull_request.head.repo.fork }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {
+              title: 'base and WooCommerce',
+              name: base-and-woo,
+              parts: '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]',
+              enable_hpos: 1,
+            }
+          - {
+              title: 'block theme',
+              name: blockbased-theme,
+              parts: '[1, 2, 3, 4, 5, 6, 7, 8]',
+              group: frontend,
+              blockbased_theme: 1,
+            }
+          - {
+              title: 'WooCommerce, HPOS sync on',
+              name: woo-hpos-sync-on,
+              parts: '[1, 2, 3, 4, 5, 6, 7, 8]',
+              group: woo,
+              enable_hpos_sync: 1,
+            }
+          - {
+              title: 'WooCommerce, HPOS off',
+              name: woo-hpos-off,
+              parts: '[1, 2, 3, 4, 5, 6, 7, 8]',
+              group: woo,
+              disable_hpos: 1,
+            }
+          - {
+              title: 'multisite',
+              name: multisite,
+              parts: '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]',
+              multisite: 1,
+            }
+    uses: ./.github/workflows/codeception-tests.yml
+    permissions:
+      contents: read
+    with:
+      suite: acceptance
+      name: ${{ matrix.name }}
+      parts: ${{ matrix.parts }}
+      group: ${{ matrix.group || '' }}
+      enable_hpos: ${{ matrix.enable_hpos || 0 }}
+      enable_hpos_sync: ${{ matrix.enable_hpos_sync || 0 }}
+      disable_hpos: ${{ matrix.disable_hpos || 0 }}
+      blockbased_theme: ${{ matrix.blockbased_theme || 0 }}
+      multisite: ${{ matrix.multisite || 0 }}
+    secrets:
+      WP_TEST_ENV: ${{ secrets.WP_TEST_ENV }}
+      WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+
+  # The one check branch protection requires. It fails when any job failed or
+  # was cancelled, so jobs can be added or renamed without changing the repo
+  # settings. Skipped jobs count as passed. Pull requests from forks get no
+  # secrets, so they skip the security scan and the WooCommerce, multisite and
+  # acceptance tests; the push to trunk runs them after the merge. List every
+  # job of this workflow under needs.
+  all_checks:
+    name: 'All checks'
+    if: always()
     needs:
       - build
       - static_analysis
@@ -189,8 +394,36 @@ jobs:
       - qa_js
       - js_tests
       - unit_tests
+      - trunk_alert_tests
       - security_analysis
-    if: ${{ failure() && github.event_name == 'push' }}
+      - release_zip
+      - qit_security
+      - integration_base
+      - integration
+      - acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 'Check the job results'
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+          FROM_FORK: ${{ github.event.pull_request.head.repo.fork }}
+        run: |
+          if [ "$FROM_FORK" == "true" ]; then
+            echo "::notice::Pull requests from forks skip the jobs that need secrets (Semgrep, the QIT security scan, WooCommerce, multisite and acceptance tests). They run on trunk after the merge."
+          fi
+          failed=$(echo "$RESULTS" | jq -r 'to_entries[] | select(.value.result != "success" and .value.result != "skipped") | "::error::\(.key): \(.value.result)"')
+          if [ -n "$failed" ]; then
+            echo "$failed"
+            exit 1
+          fi
+          echo "All jobs passed."
+
+  notify:
+    name: 'Notify Slack on failure'
+    needs: all_checks
+    # trunk-failure-watch.yml posts for trunk, after a retry.
+    if: ${{ failure() && github.event_name == 'push' && github.ref_name != 'trunk' }}
     uses: ./.github/workflows/notify-slack.yml
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

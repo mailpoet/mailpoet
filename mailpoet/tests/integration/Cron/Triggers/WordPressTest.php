@@ -2,7 +2,9 @@
 
 namespace MailPoet\Cron\Triggers;
 
+use Codeception\Stub;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\Supervisor;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\Automations\AbandonedCartWorker;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
@@ -55,7 +57,7 @@ class WordPressTest extends \MailPoetTest {
 
     $future = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp', true) + 600);
     $this->addScheduledTask(SubscribersStatsReport::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
-    $this->wordpressTrigger = $this->diContainer->get(WordPress::class);
+    $this->wordpressTrigger = $this->createTrigger();
   }
 
   public function testItDoesNotRunIfRunIntervalIsNotElapsed() {
@@ -353,7 +355,18 @@ class WordPressTest extends \MailPoetTest {
       $this->settings,
       $this->make(WPFunctions::class, ['wpGetEnvironmentType' => $environmentType])
     );
-    return $this->getServiceWithOverrides(WordPress::class, ['sendingEnvironment' => $sendingEnvironment]);
+    return $this->createTrigger(['sendingEnvironment' => $sendingEnvironment]);
+  }
+
+  /**
+   * The daemon is started over HTTP and the request waits for the 5-second timeout; the
+   * decisions under test only read and write settings and tasks.
+   */
+  private function createTrigger(array $overrides = []): WordPress {
+    $cronHelper = $this->getServiceWithOverrides(CronHelper::class, [
+      'wp' => Stub::make(new WPFunctions(), ['wpRemotePost' => ['body' => 'OK']]),
+    ]);
+    return $this->getServiceWithOverrides(WordPress::class, ['supervisor' => new Supervisor($cronHelper)] + $overrides);
   }
 
   private function addQueue($status): SendingQueueEntity {

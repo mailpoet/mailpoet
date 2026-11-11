@@ -1,6 +1,6 @@
 import { MailPoetI18n as I18n } from './i18n';
 import { filterMessageHtml } from './common/functions/filter-message-html';
-import jQuery from 'jquery'; // eslint-disable-line func-names
+import jQuery from 'jquery';
 
 /*= ==========================================================================================
 

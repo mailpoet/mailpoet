@@ -2,38 +2,6 @@
 @use '../settings/form-editor' as *;
 @use '../settings/grid' as *;
 
-.components-panel {
-  .select2-container {
-    width: 100% !important;
-
-    input.select2-search__field:focus {
-      border: 0;
-      box-shadow: none;
-    }
-
-    .select2-selection {
-      border-color: $gutenberg-control-border-color;
-    }
-
-    &.select2-container--focus {
-      .select2-selection {
-        border-color: $gutenberg-control-border-color-focus;
-        box-shadow: 0 0 0 1px $gutenberg-control-border-color-focus;
-      }
-    }
-  }
-
-  .mailpoet-form-missing-lists {
-    .select2-selection {
-      border-color: red;
-    }
-
-    .mailpoet-form-lists-error {
-      color: red;
-    }
-  }
-}
-
 // Restore spacing between sidebar controls — the old @wordpress/components
 // had margin-bottom: 8px on .components-base-control, v32+ dropped it
 .interface-interface-skeleton__sidebar .components-panel__body > * + * {
@@ -76,22 +44,50 @@
 
 .mailpoet-form-segments-settings-list {
   align-items: center;
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto auto minmax(0, 1fr) 20px;
 
   .components-base-control {
-    flex-grow: 1;
+    grid-column: 2 / 4;
     margin: 8px 0;
+    min-width: 0;
 
     .components-base-control__field {
       margin: 0;
     }
   }
 
+  input[type='checkbox'] {
+    margin: 0;
+  }
+
+  input[type='text'] {
+    grid-column: 3;
+    min-width: 0;
+  }
+
   .mailpoet-form-segments-segment-remove {
     cursor: pointer;
-    flex-grow: 0;
+    grid-column: 4;
     margin: 8px 0;
+  }
+}
+
+.mailpoet-form-segments-drag-handle {
+  align-items: center;
+  align-self: center;
+  cursor: grab;
+  display: flex;
+  justify-content: center;
+  min-width: 20px;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  .dashicon {
+    margin: 0;
   }
 }
 

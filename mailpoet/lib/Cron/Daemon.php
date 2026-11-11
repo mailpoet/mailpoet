@@ -12,6 +12,7 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\SendingEnvironment;
 use MailPoet\Mailer\SendingLimitReachedException;
 use MailPoet\Util\Helpers;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Daemon {
@@ -65,7 +66,7 @@ class Daemon {
   }
 
   public function run($settingsDaemonData) {
-    $settingsDaemonData['run_started_at'] = time();
+    $settingsDaemonData['run_started_at'] = Carbon::now()->getTimestamp();
     $this->cronHelper->saveDaemon($settingsDaemonData);
 
     $errors = [];
@@ -126,7 +127,7 @@ class Daemon {
     }
 
     // Log successful execution
-    $this->cronHelper->saveDaemonRunCompleted(time());
+    $this->cronHelper->saveDaemonRunCompleted(Carbon::now()->getTimestamp());
   }
 
   /**

@@ -41,6 +41,7 @@ type Props = {
   onChange: (value: string | undefined) => void;
 };
 
+// Keep the icon names in sync with FormEntity::CLOSE_BUTTON_ICONS in lib/Entities/FormEntity.php
 function CloseButtonsSettings({ name, value, onChange }: Props): JSX.Element {
   const closeIconsUrl = useSelect(
     (sel) => sel(storeName).getCloseIconsUrl(),

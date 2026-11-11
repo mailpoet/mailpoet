@@ -38,8 +38,8 @@ class SegmentsRepositoryTest extends \MailPoetTest {
   }
 
   public function testItCanBulkTrashDynamicSegments(): void {
-    $segment1 = $this->createDynamicSegmentEntityForEditorUsers();
-    $segment2 = $this->createDynamicSegmentEntityForEditorUsers();
+    $segment1 = $this->createDynamicSegmentEntityForEditorUsers('Segment 1');
+    $segment2 = $this->createDynamicSegmentEntityForEditorUsers('Segment 2');
     $this->entityManager->flush();
     $result = $this->segmentsRepository->bulkTrash([$segment1->getId(), $segment2->getId()], SegmentEntity::TYPE_DYNAMIC);
     $this->entityManager->refresh($segment1);
@@ -63,8 +63,8 @@ class SegmentsRepositoryTest extends \MailPoetTest {
   }
 
   public function testItSkipTrashingForActivelyUsedDynamicSegments(): void {
-    $segment1 = $this->createDynamicSegmentEntityForEditorUsers();
-    $segment2 = $this->createDynamicSegmentEntityForEditorUsers();
+    $segment1 = $this->createDynamicSegmentEntityForEditorUsers('Segment 1');
+    $segment2 = $this->createDynamicSegmentEntityForEditorUsers('Segment 2');
     $this->addActiveNewsletterToSegment($segment2);
     $this->entityManager->flush();
     $result = $this->segmentsRepository->bulkTrash([$segment1->getId(), $segment2->getId()], SegmentEntity::TYPE_DYNAMIC);
@@ -186,8 +186,8 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     verify($count)->equals(0);
 
     // Two segments with one filter each
-    $segment1 = $this->createDynamicSegmentEntityForEditorUsers();
-    $segment2 = $this->createDynamicSegmentEntityForEditorUsers();
+    $segment1 = $this->createDynamicSegmentEntityForEditorUsers('Segment 1');
+    $segment2 = $this->createDynamicSegmentEntityForEditorUsers('Segment 2');
     $count = $this->segmentsRepository->getSegmentCountWithMultipleFilters();
     verify($count)->equals(0);
 
@@ -313,8 +313,8 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     return $segment;
   }
 
-  private function createDynamicSegmentEntityForEditorUsers(): SegmentEntity {
-    $segment = new SegmentEntity('Segment' . rand(0, 10000), SegmentEntity::TYPE_DYNAMIC, 'Segment description');
+  private function createDynamicSegmentEntityForEditorUsers(string $name): SegmentEntity {
+    $segment = new SegmentEntity($name, SegmentEntity::TYPE_DYNAMIC, 'Segment description');
     $filterData = new DynamicSegmentFilterData(
       DynamicSegmentFilterData::TYPE_USER_ROLE,
       UserRole::TYPE,

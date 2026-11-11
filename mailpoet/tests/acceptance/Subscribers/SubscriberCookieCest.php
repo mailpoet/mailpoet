@@ -6,6 +6,7 @@ use AcceptanceTester;
 use Codeception\Util\Locator;
 use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Statistics\Track\SubscriberCookie;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
@@ -170,6 +171,7 @@ class SubscriberCookieCest {
     Assert::assertIsString($subscriberId);
     $i->canSeeCookie(self::SUBSCRIBER_COOKIE_NAME);
     $cookie = $i->grabCookie(self::SUBSCRIBER_COOKIE_NAME);
-    Assert::assertEquals($cookie, urlencode(json_encode(['subscriber_id' => (int)$subscriberId]) ?: ''));
+    $cookieData = ContainerWrapper::getInstance()->get(SubscriberCookie::class)->getCookieData((int)$subscriberId);
+    Assert::assertEquals($cookie, urlencode(json_encode($cookieData) ?: ''));
   }
 }

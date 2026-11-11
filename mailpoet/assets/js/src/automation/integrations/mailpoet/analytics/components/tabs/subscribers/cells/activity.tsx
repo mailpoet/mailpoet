@@ -123,7 +123,6 @@ export function ActivityCell({
           icon={moreVertical}
           controls={menuControls}
           popoverProps={{ placement: 'bottom-start' }}
-          variant="tertiary"
         />
       )}
     </div>

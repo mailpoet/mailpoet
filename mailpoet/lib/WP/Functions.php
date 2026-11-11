@@ -164,6 +164,9 @@ class Functions {
     return wp_register_ability_category($slug, $args);
   }
 
+  /**
+   * @param lowercase-string&non-falsy-string $name
+   */
   public function registerAbility(string $name, array $args): ?\WP_Ability {
     return wp_register_ability($name, $args);
   }
@@ -329,6 +332,15 @@ class Functions {
     return get_post($post, $output, $filter);
   }
 
+  /**
+   * @param string $field
+   * @param int $postId
+   * @return mixed
+   */
+  public function getPostField(string $field, int $postId) {
+    return get_post_field($field, $postId, 'raw');
+  }
+
   public function getTerm(int $termId, string $taxonomy = '') {
     return get_term($termId, $taxonomy);
   }
@@ -484,6 +496,10 @@ class Functions {
     return is_multisite();
   }
 
+  public function getCurrentBlogId(): int {
+    return get_current_blog_id();
+  }
+
   public function isPluginActive($plugin) {
     return is_plugin_active($plugin);
   }
@@ -518,6 +534,14 @@ class Functions {
 
   public function pluginBasename($file) {
     return plugin_basename($file);
+  }
+
+  public function getStylesheetDirectory() {
+    return get_stylesheet_directory();
+  }
+
+  public function getTemplateDirectory() {
+    return get_template_directory();
   }
 
   public function pluginsUrl($path = '', $plugin = '') {
@@ -660,6 +684,10 @@ class Functions {
     return wp_enqueue_script($handle, $src, $deps, $ver, $inFooter);
   }
 
+  public function wpStyleIs($handle, $status = 'enqueued') {
+    return wp_style_is($handle, $status);
+  }
+
   public function wpEnqueueStyle($handle, $src = '', array $deps = [], $ver = false, $media = 'all') {
     return wp_enqueue_style($handle, $src, $deps, $ver, $media);
   }
@@ -739,7 +767,7 @@ class Functions {
 
   /**
    * @param string $url
-   * @param int $component
+   * @param int<-1, 7> $component
    * @return ($component is -1 ? array{scheme?: string, host?: string, port?: int<0, 65535>, user?: string, pass?: string, path?: string, query?: string, fragment?: string}|false : string|int|null|false)
    */
   public function wpParseUrl($url, $component = -1) {
@@ -830,15 +858,12 @@ class Functions {
     return has_blocks($post);
   }
 
-  /**
-   * @param int|\WP_Post|null $post
-   */
-  public function postPasswordRequired($post = null): bool {
-    return post_password_required($post);
-  }
-
   public function stripShortcodes(string $content): string {
     return strip_shortcodes($content);
+  }
+
+  public function shortcodeExists(string $tag): bool {
+    return shortcode_exists($tag);
   }
 
   public function inTheLoop(): bool {
@@ -983,6 +1008,10 @@ class Functions {
     return wp_kses($string, $allowedHtml, $allowedProtocols);
   }
 
+  public function forceBalanceTags(string $text): string {
+    return force_balance_tags($text);
+  }
+
   public function wpKsesAllowedHtml($context = '') {
     return wp_kses_allowed_html($context);
   }
@@ -1020,6 +1049,11 @@ class Functions {
     return wp_get_image_editor($path, $args);
   }
 
+  /**
+   * @param non-empty-string $handle
+   * @param non-empty-string|false $src
+   * @param non-empty-string[] $deps
+   */
   public function wpRegisterScript(string $handle, $src, $deps = [], $ver = false, $in_footer = false): bool {
     return wp_register_script($handle, $src, $deps, $ver, $in_footer);
   }
@@ -1044,6 +1078,10 @@ class Functions {
     return sanitize_key($key);
   }
 
+  public function sanitizeHexColor(string $color): string {
+    return (string)sanitize_hex_color($color);
+  }
+
   public function sanitizeTextField(string $text): string {
     return sanitize_text_field($text);
   }
@@ -1064,10 +1102,22 @@ class Functions {
     return wp_unslash($value);
   }
 
+  /**
+   * @param string|array $value
+   * @return string|array
+   */
+  public function wpSlash($value) {
+    return wp_slash($value);
+  }
+
   public function restUrl(string $path = '', string $scheme = 'rest'): string {
     return rest_url($path, $scheme);
   }
 
+  /**
+   * @param non-falsy-string $namespace
+   * @param non-falsy-string $route
+   */
   public function registerRestRoute(string $namespace, string $route, array $args = [], bool $override = false): bool {
     return register_rest_route($namespace, $route, $args, $override);
   }

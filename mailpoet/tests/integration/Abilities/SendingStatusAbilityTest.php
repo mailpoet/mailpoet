@@ -21,7 +21,6 @@ class SendingStatusAbilityTest extends \MailPoetTest {
 
   public function _before(): void {
     $this->settings = $this->diContainer->get(SettingsController::class);
-    AbilitiesTestHelper::enableFeature();
     AbilitiesTestHelper::register($this->diContainer->get(AbilitiesRegistrar::class));
     wp_set_current_user((int)$this->tester->createWordPressUser('sending-status-admin@example.com', 'administrator'));
   }
@@ -75,6 +74,33 @@ class SendingStatusAbilityTest extends \MailPoetTest {
     $message = $this->executeAbility()['sending']['last_error']['message'];
 
     verify($message)->equals('Error (550): Mailbox rejected. Unprocessed subscribers: ([subscriber]: Rejected), ([subscriber]: Bounced), ([subscriber]: Full), ([subscriber]: Full)');
+  }
+
+  public function testItMasksSubscriberNamesWithUnpairedBracketsInTheLastError(): void {
+    $mailerLog = MailerLog::setError(
+      MailerLog::getMailerLog(),
+      MailerError::OPERATION_SEND,
+      'Error (550): Mailbox rejected. Unprocessed subscribers: (Jan (Honza <jan@example.com>: Full), (Petr) Svoboda <petr@example.com>: Bounced), (Eva (Evi (E <eva@example.com>: Full), (Alice, QA (Ali <alice@example.com>: Full)'
+    );
+    MailerLog::pauseSending($mailerLog);
+
+    $message = $this->executeAbility()['sending']['last_error']['message'];
+
+    verify($message)->equals('Error (550): Mailbox rejected. Unprocessed subscribers: ([subscriber]: Full), ([subscriber]: Bounced), ([subscriber]: Full), ([subscriber]: Full)');
+  }
+
+  public function testItKeepsErrorCodesAndSubscriberCountsInTheLastError(): void {
+    $messages = [
+      'Unprocessed subscribers: (John <john@example.com>), (Jane <jane@example.com>), (Ann <ann@example.com>)' => 'Unprocessed subscribers: ([subscriber]), ([subscriber]), ([subscriber])',
+      'Unprocessed subscribers: (John <john@example.com>: Rejected (550)), (Jane <jane@example.com>: Full)' => 'Unprocessed subscribers: ([subscriber]: Rejected (550)), ([subscriber]: Full)',
+      'SMTP Error (550) Recipient <john@example.com> rejected' => 'SMTP Error (550) [subscriber] rejected',
+      'Error (550): Unprocessed subscriber: (Petr) Svoboda <petr@example.com>: Bounced)' => 'Error (550): Unprocessed subscriber: ([subscriber]: Bounced)',
+    ];
+    foreach ($messages as $error => $expected) {
+      MailerLog::pauseSending(MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_SEND, $error));
+
+      verify($this->executeAbility()['sending']['last_error']['message'])->equals($expected);
+    }
   }
 
   public function testItReportsAWaitingRetryAfterATemporaryError(): void {

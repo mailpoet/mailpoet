@@ -43,6 +43,8 @@ class CreateNewWordPressUserCest {
     $i->fillField(['xpath' => "//input[@type='email'][contains(@name, 'email')]"], 'newuser@test.com');
     $i->click('#mailpoet_subscribe_on_register');
     $i->click(['xpath' => "//input[@type='submit']"]);
+    // The click does not wait for the registration to finish; leaving the page early cancels it.
+    $i->waitForElementNotVisible(['xpath' => "//input[@type='email'][contains(@name, 'email')]"]);
 
     // check email was received and confirm subscribing to both lists
     $i->checkEmailWasReceived($emailTitle);

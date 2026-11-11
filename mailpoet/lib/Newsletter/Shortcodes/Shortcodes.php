@@ -5,6 +5,7 @@ namespace MailPoet\Newsletter\Shortcodes;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\Renderer\EscapeHelper;
 use MailPoet\Newsletter\Sending\Placeholders\PlaceholderCollector;
 use MailPoet\Newsletter\Shortcodes\Categories\CategoryInterface;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
@@ -227,10 +228,70 @@ class Shortcodes {
       ($contentSource) ? $contentSource : $content
     );
     $content = (string)$content;
+    if ($isPlainText) {
+      // Category values are escaped for HTML, which plain text must not show.
+      $processedShortcodes = array_map(function ($value) {
+        return is_string($value) ? htmlspecialchars_decode($value, ENT_QUOTES | ENT_HTML401) : $value;
+      }, $processedShortcodes);
+    }
+    if (!$isPlainText) {
+      $content = $this->removeDisallowedUrls($content, $shortcodes, $processedShortcodes);
+    }
     $shortcodesInsideTags = $isPlainText ? [] : $this->findShortcodesInsideTags($content, $shortcodes);
     return $this->replaceOccurrences($content, $shortcodes, $processedShortcodes, $shortcodesInsideTags, function (int $index) use ($processedShortcodes): string {
       return self::encodeForAttribute((string)$processedShortcodes[$index]);
     });
+  }
+
+  /**
+   * Empties every href or src attribute value that contains a shortcode and, once its shortcodes
+   * are replaced with $values, has a scheme that is not allowed in links.
+   *
+   * @param string[] $shortcodes
+   * @param array<int, mixed> $values
+   */
+  private function removeDisallowedUrls(string $content, array $shortcodes, array $values): string {
+    $values = array_map(function ($value): string {
+      return is_scalar($value) ? (string)$value : '';
+    }, $values);
+    $result = '';
+    $cursor = 0;
+    foreach ($this->findTags($content, strlen($content)) as [$tagStart, $tagEnd]) {
+      $tag = substr($content, $tagStart, $tagEnd - $tagStart);
+      foreach ($this->findUrlAttributeValues($tag) as [$valueOffset, $value]) {
+        if (str_replace($shortcodes, '', $value) === $value || !EscapeHelper::hasDisallowedScheme(str_replace($shortcodes, $values, $value))) {
+          continue;
+        }
+        $result .= substr($content, $cursor, $tagStart + $valueOffset - $cursor);
+        $cursor = $tagStart + $valueOffset + strlen($value);
+      }
+    }
+    return $result . substr($content, $cursor);
+  }
+
+  /**
+   * Lists the href and src attribute values of a start tag (without its closing ">")
+   * as [offset in $tag, value] pairs.
+   *
+   * @return array<int, array{int, string}>
+   */
+  private function findUrlAttributeValues(string $tag): array {
+    // Matches one attribute after the tag name: its name, then optionally "=" and a double-quoted,
+    // single-quoted or unquoted value. findTagEnd() already made sure every quoted value is closed.
+    preg_match_all('/[\s\/]*([^\s"\'>\/=]+)(?:\s*=\s*(?:"([^"]*)"|\'([^\']*)\'|([^\s>]*)))?/', $tag, $attributes, PREG_SET_ORDER | PREG_OFFSET_CAPTURE, strcspn($tag, " \t\n\r\f/>", 1) + 1);
+    $values = [];
+    foreach ($attributes as $attribute) {
+      if (!in_array(strtolower($attribute[1][0]), ['href', 'src'], true)) {
+        continue;
+      }
+      for ($group = 2; $group <= 4; $group++) {
+        if (isset($attribute[$group]) && $attribute[$group][1] !== -1) {
+          $values[] = [$attribute[$group][1], $attribute[$group][0]];
+          break;
+        }
+      }
+    }
+    return $values;
   }
 
   /**
@@ -392,6 +453,9 @@ class Shortcodes {
     }
     $content = (string)$content;
     // Only the HTML part is parsed as markup; the subject and text parts never are.
+    if ($part === PlaceholderCollector::PART_HTML) {
+      $content = $this->removeDisallowedUrls($content, $shortcodes, $processedShortcodes);
+    }
     $shortcodesInsideTags = $part === PlaceholderCollector::PART_HTML ? $this->findShortcodesInsideTags($content, $shortcodes) : [];
     return $this->replaceOccurrences($content, $shortcodes, $placeholders, $shortcodesInsideTags, function (int $index) use ($collector, $processedShortcodes, $shortcodes): string {
       return $collector->addHtmlAttribute((string)$processedShortcodes[$index], $shortcodes[$index]);

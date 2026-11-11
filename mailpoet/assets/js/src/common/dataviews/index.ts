@@ -8,6 +8,7 @@ export {
   getDataViewsPreferenceKey,
   getPersistedDataViewsPreference,
   getStoredDataViewsFieldIds,
+  getValidPerPage,
   persistDataViewsPreference,
   usePersistedDataViewsPreference,
 } from './preferences';
@@ -36,3 +37,9 @@ export type {
   ListingQueryParams,
   ListingResponse,
 } from './types';
+export {
+  getActiveStatusTab,
+  getSingleFilterValue,
+  getTabChange,
+  groupsToTabs,
+} from './status-tabs';

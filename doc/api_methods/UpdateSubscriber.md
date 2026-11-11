@@ -2,7 +2,7 @@
 
 # Update Subscriber
 
-## `array updateSubscriber($subscriberIdOrEmail, array $subscriber): array`
+## `array updateSubscriber($subscriberIdOrEmail, array $subscriber [, array $options = []]): array`
 
 This method allows a subscriber to be updated.
 The argument `$subscriber` is similar to [Add Subscriber](AddSubscriber.md) method, but the subscriber is updated instead of created.
@@ -10,6 +10,10 @@ The argument `$subscriber` is similar to [Add Subscriber](AddSubscriber.md) meth
 It returns the updated subscriber. See [Get Subscriber](GetSubscriber.md) for a subscriber data structure.
 
 If the subscriber is a WordPress user, the method does not allow updating `email`, `first_name` and `last_name`. It needs to be updated in the `wp_users` and MailPoet will synchronise the new values.
+
+### Required custom fields
+
+Like [Add Subscriber](AddSubscriber.md), this method checks all required custom fields defined on the site. `$subscriber` has to contain them even when you update only other properties. To check only the custom fields you send, set the `skip_unsent_required_custom_fields` option.
 
 ### Tracking consent
 
@@ -31,6 +35,15 @@ Adding or removing a tag fires the `mailpoet_subscriber_tag_added` or `mailpoet_
 | -------------------- | ------------- | ----------------------------------------- |
 | $subscriberIdOrEmail | string or int | An id or email of an existing subscriber. |
 | $subscriber          | array         | Subscriber data that will be updated      |
+| $options (optional)  | array         | See [Options](#options) below.            |
+
+### Options
+
+All options are optional. If omitted a default value is used.
+
+| Option                             | Type    | Default | Description                                                                                                                                                                                                                                      |
+| ---------------------------------- | ------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| skip_unsent_required_custom_fields | boolean | false   | Can be used to check only the required custom fields that are sent in `$subscriber`. A required custom field that is not sent is not checked. A required custom field that is sent as an empty string still causes an error. `null` is accepted. |
 
 ## Error handling
 
@@ -41,12 +54,13 @@ An exception of base class `\Exception` can be thrown when something unexpected 
 
 Codes description:
 
-| Code | Description                                             |
-| ---- | ------------------------------------------------------- |
-| 4    | Updating a subscriber that does not exist.              |
-| 13   | The subscriber couldn’t be updated in the database.     |
-| 25   | A `tags` entry resolved to an empty/missing tag name.   |
-| 29   | A `tags` entry referenced a tag id that does not exist. |
+| Code | Description                                               |
+| ---- | --------------------------------------------------------- |
+| 4    | Updating a subscriber that does not exist.                |
+| 13   | The subscriber couldn’t be updated in the database.       |
+| 25   | A `tags` entry resolved to an empty/missing tag name.     |
+| 29   | A `tags` entry referenced a tag id that does not exist.   |
+| 32   | A required custom field is missing or has an empty value. |
 
 ## Example
 
@@ -65,9 +79,10 @@ if (class_exists(\MailPoet\API\API::class)) {
     ]);
 
     // To leave tags untouched, simply omit the 'tags' key.
+    // The option skips required custom fields that are not sent, such as cf_1.
     $mailpoet_api->updateSubscriber($subscriber['id'], [
       'last_name' => 'Doe-Smith',
-    ]);
+    ], ['skip_unsent_required_custom_fields' => true]);
   } catch (\MailPoet\API\MP\v1\APIException $e) {
     error_log(sprintf('MailPoet updateSubscriber failed [%d]: %s', $e->getCode(), $e->getMessage()));
   }

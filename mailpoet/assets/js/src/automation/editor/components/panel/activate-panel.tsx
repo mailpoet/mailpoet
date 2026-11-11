@@ -14,6 +14,12 @@ function PreStep({ onClose }): JSX.Element {
   return (
     <>
       <div className="mailpoet-automation-activate-panel__header">
+        <div className="mailpoet-automation-activate-panel__header-cancel-button">
+          <Button variant="secondary" onClick={onClose} disabled={isActivating}>
+            {__('Cancel', 'mailpoet')}
+          </Button>
+        </div>
+
         <div className="mailpoet-automation-activate-panel__header-activate-button">
           <Button
             variant="primary"
@@ -27,12 +33,6 @@ function PreStep({ onClose }): JSX.Element {
           >
             {isActivating && __('Activating…', 'mailpoet')}
             {!isActivating && __('Activate', 'mailpoet')}
-          </Button>
-        </div>
-
-        <div className="mailpoet-automation-activate-panel__header-cancel-button">
-          <Button variant="secondary" onClick={onClose} disabled={isActivating}>
-            {__('Cancel', 'mailpoet')}
           </Button>
         </div>
       </div>

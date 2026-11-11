@@ -15,6 +15,7 @@ use MailPoet\Logging\LogRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 require_once __DIR__ . '/../ActionSchedulerTestHelper.php';
 
@@ -72,6 +73,7 @@ class DaemonRunTest extends \MailPoetTest {
 
   public function testItDoesNotContinueWhenThePreviousRunSuspiciouslyShort() {
     $this->diContainer->get(SettingsController::class)->set('logging', 'everything');
+    $this->diContainer->get(LoggerFactory::class)->clearLoggerInstances();
     $triggerMock = $this->createMock(WordPress::class);
     $triggerMock->method('checkExecutionRequirements')
       ->willReturn(true);
@@ -92,26 +94,29 @@ class DaemonRunTest extends \MailPoetTest {
     $this->assertInstanceOf(LogEntity::class, $log);
     verify($log->getMessage())->stringContainsString('Daemon run ended too early! The background task runner stopped while time was left, so no new run was started right away.');
     $this->diContainer->get(SettingsController::class)->set('logging', 'errors');
+    $this->diContainer->get(LoggerFactory::class)->clearLoggerInstances();
   }
 
   public function testItDoesScheduleNextRun() {
+    Carbon::setTestNow(Carbon::now());
     $triggerMock = $this->createMock(WordPress::class);
     $triggerMock->method('checkExecutionRequirements')
       ->willReturn(true);
     $daemonMock = $this->createMock(Daemon::class);
+    // a run long enough not to count as suspiciously short
     $daemonMock->method('run')
       ->willReturnCallback(function() {
-        return sleep(DaemonRun::SHORT_DURATION_THRESHOLD + 1);
+        Carbon::setTestNow(Carbon::now()->addSeconds(DaemonRun::SHORT_DURATION_THRESHOLD + 1));
       });
-    $runAction = new DaemonRun(
+    $runAction = $this->construct(DaemonRun::class, [
       $this->diContainer->get(WPFunctions::class),
       $daemonMock,
       $triggerMock,
       $this->diContainer->get(CronHelper::class),
       $this->diContainer->get(RemoteExecutorHandler::class),
       $this->diContainer->get(ActionScheduler::class),
-      $this->diContainer->get(LoggerFactory::class)
-    );
+      $this->diContainer->get(LoggerFactory::class),
+    ], ['pauseExecution' => null]);
     $actions = $this->actionSchedulerHelper->getMailPoetCronActions();
     verify($actions)->arrayCount(0);
     $runAction->process();

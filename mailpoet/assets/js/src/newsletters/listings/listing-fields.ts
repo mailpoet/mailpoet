@@ -115,7 +115,7 @@ export const segmentsFieldBase: Pick<
   enableSorting: false,
   enableGlobalSearch: false,
   getValue: ({ item }) => item.segments.map((segment) => String(segment.id)),
-  filterBy: { operators: [...SEGMENT_OPERATORS] },
+  filterBy: { operators: [...SEGMENT_OPERATORS], isPrimary: true },
 };
 
 // Filter-only field: the activation listings show lists inside "Settings".

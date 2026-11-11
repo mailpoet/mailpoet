@@ -196,7 +196,11 @@ class AssetsController {
 
   private function registerAdminDeps(): void {
     // runtime
-    $this->registerFooterScript('mailpoet_runtime', $this->getScriptUrl('runtime.js'));
+    $this->registerFooterScript(
+      'mailpoet_runtime',
+      $this->getScriptUrl('runtime.js'),
+      ['react', 'react-dom', 'react-jsx-runtime', 'wp-components', 'wp-private-apis']
+    );
 
     // vendor
     $this->registerFooterScript('mailpoet_vendor', $this->getScriptUrl('vendor.js'));
@@ -283,6 +287,9 @@ JAVASCRIPT,
     return is_array($preferences) ? (object)$preferences : new \stdClass();
   }
 
+  /**
+   * @return non-empty-string
+   */
   private function getScriptUrl(string $name): string {
     return Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset($name);
   }
@@ -291,6 +298,11 @@ JAVASCRIPT,
     return Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset($name);
   }
 
+  /**
+   * @param non-empty-string $handle
+   * @param non-empty-string $src
+   * @param non-empty-string[] $deps
+   */
   private function registerFooterScript(string $handle, string $src, array $deps = []): void {
     $this->wp->wpRegisterScript($handle, $src, $deps, Env::$version, true);
   }

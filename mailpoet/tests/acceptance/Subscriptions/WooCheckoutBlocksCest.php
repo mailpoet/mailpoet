@@ -57,7 +57,7 @@ class WooCheckoutBlocksCest {
     }
   }
 
-  public function checkoutOptInDisabled(\AcceptanceTester $i) {
+  public function checkoutOptInDisabledWithConfirmation(\AcceptanceTester $i) {
     if (!$this->checkMinimalPluginVersions($i)) {
       $i->wantTo('Skip test due to minimal plugin version requirements');
       return;
@@ -68,8 +68,7 @@ class WooCheckoutBlocksCest {
     $i->wantTo('Check a message when opt-in is disabled');
     $i->login();
     $i->amOnAdminPage("post.php?post={$this->checkoutPostId}&action=edit");
-    $i->waitForElement('iframe[name="editor-canvas"]', 30);
-    $i->switchToIframe('iframe[name="editor-canvas"]');
+    $i->switchToEditorCanvas();
     $i->canSee('MailPoet marketing opt-in would be shown here if enabled. You can enable from the settings page.');
     $i->switchToIframe();
     $i->logOut();
@@ -79,7 +78,7 @@ class WooCheckoutBlocksCest {
     $i->seeConfirmationEmailWasNotReceived();
   }
 
-  public function checkoutOptInChecked(\AcceptanceTester $i) {
+  public function checkoutOptInCheckedWithConfirmation(\AcceptanceTester $i) {
     if (!$this->checkMinimalPluginVersions($i)) {
       $i->wantTo('Skip test due to minimal plugin version requirements');
       return;
@@ -93,7 +92,7 @@ class WooCheckoutBlocksCest {
     $i->seeConfirmationEmailWasReceived();
   }
 
-  public function checkoutOptInUnchecked(\AcceptanceTester $i) {
+  public function checkoutOptInUncheckedWithConfirmation(\AcceptanceTester $i) {
     if (!$this->checkMinimalPluginVersions($i)) {
       $i->wantTo('Skip test due to minimal plugin version requirements');
       return;
@@ -236,7 +235,7 @@ class WooCheckoutBlocksCest {
     // "Checkout" before the search filters, so a click could land while the list re-renders.
     $i->waitForJS('return !!window.wp?.blocks?.getBlockType("woocommerce/checkout");', 30);
     $i->executeJS('wp.data.dispatch("core/block-editor").insertBlocks(wp.blocks.createBlock("woocommerce/checkout"));');
-    $i->switchToIframe('iframe[name="editor-canvas"]');
+    $i->switchToEditorCanvas();
     $i->waitForElement('[aria-label="Block: Checkout"]');
 
     // Close dialog with Compatibility notice
@@ -244,7 +243,7 @@ class WooCheckoutBlocksCest {
     $this->closeDialog($i);
 
     // Enable registration during the checkout
-    $i->switchToIframe('iframe[name="editor-canvas"]');
+    $i->switchToEditorCanvas();
     $i->click('[aria-label="Block: Contact Information"]');
 
     $i->switchToIframe();
@@ -263,7 +262,9 @@ class WooCheckoutBlocksCest {
 
     if ($closeButton) {
       $i->click('button[aria-label="Close"]');
-      $i->waitForElementNotVisible('button[aria-label="Close"]');
+      // A closing modal is hidden a moment before it leaves the DOM. Wait until it is gone, or the
+      // next call finds its Close button and then fails to click it.
+      $i->waitForJS('return document.querySelectorAll("button[aria-label=\'Close\']").length === 0;', 10);
     }
   }
 

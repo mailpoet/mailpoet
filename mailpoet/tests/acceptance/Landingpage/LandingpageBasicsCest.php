@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Settings;
 
 class LandingpageBasicsCest {
-  public function landingpageRenders(\AcceptanceTester $i) {
+  public function landingpageRendersWithWelcomeWizard(\AcceptanceTester $i) {
     $i->wantTo('Check landing page renders');
     $i->login();
 

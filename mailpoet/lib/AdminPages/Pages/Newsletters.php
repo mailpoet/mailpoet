@@ -11,7 +11,6 @@ use MailPoet\Config\Env;
 use MailPoet\Config\Menu;
 use MailPoet\EmailEditor\Integrations\MailPoet\DependencyNotice;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
@@ -112,8 +111,7 @@ class Newsletters {
     $data = [];
 
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('newsletters');
-    $includedSegmentTypes = $this->wooCommerceSegment->shouldShowWooCommerceSegment() ? [] : SegmentEntity::NON_WOO_RELATED_TYPES;
-    $segments = $this->segmentsListRepository->getListWithSubscribedSubscribersCounts($includedSegmentTypes);
+    $segments = $this->segmentsListRepository->getListWithSubscribedSubscribersCounts($this->wooCommerceSegment->getNewsletterSegmentTypes());
     $data['segments'] = $segments;
     $data['settings'] = $this->settings->getAll();
     $data['current_wp_user'] = $this->wp->wpGetCurrentUser()->to_array();

@@ -7,6 +7,7 @@ const checkFilePlugin = require('eslint-plugin-check-file');
 const noOnlyTestsPlugin = require('eslint-plugin-no-only-tests');
 const reactJsxRuntimeConfig = require('eslint-plugin-react/configs/jsx-runtime');
 const reactHooksPlugin = require('eslint-plugin-react-hooks');
+const wordpressPlugin = require('@wordpress/eslint-plugin');
 const globals = require('globals');
 
 // compat configs
@@ -38,11 +39,17 @@ module.exports = [
       'react-hooks': reactHooksPlugin,
       'check-file': checkFilePlugin,
       'no-only-tests': noOnlyTestsPlugin,
+      '@wordpress': wordpressPlugin,
     },
     rules: {
       // Hooks
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
+      // Prefer the recommended WordPress UI components
+      '@wordpress/use-recommended-components': [
+        'error',
+        { allowUseWithCaution: true },
+      ],
       // Exceptions
       'no-only-tests/no-only-tests': 2,
       'class-methods-use-this': 0,

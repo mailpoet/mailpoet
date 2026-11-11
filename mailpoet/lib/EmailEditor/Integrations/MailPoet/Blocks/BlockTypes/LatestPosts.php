@@ -40,6 +40,20 @@ class LatestPosts extends AbstractBlock {
   /** Marks the inner blocks as a post loop for core's post blocks. */
   private const QUERY_ID = 0;
 
+  /** Core blocks that print the content of the post they are given. */
+  private const PROTECTED_POST_BLOCKS = ['core/post-excerpt', 'core/post-content'];
+
+  /**
+   * Password handling has to be the last word on its hooks: nothing may put the
+   * content of a protected post back after we have taken it out. It also lands
+   * after the engine's own render_block filter at priority 10, which wraps a
+   * block in its email markup, so an emptied block leaves no wrapper behind.
+   */
+  private const PASSWORD_FILTER_PRIORITY = PHP_INT_MAX;
+
+  /** Before core formats the text, trims the excerpt (10) and runs registered shortcodes (11). */
+  private const REMOVE_SHORTCODES_PRIORITY = 9;
+
   /** Template blocks. Not email-enabled by default, so we opt them in. */
   private const TEMPLATE_CORE_BLOCKS = [
     'core/post-featured-image',
@@ -124,6 +138,9 @@ class LatestPosts extends AbstractBlock {
   private $renderedPostsByRequest = [];
 
   private bool $isRenderingPostContent = false;
+
+  /** Nested Latest Posts blocks share the shortcode filters, so only the outermost render adds and removes them. */
+  private int $innerRenderDepth = 0;
 
   private AutomatedLatestContent $automatedLatestContent;
   private NewsletterPostsRepository $newsletterPostsRepository;
@@ -214,6 +231,9 @@ class LatestPosts extends AbstractBlock {
   public function renderEmail(string $blockContent, array $parsedBlock, ?Rendering_Context $renderingContext = null): string {
     $attrs = isset($parsedBlock['attrs']) && is_array($parsedBlock['attrs']) ? $parsedBlock['attrs'] : [];
     $query = isset($attrs['query']) && is_array($attrs['query']) ? $attrs['query'] : [];
+    // Settled once here, so the query, the posts and the content blocks all
+    // handle a post that needs a password the same way.
+    $query['passwordProtected'] = BlockPostQuery::normalizePasswordProtected($query['passwordProtected'] ?? null);
 
     $innerBlocks = $this->getTemplateInnerBlocks($parsedBlock);
 
@@ -229,7 +249,110 @@ class LatestPosts extends AbstractBlock {
     // to the first row ourselves.
     $blockMarginTop = $this->getBlockMarginTop($parsedBlock);
 
-    return $this->renderPosts($posts, $innerBlocks, $this->getColumns($attrs), $renderingContext, $availableWidth, $blockMarginTop);
+    return $this->withPasswordProtectedMode(
+      $query,
+      $posts,
+      function () use ($posts, $innerBlocks, $attrs, $renderingContext, $availableWidth, $blockMarginTop): string {
+        return $this->renderPosts($posts, $innerBlocks, $this->getColumns($attrs), $renderingContext, $availableWidth, $blockMarginTop);
+      }
+    );
+  }
+
+  /**
+   * Runs the render with the chosen handling of posts that need a password.
+   *
+   * Core post blocks decide what to show from post_password_required(), whose
+   * answer depends on the password cookie of the current request: an admin who
+   * unlocked the post on the front end would otherwise get a preview that
+   * differs from the sent email. Filtering it makes the choice explicit, and it
+   * reaches core's own blocks as well as ours.
+   *
+   * The filters answer only for the posts this block rendered, so a protected
+   * post that something else pulls into the same request keeps its own
+   * behaviour.
+   *
+   * The classic editor keeps its own
+   * mailpoet_newsletter_show_password_protected_post_content filter. Here the
+   * sidebar setting is the only answer, so what the editor shows is what the
+   * email sends.
+   *
+   * @param array<string, mixed> $query
+   * @param \WP_Post[] $posts Posts this block renders.
+   * @param callable(): string $render
+   */
+  private function withPasswordProtectedMode(array $query, array $posts, callable $render): string {
+    $isFull = BlockPostQuery::normalizePasswordProtected($query['passwordProtected'] ?? null) === BlockPostQuery::PASSWORD_PROTECTED_FULL;
+
+    $ownPostIds = [];
+    foreach ($posts as $post) {
+      $ownPostIds[(int)$post->ID] = true;
+    }
+    $isOwnProtectedPost = function ($post) use ($ownPostIds): bool {
+      return $post instanceof \WP_Post
+        && isset($ownPostIds[(int)$post->ID])
+        && $this->hasPassword($post);
+    };
+
+    $filterPasswordRequired = static function ($required, $post) use ($isFull, $isOwnProtectedPost): bool {
+      return $isOwnProtectedPost($post) ? !$isFull : (bool)$required;
+    };
+
+    // Core prepends "Protected: " from the post password alone, whatever
+    // post_password_required() answers. The REST API drops the prefix the same
+    // way, so the editor preview and the sent email show the same title.
+    $filterTitleFormat = static function ($format, $post) use ($isOwnProtectedPost) {
+      return $isOwnProtectedPost($post) ? '%s' : $format;
+    };
+
+    // This is the only guard for core/post-content: the engine replaces that
+    // block's render callback with its own stateless renderer, which prints the
+    // raw post_content and never asks for a password. core/post-excerpt does
+    // ask, and prints "There is no excerpt because this is a protected post.",
+    // which does not belong in an email either.
+    $filterProtectedBlock = function ($blockContent, $parsedBlock, $instance) use ($isFull, $isOwnProtectedPost): string {
+      $blockContent = is_string($blockContent) ? $blockContent : '';
+      $blockName = is_array($parsedBlock) ? ($parsedBlock['blockName'] ?? '') : '';
+      if ($isFull || !in_array($blockName, self::PROTECTED_POST_BLOCKS, true)) {
+        return $blockContent;
+      }
+      // Without a post to check, the block keeps nothing: by this point the
+      // mode is known not to be 'full', and the block is one that prints the
+      // content of whatever post it was handed.
+      $postId = $instance instanceof \WP_Block ? (int)($instance->context['postId'] ?? 0) : 0;
+      if ($postId <= 0) {
+        return '';
+      }
+      return $isOwnProtectedPost($this->wp->getPost($postId)) ? '' : $blockContent;
+    };
+
+    // Hands the chosen mode to our own post content block, the same way
+    // renderInnerBlocks() hands over the post being rendered.
+    $injectQueryContext = static function (array $context) use ($query): array {
+      $context['mailpoet/latestPostsQuery'] = $query;
+      return $context;
+    };
+
+    $this->wp->addFilter('post_password_required', $filterPasswordRequired, self::PASSWORD_FILTER_PRIORITY, 2);
+    $this->wp->addFilter('protected_title_format', $filterTitleFormat, self::PASSWORD_FILTER_PRIORITY, 2);
+    $this->wp->addFilter('render_block', $filterProtectedBlock, self::PASSWORD_FILTER_PRIORITY, 3);
+    $this->wp->addFilter('render_block_context', $injectQueryContext, self::PASSWORD_FILTER_PRIORITY);
+    try {
+      return $render();
+    } finally {
+      $this->wp->removeFilter('render_block_context', $injectQueryContext, self::PASSWORD_FILTER_PRIORITY);
+      $this->wp->removeFilter('render_block', $filterProtectedBlock, self::PASSWORD_FILTER_PRIORITY);
+      $this->wp->removeFilter('protected_title_format', $filterTitleFormat, self::PASSWORD_FILTER_PRIORITY);
+      $this->wp->removeFilter('post_password_required', $filterPasswordRequired, self::PASSWORD_FILTER_PRIORITY);
+    }
+  }
+
+  /**
+   * empty(), like core's post_password_required() and the REST API's
+   * content.protected, so a post whose password is "0" counts the same here as
+   * it does in the editor.
+   */
+  private function hasPassword(\WP_Post $post): bool {
+    return !empty($post->post_password); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   /**
@@ -303,9 +426,9 @@ class LatestPosts extends AbstractBlock {
   /**
    * Renders the post content for the current post in the template loop.
    * Block posts keep only the blocks the email engine can render, and
-   * classic posts are reduced to email-safe HTML. Password-protected
-   * posts render nothing here, because an email would expose the
-   * protected content to anyone who receives it.
+   * classic posts are reduced to email-safe HTML. A post that needs a
+   * password renders nothing unless the block is set to treat such posts
+   * like any other.
    *
    * @param array<string, mixed>|\WP_Block $attributes
    * @param string $content
@@ -320,7 +443,10 @@ class LatestPosts extends AbstractBlock {
       return '';
     }
     $post = $this->wp->getPost($postId);
-    if (!$post instanceof \WP_Post || $this->wp->postPasswordRequired($post)) {
+    if (!$post instanceof \WP_Post) {
+      return '';
+    }
+    if ($this->hasPassword($post) && $this->getPasswordProtectedModeFromContext($block) !== BlockPostQuery::PASSWORD_PROTECTED_FULL) {
       return '';
     }
 
@@ -359,6 +485,7 @@ class LatestPosts extends AbstractBlock {
 
   private function renderClassicPostContent(\WP_Post $post): string {
     $content = $this->wp->stripShortcodes($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $content = $this->removeUnregisteredShortcodes($content);
     $content = $this->wp->wpautop($content);
     $content = trim($this->wp->wpKses($content, self::CLASSIC_CONTENT_ALLOWED_HTML));
     if ($content === '') {
@@ -589,11 +716,12 @@ class LatestPosts extends AbstractBlock {
   /**
    * @param array<string, mixed> $query
    * @param int[] $manualPosts
-   * @return array{contentType: string, posts?: int[], amount?: int, offset?: int, sortBy?: 'ASC'|'DESC', terms?: array<int, array{taxonomy: string, id: int}>, inclusionType?: 'exclude'|'include'}
+   * @return array{contentType: string, passwordProtected: 'title_only'|'exclude'|'full', posts?: int[], amount?: int, offset?: int, sortBy?: 'ASC'|'DESC', terms?: array<int, array{taxonomy: string, id: int}>, inclusionType?: 'exclude'|'include'}
    */
   private function buildQueryArgs(array $query, bool $isManual, array $manualPosts): array {
     $args = [
       'contentType' => isset($query['postType']) && is_string($query['postType']) ? $query['postType'] : 'post',
+      'passwordProtected' => BlockPostQuery::normalizePasswordProtected($query['passwordProtected'] ?? null),
     ];
 
     if ($isManual) {
@@ -655,6 +783,17 @@ class LatestPosts extends AbstractBlock {
    */
   private function isExclude(array $query): bool {
     return isset($query['inclusionType']) && $query['inclusionType'] === 'exclude';
+  }
+
+  /**
+   * The mode the parent block settled on, passed down with its query. Without
+   * it the content of a post that needs a password stays hidden.
+   *
+   * @return 'title_only'|'exclude'|'full'
+   */
+  private function getPasswordProtectedModeFromContext(\WP_Block $block): string {
+    $query = $block->context['mailpoet/latestPostsQuery'] ?? null;
+    return BlockPostQuery::normalizePasswordProtected(is_array($query) ? ($query['passwordProtected'] ?? null) : null);
   }
 
   /**
@@ -920,9 +1059,18 @@ class LatestPosts extends AbstractBlock {
       $context['queryId'] = self::QUERY_ID;
       return $context;
     };
+    // Websites hide this text with CSS, email clients show it as "Read more: <post title>".
+    $removeReadMoreScreenReaderText = static function (string $blockContent): string {
+      return (string)preg_replace('#<span class="screen-reader-text">.*?</span>(?=</a>)#s', '', $blockContent);
+    };
 
     $content = '';
     $this->wp->addFilter('render_block_context', $injectContext, 1);
+    $this->wp->addFilter('render_block_core/read-more', $removeReadMoreScreenReaderText);
+    if ($this->innerRenderDepth++ === 0) {
+      $this->wp->addFilter('the_content', [$this, 'removeUnregisteredShortcodes'], self::REMOVE_SHORTCODES_PRIORITY);
+      $this->wp->addFilter('get_the_excerpt', [$this, 'removeUnregisteredShortcodes'], self::REMOVE_SHORTCODES_PRIORITY);
+    }
     try {
       foreach ($innerBlocks as $innerBlock) {
         if (!is_array($innerBlock)) {
@@ -931,12 +1079,41 @@ class LatestPosts extends AbstractBlock {
         $content .= render_block($this->normalizeBlock($innerBlock));
       }
     } finally {
+      $this->wp->removeFilter('render_block_core/read-more', $removeReadMoreScreenReaderText);
+      if (--$this->innerRenderDepth === 0) {
+        $this->wp->removeFilter('the_content', [$this, 'removeUnregisteredShortcodes'], self::REMOVE_SHORTCODES_PRIORITY);
+        $this->wp->removeFilter('get_the_excerpt', [$this, 'removeUnregisteredShortcodes'], self::REMOVE_SHORTCODES_PRIORITY);
+      }
       $this->wp->removeFilter('render_block_context', $injectContext, 1);
       $post = $previousPost; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
       $wp_query = $previousQuery; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
     }
 
     return $this->withPostId($content, $postId);
+  }
+
+  /**
+   * Some plugins and themes register their shortcodes only on some requests.
+   * When they are not registered, WordPress keeps them in the post text.
+   * Only tags with attributes, a closing tag or a closing slash are removed, so plain text in
+   * square brackets stays. Escaped tags like [[tag]] stay too, as in WordPress.
+   */
+  public function removeUnregisteredShortcodes(string $content): string {
+    preg_match_all('#(?<!\[)\[/([a-zA-Z0-9][\w-]*)\](?!\])#', $content, $closingTags);
+    $pairedTags = array_flip($closingTags[1]);
+    return (string)preg_replace_callback(
+      // [tag attrs] or [/tag], not wrapped in a second pair of brackets.
+      '#(?<!\[)\[/?([a-zA-Z0-9][\w-]*)(\s[^\[\]]*)?\](?!\])#',
+      function (array $tag) use ($pairedTags): string {
+        $attributes = $tag[2] ?? '';
+        // name=value with no spaces around "=", so prose like [Score 3 = good] stays.
+        $hasAttributes = preg_match('#\s[\w-]+=\S#', $attributes) === 1;
+        $isSelfClosing = substr(rtrim($attributes), -1) === '/';
+        $isShortcode = $hasAttributes || $isSelfClosing || isset($pairedTags[$tag[1]]);
+        return $isShortcode && !$this->wp->shortcodeExists($tag[1]) ? '' : $tag[0];
+      },
+      $content
+    );
   }
 
   /**

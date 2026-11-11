@@ -34,7 +34,10 @@ class Captcha extends APIEndpoint {
     $this->wp = $wp;
   }
 
-  public function render(array $data = []) {
+  public function render($data = []) {
+    if (!is_array($data)) {
+      $data = [];
+    }
     $referrer = $data['referrer_form'] ?? null;
     $isRegisterForm = in_array($referrer, [CaptchaUrlFactory::REFERER_WP_FORM, CaptchaUrlFactory::REFERER_WC_FORM], true);
     if (!$isRegisterForm || !$this->captchaHooks->isEnabled()) {

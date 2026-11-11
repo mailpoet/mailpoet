@@ -56,8 +56,7 @@ class InactiveSubscribersChangeCest {
 
   // The count lives in the Status filter option label, e.g. "Inactive (0)".
   private function waitForNoInactiveSubscribersInStatusFilter(\AcceptanceTester $i): void {
-    $i->click(['xpath' => '//button[@aria-label="Add filter"]']);
-    $i->click(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Status"]']);
+    $i->openDataViewsFilter('Status');
     try {
       $i->waitForJS(
         'return Array.from(document.querySelectorAll(".dataviews-filters__search-widget-listitem")).some(function (item) { return item.textContent.indexOf("Inactive (0)") !== -1; });',

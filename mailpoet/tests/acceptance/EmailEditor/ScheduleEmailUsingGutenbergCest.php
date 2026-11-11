@@ -35,10 +35,7 @@ class ScheduleEmailUsingGutenbergCest {
     $i->click('[data-automation-id="editor_choice_continue"]');
     $this->closeTemplateSelectionModal($i);
 
-    $i->waitForElement('[name="editor-canvas"]');
-    $i->wait(1); // wait for the iframe to initialize, otherwise the switch does not work properly
-    $i->switchToIFrame('[name="editor-canvas"]');
-    $i->waitForElementVisible('.is-root-container', 20);
+    $i->switchToEditorCanvas();
     $i->waitForElementVisible('[aria-label="Block: Image"]');
     $i->switchToIFrame();
 
@@ -72,8 +69,7 @@ class ScheduleEmailUsingGutenbergCest {
     $i->waitForText('2:00 pm', 10, ['xpath' => '//button[contains(., "Send:")]']);
 
     $i->wantTo('Schedule the email');
-    $i->waitForElementClickable('[data-automation-id="email_send_panel_send_button"]');
-    $i->click('[data-automation-id="email_send_panel_send_button"]');
+    $i->clickSendPanelSendButton();
 
     $i->wantTo('Confirm the listing shows the same site-local wall-clock time that was picked');
     $i->waitForElement('[data-automation-id="newsletters_listing_tabs"]');

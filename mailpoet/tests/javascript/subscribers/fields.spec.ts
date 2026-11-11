@@ -87,6 +87,7 @@ describe('subscribers fields', () => {
     ['status', 'segments', 'tags', 'source'].forEach((id) => {
       expect(fields[id].filterBy, id).to.deep.equal({
         operators: ['isAny', 'isNone'],
+        ...(id === 'status' || id === 'segments' ? { isPrimary: true } : {}),
       });
     });
     expect(fields.status.enableSorting).to.equal(true);

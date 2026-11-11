@@ -26,14 +26,16 @@ Always create pull requests as **drafts** and follow the repository’s PR templ
 
    Fix issues with `pnpm format` and `cd mailpoet && ./do qa:fix-file <path>`. See the `code-quality` skill for single checks and what CI runs, and run the tests for the code you touched (`running-tests`). Commit any auto-formatting changes before opening the PR — landing a “fix Prettier” follow-up commit on a fresh PR is wasteful.
 
-5. **Run the HPOS acceptance variants CI skips on feature branches.** The HPOS-off and HPOS-sync acceptance jobs run only on `trunk` and `release`, after merge. If your change touches WooCommerce order code (orders, checkout, WooCommerce Subscriptions, purchase emails, revenue tracking, WooCommerce segments), run the affected `@group woo` Cests in both modes before opening the PR. List them with `grep -rlw '@group woo' tests/acceptance` from `mailpoet/`, and pick the Cests that cover the code you changed.
+5. **Run the HPOS variants CI skips on feature branches.** The HPOS-off and HPOS-sync acceptance and integration jobs run only on `trunk` and `release`, after merge. If your change touches WooCommerce order code (orders, checkout, WooCommerce Subscriptions, purchase emails, revenue tracking, WooCommerce segments), run the affected `@group woo` tests in both modes before opening the PR. List them with `grep -rlw '@group woo' tests/acceptance tests/integration` from `mailpoet/`, and pick the ones that cover the code you changed.
 
    ```bash
    pnpm test:acceptance --file=tests/acceptance/<Path>Cest.php --disable-hpos
    pnpm test:acceptance --file=tests/acceptance/<Path>Cest.php --enable-hpos-sync
+   pnpm test:integration --file=tests/integration/<Path>Test.php --disable-hpos
+   pnpm test:integration --file=tests/integration/<Path>Test.php --enable-hpos-sync
    ```
 
-   In the PR’s **Testing instructions**, say which Cests ran, or that this did not apply.
+   In the PR’s **Testing instructions**, say which tests ran, or that this did not apply.
 
 6. **Push and create as draft** — `git push -u origin <branch>`, then `gh pr create --draft` with the filled template as the body
 7. **Follow template sections exactly** - Not all sections are mandatory, use `_N/A_` for non-applicable ones

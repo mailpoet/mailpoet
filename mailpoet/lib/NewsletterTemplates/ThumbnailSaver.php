@@ -56,16 +56,22 @@ class ThumbnailSaver {
       [$savedBaseUrl, $savedFilename] = explode('/' . self::THUMBNAIL_DIRECTORY . '/', $thumbnailUrl);
     }
     $file = $this->baseDirectory . '/' . self::THUMBNAIL_DIRECTORY . '/' . $savedFilename;
-    if (!$savedFilename || !file_exists($file)) {
+    if (!$savedFilename || !$this->isThumbnailFileName($savedFilename) || !file_exists($file)) {
       $this->saveTemplateImage($template);
     }
 
     // File might exist but domain was changed
+    $savedThumbnailUrl = $thumbnailUrl;
     $thumbnailUrl = $template->getThumbnail();
-    if ($savedBaseUrl && $savedBaseUrl !== $this->baseUrl && $thumbnailUrl) {
+    if ($thumbnailUrl === $savedThumbnailUrl && $savedBaseUrl && $savedBaseUrl !== $this->baseUrl && $thumbnailUrl) {
       $template->setThumbnail(str_replace($savedBaseUrl, $this->baseUrl, $thumbnailUrl));
     }
     return $template;
+  }
+
+  private function isThumbnailFileName(string $fileName): bool {
+    // Matches the names created in saveTemplateImage(): "<16 hex characters>_template_<template ID>.jpg"
+    return preg_match('/^[0-9a-f]{16}_template_[0-9]+\.jpg\z/', $fileName) === 1;
   }
 
   private function saveTemplateImage(NewsletterTemplateEntity $template): void {

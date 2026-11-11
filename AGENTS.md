@@ -110,7 +110,7 @@ Skills live in `.ai/skills/` (`.claude/skills` links there). Claude Code loads t
 - `code-quality` – lint, format and `qa` commands, single-file fixes, hook switches, what CI runs.
 - `running-tests` – run a suite, one file or one test, on the host or in Docker.
 - `writing-tests` – pick the suite, then place and structure a new test.
-- `debugging-failed-tests` – investigate a failing CircleCI job or local run.
+- `debugging-failed-tests` – investigate a failing CircleCI or GitHub Actions job, or a local run.
 - `reviewing-code` – review a PR or local changes against these rules.
 - `writing-changelog` – write the changelog file for a user-facing change.
 - `beta-compat-test` – test the released plugin against a WordPress or WooCommerce beta/RC.

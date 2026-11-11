@@ -150,6 +150,8 @@ class ImportExportFactoryTest extends \MailPoetTest {
     }
     // tracking_consent_updated_at is export-only: it is always stamped by the plugin, never imported
     verify(in_array('tracking_consent_updated_at', array_keys($subsriberFields)))->false();
+    // source is export-only: import always stamps it as imported
+    verify(in_array('source', array_keys($subsriberFields)))->false();
     // export fields contain extra data
     $this->importFactory->action = 'export';
     $subsriberFields = $this->importFactory->getSubscriberFields();
@@ -165,6 +167,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
       'tracking_consent_updated_at',
       'tracking_consent_method',
       'tracking_consent_copy',
+      'source',
     ];
     foreach ($exportFields as $field) {
       verify(in_array($field, array_keys($subsriberFields)))->true();

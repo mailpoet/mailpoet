@@ -6,6 +6,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class PageLimit {
   const DEFAULT_LIMIT_PER_PAGE = 20;
+  const MAX_LIMIT_PER_PAGE = 100;
 
   /** @var WPFunctions */
   private $wp;
@@ -26,8 +27,12 @@ class PageLimit {
       'mailpoet_' . $model . '_per_page',
       true
     );
-    return (!empty($listingPerPage))
-      ? (int)$listingPerPage
-      : self::DEFAULT_LIMIT_PER_PAGE;
+    $listingPerPage = is_numeric($listingPerPage) ? (int)$listingPerPage : 0;
+    if ($listingPerPage < 1) {
+      return self::DEFAULT_LIMIT_PER_PAGE;
+    }
+    // Older versions let admins save any value here,
+    // but the listing endpoints reject a page size over this maximum.
+    return min($listingPerPage, self::MAX_LIMIT_PER_PAGE);
   }
 }

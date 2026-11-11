@@ -1,5 +1,76 @@
 == Changelog ==
 
+= 5.45.2 - 2026-11-09 =
+* Added: Option for other plugins to add or update subscribers without sending every required custom field;
+* Added: Subscription source column in the subscriber export;
+* Improved: Styling of admin screens that use WordPress design system components;
+* Improved: Main filters stay visible on the Subscribers, Emails, Sending status, Forms and Logs pages;
+* Improved: Status tabs with counts on the Subscribers and Emails pages, so one status is a click away;
+* Improved: Handling of subscriber links in emails;
+* Improved: Stability of several admin features;
+* Improved: Landing page guidance for users who can't run the setup wizard;
+* Improved: Form editor list and placement pickers that match the WordPress admin style;
+* Improved: Show the admin bar and align the activate panel in the automation editor;
+* Fixed: Links in customized WooCommerce emails taking the branding color, which made them hard to read with a light branding color;
+* Fixed: Subscription forms showing a wait time that never counts down and a new CAPTCHA when a visitor subscribes again too soon;
+* Fixed: A double-click on “Review & send” or “Send” in the new email editor sending the email right away or twice;
+* Fixed: Unreadable error message in the new email editor’s send panel when a send request fails;
+* Fixed: Revenue from orders placed shortly after an email click being credited incorrectly on sites with a timezone other than UTC;
+* Fixed: Spacing around the "Back to Post notifications" button on the post notification history page;
+* Fixed: Missing Subscribers table background and other styles on sites that combine CSS files, such as WordPress VIP;
+* Fixed: Subscriber import clearing the selected lists instead of selecting a newly created list.
+
+= 5.45.1 - 2026-11-05 =
+* Improved: Logs page buttons that match the WordPress admin style;
+* Fixed: MailPoet version update getting stuck and slowing down large sites using MariaDB.
+
+= 5.45.0 - 2026-11-02 =
+* Added: Abilities that let AI agents read MailPoet's sending status, unsubscribe trend and recent newsletter statistics;
+* Updated: Style linting tools used in development;
+* Improved: Rendering of emails opened with View in Browser;
+* Improved: Handling of subscriber names;
+* Improved: Stability of the Welcome Wizard;
+* Improved: Stability of the email editor;
+* Improved: Detection of unused style lint exceptions;
+* Improved: Stability of the Latest Posts and Posts blocks;
+* Improved: Handling of shortcodes and campaign links in emails;
+* Improved: Handling of subscription and checkout requests;
+* Improved: Stability of subscriber tracking;
+* Fixed: Personalization tags inside link addresses not being replaced in the plain-text part of block emails and in tracked links;
+* Fixed: Error in booking automations that count a customer’s recent bookings;
+* Fixed: Options deleted from a radio or select custom field in the form editor coming back after saving;
+* Fixed: Tags page showing “No tags yet.” while the tags are still loading;
+* Fixed: Text area fields in forms going back to one line after updating the custom field in the form editor;
+* Fixed: WooCommerce and email conditions in the segment editor showing in English on translated sites;
+* Fixed: Read More links in the Latest Posts block showing the post title in sent emails;
+* Fixed: Subscribers and Lists pages showing an error instead of items for admins who set more than 100 items per page in an older version.
+
+= 5.44.0 - 2026-10-26 =
+* Added: Filters by status, list, tag, source, engagement score and dates, and sorting by more columns, on the Subscribers page;
+* Added: Hold campaigns that are late because sending was blocked, and let admins send, reschedule or cancel them from a notice;
+* Added: The Latest Posts block can now show password-protected posts without their content, leave them out, or treat them like any other post;
+* Added: Logs tab on the Help page;
+* Improved: Handling of special characters in author, category and read more text of posts in emails;
+* Improved: Reporting of failed database updates with the error details, and the update now starts right after the plugin is updated;
+* Improved: Syncing of WordPress user email changes to MailPoet subscribers;
+* Improved: Linking of new WordPress accounts to existing subscribers;
+* Improved: Logs are easier to read with readable topic names, severity tags, plain messages with details on expand, and help text. Saved column, sort and page-size choices on the logs page reset once;
+* Improved: Log messages are written in plain language;
+* Changed: Deprecated the automation email personalization filters mailpoet_automation_email_personalize_html_after and mailpoet_automation_email_personalize_text_after in favor of personalization tags;
+* Changed: Newsletters, post notifications and automation emails now wait in the queue on staging, development and local sites until you turn sending on;
+* Fixed: Filter button not hiding active filters on the Forms, Logs, Tags, Custom fields, Lists and Segments pages;
+* Fixed: Name column menu on the Automations listing offering Hide column and Add filter options that did nothing;
+* Fixed: Export downloads not working and a PHP warning logged on every page load on hosts that store uploads remotely, such as WordPress VIP;
+* Fixed: Missing texts on MailPoet admin pages when a translation contains a backslash;
+* Fixed: Title column menu on listings offering Hide column and Add filter options that did nothing;
+* Fixed: Redirect to the MailPoet welcome page after activation sometimes not happening;
+* Fixed: "View in browser" could fail for emails with broken column layouts;
+* Fixed: Compatibility with WordPress 7.2;
+* Fixed: Sending limit notice showing the wrong resume date, or a placeholder instead of the date in some languages;
+* Fixed: Verifying an already activated key no longer switches the sending method to MailPoet Sending Service;
+* Fixed: Date picked in segment conditions and the archive shortcode saved as the previous day in some time zones;
+* Fixed: Horizontal scrollbar under the email list on the Emails page.
+
 = 5.43.0 - 2026-10-19 =
 * Added: Date created and Last modified sort options to the Newsletters list;
 * Improved: Recorded the plugin behind API subscriber signups and the URL a subscriber was created from;

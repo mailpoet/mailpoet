@@ -3,13 +3,35 @@
 namespace MailPoet\Test\Abilities;
 
 use MailPoet\Abilities\AbilitiesRegistrar;
+use MailPoet\Abilities\CreateNewsletterDraftAbility;
+use MailPoet\Abilities\GetNewsletterDraftAbility;
+use MailPoet\Abilities\NewsletterDraftOptionsAbility;
+use MailPoet\Abilities\UpdateNewsletterDraftAbility;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Test\DataFactories\Features;
 
 class AbilitiesTestHelper {
-  public static function enableFeature(): void {
-    (new Features())->withFeatureEnabled(FeaturesController::FEATURE_MCP_ABILITIES);
+  public const DRAFT_ABILITY_NAMES = [
+    CreateNewsletterDraftAbility::NAME,
+    NewsletterDraftOptionsAbility::NAME,
+    GetNewsletterDraftAbility::NAME,
+    UpdateNewsletterDraftAbility::NAME,
+  ];
+
+  public static function enableDraftAbilities(): void {
+    (new Features())->withFeatureEnabled(FeaturesController::FEATURE_MCP_WRITE_ABILITIES);
+    self::resetFeatureCache();
+    self::register(ContainerWrapper::getInstance()->get(AbilitiesRegistrar::class));
+  }
+
+  public static function disableDraftAbilities(): void {
+    self::unregister();
+    self::resetFeatureCache();
+    self::deleteEmailPosts();
+  }
+
+  public static function resetFeatureCache(): void {
     ContainerWrapper::getInstance()->get(FeaturesController::class)->resetCache();
   }
 
@@ -18,21 +40,31 @@ class AbilitiesTestHelper {
    * were initialized before the test started, so the actions are simulated here.
    */
   public static function register(AbilitiesRegistrar $registrar): void {
-    // The flag is stored in the database, so a previous run can leave it on and the
-    // abilities registered while WordPress booted.
+    // WordPress registered the abilities while it booted.
     self::removeRegistrations();
     self::runInsideAction('wp_abilities_api_categories_init', [$registrar, 'registerCategory']);
     self::runInsideAction('wp_abilities_api_init', [$registrar, 'registerAbilities']);
   }
 
   public static function unregister(): void {
-    (new Features())->withFeatureDisabled(FeaturesController::FEATURE_MCP_ABILITIES);
-    ContainerWrapper::getInstance()->get(FeaturesController::class)->resetCache();
     self::removeRegistrations();
   }
 
+  /** WordPress posts aren't emptied between tests like the MailPoet tables are. */
+  private static function deleteEmailPosts(): void {
+    $ids = get_posts([
+      'post_type' => 'mailpoet_email',
+      'post_status' => ['draft', 'sent'],
+      'numberposts' => -1,
+      'fields' => 'ids',
+    ]);
+    array_map(function ($id) {
+      wp_delete_post((int)$id, true);
+    }, $ids);
+  }
+
   private static function removeRegistrations(): void {
-    foreach (AbilitiesRegistrar::ABILITY_NAMES as $name) {
+    foreach (array_merge(AbilitiesRegistrar::ABILITY_NAMES, self::DRAFT_ABILITY_NAMES) as $name) {
       if (wp_has_ability($name)) {
         wp_unregister_ability($name);
       }

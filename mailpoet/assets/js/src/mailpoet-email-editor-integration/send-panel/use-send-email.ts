@@ -26,7 +26,6 @@ function extractErrorMessage(error: AjaxError): string {
 
 type UseSendEmail = {
   sendEmail: () => Promise<void>;
-  isSending: boolean;
   error: string | null;
   clearError: () => void;
 };
@@ -38,7 +37,6 @@ type UseSendEmail = {
  * failure the API error is surfaced for display in the send panel.
  */
 export function useSendEmail(): UseSendEmail {
-  const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { closeSendPanel } = useDispatch(emailEditorIntegrationStore);
 
@@ -50,7 +48,6 @@ export function useSendEmail(): UseSendEmail {
       return;
     }
 
-    setIsSending(true);
     setError(null);
 
     try {
@@ -93,10 +90,8 @@ export function useSendEmail(): UseSendEmail {
       window.location.href = window.WooCommerceEmailEditor.urls.listings;
     } catch (err) {
       setError(extractErrorMessage(err as AjaxError));
-    } finally {
-      setIsSending(false);
     }
   }, [closeSendPanel]);
 
-  return { sendEmail, isSending, error, clearError };
+  return { sendEmail, error, clearError };
 }

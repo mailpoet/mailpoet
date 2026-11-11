@@ -26,6 +26,9 @@ class SaveNewsletterAsTemplateCest {
     $i->fillField(['name' => 'template_name'], $templateName);
     $i->click('[data-automation-id="newsletter_save_as_template_button"]');
     $i->waitForText('Template has been saved');
+    // The editor autosaves after it loads. Leaving the page while that save
+    // is pending opens a "leave page?" dialog that blocks the next steps.
+    $i->waitForJS('return !window.onbeforeunload || window.onbeforeunload({}) === undefined;', 10);
 
     //step 4 - confirm template can be used
     $i->amOnMailpoetPage('Emails');

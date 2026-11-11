@@ -17,7 +17,6 @@ class PatternsControllerTest extends \MailPoetTest {
   public function testItRegistersAllPatternsWhenWooCommerceIsActive(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.8.0');
     $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
 
     $patterns = new PatternsController(
@@ -69,7 +68,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertContains('mailpoet/booking-post-visit-review', $patternNames);
     $this->assertContains('mailpoet/booking-next-booking-nudge', $patternNames);
 
-    // WooCommerce 10.8.0+ patterns (uses generated coupon block)
+    // Patterns using the generated coupon block
     $this->assertContains('mailpoet/welcome-with-discount-email-content', $patternNames);
     $this->assertContains('mailpoet/birthday-email-with-discount', $patternNames);
     $this->assertContains('mailpoet/win-back-customer', $patternNames);
@@ -149,108 +148,9 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertNotEmpty($bookingsCategory['label']);
   }
 
-  public function testItDoesNotRegisterCouponPatternsWhenWooCommerceVersionIsBelowMinimum(): void {
-    $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
-    $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.7.0');
-    $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
-
-    $patterns = new PatternsController(
-      $this->diContainer->get(CdnAssetUrl::class),
-      $this->diContainer->get(WPFunctions::class),
-      $wooCommerceHelper
-    );
-
-    $patterns->registerPatterns();
-    $blockPatterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
-    $patternNames = array_column($blockPatterns, 'name');
-
-    // Should include non-WooCommerce patterns
-    $this->assertContains('mailpoet/newsletter-content', $patternNames);
-    $this->assertContains('mailpoet/welcome-email-content', $patternNames);
-    $this->assertContains('mailpoet/birthday-email-content', $patternNames);
-
-    // Should include WooCommerce patterns that don't require coupon block
-    $this->assertContains('mailpoet/first-purchase-thank-you', $patternNames);
-    $this->assertContains('mailpoet/post-purchase-thank-you', $patternNames);
-    $this->assertContains('mailpoet/product-purchase-follow-up', $patternNames);
-    $this->assertContains('mailpoet/tag-purchase-follow-up', $patternNames);
-    $this->assertContains('mailpoet/category-purchase-follow-up', $patternNames);
-    $this->assertContains('mailpoet/win-back-customer-reminder', $patternNames);
-    $this->assertContains('mailpoet/win-back-customer-final-nudge', $patternNames);
-    $this->assertContains('mailpoet/ask-for-review-post-purchase', $patternNames);
-    $this->assertContains('mailpoet/positive-review-follow-up', $patternNames);
-    $this->assertContains('mailpoet/negative-review-follow-up', $patternNames);
-    $this->assertContains('mailpoet/abandoned-cart-content', $patternNames);
-    $this->assertContains('mailpoet/abandoned-cart-reminder-content', $patternNames);
-    $this->assertContains('mailpoet/subscription-purchase-follow-up', $patternNames);
-    $this->assertContains('mailpoet/subscription-renewal-follow-up', $patternNames);
-    $this->assertContains('mailpoet/subscription-failed-renewal-follow-up', $patternNames);
-    $this->assertContains('mailpoet/subscription-churned-follow-up', $patternNames);
-    $this->assertContains('mailpoet/subscription-trial-ended-follow-up', $patternNames);
-    $this->assertContains('mailpoet/subscription-win-back', $patternNames);
-    $this->assertContains('mailpoet/booking-abandoned-spot', $patternNames);
-    $this->assertContains('mailpoet/booking-new-booking-follow-up', $patternNames);
-    $this->assertContains('mailpoet/booking-pre-visit-reminder', $patternNames);
-    $this->assertContains('mailpoet/booking-pre-visit-what-to-expect', $patternNames);
-    $this->assertContains('mailpoet/booking-pre-visit-tips', $patternNames);
-    $this->assertContains('mailpoet/booking-post-visit-review', $patternNames);
-    $this->assertContains('mailpoet/booking-next-booking-nudge', $patternNames);
-
-    // Should NOT include generated coupon block patterns (require WooCommerce 10.8.0+)
-    $this->assertNotContains('mailpoet/welcome-with-discount-email-content', $patternNames);
-    $this->assertNotContains('mailpoet/birthday-email-with-discount', $patternNames);
-    $this->assertNotContains('mailpoet/win-back-customer', $patternNames);
-    $this->assertNotContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
-    $this->assertNotContains('mailpoet/reward-positive-reviewer', $patternNames);
-
-    // Verify total count (all patterns except 5 coupon patterns)
-    $this->assertCount(34, $blockPatterns);
-  }
-
-  /**
-   * @dataProvider dataProviderForWooCommerceVersionsWithCouponSupport
-   */
-  public function testItRegistersCouponPatternsForWooCommerceVersionsWithCouponSupport(string $version): void {
-    $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
-    $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn($version);
-    $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
-
-    $patterns = new PatternsController(
-      $this->diContainer->get(CdnAssetUrl::class),
-      $this->diContainer->get(WPFunctions::class),
-      $wooCommerceHelper
-    );
-
-    $patterns->registerPatterns();
-    $blockPatterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
-    $patternNames = array_column($blockPatterns, 'name');
-
-    // Generated coupon block patterns should be registered for WooCommerce 10.8.0+ (including RC/beta)
-    $this->assertContains('mailpoet/welcome-with-discount-email-content', $patternNames);
-    $this->assertContains('mailpoet/birthday-email-with-discount', $patternNames);
-    $this->assertContains('mailpoet/win-back-customer', $patternNames);
-    $this->assertContains('mailpoet/abandoned-cart-with-discount-content', $patternNames);
-    $this->assertContains('mailpoet/reward-positive-reviewer', $patternNames);
-  }
-
-  public function dataProviderForWooCommerceVersionsWithCouponSupport(): array {
-    return [
-      'release version' => ['10.8.0'],
-      'patch version' => ['10.8.1'],
-      'minor version' => ['10.9.0'],
-      'major version' => ['11.0.0'],
-      'rc version' => ['10.8.0-rc.1'],
-      'beta version' => ['10.8.0-beta.1'],
-      'dev version' => ['10.8.0-dev'],
-    ];
-  }
-
   public function testItRegistersDiscountPatternsWithGeneratedCouponDefaults(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.8.0');
     $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
 
     $patterns = new PatternsController(
@@ -298,7 +198,6 @@ class PatternsControllerTest extends \MailPoetTest {
   public function testWinBackReminderPatternDoesNotUseGeneratedCouponBlock(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.7.0');
     $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
 
     $patterns = new PatternsController(
@@ -321,7 +220,6 @@ class PatternsControllerTest extends \MailPoetTest {
   public function testPostPurchaseThankYouPatternUsesOrderAwareProducts(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.8.0');
     $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
 
     $patterns = new PatternsController(
@@ -341,7 +239,6 @@ class PatternsControllerTest extends \MailPoetTest {
   public function testWinBackFinalNudgePatternDoesNotUseGeneratedCouponBlock(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.7.0');
     $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
 
     $patterns = new PatternsController(
@@ -362,7 +259,6 @@ class PatternsControllerTest extends \MailPoetTest {
   public function testAskForReviewPatternContainsReviewButtonWithOrderReviewUrlTag(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.8.0');
     $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
 
     $patterns = new PatternsController(
@@ -385,7 +281,6 @@ class PatternsControllerTest extends \MailPoetTest {
   public function testPositiveReviewFollowUpPatternContainsReviewCopy(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.8.0');
     $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
 
     $patterns = new PatternsController(
@@ -404,7 +299,6 @@ class PatternsControllerTest extends \MailPoetTest {
   public function testNegativeReviewFollowUpPatternContainsReviewCopy(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.8.0');
     $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
 
     $patterns = new PatternsController(
@@ -423,7 +317,6 @@ class PatternsControllerTest extends \MailPoetTest {
   public function testRewardPositiveReviewerPatternContainsCouponCopy(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.8.0');
     $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
 
     $patterns = new PatternsController(
@@ -444,7 +337,6 @@ class PatternsControllerTest extends \MailPoetTest {
   public function testSubscriptionOnboardingPatternsContainSubscriptionCopy(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.8.0');
     $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
 
     $patterns = new PatternsController(
@@ -504,7 +396,6 @@ class PatternsControllerTest extends \MailPoetTest {
   public function testBookingNewBookingFollowUpPatternContainsBookingCopy(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.8.0');
     $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
 
     $patterns = new PatternsController(
@@ -525,7 +416,6 @@ class PatternsControllerTest extends \MailPoetTest {
   public function testBookingPreVisitReminderPatternContainsBookingCopy(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.8.0');
     $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
 
     $patterns = new PatternsController(
@@ -590,7 +480,6 @@ class PatternsControllerTest extends \MailPoetTest {
   public function testItDoesNotRegisterAskForReviewPatternWhenOrderReviewUrlIsUnsupported(): void {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.8.0');
     $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(false);
 
     $patterns = new PatternsController(
@@ -803,7 +692,6 @@ class PatternsControllerTest extends \MailPoetTest {
   private function createControllerWithWooCommerce(): PatternsController {
     $wooCommerceHelper = $this->createMock(WooCommerceHelper::class);
     $wooCommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $wooCommerceHelper->method('getWooCommerceVersion')->willReturn('10.8.0');
     $wooCommerceHelper->method('wcSupportsOrderReviewUrl')->willReturn(true);
 
     return new PatternsController(

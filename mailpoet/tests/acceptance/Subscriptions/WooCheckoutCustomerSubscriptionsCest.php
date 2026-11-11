@@ -30,7 +30,7 @@ class WooCheckoutCustomerSubscriptionsCest {
     $this->settingsFactory->withCookieRevenueTrackingDisabled();
   }
 
-  public function checkoutOptInDisabled(\AcceptanceTester $i) {
+  public function checkoutOptInDisabledWithConfirmation(\AcceptanceTester $i) {
     $this->settingsFactory->withWooCommerceCheckoutOptinDisabled();
     $this->settingsFactory->withConfirmationEmailEnabled();
     $customerEmail = 'woo_customer_noptin@example.com';
@@ -40,7 +40,7 @@ class WooCheckoutCustomerSubscriptionsCest {
     $i->seeConfirmationEmailWasNotReceived();
   }
 
-  public function checkoutOptInChecked(\AcceptanceTester $i) {
+  public function checkoutOptInCheckedWithConfirmation(\AcceptanceTester $i) {
     $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
     $this->settingsFactory->withConfirmationEmailEnabled();
     $customerEmail = 'woo_customer_check@example.com';
@@ -50,7 +50,7 @@ class WooCheckoutCustomerSubscriptionsCest {
     $i->seeConfirmationEmailWasReceived();
   }
 
-  public function checkoutOptInUnchecked(\AcceptanceTester $i) {
+  public function checkoutOptInUncheckedWithConfirmation(\AcceptanceTester $i) {
     $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
     $this->settingsFactory->withConfirmationEmailEnabled();
     $customerEmail = 'woo_customer_uncheck@example.com';

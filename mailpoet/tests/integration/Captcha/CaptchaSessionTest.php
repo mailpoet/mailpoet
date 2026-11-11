@@ -41,6 +41,24 @@ class CaptchaSessionTest extends \MailPoetTest {
     verify($this->captchaSession->getFormData(self::SESSION_ID))->equals($formData);
   }
 
+  public function testItStoresSubscriptionFormDataWithALongTextField() {
+    $formData = ['form_id' => 1, 'message' => str_repeat('a', 30000)];
+    $this->captchaSession->setSubscriptionFormData(self::SESSION_ID, $formData);
+    verify($this->captchaSession->getFormData(self::SESSION_ID))->equals($formData);
+  }
+
+  public function testItDoesNotStoreSubscriptionFormDataOverTheSizeLimit() {
+    $formData = ['form_id' => 1, 'message' => str_repeat('a', 70000)];
+    $this->captchaSession->setSubscriptionFormData(self::SESSION_ID, $formData);
+    verify($this->captchaSession->getFormData(self::SESSION_ID))->false();
+  }
+
+  public function testItRemovesEarlierSubscriptionFormDataWhenNewDataIsOverTheSizeLimit() {
+    $this->captchaSession->setSubscriptionFormData(self::SESSION_ID, ['form_id' => 1, 'email' => 'first@example.com']);
+    $this->captchaSession->setSubscriptionFormData(self::SESSION_ID, ['form_id' => 1, 'message' => str_repeat('a', 70000)]);
+    verify($this->captchaSession->getFormData(self::SESSION_ID))->false();
+  }
+
   public function testItCanStoreAndRetrieveCaptchaHash() {
     $hash = '1234';
     $this->captchaSession->setCaptchaHash(self::SESSION_ID, $hash);

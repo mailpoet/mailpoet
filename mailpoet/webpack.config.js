@@ -71,7 +71,6 @@ const baseConfig = {
       }
 
       if (warnings) {
-        // eslint-disable-next-line
         console.warn(warnings);
         process.emitWarning(warnings); // emit for listeners
         process.exit(1);
@@ -253,6 +252,16 @@ const baseConfig = {
   },
 };
 
+// React from WordPress, mapped like @wordpress/dependency-extraction-webpack-plugin
+// does. The PHP that registers these bundles lists the matching script
+// handles: react, react-dom, react-jsx-runtime.
+const wordPressReactExternals = {
+  react: 'React',
+  'react-dom': 'ReactDOM',
+  'react-dom/client': 'ReactDOM',
+  'react/jsx-runtime': 'ReactJSXRuntime',
+};
+
 // Admin config
 const adminConfig = {
   name: 'admin',
@@ -291,8 +300,9 @@ const adminConfig = {
           to: 'skins/ui/oxide',
           // TinyMCE switches to the .min.css files when any part of the page
           // script URL contains ".min" (e.g. a domain like mindvalley.com),
-          // so both CSS variants ship. The .js files are never loaded.
-          globOptions: { ignore: ['**/*.js'] },
+          // so both CSS variants ship. The .js files are never loaded and the
+          // .ts files are only type definitions.
+          globOptions: { ignore: ['**/*.js', '**/*.ts'] },
           info: { minimized: true },
         },
         {
@@ -319,9 +329,25 @@ const adminConfig = {
       },
     },
   },
-  externals: {
-    jquery: 'jQuery',
-  },
+  externals: [
+    {
+      jquery: 'jQuery',
+      ...wordPressReactExternals,
+      '@wordpress/components': ['wp', 'components'],
+    },
+    // Our code unlocks private APIs of core's components, so it needs core's
+    // private-apis. Bundled packages keep their own copy, because core's
+    // allowlist rejects some of them (e.g. @wordpress/notices).
+    ({ context, request }, callback) => {
+      if (
+        request === '@wordpress/private-apis' &&
+        !context.includes(`${path.sep}node_modules${path.sep}`)
+      ) {
+        return callback(null, ['wp', 'privateApis'], 'window');
+      }
+      return callback();
+    },
+  ],
 };
 
 function requestToFormEditorExternal(request) {
@@ -331,7 +357,6 @@ function requestToFormEditorExternal(request) {
   // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
   // packages, for that handling to kick in, we must not return anything from
   // function.
-  /* eslint-disable-next-line consistent-return, no-useless-return */
   return;
 }
 
@@ -446,6 +471,20 @@ const testConfig = {
       /mailpoet\.js/,
       './mailpoet-tests.js',
     ),
+    // Tests are compiled to CommonJS, so webpack would pick the CJS build of
+    // @ariakit/react. It loads React through a require shim that webpack
+    // can't resolve, so resolve @ariakit packages to their ESM builds.
+    {
+      apply: (compiler) => {
+        compiler.hooks.normalModuleFactory.tap('AriakitEsm', (factory) => {
+          factory.hooks.beforeResolve.tap('AriakitEsm', (data) => {
+            if (data.request.startsWith('@ariakit/')) {
+              data.dependencyType = 'esm';
+            }
+          });
+        });
+      },
+    },
   ],
   resolve: {
     modules: [
@@ -491,6 +530,7 @@ const postEditorBlock = {
   entry: {
     post_editor_block: 'post-editor-block/blocks.jsx',
   },
+  externals: wordPressReactExternals,
 };
 
 // Marketing Optin config
@@ -505,7 +545,6 @@ function requestToExternal(request) {
   // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
   // packages, for that handling to kick in, we must not return anything from
   // function.
-  /* eslint-disable-next-line consistent-return, no-useless-return */
   return;
 }
 
@@ -520,7 +559,6 @@ function requestToHandle(request) {
   // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
   // packages, for that handling to kick in, we must not return anything from
   // function.
-  /* eslint-disable-next-line consistent-return, no-useless-return */
   return;
 }
 const marketingOptinBlock = Object.assign({}, wpScriptConfig, {

@@ -17,6 +17,8 @@ import {
   FormTokenField,
 } from '@wordpress/components';
 import { MAX_POSTS, TEMPLATE_BLOCK_NAME } from './constants';
+import { DEFAULT_PASSWORD_PROTECTED } from './password-protected';
+import type { PasswordProtectedMode } from './password-protected';
 
 type Term = { id: number; taxonomy: string };
 
@@ -29,6 +31,7 @@ type LatestPostsQuery = {
   terms: Term[];
   inclusionType: 'include' | 'exclude';
   posts: number[];
+  passwordProtected: PasswordProtectedMode;
 };
 
 type Attributes = {
@@ -53,6 +56,17 @@ const MODE_OPTIONS: { label: string; value: string }[] = [
 const POST_TYPE_OPTIONS: { label: string; value: string }[] = [
   { label: __('Posts', 'mailpoet'), value: 'post' },
   { label: __('Pages', 'mailpoet'), value: 'page' },
+];
+
+// 'title_only' keeps the words of the post out; the title, image and date the
+// block is set to show still render. 'full' means no special handling at all.
+const PASSWORD_PROTECTED_OPTIONS: {
+  label: string;
+  value: PasswordProtectedMode;
+}[] = [
+  { label: __('Show without content', 'mailpoet'), value: 'title_only' },
+  { label: __('Leave these posts out', 'mailpoet'), value: 'exclude' },
+  { label: __('Treat like any other post', 'mailpoet'), value: 'full' },
 ];
 
 const ORDER_OPTIONS: { label: string; value: string }[] = [
@@ -236,6 +250,21 @@ export function Edit({
             value={query.postType}
             options={POST_TYPE_OPTIONS}
             onChange={(value) => updateQuery({ postType: value })}
+            __nextHasNoMarginBottom
+          />
+          <SelectControl
+            label={__('Password-protected posts', 'mailpoet')}
+            help={__(
+              'Readers open the site and enter the password to read a protected post.',
+              'mailpoet',
+            )}
+            value={query.passwordProtected ?? DEFAULT_PASSWORD_PROTECTED}
+            options={PASSWORD_PROTECTED_OPTIONS}
+            onChange={(value) =>
+              updateQuery({
+                passwordProtected: value as PasswordProtectedMode,
+              })
+            }
             __nextHasNoMarginBottom
           />
           {isManual && (

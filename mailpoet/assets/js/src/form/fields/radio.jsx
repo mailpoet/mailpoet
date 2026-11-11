@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Radio } from 'common/form/radio/radio';
 
 class FormFieldRadio extends Component {
-  // eslint-disable-line react/prefer-stateless-function, max-len
   constructor(props) {
     super(props);
     this.onValueChange = this.onValueChange.bind(this);

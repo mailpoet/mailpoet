@@ -26,7 +26,8 @@
         "offset": 0,
         "terms": [],
         "inclusionType": "include",
-        "posts": []
+        "posts": [],
+        "passwordProtected": "title_only"
       }
     },
     "displayLayout": {

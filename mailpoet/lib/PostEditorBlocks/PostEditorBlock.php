@@ -60,6 +60,7 @@ class PostEditorBlock {
       'mailpoet-block-form-block-js',
       Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('post_editor_block.js'),
       [
+        'react-jsx-runtime',
         'wp-api-fetch',
         'wp-blocks',
         'wp-components',

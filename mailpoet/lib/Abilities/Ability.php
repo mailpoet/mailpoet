@@ -5,6 +5,9 @@ namespace MailPoet\Abilities;
 if (!defined('ABSPATH')) exit;
 
 interface Ability {
+  /**
+   * @return lowercase-string&non-falsy-string
+   */
   public function getName(): string;
 
   /**

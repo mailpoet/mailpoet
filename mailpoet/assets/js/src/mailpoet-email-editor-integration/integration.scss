@@ -277,3 +277,9 @@
     margin: 0;
   }
 }
+
+// Names and subjects can be long, so keep them inside the preset card.
+.email-editor-template-select__template-title {
+  overflow-wrap: anywhere;
+  padding-inline-end: 1rem;
+}

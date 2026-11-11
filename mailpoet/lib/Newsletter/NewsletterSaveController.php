@@ -350,6 +350,7 @@ class NewsletterSaveController {
     }
 
     if (array_key_exists('subject', $data)) {
+      $this->updateCampaignNameForSubject($newsletter, (string)$data['subject']);
       $newsletter->setSubject($data['subject']);
     }
 
@@ -363,7 +364,7 @@ class NewsletterSaveController {
     }
 
     if (array_key_exists('ga_campaign', $data)) {
-      $newsletter->setGaCampaign($data['ga_campaign']);
+      $newsletter->setGaCampaign($this->wp->wpStripAllTags((string)$data['ga_campaign'], true));
     }
 
     if (array_key_exists('sender_name', $data)) {
@@ -532,6 +533,32 @@ class NewsletterSaveController {
     $this->entityManager->flush();
   }
 
+  /**
+   * The name follows the subject until the user picks one, as it does in the email editor.
+   */
+  private function updateCampaignNameForSubject(NewsletterEntity $newsletter, string $newSubject): void {
+    $post = $newsletter->getWpPost();
+    $previousSubject = $newsletter->getSubject();
+    if (!$post || $newSubject === $previousSubject) {
+      return;
+    }
+    // WordPress can store titles entity-encoded: markup for users without unfiltered_html, emoji on utf8 tables.
+    $title = $post->getPostTitle();
+    $names = [$title, html_entity_decode($title, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401)];
+    if ($title !== '' && !in_array($this->getDefaultEmailName(), $names, true) && !in_array($previousSubject, $names, true)) {
+      return;
+    }
+    $this->wp->wpUpdatePost([
+      'ID' => $post->getId(),
+      'post_title' => addslashes($newSubject !== '' ? $newSubject : $this->getDefaultEmailName()),
+    ]);
+    $this->entityManager->refresh($post);
+  }
+
+  private function getDefaultEmailName(): string {
+    return __('New Email', 'mailpoet');
+  }
+
   private function ensureWpPost(NewsletterEntity $newsletter): void {
     if ($newsletter->getWpPostId()) {
       return;
@@ -546,7 +573,7 @@ class NewsletterSaveController {
       'post_type' => EmailEditor::MAILPOET_EMAIL_POST_TYPE,
       'post_status' => $postStatus,
       'post_author' => $this->wp->getCurrentUserId(),
-      'post_title' => __('New Email', 'mailpoet'),
+      'post_title' => $this->getDefaultEmailName(),
     ];
 
     // Set meta flag for automation emails to prevent other plugins from creating duplicate newsletters

@@ -22,6 +22,10 @@ class NewsletterLinkFieldsTest extends \MailPoetTest {
     $expectedUrl = 'https://someurl.com';
     $payload = $this->getPayload(1, $expectedUrl);
     $this->assertEquals($expectedUrl, $field->getValue($payload));
+
+    // links sent before they were stored with plain ampersands keep "&amp;"
+    $payload = $this->getPayload(1, 'https://someurl.com/?a=1&amp;b=2');
+    $this->assertEquals('https://someurl.com/?a=1&b=2', $field->getValue($payload));
   }
 
   public function testCreatedField(): void {

@@ -133,6 +133,15 @@ class PHPMailTest extends \MailPoetTest {
     );
   }
 
+  public function testItCanProcessSubscriberWithSpecialCharactersInName() {
+    verify($this->mailer->processSubscriber('Jane <Doe> <test@test.com>'))->equals(
+      [
+        'email' => 'test@test.com',
+        'name' => 'Jane <Doe>',
+      ]
+    );
+  }
+
   public function testItChecksBlacklistBeforeSending() {
     $blacklistedSubscriber = 'blacklist_test@example.com';
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);

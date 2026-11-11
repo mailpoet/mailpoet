@@ -14,6 +14,7 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberIPEntity;
 use MailPoet\Entities\TagEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\NotFoundException;
@@ -21,6 +22,8 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Test\DataFactories\Tag;
+use MailPoet\UnexpectedValueException;
+use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberSubscribeControllerTest extends \MailPoetTest {
   /** @var SettingsController */
@@ -632,6 +635,16 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     verify($meta)->arrayHasNotKey('redirect_url');
   }
 
+  public function testItRedirectsToSuccessUrl(): void {
+    $meta = $this->subscribeWithSuccessUrl('https://example.com/thanks');
+    verify($meta['redirect_url'])->equals('https://example.com/thanks');
+  }
+
+  public function testItDoesNotRedirectToSuccessUrlWithUnsupportedScheme(): void {
+    $meta = $this->subscribeWithSuccessUrl('ftp://example.com/thanks');
+    verify($meta)->arrayHasNotKey('redirect_url');
+  }
+
   public function testItDoesNotRedirectWhenSuccessPageHasNoPermalink(): void {
     $pageId = $this->createPage('publish');
     add_filter('page_link', '__return_empty_string');
@@ -741,12 +754,53 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
 
     $secondResult = $subscriberController->subscribe($data);
 
-    verify($secondResult['refresh_captcha'])->true();
+    verify($secondResult)->arrayHasNotKey('refresh_captcha');
     verify($secondResult['error'])->stringContainsString('You need to wait');
     $this->subscribersRepository->refresh($subscriber);
     verify($subscriber->getConfirmationsCount())->equals(2);
     verify($subscriber->getLastConfirmationEmailSentAt())->equals($lastConfirmationEmailSentAt);
     verify($subscriber->getUnconfirmedData())->equals('{"first_name":"Original"}');
+  }
+
+  public function testItAsksThrottledVisitorsToWaitBeforeShowingACaptcha(): void {
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
+    $_SERVER['REMOTE_ADDR'] = '203.0.113.60';
+    $this->createSubscriberIP('203.0.113.60', Carbon::now());
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $stashesBefore = $this->countFormStashes();
+    $sessionBudgetsBefore = $this->countCaptchaSessionBudgets();
+
+    $result = $this->subscribeController->subscribe($this->getCaptchaSubmission($form, $segment, 'throttled@example.com', []));
+
+    verify($result['error'])->stringContainsString('You need to wait');
+    verify($result)->arrayHasNotKey('show_captcha');
+    verify($result)->arrayHasNotKey('refresh_captcha');
+    verify($this->countFormStashes())->equals($stashesBefore);
+    verify($this->countCaptchaSessionBudgets())->equals($sessionBudgetsBefore);
+  }
+
+  public function testItKeepsASolvedCaptchaWhenTheVisitorIsThrottled(): void {
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
+    $_SERVER['REMOTE_ADDR'] = '203.0.113.61';
+    $captchaSession = $this->diContainer->get(CaptchaSession::class);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $challenge = $this->subscribeController->subscribe($this->getCaptchaSubmission($form, $segment, 'solved@example.com', []));
+    $sessionId = $challenge['captcha_session_id'];
+    $phrase = $captchaSession->getCaptchaHash($sessionId)['phrase'];
+    $this->createSubscriberIP('203.0.113.61', Carbon::now());
+
+    $result = $this->subscribeController->subscribe([
+      'form_id' => $form->getId(),
+      'captcha_session_id' => $sessionId,
+      'captcha' => $phrase,
+    ]);
+
+    verify($result['error'])->stringContainsString('You need to wait');
+    verify($result)->arrayHasNotKey('refresh_captcha');
+    verify($captchaSession->getCaptchaHash($sessionId)['phrase'] ?? null)->equals($phrase);
+    $captchaSession->reset($sessionId);
   }
 
   public function testItReturnsHelpfulErrorWhenUnconfirmedSubscriberReachedConfirmationEmailLimit(): void {
@@ -804,6 +858,46 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
       'email' => $email,
       'first_name' => 'Updated',
     ]));
+  }
+
+  public function testItRejectsAnInvalidFirstName(): void {
+    $this->settings->set('signup_confirmation.enabled', false);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $email = 'invalid-first-name-' . rand(0, 10000) . '@example.com';
+
+    try {
+      $this->subscribeController->subscribe([
+        $this->obfuscatedEmail => $email,
+        $this->obfuscatedFirstName => 'Jane > Doe',
+        $this->obfuscatedSegments => [$segment->getId()],
+        'form_id' => $form->getId(),
+      ]);
+      $this->fail('Expected UnexpectedValueException was not thrown.');
+    } catch (UnexpectedValueException $e) {
+      verify($e->getMessage())->equals('Please specify a valid name.');
+      verify($this->subscribersRepository->findOneBy(['email' => $email]))->null();
+    }
+  }
+
+  public function testItRejectsAnInvalidLastName(): void {
+    $this->settings->set('signup_confirmation.enabled', false);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+    $email = 'invalid-last-name-' . rand(0, 10000) . '@example.com';
+
+    try {
+      $this->subscribeController->subscribe([
+        $this->obfuscatedEmail => $email,
+        $this->obfuscator->obfuscate('last_name') => 'Doe >',
+        $this->obfuscatedSegments => [$segment->getId()],
+        'form_id' => $form->getId(),
+      ]);
+      $this->fail('Expected UnexpectedValueException was not thrown.');
+    } catch (UnexpectedValueException $e) {
+      verify($e->getMessage())->equals('Please specify a valid name.');
+      verify($this->subscribersRepository->findOneBy(['email' => $email]))->null();
+    }
   }
 
   public function testItCanSubscribeSubscriberWithCustomField(): void {
@@ -908,10 +1002,18 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
   }
 
   private function subscribeWithSuccessPage(int $pageId): array {
+    return $this->subscribeWithSuccessSettings(['on_success' => 'page', 'success_page' => $pageId]);
+  }
+
+  private function subscribeWithSuccessUrl(string $url): array {
+    return $this->subscribeWithSuccessSettings(['on_success' => 'url', 'success_url' => $url]);
+  }
+
+  private function subscribeWithSuccessSettings(array $successSettings): array {
     $this->settings->set('signup_confirmation.enabled', false);
     $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
     $form = $this->createForm($segment);
-    $form->setSettings(array_merge($form->getSettings() ?? [], ['on_success' => 'page', 'success_page' => $pageId]));
+    $form->setSettings(array_merge($form->getSettings() ?? [], $successSettings));
     $this->entityManager->flush();
     return $this->subscribeController->subscribe([
       $this->obfuscatedEmail => 'redirect' . rand(0, 100000) . '@example.com',
@@ -936,6 +1038,19 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
   private function makeStamp(int $ageInSeconds): string {
     $timestamp = time() - $ageInSeconds;
     return $timestamp . '.' . hash_hmac('sha256', (string)$timestamp, wp_salt('nonce'));
+  }
+
+  private function createSubscriberIP(string $ip, Carbon $createdAt): void {
+    $subscriberIP = new SubscriberIPEntity($ip);
+    $subscriberIP->setCreatedAt($createdAt);
+    $this->entityManager->persist($subscriberIP);
+    $this->entityManager->flush();
+  }
+
+  private function countCaptchaSessionBudgets(): int {
+    global $wpdb;
+    wp_cache_flush();
+    return (int)$wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_MAILPOET\\_captcha\\_sessions\\_%'");
   }
 
   private function countFormStashes(): int {

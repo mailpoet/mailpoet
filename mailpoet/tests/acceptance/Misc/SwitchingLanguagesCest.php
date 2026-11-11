@@ -98,8 +98,7 @@ class SwitchingLanguagesCest {
     $i->wantTo('Check Emails filter strings');
     $i->waitForText('Alle');
     // Status labels are built server side with counts, e.g. "Entwurf (0)".
-    $i->click('button.dataviews-filters__visibility-toggle[aria-haspopup="menu"]');
-    $i->click(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Status"]']);
+    $i->openDataViewsFilter('Status');
     $i->waitForElement('.dataviews-filters__search-widget-listitem');
     $i->waitForText('Entwurf (');
     $i->waitForText('Geplant (');
@@ -133,7 +132,6 @@ class SwitchingLanguagesCest {
     $i->waitForText(strtoupper('Änderungsdatum'));
 
     $i->wantTo('Check Subscribers tab and button strings');
-    // Statuses are no longer tabs; only the All tab (and Trash, when there are trashed subscribers) remains.
     $i->amOnMailpoetPage('subscribers');
     $i->waitForText('Neuen Abonnenten hinzufügen');
     $i->waitForText('Alle');
@@ -147,8 +145,7 @@ class SwitchingLanguagesCest {
 
     $i->wantTo('Check Subscribers Status filter options');
     // Option labels carry the count, e.g. "Unbestätigt (3)".
-    $i->click('button.dataviews-filters__visibility-toggle[aria-haspopup="menu"]');
-    $i->click(['xpath' => '//*[@role="menuitem"][normalize-space(.)="Status"]']);
+    $i->openDataViewsFilter('Status');
     $i->waitForElement('.dataviews-filters__search-widget-listitem');
     $i->waitForElement(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][contains(normalize-space(.), "Unbestätigt")]'], 3);
     $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);

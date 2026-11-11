@@ -74,6 +74,9 @@ class Subscribers extends APIEndpoint {
   }
 
   public function subscribe($data = []) {
+    if (!is_array($data)) {
+      return $this->badRequest();
+    }
     try {
       $meta = $this->subscribeController->subscribe($data);
     } catch (Exception $exception) {

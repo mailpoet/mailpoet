@@ -4,7 +4,6 @@ import {
 } from '@wordpress/components/build-types/palette-edit/types';
 import { FontSize } from '@wordpress/components/build-types/font-size-picker/types';
 
-// eslint-disable-next-line import/no-named-default
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { store as keyboardShortutsStore } from '@wordpress/keyboard-shortcuts';
 import { store as interfaceStore } from '@wordpress/interface';

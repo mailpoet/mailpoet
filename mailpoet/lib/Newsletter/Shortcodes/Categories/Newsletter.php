@@ -33,7 +33,7 @@ class Newsletter implements CategoryInterface {
   ): ?string {
     switch ($shortcodeDetails['action']) {
       case 'subject':
-        return ($newsletter instanceof NewsletterEntity) ? $newsletter->getSubject() : null;
+        return ($newsletter instanceof NewsletterEntity) ? htmlspecialchars($newsletter->getSubject(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401) : null;
 
       case 'total':
         return (string)substr_count($content, 'data-post-id');

@@ -2,7 +2,6 @@ import { select } from '@wordpress/data';
 import { CategoryActionType, CategoryType } from './types';
 import { storeName } from './constants';
 
-// eslint-disable-next-line @typescript-eslint/ban-types -- IDK what else could be the return value
 export function* selectTemplate(templateId: string, templateName: string) {
   yield { type: 'SELECT_TEMPLATE_START' };
   yield {

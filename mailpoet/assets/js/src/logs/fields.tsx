@@ -144,7 +144,7 @@ export function getLogFields(
       enableSorting: false,
       enableGlobalSearch: false,
       elements: getLogSeverityElements(),
-      filterBy: { operators: ['isAny'] },
+      filterBy: { operators: ['isAny'], isPrimary: true },
       render: ({ item }) =>
         item.level === null
           ? createElement('span', null, '—')

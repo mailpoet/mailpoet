@@ -37,31 +37,40 @@ class StatisticsUnsubscribesRepositoryTest extends \MailPoetTest {
     ]);
   }
 
-  public function testItCountsUnsubscribesPerMonthAndReasonWithMissingReasonAsUnspecified(): void {
-    $this->createUnsubscribe('2026-03-02 10:00:00', StatisticsUnsubscribeEntity::METHOD_LINK, StatisticsUnsubscribeEntity::REASON_SPAM);
-    $this->createUnsubscribe('2026-03-03 10:00:00', StatisticsUnsubscribeEntity::METHOD_LINK, StatisticsUnsubscribeEntity::REASON_SPAM);
-    $this->createUnsubscribe('2026-03-04 10:00:00', StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
-    $this->createUnsubscribe('2026-02-04 10:00:00', StatisticsUnsubscribeEntity::METHOD_LINK, StatisticsUnsubscribeEntity::REASON_OTHER);
-
-    $result = $this->repository->getMonthlyCountsPerReason(new \DateTimeImmutable('2026-03-01 00:00:00'));
-
-    verify($result)->equals([
-      ['month' => '2026-03', 'reason' => StatisticsUnsubscribeEntity::REASON_SPAM, 'count' => 2],
-      ['month' => '2026-03', 'reason' => StatisticsUnsubscribeEntity::REASON_UNSPECIFIED, 'count' => 1],
-    ]);
-  }
-
-  public function testItCountsUnsubscribesPerMonthAndSource(): void {
-    $this->createUnsubscribe('2026-03-02 10:00:00', StatisticsUnsubscribeEntity::METHOD_LINK, null, StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
-    $this->createUnsubscribe('2026-03-03 10:00:00', StatisticsUnsubscribeEntity::METHOD_UNKNOWN, null, StatisticsUnsubscribeEntity::SOURCE_ADMINISTRATOR);
+  public function testItCountsUnsubscribesPerMonthMethodSourceAndReasonWithDefaultsForMissingValues(): void {
+    $this->createUnsubscribe('2026-03-02 10:00:00', StatisticsUnsubscribeEntity::METHOD_LINK, StatisticsUnsubscribeEntity::REASON_SPAM, StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
+    $this->createUnsubscribe('2026-03-03 10:00:00', StatisticsUnsubscribeEntity::METHOD_LINK, StatisticsUnsubscribeEntity::REASON_SPAM, StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
     $this->createUnsubscribe('2026-03-04 10:00:00', StatisticsUnsubscribeEntity::METHOD_UNKNOWN, null, StatisticsUnsubscribeEntity::SOURCE_ADMINISTRATOR);
-    $this->createUnsubscribe('2026-02-04 10:00:00', StatisticsUnsubscribeEntity::METHOD_LINK, null, StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
+    $this->createUnsubscribe('2026-05-01 00:00:00', StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
+    $this->createUnsubscribe('2026-02-28 23:59:59', StatisticsUnsubscribeEntity::METHOD_LINK, StatisticsUnsubscribeEntity::REASON_OTHER);
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE {$this->repository->getTableName()} SET source = NULL WHERE created_at = '2026-05-01 00:00:00'"
+    );
 
-    $result = $this->repository->getMonthlyCountsPerSource(new \DateTimeImmutable('2026-03-01 00:00:00'));
+    $result = $this->repository->getMonthlyCountsPerMethodSourceAndReason(new \DateTimeImmutable('2026-03-01 00:00:00'));
 
     verify($result)->equals([
-      ['month' => '2026-03', 'source' => StatisticsUnsubscribeEntity::SOURCE_ADMINISTRATOR, 'count' => 2],
-      ['month' => '2026-03', 'source' => StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER, 'count' => 1],
+      [
+        'month' => '2026-03',
+        'method' => StatisticsUnsubscribeEntity::METHOD_LINK,
+        'source' => StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER,
+        'reason' => StatisticsUnsubscribeEntity::REASON_SPAM,
+        'count' => 2,
+      ],
+      [
+        'month' => '2026-03',
+        'method' => StatisticsUnsubscribeEntity::METHOD_UNKNOWN,
+        'source' => StatisticsUnsubscribeEntity::SOURCE_ADMINISTRATOR,
+        'reason' => StatisticsUnsubscribeEntity::REASON_UNSPECIFIED,
+        'count' => 1,
+      ],
+      [
+        'month' => '2026-05',
+        'method' => StatisticsUnsubscribeEntity::METHOD_ONE_CLICK,
+        'source' => 'unknown',
+        'reason' => StatisticsUnsubscribeEntity::REASON_UNSPECIFIED,
+        'count' => 1,
+      ],
     ]);
   }
 

@@ -24,7 +24,7 @@ class ApiSourcePluginResolver {
   }
 
   /**
-   * Returns the slug of the first third-party plugin found in the current call stack.
+   * Returns the slug of the first third-party plugin or theme found in the current call stack.
    * Meant for API signups; outside of the signup request (e.g. cron) the stack holds no plugin.
    */
   public function resolve(): ?string {
@@ -46,7 +46,10 @@ class ApiSourcePluginResolver {
    * @param string[] $files
    */
   public function resolveFromFiles(array $files): ?string {
-    $pluginsDirs = $this->getPluginsDirs();
+    $pluginsDirs = $this->getDirs(
+      $this->pluginsDir ?? (defined('WP_PLUGIN_DIR') ? (string)constant('WP_PLUGIN_DIR') : null)
+    );
+    $themesDirs = $this->getActiveThemeDirs();
     foreach ($files as $file) {
       $normalizedFile = $this->normalizePath($file);
       $slug = null;
@@ -56,6 +59,7 @@ class ApiSourcePluginResolver {
           break;
         }
       }
+      $slug = $slug ?: $this->getThemeSlug($normalizedFile, $themesDirs);
       // Backtrace paths are real paths, so they don't match a plugin symlinked into the plugins directory.
       // plugin_basename() knows about those through wp_register_plugin_realpath().
       $slug = $slug ?: $this->getSlugFromPluginBasename($normalizedFile);
@@ -72,6 +76,39 @@ class ApiSourcePluginResolver {
       return null;
     }
     return $this->getSlugFromRelativePath(substr($file, strlen($prefix)));
+  }
+
+  /**
+   * @param string[] $themesDirs theme directory => theme slug
+   */
+  private function getThemeSlug(string $file, array $themesDirs): ?string {
+    foreach ($themesDirs as $dir => $slug) {
+      if (strpos($file, $dir . '/') === 0) {
+        return $slug;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Only the active theme and its parent can run code, so there is no need to scan all theme roots.
+   * That also covers themes in directories added by register_theme_directory().
+   * The slug is the theme folder name (e.g. Divi), which is what the theme directory ends with.
+   * @return string[] theme directory (also its real path, as backtraces hold real paths) => theme slug
+   */
+  private function getActiveThemeDirs(): array {
+    $result = [];
+    foreach ([$this->wp->getStylesheetDirectory(), $this->wp->getTemplateDirectory()] as $themeDir) {
+      $themeDir = (string)$themeDir;
+      $slug = basename($this->normalizePath($themeDir));
+      if ($slug === '' || strlen($slug) > self::MAX_SLUG_LENGTH) {
+        continue;
+      }
+      foreach ($this->getDirs($themeDir) as $dir) {
+        $result[$dir] = $slug;
+      }
+    }
+    return $result;
   }
 
   private function getSlugFromPluginBasename(string $file): ?string {
@@ -100,16 +137,15 @@ class ApiSourcePluginResolver {
 
   /**
    * Backtrace paths are real paths, so besides the configured directory
-   * the resolved one is needed when the plugins directory is a symlink.
+   * the resolved one is needed when the directory is a symlink.
    * @return string[]
    */
-  private function getPluginsDirs(): array {
-    $pluginsDir = $this->pluginsDir ?? (defined('WP_PLUGIN_DIR') ? (string)constant('WP_PLUGIN_DIR') : null);
-    if (!$pluginsDir) {
+  private function getDirs(?string $dir): array {
+    if (!$dir) {
       return [];
     }
-    $dirs = [rtrim($this->normalizePath($pluginsDir), '/')];
-    $realPath = realpath($pluginsDir);
+    $dirs = [rtrim($this->normalizePath($dir), '/')];
+    $realPath = realpath($dir);
     if ($realPath) {
       $dirs[] = rtrim($this->normalizePath($realPath), '/');
     }

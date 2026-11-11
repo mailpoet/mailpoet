@@ -6,13 +6,14 @@
   "category": "mailpoet",
   "parent": ["mailpoet/latest-posts-template"],
   "textdomain": "mailpoet",
+  "attributes": {},
   "icon": "align-left",
   "supports": {
     "html": false,
     "reusable": false,
     "email": true
   },
-  "usesContext": ["postId", "postType"],
+  "usesContext": ["postId", "postType", "mailpoet/latestPostsQuery"],
   "apiVersion": 3,
   "$schema": "https://schemas.wp.org/trunk/block.json"
 }

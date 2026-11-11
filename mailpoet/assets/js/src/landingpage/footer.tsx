@@ -3,6 +3,10 @@ import { Heading } from 'common/typography/heading/heading';
 import { WelcomeWizardButton } from './welcome-wizard-button';
 
 function Footer() {
+  if (!window.mailpoet_can_manage_settings) {
+    return null;
+  }
+
   return (
     <section className="landing-footer">
       <div className="landing-footer-content mailpoet-content-center">

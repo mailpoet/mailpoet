@@ -1,4 +1,3 @@
-/* eslint-disable func-names */
 /* eslint-disable no-underscore-dangle */
 /**
  * Dynamic products block.
@@ -302,12 +301,8 @@ Module.DynamicProductsBlockSettingsView = base.BlockSettingsView.extend({
                 _.defaults(
                   {
                     text: `${
-                      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                       data.taxonomies[item.taxonomy].labels.singular_name
-                    }: ${
-                      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                      item.name
-                    }`,
+                    }: ${item.name}`,
                     id: item.term_id,
                   },
                   item,
@@ -443,9 +438,7 @@ Module.DynamicProductsBlockSettingsView = base.BlockSettingsView.extend({
 });
 
 Module.DynamicProductsWidgetView = base.WidgetView.extend({
-  className:
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    `${base.WidgetView.prototype.className} mailpoet_droppable_layout_block`,
+  className: `${base.WidgetView.prototype.className} mailpoet_droppable_layout_block`,
   getTemplate() {
     return window.templates.dynamicProductsInsertion;
   },

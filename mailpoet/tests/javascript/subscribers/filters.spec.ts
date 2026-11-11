@@ -2,7 +2,7 @@ import type { Filter } from '@wordpress/dataviews';
 import {
   SORT_FIELD_TO_ORDERBY,
   fromOrderby,
-  getExactStatus,
+  filtersWithValues,
   hasActiveFilters,
   normalizeRequestFilter,
   requestFilterToViewFilters,
@@ -317,17 +317,6 @@ describe('Subscribers filters: request to view', () => {
 });
 
 describe('Subscribers filters: helpers', () => {
-  it('getExactStatus returns a single isAny status only', () => {
-    expect(getExactStatus([f('status', 'isAny', ['unconfirmed'])])).to.equal(
-      'unconfirmed',
-    );
-    expect(getExactStatus([f('status', 'isAny', ['a', 'b'])])).to.equal(null);
-    expect(getExactStatus([f('status', 'isNone', ['bounced'])])).to.equal(null);
-    expect(getExactStatus([f('tags', 'isAny', ['1'])])).to.equal(null);
-    expect(getExactStatus([f('status', 'isAny', [])])).to.equal(null);
-    expect(getExactStatus(undefined)).to.equal(null);
-  });
-
   it('maps sort fields to orderby and back', () => {
     expect(SORT_FIELD_TO_ORDERBY).to.deep.equal({
       statistics: 'engagement_score',
@@ -343,5 +332,16 @@ describe('Subscribers filters: helpers', () => {
     expect(hasActiveFilters(undefined, undefined)).to.equal(false);
     expect(hasActiveFilters([], 'abc')).to.equal(true);
     expect(hasActiveFilters([f('status', 'isAny', ['x'])], '')).to.equal(true);
+  });
+
+  it('ignores filters without a value, like an emptied primary filter', () => {
+    const emptied = [
+      f('segments', 'isAny', []),
+      f('status', 'isAny', undefined),
+    ];
+    expect(hasActiveFilters(emptied, '')).to.equal(false);
+    expect(
+      filtersWithValues([...emptied, f('status', 'isAny', ['x'])]),
+    ).to.deep.equal([f('status', 'isAny', ['x'])]);
   });
 });

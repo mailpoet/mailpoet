@@ -1,10 +1,28 @@
 #!/bin/bash
 
-# Fetch the WordPress releases RSS feed
-RSS_FEED=$(curl -s https://wordpress.org/news/category/releases/feed/)
+# Fetch the WordPress releases RSS feed. Fail when it can’t be fetched or read,
+# so an error isn’t taken for “no beta is out”.
+RSS_FEED=$(curl -sSf --retry 3 https://wordpress.org/news/category/releases/feed/) || {
+  echo "Could not fetch the WordPress releases feed." >&2
+  exit 1
+}
 
-# Extract the latest version from the feed and convert it to lowercase
-LAST_VERSION=$(echo "$RSS_FEED" | grep -o '<title>WordPress [^<]*</title>' | sed -E 's/<\/?title>//g' | head -n 1 | tr [:upper:] [:lower:])
+# Release titles, newest first, in lowercase
+TITLES=$(echo "$RSS_FEED" | grep -o '<title>WordPress [^<]*</title>' | sed -E 's/<\/?title>//g' | tr [:upper:] [:lower:])
+if [[ -z $TITLES ]]; then
+  echo "The WordPress releases feed has no releases in it." >&2
+  exit 1
+fi
+
+# A minor release (e.g. 7.1.4) can be published after the current beta, so the newest post isn't always the beta
+LAST_VERSION=$(echo "$TITLES" | grep -E 'beta|release candidate' | head -n 1)
+LAST_STABLE_VERSION=$(echo "$TITLES" | grep -vE 'beta|release candidate' | head -n 1 | grep -oE '[0-9]+\.[0-9]+' | head -n 1)
+
+# Skip a beta or RC whose version is already released (e.g. 7.2-RC3 after 7.2)
+LAST_PRERELEASE_VERSION=$(echo "$LAST_VERSION" | grep -oE '[0-9]+\.[0-9]+' | head -n 1)
+if [[ -n $LAST_STABLE_VERSION && -n $LAST_PRERELEASE_VERSION ]] && [[ $(printf '%s\n%s\n' "$LAST_STABLE_VERSION" "$LAST_PRERELEASE_VERSION" | sort -V | tail -n 1) == "$LAST_STABLE_VERSION" ]]; then
+  LAST_VERSION=''
+fi
 
 # Check if a beta or RC version is found
 if [[ $LAST_VERSION == *'beta'* ]]; then

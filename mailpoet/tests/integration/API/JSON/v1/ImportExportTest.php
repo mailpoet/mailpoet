@@ -6,7 +6,9 @@ use MailPoet\API\JSON\v1\ImportExport;
 use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoetVendor\Carbon\Carbon;
 
 class ImportExportTest extends \MailPoetTest {
@@ -73,6 +75,36 @@ class ImportExportTest extends \MailPoetTest {
     $this->endpoint->setupWooCommerceInitialImport();
     $taskCount = $this->scheduledTasksRepository->countBy(['type' => WooCommerceSync::TASK_TYPE]);
     verify($taskCount)->equals(3);
+  }
+
+  public function testAddSegmentCreatesNewSegmentEvenWithExistingId() {
+    $existingSegment = (new SegmentFactory())->withName('Existing list')->withDescription('Existing description')->create();
+
+    $response = $this->endpoint->addSegment([
+      'id' => $existingSegment->getId(),
+      'name' => 'Imported list',
+      'description' => 'Imported description',
+    ]);
+
+    verify($response->status)->equals(200);
+    verify($response->data['id'])->notEquals($existingSegment->getId());
+    verify($response->data['name'])->equals('Imported list');
+    $this->entityManager->refresh($existingSegment);
+    verify($existingSegment->getName())->equals('Existing list');
+    verify($existingSegment->getDescription())->equals('Existing description');
+  }
+
+  public function testAddSegmentIgnoresPublicDescription() {
+    $response = $this->endpoint->addSegment([
+      'name' => 'Imported list',
+      'description' => 'Imported description',
+      'public_description' => 'Public description',
+    ]);
+
+    verify($response->status)->equals(200);
+    $segment = $this->entityManager->find(SegmentEntity::class, $response->data['id']);
+    $this->assertInstanceOf(SegmentEntity::class, $segment);
+    verify($segment->getPublicDescription())->equals('');
   }
 
   private function createTask($type, $status = null, $scheduledAt = null) {

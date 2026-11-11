@@ -65,25 +65,11 @@ anchors:
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
 
-  only_trunk_and_release: &only_trunk_and_release
-    filters:
-      branches:
-        only:
-          - trunk
-          - release
-
   only_release: &only_release
     filters:
       branches:
         only:
           - release
-
-  multisite_acceptance_config: &multisite_acceptance_config
-    multisite: 1
-    requires:
-      - unit_tests
-      - static_analysis
-    <<: *only_trunk_and_release
 
   command_add_github_key: &command_add_github_key
     command: |
@@ -96,21 +82,10 @@ executors:
     docker:
       - image: mailpoet/wordpress:7.4_20261005.1
 
-  wpcli_php_max_wporg:
-    <<: *default_job_config
-    docker:
-      - image: mailpoet/wordpress:8.1_20261005.1 # We need to use 8.1 to emulate the WP.org environment
-
   wpcli_php_latest:
     <<: *default_job_config
     docker:
       - image: mailpoet/wordpress:8.5_20261014.1
-
-  wpcli_php_mysql_oldest:
-    <<: *default_job_config
-    docker:
-      - image: mailpoet/wordpress:7.4_20261005.1
-      - image: cimg/mysql:5.7
 
   wpcli_php_mysql_latest:
     <<: *default_job_config
@@ -173,9 +148,6 @@ jobs:
             ./do doctrine:generate-cache
             php -d register_argc_argv=1 ../tests_env/vendor/bin/codecept build
             ./do twig:generate-cache
-      - run:
-          name: 'Check Prettier formatting'
-          command: ./do qa:prettier-check
       - save_cache:
           key: tools-{{ checksum "tools/install.php" }}
           paths:
@@ -210,10 +182,7 @@ jobs:
           name: Download additional WP Plugins for tests
           command: |
             export GH_TOKEN="${WP_GITHUB_WOOCOMMERCE_TOKEN}"
-            ./do download:woo-commerce-zip 11.2.1
-            ./do download:woo-commerce-subscriptions-zip 9.3.0
-            ./do download:woo-commerce-memberships-zip 1.30.1
-            ./do download:automate-woo-zip 6.9.4
+            ../tests_env/download-test-plugins.sh
       - run:
           name: Dump tests ENV variables for acceptance tests
           command: |
@@ -267,119 +236,13 @@ jobs:
             - .node
             - mailpoet
 
-  static_analysis:
-    executor: wpcli_php_latest
-    resource_class: medium+
-    working_directory: /home/circleci/mailpoet/mailpoet
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'Static analysis'
-          command: ./do qa:phpstan
-  security_analysis:
-    working_directory: /home/circleci/mailpoet/mailpoet
-    machine:
-      image: default
-      docker_layer_caching: false
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - add_ssh_keys
-      - run:
-          name: 'Add GitHub to known_hosts'
-          <<: *command_add_github_key
-      - run:
-          name: 'Set up PHP'
-          command: |
-            sudo apt update
-            sudo apt install -y php8.1-cli
-      - run:
-          name: 'QA Security'
-          command: |
-            # Forked pull requests do not get project secrets, so skip the
-            # steps that need them instead of failing the whole workflow.
-            if [ -n "${CIRCLE_PR_USERNAME:-}" ]; then
-              echo "Forked pull request from ${CIRCLE_PR_USERNAME}: the wpscan-semgrep-rules deploy key is not available. Skipping."
-              exit 0
-            fi
-            ./do qa:semgrep
-  qa_js:
-    executor: wpcli_php_latest
-    resource_class: medium
-    working_directory: /home/circleci/mailpoet/mailpoet
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'QA Frontend Assets'
-          command: ./do qa:frontend-assets
-  qa_php:
-    executor: wpcli_php_latest
-    working_directory: /home/circleci/mailpoet/mailpoet
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'QA PHP'
-          command: ./do qa:php
-  qa_php_oldest:
-    executor: wpcli_php_oldest
-    working_directory: /home/circleci/mailpoet/mailpoet
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'QA PHP'
-          command: ./do qa:php
-  qa_php_max_wporg:
-    executor: wpcli_php_max_wporg
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'QA PHP'
-          command: ./do qa:php-max-wporg
-  js_tests:
-    executor: wpcli_php_latest
-    working_directory: /home/circleci/mailpoet/mailpoet
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'Preparing test results folder'
-          command: mkdir test-results
-      - run:
-          name: 'JS Newsletter Editor Tests'
-          command: |
-            mkdir test-results/mocha
-            ./do compile:js --env production --only-tests
-            ./do t:newsletter-editor test-results/mocha/newsletter_editor_junit.xml
-      - run:
-          name: 'JS Tests'
-          command: |
-            ./do t:j test-results/mocha/junit.xml
-      - store_test_results:
-          path: test-results/mocha
-      - store_artifacts:
-          path: test-results/mocha
-          destination: mocha
   acceptance_tests:
-    parallelism: << parameters.parallelism >>
+    parallelism: 20
     working_directory: /home/circleci/mailpoet/mailpoet
     machine:
       image: default
       docker_layer_caching: false
     parameters:
-      parallelism:
-        type: integer
-        default: 20
-      multisite:
-        type: integer
-        default: 0
-      group:
-        type: string
-        default: ''
       mysql_command:
         type: string
         default: ''
@@ -404,28 +267,7 @@ jobs:
       automate_woo_version:
         type: string
         default: ''
-      blockbased_theme:
-        type: integer
-        default: 0
-      enable_hpos:
-        type: integer
-        default: 0
-      enable_hpos_sync:
-        type: integer
-        default: 0
-      disable_hpos:
-        type: integer
-        default: 0
-      use_wordpress_beta:
-        type: boolean
-        default: false
-      use_woocommerce_beta:
-        type: boolean
-        default: false
       wordpress_version:
-        type: string
-        default: ''
-      gutenberg_version:
         type: string
         default: ''
     environment:
@@ -434,7 +276,6 @@ jobs:
       CODECEPTION_IMAGE_VERSION: << parameters.codeception_image_version >>
       WORDPRESS_IMAGE_VERSION: << parameters.wordpress_image_version >>
       WORDPRESS_VERSION: << parameters.wordpress_version >>
-      GUTENBERG_VERSION: << parameters.gutenberg_version >>
     steps:
       - attach_workspace:
           at: /home/circleci
@@ -442,36 +283,8 @@ jobs:
           name: 'Set up virtual host'
           command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
       - run:
-          name: Check for Latest WordPress Beta Version
-          command: |
-            if [ "<< parameters.use_wordpress_beta >>" == "true" ]; then
-              LATEST_WP_BETA=$(../.circleci/check_wordpress_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
-              if [ -z "$LATEST_WP_BETA" ]; then
-                echo "No latest beta version found. Ending job early."
-                circleci-agent step halt
-              else
-                echo "export WORDPRESS_VERSION=$LATEST_WP_BETA" >> $BASH_ENV
-                echo "Using WordPress Beta Version: $LATEST_WP_BETA"
-              fi
-            else
-              echo "Not using WordPress Beta Version"
-            fi
-      - run:
-          name: Check for Latest WooCommerce Beta Version
-          command: |
-            if [ "<< parameters.use_woocommerce_beta >>" == "true" ]; then
-              LATEST_WC_BETA=$(../.circleci/check_woocommerce_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
-              if [ -z "$LATEST_WC_BETA" ]; then
-                echo "No WooCommerce Beta version found. Ending job early."
-                circleci-agent step halt
-              else
-                echo "export WOOCOMMERCE_VERSION=$LATEST_WC_BETA" >> $BASH_ENV
-                echo "Using WooCommerce Beta Version: $LATEST_WC_BETA"
-              fi
-            else
-              echo "export WOOCOMMERCE_VERSION=<< parameters.woo_core_version >>" >> $BASH_ENV
-              echo "Not using WooCommerce Beta Version"
-            fi
+          name: Set the WooCommerce version
+          command: echo "export WOOCOMMERCE_VERSION=<< parameters.woo_core_version >>" >> $BASH_ENV
       - run:
           name: 'Pull test docker images'
           # Pull docker images with 3 retries
@@ -538,23 +351,20 @@ jobs:
             if [ -e $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json ]; then
               sed -i.bak 's#/wp-core/wp-content/plugins/mailpoet/##g' $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json
             fi
-            export MULTISITE=<< parameters.multisite >>
-            export BLOCKBASED_THEME=<< parameters.blockbased_theme >>
-            export ENABLE_HPOS=<< parameters.enable_hpos >>
-            export ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >>
-            export DISABLE_HPOS=<< parameters.disable_hpos >>
             # `circleci tests run` splits the list and launches the tests itself, which is what
             # lets CircleCI offer "Rerun failed tests" on this job. `circleci tests split` cannot.
-            # in case group is defined find only tests containing the group
-            if [[ -n '<< parameters.group >>' ]]; then
-              grep -rw 'tests/acceptance' -e '@group << parameters.group >>' | sed -e "s/:.*//"
-            else
-              circleci tests glob "tests/acceptance/**/*Cest.php"
-            fi | circleci tests run \
-              --command='../.circleci/run_acceptance_tests.sh' \
+            # The tests are listed one per Cest method, so the split balances by test, not by file.
+            ../.circleci/list_tests.sh tests/acceptance '' | circleci tests run \
+              --command='../.circleci/run_split_tests.sh codeception_acceptance' \
               --split-by=timings \
               --timings-type=filename \
               --verbose
+      - run:
+          # The stored timings are keyed by the `file` attribute, which has to match the
+          # file:method entries the split was given.
+          name: Key the test timings by test
+          when: always
+          command: ../.circleci/junit_file_per_test.sh tests/_output/report.xml
       - run:
           name: Check exceptions
           command: |
@@ -630,42 +440,8 @@ jobs:
           path: tests/performance/_screenshots
       - store_test_results:
           path: tests/performance/_output
-  unit_tests:
-    working_directory: /home/circleci/mailpoet/mailpoet
-    parameters:
-      executor:
-        type: string
-        default: wpcli_php_mysql_latest
-    executor: << parameters.executor >>
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'Set up virtual host'
-          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
-      - run:
-          name: 'Prepare example.com for testing'
-          command: echo 127.0.0.1 example.com | sudo tee -a /etc/hosts
-      - run:
-          # Some tools we use may need different version based on PHP version used in docker
-          name: Ensure correct versions of tools
-          command: COMPOSER_DEV_MODE=1 php tools/install.php
-      - run:
-          name: 'Set up test environment'
-          command: source ../.circleci/setup.bash && setup php7
-      - run:
-          name: 'PHP Unit tests'
-          command: |
-            ./do t:u --xml
-      - store_test_results:
-          path: tests/_output
-      - store_artifacts:
-          path: tests/_output
-          destination: codeception
-      - store_artifacts:
-          path: /tmp/fake-mailer/
-          destination: fake-mailer
   integration_tests:
+    parallelism: 1
     working_directory: /home/circleci/mailpoet/mailpoet
     machine:
       image: default
@@ -683,27 +459,6 @@ jobs:
       wordpress_image_version:
         type: string
         default: ''
-      group:
-        type: string
-        default: ''
-      skip_group:
-        type: string
-        default: ''
-      skip_plugins:
-        type: integer
-        default: 0
-      enable_hpos:
-        type: integer
-        default: 0
-      enable_hpos_sync:
-        type: integer
-        default: 0
-      disable_hpos:
-        type: integer
-        default: 0
-      multisite:
-        type: integer
-        default: 0
       mysql_command:
         type: string
         default: ''
@@ -722,12 +477,6 @@ jobs:
       automate_woo_version:
         type: string
         default: ''
-      use_wordpress_beta:
-        type: boolean
-        default: false
-      use_woocommerce_beta:
-        type: boolean
-        default: false
       wordpress_version:
         type: string
         default: ''
@@ -735,36 +484,8 @@ jobs:
       - attach_workspace:
           at: /home/circleci
       - run:
-          name: Check for Latest WordPress Beta Version
-          command: |
-            if [ "<< parameters.use_wordpress_beta >>" == "true" ]; then
-              LATEST_WP_BETA=$(../.circleci/check_wordpress_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
-              if [ -z "$LATEST_WP_BETA" ]; then
-                echo "No latest beta version found. Ending job early."
-                circleci-agent step halt
-              else
-                echo "export WORDPRESS_VERSION=$LATEST_WP_BETA" >> $BASH_ENV
-                echo "Using WordPress Beta Version: $LATEST_WP_BETA"
-              fi
-            else
-              echo "Not using WordPress Beta Version"
-            fi
-      - run:
-          name: Check for Latest WooCommerce Beta Version
-          command: |
-            if [ "<< parameters.use_woocommerce_beta >>" == "true" ]; then
-              LATEST_WC_BETA=$(../.circleci/check_woocommerce_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
-              if [ -z "$LATEST_WC_BETA" ]; then
-                echo "No WooCommerce Beta version found. Ending job early."
-                circleci-agent step halt
-              else
-                echo "export WOOCOMMERCE_VERSION=$LATEST_WC_BETA" >> $BASH_ENV
-                echo "Using WooCommerce Beta Version: $LATEST_WC_BETA"
-              fi
-            else
-              echo "export WOOCOMMERCE_VERSION=<< parameters.woo_core_version >>" >> $BASH_ENV
-              echo "Not using WooCommerce Beta Version"
-            fi
+          name: Set the WooCommerce version
+          command: echo "export WOOCOMMERCE_VERSION=<< parameters.woo_core_version >>" >> $BASH_ENV
       - run:
           name: 'Pull test docker images'
           # Pull docker images with 3 retries
@@ -822,43 +543,17 @@ jobs:
           name: 'PHP Integration tests'
           command: |
             mkdir -m 777 -p tests/_output/exceptions
-            cd ../tests_env/docker
-            args=(
-              --steps
-              --debug
-              -vvv
-              --html
-              --xml
-            )
-            if [[ -n '<< parameters.group >>' ]]; then
-              args+=(--group << parameters.group >>)
+            # Convert test result filename values to be relative paths because the circleci CLI requires exact matches
+            if [ -e $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json ]; then
+              sed -i.bak 's#/wp-core/wp-content/plugins/mailpoet/##g' $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json
             fi
-            if [[ -n '<< parameters.skip_group >>' ]]; then
-              args+=(--skip-group << parameters.skip_group >>)
-            fi
-            docker compose run -e SKIP_DEPS=1 \
-              -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
-              -e CIRCLE_JOB=${CIRCLE_JOB} \
-              -e GH_TOKEN=${WP_GITHUB_WOOCOMMERCE_TOKEN} \
-              -e SKIP_PLUGINS=<< parameters.skip_plugins >> \
-              -e WP_TEST_MAILER_ENABLE_SENDING=${WP_TEST_MAILER_ENABLE_SENDING} \
-              -e WP_TEST_ENABLE_NETWORK_TESTS=${WP_TEST_ENABLE_NETWORK_TESTS} \
-              -e WP_TEST_MAILER_MAILPOET_API=${WP_TEST_MAILER_MAILPOET_API} \
-              -e WP_TEST_MAILER_SENDGRID_API=${WP_TEST_MAILER_SENDGRID_API} \
-              -e WP_TEST_MAILER_AMAZON_ACCESS=${WP_TEST_MAILER_AMAZON_ACCESS} \
-              -e WP_TEST_MAILER_AMAZON_REGION=${WP_TEST_MAILER_AMAZON_REGION} \
-              -e WP_TEST_MAILER_AMAZON_SECRET=${WP_TEST_MAILER_AMAZON_SECRET} \
-              -e WP_TEST_IMPORT_MAILCHIMP_API=${WP_TEST_IMPORT_MAILCHIMP_API} \
-              -e WP_TEST_IMPORT_MAILCHIMP_LISTS=${WP_TEST_IMPORT_MAILCHIMP_LISTS} \
-              -e WP_TEST_MAILER_SMTP_HOST=${WP_TEST_MAILER_SMTP_HOST} \
-              -e WP_TEST_MAILER_SMTP_LOGIN=${WP_TEST_MAILER_SMTP_LOGIN} \
-              -e WP_TEST_MAILER_SMTP_PASSWORD=${WP_TEST_MAILER_SMTP_PASSWORD} \
-              -e MULTISITE=<< parameters.multisite >> \
-              -e ENABLE_HPOS=<< parameters.enable_hpos >> \
-              -e ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >> \
-              -e DISABLE_HPOS=<< parameters.disable_hpos >> \
-              -e WORDPRESS_VERSION=${WORDPRESS_VERSION} \
-              codeception_integration "${args[@]}"
+            # `circleci tests run` splits the files over the job’s containers by their stored timings
+            # and launches the tests itself, which is what lets CircleCI offer “Rerun failed tests”.
+            ../.circleci/list_tests.sh tests/integration '' | circleci tests run \
+              --command='../.circleci/run_split_tests.sh codeception_integration' \
+              --split-by=timings \
+              --timings-type=filename \
+              --verbose
       - store_test_results:
           path: tests/_output
       - store_artifacts:
@@ -918,7 +613,7 @@ jobs:
             # Copy built ZIP to local directory for easier access from QIT
             cp /home/circleci/mailpoet/mailpoet.zip .
             # Authenticate in QIT
-            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
+            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --qit_token="${QIT_PARTNER_SECRET}"
       - run:
           name: 'QIT Security Test'
           command: |
@@ -940,128 +635,6 @@ jobs:
       - store_artifacts:
           path: tests/_output
 
-  qit_malware_scan:
-    executor: wpcli_php_latest
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'Set up environment'
-          command: |
-            # Copy built ZIP to local directory for easier access from QIT
-            cp /home/circleci/mailpoet/mailpoet.zip .
-            # Authenticate in QIT
-            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
-      - run:
-          name: 'QIT Malware Scan'
-          command: ./do qa:qit-malware | tee tests/_output/qit-malware
-      - run:
-          name: 'Retrieve test results'
-          command: |
-            grep "Result Url" tests/_output/qit-malware | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
-          when: always
-      - store_artifacts:
-          path: tests/_output
-
-  qit_php_compatibility:
-    executor: wpcli_php_latest
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'Set up environment'
-          command: |
-            # Copy built ZIP to local directory for easier access from QIT
-            cp /home/circleci/mailpoet/mailpoet.zip .
-            # Authenticate in QIT
-            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
-      - run:
-          name: 'QIT PHP Compatibility Check'
-          command: ./do qa:qit-php-compatibility | tee tests/_output/qit-php-compatibility
-      - run:
-          name: 'Retrieve test results'
-          command: |
-            grep "Result Url" tests/_output/qit-php-compatibility | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
-          when: always
-      - store_artifacts:
-          path: tests/_output
-
-  qit_activation_tests:
-    executor: wpcli_php_latest
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'Set up environment'
-          command: |
-            # Copy built ZIP to local directory for easier access from QIT
-            cp /home/circleci/mailpoet/mailpoet.zip .
-            # Authenticate in QIT
-            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
-      - run:
-          name: 'QIT Activation Tests'
-          command: |
-            echo "Using WooCommerce RC Version"
-            ./do qa:qit-activation --wc=rc | tee tests/_output/qit-activation
-      - run:
-          name: 'Retrieve test results'
-          command: |
-            grep "Result Url" tests/_output/qit-activation | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
-          when: always
-      - store_artifacts:
-          path: tests/_output
-
-  qit_woo_api_tests:
-    executor: wpcli_php_latest
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'Set up environment'
-          command: |
-            # Copy built ZIP to local directory for easier access from QIT
-            cp /home/circleci/mailpoet/mailpoet.zip .
-            # Authenticate in QIT
-            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
-      - run:
-          name: 'QIT Woo API Tests'
-          command: |
-            echo "Using WooCommerce RC Version"
-            ./do qa:qit-woo-api --wc=rc | tee tests/_output/qit-woo-api
-      - run:
-          name: 'Retrieve test results'
-          command: |
-            grep "Result Url" tests/_output/qit-woo-api | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
-          when: always
-      - store_artifacts:
-          path: tests/_output
-
-  qit_woo_e2e_tests:
-    executor: wpcli_php_latest
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          name: 'Set up environment'
-          command: |
-            # Copy built ZIP to local directory for easier access from QIT
-            cp /home/circleci/mailpoet/mailpoet.zip .
-            # Authenticate in QIT
-            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
-      - run:
-          name: 'QIT Woo E2E Tests'
-          no_output_timeout: 1h # Woo E2E tests usually takes ~45m
-          command: |
-            echo "Using WooCommerce RC Version"
-            ./do qa:qit-woo-e2e --wc=rc | tee tests/_output/qit-woo-e2e
-      - run:
-          name: 'Retrieve test results'
-          command: |
-            grep "Result Url" tests/_output/qit-woo-e2e | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
-          when: always
-      - store_artifacts:
-          path: tests/_output
-
 workflows:
   build_and_test:
     jobs:
@@ -1072,122 +645,10 @@ workflows:
           <<: *only_release
           requires:
             - build
-      - unit_tests:
-          <<: *slack-fail-post-step
-          name: unit_tests
-          requires:
-            - build
-      - static_analysis:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - security_analysis:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - qa_js:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - qa_php:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - qa_php_oldest:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - qa_php_max_wporg:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_tests_base_and_woo
-          enable_hpos: 1
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          <<: *only_trunk_and_release
-          name: acceptance_tests_woo_hpos_sync_on
-          parallelism: 8
-          group: woo
-          enable_hpos_sync: 1
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          <<: *only_trunk_and_release
-          name: acceptance_tests_woo_hpos_off
-          parallelism: 8
-          group: woo
-          disable_hpos: 1
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_tests_blockbased_theme
-          parallelism: 8
-          group: frontend
-          blockbased_theme: 1
-          requires:
-            - build
-      - js_tests:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          group: woo
-          enable_hpos_sync: 1
-          name: integration_test_woo_hpos_sync_on
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          group: woo
-          name: integration_test_woo_hpos_on
-          enable_hpos: 1
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          group: woo
-          disable_hpos: 1
-          name: integration_test_woo_hpos_off
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          skip_group: woo
-          skip_plugins: 1
-          name: integration_test_base
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          <<: *multisite_acceptance_config
-          name: acceptance_tests_multisite
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          <<: *only_trunk_and_release
-          multisite: 1
-          name: integration_tests_multisite
-          requires:
-            - build
       - acceptance_tests:
           <<: *slack-fail-post-step
           <<: *only_release
           name: acceptance_with_premium_latest
-          requires:
-            - build_premium
-      - unit_tests:
-          <<: *slack-fail-post-step
-          <<: *only_release
-          name: unit_with_premium_latest
           requires:
             - build_premium
       - integration_tests:
@@ -1198,25 +659,10 @@ workflows:
             - build_premium
       - build_release_zip:
           <<: *slack-fail-post-step
+          # Only the Playground previews of pull requests read this zip. Releases take it from
+          # GitHub Actions (.github/workflows/checks.yml).
           requires:
             - build
-            - acceptance_tests_base_and_woo
-            - js_tests
-            - integration_test_base
-            - integration_test_woo_hpos_on
-            - integration_test_woo_hpos_off
-            - integration_test_woo_hpos_sync_on
-            - integration_with_premium_latest
-            - acceptance_tests_woo_hpos_sync_on
-            - acceptance_tests_woo_hpos_off
-            - acceptance_tests_blockbased_theme
-            - static_analysis
-            - unit_tests
-            - qa_js
-            - qa_php
-            - qa_php_oldest
-            - security_analysis
-            - qa_php_max_wporg
       - lint_release_zip_php74:
           <<: *slack-fail-post-step
           requires:
@@ -1237,46 +683,6 @@ workflows:
     jobs:
       - build:
           <<: *slack-fail-post-step
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_latest
-          mysql_image: mysql:8.3
-          mysql_command: --default-authentication-plugin=mysql_native_password
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_latest_blockbased_theme
-          group: frontend
-          blockbased_theme: 1
-          mysql_image: mysql:8.3
-          mysql_command: --default-authentication-plugin=mysql_native_password
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_gutenberg_latest
-          group: gutenberg-latest
-          gutenberg_version: latest
-          parallelism: 5
-          mysql_image: mysql:8.3
-          mysql_command: --default-authentication-plugin=mysql_native_password
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_oldest
-          woo_core_version: 11.1.2
-          woo_subscriptions_version: 9.2.0
-          woo_memberships_version: 1.29.2
-          automate_woo_version: 6.8.3
-          mysql_command: --max_allowed_packet=100M
-          mysql_image: mysql:5.6
-          codeception_image_version: 7.4-cli_20220605.0
-          wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
-          wordpress_version: 7.0.3
-          requires:
-            - build
       # Disabled: the performance testing site https://mpperftesting.com is no longer
       # available (the domain has expired), so this step always fails. Re-enable once a
       # valid performance testing URL is configured.
@@ -1289,38 +695,6 @@ workflows:
       #          scenario: nightlytests
       #          requires:
       #            - build
-      - unit_tests:
-          <<: *slack-fail-post-step
-          name: unit_latest
-          requires:
-            - build
-      - unit_tests:
-          <<: *slack-fail-post-step
-          name: unit_oldest
-          executor: wpcli_php_mysql_oldest
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          name: integration_latest
-          mysql_image: mysql:8.3
-          mysql_command: --default-authentication-plugin=mysql_native_password
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          name: integration_oldest
-          woo_core_version: 11.1.2
-          woo_subscriptions_version: 9.2.0
-          woo_memberships_version: 1.29.2
-          automate_woo_version: 6.8.3
-          codeception_image_version: 7.4-cli_20220605.0
-          wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI # We use image with PHP 7.4 and install required WordPress version via CLI
-          wordpress_version: 7.0.3
-          mysql_command: --max_allowed_packet=100M
-          mysql_image: mysql:5.6
-          requires:
-            - build
       - build_premium:
           <<: *slack-fail-post-step
           requires:
@@ -1332,41 +706,6 @@ workflows:
             - build_premium
       - integration_tests:
           <<: *slack-fail-post-step
-          name: integration_tests_wordpress_beta
-          use_wordpress_beta: true
-          mysql_image: mysql:8.3
-          mysql_command: --default-authentication-plugin=mysql_native_password
-          requires:
-            - build
-      - integration_tests:
-          <<: *slack-fail-post-step
-          name: integration_tests_woocommerce_beta
-          use_woocommerce_beta: true
-          mysql_image: mysql:8.3
-          mysql_command: --default-authentication-plugin=mysql_native_password
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_tests_wordpress_beta
-          enable_hpos: 1
-          use_wordpress_beta: true
-          requires:
-            - build
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_tests_woocommerce_beta
-          enable_hpos: 1
-          use_woocommerce_beta: true
-          requires:
-            - build
-      - unit_tests:
-          <<: *slack-fail-post-step
-          name: unit_with_premium_latest
-          requires:
-            - build_premium
-      - integration_tests:
-          <<: *slack-fail-post-step
           name: integration_with_premium_latest
           requires:
             - build_premium
@@ -1374,69 +713,25 @@ workflows:
           <<: *slack-fail-post-step
           name: acceptance_with_premium_oldest
           woo_core_version: 11.1.2
-          woo_subscriptions_version: 9.2.0
+          woo_subscriptions_version: 9.3.0
           woo_memberships_version: 1.29.2
           automate_woo_version: 6.8.3
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
-          wordpress_version: 7.0.3
+          wordpress_version: 7.0.4
           requires:
             - build_premium
       - integration_tests:
           <<: *slack-fail-post-step
           name: integration_with_premium_oldest
           woo_core_version: 11.1.2
-          woo_subscriptions_version: 9.2.0
+          woo_subscriptions_version: 9.3.0
           woo_memberships_version: 1.29.2
           automate_woo_version: 6.8.3
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: 6.1.1-php7.4 # We use image with PHP 7.4 and install required WordPress version via CLI
-          wordpress_version: 7.0.3
+          wordpress_version: 7.0.4
           mysql_command: --max_allowed_packet=100M
           mysql_image: mysql:5.6
           requires:
             - build_premium
-
-  nightly_qit:
-    triggers:
-      - schedule:
-          cron: '0 2 * * 2,3' # Every Tuesday and Wednesday at 2am UTC
-          filters:
-            branches:
-              only:
-                - trunk
-    jobs:
-      - build:
-          <<: *slack-fail-post-step
-      - build_release_zip:
-          <<: *slack-fail-post-step
-          requires:
-            - build
-      - lint_release_zip_php74:
-          <<: *slack-fail-post-step
-          requires:
-            - build_release_zip
-      - qit_security_scan:
-          <<: *slack-fail-post-step
-          requires:
-            - build_release_zip
-      - qit_activation_tests:
-          <<: *slack-fail-post-step
-          requires:
-            - build_release_zip
-      - qit_malware_scan:
-          <<: *slack-fail-post-step
-          requires:
-            - build_release_zip
-      - qit_php_compatibility:
-          <<: *slack-fail-post-step
-          requires:
-            - build_release_zip
-      - qit_woo_api_tests:
-          <<: *slack-fail-post-step
-          requires:
-            - build_release_zip
-      - qit_woo_e2e_tests:
-          <<: *slack-fail-post-step
-          requires:
-            - build_release_zip

@@ -557,7 +557,7 @@ class SendEmailAction implements Action {
     $email->setSenderAddress($args['sender_address'] ?? '');
     $email->setReplyToName($args['reply_to_name'] ?? '');
     $email->setReplyToAddress($args['reply_to_address'] ?? '');
-    $email->setGaCampaign($args['ga_campaign'] ?? '');
+    $email->setGaCampaign($this->wp->wpStripAllTags((string)($args['ga_campaign'] ?? ''), true));
     $this->storeNewsletterOption(
       $email,
       NewsletterOptionFieldEntity::NAME_GROUP,
@@ -714,7 +714,7 @@ class SendEmailAction implements Action {
     $email = $this->newslettersRepository->findOneBy([
       'id' => $emailId,
     ]);
-    if (!$email) {
+    if (!$email || !in_array($email->getType(), [NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL], true)) {
       throw new \MailPoet\Automation\Engine\Exceptions\InvalidStateException('Automation email entity not found for duplication.');
     }
     try {

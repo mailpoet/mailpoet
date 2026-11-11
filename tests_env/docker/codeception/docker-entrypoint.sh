@@ -22,6 +22,10 @@ chown www-data:www-data wp-content/uploads
 chmod 755 wp-content/plugins
 chmod -R 777 wp-content/uploads
 chmod -R 777 /mailhog-data
+# The tests run WordPress as root here and as www-data in the WordPress container.
+# Whoever logs first creates debug.log, so create it writable for both.
+touch wp-content/debug.log
+chmod 666 wp-content/debug.log
 
 # deleting configs in case are set in previous run
 wp config delete MULTISITE > /dev/null 2>&1
@@ -85,6 +89,41 @@ add_filter('action_scheduler_store_class', static function () {
 add_filter('action_scheduler_logger_class', static function () {
     return 'ActionScheduler_DBLogger';
 }, 200);
+PHP
+
+# Messages from outside our code that the site logs as PHP errors, which fail the tests.
+cat > /wp-core/wp-content/mu-plugins/mailpoet-test-ignored-errors.php <<'PHP'
+<?php
+// Don’t check WordPress.org for updates; an unreachable WordPress.org logs a warning.
+remove_action('admin_init', '_maybe_update_core');
+remove_action('admin_init', '_maybe_update_plugins');
+remove_action('admin_init', '_maybe_update_themes');
+remove_action('load-plugins.php', 'wp_update_plugins');
+remove_action('load-themes.php', 'wp_update_themes');
+
+// An Action Scheduler runner throws this when its action was deleted while it ran.
+// CleanupExtension waits for running actions before it restores the database, but a
+// runner can still lose its action that way (seen once at the start of a test).
+// Keep only this message out of the error log.
+add_action('plugins_loaded', static function () {
+  if (!class_exists(\Tracy\Debugger::class) || !\Tracy\Debugger::$productionMode) {
+    return;
+  }
+  \Tracy\Debugger::setLogger(new class(\Tracy\Debugger::getLogger()) implements \Tracy\ILogger {
+    private $logger;
+
+    public function __construct(\Tracy\ILogger $logger) {
+      $this->logger = $logger;
+    }
+
+    public function log($value, $level = self::INFO) {
+      if ($value instanceof \Throwable && strpos($value->getMessage(), 'we were unable to mark this action as having failed') !== false) {
+        return null;
+      }
+      return $this->logger->log($value, $level);
+    }
+  });
+});
 PHP
 
 # Load Composer dependencies
@@ -274,7 +313,7 @@ if [[ $CIRCLE_JOB == *"_with_premium_"* || $WITH_PREMIUM == "1" ]]; then
   # Copy MailPoet Premium to plugin path
 #  cp -r -n /project/mailpoet-premium /wp-core/wp-content/plugins/mailpoet-premium
   chown www-data:www-data /wp-core/wp-content/plugins/mailpoet-premium/generated
-  chmod -R 755 /wp-core/wp-content/plugins/mailpoet-premium/generated
+  chmod -R a+rwX /wp-core/wp-content/plugins/mailpoet-premium/generated
   # Activate MailPoet Premium
   wp plugin activate mailpoet-premium/mailpoet-premium.php || { echo "MailPoet Premium plugin activation failed!" ; exit 1; }
 fi

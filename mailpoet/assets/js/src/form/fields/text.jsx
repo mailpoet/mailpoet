@@ -2,7 +2,7 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Input } from 'common/form/input/input';
 
-// eslint-disable-next-line react/prefer-stateless-function, max-len
+// eslint-disable-next-line react/prefer-stateless-function
 class FormFieldText extends Component {
   render() {
     const { onValueChange = () => {}, onBlurEvent = () => {} } = this.props;

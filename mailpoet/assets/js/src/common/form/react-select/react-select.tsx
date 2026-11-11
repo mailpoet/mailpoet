@@ -88,7 +88,7 @@ type MultiValueLabelProps = {
     count?: ReactNode;
     tag?: ReactNode;
   };
-  // eslint-disable-next-line @typescript-eslint/ban-types -- we need to match react-select
+
   innerProps: object;
 };
 

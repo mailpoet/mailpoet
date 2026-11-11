@@ -1,8 +1,13 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
 use Codeception\Util\Locator;
+use Facebook\WebDriver\Exception\StaleElementReferenceException;
+use Facebook\WebDriver\Exception\UnknownErrorException;
 use Facebook\WebDriver\Exception\UnrecognizedExceptionException;
 use Facebook\WebDriver\Exception\WebDriverException;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\Cache\TransientCache;
 use MailPoet\DI\ContainerWrapper;
@@ -200,14 +205,14 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   private function clickListingRowActionWithJavaScript(string $itemName, string $link): bool {
-    $encodedItemName = json_encode($itemName);
+    // Same row XPath as the WebDriver locators. Matching an element's whole
+    // textContent misses titles with extra text, like "Name (private)".
+    $encodedRowXpath = json_encode('//tr[.//*[normalize-space(text())=' . self::xpathString($itemName) . ']]');
     $encodedLink = json_encode($link);
     return (bool)$this->executeJS(
       <<<JS
-      const itemName = {$encodedItemName};
       const link = {$encodedLink};
-      const rows = Array.from(document.querySelectorAll('tr'));
-      const row = rows.find((tableRow) => Array.from(tableRow.querySelectorAll('*')).some((element) => element.textContent.trim() === itemName));
+      const row = document.evaluate({$encodedRowXpath}, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
       if (!row) return false;
       const action = Array.from(row.querySelectorAll('a, button')).find((element) => element.textContent.trim() === link);
       if (!action) return false;
@@ -297,6 +302,24 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->see($value, $element);
   }
 
+  /**
+   * Select an option in a SearchableChipSelectControl inside the given container.
+   */
+  public function selectOptionInChipSelect(string $value, string $container): void {
+    $i = $this;
+    $input = "$container input[role='combobox']";
+    $i->waitForElement($input);
+    $i->fillField($input, $value);
+    $i->waitForText($value, 10, "[role='listbox'] [role='option']");
+    $i->pressKey($input, WebDriverKeys::ENTER);
+    $i->seeSelectedInChipSelect($value, $container);
+  }
+
+  public function seeSelectedInChipSelect(string $value, string $container): void {
+    $i = $this;
+    $i->waitForText($value, 10, "$container [role='toolbar']");
+  }
+
   public function selectOptionInReactSelect($value, $selector) {
     $i = $this;
     $i->waitForElement($selector);
@@ -351,14 +374,14 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function selectAllListingItems() {
     $i = $this;
-    $dataViewsSelectAll = ['xpath' => '//*[contains(concat(" ", normalize-space(@class), " "), " mailpoet-dataviews ")]//table//thead//input[@type="checkbox"]'];
+    $dataViewsSelectAll = ['xpath' => '//*[contains(concat(" ", normalize-space(@class), " "), " mailpoet-dataviews ")]//table//thead//*[@role="checkbox"]'];
     $i->waitForElementVisible($dataViewsSelectAll);
     $i->click($dataViewsSelectAll);
     $i->waitForJS(<<<'JS'
       const root = document.querySelector('.mailpoet-dataviews');
       if (!root) return false;
-      return root.querySelector('.dataviews-bulk-actions-footer') !== null
-        || Array.from(root.querySelectorAll('tbody input[type="checkbox"]')).some((checkbox) => checkbox.checked);
+      return root.querySelector('.dataviews-bulk-actions-footer__item-count') !== null
+        || root.querySelector('tbody [role="checkbox"][aria-checked="true"]') !== null;
     JS);
   }
 
@@ -389,6 +412,18 @@ class AcceptanceTester extends \Codeception\Actor {
         return false;
       JS);
     }
+  }
+
+  /**
+   * The send panel ignores clicks on Send in the first 500 ms after it opens,
+   * so a double-click on “Review & send” doesn’t send (use-guarded-send.ts).
+   * A fast test run can get there sooner, so wait out that window first.
+   */
+  public function clickSendPanelSendButton(): void {
+    $i = $this;
+    $i->waitForElementClickable('[data-automation-id="email_send_panel_send_button"]');
+    $i->wait(0.5);
+    $i->click('[data-automation-id="email_send_panel_send_button"]');
   }
 
   public function waitForEmailSendingOrSent() {
@@ -518,6 +553,41 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   /**
+   * For a click that loads a new page, such as a form submit. Until the new page loads,
+   * waitForElement() and other checks still find elements on the old page, and those
+   * elements go stale when the new page loads.
+   *
+   * Don't use WebDriverExpectedCondition::stalenessOf() here: while the page is being replaced,
+   * ChromeDriver can report “Node with given id does not belong to the document” instead of
+   * a stale element, and stalenessOf() throws on it.
+   *
+   * @param string|array $link
+   * @param string|array|null $context
+   */
+  public function clickAndWaitForPageReload($link, $context = null, int $timeout = 10): void {
+    $timeout = $this->getDefaultTimeout($timeout);
+    $oldPage = $this->executeInSelenium(function (RemoteWebDriver $webDriver) {
+      return $webDriver->findElement(WebDriverBy::tagName('html'));
+    });
+    $this->click($link, $context);
+    $this->executeInSelenium(function (RemoteWebDriver $webDriver) use ($oldPage, $timeout): void {
+      $webDriver->wait($timeout)->until(function () use ($oldPage): bool {
+        try {
+          $oldPage->isEnabled();
+          return false;
+        } catch (StaleElementReferenceException $e) {
+          return true;
+        } catch (UnknownErrorException $e) {
+          if (strpos($e->getMessage(), 'does not belong to the document') === false) {
+            throw $e;
+          }
+          return true;
+        }
+      });
+    });
+  }
+
+  /**
    * A menu that closes while it is still opening can stay in the page as `inert`, with a
    * full-page backdrop that takes every click (CircleCI job 451249). Let clicks pass through
    * such backdrops, and close a menu that is really open.
@@ -536,6 +606,17 @@ class AcceptanceTester extends \Codeception\Actor {
       $this->pressKey('body', WebDriverKeys::ESCAPE);
       $this->waitForJS("return !$hasBlockingBackdrop;", 2);
     }
+  }
+
+  /**
+   * DataViews sort items stay open after a click, and the open menu's backdrop takes every click on the page.
+   *
+   * @param string|array $item
+   */
+  public function clickDataViewsSortItem($item): void {
+    $this->click($item);
+    $this->pressKey('body', WebDriverKeys::ESCAPE);
+    $this->waitForElementNotVisible('[data-base-ui-inert]', 5);
   }
 
   /**
@@ -628,8 +709,55 @@ class AcceptanceTester extends \Codeception\Actor {
     $this->waitForJS('return new RegExp(' . json_encode($pattern) . ').test(decodeURIComponent(window.location.hash));', $timeout);
   }
 
+  /**
+   * While a page is being replaced, ChromeDriver can report “Node with given id does not belong
+   * to the document” instead of a stale element, and the wait only retries on stale elements.
+   */
   public function waitForText($text, $timeout = 10, $selector = null) {
-    return $this->_waitForText($text, $this->getDefaultTimeout($timeout), $selector);
+    $deadline = time() + (int)$this->getDefaultTimeout($timeout);
+    while (true) {
+      try {
+        return $this->_waitForText($text, max(1, $deadline - time()), $selector);
+      } catch (UnknownErrorException $e) {
+        if (strpos($e->getMessage(), 'does not belong to the document') === false || time() >= $deadline) {
+          throw $e;
+        }
+      }
+    }
+  }
+
+  /**
+   * The block editor can replace its canvas iframe after the first render (the email editor
+   * does when it applies a template after the template window closes). So this only stays in
+   * an iframe that is still on the page after a short wait, and starts over otherwise.
+   */
+  public function switchToEditorCanvas(int $timeout = 30): void {
+    $deadline = time() + (int)$this->getDefaultTimeout($timeout);
+    $this->executeInSelenium(function (RemoteWebDriver $webDriver) use ($deadline): void {
+      $iframeLocator = WebDriverBy::cssSelector('iframe[name="editor-canvas"]');
+      while (true) {
+        try {
+          $webDriver->switchTo()->defaultContent();
+          $webDriver->wait(max(1, $deadline - time()))->until(
+            WebDriverExpectedCondition::presenceOfElementLocated($iframeLocator)
+          );
+          $iframe = $webDriver->findElement($iframeLocator);
+          $webDriver->switchTo()->frame($iframe);
+          $webDriver->wait(min(5, max(1, $deadline - time())))->until(
+            WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::cssSelector('.is-root-container'))
+          );
+          sleep(2);
+          $webDriver->switchTo()->defaultContent();
+          $iframe->getTagName(); // throws when the editor has replaced the iframe
+          $webDriver->switchTo()->frame($iframe);
+          return;
+        } catch (\Exception $e) {
+          if (time() >= $deadline) {
+            throw $e;
+          }
+        }
+      }
+    });
   }
 
   public function waitForNoticeAndClose($text, $timeout = 10, $selector = null) {
@@ -1198,11 +1326,53 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function applyDataViewsFilter(string $filterName, array $optionLabels, string $operator = ''): void {
     $i = $this;
-    // The "Add filter" control is icon-only until a filter is active, then it gets a text label.
+    $i->openDataViewsFilter($filterName);
+    if ($operator !== '') {
+      $i->selectDataViewsOption('.dataviews-filters__summary-operators-filter-select [role="combobox"]', $operator);
+    }
+    $i->waitForElement('.dataviews-filters__search-widget-listitem');
+    foreach ($optionLabels as $label) {
+      $i->click(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][.//text()[contains(., "' . $label . '")]]']);
+    }
+    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+    if ($i->executeJS('return document.querySelector(".mailpoet-dataviews") !== null;')) {
+      $i->waitForListingItemsToLoad();
+    }
+  }
+
+  /**
+   * Picks an option in a DataViews select. They are comboboxes with a popup
+   * list, not native selects.
+   *
+   * @param string|array $trigger
+   */
+  public function selectDataViewsOption($trigger, string $label): void {
+    $i = $this;
+    $i->waitForElementVisible($trigger);
+    $i->click($trigger);
+    $triggerId = $i->grabAttributeFrom($trigger, 'id');
+    Assert::assertIsString($triggerId);
+    $list = '//*[@id=' . self::xpathString($triggerId . '-list') . ']';
+    $i->click(['xpath' => $list . '//*[@role="option"][normalize-space(.)=' . self::xpathString($label) . ']']);
+    $i->waitForElementNotVisible(['xpath' => $list]);
+  }
+
+  /**
+   * Opens a DataViews filter: a primary filter by its chip, which is always
+   * shown, any other one from the “Add filter” menu.
+   */
+  public function openDataViewsFilter(string $filterName): void {
+    $i = $this;
+    // The tabs row renders after the first listing response and moves the filters down, so a click before that misses them.
+    $i->waitForListingItemsToLoad();
+    $chip = ['xpath' => '//*[@role="button"][contains(@class, "dataviews-filters__summary-chip")][starts-with(normalize-space(.), "' . $filterName . '")]'];
+    if ($i->grabMultiple($chip)) {
+      $i->click($chip);
+      return;
+    }
+    // The “Add filter” control is icon-only until a filter is shown, then it gets a text label.
     $addFilter = ['xpath' => '//button[@aria-label="Add filter" or normalize-space(.)="Add filter"]'];
     $i->waitForElementClickable($addFilter);
-    // The tabs row renders after the first listing response and moves the toggle down, so a click before that misses it.
-    $i->waitForListingItemsToLoad();
     $i->click($addFilter);
     // Skip the WP admin bar, which has menu items of its own.
     $menuItem = ['xpath' => '//*[@role="menuitem"][not(ancestor::*[@id="wpadminbar"])][contains(normalize-space(.), "' . $filterName . '")]'];
@@ -1218,19 +1388,6 @@ class AcceptanceTester extends \Codeception\Actor {
       $i->waitForElementVisible($menuItem);
     }
     $i->click($menuItem);
-    if ($operator !== '') {
-      $operatorSelect = '.dataviews-filters__summary-operators-filter-select select';
-      $i->waitForElement($operatorSelect);
-      $i->selectOption($operatorSelect, $operator);
-    }
-    $i->waitForElement('.dataviews-filters__search-widget-listitem');
-    foreach ($optionLabels as $label) {
-      $i->click(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][.//text()[contains(., "' . $label . '")]]']);
-    }
-    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
-    if ($i->executeJS('return document.querySelector(".mailpoet-dataviews") !== null;')) {
-      $i->waitForListingItemsToLoad();
-    }
   }
 
   public function changeGroupInListingFilter(string $name): void {
@@ -1318,7 +1475,8 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function checkWooTableCheckboxForItemName(string $itemName): void {
     $i = $this;
-    $xpath = ['xpath' => '//tr[.//*[normalize-space(text())=' . self::xpathString($itemName) . ']]//input[@type="checkbox"]'];
+    // DataViews rows use a role="checkbox" element over a hidden input, other tables a plain input.
+    $xpath = ['xpath' => '(//tr[.//*[normalize-space(text())=' . self::xpathString($itemName) . ']]//*[@role="checkbox" or self::input[@type="checkbox"]])[1]'];
     $i->scrollListingRowIntoViewByItemName($itemName);
     $i->click($xpath);
   }
@@ -1344,12 +1502,12 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   private function scrollListingRowIntoViewByItemName(string $itemName): void {
-    $encodedItemName = json_encode($itemName);
+    // Same row XPath as the WebDriver locators. Matching an element's whole
+    // textContent misses titles with extra text, like "Name (private)".
+    $encodedRowXpath = json_encode('//tr[.//*[normalize-space(text())=' . self::xpathString($itemName) . ']]');
     $this->executeJS(
       <<<JS
-      const itemName = {$encodedItemName};
-      const rows = Array.from(document.querySelectorAll('tr'));
-      const row = rows.find((tableRow) => Array.from(tableRow.querySelectorAll('*')).some((element) => element.textContent.trim() === itemName));
+      const row = document.evaluate({$encodedRowXpath}, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
       if (row) row.scrollIntoView({ block: 'center', inline: 'nearest' });
       JS
     );
@@ -1363,7 +1521,7 @@ class AcceptanceTester extends \Codeception\Actor {
       $i->click(['css' => 'input[value="Apply"], button[value="Apply"]']);
       return;
     } catch (Exception $exception) {
-      $dataViewsAction = ['xpath' => '//div[contains(@class, "dataviews-bulk-actions-footer__action-buttons")]//button[normalize-space(.)="' . $actionName . '"]'];
+      $dataViewsAction = ['xpath' => '//*[contains(concat(" ", normalize-space(@class), " "), " dataviews-bulk-actions__actions ")]//button[normalize-space(.)="' . $actionName . '"]'];
       $i->waitForElementClickable($dataViewsAction);
       $i->click($dataViewsAction);
     }

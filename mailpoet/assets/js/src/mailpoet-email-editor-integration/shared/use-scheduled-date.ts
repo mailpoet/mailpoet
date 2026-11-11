@@ -13,6 +13,7 @@ import {
   getScheduleModeOptionChanges,
 } from 'common/newsletter-schedule-mode';
 import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
+import type { MailPoetEmailData } from './mailpoet-email-data';
 import { formatScheduledDate } from './format-scheduled-date';
 
 type UseScheduledDate = {
@@ -69,25 +70,23 @@ function editMailpoetData(changes: Record<string, string | null>): void {
  * A `null` date means the email is sent immediately.
  */
 export function useScheduledDate(): UseScheduledDate {
-  const [mailpoetEmailData] = useEntityProp(
+  const [mailpoetEmailData] = useEntityProp<MailPoetEmailData>(
     'postType',
     MAILPOET_EMAIL_POST_TYPE,
     'mailpoet_data',
   );
 
-  const scheduledDate = (mailpoetEmailData?.scheduled_at as string) || null;
+  const scheduledDate = mailpoetEmailData?.scheduled_at || null;
   const isTimezoneSchedulingAvailable = MailPoet.FeaturesController.isSupported(
     MailPoet.FeaturesController.FEATURE_SEND_BY_TIMEZONE,
   );
   const scheduleMode = isTimezoneSchedulingAvailable
-    ? getScheduleMode(mailpoetEmailData?.schedule_mode as string)
+    ? getScheduleMode(mailpoetEmailData?.schedule_mode)
     : SCHEDULE_MODE_WEBSITE_TIME;
   const isSubscriberTimezoneMode =
     scheduleMode === SCHEDULE_MODE_SUBSCRIBER_TIMEZONE;
-  const scheduledLocalDate =
-    (mailpoetEmailData?.scheduled_local_date as string) || null;
-  const scheduledLocalTime =
-    (mailpoetEmailData?.scheduled_local_time as string) || null;
+  const scheduledLocalDate = mailpoetEmailData?.scheduled_local_date || null;
+  const scheduledLocalTime = mailpoetEmailData?.scheduled_local_time || null;
   // Defaults shown by the picker when the local options are not stored yet;
   // used everywhere the local schedule is displayed so the panel stays
   // consistent with what the picker shows.

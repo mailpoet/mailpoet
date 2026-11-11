@@ -119,6 +119,45 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $this->assertEquals("completed", $statistic2->getStatus());
   }
 
+  public function testItTracksOrderPlacedShortlyAfterClickOnSiteBehindUtc() {
+    $this->withTimezone('America/New_York', function () {
+      $click = $this->createClick($this->link, $this->subscriber);
+      $click->setCreatedAt(new DateTime('-30 minutes'));
+      $click->setUpdatedAt(new DateTime('-30 minutes'));
+      $this->entityManager->flush();
+
+      $order = wc_create_order();
+      $this->assertInstanceOf(WC_Order::class, $order);
+      $order->set_billing_email($this->subscriber->getEmail());
+      $order->set_total('10');
+      $order->set_status('completed');
+      $order->save();
+
+      $statistics = $this->statisticsWooCommercePurchasesRepository->findBy(['orderId' => $order->get_id()]);
+      verify(count($statistics))->equals(1);
+    });
+  }
+
+  public function testItDoesNotTrackOrderPlacedBeforeClickOnSiteAheadOfUtc() {
+    $this->withTimezone('Asia/Tokyo', function () {
+      $click = $this->createClick($this->link, $this->subscriber);
+      $click->setCreatedAt(new DateTime('-30 minutes'));
+      $click->setUpdatedAt(new DateTime('-30 minutes'));
+      $this->entityManager->flush();
+
+      $order = wc_create_order();
+      $this->assertInstanceOf(WC_Order::class, $order);
+      $order->set_billing_email($this->subscriber->getEmail());
+      $order->set_total('10');
+      $order->set_date_created(time() - HOUR_IN_SECONDS);
+      $order->set_status('completed');
+      $order->save();
+
+      $statistics = $this->statisticsWooCommercePurchasesRepository->findBy(['orderId' => $order->get_id()]);
+      verify(count($statistics))->equals(0);
+    });
+  }
+
   public function testItDoesNotTrackPaymentForWrongSubscriber() {
     $click = $this->createClick($this->link, $this->subscriber, 3);
 
@@ -540,6 +579,20 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $click->setCreatedAt($timestamp);
     $click->setUpdatedAt($timestamp);
     return $click;
+  }
+
+  private function withTimezone(string $timezone, callable $callback): void {
+    $previousTimezone = get_option('timezone_string');
+    update_option('timezone_string', $timezone);
+    try {
+      $callback();
+    } finally {
+      if (is_string($previousTimezone)) {
+        update_option('timezone_string', $previousTimezone);
+      } else {
+        delete_option('timezone_string');
+      }
+    }
   }
 
   private function createWooCommerceHelperMock(MockObject $orderMock) {

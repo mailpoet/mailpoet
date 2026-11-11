@@ -16,9 +16,11 @@ class HtmlParser {
     $dom = new \DOMDocument();
     if ($isHtml5) {
       // HTML 5 tags like figure, nav are not supported so we need to turn off errors
-      libxml_use_internal_errors(true);
+      // Restore the setting afterwards, or warnings stay hidden for every later test.
+      $previous = libxml_use_internal_errors(true);
       $dom->loadHTML($html);
       libxml_clear_errors();
+      libxml_use_internal_errors($previous);
     } else {
       $dom->loadHTML($html);
     }

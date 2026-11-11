@@ -86,6 +86,22 @@ class NewsletterLinksTest extends \MailPoetTest {
     verify($ids)->equals($urls);
   }
 
+  public function testItListsAnAutomationLinkStoredWithHtmlEncodedAmpersandsOnce(): void {
+    // earlier sends stored the URL with "&amp;", as written in the email HTML
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
+    $this->createLink($newsletter, $this->createQueue($newsletter), 'https://example.com/page?a=1&amp;b=2');
+    $this->createLink($newsletter, $this->createQueue($newsletter), 'https://example.com/page?a=1&b=2');
+
+    $response = $this->endpoint->get(['newsletterId' => $newsletter->getId()]);
+
+    verify($response->data)->equals([
+      [
+        'id' => 'https://example.com/page?a=1&b=2',
+        'url' => 'https://example.com/page?a=1&b=2',
+      ],
+    ]);
+  }
+
   public function testItDispatchesAutomationPathForTransactionalEmails(): void {
     $newsletter = $this->createNewsletter(
       NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,

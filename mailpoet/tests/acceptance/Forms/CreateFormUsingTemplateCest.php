@@ -23,7 +23,7 @@ class CreateFormUsingTemplateCest {
     $i->click('[data-automation-id="select_template_template_1_fixed_bar"]');
 
     $i->waitForElement('[data-automation-id="form_title_input"]', 20);
-    $i->selectOptionInSelect2($segmentName);
+    $i->selectOptionInChipSelect($segmentName, '.mailpoet-form-segments');
     $i->click('[data-automation-id="form_save_button"]');
     $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
   }

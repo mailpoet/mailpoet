@@ -1,6 +1,6 @@
 import { useLayoutEffect } from 'react';
+import { renderToString } from '@wordpress/element';
 import { MailPoet } from 'mailpoet';
-import ReactDOMServer from 'react-dom/server';
 import satismeter from 'satismeter-loader';
 import { ReviewRequest } from 'review-request';
 import { getTrackingData } from 'analytics.js';
@@ -9,7 +9,7 @@ export const initializeSatismeterSurvey = (writeId = null) => {
   const showReviewRequestModal = () => {
     MailPoet.Modal.popup({
       width: 800,
-      template: ReactDOMServer.renderToString(
+      template: renderToString(
         ReviewRequest({
           username:
             window.mailpoet_current_wp_user_firstname ||

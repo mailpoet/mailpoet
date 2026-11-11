@@ -1,3 +1,8 @@
+import { decodeEntities } from '@wordpress/html-entities';
+import { __ } from '@wordpress/i18n';
+
+export const getDefaultEmailName = (): string => __('New Email', 'mailpoet');
+
 type CampaignNameForSubjectArgs = {
   name: string;
   previousSubject: string;
@@ -15,8 +20,12 @@ export function getCampaignNameForSubject({
   newSubject,
   defaultName,
 }: CampaignNameForSubjectArgs): string | null {
+  // Titles are stored entity-encoded for users without unfiltered_html.
+  const names = [name, decodeEntities(name)];
   const followsSubject =
-    name === '' || name === defaultName || name === previousSubject;
+    name === '' ||
+    names.includes(defaultName) ||
+    names.includes(previousSubject);
   if (!followsSubject) {
     return null;
   }

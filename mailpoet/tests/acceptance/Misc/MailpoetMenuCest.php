@@ -112,7 +112,7 @@ class MailpoetMenuCest {
     $i->waitForElement('#mailpoet_form_edit');
     $i->seeInCurrentUrl('?page=mailpoet-form-editor');
     $this->assertSelectedMenuItem($i, 'Forms');
-    $i->selectOptionInSelect2('Newsletter mailing list');
+    $i->selectOptionInChipSelect('Newsletter mailing list', '.mailpoet-form-segments');
     $i->saveFormInEditor();
   }
 

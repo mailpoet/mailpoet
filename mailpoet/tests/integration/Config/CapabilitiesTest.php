@@ -30,6 +30,11 @@ class CapabilitiesTest extends \MailPoetTest {
     // Guarantee cleanup even if assertions fail
     delete_transient(Capabilities::TRANSIENT_CAPS_VERIFIED);
     $this->caps->setupWPCapabilities();
+    // Screen functions live in wp-admin and are loaded only by tests that need them
+    if (!function_exists('set_current_screen')) {
+      require_once ABSPATH . 'wp-admin/includes/class-wp-screen.php';
+      require_once ABSPATH . 'wp-admin/includes/screen.php';
+    }
     set_current_screen('front');
     parent::_after();
   }

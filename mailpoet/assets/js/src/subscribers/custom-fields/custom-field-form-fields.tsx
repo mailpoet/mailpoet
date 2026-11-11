@@ -13,9 +13,9 @@ import {
 import {
   DragDropContext,
   Draggable,
+  Droppable,
   type DropResult,
-} from 'react-beautiful-dnd';
-import { StrictModeDroppable as Droppable } from 'form-editor/utils/strict-mode-droppable';
+} from '@hello-pangea/dnd';
 import type {
   CustomField,
   CustomFieldDateSettings,

@@ -94,7 +94,7 @@ class Helper {
         continue;
       }
       $created = $booking->get_date_created();
-      if ($created && $created->getTimestamp() >= $threshold) {
+      if ($created && $created >= $threshold) {
         $count++;
       }
     }

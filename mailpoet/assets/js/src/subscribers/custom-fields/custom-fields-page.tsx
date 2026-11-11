@@ -388,7 +388,6 @@ export function CustomFieldsPage() {
         id: 'delete',
         label: __('Delete permanently', 'mailpoet'),
         supportsBulk: true,
-        isDestructive: true,
         isEligible: (item) => !!item.deleted_at,
         callback: (selected) => {
           void handleBulkAction('delete', selected);

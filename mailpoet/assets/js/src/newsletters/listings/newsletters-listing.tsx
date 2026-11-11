@@ -1,4 +1,3 @@
-import classnames from 'classnames';
 import jQuery from 'jquery';
 import { Button, Notice } from '@wordpress/components';
 import {
@@ -23,13 +22,16 @@ import { MailPoet } from 'mailpoet';
 import { MailerError } from 'notices/mailer-error';
 import {
   filterToExtraParams,
+  getActiveStatusTab,
+  getTabChange,
+  groupsToTabs,
   getDataViewsPreference,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
-  useShowFiltersWhenActive,
   type ListingGroup,
   type ListingQueryParams,
 } from 'common/dataviews';
+import { Categories } from 'common/categories/categories';
 import { pollExportStatus } from 'newsletters/statistics-export/poll-export-status';
 import {
   bulkAction,
@@ -46,6 +48,7 @@ import {
 import { checkCronStatus, checkMailerStatus } from './utils.jsx';
 import { buildHash, parseHash } from './hash-state';
 import {
+  STATUS_FIELD,
   getAllowedStatuses,
   hashFilterToRequestFilter,
   requestFilterToHashFilter,
@@ -519,15 +522,27 @@ export function NewslettersListing({
     [],
   );
 
-  const handleGroupSelect = useCallback(
-    (nextGroup: Group): void => {
-      if (nextGroup === group) return;
-      setGroup(nextGroup);
+  const activeTab = getActiveStatusTab(
+    group,
+    view.filters,
+    STATUS_FIELD,
+    allowedStatuses,
+  );
+
+  const handleTabSelect = useCallback(
+    (tab: string): void => {
+      const change = getTabChange(tab, group, view.filters, STATUS_FIELD);
+      if (!change) return;
+      setGroup(change.group);
       setSelection([]);
       clearLoadError();
-      setView((currentView) => ({ ...currentView, page: 1 }));
+      setView((currentView) => ({
+        ...currentView,
+        page: 1,
+        filters: change.filters,
+      }));
     },
-    [clearLoadError, group, setView],
+    [clearLoadError, group, setView, view.filters],
   );
 
   const groupCounts = useMemo(() => {
@@ -566,13 +581,8 @@ export function NewslettersListing({
   ]);
 
   const tabs = useMemo(
-    () =>
-      (groups ?? []).filter(
-        (entry) =>
-          entry.name in groupCounts &&
-          !(entry.name === 'trash' && entry.count === 0 && group !== 'trash'),
-      ),
-    [group, groupCounts, groups],
+    () => groupsToTabs(groups ?? [], group),
+    [group, groups],
   );
 
   const actionHelpers = useMemo<ListingActionHelpers>(
@@ -690,9 +700,6 @@ export function NewslettersListing({
     [fields, segmentElements, statusLabels],
   );
 
-  const dataViewsRef = useRef<HTMLDivElement>(null);
-  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
-
   // List ids from the URL that are no longer selectable (a deleted list) are
   // dropped once a listing response has arrived, because the options are only
   // known from it.
@@ -745,44 +752,14 @@ export function NewslettersListing({
         </Notice>
       )}
 
-      <div className="mailpoet-categories mailpoet-dataviews__tabs mailpoet-newsletters-dataviews__tabs">
-        <div className="components-tab-panel__tabs" role="tablist">
-          {tabs.map((entry) => {
-            const tabClasses = classnames(
-              'components-button',
-              'components-tab-panel__tabs-item',
-              `mailpoet-dataviews-group-${entry.name}`,
-              {
-                'is-active': entry.name === group,
-              },
-            );
-            return (
-              <a
-                key={entry.name}
-                href="#"
-                role="tab"
-                aria-selected={entry.name === group}
-                className={tabClasses}
-                data-automation-id={`filters_${entry.name}`}
-                onClick={(event) => {
-                  event.preventDefault();
-                  handleGroupSelect(entry.name);
-                }}
-              >
-                <span data-title={entry.label}>{entry.label}</span>
-                {Number(entry.count) > 0 && (
-                  <span className="count">
-                    {Number(entry.count).toLocaleString()}
-                  </span>
-                )}
-              </a>
-            );
-          })}
-        </div>
-      </div>
+      <Categories
+        className="mailpoet-dataviews__tabs mailpoet-newsletters-dataviews__tabs"
+        categories={tabs}
+        active={activeTab}
+        onSelect={handleTabSelect}
+      />
 
       <div
-        ref={dataViewsRef}
         className="mailpoet-dataviews mailpoet-newsletters-dataviews mailpoet-listing"
         data-automation-id={`newsletters_listing_${type}`}
       >

@@ -68,7 +68,7 @@ class SubscribersEndpointsTest extends Test {
     $groups = array_column($groupsList, 'count', 'name');
     $this->assertArrayHasKey('all', $groups);
     $this->assertArrayHasKey('trash', $groups);
-    $this->assertCount(2, $groups);
+    $this->assertCount(7, $groups);
 
     $emails = array_column($items, 'email');
     $this->assertContains("rest-listing-{$suffix}@example.com", $emails);
@@ -594,8 +594,6 @@ class SubscribersEndpointsTest extends Test {
     $payload = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => ['filter' => ['score_gt' => '0']]]));
     $this->assertCount(2, $payload['items']);
     $this->assertSame(2, $payload['meta']['count']);
-    $groups = array_column($payload['groups'] ?? [], 'count', 'name');
-    $this->assertSame(2, $groups['all'] ?? null);
   }
 
   public function testListingEmptyResultHasNoItemsAndNoPages(): void {
@@ -785,40 +783,43 @@ class SubscribersEndpointsTest extends Test {
     $this->assertSame([$data['b']], array_column($this->listingPayload($response)['items'], 'email'));
   }
 
-  public function testListingReturnsOnlyAllAndTrashGroups(): void {
+  public function testListingGroupsAreSiteTotalsWhateverTheFilters(): void {
     $data = $this->createGroupsData();
+    $this->clearSubscribersCountCache();
     $sfx = $data['suffix'];
 
-    $response = $this->get(self::LISTING_PATH, ['query' => ['per_page' => 100]]);
-    $payload = $this->listingPayload($response);
-    $this->assertSame(['all', 'trash'], array_column($this->groupsOf($payload), 'name'));
-    $this->assertSame(['All', 'Trash'], array_column($this->groupsOf($payload), 'label'));
-    $this->assertSame($this->groupsOf($payload)[0]['count'], $payload['meta']['count']);
+    $payload = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => ['per_page' => 100]]));
+    $totals = $this->groupsOf($payload);
+    $this->assertSame(
+      ['all', 'subscribed', 'unconfirmed', 'unsubscribed', 'inactive', 'bounced', 'trash'],
+      array_column($totals, 'name')
+    );
+    $counts = array_column($totals, 'count', 'name');
+    $this->assertSame($payload['meta']['count'], $counts['all']);
+    foreach (['unconfirmed', 'trash'] as $group) {
+      $groupPayload = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => ['group' => $group]]));
+      $this->assertSame($groupPayload['meta']['count'], $counts[$group], $group);
+    }
 
     $scenarios = [
-      'search' => [['search' => $sfx], 3, 3, 1],
-      'search and tag' => [['search' => $sfx, 'filter' => ['tag_in' => [$data['tagId']]]], 1, 1, 1],
-      'search and dynamic segment' => [['search' => $sfx, 'filter' => ['segment_in' => [$data['dynamicId']]]], 1, 1, 1],
-      'search, tag and dynamic segment' => [['search' => $sfx, 'filter' => ['segment_in' => [$data['dynamicId']], 'tag_in' => [$data['tagId']]]], 1, 1, 1],
-      'search, list and tag' => [['search' => $sfx, 'filter' => ['segment_in' => [$data['segmentId']], 'tag_in' => [$data['tagId']]]], 1, 1, 0],
-      'legacy unconfirmed group' => [['search' => $sfx, 'group' => 'unconfirmed'], 1, 3, 1],
-      'legacy group with dynamic segment' => [['search' => $sfx, 'group' => 'subscribed', 'filter' => ['segment_in' => [$data['dynamicId']]]], 1, 1, 1],
-      'trash group' => [['search' => $sfx, 'group' => 'trash'], 1, 3, 1],
+      'search' => [['search' => $sfx], 3],
+      'search and tag' => [['search' => $sfx, 'filter' => ['tag_in' => [$data['tagId']]]], 1],
+      'search and dynamic segment' => [['search' => $sfx, 'filter' => ['segment_in' => [$data['dynamicId']]]], 1],
+      'search and list' => [['search' => $sfx, 'filter' => ['segment_in' => [$data['segmentId']]]], 2],
+      'search and status' => [['search' => $sfx, 'filter' => ['status_in' => ['unconfirmed']]], 1],
+      'legacy unconfirmed group' => [['search' => $sfx, 'group' => 'unconfirmed'], 1],
+      'trash group' => [['search' => $sfx, 'group' => 'trash'], 1],
     ];
-    foreach ($scenarios as $name => [$query, $count, $all, $trash]) {
+    foreach ($scenarios as $name => [$query, $count]) {
       $payload = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => $query]));
-      $groups = $this->groupsOf($payload);
-      $this->assertSame(['all', 'trash'], array_column($groups, 'name'), $name);
       $this->assertSame($count, $payload['meta']['count'], "$name: meta.count");
-      $this->assertSame([$all, $trash], array_column($groups, 'count'), "$name: groups");
+      $this->assertSame($totals, $this->groupsOf($payload), "$name: groups");
     }
   }
 
-  public function testListingGroupsUseTheSingleListCacheForAPlainListFilter(): void {
+  public function testListingCountUsesTheSingleListCacheForAPlainListFilter(): void {
     $data = $this->createGroupsData();
     $payload = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => ['filter' => ['segment_in' => [$data['segmentId']]]]]));
-    $this->assertSame(['all', 'trash'], array_column($this->groupsOf($payload), 'name'));
-    $this->assertSame([2, 0], array_column($this->groupsOf($payload), 'count'));
     $this->assertSame(2, $payload['meta']['count']);
   }
 

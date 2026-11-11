@@ -25,7 +25,7 @@ class WooMyAccountRegistrationCest {
       ->withCaptchaType(CaptchaConstants::TYPE_DISABLED);
   }
 
-  public function registerOptInDisabled(\AcceptanceTester $i) {
+  public function registerOptInDisabledWithConfirmation(\AcceptanceTester $i) {
     $this->settingsFactory->withSubscribeOnRegisterDisabled();
     $this->settingsFactory->withConfirmationEmailEnabled();
     $customerEmail = 'woo_register_noptin@example.com';
@@ -36,7 +36,7 @@ class WooMyAccountRegistrationCest {
     $i->seeConfirmationEmailWasNotReceived();
   }
 
-  public function registerOptInChecked(\AcceptanceTester $i) {
+  public function registerOptInCheckedWithConfirmation(\AcceptanceTester $i) {
     $this->settingsFactory->withSubscribeOnRegisterEnabled();
     $this->settingsFactory->withConfirmationEmailEnabled();
     $customerEmail = 'woo_register_optin_checked@example.com';
@@ -47,7 +47,7 @@ class WooMyAccountRegistrationCest {
     $i->seeConfirmationEmailWasReceived();
   }
 
-  public function registerOptInUnchecked(\AcceptanceTester $i) {
+  public function registerOptInUncheckedWithConfirmation(\AcceptanceTester $i) {
     $this->settingsFactory->withSubscribeOnRegisterEnabled();
     $this->settingsFactory->withConfirmationEmailEnabled();
     $customerEmail = 'woo_register_optin_unchecked@example.com';

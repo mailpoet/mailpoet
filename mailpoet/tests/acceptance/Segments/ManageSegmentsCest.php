@@ -62,7 +62,7 @@ class ManageSegmentsCest {
     $i->waitForElementClickable($nextPageButton);
     $i->click($createdOnHeaderButton);
     $i->waitForElementClickable($sortAscendingItem);
-    $i->click($sortAscendingItem);
+    $i->clickDataViewsSortItem($sortAscendingItem);
     $i->waitForText($wpEditorEmail, 20);
     $i->waitForElementClickable($nextPageButton);
     $i->click($nextPageButton);

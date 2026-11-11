@@ -44,6 +44,12 @@ $dotenv->load();
 $console = new \Codeception\Lib\Console\Output([]);
 $console->writeln('Loading WP core... (' . $wpLoadFile . ')');
 
+// Every user or customer a test creates hashes a password. bcrypt at WordPress's default cost
+// takes tens of milliseconds, the minimum cost under a millisecond; verification still works.
+add_filter('wp_hash_password_options', function ($options, $algorithm) {
+  return $algorithm === PASSWORD_BCRYPT ? ['cost' => 4] : $options;
+}, 10, 2);
+
 $console->writeln('Cleaning up database...');
 
 $connection = ContainerWrapper::getInstance(WP_DEBUG)->get(Connection::class);

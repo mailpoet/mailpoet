@@ -8,6 +8,7 @@ import { addQueryArgs } from '@wordpress/url';
 import { MailPoet } from 'mailpoet';
 import { buildRestApiPath } from 'common/dataviews';
 import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
+import type { MailPoetEmailData } from './mailpoet-email-data';
 
 export type Segment = {
   id: string;
@@ -101,7 +102,7 @@ export type UseRecipients = {
  * Shared between the recipients sidebar row and the review & send panel.
  */
 export function useRecipients(): UseRecipients {
-  const [mailpoetEmailData] = useEntityProp(
+  const [mailpoetEmailData] = useEntityProp<MailPoetEmailData>(
     'postType',
     MAILPOET_EMAIL_POST_TYPE,
     'mailpoet_data',

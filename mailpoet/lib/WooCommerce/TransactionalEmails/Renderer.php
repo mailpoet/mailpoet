@@ -155,6 +155,7 @@ class Renderer {
    * - We prefix the original selectors to avoid inlining those rules into content added int the MailPoet's editor.
    * - We update the font-family in the original CSS if it's set in the editor.
    * - We update the font-size for the inner content if it's set in the editor.
+   * - We set links in the WooCommerce content to the editor's link color.
    */
   public function enhanceCss(string $css, NewsletterEntity $newsletter): string {
     $this->cssParser->settings['compress_colors'] = false;
@@ -181,6 +182,14 @@ class Renderer {
     $wooHeadingColor = $this->getValidGlobalStyle($newsletter, 'woocommerce', 'headingFontColor');
     if ($wooHeadingColor) {
       $css .= "#mailpoet-woo-email-header { color: $wooHeadingColor !important; }";
+    }
+
+    // WooCommerce derives link colors from its base color, which MailPoet sets to the branding color.
+    // The rule goes last, so it overrides link rules of the same specificity, including grouped ones like `a, .link`.
+    $linkColor = $this->getValidGlobalStyle($newsletter, 'link', 'fontColor');
+    if ($linkColor && $newsletter->getGlobalStyle('woocommerce', 'isSavedWithUpdatedStyles')) {
+      $container = '#' . self::CONTENT_CONTAINER_ID;
+      $css .= "$container a, $container .link, $container a.link { color: $linkColor; }";
     }
     return $css;
   }

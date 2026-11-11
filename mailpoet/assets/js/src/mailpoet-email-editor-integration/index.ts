@@ -22,14 +22,24 @@ import {
   trackingOptOutValidationRule,
 } from './validate-email-content';
 import { registerCouponCodeRestrictToSubscriberExtension } from './coupon-code-restrict-to-subscriber-control';
+import { registerLatestPostsProtectedContent } from './latest-posts-protected-content-control';
 import { registerLatestPostsTemplateBlocks } from './latest-posts-template-blocks';
 import { registerOrderProductCollectionsWhenAvailable } from './order-product-collections';
 import { store as emailEditorIntegrationStore } from './store';
 import { MAILPOET_EMAIL_POST_TYPE } from './constants';
+import { getRecentEmailTitle } from './recent-email-title';
+import { getDefaultEmailName } from './sidebar/campaign-name';
+import type { MailPoetEmailData } from './shared/mailpoet-email-data';
+
+type RecentEmailPost = {
+  title?: { raw?: string };
+  mailpoet_data?: Pick<MailPoetEmailData, 'subject'>;
+};
 
 registerTranslations();
 registerCouponCodeRestrictToSubscriberExtension();
 registerLatestPostsTemplateBlocks();
+registerLatestPostsProtectedContent();
 registerOrderProductCollectionsWhenAvailable();
 
 // MailPoet's shared Modal portals into a `#mailpoet-modal` container that the
@@ -188,15 +198,16 @@ addFilter(
   () => !!window.mailpoet_analytics_enabled,
 );
 
-// use mailpoet data subject if available
 addFilter(
   'woocommerce_email_editor_preferred_template_title',
   'mailpoet/email-editor-integration',
-  (...args) => {
-    const [, post] = args;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return post?.mailpoet_data?.subject || ''; // use MailPoet subject as title
-  },
+  (_title: string, post: RecentEmailPost): string =>
+    getRecentEmailTitle({
+      name: post?.title?.raw || '',
+      subject: post?.mailpoet_data?.subject || '',
+      defaultName: getDefaultEmailName(),
+      defaultSubject: __('Subject', 'mailpoet'),
+    }),
 );
 
 // Also list draft, scheduled and sending emails. They all use the `draft` post status.

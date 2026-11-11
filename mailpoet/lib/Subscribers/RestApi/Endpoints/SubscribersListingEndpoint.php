@@ -64,7 +64,10 @@ class SubscribersListingEndpoint extends AbstractListingEndpoint {
     if (!$repository instanceof SubscriberListingRepository) {
       return parent::getCountAndGroups($repository, $definition);
     }
-    return $repository->getCountAndAllTrashGroups($definition);
+    return [
+      'count' => $repository->getListingCount($definition),
+      'groups' => $repository->getGroups($definition),
+    ];
   }
 
   protected function buildItems(array $rows, ListingDefinition $definition): array {

@@ -51,16 +51,7 @@ class FormsListingCest {
     $i->waitForText($disabledName, 10, '[data-automation-id="forms_listing"]');
 
     $i->wantTo('Apply a native Status filter and keep only Enabled forms');
-    // The DataViews "Add filter" control is an icon-only button, so target its
-    // accessible name rather than visible text.
-    $addFilter = ['xpath' => '//button[@aria-label="Add filter"]'];
-    $i->waitForElementClickable($addFilter);
-    $i->click($addFilter);
-    $i->waitForText('Status');
-    $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "Status")]']);
-    $i->waitForElement('.dataviews-filters__search-widget-listitem');
-    $i->click(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][.//text()[contains(., "Enabled")]]']);
-    $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+    $i->applyDataViewsFilter('Status', ['Enabled']);
     $i->waitForText($enabledName);
     // Wait for the filtered re-fetch to drop the disabled form before asserting.
     $i->waitForJS(<<<JS
@@ -75,7 +66,7 @@ class FormsListingCest {
     $i->waitForText($enabledName, 10, '[data-automation-id="forms_listing"]');
     $i->click(['xpath' => '//th//button[contains(., "Created date")]']);
     $i->waitForText('Sort ascending');
-    $i->click(['xpath' => '//*[@role="menuitemradio"][contains(normalize-space(.), "Sort ascending")]']);
+    $i->clickDataViewsSortItem(['xpath' => '//*[@role="menuitemradio"][contains(normalize-space(.), "Sort ascending")]']);
     // Wait for the ascending re-fetch: oldest form (enabled) before newest (disabled).
     $i->waitForJS(<<<JS
       const text = Array.from(document.querySelectorAll('.mailpoet-forms-dataviews tbody tr'))

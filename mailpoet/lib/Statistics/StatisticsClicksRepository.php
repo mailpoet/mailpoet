@@ -120,8 +120,9 @@ class StatisticsClicksRepository extends Repository {
         )
       )
       ->setParameter('subscriber', $subscriber)
-      ->setParameter('from', $from->format('Y-m-d H:i:s'))
-      ->setParameter('to', $to->format('Y-m-d H:i:s'))
+      // click times are stored in UTC, while the bounds (e.g. WooCommerce order dates) may be in the site timezone
+      ->setParameter('from', gmdate('Y-m-d H:i:s', $from->getTimestamp()))
+      ->setParameter('to', gmdate('Y-m-d H:i:s', $to->getTimestamp()))
       ->getQuery()
       ->getResult();
   }

@@ -22,6 +22,8 @@ export type SubscriberFieldOptions = {
 type FilterBy = Exclude<Field<Subscriber>['filterBy'], false | undefined>;
 
 const SET_OPERATORS: FilterBy = { operators: ['isAny', 'isNone'] };
+// Always shown in the filter bar, so merchants find them without the toggle.
+const PRIMARY_SET_OPERATORS: FilterBy = { ...SET_OPERATORS, isPrimary: true };
 // DataViews opens a new filter on the first operator; `between` has range
 // presets (last 7 days, month to date…), unlike `on`, which picks a single day.
 const DATE_OPERATORS: FilterBy = {
@@ -205,7 +207,7 @@ export function getSubscriberFields(
         value: status,
         label: options.statusLabels?.[status] ?? statusLabel(status),
       })),
-      filterBy: SET_OPERATORS,
+      filterBy: PRIMARY_SET_OPERATORS,
       render: ({ item }) => <span>{statusLabel(item.status)}</span>,
     },
     {
@@ -215,7 +217,7 @@ export function getSubscriberFields(
       enableSorting: false,
       enableGlobalSearch: false,
       elements: options.segments,
-      filterBy: SET_OPERATORS,
+      filterBy: PRIMARY_SET_OPERATORS,
       getValue: ({ item }) =>
         subscribedSegments(item).map((segment) => String(segment.id)),
       render: ({ item }) => (

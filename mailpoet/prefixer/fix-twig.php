@@ -42,6 +42,26 @@ foreach ($moduleNodeClasses as $class) {
   replaceInFile($twigSrc . 'Node/ModuleNode.php', ["\"use Twig\\\\$class;"], "\"use MailPoetVendor\\\\Twig\\\\$class;");
 }
 
+// Twig 3.26.0 makes the next two changes so a quote in a name can't end a
+// string in the compiled PHP. Remove them once we update Twig; 3.26 needs PHP 8.
+$traitBlockError = <<<'PHP'
+->write("throw new RuntimeError('Block ")->string($key)->raw(' is not defined in trait ')->subcompile($trait->getNode('template'))->raw(".', ")
+PHP;
+$traitBlockErrorFixed = <<<'PHP'
+->write("throw new RuntimeError(sprintf('Block \"%s\" is not defined in trait \"%s\".', ")->string($key)->raw(', ')->subcompile($trait->getNode('template'))->raw('), ')
+PHP;
+replaceInFile($twigSrc . 'Node/ModuleNode.php', [$traitBlockError], $traitBlockErrorFixed);
+
+// php-scoper 0.17 writes "\addcslashes(" and 0.18 "addcslashes(", so don't
+// match the leading backslash.
+$stringEscaping = <<<'PHP'
+addcslashes($value, "\x00\t\"\$\\")
+PHP;
+$stringEscapingFixed = <<<'PHP'
+str_replace("'", '\\x27', addcslashes($value, "\x00\t\"\$\\"))
+PHP;
+replaceInFile($twigSrc . 'Compiler.php', [$stringEscaping], $stringEscapingFixed);
+
 // Remove unwanted class aliases in lib/Twig
 exec("rm -rf ../vendor-prefixed/twig/twig/lib/Twig");
 exec("rm ../vendor-prefixed/twig/twig/README.rst");

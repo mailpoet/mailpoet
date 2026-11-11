@@ -105,7 +105,7 @@ class SendEventConditions extends Component {
     let meta;
     try {
       meta = JSON.parse(this.emailOptions.meta || null);
-    } catch (e) {
+    } catch {
       meta = this.emailOptions.meta || null;
     }
     const props = {

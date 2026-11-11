@@ -51,7 +51,7 @@ class MPMarketingChannelCest {
     $i->see('1 issues to resolve', '.woocommerce-marketing-registered-channel-card-body');
   }
 
-  public function itShowsMailPoetSyncStatus(\AcceptanceTester $i) {
+  public function itShowsMailPoetSyncStatusWithoutErrors(\AcceptanceTester $i) {
     (new Newsletter())->create();
 
     $i->login();

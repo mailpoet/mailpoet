@@ -1,0 +1,120 @@
+name: 'Codeception tests'
+
+# Runs the integration or acceptance suite in the tests_env Docker stack, like
+# the integration_tests and acceptance_tests jobs in .circleci/config.yml.
+# Callers pick the suite, the group, the WooCommerce, theme or multisite set-up,
+# and how many parts to split the tests into.
+
+on:
+  workflow_call:
+    inputs:
+      suite:
+        description: 'integration or acceptance'
+        type: string
+        required: true
+      name:
+        description: 'Short name of the variant, used for artifact names'
+        type: string
+        required: true
+      parts:
+        description: 'JSON list with one entry per part, for example [1, 2]'
+        type: string
+        default: '[1]'
+      group:
+        type: string
+        default: ''
+      skip_group:
+        type: string
+        default: ''
+      skip_plugins:
+        type: number
+        default: 0
+      enable_hpos:
+        type: number
+        default: 0
+      enable_hpos_sync:
+        type: number
+        default: 0
+      disable_hpos:
+        type: number
+        default: 0
+      multisite:
+        type: number
+        default: 0
+      blockbased_theme:
+        type: number
+        default: 0
+      # The nightly runs set these; empty means the defaults in
+      # tests_env/docker/docker-compose.yml and the plugin versions in
+      # tests_env/download-test-plugins.sh.
+      oldest:
+        description: 'Test the oldest supported versions from tests_env/oldest-versions.yml'
+        type: boolean
+        default: false
+      mysql_image:
+        type: string
+        default: ''
+      mysql_command:
+        type: string
+        default: ''
+      wordpress_version:
+        type: string
+        default: ''
+      woo_core_version:
+        type: string
+        default: ''
+      gutenberg_version:
+        type: string
+        default: ''
+      skip:
+        description: 'Skip the job, for example a beta job when no beta is out'
+        type: boolean
+        default: false
+    secrets:
+      WP_GITHUB_WOOCOMMERCE_TOKEN:
+        required: false
+      WP_TEST_ENV:
+        required: false
+
+permissions: {}
+
+jobs:
+  test:
+    name: 'Part ${{ matrix.part }}'
+    if: ${{ !inputs.skip }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        part: ${{ fromJSON(inputs.parts) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/codeception-tests
+        with:
+          suite: ${{ inputs.suite }}
+          name: ${{ inputs.name }}
+          part: ${{ matrix.part }}
+          part_index: ${{ strategy.job-index }}
+          part_total: ${{ strategy.job-total }}
+          group: ${{ inputs.group }}
+          skip_group: ${{ inputs.skip_group }}
+          skip_plugins: ${{ inputs.skip_plugins }}
+          enable_hpos: ${{ inputs.enable_hpos }}
+          enable_hpos_sync: ${{ inputs.enable_hpos_sync }}
+          disable_hpos: ${{ inputs.disable_hpos }}
+          multisite: ${{ inputs.multisite }}
+          blockbased_theme: ${{ inputs.blockbased_theme }}
+          oldest: ${{ inputs.oldest }}
+          mysql_image: ${{ inputs.mysql_image }}
+          mysql_command: ${{ inputs.mysql_command }}
+          wordpress_version: ${{ inputs.wordpress_version }}
+          woo_core_version: ${{ inputs.woo_core_version }}
+          gutenberg_version: ${{ inputs.gutenberg_version }}
+          wp_github_woocommerce_token: ${{ secrets.WP_GITHUB_WOOCOMMERCE_TOKEN }}
+          wp_test_env: ${{ secrets.WP_TEST_ENV }}

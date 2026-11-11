@@ -144,20 +144,22 @@ class SubscribersTest extends \MailPoetTest {
   public function testItDoesNotSubscribeSubscriberToListsWhenOneOrMoreListsAreMissing() {
     $subscriber = $this->subscriberFactory->create();
     $segment = $this->getSegment();
+    $missingId = $segment->getId() + 1000;
+    $otherMissingId = $segment->getId() + 2000;
 
     // multiple lists error message
     try {
-      $this->getApi()->subscribeToLists($subscriber->getId(), [$segment->getId(), 90, 100]);
+      $this->getApi()->subscribeToLists($subscriber->getId(), [$segment->getId(), $missingId, $otherMissingId]);
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->equals("Lists with IDs '90, 100' do not exist.");
+      verify($e->getMessage())->equals("Lists with IDs '$missingId, $otherMissingId' do not exist.");
     }
     // single list error message
     try {
-      $this->getApi()->subscribeToLists($subscriber->getId(), [$segment->getId(), 90]);
+      $this->getApi()->subscribeToLists($subscriber->getId(), [$segment->getId(), $missingId]);
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->equals("List with ID '90' does not exist.");
+      verify($e->getMessage())->equals("List with ID '$missingId' does not exist.");
     }
   }
 
@@ -461,19 +463,21 @@ class SubscribersTest extends \MailPoetTest {
   public function testItDoesNotUnsubscribeSubscriberFromListsWhenOneOrMoreListsAreMissing() {
     $subscriber = $this->subscriberFactory->create();
     $segment = $this->getSegment();
+    $missingId = $segment->getId() + 1000;
+    $otherMissingId = $segment->getId() + 2000;
     // multiple lists error message
     try {
-      $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId(), 90, 100]);
+      $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId(), $missingId, $otherMissingId]);
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->equals("Lists with IDs '90, 100' do not exist.");
+      verify($e->getMessage())->equals("Lists with IDs '$missingId, $otherMissingId' do not exist.");
     }
     // single list error message
     try {
-      $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId(), 90]);
+      $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId(), $missingId]);
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->equals("List with ID '90' does not exist.");
+      verify($e->getMessage())->equals("List with ID '$missingId' does not exist.");
     }
   }
 
@@ -624,9 +628,70 @@ class SubscribersTest extends \MailPoetTest {
       'email' => 'test@example.com',
     ];
 
-    $this->expectException('Exception');
+    $this->expectException(APIException::class);
+    $this->expectExceptionCode(APIException::CUSTOM_FIELD_VALUE_REQUIRED);
     $this->expectExceptionMessage('Missing value for custom field "custom field');
     $this->getApi()->addSubscriber($subscriber);
+  }
+
+  public function testItSkipsUnsentMandatoryCustomFieldsWhenAddingSubscriber() {
+    $this->customFieldRepository->createOrUpdate([
+      'name' => 'custom field',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+      'params' => ['required' => '1'],
+    ]);
+
+    $result = $this->getApi()->addSubscriber(
+      ['email' => 'test@example.com'],
+      [],
+      ['skip_unsent_required_custom_fields' => true]
+    );
+    verify($result['email'])->equals('test@example.com');
+  }
+
+  public function testItChecksSentEmptyMandatoryCustomFieldsWhenSkippingUnsentOnAdd() {
+    $customField = $this->customFieldRepository->createOrUpdate([
+      'name' => 'custom field',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+      'params' => ['required' => '1'],
+    ]);
+
+    $this->expectException(APIException::class);
+    $this->expectExceptionCode(APIException::CUSTOM_FIELD_VALUE_REQUIRED);
+    $this->expectExceptionMessage('Missing value for custom field "custom field');
+    $this->getApi()->addSubscriber(
+      ['email' => 'test@example.com', 'cf_' . $customField->getId() => ''],
+      [],
+      ['skip_unsent_required_custom_fields' => true]
+    );
+  }
+
+  public function testItAcceptsNullMandatoryCustomFieldsOnAdd() {
+    $customField = $this->customFieldRepository->createOrUpdate([
+      'name' => 'custom field',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+      'params' => ['required' => '1'],
+    ]);
+
+    $result = $this->getApi()->addSubscriber(
+      ['email' => 'test@example.com', 'cf_' . $customField->getId() => null]
+    );
+    verify($result['email'])->equals('test@example.com');
+  }
+
+  public function testItAcceptsNullMandatoryCustomFieldsWhenSkippingUnsentOnAdd() {
+    $customField = $this->customFieldRepository->createOrUpdate([
+      'name' => 'custom field',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+      'params' => ['required' => '1'],
+    ]);
+
+    $result = $this->getApi()->addSubscriber(
+      ['email' => 'test@example.com', 'cf_' . $customField->getId() => null],
+      [],
+      ['skip_unsent_required_custom_fields' => true]
+    );
+    verify($result['email'])->equals('test@example.com');
   }
 
   public function testItSubscribesToSegmentsWhenAddingSubscriber() {
@@ -898,6 +963,54 @@ class SubscribersTest extends \MailPoetTest {
       'email' => 'newemail@example.com',
       'first_name' => 'New Name',
     ]);
+  }
+
+  public function testUpdateSubscriberChecksForMandatoryCustomFields() {
+    $subscriber = $this->subscriberFactory->create();
+    $this->customFieldRepository->createOrUpdate([
+      'name' => 'custom field',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+      'params' => ['required' => '1'],
+    ]);
+
+    $this->expectException(APIException::class);
+    $this->expectExceptionCode(APIException::CUSTOM_FIELD_VALUE_REQUIRED);
+    $this->expectExceptionMessage('Missing value for custom field "custom field');
+    $this->getApi()->updateSubscriber($subscriber->getId(), ['first_name' => 'New Name']);
+  }
+
+  public function testUpdateSubscriberSkipsUnsentMandatoryCustomFields() {
+    $subscriber = $this->subscriberFactory->create();
+    $this->customFieldRepository->createOrUpdate([
+      'name' => 'custom field',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+      'params' => ['required' => '1'],
+    ]);
+
+    $result = $this->getApi()->updateSubscriber(
+      $subscriber->getId(),
+      ['first_name' => 'New Name'],
+      ['skip_unsent_required_custom_fields' => true]
+    );
+    verify($result['first_name'])->equals('New Name');
+  }
+
+  public function testUpdateSubscriberChecksSentEmptyMandatoryCustomFieldsWhenSkippingUnsent() {
+    $subscriber = $this->subscriberFactory->create();
+    $customField = $this->customFieldRepository->createOrUpdate([
+      'name' => 'custom field',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+      'params' => ['required' => '1'],
+    ]);
+
+    $this->expectException(APIException::class);
+    $this->expectExceptionCode(APIException::CUSTOM_FIELD_VALUE_REQUIRED);
+    $this->expectExceptionMessage('Missing value for custom field "custom field');
+    $this->getApi()->updateSubscriber(
+      $subscriber->getId(),
+      ['cf_' . $customField->getId() => ''],
+      ['skip_unsent_required_custom_fields' => true]
+    );
   }
 
   public function testItGetsSubscriber() {

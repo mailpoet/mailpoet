@@ -93,32 +93,10 @@ class SendingStatusCest {
     $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/sending-status/' . $newsletter->getId());
     $this->checkSubscriber($i, $taskId, $lucky, 'Sent');
     $i->dontSeeElement('[role="tablist"]');
-    $addFilter = ['xpath' => '//button[@aria-label="Add filter" or normalize-space(.)="Add filter"]'];
-    $i->waitForElementClickable($addFilter);
-    $i->click($addFilter);
-    $i->click(['xpath' => '//*[@role="menuitem"][contains(normalize-space(.), "Sending status")]']);
+    $i->openDataViewsFilter('Sending status');
     $i->waitForText('Sent (1)');
     $i->waitForText('Failed (1)');
     $i->waitForText('Unprocessed (0)');
-  }
-
-  public function filterToggleShowsAndHidesTheFilterRow(\AcceptanceTester $i) {
-    $i->wantTo('Hide and show the active filters with the filter toggle button');
-    [$newsletter, $lucky, $unlucky, $taskId] = $this->createSentNewsletter();
-    $i->login();
-    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/sending-status/' . $newsletter->getId() . '/filter[result=failed]');
-    $i->waitForElement($this->rowSelector($taskId, $unlucky));
-    $i->waitForElement($this->filterChip('Sending status'));
-    $i->waitForElement('.dataviews-filters-toggle__count');
-
-    $i->wantTo('Hide the filter row with the toggle');
-    $i->click('.dataviews-filters__visibility-toggle');
-    $i->waitForElementNotVisible('.dataviews-filters__summary-chip');
-
-    $i->wantTo('Show the filter row again with the toggle');
-    $i->click('.dataviews-filters__visibility-toggle');
-    $i->waitForElementVisible('.dataviews-filters__summary-chip');
-    $i->waitForElement($this->filterChip('Sending status'));
   }
 
   private function createSentNewsletter(): array {
@@ -139,7 +117,8 @@ class SendingStatusCest {
   }
 
   private function filterChip(string $name): array {
-    return ['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip-container")][contains(., "' . $name . '")]'];
+    // Primary filters always show a chip, so only a chip with values means the filter is set.
+    return ['xpath' => '//*[contains(@class, "dataviews-filters__summary-chip") and contains(@class, "has-values")][contains(., "' . $name . '")]'];
   }
 
   private function checkSubscriber(\AcceptanceTester $i, $taskId, $subscriber, $status, $error = false) {

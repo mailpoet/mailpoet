@@ -23,7 +23,8 @@ class BlacklistCheck {
   }
 
   private function getSubscriberEmailForBlacklistCheck($subscriberString) {
-    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriberString, $subscriberData);
+    // Matches "Name <email>"
+    preg_match('!^(?P<name>.*)\s<(?P<email>[^<>]+)>\z!s', $subscriberString, $subscriberData);
     if (!isset($subscriberData['email'])) {
       return $subscriberString;
     }

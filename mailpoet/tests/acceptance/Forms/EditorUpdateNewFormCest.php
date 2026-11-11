@@ -60,14 +60,14 @@ class EditorUpdateNewFormCest {
     $i->seeNoJSErrors();
 
     $i->wantTo('Select list and save form');
-    $i->selectOptionInSelect2($segmentName);
+    $i->selectOptionInChipSelect($segmentName, '.mailpoet-form-segments');
     $i->saveFormInEditor();
 
     $i->wantTo('Reload page and check data were saved');
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="form_title_input"]');
     $i->seeInField('[data-automation-id="form_title_input"]', $formName);
-    $i->seeSelectedInSelect2($segmentName);
+    $i->seeSelectedInChipSelect($segmentName, '.mailpoet-form-segments');
     $i->seeNoJSErrors();
 
     $i->wantTo('Update form name and confirmation message');

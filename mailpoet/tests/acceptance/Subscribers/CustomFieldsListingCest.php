@@ -28,8 +28,8 @@ class CustomFieldsListingCest {
     $i->waitForElement('.dataviews-filters__search-widget-listitem');
     $i->click(['xpath' => '//*[contains(@class, "dataviews-filters__search-widget-listitem")][.//text()[contains(., "Date")]]']);
     $i->pressKey('body', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+    $i->waitForElementNotVisible(['xpath' => '//tr[.//*[normalize-space(text())="' . $textField . '"]]']);
     $i->waitForText($dateField);
-    $i->dontSee($textField);
     $i->seeInCurrentUrl('type=date');
 
     $i->wantTo('Sort the custom fields by name descending');
@@ -38,7 +38,7 @@ class CustomFieldsListingCest {
     $i->waitForText($textField);
     $i->click(['xpath' => '//th//button[contains(., "Name")]']);
     $i->waitForText('Sort descending');
-    $i->click(['xpath' => '//*[@role="menuitemradio"][contains(normalize-space(.), "Sort descending")]']);
+    $i->clickDataViewsSortItem(['xpath' => '//*[@role="menuitemradio"][contains(normalize-space(.), "Sort descending")]']);
     $i->waitForText($textField);
     $i->waitForJS(<<<JS
       const text = Array.from(document.querySelectorAll('.mailpoet-custom-fields-dataviews tbody tr'))

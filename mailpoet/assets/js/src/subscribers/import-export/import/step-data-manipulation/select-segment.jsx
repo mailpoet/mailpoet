@@ -11,21 +11,25 @@ import {
 } from './generate-segment-selection.jsx';
 import { createNewSegment } from './create-new-segment';
 
-function SelectSegment({ setSelectedSegments }) {
+function SelectSegment({ selectedSegments, setSelectedSegments }) {
   const { segments: segmentsContext } = useContext(GlobalContext);
   const { all: originalSegments, updateAll: updateContextSegments } =
     segmentsContext;
   const [selectionSegments, setSelectionSegments] = useState(originalSegments);
 
   useLayoutEffect(() => {
-    createSelection(selectionSegments, (segments) => {
-      setSelectedSegments(segments);
-    });
-  }, [selectionSegments, setSelectedSegments]);
+    createSelection(
+      selectionSegments,
+      (segments) => {
+        setSelectedSegments(segments);
+      },
+      selectedSegments,
+    );
+  }, [selectionSegments, selectedSegments, setSelectedSegments]);
 
   const onCreateNewSegment = (segment) => {
     destroySelection();
-    setSelectedSegments([]);
+    setSelectedSegments((current) => [...current, segment.id]);
     setSelectionSegments([...selectionSegments, segment]);
     updateContextSegments([...selectionSegments, segment]);
   };
@@ -65,6 +69,7 @@ function SelectSegment({ setSelectedSegments }) {
 }
 
 SelectSegment.propTypes = {
+  selectedSegments: PropTypes.arrayOf(PropTypes.string).isRequired,
   setSelectedSegments: PropTypes.func.isRequired,
 };
 

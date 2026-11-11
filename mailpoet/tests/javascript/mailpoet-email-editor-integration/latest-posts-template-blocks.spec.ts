@@ -8,7 +8,7 @@ describe('Latest Posts template blocks', () => {
   it('limits the post blocks to the Post Template block', () => {
     TEMPLATE_CORE_BLOCKS.forEach((name) => {
       const settings = limitToPostTemplate(
-        { title: name, category: 'theme', attributes: {} },
+        { name, title: name, category: 'theme', attributes: {} },
         name,
       );
       expect(settings.ancestor).to.deep.equal([TEMPLATE_BLOCK_NAME]);
@@ -18,6 +18,7 @@ describe('Latest Posts template blocks', () => {
   it('keeps ancestors set by other extensions', () => {
     const settings = limitToPostTemplate(
       {
+        name: 'core/post-title',
         title: 'Post Title',
         category: 'theme',
         attributes: {},
@@ -32,7 +33,12 @@ describe('Latest Posts template blocks', () => {
   });
 
   it('leaves other blocks untouched', () => {
-    const settings = { title: 'Paragraph', category: 'text', attributes: {} };
+    const settings = {
+      name: 'core/paragraph',
+      title: 'Paragraph',
+      category: 'text',
+      attributes: {},
+    };
     expect(limitToPostTemplate(settings, 'core/paragraph')).to.equal(settings);
   });
 });

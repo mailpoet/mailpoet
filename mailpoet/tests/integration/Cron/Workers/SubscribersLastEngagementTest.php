@@ -98,10 +98,16 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
   }
 
   public function testItProcessMultipleBatches() {
-    $subscriberInFirstBatch = $this->createSubscriber('last-engagement1@test.com');
+    $this->createSubscriber('last-engagement1@test.com');
     $this->createSubscriber('last-engagement2@test.com');
+    // Fixed ids: the table is emptied with DELETE between tests, so the auto-increment depends
+    // on which tests ran before this one on the same container.
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement("UPDATE $subscribersTable SET id = 1 WHERE email='last-engagement1@test.com'");
     $this->entityManager->getConnection()->executeStatement("UPDATE $subscribersTable SET id = 1001 WHERE email='last-engagement2@test.com'");
+    $this->entityManager->clear();
+    $subscriberInFirstBatch = $this->entityManager->find(SubscriberEntity::class, 1);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriberInFirstBatch);
     $subscriberInSecondBatch = $this->entityManager->find(SubscriberEntity::class, 1001);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriberInSecondBatch);
     $firstOpenTime = new Carbon('2021-08-10 12:13:14');

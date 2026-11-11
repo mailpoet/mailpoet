@@ -43,7 +43,7 @@ class EditorCreateBlankFormCest {
 
     // Select list and save form
     $i->waitForElementVisible('[data-automation-id="editor_submit_input"]');
-    $i->selectOptionInSelect2($segmentName);
+    $i->selectOptionInChipSelect($segmentName, '.mailpoet-form-segments');
     $i->saveFormInEditor();
 
     // Reload page and check data were saved

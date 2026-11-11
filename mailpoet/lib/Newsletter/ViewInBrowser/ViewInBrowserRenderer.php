@@ -15,7 +15,6 @@ use MailPoet\Settings\TrackingConfig;
 use MailPoet\WP\Emoji;
 
 class ViewInBrowserRenderer {
-  private const OPTION_RENDER_AS_PREVIEW = 'renderAsPreview';
   private const OPTION_SANITIZE_RENDERED_QUEUE_LINKS = 'sanitizeRenderedQueueLinks';
   private const OPTION_SHORTCODES_PREVIEW = 'shortcodesPreview';
   private const OPTION_REPLACE_SUBSCRIBER_TRACKING = 'replaceSubscriberTracking';
@@ -69,7 +68,7 @@ class ViewInBrowserRenderer {
       $newsletter,
       $subscriber,
       $queue,
-      $this->buildRenderOptionsForPreview($isPreview)
+      $this->buildRenderOptionsForPreview($isPreview, $subscriber && $subscriber->getId())
     );
   }
 
@@ -90,7 +89,6 @@ class ViewInBrowserRenderer {
 
   /**
    * @param array{
-   *   renderAsPreview: bool,
    *   sanitizeRenderedQueueLinks: bool,
    *   shortcodesPreview: bool,
    *   replaceSubscriberTracking: bool,
@@ -104,7 +102,6 @@ class ViewInBrowserRenderer {
     ?SendingQueueEntity $queue,
     array $options
   ): string {
-    $renderAsPreview = $options[self::OPTION_RENDER_AS_PREVIEW];
     $sanitizeRenderedQueueLinks = $options[self::OPTION_SANITIZE_RENDERED_QUEUE_LINKS];
     $shortcodesPreview = $options[self::OPTION_SHORTCODES_PREVIEW];
     $replaceSubscriberTracking = $options[self::OPTION_REPLACE_SUBSCRIBER_TRACKING];
@@ -135,11 +132,9 @@ class ViewInBrowserRenderer {
         $newsletterBody = str_replace(Links::DATA_TAG_OPEN, '', $newsletterBody);
       }
     } else {
-      if ($renderAsPreview) {
-        $newsletterBody = $this->renderer->renderAsPreview($newsletter, 'html');
-      } else {
-        $newsletterBody = $this->renderer->render($newsletter, $sendingTask = null, 'html');
-      }
+      // Without a stored queue body, render as preview so that send-time
+      // preprocessing doesn't run outside of sending.
+      $newsletterBody = $this->renderer->renderAsPreview($newsletter, 'html');
     }
     $this->prepareShortcodes(
       $newsletter,
@@ -176,7 +171,6 @@ class ViewInBrowserRenderer {
 
   /**
    * @return array{
-   *   renderAsPreview: bool,
    *   sanitizeRenderedQueueLinks: bool,
    *   shortcodesPreview: bool,
    *   replaceSubscriberTracking: bool,
@@ -184,12 +178,12 @@ class ViewInBrowserRenderer {
    *   replaceViewInBrowserUrlWithPublicShareUrl: bool
    * }
    */
-  private function buildRenderOptionsForPreview(bool $isPreview): array {
+  private function buildRenderOptionsForPreview(bool $isPreview, bool $hasSubscriber): array {
     return [
-      self::OPTION_RENDER_AS_PREVIEW => $isPreview,
-      self::OPTION_SANITIZE_RENDERED_QUEUE_LINKS => $isPreview,
-      self::OPTION_SHORTCODES_PREVIEW => $isPreview,
-      self::OPTION_REPLACE_SUBSCRIBER_TRACKING => !$isPreview,
+      // without a subscriber, links and shortcodes render as on the public share page
+      self::OPTION_SANITIZE_RENDERED_QUEUE_LINKS => $isPreview || !$hasSubscriber,
+      self::OPTION_SHORTCODES_PREVIEW => $isPreview || !$hasSubscriber,
+      self::OPTION_REPLACE_SUBSCRIBER_TRACKING => !$isPreview && $hasSubscriber,
       self::OPTION_PERSONALIZER_PREVIEW => $isPreview,
       self::OPTION_REPLACE_VIEW_IN_BROWSER_URL => false,
     ];
@@ -197,7 +191,6 @@ class ViewInBrowserRenderer {
 
   /**
    * @return array{
-   *   renderAsPreview: bool,
    *   sanitizeRenderedQueueLinks: bool,
    *   shortcodesPreview: bool,
    *   replaceSubscriberTracking: bool,
@@ -207,10 +200,8 @@ class ViewInBrowserRenderer {
    */
   private function buildRenderOptionsForPublicShare(): array {
     return [
-      // Keep no-queue public share fallback in preview mode to avoid
-      // send-time preprocessing side effects and keep shortcode behavior
-      // consistent with the rendering mode.
-      self::OPTION_RENDER_AS_PREVIEW => true,
+      // Keep shortcode behavior consistent with the no-queue fallback,
+      // which always renders in preview mode.
       self::OPTION_SANITIZE_RENDERED_QUEUE_LINKS => true,
       self::OPTION_SHORTCODES_PREVIEW => true,
       self::OPTION_REPLACE_SUBSCRIBER_TRACKING => false,

@@ -1,4 +1,3 @@
-import classnames from 'classnames';
 import {
   Button as WordPressButton,
   CheckboxControl,
@@ -24,12 +23,16 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { Button } from 'common';
 import {
   filterToExtraParams,
+  getActiveStatusTab,
   getDataViewsPreference,
+  getSingleFilterValue,
+  getTabChange,
+  groupsToTabs,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
-  useShowFiltersWhenActive,
   type ListingQueryParams,
 } from 'common/dataviews';
+import { Categories } from 'common/categories/categories';
 import type { ListingGroup } from 'common/dataviews/types';
 import { MailPoet } from 'mailpoet';
 import { Modal } from 'common/modal/modal';
@@ -43,8 +46,10 @@ import {
   type FieldElement,
 } from './fields';
 import {
+  STATUS_FIELD,
+  SUBSCRIBER_STATUSES,
   WITHOUT_LIST,
-  getExactStatus,
+  filtersWithValues,
   hasActiveFilters,
   requestFilterToViewFilters,
   toOrderby,
@@ -659,8 +664,8 @@ function EmptyContent({
 }) {
   if (
     group !== 'trash' &&
-    getExactStatus(filters) === 'bounced' &&
-    (filters ?? []).length === 1 &&
+    getSingleFilterValue(filters, STATUS_FIELD) === 'bounced' &&
+    filtersWithValues(filters).length === 1 &&
     !search &&
     !window.mailpoet_premium_active &&
     !window.mailpoet_mss_active
@@ -770,8 +775,6 @@ function SubscriberList() {
       orderby: currentView.sort ? toOrderby(currentView.sort.field) : undefined,
     }),
   });
-  const dataViewsRef = useRef<HTMLDivElement>(null);
-  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
   const viewRef = useRef(view);
   viewRef.current = view;
 
@@ -782,7 +785,7 @@ function SubscriberList() {
       }),
     [view.filters],
   );
-  const exactStatus = getExactStatus(view.filters);
+  const exactStatus = getSingleFilterValue(view.filters, STATUS_FIELD);
 
   // Resolve the URL defaults at write time (not mount time) so preferences
   // persisted during the session are reflected.
@@ -1177,7 +1180,6 @@ function SubscriberList() {
       {
         id: 'statistics',
         label: __('Statistics', 'mailpoet'),
-        context: 'single',
         supportsBulk: false,
         isEligible: () => group !== 'trash',
         callback: (targets) => {
@@ -1192,7 +1194,6 @@ function SubscriberList() {
       {
         id: 'edit',
         label: __('Edit', 'mailpoet'),
-        context: 'single',
         isPrimary: true,
         supportsBulk: false,
         isEligible: () => group !== 'trash',
@@ -1208,7 +1209,6 @@ function SubscriberList() {
       {
         id: 'sendConfirmationEmail',
         label: __('Resend confirmation email', 'mailpoet'),
-        context: 'single',
         supportsBulk: false,
         isEligible: (item) =>
           group !== 'trash' &&
@@ -1250,7 +1250,6 @@ function SubscriberList() {
         id: 'delete',
         label: __('Delete permanently', 'mailpoet'),
         supportsBulk: true,
-        isDestructive: true,
         isEligible: (item) => group === 'trash' && isItemDeletable(item),
         callback: (targets) => {
           if (selectAll) {
@@ -1347,32 +1346,30 @@ function SubscriberList() {
     ],
   );
 
-  const handleGroupSelect = (nextGroup: Group): void => {
-    if (nextGroup === group) return;
-    setGroup(nextGroup);
+  const activeTab = getActiveStatusTab(
+    group,
+    view.filters,
+    STATUS_FIELD,
+    SUBSCRIBER_STATUSES,
+  );
+
+  const handleTabSelect = (tab: string): void => {
+    const change = getTabChange(tab, group, view.filters, STATUS_FIELD);
+    if (!change) return;
+    setGroup(change.group);
     setSelection([]);
     setSelectAll(false);
     clearLoadError();
-    setView((currentView) => ({ ...currentView, page: 1 }));
+    setView((currentView) => ({
+      ...currentView,
+      page: 1,
+      filters: change.filters,
+    }));
   };
 
-  const handleCheckTrash = (): void => {
-    setGroup('trash');
-    setSelection([]);
-    setSelectAll(false);
-    clearLoadError();
-    setView((currentView) => ({ ...currentView, page: 1 }));
-  };
-
-  const groupsToRender = useMemo(
-    () =>
-      (groups ?? [])
-        .filter(
-          (entry) =>
-            !(entry.name === 'trash' && entry.count === 0 && group !== 'trash'),
-        )
-        .filter((entry) => entry.name in groupCounts),
-    [group, groupCounts, groups],
+  const tabs = useMemo(
+    () => groupsToTabs(groups ?? [], group),
+    [group, groups],
   );
 
   const fields = useMemo(
@@ -1549,39 +1546,12 @@ function SubscriberList() {
         </Notice>
       )}
 
-      <div className="mailpoet-categories mailpoet-dataviews__tabs mailpoet-subscribers-dataviews__tabs">
-        <div className="components-tab-panel__tabs" role="tablist">
-          {groupsToRender.map((entry) => {
-            const tabClasses = classnames(
-              'components-button',
-              'components-tab-panel__tabs-item',
-              `mailpoet-dataviews-group-${entry.name}`,
-              {
-                'is-active': entry.name === group,
-              },
-            );
-            return (
-              <a
-                key={entry.name}
-                href="#"
-                className={tabClasses}
-                data-automation-id={`filters_${entry.name}`}
-                onClick={(event) => {
-                  event.preventDefault();
-                  handleGroupSelect(entry.name as Group);
-                }}
-              >
-                <span data-title={entry.label}>{entry.label}</span>
-                {Number(entry.count) > 0 && (
-                  <span className="count">
-                    {Number(entry.count).toLocaleString()}
-                  </span>
-                )}
-              </a>
-            );
-          })}
-        </div>
-      </div>
+      <Categories
+        className="mailpoet-dataviews__tabs mailpoet-subscribers-dataviews__tabs"
+        categories={tabs}
+        active={activeTab}
+        onSelect={handleTabSelect}
+      />
 
       <SelectAllBanner
         mode={bannerMode}
@@ -1595,7 +1565,6 @@ function SubscriberList() {
       />
 
       <div
-        ref={dataViewsRef}
         className="mailpoet-dataviews mailpoet-subscribers-dataviews"
         data-automation-id="subscribers_listing"
       >
@@ -1616,7 +1585,7 @@ function SubscriberList() {
               group={group}
               filters={view.filters}
               search={view.search}
-              onCheckTrash={handleCheckTrash}
+              onCheckTrash={() => handleTabSelect('trash')}
             />
           }
         >

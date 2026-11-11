@@ -6,7 +6,7 @@ use Facebook\WebDriver\Exception\TimeoutException;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class ScheduleNewsletterCest {
-  public function scheduleStandardNewsletter(\AcceptanceTester $i) {
+  public function scheduleStandardNewsletterForLater(\AcceptanceTester $i) {
     $i->wantTo('Schedule a newsletter');
     $newsletterTitle = 'Schedule Test Newsletter';
 

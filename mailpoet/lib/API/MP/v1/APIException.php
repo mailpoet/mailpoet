@@ -32,4 +32,5 @@ class APIException extends \Exception {
   const TAG_NOT_EXISTS = 29;
   const FAILED_TO_UPDATE_TAG = 30;
   const FAILED_TO_DELETE_TAG = 31;
+  const CUSTOM_FIELD_VALUE_REQUIRED = 32;
 }

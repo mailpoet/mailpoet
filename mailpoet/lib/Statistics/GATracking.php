@@ -142,8 +142,8 @@ class GATracking {
     // Extract shortcodes from query parameters to preserve them
     list($linkWithPlaceholders, $shortcodeMap) = $this->extractShortcodes($link);
 
-    // Add GA parameters to the link with placeholders
-    $linkWithGAParams = $this->wp->addQueryArg($params, $linkWithPlaceholders);
+    // Add GA parameters to the link with placeholders; add_query_arg() does not encode values
+    $linkWithGAParams = $this->wp->addQueryArg(array_map('rawurlencode', $params), $linkWithPlaceholders);
 
     // Restore the original shortcodes
     $linkWithGAParams = $this->restoreShortcodes($linkWithGAParams, $shortcodeMap);

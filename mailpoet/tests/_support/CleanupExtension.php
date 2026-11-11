@@ -85,6 +85,15 @@ class CleanupExtension extends Extension {
       ON DUPLICATE KEY UPDATE option_value = '1', autoload = 'yes';
     ";
 
+    // Turn off WooCommerce marketplace suggestions. Otherwise its marketing page loads the
+    // knowledge base in the background, and when the database is restored or dropped while
+    // that request still runs, its database error fails the run.
+    $sql .= "
+      INSERT INTO mp_options (option_name, option_value, autoload)
+      VALUES ('woocommerce_show_marketplace_suggestions', 'no', 'yes')
+      ON DUPLICATE KEY UPDATE option_value = 'no';
+    ";
+
     // wrap SQL with serializable transaction (to avoid other connections like WP-CLI seeing wrong state)
     $sql = "
       SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE;

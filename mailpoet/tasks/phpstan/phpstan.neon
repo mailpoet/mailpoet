@@ -48,14 +48,6 @@ parameters:
     - '/Parameter #1 \$cssOrXPath of method AcceptanceTester::moveMouseOver\(\) expects string\|null, array<string, string> given./'
     - '/Call to method getName\(\) on an unknown class _generated\\([a-zA-Z])*Cookie/' # codeception generate incorrect return type in ../../tests/_support/_generated
     -
-      message: '/^Call to static method get_orders_table_name\(\) on an unknown class Automattic\\WooCommerce\\Internal\\DataStores\\Orders\\OrdersTableDataStore\.$/'
-      count: 1
-      path: ../../lib/WooCommerce/Helper.php
-    -
-      message: '/^Call to static method get_addresses_table_name\(\) on an unknown class Automattic\\WooCommerce\\Internal\\DataStores\\Orders\\OrdersTableDataStore\.$/'
-      count: 1
-      path: ../../lib/WooCommerce/Helper.php
-    -
       message: '/^Cannot call method get\(\) on mixed.$/'
       count: 2
       path: ../../lib/PostEditorBlocks/WooCommerceBlocksIntegration.php
@@ -89,6 +81,9 @@ parameters:
   dynamicConstantNames:
     - MAILPOET_PREMIUM_INITIALIZED
     - MAILPOET_PREMIUM_VERSION
+    - WC_BOOKINGS_VERSION
+    - AUTOMATEWOO_VERSION
+    - WC_VERSION
   doctrine:
     objectManagerLoader: create-entity-manager.php
 
@@ -100,6 +95,7 @@ parameters:
       - ../../lib/Config/PopulatorData/Templates # analysis of templates is extremely slow, let's skip them for now
       - ../../tests/_support/_generated
       - ../../tests/unit/_stubs.php # Contains stubs for WP classes etc.
+      - ../../tests/unit/_stubs # Stubs for the PHPMailer classes WordPress ships; PHPStan knows the real ones
       - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php # stubs are loaded via szepeviktor/phpstan-wordpress, no need to analyse them
 includes:
   - extensions/CodeceptionExtension/extension.neon
@@ -107,4 +103,9 @@ includes:
   - vendor/phpstan/phpstan-phpunit/extension.neon
   - vendor/phpstan/phpstan-doctrine/rules.neon
   - vendor/szepeviktor/phpstan-wordpress/extension.neon
+  # No minimum version is declared for these plugins, so use latest (see the woocommerce/php-stubs README); pin x.y.0 when one is declared
+  - vendor/woocommerce/php-stubs/stubs/woocommerce-subscriptions/latest.neon
+  - vendor/woocommerce/php-stubs/stubs/woocommerce-bookings/latest.neon
+  - vendor/woocommerce/php-stubs/stubs/automatewoo/latest.neon
+  - vendor/woocommerce/php-stubs/supplements/woocommerce-internal.php
   - phpstan-baseline.neon

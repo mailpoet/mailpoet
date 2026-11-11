@@ -14,7 +14,7 @@ const FormStyles = () => {
 
   try {
     css.parse(formStyles);
-  } catch (e) {
+  } catch {
     return ReactDOM.createPortal(null, element);
   }
 

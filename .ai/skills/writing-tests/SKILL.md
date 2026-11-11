@@ -76,5 +76,5 @@ Place reusable test fixtures under `tests/DataFactories/`. If you find yourself 
 ## Related skills
 
 - [[running-tests]] — how to actually invoke the test runner (single file, whole suite, premium variants, debug mode, multisite, Docker shell).
-- [[debugging-failed-tests]] — investigating a CircleCI failure and shipping a fix.
+- [[debugging-failed-tests]] — investigating a CI failure and shipping a fix.
 - [[code-quality]] — the broader lint/format/test loop you should run before pushing.

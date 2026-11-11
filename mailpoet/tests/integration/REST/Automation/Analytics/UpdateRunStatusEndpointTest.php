@@ -31,6 +31,8 @@ class UpdateRunStatusEndpointTest extends AutomationTest {
     parent::_before();
     $this->automationRunStorage = $this->diContainer->get(AutomationRunStorage::class);
     $this->actionScheduler = $this->diContainer->get(ASWrapper::class);
+    // Action Scheduler tables aren't reset between tests, and other tests may leave pending actions behind
+    $this->cleanup();
 
     // Create a running automation run
     $this->runningRun = (new AutomationRunFactory())
@@ -41,6 +43,11 @@ class UpdateRunStatusEndpointTest extends AutomationTest {
     $this->cancelledRun = (new AutomationRunFactory())
       ->withStatus(AutomationRun::STATUS_CANCELLED)
       ->create();
+  }
+
+  public function _after() {
+    parent::_after();
+    $this->cleanup();
   }
 
   public function testEditorIsAllowed(): void {
@@ -319,5 +326,11 @@ class UpdateRunStatusEndpointTest extends AutomationTest {
         && (int)$a[0]['run_number'] === 1;
     }));
     $this->assertNotEmpty($matching);
+  }
+
+  private function cleanup(): void {
+    global $wpdb;
+    $wpdb->query($wpdb->prepare('TRUNCATE %i', $wpdb->prefix . 'actionscheduler_actions'));
+    $wpdb->query($wpdb->prepare('TRUNCATE %i', $wpdb->prefix . 'actionscheduler_claims'));
   }
 }

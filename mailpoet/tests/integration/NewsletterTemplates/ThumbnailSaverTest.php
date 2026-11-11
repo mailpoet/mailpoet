@@ -53,6 +53,35 @@ class ThumbnailSaverTest extends \MailPoetTest {
     verify($thumbnailUrl)->null();
   }
 
+  public function testItRegeneratesThumbnailWithUnexpectedFileName() {
+    $thumbnailsDirectory = Env::$tempPath . '/' . ThumbnailSaver::THUMBNAIL_DIRECTORY;
+    wp_mkdir_p($thumbnailsDirectory);
+    $otherFile = $thumbnailsDirectory . '/other-file.jpg';
+    file_put_contents($otherFile, 'test');
+    $template = $this->createTemplate();
+    $template->setThumbnail(Env::$tempUrl . '/' . ThumbnailSaver::THUMBNAIL_DIRECTORY . '/other-file.jpg');
+
+    $template = $this->thumbnailSaver->ensureTemplateThumbnailFile($template);
+
+    $thumbnailUrl = (string)$template->getThumbnail();
+    unlink($otherFile);
+    verify($thumbnailUrl)->stringEndsWith('_template_' . $template->getId() . '.jpg');
+    [, $fileName] = explode(ThumbnailSaver::THUMBNAIL_DIRECTORY, $thumbnailUrl);
+    unlink($thumbnailsDirectory . $fileName);
+  }
+
+  public function testItKeepsRegeneratedThumbnailUrlWhenSavedUrlHasDifferentBase() {
+    $template = $this->createTemplate();
+    $template->setThumbnail(dirname(Env::$tempUrl) . '/' . ThumbnailSaver::THUMBNAIL_DIRECTORY . '/other-file.jpg');
+
+    $template = $this->thumbnailSaver->ensureTemplateThumbnailFile($template);
+
+    $thumbnailUrl = (string)$template->getThumbnail();
+    [, $fileName] = explode(ThumbnailSaver::THUMBNAIL_DIRECTORY, $thumbnailUrl);
+    unlink(Env::$tempPath . '/' . ThumbnailSaver::THUMBNAIL_DIRECTORY . $fileName);
+    verify($thumbnailUrl)->stringStartsWith(Env::$tempUrl . '/' . ThumbnailSaver::THUMBNAIL_DIRECTORY . '/');
+  }
+
   private function createTemplate(): NewsletterTemplateEntity {
     $template = new NewsletterTemplateEntity('Template');
     $template->setBody([1]);

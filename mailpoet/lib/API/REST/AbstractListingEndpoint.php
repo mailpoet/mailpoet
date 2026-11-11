@@ -5,6 +5,7 @@ namespace MailPoet\API\REST;
 use MailPoet\Listing\Handler as ListingHandler;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
+use MailPoet\Listing\PageLimit;
 use MailPoet\Validator\Builder;
 
 /**
@@ -20,7 +21,7 @@ use MailPoet\Validator\Builder;
  */
 abstract class AbstractListingEndpoint extends Endpoint {
   public const DEFAULT_PER_PAGE = 20;
-  public const MAX_PER_PAGE = 100;
+  public const MAX_PER_PAGE = PageLimit::MAX_LIMIT_PER_PAGE;
   // Sentinel cap on `page`. Keeps `(page-1) * per_page` from producing
   // huge OFFSETs that would push MySQL through millions of skipped rows
   // when a client (or fuzzer) sends `page=999999999`.
@@ -66,10 +67,9 @@ abstract class AbstractListingEndpoint extends Endpoint {
 
   /**
    * Returns `['count' => int, 'groups' => array]`. Split into a hook so an
-   * endpoint whose group counts already include the current group's count can
-   * compute both from a single query and skip the separate getCount(). The
-   * default keeps the two independent queries, unchanged for every other
-   * listing.
+   * endpoint can read the count from cached statistics instead of running
+   * getCount(). The default keeps the two independent queries, unchanged for
+   * every other listing.
    *
    * @return array{count: int, groups: array<int, array<string, mixed>>}
    */

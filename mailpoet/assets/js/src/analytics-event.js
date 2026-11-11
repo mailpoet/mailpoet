@@ -153,7 +153,7 @@ function trackToTracks(name, data = []) {
     ) {
       window.mailpoetTracks.recordEvent(tracksEventName, tracksData);
     }
-  } catch (error) {
+  } catch {
     // Fail silently to avoid breaking the user experience
   }
 }

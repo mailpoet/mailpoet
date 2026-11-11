@@ -1,8 +1,7 @@
 import { useCallback } from 'react';
-import { Modal, Notice } from '@wordpress/components';
+import { Button, Modal, Notice } from '@wordpress/components';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
-import { Button } from 'common';
 import type { LogsFilter } from './url-state';
 
 type DownloadConfig = {
@@ -93,10 +92,14 @@ export function DownloadLogsModal({
       <p>{message}</p>
 
       <div className="mailpoet-logs-download-modal__actions">
-        <Button dimension="small" variant="secondary" onClick={onClose}>
+        <Button __next40pxDefaultSize variant="tertiary" onClick={onClose}>
           {__('Cancel', 'mailpoet')}
         </Button>
-        <Button dimension="small" onClick={handleDownload}>
+        <Button
+          __next40pxDefaultSize
+          variant="primary"
+          onClick={handleDownload}
+        >
           {sprintf(
             _n('Download %s log', 'Download %s logs', count, 'mailpoet'),
             formattedCount,

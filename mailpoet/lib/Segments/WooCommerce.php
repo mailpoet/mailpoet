@@ -123,6 +123,15 @@ class WooCommerce {
     return $this->woocommerceHelper->isWooCommerceActive();
   }
 
+  /**
+   * The segment types a newsletter can be sent to. Empty means all types.
+   *
+   * @return string[]
+   */
+  public function getNewsletterSegmentTypes(): array {
+    return $this->shouldShowWooCommerceSegment() ? [] : SegmentEntity::NON_WOO_RELATED_TYPES;
+  }
+
   public function synchronizeRegisteredCustomer(int $wpUserId, ?string $currentFilter = null): bool {
     $wcSegment = $this->segmentsRepository->getWooCommerceSegment();
 
@@ -252,10 +261,11 @@ class WooCommerce {
     if ($subscriber) {
       $firstName = $wcOrder->get_billing_first_name(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $lastName = $wcOrder->get_billing_last_name(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      if ($firstName) {
+      // Use only names that pass the character check the subscription form also runs in the browser
+      if ($firstName && strpbrk($firstName, '<>') === false) {
         $subscriber->setFirstName($firstName);
       }
-      if ($lastName) {
+      if ($lastName && strpbrk($lastName, '<>') === false) {
         $subscriber->setLastName($lastName);
       }
       if ($firstName || $lastName) {
@@ -518,6 +528,10 @@ class WooCommerce {
 
     foreach ($metaData as $row) {
       if (!$row['meta_value']) {
+        continue;
+      }
+      // Use only names that pass the character check the subscription form also runs in the browser
+      if (is_string($row['meta_value']) && strpbrk($row['meta_value'], '<>') !== false) {
         continue;
       }
       $postId = is_numeric($row['post_id']) ? (int)$row['post_id'] : 0;

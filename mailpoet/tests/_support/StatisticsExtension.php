@@ -15,6 +15,9 @@ use Codeception\Event\SuiteEvent;
 use Codeception\Event\TestEvent;
 use Codeception\Events;
 use Codeception\Extension;
+use Codeception\Test\Descriptor;
+use Codeception\Test\Interfaces\Descriptive;
+use PHPUnit\Framework\SelfDescribing;
 
 class StatisticsExtension extends Extension {
   /**
@@ -43,21 +46,17 @@ class StatisticsExtension extends Extension {
 
   // we are printing test status and time taken
   public function beforeTest(TestEvent $e) {
-    self::$tmpCurrentTest = (new \ReflectionClass($e->getTest()))->getFileName();
+    self::$tmpCurrentTest = $this->testName($e);
   }
 
   // we are printing test status and time taken
   public function beforeStep(StepEvent $e) {
-    list($usec, $sec) = explode(" ", microtime());
-    self::$tmpStepStartTime = (float)$sec;
+    self::$tmpStepStartTime = microtime(true);
   }
 
   // we are printing test status and time taken
   public function afterStep(StepEvent $e) {
-    list($usec, $sec) = explode(" ", microtime());
-    $stepEndTime = (float)$sec;
-
-    $stepTime = $stepEndTime - self::$tmpStepStartTime;
+    $stepTime = microtime(true) - self::$tmpStepStartTime;
 
     // If the Step has taken more than 5 seconds
     if ($stepTime > self::$maxStepPerformantTime) {
@@ -72,13 +71,18 @@ class StatisticsExtension extends Extension {
 
   public function afterTest(TestEvent $e) {
     $test = new \stdClass;
-    $test->name = (new \ReflectionClass($e->getTest()))->getFileName();
-    // stack overflow: http://stackoverflow.com/questions/16825240/how-to-convert-microtime-to-hhmmssuu
-    $seconds_input = $e->getTime();
-    $seconds = (int)($milliseconds = (int)($seconds_input * 1000)) / 1000;
-    $time = ((int)$seconds % 60);
-    $test->time = $time;
+    $test->name = $this->testName($e);
+    $test->time = round($e->getTime(), 1);
     self::$testTimes[] = $test;
+  }
+
+  private function testName(TestEvent $e): string {
+    $test = $e->getTest();
+    if ($test instanceof Descriptive) {
+      return $test->getSignature();
+    }
+    // PHPUnit-style tests: class and method
+    return $test instanceof SelfDescribing ? Descriptor::getTestSignature($test) : get_class($test);
   }
 
   public function afterSuite(SuiteEvent $e) {
@@ -86,8 +90,11 @@ class StatisticsExtension extends Extension {
     $this->writeln("Tests Performance times");
     $this->writeln("-----------------------------------------------");
 
+    usort(self::$testTimes, function ($a, $b) {
+      return $b->time <=> $a->time;
+    });
     foreach (self::$testTimes as $test) {
-      $this->writeln(str_pad($test->name, 35) . ' ' . $test->time . 's');
+      $this->writeln(str_pad($test->name, 100) . ' ' . $test->time . 's');
     }
 
     $this->writeln("");
@@ -99,7 +106,7 @@ class StatisticsExtension extends Extension {
       $this->writeln("  TEST: " . $testname);
       $this->writeln("  ------------------------------------------");
       foreach ($steps as $step) {
-        $this->writeln('    ' . $step->name . '(' . $step->time . 's)');
+        $this->writeln('    ' . $step->name . ' (' . round($step->time, 1) . 's)');
       }
     }
   }

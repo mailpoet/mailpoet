@@ -17,7 +17,6 @@ import {
   getStoredDataViewsFieldIds,
   usePersistedDataViewsPreference,
   useDataViewsQuery,
-  useShowFiltersWhenActive,
   filterToExtraParams,
   type ListingQueryParams,
 } from 'common/dataviews';
@@ -175,7 +174,7 @@ function buildFields(
   // Only the result column maps to a request filter.
   return fields.map((field) =>
     field.id === RESULT_FIELD
-      ? { ...field, filterBy: { operators: ['isAny'] } }
+      ? { ...field, filterBy: { operators: ['isAny'], isPrimary: true } }
       : { ...field, filterBy: false },
   );
 }
@@ -316,8 +315,6 @@ export function SendingStatus() {
     extraParams: (currentView) =>
       filterToExtraParams(toRequestFilter(currentView.filters)),
   });
-  const dataViewsRef = useRef<HTMLDivElement>(null);
-  useShowFiltersWhenActive(dataViewsRef, (view.filters ?? []).length > 0);
   const requestFilter = useMemo(
     () => toRequestFilter(view.filters),
     [toRequestFilter, view.filters],
@@ -490,7 +487,6 @@ export function SendingStatus() {
       {
         id: 'resend',
         label: __('Resend', 'mailpoet'),
-        context: 'single',
         isPrimary: true,
         supportsBulk: false,
         isEligible: (item) => Boolean(item.failed),
@@ -550,7 +546,6 @@ export function SendingStatus() {
       )}
 
       <div
-        ref={dataViewsRef}
         className="mailpoet-dataviews mailpoet-listing"
         data-automation-id="sending_status_listing"
       >

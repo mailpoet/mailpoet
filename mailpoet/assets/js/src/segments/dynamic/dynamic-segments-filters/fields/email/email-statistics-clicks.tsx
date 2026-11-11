@@ -4,6 +4,7 @@ import { filter } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import { APIErrorsNotice } from 'notices/api-errors-notice';
+import { decodeAmpersands } from 'common/functions/decode-ampersands';
 import { ReactSelect } from 'common/form/react-select/react-select';
 import { Select } from 'common/form/select/select';
 import {
@@ -146,7 +147,11 @@ export function EmailClickStatisticsFields({
           }
           value={filter((option) => {
             if (!segment.link_ids) return false;
-            return segment.link_ids.indexOf(option.value) !== -1;
+            // Automation email links saved before they were stored with plain ampersands keep "&amp;"
+            const linkIds = segment.link_ids.map((id) =>
+              typeof id === 'string' ? decodeAmpersands(id) : id,
+            );
+            return linkIds.indexOf(option.value) !== -1;
           }, links)}
           onChange={(options: EmailLinkOption[]): void => {
             void updateSegmentFilter(

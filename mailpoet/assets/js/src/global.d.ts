@@ -278,6 +278,7 @@ interface Window {
   mailpoet_mta_log?: MtaLog;
   mailpoet_welcome_wizard_url: string;
   mailpoet_welcome_wizard_current_step: string;
+  mailpoet_can_manage_settings: boolean;
   mailpoet_homepage_data: {
     taskListDismissed: boolean;
     productDiscoveryDismissed: boolean;

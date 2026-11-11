@@ -176,7 +176,7 @@ function buildFields(
       enableGlobalSearch: false,
       getValue: ({ item }) => item.status,
       elements: ACTIVATION_STATUS_ELEMENTS,
-      filterBy: { operators: ['isAny'] },
+      filterBy: { operators: ['isAny'], isPrimary: true },
       render: ({ item }) => {
         const totalSent = Number(item.total_sent ?? 0);
         const totalSentMessage = _x(
@@ -302,7 +302,6 @@ function NewsletterListReEngagementComponent() {
           {
             id: 'preview',
             label: __('Preview', 'mailpoet'),
-            context: 'single',
             supportsBulk: false,
             callback: (targets: NewsletterListingItem[]) => {
               const target = targets[0];
@@ -318,7 +317,6 @@ function NewsletterListReEngagementComponent() {
           {
             id: 'duplicate',
             label: __('Duplicate', 'mailpoet'),
-            context: 'single',
             supportsBulk: false,
             callback: (targets: NewsletterListingItem[]) => {
               const target = targets[0];
@@ -346,7 +344,6 @@ function NewsletterListReEngagementComponent() {
           {
             id: 'edit',
             label: __('Edit', 'mailpoet'),
-            context: 'single',
             isPrimary: true,
             supportsBulk: false,
             callback: (targets: NewsletterListingItem[]) => {

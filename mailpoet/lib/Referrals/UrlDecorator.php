@@ -23,9 +23,9 @@ class UrlDecorator {
 
   public function decorate($url) {
     $referralId = $this->settings->get(ReferralDetector::REFERRAL_SETTING_NAME, null);
-    if ($referralId === null) {
+    if (!ReferralDetector::isValid($referralId)) {
       return $url;
     }
-    return $this->wp->addQueryArg('ref', $referralId, $url);
+    return $this->wp->addQueryArg('ref', rawurlencode((string)$referralId), $url);
   }
 }

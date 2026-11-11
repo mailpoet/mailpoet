@@ -101,7 +101,6 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   public function testItKeepsSubscriberOfUnconfirmedLinkAfterTheCustomerIsDeleted(): void {
-    require_once ABSPATH . 'wp-admin/includes/user.php';
     $user = $this->insertRegisteredCustomer();
     $subscriber = $this->createSubscriber(
       'Earlier',
@@ -114,7 +113,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->diContainer->get(WPUserSubscriberLink::class)->markUnconfirmed($user->ID, $user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $this->wooCommerceSegment->synchronizeRegisteredCustomer($user->ID, 'woocommerce_new_customer');
 
-    wp_delete_user($user->ID);
+    $this->tester->deleteWordPressUser($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $this->synchronizeAllCustomers();
 
     $this->entityManager->clear();
@@ -169,7 +168,6 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   public function testItKeepsWooCommerceListOfGuestCustomerAfterTheUnconfirmedLinkIsDeleted(): void {
-    require_once ABSPATH . 'wp-admin/includes/user.php';
     $guest = $this->insertGuestCustomer();
     $this->synchronizeAllCustomers();
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
@@ -188,7 +186,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->entityManager->flush();
     $this->diContainer->get(WPUserSubscriberLink::class)->markUnconfirmed($user->ID, (string)$subscriber->getEmail());
 
-    wp_delete_user($user->ID);
+    $this->tester->deleteWordPressUser($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $this->synchronizeAllCustomers();
 
     $this->entityManager->clear();
@@ -522,6 +520,34 @@ class WooCommerceTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     verify($subscriber->getLastName())->equals('Last name (newer)');
+  }
+
+  public function testAGuestOrderDoesNotUseInvalidNames(): void {
+    $this->settings->set('signup_confirmation', ['enabled' => false]);
+    $this->settings->set('woocommerce.optin_on_checkout', ['enabled' => false]);
+    $guest = $this->insertGuestCustomer(null, ['first_name' => 'Jane', 'last_name' => 'Doe']);
+    $this->wooCommerceSegment->synchronizeGuestCustomer($guest['order_id']);
+
+    $orderId = $this->createOrder(['email' => $guest['email'], 'first_name' => 'Jane > Doe', 'last_name' => 'Smith']);
+    $this->wooCommerceSegment->synchronizeGuestCustomer($orderId);
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getFirstName())->equals('Jane');
+    verify($subscriber->getLastName())->equals('Smith');
+  }
+
+  public function testSynchronizingGuestCustomersDoesNotUseInvalidNames(): void {
+    $guest = $this->insertGuestCustomer(null, ['first_name' => 'Jane', 'last_name' => 'Doe']);
+    $this->synchronizeAllCustomers();
+
+    $this->createOrder(['email' => $guest['email'], 'first_name' => 'Anna', 'last_name' => 'Doe >']);
+    $this->synchronizeAllCustomers();
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getFirstName())->equals('Anna');
+    verify($subscriber->getLastName())->equals('Doe');
   }
 
   public function testItSynchronizesSegment(): void {

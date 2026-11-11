@@ -9,6 +9,7 @@ use MailPoet\Cron\Daemon;
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class DaemonRun {
   const NAME = 'mailpoet/cron/daemon-run';
@@ -75,9 +76,9 @@ class DaemonRun {
     $this->wp->addAction('action_scheduler_after_process_queue', [$this, 'afterProcess']);
     $this->wp->addAction('mailpoet_cron_get_execution_limit', [$this, 'getDaemonExecutionLimit']);
     $this->lastRunDuration = 0;
-    $startTime = time();
+    $startTime = Carbon::now()->getTimestamp();
     $this->daemon->run($this->cronHelper->createDaemon($this->cronHelper->createToken()));
-    $this->lastRunDuration = time() - $startTime;
+    $this->lastRunDuration = Carbon::now()->getTimestamp() - $startTime;
   }
 
   /**
@@ -106,10 +107,16 @@ class DaemonRun {
       return;
     }
     $this->actionScheduler->scheduleImmediateSingleAction(self::NAME);
-    // Chaining async requests can crash MySQL. A brief sleep call in PHP prevents that.
-    // @see https://github.com/woocommerce/action-scheduler/blob/6633378283d33746eec7314586783f58deee5375/classes/ActionScheduler_AsyncRequest_QueueRunner.php#L91-L96
-    sleep(2);
+    $this->pauseExecution(2);
     $this->remoteExecutorHandler->triggerExecutor();
+  }
+
+  /**
+   * Chaining async requests can crash MySQL. A brief sleep call in PHP prevents that.
+   * @see https://github.com/woocommerce/action-scheduler/blob/6633378283d33746eec7314586783f58deee5375/classes/ActionScheduler_AsyncRequest_QueueRunner.php#L91-L96
+   */
+  public function pauseExecution(int $seconds): void {
+    sleep($seconds);
   }
 
   /**

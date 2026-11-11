@@ -396,6 +396,131 @@ class NewsletterTest extends \MailPoetTest {
       ->stringContainsString(Router::NAME . '&endpoint=track&action=click&data=');
   }
 
+  public function testItPreprocessesNewsletterWithQuotesInGaCampaign() {
+    $this->newsletter->setGaCampaign('a"b\'c');
+    $styles = ['block' => ['backgroundColor' => 'transparent']];
+    $this->newsletter->setBody([
+      'content' => ['type' => 'container', 'orientation' => 'vertical', 'styles' => $styles, 'blocks' => [
+        ['type' => 'container', 'orientation' => 'horizontal', 'styles' => $styles, 'blocks' => [
+          ['type' => 'container', 'orientation' => 'vertical', 'styles' => $styles, 'blocks' => [
+            ['type' => 'text', 'text' => '<p><a href="' . home_url('/page/') . '">Internal link</a></p>'],
+          ]],
+        ]],
+      ]],
+      'globalStyles' => [],
+    ]);
+    $this->newslettersRepository->persist($this->newsletter);
+    $this->newslettersRepository->flush();
+
+    $newsletter = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $sendingQueue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
+    $renderedBody = $sendingQueue->getNewsletterRenderedBody();
+    $this->assertIsArray($renderedBody);
+    verify($renderedBody['text'])->stringContainsString('Internal link');
+  }
+
+  public function testItKeepsSubscriberValuesInSubjectAsTheyAre() {
+    $this->subscriber->setFirstName("O'Brien");
+    $this->sendingQueueEntity->setNewsletterRenderedSubject("Hi [subscriber:firstname] / [subscriber:cf_999999 | default:Friend's & co]");
+    $this->sendingQueueEntity->setNewsletterRenderedBody(['html' => '<p>Hi</p>', 'text' => 'Hi']);
+    $result = $this->newsletterTask->prepareNewsletterForSending(
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+    verify($result['subject'])->equals("Hi O'Brien / Friend's & co");
+  }
+
+  public function testItKeepsShortcodeValuesInTextBodyAsTheyAre() {
+    $this->newsletter->setSubject("Don't & miss");
+    $this->sendingQueueEntity->setNewsletterRenderedSubject('Hi');
+    $this->sendingQueueEntity->setNewsletterRenderedBody(['html' => '<p>[newsletter:subject]</p>', 'text' => '[newsletter:subject]']);
+    $result = $this->newsletterTask->prepareNewsletterForSending(
+      $this->newsletter,
+      $this->subscriber,
+      $this->sendingQueueEntity
+    );
+    verify($result['body']['html'])->equals('<p>Don&#039;t &amp; miss</p>');
+    verify($result['body']['text'])->equals("Don't & miss");
+  }
+
+  public function testItLeavesLinkEmptyInTemplateWhenTheReplacedUrlIsInvalid(): void {
+    foreach ([false, true] as $trackingEnabled) {
+      $this->newsletterTask->trackingEnabled = $trackingEnabled;
+      $html = $this->prepareTemplatedHtmlWithSubjectLink('javascript:void(0)');
+      verify($html)->stringContainsString('Subject link');
+      verify($html)->stringNotContainsString('href="javascript:');
+    }
+    $this->subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $this->entityManager->flush();
+    $html = $this->prepareTemplatedHtmlWithSubjectLink('javascript:void(0)');
+    verify($html)->stringContainsString('Subject link');
+    verify($html)->stringNotContainsString('href="javascript:');
+  }
+
+  public function testItLeavesLinkEmptyInTemplateWhenTheResolvedUrlIsInvalid(): void {
+    $this->newsletterTask->trackingEnabled = false;
+    $html = $this->prepareTemplatedHtmlWithSubjectLink('javascript', '[newsletter:subject]:void(0)');
+    verify($html)->stringContainsString('Subject link');
+    verify($html)->stringNotContainsString('javascript:');
+  }
+
+  public function testItKeepsShortcodeValuesInUntrackedTextLinksAsTheyAre(): void {
+    $this->newsletterTask->trackingEnabled = true;
+    $this->subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $this->entityManager->flush();
+    [$newsletter, $queue] = $this->createNewsletterWithSubjectLink("Don't miss", 'https://example.com/?s=[newsletter:subject]');
+    $result = $this->newsletterTask->prepareNewsletterForSending($newsletter, $this->subscriber, $queue);
+    verify($result['body']['text'])->stringContainsString("?s=Don't miss");
+  }
+
+  public function testItKeepsShortcodeValuesInUntrackedTextLinksAsTheyAreInTemplate(): void {
+    $this->newsletterTask->trackingEnabled = true;
+    $this->subscriber->setTrackingConsent(SubscriberEntity::TRACKING_CONSENT_DENIED);
+    $this->entityManager->flush();
+    [$newsletter, $queue] = $this->createNewsletterWithSubjectLink("Don't miss", 'https://example.com/?s=[newsletter:subject]');
+    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $this->subscriber, $queue);
+    $text = strtr($templatedNewsletter['newsletter']['body']['text'], $templatedNewsletter['substitutions']['text']);
+    verify($text)->stringContainsString("?s=Don't miss");
+  }
+
+  private function prepareTemplatedHtmlWithSubjectLink(string $subject, string $href = '[newsletter:subject]'): string {
+    [$newsletter, $queue] = $this->createNewsletterWithSubjectLink($subject, $href);
+    $templatedNewsletter = $this->newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $this->subscriber, $queue);
+    return strtr($templatedNewsletter['newsletter']['body']['html'], $templatedNewsletter['substitutions']['html']);
+  }
+
+  /**
+   * @return array{NewsletterEntity, SendingQueueEntity}
+   */
+  private function createNewsletterWithSubjectLink(string $subject, string $href): array {
+    $newsletter = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withSubject($subject)
+      ->create();
+    $styles = ['block' => ['backgroundColor' => 'transparent']];
+    $newsletter->setBody([
+      'content' => ['type' => 'container', 'orientation' => 'vertical', 'styles' => $styles, 'blocks' => [
+        ['type' => 'container', 'orientation' => 'horizontal', 'styles' => $styles, 'blocks' => [
+          ['type' => 'container', 'orientation' => 'vertical', 'styles' => $styles, 'blocks' => [
+            ['type' => 'text', 'text' => '<p><a href="' . $href . '">Subject link</a></p>'],
+          ]],
+        ]],
+      ]],
+      'globalStyles' => [],
+    ]);
+    $this->newslettersRepository->flush();
+    $task = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $queue = (new SendingQueueFactory())->create($task, $newsletter);
+
+    $newsletter = $this->newsletterTask->preProcessNewsletter($newsletter, $task);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    return [$newsletter, $queue];
+  }
+
   public function testItCanPrepareNewsletterTemplateWithPlaceholderMap(): void {
     $newsletterEntity = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
@@ -660,10 +785,9 @@ class NewsletterTest extends \MailPoetTest {
     $this->assertStringContainsString('https://example.com/profile?email=' . $this->subscriber->getEmail(), $reconstructedHtml);
     $this->assertStringNotContainsString('[mailpoet/subscriber-email]', $reconstructedHtml);
     $this->assertSame($rendered['body']['html'], $reconstructedHtml);
-    // The rendered path still ships the literal tag in the text body's markdown link, because the
-    // Personalizer resolves embedded tags only in hrefs. The templated path resolves the URL itself.
     $reconstructedText = strtr($templated['newsletter']['body']['text'], $templated['substitutions']['text']);
-    $this->assertSame('[Profile](https://example.com/profile?email=' . $this->subscriber->getEmail() . ')', $reconstructedText);
+    $this->assertStringNotContainsString('[mailpoet/subscriber-email]', $reconstructedText);
+    $this->assertSame($rendered['body']['text'], $reconstructedText);
   }
 
   public function testItEscapesAnUntrackedLinkWithAReplacedTagLikeTheRenderedPathInTemplatedBatch(): void {
@@ -685,6 +809,10 @@ class NewsletterTest extends \MailPoetTest {
     $reconstructedHtml = strtr($templated['newsletter']['body']['html'], $templated['substitutions']['html']);
     $this->assertStringContainsString('href="https://example.com/profile?name=Anna%20AJ%20Lee"', $reconstructedHtml);
     $this->assertSame($rendered['body']['html'], $reconstructedHtml);
+    // The text part is not escaped on either path; the raw name lands in the markdown target.
+    $reconstructedText = strtr($templated['newsletter']['body']['text'], $templated['substitutions']['text']);
+    $this->assertSame('[Profile](https://example.com/profile?name=' . $this->subscriber->getFirstName() . ')', $reconstructedText);
+    $this->assertSame($rendered['body']['text'], $reconstructedText);
   }
 
   public function testItKeepsTemplateIdenticalWhenATagLinkResolvesForOnlySomeSubscribersInTemplatedBatch(): void {
@@ -755,6 +883,64 @@ class NewsletterTest extends \MailPoetTest {
       $this->assertSame($rendered['body'][$part], $reconstructed);
       $this->assertStringContainsString('action=confirm_unsubscribe', $reconstructed);
     }
+  }
+
+  public function testItResolvesTagsEmbeddedInLinksInTextBodyWhenTrackingIsDisabledInTemplatedBatch(): void {
+    $newsletterTask = Stub::copy($this->newsletterTask, ['trackingEnabled' => false]);
+    // Both recipients need a first name: an empty tag value stays literal on the rendered path by design
+    $this->subscriber->setFirstName('Anna');
+    $this->entityManager->flush();
+    $other = (new SubscriberFactory())->withFirstName('Ben')->create();
+    // A legacy shortcode next to the tag: it is already a placeholder when the tag is resolved
+    $url = 'https://example.com/profile?e=[subscriber:email]&n=[mailpoet/subscriber-firstname]';
+    [$newsletter, , $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink($url, 'Profile');
+    // Without tracking the link stays in the body instead of a hash
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<a href="' . $url . '">Profile</a>',
+      'text' => '[Profile](' . $url . ')',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $namespace = PlaceholderCollector::generateNamespace();
+    $templated = $newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $this->subscriber, $sendingQueue, $namespace);
+    $templatedForOther = $newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $other, $sendingQueue, $namespace);
+    $rendered = $newsletterTask->prepareNewsletterForSending($newsletter, $this->subscriber, $sendingQueue);
+
+    $this->assertSame($templatedForOther['newsletter'], $templated['newsletter']);
+    // Every text placeholder sits in the template itself: the sending service substitutes once
+    foreach (array_keys($templated['substitutions']['text']) as $placeholder) {
+      $this->assertStringContainsString($placeholder, $templated['newsletter']['body']['text']);
+    }
+    $reconstructedText = strtr($templated['newsletter']['body']['text'], $templated['substitutions']['text']);
+    $this->assertSame('[Profile](https://example.com/profile?e=' . $this->subscriber->getEmail() . '&n=Anna)', $reconstructedText);
+    $this->assertSame($rendered['body']['text'], $reconstructedText);
+  }
+
+  public function testItKeepsTemplateIdenticalWhenAnEmbeddedTagIsEmptyForOnlySomeSubscribersInTemplatedBatch(): void {
+    $newsletterTask = Stub::copy($this->newsletterTask, ['trackingEnabled' => false]);
+    $this->subscriber->setFirstName('Anna');
+    $this->entityManager->flush();
+    $other = (new SubscriberFactory())->withFirstName('')->create();
+    $url = 'https://example.com/profile?n=[mailpoet/subscriber-firstname]';
+    [$newsletter, , $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink($url, 'Profile');
+    // Without tracking the link stays in the body instead of a hash
+    $sendingQueue->setNewsletterRenderedBody([
+      'html' => '<a href="' . $url . '">Profile</a>',
+      'text' => '[Profile](' . $url . ')',
+    ]);
+    $this->sendingQueuesRepository->flush();
+
+    $namespace = PlaceholderCollector::generateNamespace();
+    $named = $newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $this->subscriber, $sendingQueue, $namespace);
+    $unnamed = $newsletterTask->prepareNewsletterForTemplatedSending($newsletter, $other, $sendingQueue, $namespace);
+
+    // The empty value travels in the substitution map, so the template is the same for both recipients
+    $this->assertSame($named['newsletter'], $unnamed['newsletter']);
+    $this->assertStringNotContainsString('[mailpoet/subscriber-firstname]', $named['newsletter']['body']['text']);
+    $this->assertSame('[Profile](https://example.com/profile?n=Anna)', strtr($named['newsletter']['body']['text'], $named['substitutions']['text']));
+    $this->assertSame('[Profile](https://example.com/profile?n=)', strtr($unnamed['newsletter']['body']['text'], $unnamed['substitutions']['text']));
+    $this->assertStringContainsString('profile?n=Anna', strtr($named['newsletter']['body']['html'], $named['substitutions']['html']));
+    $this->assertStringContainsString('profile?n="', strtr($unnamed['newsletter']['body']['html'], $unnamed['substitutions']['html']));
   }
 
   public function testItDoesNotReplaceUserAuthoredTextThatLooksLikeOldPlaceholders(): void {
@@ -1322,6 +1508,24 @@ class NewsletterTest extends \MailPoetTest {
       $this->assertStringNotContainsString('[mailpoet/subscription-unsubscribe-url]', $result['body'][$part]);
       $this->assertStringContainsString('action=confirm_unsubscribe', $result['body'][$part]);
     }
+  }
+
+  public function testItResolvesTagsEmbeddedInLinksInTextBodyForSubscriberWithoutConsent(): void {
+    $this->subscriber->setTrackingConsent(
+      SubscriberEntity::TRACKING_CONSENT_DENIED,
+      SubscriberEntity::TRACKING_CONSENT_METHOD_FOOTER_LINK
+    );
+    $this->entityManager->flush();
+    [$newsletter, , $sendingQueue] = $this->createBlockEmailQueueWithTrackedLink(
+      'https://example.com/profile?email=[mailpoet/subscriber-email]',
+      'Profile'
+    );
+
+    $result = $this->newsletterTask->prepareNewsletterForSending($newsletter, $this->subscriber, $sendingQueue);
+
+    $this->assertSame('[Profile](https://example.com/profile?email=' . $this->subscriber->getEmail() . ')', $result['body']['text']);
+    $this->assertStringContainsString('https://example.com/profile?email=' . $this->subscriber->getEmail(), $result['body']['html']);
+    $this->assertStringNotContainsString('[mailpoet/subscriber-email]', $result['body']['html']);
   }
 
   /**

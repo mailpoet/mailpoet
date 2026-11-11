@@ -150,6 +150,8 @@ export function useDataViewsQuery<T>({
     const requestId = latestRequestIdRef.current + 1;
     latestRequestIdRef.current = requestId;
     setIsLoading(true);
+    // A clamped page triggers a new request, so the listing stays loading.
+    let refetching = false;
 
     const requestedPage = queryPage;
     const params: ListingQueryParams = {
@@ -176,6 +178,7 @@ export function useDataViewsQuery<T>({
           // clamped page below.
           setError(null);
           setView((currentView) => ({ ...currentView, page: lastValidPage }));
+          refetching = true;
           return;
         }
         setItems(result.items);
@@ -196,8 +199,8 @@ export function useDataViewsQuery<T>({
           err && typeof err === 'object' && 'message' in err
             ? String((err as { message?: unknown }).message ?? '')
             : '';
+        // Keep meta, or DataViews jumps to page 1 and the error is lost.
         setItems([]);
-        setMeta({ count: 0, pages: 0 });
         setFilters(EMPTY_FILTERS);
         setGroups([]);
         setError(message || 'Failed to load data.');
@@ -205,7 +208,9 @@ export function useDataViewsQuery<T>({
       .finally(() => {
         if (requestId === latestRequestIdRef.current) {
           completedInitialRequestRef.current = true;
-          setIsLoading(false);
+          if (!refetching) {
+            setIsLoading(false);
+          }
         }
       });
     return () => controller.abort();

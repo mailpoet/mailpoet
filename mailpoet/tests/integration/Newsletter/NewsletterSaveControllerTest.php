@@ -64,6 +64,15 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     verify($newsletter->getGaCampaign())->equals('Updated GA campaign');
   }
 
+  public function testItSavesGaCampaignAsPlainText() {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
+    $newsletter = $this->saveController->save([
+      'id' => $newsletter->getId(),
+      'ga_campaign' => '<b>Spring</b> sale 50%cashback',
+    ]);
+    verify($newsletter->getGaCampaign())->equals('Spring sale 50%cashback');
+  }
+
   public function testItCanSaveANewsletterWithEmojis() {
     $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
     $newsletterData = [
@@ -464,6 +473,66 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     verify($duplicate->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_TIME))->null();
   }
 
+  /**
+   * @dataProvider campaignNameProvider
+   */
+  public function testItKeepsCampaignNameInStepWithSubject(string $name, string $newSubject, string $expectedName) {
+    $newsletter = $this->createNewsletterWithPost($name);
+
+    $newsletter = $this->saveController->save(['id' => $newsletter->getId(), 'subject' => $newSubject]);
+
+    verify($newsletter->getCampaignName())->equals($expectedName);
+  }
+
+  public function campaignNameProvider(): array {
+    return [
+      'name matches the old subject' => ['My Standard Newsletter', 'Winter sale', 'Winter sale'],
+      'name is the default' => ['New Email', 'Winter sale', 'Winter sale'],
+      'name is empty' => ['', 'Winter sale', 'Winter sale'],
+      'name was picked by the user' => ['October promo', 'Winter sale', 'October promo'],
+      'subject is cleared' => ['My Standard Newsletter', '', 'New Email'],
+      'subject has a backslash' => ['New Email', 'Winter \\ sale', 'Winter \\ sale'],
+    ];
+  }
+
+  public function testItFollowsSubjectWhenStoredNameIsEntityEncoded() {
+    $newsletter = $this->createNewsletterWithPost('Sale &amp; more');
+    $newsletter->setSubject('Sale & more');
+    $this->entityManager->flush();
+
+    $newsletter = $this->saveController->save(['id' => $newsletter->getId(), 'subject' => 'Winter sale']);
+
+    verify($newsletter->getCampaignName())->equals('Winter sale');
+  }
+
+  public function testItFollowsSubjectWhenStoredNameHasEncodedEmoji() {
+    $newsletter = $this->createNewsletterWithPost('Sunny &#x2600;');
+    $newsletter->setSubject('Sunny ☀');
+    $this->entityManager->flush();
+
+    $newsletter = $this->saveController->save(['id' => $newsletter->getId(), 'subject' => 'Winter sale']);
+
+    verify($newsletter->getCampaignName())->equals('Winter sale');
+  }
+
+  public function testItFollowsSubjectWhenNameAndSubjectHaveTheSameEntityText() {
+    $newsletter = $this->createNewsletterWithPost('Fish &amp; Chips');
+    $newsletter->setSubject('Fish &amp; Chips');
+    $this->entityManager->flush();
+
+    $newsletter = $this->saveController->save(['id' => $newsletter->getId(), 'subject' => 'Winter sale']);
+
+    verify($newsletter->getCampaignName())->equals('Winter sale');
+  }
+
+  public function testItLeavesCampaignNameAloneWhenSubjectDoesNotChange() {
+    $newsletter = $this->createNewsletterWithPost('New Email');
+
+    $newsletter = $this->saveController->save(['id' => $newsletter->getId(), 'subject' => 'My Standard Newsletter']);
+
+    verify($newsletter->getCampaignName())->equals('New Email');
+  }
+
   public function testItDuplicatesNewsletterWithAssociatedPost() {
     $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
     $wp = $this->diContainer->get(WPFunctions::class);
@@ -597,6 +666,15 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
       verify($e->getErrors())->arrayHasKey(APIError::NOT_FOUND);
       verify($e->getErrors()[APIError::NOT_FOUND])->equals('This email does not exist.');
     }
+  }
+
+  private function createNewsletterWithPost(string $title): NewsletterEntity {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
+    $wp = $this->diContainer->get(WPFunctions::class);
+    $postId = $wp->wpInsertPost(['post_content' => 'content', 'post_title' => $title, 'post_status' => 'draft']);
+    $newsletter->setWpPost($this->entityManager->getReference(WpPostEntity::class, $postId));
+    $this->entityManager->flush();
+    return $newsletter;
   }
 
   private function createNewsletter(string $type, string $status = NewsletterEntity::STATUS_DRAFT): NewsletterEntity {

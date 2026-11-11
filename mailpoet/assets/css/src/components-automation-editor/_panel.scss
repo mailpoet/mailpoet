@@ -70,13 +70,14 @@
   animation: mailpoet-automation-activate-panel-animation 0.1s forwards;
   background: #fff;
   border-left: 1px solid #ddd;
-  height: 100%;
-  inset: 0 0 0 auto;
+  bottom: 0;
   overflow: auto;
   position: fixed;
+  right: 0;
+  top: var(--wp-admin--admin-bar--height, 0);
   transform: translateX(100%);
   width: 281px;
-  z-index: 999999;
+  z-index: 99998;
 
   button {
     justify-content: center;
@@ -88,7 +89,7 @@
   align-content: space-between;
   align-items: center;
   display: flex;
-  height: 61px;
+  height: 65px;
 
   .has-icon {
     margin-left: auto;
@@ -125,11 +126,11 @@
 }
 
 .mailpoet-automation-activate-panel__header-activate-button {
-  padding-right: 4px;
+  padding-left: 4px;
 }
 
 .mailpoet-automation-activate-panel__header-cancel-button {
-  padding-left: 4px;
+  padding-right: 4px;
 }
 
 @keyframes mailpoet-automation-activate-panel-animation {

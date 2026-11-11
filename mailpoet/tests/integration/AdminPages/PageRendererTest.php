@@ -3,6 +3,7 @@
 namespace integration\AdminPages;
 
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
 
 class PageRendererTest extends \MailPoetTest {
@@ -29,5 +30,31 @@ class PageRendererTest extends \MailPoetTest {
     }
 
     $this->assertSame([], $deprecations);
+  }
+
+  public function testItDoesNotPassInvalidReferralIdToPage(): void {
+    $this->diContainer->get(SettingsController::class)->set(ReferralDetector::REFERRAL_SETTING_NAME, 'invalid referral id');
+
+    $output = $this->renderBlankPage();
+
+    $this->assertStringContainsString('var mailpoet_referral_id = null;', $output);
+  }
+
+  public function testItPassesValidReferralIdToPage(): void {
+    $this->diContainer->get(SettingsController::class)->set(ReferralDetector::REFERRAL_SETTING_NAME, 'valid_referral-id');
+
+    $output = $this->renderBlankPage();
+
+    $this->assertStringContainsString('var mailpoet_referral_id = "valid_referral-id";', $output);
+  }
+
+  private function renderBlankPage(): string {
+    ob_start();
+    try {
+      $this->diContainer->get(PageRenderer::class)->displayPage('blank.html');
+    } finally {
+      $output = (string)ob_get_clean();
+    }
+    return $output;
   }
 }

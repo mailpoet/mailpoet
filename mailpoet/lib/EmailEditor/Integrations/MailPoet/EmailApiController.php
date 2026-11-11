@@ -2,6 +2,8 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
+use MailPoet\AccessDeniedException;
+use MailPoet\Config\AccessControl;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
@@ -112,6 +114,9 @@ class EmailApiController {
    * Update MailPoet specific data we store with Emails.
    */
   public function saveEmailData(array $data, \WP_Post $emailPost): void {
+    if (!$this->wp->currentUserCan(AccessControl::PERMISSION_MANAGE_EMAILS)) {
+      throw new AccessDeniedException('You do not have permission to perform this action.');
+    }
     $newsletter = $this->newsletterRepository->findOneById($data['id']);
     if (!$newsletter) {
       throw new NotFoundException('Newsletter was not found');
@@ -140,7 +145,7 @@ class EmailApiController {
     }
 
     if (isset($data['utm_campaign'])) {
-      $newsletter->setGaCampaign($data['utm_campaign']);
+      $newsletter->setGaCampaign($this->wp->wpStripAllTags((string)$data['utm_campaign'], true));
     }
 
     if (isset($data['deleted_at'])) {

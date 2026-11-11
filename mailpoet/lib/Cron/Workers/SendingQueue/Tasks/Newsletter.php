@@ -23,6 +23,7 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Renderer\EscapeHelper;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
@@ -162,10 +163,13 @@ class Newsletter {
    * tracking is on, because the click redirect is normally what resolves them. Since these
    * recipients get no redirect, they are resolved here with the same call the redirect would
    * have made. A restored URL may also carry a non-link shortcode of its own, such as
-   * `http://example.com/?email=[subscriber:email]`; Clicks::processUrl() runs a shortcode pass
-   * over those at click time, so this does the same at send time (STOMAIL-8340). Links of block
-   * emails whose URL is a personalization tag token are resolved with the resolver the redirect
-   * uses. An unresolvable token or shortcode becomes empty rather than shipping as literal text.
+   * `http://example.com/?email=[subscriber:email]`, or a personalization tag embedded the same way.
+   * The click redirect resolves both; for these recipients the shortcodes are resolved here
+   * (STOMAIL-8340) and the embedded tags later, by the Personalizer in the HTML part and by
+   * resolveMarkdownLinks() in the text part. Links of block emails whose URL is a personalization
+   * tag token are resolved with the resolver the redirect uses. A token link or shortcode that
+   * cannot be resolved becomes empty rather than shipping as literal text; an embedded tag that
+   * cannot be resolved stays literal.
    *
    * @param array<string, mixed>|null $personalizationContext
    */
@@ -188,16 +192,20 @@ class Newsletter {
     $content = $this->resolveLinkShortcodes($content, $newsletter, $subscriber, $queue);
     // Only the restored URLs can still carry shortcodes: the pass in prepareNewsletterForSending()
     // ran while every link was a hashed tag.
-    return (string)ShortcodesTask::process($content, null, $newsletter, $subscriber, $queue);
+    [$subject, $html, $text] = Helpers::splitObject($content);
+    $html = (string)ShortcodesTask::process($html, $content, $newsletter, $subscriber, $queue);
+    $text = (string)ShortcodesTask::process($text, $content, $newsletter, $subscriber, $queue, $isPlainText = true);
+    return Helpers::joinObject([$subject, $html, $text]);
   }
 
   /**
    * The destination a recipient we may not track gets for one stored link; see untrackLinks().
    *
    * A personalization tag embedded in a stored URL (https://example.com/?ref=[acme/url]) is resolved
-   * here too. On the rendered path the Personalizer does that while it runs over the restored
-   * content and writes the href through esc_url(); on the templated path the URL leaves as a
-   * substitution value, so it has to be complete and, in the HTML part, escaped the same way.
+   * here too. On the rendered path the Personalizer does that for the HTML href while it runs over
+   * the restored content, writing it through esc_url(), and resolveMarkdownLinks() does it for the
+   * text body's link targets; on the templated path the URL leaves as a substitution value, so it
+   * has to be complete and, in the HTML part, escaped the same way.
    *
    * @param string $part The PlaceholderCollector::PART_* constant the URL is for
    * @param string $shortcodeLookupSource Content that shortcodes such as [newsletter:post_title] look their value up in
@@ -216,7 +224,10 @@ class Newsletter {
       return $this->resolveTokenUrl($url, $newsletter, $personalizationContext);
     }
     $url = $this->resolveLinkShortcodes($url, $newsletter, $subscriber, $queue);
-    $url = (string)ShortcodesTask::process($url, $shortcodeLookupSource, $newsletter, $subscriber, $queue);
+    $url = (string)ShortcodesTask::process($url, $shortcodeLookupSource, $newsletter, $subscriber, $queue, $part !== PlaceholderCollector::PART_HTML);
+    if (EscapeHelper::hasDisallowedScheme($url)) {
+      return '';
+    }
     if ($personalizationContext === null) {
       return $url;
     }
@@ -496,21 +507,25 @@ class Newsletter {
   public function prepareNewsletterForSending(NewsletterEntity $newsletter, SubscriberEntity $subscriber, SendingQueueEntity $queue): array {
     $renderedNewsletter = $queue->getNewsletterRenderedBody();
     $renderedNewsletter = $this->emoji->decodeEmojisInBody($renderedNewsletter);
-    $preparedNewsletter = Helpers::joinObject(
-      [
-        $queue->getNewsletterRenderedSubject(),
-        $renderedNewsletter['html'],
-        $renderedNewsletter['text'],
-      ]
-    );
-
-    $preparedNewsletter = ShortcodesTask::process(
-      $preparedNewsletter,
-      null,
+    // The subject and the text body are plain text, so their shortcodes are replaced on their own
+    $subject = ShortcodesTask::process(
+      (string)$queue->getNewsletterRenderedSubject(),
+      $renderedNewsletter['html'],
       $newsletter,
       $subscriber,
-      $queue
+      $queue,
+      $isPlainText = true
     );
+    $html = ShortcodesTask::process($renderedNewsletter['html'], null, $newsletter, $subscriber, $queue);
+    $text = ShortcodesTask::process(
+      $renderedNewsletter['text'],
+      $renderedNewsletter['html'],
+      $newsletter,
+      $subscriber,
+      $queue,
+      $isPlainText = true
+    );
+    $preparedNewsletter = Helpers::joinObject([$subject, $html, $text]);
     $context = $newsletter->getWpPostId() !== null
       ? $this->personalizationContextBuilder->build($newsletter, $subscriber, $queue)
       : null;
@@ -536,7 +551,8 @@ class Newsletter {
       $subject = $this->personalizer->personalize_content($subject, Personalizer::RENDERING_CONTEXT_TEXT);
       $html = $this->personalizer->personalize_content($html, Personalizer::RENDERING_CONTEXT_HTML);
       $text = $this->personalizer->personalize_content($text, Personalizer::RENDERING_CONTEXT_TEXT);
-      // Token links that were not hashed (tracking disabled) are still literal in the text body.
+      // The Personalizer does not touch markdown link targets: token links that were not hashed (tracking
+      // disabled) and tags embedded in restored links (no consent) are still literal in the text body.
       $text = $this->personalizationTagLinkResolver->resolveMarkdownLinks($text, $context);
       $html = $this->applyDeprecatedAutomationPersonalizationFilter(self::AUTOMATION_EMAIL_PERSONALIZE_HTML_AFTER_FILTER, $html, $context);
       $text = $this->applyDeprecatedAutomationPersonalizationFilter(self::AUTOMATION_EMAIL_PERSONALIZE_TEXT_AFTER_FILTER, $text, $context);
@@ -603,7 +619,8 @@ class Newsletter {
       foreach ($parts as $part => $content) {
         $parts[$part] = $this->templatePersonalizer->personalize($content, $context, $collector, $part);
       }
-      // Token links that were not hashed (tracking disabled) are still literal in the text body.
+      // The Personalizer does not touch markdown link targets: token links and embedded tags that were not
+      // hashed (tracking disabled) are still literal in the text body.
       $parts[PlaceholderCollector::PART_TEXT] = $this->personalizationTagLinkResolver->resolveMarkdownLinks(
         $parts[PlaceholderCollector::PART_TEXT],
         $context,

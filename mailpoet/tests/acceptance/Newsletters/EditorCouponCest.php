@@ -26,7 +26,7 @@ class EditorCouponCest {
     $this->wcHelper = ContainerWrapper::getInstance()->get(Helper::class);
   }
 
-  public function addCoupon(\AcceptanceTester $i) {
+  public function addCouponBlock(\AcceptanceTester $i) {
     $couponInEditor = '[data-automation-id="coupon_block"]';
     $footer = '[data-automation-id="footer"]';
     $sendFormElement = '[data-automation-id="newsletter_send_form"]';
@@ -46,7 +46,10 @@ class EditorCouponCest {
     $i->waitForElementVisible($couponInEditor);
     $i->see(Coupon::CODE_PLACEHOLDER);
     $i->wantTo('Check coupon overlay');
+    // Chrome 155 no longer scrolls to the element before moving the mouse.
+    $this->scrollToMiddle($i, $footer);
     $i->moveMouseOver($footer, 3, 2);
+    $this->scrollToMiddle($i, $couponInEditor);
     $i->moveMouseOver($couponInEditor, 3, 2);
     $i->waitForText('The coupon code will be auto-generated when this campaign is activated.');
     $i->seeNoJSErrors();
@@ -180,7 +183,9 @@ class EditorCouponCest {
 
     $i->wantTo('Resume sending and verify coupon is sent');
     $i->activateWooCommerce();
-    $i->click(Locator::contains('button', 'Resume'));
+    $resumeButton = Locator::contains('button', 'Resume');
+    $i->scrollTo($resumeButton, 0, -200);
+    $i->click($resumeButton);
     $i->waitForText('Confirm to proceed');
     $i->click('#mailpoet_alert_confirm');
     $i->triggerMailPoetActionScheduler();
@@ -190,5 +195,12 @@ class EditorCouponCest {
     $i->switchToIFrame("#preview-html");
     $i->waitForElementVisible('.mailpoet_coupon');
     $i->dontSee(Locator::contains('.mailpoet_coupon', Coupon::CODE_PLACEHOLDER));
+  }
+
+  /**
+   * Puts the element in the middle of the window, so the editor’s sticky toolbar doesn’t cover it.
+   */
+  private function scrollToMiddle(\AcceptanceTester $i, string $selector): void {
+    $i->executeJS('document.querySelector(arguments[0]).scrollIntoView({block: "center"});', [$selector]);
   }
 }

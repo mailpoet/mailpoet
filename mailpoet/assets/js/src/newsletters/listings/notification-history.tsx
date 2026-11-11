@@ -70,7 +70,7 @@ function buildFields(
       enableGlobalSearch: false,
       getValue: ({ item }) => getStatusFilterValue(item),
       elements: statusElements(getAllowedStatuses('notification_history')),
-      filterBy: { operators: ['isAny'] },
+      filterBy: { operators: ['isAny'], isPrimary: true },
       render: ({ item }) => (
         <QueueStatus newsletter={asNewsLetter(item)} mailerLog={mailerLog} />
       ),
@@ -156,7 +156,6 @@ function NewsletterListNotificationHistoryComponent({
             {
               id: 'preview',
               label: __('Preview', 'mailpoet'),
-              context: 'single',
               supportsBulk: false,
               callback: (targets: NewsletterListingItem[]) => {
                 const target = targets[0];
@@ -176,7 +175,7 @@ function NewsletterListNotificationHistoryComponent({
   );
   return (
     <>
-      <p>
+      <p className="mailpoet-notification-history-back">
         <Link
           className="mailpoet-button button button-secondary button-small"
           to="/notification"

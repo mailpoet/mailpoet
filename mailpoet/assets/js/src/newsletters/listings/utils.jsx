@@ -16,7 +16,6 @@ export const addStatsCTAAction = (actions, navigate) => {
   actions.unshift({
     id: 'stats',
     label: __('Statistics', 'mailpoet'),
-    context: 'single',
     supportsBulk: false,
     isEligible: function isEligible(newsletter) {
       // welcome emails provide explicit total_sent value

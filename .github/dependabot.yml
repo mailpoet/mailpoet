@@ -17,3 +17,25 @@ updates:
           - '*'
     labels:
       - 'dependencies'
+
+  # The PHP stubs PRs merge on their own once the required checks pass
+  # (dependabot-php-stubs-auto-merge.yml). The Porter handles those that fail.
+  # New stubs arrive only through a lock update, so Dependabot is limited to
+  # woocommerce/php-stubs.
+  - package-ecosystem: 'composer'
+    directory: '/mailpoet/tasks/phpstan'
+    schedule:
+      interval: 'weekly'
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
+    # The sync script keeps the WordPress and WooCommerce stubs at MailPoet’s
+    # minimum versions.
+    allow:
+      - dependency-name: 'woocommerce/php-stubs'
+    groups:
+      php-stubs:
+        patterns:
+          - 'woocommerce/php-stubs'
+    labels:
+      - 'dependencies'

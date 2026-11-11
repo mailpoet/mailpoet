@@ -1,7 +1,7 @@
 import { App } from 'newsletter-editor/app';
 import Marionette from 'backbone.marionette';
 import SuperModel from 'backbone.supermodel';
-import _ from 'underscore'; // eslint-disable-line func-names
+import _ from 'underscore';
 import jQuery from 'jquery';
 
 var Module = {};

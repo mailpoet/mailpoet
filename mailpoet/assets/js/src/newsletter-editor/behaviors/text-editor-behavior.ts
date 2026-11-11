@@ -38,7 +38,7 @@ BehaviorsLookup.TextEditorBehavior = Marionette.Behavior.extend({
   },
   hideEditor: function hideEditor() {
     if (this.tinymceEditor) {
-      this.tinymceEditor.fire('blur');
+      this.tinymceEditor.dispatch('blur');
     }
   },
   onDomRefresh: async function onDomRefresh() {

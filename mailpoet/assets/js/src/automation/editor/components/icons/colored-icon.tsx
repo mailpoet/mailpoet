@@ -21,6 +21,7 @@ export function ColoredIcon({
         width: iconProps.width,
         height: iconProps.height,
         backgroundColor: background,
+        color: foreground,
         fill: foreground,
       }}
     >

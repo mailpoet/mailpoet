@@ -91,6 +91,72 @@ class LatestPostsTest extends \MailPoetTest {
     verify($withExcerpt)->stringContainsString('excerpt content');
   }
 
+  public function testItRendersReadMoreWithoutScreenReaderText(): void {
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/read-more')]);
+
+    verify($html)->stringContainsString('Read more');
+    verify($html)->stringNotContainsString('screen-reader-text');
+    verify($html)->stringNotContainsString(': Latest posts block C');
+    verify(has_filter('render_block_core/read-more'))->false();
+  }
+
+  public function testItRemovesUnregisteredShortcodesFromExcerpt(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts page builder post',
+      '[builder_section layout="1"][builder_text]Builder text [Update] with more words here[/builder_text][/builder_section]'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/post-excerpt', ['excerptLength' => 4])]);
+
+    verify($html)->stringContainsString('Builder text [Update] with');
+    verify($html)->stringNotContainsString('builder_');
+    verify($html)->stringNotContainsString('more words');
+    verify(has_filter('the_content', [$this->block, 'removeUnregisteredShortcodes']))->false();
+  }
+
+  public function testItKeepsBracketedTextWithAnEqualsSign(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts equals sign post',
+      'Rated [Score 3 = good] by [builder_rating value=3 style="stars"] readers'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/post-excerpt', ['excerptLength' => 20])]);
+
+    verify($html)->stringContainsString('Rated [Score 3 = good] by readers');
+    verify($html)->stringNotContainsString('builder_rating');
+  }
+
+  public function testItRemovesUnregisteredShortcodesFromManualExcerpt(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts manual excerpt post',
+      'Post content',
+      ['post_excerpt' => '[builder_text layout="1"]Manual excerpt [Update] text[/builder_text]']
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/post-excerpt')]);
+
+    verify($html)->stringContainsString('Manual excerpt [Update] text');
+    verify($html)->stringNotContainsString('builder_');
+    verify(has_filter('get_the_excerpt', [$this->block, 'removeUnregisteredShortcodes']))->false();
+  }
+
+  public function testItKeepsEscapedShortcodesInExcerpt(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts escaped shortcode post',
+      'Write [[builder_text layout=1]] or [[builder_box]Box[/builder_box]] in a post'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/post-excerpt')]);
+
+    verify($html)->stringContainsString('Write [[builder_text layout=1]] or [[builder_box]Box[/builder_box]] in a post');
+  }
+
   public function testItRendersDefaultLayoutWhenInsertedWithoutInnerBlocks(): void {
     $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
 
@@ -162,6 +228,9 @@ class LatestPostsTest extends \MailPoetTest {
     verify($html)->stringContainsString('Latest pages block A');
   }
 
+  /**
+   * @group woo
+   */
   public function testItSupportsCustomPostTypes(): void {
     $this->postIds[] = $this->createPost('Latest products block A', '2020-04-01 01:01:01', 'product');
     $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
@@ -169,6 +238,17 @@ class LatestPostsTest extends \MailPoetTest {
     $html = $this->render(['postType' => 'product']);
 
     verify($html)->stringContainsString('Latest products block A');
+    verify($html)->stringNotContainsString('Latest posts block C');
+  }
+
+  public function testItRendersNoPostsForAnUnlistedType(): void {
+    $this->postIds[] = $this->createPost('Latest reusable block A', '2020-04-01 01:01:01', 'wp_block');
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['postType' => 'wp_block']);
+
+    verify($html)->stringContainsString('No posts found.');
+    verify($html)->stringNotContainsString('Latest reusable block A');
     verify($html)->stringNotContainsString('Latest posts block C');
   }
 
@@ -616,9 +696,27 @@ class LatestPostsTest extends \MailPoetTest {
     verify($html)->stringNotContainsString('[gallery]');
   }
 
+  public function testItRemovesUnregisteredShortcodesFromClassicContent(): void {
+    $this->ensurePostContentBlockRegistered();
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts classic builder content',
+      '[builder_section layout="1"][builder_text]Builder text [Update] here[/builder_text][builder_divider /][/builder_section]'
+      . ' Write [[builder_text layout=1]] to show a tag.'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('mailpoet/post-content')]);
+
+    verify($html)->stringContainsString('Builder text [Update] here');
+    verify($html)->stringContainsString('[[builder_text layout=1]]');
+    verify($html)->stringNotContainsString('[builder_section');
+    verify($html)->stringNotContainsString('[/builder_text]');
+    verify($html)->stringNotContainsString('builder_divider');
+  }
+
   public function testItKeepsSquareBracketsThatAreNotShortcodes(): void {
-    // Nothing strips post content by syntax, so brackets that only look like a
-    // tag must survive: an array query parameter, a footnote.
+    // Brackets that only look like a tag must survive: an array query
+    // parameter, a footnote.
     $this->ensurePostContentBlockRegistered();
     $this->postIds[] = $this->createPostWithContent(
       'Latest posts bracket link',
@@ -630,6 +728,77 @@ class LatestPostsTest extends \MailPoetTest {
 
     verify($html)->stringContainsString('?tag[]=draft');
     verify($html)->stringContainsString('[1]');
+  }
+
+  public function testItRemovesUnregisteredShortcodesWithDigitNames(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts digit shortcode post',
+      '[2column width="50"]Column text[/2column] and note [1] here'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/post-excerpt', ['excerptLength' => 20])]);
+
+    verify($html)->stringContainsString('Column text and note [1] here');
+    verify($html)->stringNotContainsString('2column');
+  }
+
+  public function testItKeepsRemovingShortcodesAfterANestedLatestPostsBlock(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts nested post',
+      '[builder_text]Builder text here[/builder_text]'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+    $isNested = false;
+    $renderNested = function (string $content) use (&$isNested): string {
+      if ($isNested) {
+        return $content;
+      }
+      $isNested = true;
+      return $content . $this->render(['perPage' => 1]);
+    };
+
+    add_filter('render_block_core/post-title', $renderNested);
+    try {
+      $html = $this->render(['perPage' => 1], [], [
+        $this->block('core/post-title'),
+        $this->block('core/post-excerpt'),
+      ]);
+    } finally {
+      remove_filter('render_block_core/post-title', $renderNested);
+    }
+
+    verify($isNested)->true();
+    verify($html)->stringContainsString('Builder text here');
+    verify($html)->stringNotContainsString('builder_');
+    verify(has_filter('the_content', [$this->block, 'removeUnregisteredShortcodes']))->false();
+  }
+
+  public function testItRemovesUnregisteredSelfClosingShortcodes(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts self-closing shortcode post',
+      'Intro text [builder_widget compact /] and [Update] here'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/post-excerpt', ['excerptLength' => 20])]);
+
+    verify($html)->stringContainsString('Intro text');
+    verify($html)->stringContainsString('[Update] here');
+    verify($html)->stringNotContainsString('builder_widget');
+  }
+
+  public function testItKeepsPlainTagsWhenOnlyAnEscapedClosingTagMatches(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts escaped closing tag post',
+      'Type [[/note]] to close and [note] stays'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/post-excerpt', ['excerptLength' => 20])]);
+
+    verify($html)->stringContainsString('[[/note]]');
+    verify($html)->stringContainsString('[note] stays');
   }
 
   public function testItStripsRegisteredShortcodesFromBlockContent(): void {
@@ -660,6 +829,292 @@ class LatestPostsTest extends \MailPoetTest {
     $html = $this->render(['perPage' => 1], [], [$this->block('mailpoet/post-content')]);
 
     verify($html)->stringNotContainsString('Hidden protected content');
+  }
+
+  public function testItExcludesPasswordProtectedPostsWhenSetToExclude(): void {
+    // The newest post, so asking for a single post proves the query itself left
+    // it out instead of the renderer dropping it afterwards.
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts protected excluded',
+      '<!-- wp:paragraph --><p>Hidden protected content</p><!-- /wp:paragraph -->',
+      ['post_password' => 'secret'] + $this->publishedOn('2020-06-01 01:01:01')
+    );
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts public kept',
+      '<!-- wp:paragraph --><p>Public content</p><!-- /wp:paragraph -->'
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1, 'passwordProtected' => 'exclude']);
+
+    verify($html)->stringContainsString('Latest posts public kept');
+    verify($html)->stringNotContainsString('Latest posts protected excluded');
+  }
+
+  public function testItShowsNoPostsWhenEveryPostIsLeftOut(): void {
+    foreach ($this->postIds as $postId) {
+      $this->wp->wpDeletePost($postId, true);
+    }
+    $this->postIds = [$this->createPostWithContent(
+      'Latest posts only protected',
+      '<!-- wp:paragraph --><p>Hidden protected content</p><!-- /wp:paragraph -->',
+      ['post_password' => 'secret']
+    )];
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 10, 'passwordProtected' => 'exclude']);
+
+    verify($html)->stringContainsString('No posts found.');
+    verify($html)->stringNotContainsString('Latest posts only protected');
+  }
+
+  public function testItRendersPasswordProtectedPostsLikeOthersWhenSetToFull(): void {
+    $this->ensurePostContentBlockRegistered();
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts protected in full',
+      '<!-- wp:paragraph --><p>Protected content in full</p><!-- /wp:paragraph -->',
+      ['post_password' => 'secret', 'post_excerpt' => 'Excerpt in full']
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(
+      ['perPage' => 1, 'passwordProtected' => 'full'],
+      [],
+      [$this->block('core/post-title'), $this->block('mailpoet/post-content'), $this->block('core/post-excerpt')]
+    );
+
+    verify($html)->stringContainsString('Protected content in full');
+    verify($html)->stringContainsString('Excerpt in full');
+    // The prefix belongs to the front end, whatever the block shows of the post.
+    verify($html)->stringNotContainsString('Protected:');
+  }
+
+  public function testItHidesExcerptOfPasswordProtectedPostsByDefault(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts protected excerpt',
+      '<!-- wp:paragraph --><p>Hidden protected content</p><!-- /wp:paragraph -->',
+      ['post_password' => 'secret', 'post_excerpt' => 'Hand written excerpt'] + $this->publishedOn('2020-06-01 01:01:01')
+    );
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts public excerpt',
+      '<!-- wp:paragraph --><p>Public content</p><!-- /wp:paragraph -->',
+      ['post_excerpt' => 'Excerpt of a public post']
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(
+      ['perPage' => 2],
+      [],
+      [$this->block('core/post-title'), $this->block('core/post-excerpt')]
+    );
+
+    verify($html)->stringContainsString('Latest posts protected excerpt');
+    verify($html)->stringNotContainsString('Hand written excerpt');
+    verify($html)->stringNotContainsString('There is no excerpt because this is a protected post.');
+    // Only the post that needs a password loses its excerpt.
+    verify($html)->stringContainsString('Excerpt of a public post');
+  }
+
+  public function testItHidesContentOfPasswordProtectedPostsWhenPasswordCookieIsSet(): void {
+    $this->ensurePostContentBlockRegistered();
+    $postId = $this->createPostWithContent(
+      'Latest posts protected cookie',
+      '<!-- wp:paragraph --><p>Hidden protected content</p><!-- /wp:paragraph -->',
+      ['post_password' => 'secret', 'post_excerpt' => 'Hand written excerpt']
+    );
+    $this->postIds[] = $postId;
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    require_once ABSPATH . WPINC . '/class-phpass.php';
+    $cookieName = 'wp-postpass_' . constant('COOKIEHASH');
+    $_COOKIE[$cookieName] = (new \PasswordHash(8, true))->HashPassword('secret');
+    try {
+      verify(post_password_required($postId))->false();
+      $html = $this->render(
+        ['perPage' => 1],
+        [],
+        [$this->block('mailpoet/post-content'), $this->block('core/post-excerpt')]
+      );
+    } finally {
+      unset($_COOKIE[$cookieName]);
+    }
+
+    verify($html)->stringNotContainsString('Hidden protected content');
+    verify($html)->stringNotContainsString('Hand written excerpt');
+  }
+
+  public function testItDropsTheProtectedPrefixFromTheTitle(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts protected title',
+      '<!-- wp:paragraph --><p>Hidden protected content</p><!-- /wp:paragraph -->',
+      ['post_password' => 'secret']
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(['perPage' => 1], [], [$this->block('core/post-title')]);
+
+    verify($html)->stringContainsString('Latest posts protected title');
+    verify($html)->stringNotContainsString('Protected:');
+  }
+
+  public function testItExcludesPasswordProtectedPostsPickedManually(): void {
+    $protectedId = $this->createPostWithContent(
+      'Latest posts manual protected',
+      '<!-- wp:paragraph --><p>Hidden protected content</p><!-- /wp:paragraph -->',
+      ['post_password' => 'secret']
+    );
+    $publicId = $this->createPostWithContent(
+      'Latest posts manual public',
+      '<!-- wp:paragraph --><p>Public content</p><!-- /wp:paragraph -->'
+    );
+    $this->postIds[] = $protectedId;
+    $this->postIds[] = $publicId;
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render([
+      'selectionMode' => 'manual',
+      'posts' => [$protectedId, $publicId],
+      'passwordProtected' => 'exclude',
+    ]);
+
+    verify($html)->stringContainsString('Latest posts manual public');
+    verify($html)->stringNotContainsString('Latest posts manual protected');
+  }
+
+  public function testItHidesContentOnAnUnknownPasswordProtectedValue(): void {
+    $this->ensurePostContentBlockRegistered();
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts protected unknown mode',
+      '<!-- wp:paragraph --><p>Hidden protected content</p><!-- /wp:paragraph -->',
+      ['post_password' => 'secret']
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $html = $this->render(
+      ['perPage' => 1, 'passwordProtected' => 'nonsense'],
+      [],
+      [$this->block('core/post-title'), $this->block('mailpoet/post-content')]
+    );
+
+    verify($html)->stringContainsString('Latest posts protected unknown mode');
+    verify($html)->stringNotContainsString('Hidden protected content');
+  }
+
+  public function testItRestoresDefaultHandlingAfterABlockSetToFull(): void {
+    $this->ensurePostContentBlockRegistered();
+    $postId = $this->createPostWithContent(
+      'Latest posts protected twice',
+      '<!-- wp:paragraph --><p>Hidden protected content</p><!-- /wp:paragraph -->',
+      ['post_password' => 'secret']
+    );
+    $this->postIds[] = $postId;
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    // A manual selection is not deduplicated, so both blocks render the post.
+    $manualQuery = ['selectionMode' => 'manual', 'posts' => [$postId]];
+    $templateBlocks = [$this->block('mailpoet/post-content')];
+
+    $hooksBefore = $this->passwordHookCallbackCounts();
+    $full = $this->render($manualQuery + ['passwordProtected' => 'full'], [], $templateBlocks);
+    $default = $this->render($manualQuery, [], $templateBlocks);
+
+    verify($full)->stringContainsString('Hidden protected content');
+    verify($default)->stringNotContainsString('Hidden protected content');
+    verify($this->passwordHookCallbackCounts())->equals($hooksBefore);
+  }
+
+  public function testItRestoresTheHooksWhenTheRenderFails(): void {
+    $this->postIds[] = $this->createPostWithContent(
+      'Latest posts protected failing render',
+      '<!-- wp:paragraph --><p>Hidden protected content</p><!-- /wp:paragraph -->',
+      ['post_password' => 'secret']
+    );
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $failingBlock = 'mailpoet/test-failing-block';
+    register_block_type($failingBlock, [
+      'render_callback' => static function (): string {
+        throw new \RuntimeException('Rendering a block failed');
+      },
+    ]);
+
+    $hooksBefore = $this->passwordHookCallbackCounts();
+    try {
+      $this->render(['perPage' => 1], [], [$this->block($failingBlock)]);
+      $this->fail('The render was expected to throw.');
+    } catch (\RuntimeException $e) {
+      verify($e->getMessage())->equals('Rendering a block failed');
+    } finally {
+      unregister_block_type($failingBlock);
+    }
+
+    verify($this->passwordHookCallbackCounts())->equals($hooksBefore);
+  }
+
+  /**
+   * Core's own callback answers with the password form, and in a full render
+   * the engine swaps that callback for a stateless renderer that prints the
+   * post content without asking for a password at all. Neither may reach the
+   * email, so the block empties this one out whatever rendered it.
+   */
+  public function testItHidesTheCoreContentBlockOfPasswordProtectedPosts(): void {
+    $postId = $this->createPostWithContent(
+      'Latest posts core content protected',
+      '<!-- wp:paragraph --><p>Hidden protected content</p><!-- /wp:paragraph -->',
+      ['post_password' => 'secret']
+    );
+    $this->postIds[] = $postId;
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $manualQuery = ['selectionMode' => 'manual', 'posts' => [$postId]];
+    $templateBlocks = [$this->block('core/post-content')];
+
+    $default = $this->render($manualQuery, [], $templateBlocks);
+    $full = $this->render($manualQuery + ['passwordProtected' => 'full'], [], $templateBlocks);
+
+    verify($default)->stringNotContainsString('Hidden protected content');
+    verify($default)->stringNotContainsString('post-password-form');
+    verify($full)->stringContainsString('Hidden protected content');
+  }
+
+  public function testItLeavesPasswordProtectedPostsOfOtherBlocksAlone(): void {
+    $ourId = $this->createPostWithContent(
+      'Latest posts protected ours',
+      '<!-- wp:paragraph --><p>Protected content in full</p><!-- /wp:paragraph -->',
+      ['post_password' => 'secret']
+    );
+    $otherId = $this->createPostWithContent(
+      'Latest posts protected elsewhere',
+      '<!-- wp:paragraph --><p>Someone else content</p><!-- /wp:paragraph -->',
+      ['post_password' => 'secret']
+    );
+    $this->postIds[] = $ourId;
+    $this->postIds[] = $otherId;
+    $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));
+
+    $otherPostStillNeedsPassword = null;
+    $otherPostTitle = null;
+    $observe = static function ($blockContent, $parsedBlock, $instance) use (&$otherPostStillNeedsPassword, &$otherPostTitle, $otherId) {
+      if ($otherPostStillNeedsPassword === null) {
+        $otherPostStillNeedsPassword = post_password_required($otherId);
+        $otherPostTitle = get_the_title($otherId);
+      }
+      return $blockContent;
+    };
+    add_filter('render_block', $observe, 5, 3);
+    try {
+      $html = $this->render(
+        ['selectionMode' => 'manual', 'posts' => [$ourId], 'passwordProtected' => 'full'],
+        [],
+        [$this->block('core/post-title')]
+      );
+    } finally {
+      remove_filter('render_block', $observe, 5);
+    }
+
+    verify($html)->stringContainsString('Latest posts protected ours');
+    verify($otherPostStillNeedsPassword)->true();
+    verify($otherPostTitle)->stringContainsString('Protected:');
   }
 
   public function testItDoesNotRenderItsOwnBlocksInsidePostContent(): void {
@@ -792,6 +1247,36 @@ class LatestPostsTest extends \MailPoetTest {
   }
 
   /**
+   * How many callbacks sit on the hooks the password handling uses. Comparing
+   * it before and after a render catches a filter left behind, which would
+   * decide for whatever renders next.
+   *
+   * @return array<string, int>
+   */
+  private function passwordHookCallbackCounts(): array {
+    $registered = $GLOBALS['wp_filter'] ?? [];
+    $this->assertIsArray($registered);
+
+    $counts = [];
+    $hooks = ['post_password_required', 'protected_title_format', 'render_block', 'render_block_context'];
+    foreach ($hooks as $hook) {
+      $hookCallbacks = $registered[$hook] ?? null;
+      $counts[$hook] = $hookCallbacks instanceof \WP_Hook ? count($hookCallbacks->callbacks, COUNT_RECURSIVE) : 0;
+    }
+    return $counts;
+  }
+
+  /**
+   * @return array{post_date: string, post_date_gmt: string}
+   */
+  private function publishedOn(string $date): array {
+    return [
+      'post_date' => $date,
+      'post_date_gmt' => $this->wp->getGmtFromDate($date),
+    ];
+  }
+
+  /**
    * @param array<string, mixed> $extra
    */
   private function createPostWithContent(string $title, string $content, array $extra = []): int {
@@ -854,7 +1339,7 @@ class LatestPostsTest extends \MailPoetTest {
     $filename = dirname(__DIR__, 5) . '/_data/600x400.jpg';
     $contents = file_get_contents($filename);
     $this->assertIsString($contents);
-    $upload = wp_upload_bits(basename($filename), null, $contents);
+    $upload = wp_upload_bits('600x400.jpg', null, $contents);
     $this->assertEmpty($upload['error']);
 
     $attachmentId = wp_insert_attachment([

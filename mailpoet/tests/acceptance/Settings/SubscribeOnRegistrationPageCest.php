@@ -13,7 +13,7 @@ use MailPoet\Test\DataFactories\Settings;
 class SubscribeOnRegistrationPageCest {
   private Settings $settings;
 
-  public function before() {
+  public function _before() {
     $this->settings = new Settings();
   }
 

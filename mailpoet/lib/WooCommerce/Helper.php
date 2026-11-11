@@ -4,7 +4,6 @@ namespace MailPoet\WooCommerce;
 
 use Automattic\WooCommerce\Admin\API\Reports\Customers\Stats\DataStore;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\RuntimeException;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Helper {
@@ -44,17 +43,8 @@ class Helper {
   }
 
   public function isWooCommerceCustomOrdersTableEnabled(): bool {
-    if (
-      $this->isWooCommerceActive()
-      // Stubs reflect the current WC version; the runtime check guards older WooCommerce installs that lack this helper.
-      // @phpstan-ignore-next-line function.alreadyNarrowedType
-      && method_exists('\Automattic\WooCommerce\Utilities\OrderUtil', 'custom_orders_table_usage_is_enabled')
-      && \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled()
-    ) {
-      return true;
-    }
-
-    return false;
+    return $this->isWooCommerceActive()
+      && \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
   }
 
   public function WC() {
@@ -280,20 +270,10 @@ class Helper {
   }
 
   public function getOrdersTableName() {
-    // @phpstan-ignore function.impossibleType (WC stub omits this method; the runtime check is meaningful for older WC versions)
-    if (!method_exists('\Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore', 'get_orders_table_name')) {
-      throw new RuntimeException('Cannot get orders table name when running a WooCommerce version that doesn\'t support custom order tables.');
-    }
-
     return \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore::get_orders_table_name();
   }
 
   public function getAddressesTableName() {
-    // @phpstan-ignore function.impossibleType (WC stub omits this method; the runtime check is meaningful for older WC versions)
-    if (!method_exists('\Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore', 'get_addresses_table_name')) {
-      throw new RuntimeException('Cannot get addresses table name when running a WooCommerce version that doesn\'t support custom order tables.');
-    }
-
     return \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore::get_addresses_table_name();
   }
 

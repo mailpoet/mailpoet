@@ -51,7 +51,7 @@ if (!defined('ABSPATH')) {
 }
 
 if (!defined('WPINC')) {
-  define('WPINC', getenv('WP_ROOT') . '/wp-includes');
+  define('WPINC', '/wp-includes');
 }
 
 if (!defined('WP_DEBUG')) {
