@@ -10,6 +10,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\AssetsController;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
@@ -716,7 +717,15 @@ class Pages {
     $wpUserId = (int)$this->wp->getCurrentUserId();
     if ($wpUserId && $subscriber->getWpUserId() === $wpUserId && $this->wpUserSubscriberLink->isUnconfirmed($wpUserId)) {
       $this->wpUserSubscriberLink->confirm($wpUserId);
-      $this->wooCommerceSegment->synchronizeConfirmedCustomer($wpUserId);
+      try {
+        $this->wooCommerceSegment->synchronizeConfirmedCustomer($wpUserId);
+      } catch (\Throwable $e) {
+        // The page still renders if the WooCommerce Customers sync fails, as it does for the WooCommerce hooks
+        LoggerFactory::getInstance()->getLogger('WooCommerce Sync')->error('WooCommerce integration hook failed: ' . $e->getMessage(), [
+          'file' => $e->getFile(),
+          'line' => $e->getLine(),
+        ]);
+      }
     }
   }
 

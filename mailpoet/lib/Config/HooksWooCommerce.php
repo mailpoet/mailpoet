@@ -132,7 +132,7 @@ class HooksWooCommerce {
    */
   public function synchronizeCustomerOnPasswordReset($wpUser) {
     if ($wpUser instanceof \WP_User) {
-      $this->synchronizeConfirmedCustomer($wpUser->ID); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $this->synchronizeConfirmedCustomer($wpUser->ID); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps -- WP_User::$ID is named by WordPress core
     }
   }
 

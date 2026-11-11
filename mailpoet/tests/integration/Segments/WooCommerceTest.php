@@ -699,49 +699,37 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   public function testItRestoresTrashedFormerCustomerWhoOrdersAgain(): void {
-    $guest = $this->insertGuestCustomer();
-    $this->synchronizeAllCustomers();
-    $this->tester->deleteTestWooOrder((int)$guest['order_id']);
-    $this->synchronizeAllCustomers();
-    verify($this->findSubscriberByEmail($guest['email'])->getDeletedAt())->notNull();
+    $email = $this->trashFormerGuestCustomer(mt_rand());
 
-    $this->createOrder(['email' => $guest['email']]);
+    $this->createOrder(['email' => $email]);
     $this->synchronizeAllCustomers();
 
-    $subscriber = $this->findSubscriberByEmail($guest['email']);
+    $subscriber = $this->findSubscriberByEmail($email);
     verify($subscriber->getDeletedAt())->null();
     verify($subscriber->getIsWoocommerceUser())->true();
     verify($this->isOnWooCommerceSegment($subscriber))->true();
   }
 
   public function testItRestoresTrashedFormerCustomerAtCheckout(): void {
-    $guest = $this->insertGuestCustomer();
-    $this->synchronizeAllCustomers();
-    $this->tester->deleteTestWooOrder((int)$guest['order_id']);
-    $this->synchronizeAllCustomers();
-    verify($this->findSubscriberByEmail($guest['email'])->getDeletedAt())->notNull();
+    $email = $this->trashFormerGuestCustomer(mt_rand());
 
-    $orderId = $this->createOrder(['email' => $guest['email']]);
+    $orderId = $this->createOrder(['email' => $email]);
     $this->wooCommerceSegment->synchronizeGuestCustomer($orderId);
 
-    $subscriber = $this->findSubscriberByEmail($guest['email']);
+    $subscriber = $this->findSubscriberByEmail($email);
     verify($subscriber->getDeletedAt())->null();
     verify($subscriber->getIsWoocommerceUser())->true();
   }
 
   public function testItKeepsTrashedFormerCustomerInTrashForUnconfirmedNewAccount(): void {
     $number = mt_rand();
-    $guest = $this->insertGuestCustomer($number);
-    $this->synchronizeAllCustomers();
-    $this->tester->deleteTestWooOrder((int)$guest['order_id']);
-    $this->synchronizeAllCustomers();
-    verify($this->findSubscriberByEmail($guest['email'])->getDeletedAt())->notNull();
+    $email = $this->trashFormerGuestCustomer($number);
 
     $user = $this->insertRegisteredCustomer($number);
-    verify($user->user_email)->equals($guest['email']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($user->user_email)->equals($email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $this->synchronizeAllCustomers();
 
-    $subscriber = $this->findSubscriberByEmail($guest['email']);
+    $subscriber = $this->findSubscriberByEmail($email);
     verify($subscriber->getDeletedAt())->notNull();
     // The flag stays at 0, so a later order or the account confirming the address can still restore them
     verify($subscriber->getIsWoocommerceUser())->false();
