@@ -170,6 +170,17 @@ describe('MailPoetDate', () => {
       ).to.equal('2026-07-10 10:00');
     });
 
+    it('gives the same result when one options object is used twice', () => {
+      setSite('America/New_York', '-5');
+      const options = { format: 'Y-m-d H:i' };
+      expect(MailPoetDate.format('2026-07-10 14:00:00', options)).to.equal(
+        '2026-07-10 10:00',
+      );
+      expect(MailPoetDate.format('2026-07-10 14:00:00', options)).to.equal(
+        '2026-07-10 10:00',
+      );
+    });
+
     it('keeps the fixed offset on a site without a named time zone', () => {
       setSite('', '-4');
       expect(MailPoetDate.toGmtDatetimeString('2026-11-10 00:00:00')).to.equal(
