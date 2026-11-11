@@ -33,7 +33,7 @@ function getSiteTimeFormatter(): Intl.DateTimeFormat | null {
   return siteTimeFormatters[timeZone];
 }
 
-// Hours between site time and UTC at the given moment. WordPress's gmt_offset
+// Hours between site time and UTC at the given moment. WordPress’s gmt_offset
 // is this value for today only, so it is wrong for a date across a clock change.
 function getSiteOffset(timestamp: number): number {
   const formatter = getSiteTimeFormatter();

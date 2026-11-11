@@ -63,7 +63,7 @@ describe('MailPoetDate', () => {
     });
 
     const conversions: [string, string, string, string, string][] = [
-      // [case, time zone, today's offset, site time, UTC]
+      // [case, time zone, today’s offset, site time, UTC]
       [
         'a November date picked in October',
         'America/New_York',
