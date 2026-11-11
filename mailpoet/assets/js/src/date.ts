@@ -95,7 +95,7 @@ export const MailPoetDate: {
     format: 'F j, Y H:i:s',
   },
   init: function init(opts?: DateOptions): typeof MailPoetDate {
-    const options = opts || {};
+    const options = { ...opts };
 
     // set UTC offset
     if (
@@ -124,12 +124,11 @@ export const MailPoetDate: {
   },
   format: function format(date: MomentInput, opts?: DateOptions): string {
     const options = opts || {};
-    // Read before init(), which fills in today's offset.
-    const offset = options.offset ?? getSiteOffset(Moment.utc(date).valueOf());
     let momentDate;
     this.init(options);
 
     momentDate = Moment.utc(date);
+    const offset = options.offset ?? getSiteOffset(Moment.utc(date).valueOf());
     if (offset) {
       momentDate = momentDate.utcOffset(offset);
     }
