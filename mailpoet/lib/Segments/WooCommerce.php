@@ -798,9 +798,9 @@ class WooCommerce {
   }
 
   /**
-   * Trashes former customers that the WooCommerce segment was the only list for,
+   * Trashes former customers without a WP account that the WooCommerce segment was the only list for,
    * then clears their WooCommerce flag so unsubscribeUsersFromSegment() removes them from the segment.
-   * Already trashed subscribers keep their original deleted_at.
+   * Already trashed subscribers keep their original deleted_at. Subscribers with a WP account stay live.
    */
   private function unmarkFormerCustomers(string $formerCustomersSql, array $params, array $types): void {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
@@ -830,6 +830,7 @@ class WooCommerce {
         SET s.deleted_at = :deletedAt
         WHERE s.id IN (:ids)
           AND s.deleted_at IS NULL
+          AND s.wp_user_id IS NULL
           AND NOT EXISTS (
             SELECT 1 FROM {$subscriberSegmentsTable} ss_other
             INNER JOIN {$segmentsTable} seg ON seg.id = ss_other.segment_id

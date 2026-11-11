@@ -682,7 +682,7 @@ class WooCommerceTest extends \MailPoetTest {
     verify($subscriber->getDeletedAt())->null();
   }
 
-  public function testItTrashesFormerRegisteredCustomerWhoIsOnNoOtherList(): void {
+  public function testItKeepsFormerRegisteredCustomerWithAnAccountOutOfTrash(): void {
     $user = $this->insertRegisteredCustomer();
     $this->synchronizeAllCustomers();
     $wpUsersSegment = $this->segmentsRepository->getWPUsersSegment();
@@ -695,7 +695,7 @@ class WooCommerceTest extends \MailPoetTest {
     $subscriber = $this->findSubscriberByEmail($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($subscriber->getIsWoocommerceUser())->false();
     verify($this->isOnWooCommerceSegment($subscriber))->false();
-    verify($subscriber->getDeletedAt())->notNull();
+    verify($subscriber->getDeletedAt())->null();
   }
 
   public function testItRestoresTrashedFormerCustomerWhoOrdersAgain(): void {
