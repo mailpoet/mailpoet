@@ -1,7 +1,8 @@
 // @wordpress/icons draws its icons with strokes and sets `fill: none` on the
 // svg. Core's older components set `fill: currentColor` on paths inside some
-// buttons (e.g. Item), which fills the icons in. Remove once our minimum
-// WordPress ships @wordpress/components 44+.
-svg[style*='fill: none'] path {
+// buttons (e.g. Item), which fills the icons in. Paths with their own fill are
+// meant to be filled. Remove once our minimum WordPress ships
+// @wordpress/components 44+.
+svg[style*='fill: none'] path:not([fill]) {
   fill: none;
 }
