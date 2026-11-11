@@ -1743,7 +1743,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   private function getParallelism(int $multiplier = 1, int $min = 4, int $max = 32): int {
-    $path = __DIR__ . '/../.circleci/nproc.js';
+    $path = __DIR__ . '/tasks/nproc.mjs';
     $nproc = (int)$this->taskExec("node $path")->printOutput(false)->run()->stopOnFail()->getMessage();
     return max(min($nproc * $multiplier, $max), $min);
   }

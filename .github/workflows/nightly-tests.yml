@@ -47,14 +47,14 @@ jobs:
         id: wordpress
         continue-on-error: true
         run: |
-          beta=$(.circleci/check_wordpress_beta.sh | sed -n 's/^LATEST_BETA=//p')
+          beta=$(.github/workflows/scripts/check_wordpress_beta.sh | sed -n 's/^LATEST_BETA=//p')
           echo "beta=$beta" >> "$GITHUB_OUTPUT"
           echo "WordPress beta: ${beta:-none}"
       - name: 'Look up the WooCommerce beta'
         id: woocommerce
         continue-on-error: true
         run: |
-          beta=$(.circleci/check_woocommerce_beta.sh | sed -n 's/^LATEST_BETA=//p')
+          beta=$(.github/workflows/scripts/check_woocommerce_beta.sh | sed -n 's/^LATEST_BETA=//p')
           echo "beta=$beta" >> "$GITHUB_OUTPUT"
           echo "WooCommerce beta: ${beta:-none}"
       - name: 'Fail when a lookup failed'
@@ -255,7 +255,7 @@ jobs:
       - integration_beta
       - acceptance
       - acceptance_beta
-    # Like CircleCI, alert only for trunk, not for manual runs on other branches.
+    # Alert only for trunk, not for manual runs on other branches.
     # A job that hit its time limit is cancelled, which failure() doesn’t catch.
     if: ${{ always() && (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) && (github.event_name == 'schedule' || github.ref_name == 'trunk') }}
     uses: ./.github/workflows/notify-slack.yml
