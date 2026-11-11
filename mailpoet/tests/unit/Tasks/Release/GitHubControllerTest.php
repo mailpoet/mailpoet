@@ -3,14 +3,15 @@
 namespace MailPoet\Test\Tasks\Release;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Promise\Create;
+use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Response;
 use MailPoetTasks\Release\GitHubController;
 use Psr\Http\Message\RequestInterface;
 
 class GitHubControllerTest extends \MailPoetUnitTest {
-  public function testItPassesWhenStatusesAndAllChecksPassed() {
+  public function testItPassesWhenAllChecksPassedAndIgnoresCommitStatuses() {
     // checks.yml runs for the push to release and for the pull request.
     $controller = $this->makeController([
       $this->checkRun('All checks', 'success'),
@@ -91,10 +92,23 @@ class GitHubControllerTest extends \MailPoetUnitTest {
   }
 
   /**
-   * Answers like GitHub: check runs filtered by check_name, at most 100 per page.
+   * Answers like GitHub: check runs filtered by check_name, at most 100 per page. The
+   * release pull request's commit also has a failed CircleCI status, which no job posts
+   * any more.
    */
   private function makeController(array $checkRuns, string $project = GitHubController::PROJECT_MAILPOET): GitHubController {
-    $checkRunsResponse = function (RequestInterface $request) use ($checkRuns): Response {
+    $handler = function (RequestInterface $request) use ($checkRuns): PromiseInterface {
+      $path = $request->getUri()->getPath();
+      if (basename($path) === 'pulls') {
+        return Create::promiseFor($this->jsonResponse([[
+          'title' => 'Release 5.1.0',
+          'statuses_url' => 'https://api.github.com/repos/mailpoet/mailpoet/statuses/abc',
+          'head' => ['sha' => 'abc'],
+        ]]));
+      }
+      if (strpos($path, '/statuses/') !== false) {
+        return Create::promiseFor($this->jsonResponse([['context' => 'ci/circleci: build', 'state' => 'failure']]));
+      }
       parse_str($request->getUri()->getQuery(), $query);
       if (isset($query['check_name'])) {
         $checkRuns = array_values(array_filter($checkRuns, function (array $checkRun) use ($query): bool {
@@ -102,17 +116,9 @@ class GitHubControllerTest extends \MailPoetUnitTest {
         }));
       }
       $page = array_slice($checkRuns, 0, min(100, (int)($query['per_page'] ?? 30)));
-      return $this->jsonResponse(['total_count' => count($checkRuns), 'check_runs' => $page]);
+      return Create::promiseFor($this->jsonResponse(['total_count' => count($checkRuns), 'check_runs' => $page]));
     };
-    $responses = array_merge([
-      $this->jsonResponse([[
-        'title' => 'Release 5.1.0',
-        'statuses_url' => 'https://api.github.com/repos/mailpoet/mailpoet/statuses/abc',
-        'head' => ['sha' => 'abc'],
-      ]]),
-      $this->jsonResponse([['context' => 'ci/circleci: build', 'state' => 'success']]),
-    ], array_fill(0, count(GitHubController::REQUIRED_CHECK_RUNS), $checkRunsResponse));
-    $client = new Client(['handler' => HandlerStack::create(new MockHandler($responses))]);
+    $client = new Client(['handler' => HandlerStack::create($handler)]);
     return new GitHubController('mailpoet', 'token', $project, $client);
   }
 
