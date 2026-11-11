@@ -14,8 +14,8 @@ import { ColorGradientSettings } from 'form-editor/components/color-gradient-set
 import { FontSizeSettings } from 'form-editor/components/font-size-settings';
 import { ImageSettings } from 'form-editor/components/image-settings';
 import { CloseButtonsSettings } from 'form-editor/components/close-button-settings';
-import { formStyles as defaultFormStyles } from 'form-editor/store/defaults';
 import { FontFamilySettings } from '../font-family-settings';
+import { getFormStyleValue } from './form-style-value';
 import { storeName } from '../../store';
 
 type StylesSettingsPanelProps = {
@@ -34,9 +34,9 @@ function StylesSettingsPanel({ onToggle, isOpened }: StylesSettingsPanelProps) {
     settingsRef.current = settings;
   }, [settings]);
 
-  const updateStyles = (property, value) => {
+  const updateStyles = (property: string, value: unknown) => {
     const updated = { ...settingsRef.current };
-    updated[property] = value ?? defaultFormStyles[property] ?? undefined;
+    updated[property] = getFormStyleValue(property, value);
     void changeFormSettings(updated);
     settingsRef.current = updated;
   };

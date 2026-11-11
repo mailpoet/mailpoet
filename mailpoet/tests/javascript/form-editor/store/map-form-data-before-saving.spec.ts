@@ -133,5 +133,21 @@ describe('Form Data Save Mapper', () => {
         '#signup-popup-trigger',
       );
     });
+
+    it('Maps input padding', () => {
+      const mapData = {
+        ...data,
+        settings: { ...data.settings, inputPadding: 0 },
+      };
+      expect(map(mapData).settings).to.have.property('input_padding', 0);
+    });
+
+    it('Saves cleared input padding as an empty value', () => {
+      const mapData = {
+        ...data,
+        settings: { ...data.settings, inputPadding: undefined },
+      };
+      expect(map(mapData).settings).to.have.property('input_padding', '');
+    });
   });
 });

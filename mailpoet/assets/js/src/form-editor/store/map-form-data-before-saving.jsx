@@ -174,7 +174,8 @@ export function mapFormDataBeforeSaving(data) {
       border_radius: data.settings.borderRadius,
       border_size: data.settings.borderSize,
       form_padding: data.settings.formPadding,
-      input_padding: data.settings.inputPadding,
+      // Empty means no padding, so the fields inherit it from the theme
+      input_padding: data.settings.inputPadding ?? '',
       border_color: data.settings.borderColor,
       font_family: data.settings.fontFamily,
       success_validation_color: data.settings.successValidationColor,
