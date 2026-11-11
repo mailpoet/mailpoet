@@ -1,18 +1,18 @@
 #!/bin/bash
 
-# Lists tests as Codeception group-file entries, one per line, for `circleci tests run`
-# to split over the job’s containers. Usage: list_tests.sh <tests directory> [group]
+# Lists tests as Codeception group-file entries, one per line, to split over the
+# parts of a job. Usage: list_tests.sh <tests directory> [group]
 #
 # Without a group, every test file in the directory is listed. With a group, only the
 # tests in it: the file when the whole class is in the group, otherwise file:method for
 # each method that is (passing --group to Codeception instead would run every grouped
-# test on each container).
+# test in each part).
 #
 # A Cest file is listed as one file:method entry per test, so the split balances the
 # acceptance suite by test rather than by file. Codeception matches a file:method entry
 # by prefix, so a method whose name starts another method’s name is listed as a whole
-# file instead, or the shorter name would run on two containers. A Cest with @depends is
-# listed whole too, so a test and the one it depends on stay on one container.
+# file instead, or the shorter name would run in two parts. A Cest with @depends is
+# listed whole too, so a test and the one it depends on stay in one part.
 
 set -eo pipefail
 

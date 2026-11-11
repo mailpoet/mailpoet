@@ -1,7 +1,7 @@
 import * as fs from 'fs/promises';
 import * as os from 'os';
 
-// Get logical CPU count for a container on CircleCI. Adapted from:
+// Get logical CPU count for a container, which os.cpus() reports for the host. Adapted from:
 //   https://circleci.canny.io/cloud-feature-requests/p/have-nproc-accurately-reporter-number-of-cpus-available-to-container
 
 async function cgroupCpuCount() {

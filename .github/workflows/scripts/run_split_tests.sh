@@ -1,22 +1,19 @@
 #!/bin/bash
 
-# Runs one Codeception suite for the tests `circleci tests run` sends on stdin.
-# It lives in a script rather than inline in config.yml because CircleCI has to
-# launch the tests itself for the split and for “Rerun failed tests” to work.
+# Runs one Codeception suite for the tests listed on stdin (list_tests.sh output).
 # Usage: run_split_tests.sh <compose service>  (codeception_acceptance or codeception_integration)
 
 set -eo pipefail
 
 service=$1
-GROUP_FILE=tests/acceptance/_groups/circleci_split_group
+GROUP_FILE=tests/acceptance/_groups/split_group
 
-# `circleci tests run` sends the names space separated on one line, and Codeception
-# reads one entry per line, so put each on its own. Blank lines would make it run with
+# Codeception reads one entry per line, so put each name on its own. Blank lines would make it run with
 # an empty group.
 tr '[:space:]' '\n' | sed '/^[[:space:]]*$/d' > "$GROUP_FILE"
 
 if [ ! -s "$GROUP_FILE" ]; then
-  echo "No tests were assigned to this container."
+  echo "No tests were assigned to this part."
   exit 0
 fi
 
@@ -30,14 +27,14 @@ args=(
   -vvv
   --html
   --xml
-  -g circleci_split_group
+  -g split_group
 )
 if [[ -n "${SKIP_GROUP}" ]]; then
   args+=(--skip-group "${SKIP_GROUP}")
 fi
 
-# -T and </dev/null because our stdin is the pipe `circleci tests run` sent the test
-# list on, and compose refuses to allocate a TTY on it.
+# -T and </dev/null because our stdin is the pipe the test list came on, and
+# compose refuses to allocate a TTY on it.
 docker compose run -T -e SKIP_DEPS=1 \
   -e CIRCLE_BRANCH="${CIRCLE_BRANCH}" \
   -e CIRCLE_JOB="${CIRCLE_JOB}" \

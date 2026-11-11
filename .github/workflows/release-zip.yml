@@ -15,7 +15,7 @@ on:
 
 permissions: {}
 
-# Run steps with pipefail, like CircleCI does.
+# Run steps with pipefail.
 defaults:
   run:
     shell: bash
@@ -95,4 +95,4 @@ jobs:
           name: mailpoet-zip
           path: ${{ runner.temp }}/zip
       - name: 'Lint the release zip on PHP 7.4'
-        run: .circleci/lint-release-zip.sh "$RUNNER_TEMP/zip/mailpoet.zip" .circleci/php74-lint-exclude.txt
+        run: .github/workflows/scripts/lint-release-zip.sh "$RUNNER_TEMP/zip/mailpoet.zip" .github/workflows/scripts/php74-lint-exclude.txt

@@ -181,7 +181,7 @@ runs:
         WP_GITHUB_WOOCOMMERCE_TOKEN: ${{ inputs.wp_github_woocommerce_token }}
         # tests/_support/CheckSkippedTestsExtension.php reads it to forbid
         # skipped tests on trunk and release. A fork’s branch can be called
-        # trunk too, so fork pull requests get pull/<number>, like on CircleCI.
+        # trunk too, so fork pull requests get pull/<number>.
         CIRCLE_BRANCH: ${{ github.event.pull_request.head.repo.fork && format('pull/{0}', github.event.number) || github.head_ref || github.ref_name }}
         # The acceptance entrypoint removes Doctrine Annotations when it is set,
         # to prove the plugin runs without them. With _with_premium_ in the name
@@ -202,12 +202,12 @@ runs:
         # Without it the mailer and network tests skip, which trunk and release
         # don’t allow; say so once instead of failing each of those tests.
         if [[ -z "$WITH_PREMIUM" && -z "$WP_TEST_ENV" && ( "$CIRCLE_BRANCH" == trunk || "$CIRCLE_BRANCH" == release ) ]]; then
-          echo "::error::The WP_TEST_ENV secret is missing. Add the WP_TEST_* lines from the CircleCI project variables."
+          echo "::error::The WP_TEST_ENV secret is missing. Set it to the WP_TEST_*=value lines the mailer and network tests need."
           exit 1
         fi
         mkdir -p tests/_output/exceptions
         chmod 777 tests/_output/exceptions
-        # WP_TEST_ENV holds the WP_TEST_* lines CircleCI has as project variables.
+        # WP_TEST_ENV holds WP_TEST_*=value lines.
         # GitHub masks each whole line of the secret, so mask the values too.
         while IFS= read -r value; do
           echo "::add-mask::$value"
@@ -216,9 +216,9 @@ runs:
           export "${line?}"
         done < <(../.github/workflows/scripts/wp-test-secret-values.sh --lines)
         # Every part takes every PART_TOTAL-th test from the same sorted list.
-        tests=$(../.circleci/list_tests.sh "tests/$SUITE" "$GROUP" \
+        tests=$(../.github/workflows/scripts/list_tests.sh "tests/$SUITE" "$GROUP" \
           | awk -v total="$PART_TOTAL" -v index_="$PART_INDEX" '(NR - 1) % total == index_')
-        if printf '%s\n' "$tests" | ../.circleci/run_split_tests.sh "codeception_$SUITE"; then
+        if printf '%s\n' "$tests" | ../.github/workflows/scripts/run_split_tests.sh "codeception_$SUITE"; then
           exit 0
         else
           status=$?
@@ -256,7 +256,7 @@ runs:
           if grep -q '@depends' "$file"; then echo "$file"; else echo "$test"; fi
         done <<< "$failed" | sort -u)
         echo "::group::Running the failed tests again"
-        if ! printf '%s\n' "$retry" | ../.circleci/run_split_tests.sh "codeception_$SUITE"; then
+        if ! printf '%s\n' "$retry" | ../.github/workflows/scripts/run_split_tests.sh "codeception_$SUITE"; then
           echo "::endgroup::"
           echo "::error::Acceptance tests failed twice; see the reports in the artifact."
           exit 1

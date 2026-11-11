@@ -22,8 +22,8 @@ Invoke with the target beta version(s) as argument:
 If neither is provided, detect the latest beta automatically:
 
 ```bash
-.circleci/check_woocommerce_beta.sh
-.circleci/check_wordpress_beta.sh
+.github/workflows/scripts/check_woocommerce_beta.sh
+.github/workflows/scripts/check_wordpress_beta.sh
 ```
 
 Both scripts print a `LATEST_BETA=…` line (empty if none).
