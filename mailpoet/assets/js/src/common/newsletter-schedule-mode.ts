@@ -10,7 +10,7 @@ export type ScheduleMode =
 export const DEFAULT_SCHEDULED_LOCAL_TIME = '08:00:00';
 export const SUBSCRIBER_TIMEZONE_LEAD_TIME_HOURS = 24;
 
-/** Tomorrow at the default time in the site's time zone, converted to GMT. */
+/** Tomorrow at the default time in the site’s time zone, converted to GMT. */
 export function getDefaultScheduledAt(): string {
   return MailPoetDate.toGmtDatetimeString(
     `${window.mailpoet_tomorrow_date} ${DEFAULT_SCHEDULED_LOCAL_TIME}`,
