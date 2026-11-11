@@ -26,6 +26,10 @@ class Mixpanel extends SimpleWorker {
     $this->mixpanel->register('Platform', 'Plugin');
   }
 
+  public function checkProcessingRequirements() {
+    return $this->analytics->isEnabled();
+  }
+
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
     return $this->maybeReportAnalyticsToMixpanel();
   }
