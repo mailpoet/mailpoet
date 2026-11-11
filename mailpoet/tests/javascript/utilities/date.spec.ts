@@ -181,14 +181,30 @@ describe('MailPoetDate', () => {
       );
     });
 
-    it('keeps the fixed offset on a site without a named time zone', () => {
-      setSite('', '-4');
-      expect(MailPoetDate.toGmtDatetimeString('2026-11-10 00:00:00')).to.equal(
-        '2026-11-10 04:00:00',
-      );
-      expect(MailPoetDate.datetimeString('2026-11-10 04:00:00')).to.equal(
-        '2026-11-10 00:00:00',
-      );
+    it('ignores the milliseconds of a date', () => {
+      setSite('America/New_York', '-5');
+      expect(
+        MailPoetDate.datetimeString(new Date('2026-07-10T14:00:00.500Z')),
+      ).to.equal('2026-07-10 10:00:00');
+      expect(
+        MailPoetDate.toGmtDatetimeString(new Date('2026-07-10T10:00:00.500Z')),
+      ).to.equal('2026-07-10 14:00:00');
+    });
+
+    // WordPress has no time zone name for a manual UTC offset, and some pages
+    // do not give the name at all.
+    [{ mailpoet_date_timezone: '' }, {}].forEach((site) => {
+      it(`keeps the fixed offset without a named time zone: ${JSON.stringify(
+        site,
+      )}`, () => {
+        globalWithWindow.window = { ...site, mailpoet_date_offset: '-4' };
+        expect(
+          MailPoetDate.toGmtDatetimeString('2026-11-10 00:00:00'),
+        ).to.equal('2026-11-10 04:00:00');
+        expect(MailPoetDate.datetimeString('2026-11-10 04:00:00')).to.equal(
+          '2026-11-10 00:00:00',
+        );
+      });
     });
 
     it('keeps the fixed offset for a time zone the browser does not know', () => {
