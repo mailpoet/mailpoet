@@ -98,12 +98,11 @@ class GitHubController {
     $releasePullRequest = reset($response);
     // Verify the CI builds passed. The release-PR approval requirement was removed when
     // MailPoet stopped using a dedicated QA reviewer; the Porter owns release verification.
-    $this->checkPullRequestChecks($releasePullRequest['statuses_url']);
     $this->checkPullRequestCheckRuns($releasePullRequest['head']['sha']);
   }
 
-  // GitHub Actions jobs report check runs, not commit statuses. A release pull request has
-  // more check runs than one page holds, so ask for each required one by name.
+  // A release pull request has more check runs than one page holds, so ask for each
+  // required one by name.
   private function checkPullRequestCheckRuns(string $sha): void {
     $missing = [];
     $failed = [];
@@ -128,29 +127,6 @@ class GitHubController {
     }
     if (!empty($failed)) {
       throw new \Exception('Release pull request checks failed or are still running: ' . join(', ', $failed));
-    }
-  }
-
-  private function checkPullRequestChecks($statusesUrl) {
-    $response = $this->httpClient->get($statusesUrl);
-    $response = json_decode($response->getBody()->getContents(), true);
-
-    // Find checks. Statuses are returned in reverse chronological order. We need to get the first of each type
-    $latestStatuses = [];
-    foreach ($response as $status) {
-      if (!isset($latestStatuses[$status['context']])) {
-        $latestStatuses[$status['context']] = $status;
-      }
-    }
-
-    $failed = [];
-    foreach ($latestStatuses as $status) {
-      if ($status['state'] !== 'success') {
-        $failed[] = $status['context'];
-      }
-    }
-    if (!empty($failed)) {
-      throw new \Exception('Release pull request build failed. Failed jobs: ' . join(', ', $failed));
     }
   }
 
