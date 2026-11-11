@@ -210,6 +210,24 @@ class EmailPresetsControllerTest extends \MailPoetTest {
     verify($subjects)->arrayContains('woocommerce:customer');
   }
 
+  public function testItRendersThePresetWithSampleData(): void {
+    $presetId = $this->controller->create('Sample data');
+    $sampleContext = null;
+    $captureContext = function (array $context) use (&$sampleContext): array {
+      $sampleContext = $context;
+      return $context;
+    };
+    add_filter('mailpoet_automation_email_preview_sample_data', $captureContext);
+    try {
+      $this->controller->render($this->getPost($presetId));
+    } finally {
+      remove_filter('mailpoet_automation_email_preview_sample_data', $captureContext);
+    }
+
+    verify($sampleContext)->arrayHasKey('order');
+    verify($sampleContext)->arrayHasKey('customer');
+  }
+
   private function getPost(int $postId): \WP_Post {
     $post = get_post($postId);
     $this->assertInstanceOf(\WP_Post::class, $post);

@@ -13,6 +13,7 @@ use MailPoet\InvalidStateException;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Preview\SendPreviewController;
 use MailPoet\Newsletter\Preview\SendPreviewException;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -34,6 +35,8 @@ class EmailPresetsController {
 
   private PersonalizationTagManager $personalizationTagManager;
 
+  private SendPreviewController $sendPreviewController;
+
   public function __construct(
     WPFunctions $wp,
     TemplatesController $templatesController,
@@ -41,7 +44,8 @@ class EmailPresetsController {
     MailerFactory $mailerFactory,
     MetaInfo $mailerMetaInfo,
     PersonalizationTagLinkResolver $linkResolver,
-    PersonalizationTagManager $personalizationTagManager
+    PersonalizationTagManager $personalizationTagManager,
+    SendPreviewController $sendPreviewController
   ) {
     $this->wp = $wp;
     $this->templatesController = $templatesController;
@@ -50,6 +54,7 @@ class EmailPresetsController {
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->linkResolver = $linkResolver;
     $this->personalizationTagManager = $personalizationTagManager;
+    $this->sendPreviewController = $sendPreviewController;
   }
 
   public function getPreset(int $postId, bool $includeTrashed = false): ?\WP_Post {
@@ -195,10 +200,10 @@ class EmailPresetsController {
       $this->wp->removeFilter('woocommerce_email_editor_rendering_email_context', $contextFilter);
     }
 
-    $context = [
+    $context = $this->sendPreviewController->addSampleDataToContext([
       'recipient_email' => $this->wp->wpGetCurrentUser()->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'is_preview' => true,
-    ];
+    ]);
     $this->personalizationTagManager->extendPersonalizationTagsByAllSubjects();
     $personalizer = Email_Editor_Container::container()->get(Personalizer::class);
     $personalizer->set_context($context);
