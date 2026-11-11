@@ -25,10 +25,11 @@ vendor-prefixed
 /mailpoet/tests/plugins
 /mailpoet/tools/wpscan-semgrep-rules
 /mailpoet/views
+# Build left over from the removed dev MCP server in existing checkouts
+/tools/mcp-server
 /mailpoet-premium
 /wordpress
 
 # Build outputs from packages/js workspaces
 /packages/js/components/build-module
 /packages/js/components/build-style
-/tools/mcp-server/dist

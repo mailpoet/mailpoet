@@ -16,5 +16,8 @@ packages/php/*/vendor
 tests_env/vendor
 .wp-env.override.json*
 !.wp-env.override.json.sample
+# The dev MCP server was removed. Keep ignoring what it left in existing
+# checkouts (build, node_modules, companion secret, telemetry log).
+/tools/mcp-server/
 .wp-env/.mailpoet-dev-companion-secret
 .wp-env/mcp-usage.jsonl
