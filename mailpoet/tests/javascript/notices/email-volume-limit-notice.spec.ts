@@ -1,4 +1,5 @@
 import NodeModule from 'module';
+import { MomentInput } from 'moment';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import sinon from 'sinon';
@@ -47,7 +48,12 @@ const installModuleMocks = () => {
                 ? translation
                 : key,
           },
-          Date: { short: (date: unknown) => shortDate(date) },
+          Date: {
+            short: (date: unknown) => shortDate(date),
+            datetimeString: (date: Date) => MailPoetDate.datetimeString(date),
+            toGmtDatetimeString: (date: MomentInput) =>
+              MailPoetDate.toGmtDatetimeString(date),
+          },
           MailPoetComUrlFactory: {
             getUpgradeUrl: () => 'https://example.com/upgrade',
           },

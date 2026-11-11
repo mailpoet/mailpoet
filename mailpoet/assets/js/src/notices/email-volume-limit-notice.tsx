@@ -34,10 +34,11 @@ function EmailVolumeLimitNotice(): JSX.Element {
   };
 
   // MailPoet.Date prints dates in the site time zone, so calculate in it too.
-  const firstDayOfTheNextMonth = Moment.utc()
-    .utcOffset(parseFloat(window.mailpoet_date_offset || '0'))
-    .add(1, 'month')
-    .startOf('month');
+  const firstDayOfTheNextMonth = MailPoet.Date.toGmtDatetimeString(
+    Moment.utc(MailPoet.Date.datetimeString(new Date()))
+      .add(1, 'month')
+      .startOf('month'),
+  );
   let toContinueUpgradeYourPlanOrWaitUntil = ReactStringReplace(
     MailPoet.I18n.t('toContinueUpgradeYourPlanOrWaitUntil'),
     /\[link](.*?)\[\/link]/g,
