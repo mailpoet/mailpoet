@@ -13,6 +13,8 @@ class GitHubActionsController {
   const RELEASE_BRANCH = 'release';
   const WORKFLOW = 'checks.yml';
   const POT_FILENAME = 'lang/mailpoet.pot';
+  // Premium's workflow that runs Free's tests with Premium active on a Free release commit.
+  const FREE_RELEASE_TESTS_WORKFLOW = 'free-release-tests.yml';
 
   // Per project: the repository, the artifact checks.yml uploads, and the ZIP inside it.
   private const PROJECTS = [
@@ -109,6 +111,44 @@ class GitHubActionsController {
     }
     $this->httpClient->post($this->url("actions/runs/$runId/rerun"));
     return true;
+  }
+
+  /**
+   * Starts Premium's run of Free's tests with Premium active on the Free commit, with
+   * Premium from $premiumRef. Call it on the Premium project's controller.
+   */
+  public function startFreeReleaseTests(string $freeSha, string $premiumRef): void {
+    $this->httpClient->post($this->url('actions/workflows/' . self::FREE_RELEASE_TESTS_WORKFLOW . '/dispatches'), [
+      'json' => ['ref' => $premiumRef, 'inputs' => ['free_sha' => $freeSha]],
+    ]);
+  }
+
+  /**
+   * Throws unless the newest Premium run of Free's tests with Premium active on the Free
+   * commit passed. Call it on the Premium project's controller.
+   */
+  public function checkFreeReleaseTestsPassed(string $freeSha): void {
+    $response = $this->httpClient->get($this->url('actions/workflows/' . self::FREE_RELEASE_TESTS_WORKFLOW . '/runs'), [
+      'query' => ['event' => 'workflow_dispatch', 'per_page' => 100],
+    ]);
+    $runs = $this->decode($response)['workflow_runs'] ?? [];
+    // The workflow puts the Free commit in the run's title. Runs come newest first.
+    foreach ($runs as $run) {
+      if (strpos($run['display_title'] ?? '', "($freeSha)") === false) {
+        continue;
+      }
+      if (($run['status'] ?? null) === 'completed' && ($run['conclusion'] ?? null) === 'success') {
+        return;
+      }
+      $state = ($run['status'] ?? null) === 'completed' ? ($run['conclusion'] ?? 'unknown') : ($run['status'] ?? 'unknown');
+      throw new \Exception(
+        "Free’s tests with Premium active for the release commit $freeSha must pass first. The latest run is '$state': "
+        . ($run['html_url'] ?? '')
+      );
+    }
+    throw new \Exception(
+      "Free’s tests with Premium active have not run for the release commit $freeSha. Start them with `./do release:test-free-with-premium`."
+    );
   }
 
   private function getSuccessfulReleaseRun(): array {
