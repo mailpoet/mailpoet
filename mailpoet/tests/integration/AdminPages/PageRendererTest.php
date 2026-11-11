@@ -55,7 +55,11 @@ class PageRendererTest extends \MailPoetTest {
     try {
       $output = $this->renderBlankPage();
     } finally {
-      update_option('timezone_string', $originalTimeZone);
+      if ($originalTimeZone === false) {
+        delete_option('timezone_string');
+      } else {
+        update_option('timezone_string', $originalTimeZone);
+      }
     }
 
     // The date helper in JS reads this name to get the UTC offset of each date.
