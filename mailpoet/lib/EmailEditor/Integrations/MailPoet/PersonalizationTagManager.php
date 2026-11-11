@@ -8,6 +8,7 @@ use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalizatio
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\CustomFields\CustomFieldsRepository;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets\EmailPresetPostType;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Date;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Link;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Newsletter;
@@ -52,6 +53,7 @@ class PersonalizationTagManager {
   private Registry $registry;
   private NewslettersRepository $newslettersRepository;
   private CustomFieldsRepository $customFieldsRepository;
+  private EmailPresetPostType $emailPresetPostType;
 
   public function __construct(
     Subscriber $subscriber,
@@ -65,7 +67,8 @@ class PersonalizationTagManager {
     AutomationStorage $automationStorage,
     Registry $registry,
     NewslettersRepository $newslettersRepository,
-    CustomFieldsRepository $customFieldsRepository
+    CustomFieldsRepository $customFieldsRepository,
+    EmailPresetPostType $emailPresetPostType
   ) {
     $this->subscriber = $subscriber;
     $this->site = $site;
@@ -79,6 +82,7 @@ class PersonalizationTagManager {
     $this->registry = $registry;
     $this->newslettersRepository = $newslettersRepository;
     $this->customFieldsRepository = $customFieldsRepository;
+    $this->emailPresetPostType = $emailPresetPostType;
   }
 
   /**
@@ -89,6 +93,12 @@ class PersonalizationTagManager {
    */
   public function extendPersonalizationTagsForPost($postId): void {
     $postId = (int)$postId;
+
+    // A preset can become any email, so it offers the tags of every subject.
+    if ($this->emailPresetPostType->isPreset($this->wp->getPost($postId))) {
+      $this->extendPersonalizationTagsByAllSubjects();
+      return;
+    }
 
     $newsletter = $this->newslettersRepository->findOneBy(['wpPost' => $postId]);
     if (!$newsletter || (!$newsletter->isAutomation() && !$newsletter->isAutomationTransactional())) {
@@ -108,6 +118,11 @@ class PersonalizationTagManager {
    */
   public function extendPersonalizationTagsByAutomationSubjects(int $automationId): void {
     $this->extendPersonalizationTagsBySubjects($this->getAutomationSubjects($automationId));
+  }
+
+  public function extendPersonalizationTagsByAllSubjects(): void {
+    $subjects = array_merge([], ...array_values($this->getCategoryToSubjectsMapping()));
+    $this->extendPersonalizationTagsBySubjects(array_values(array_unique($subjects)));
   }
 
   /**
@@ -389,8 +404,7 @@ class PersonalizationTagManager {
    * @return array<string, string>
    */
   public function getTokenDisplayNames(): array {
-    $subjects = array_merge([], ...array_values($this->getCategoryToSubjectsMapping()));
-    $this->extendPersonalizationTagsBySubjects(array_unique($subjects));
+    $this->extendPersonalizationTagsByAllSubjects();
 
     $names = [];
     $registry = Email_Editor_Container::container()->get(Personalization_Tags_Registry::class);

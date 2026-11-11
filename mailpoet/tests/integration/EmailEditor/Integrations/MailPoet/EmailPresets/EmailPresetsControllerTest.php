@@ -192,6 +192,24 @@ class EmailPresetsControllerTest extends \MailPoetTest {
     verify(get_posts(['post_type' => 'shop_coupon', 'post_status' => 'any', 'numberposts' => -1]))->empty();
   }
 
+  public function testItOffersTheTagsOfAllSubjectsForAPreset(): void {
+    $presetId = $this->controller->create('Preset');
+    $subjects = null;
+    $captureSubjects = function ($registry, array $availableSubjects) use (&$subjects) {
+      $subjects = $availableSubjects;
+      return $registry;
+    };
+    add_filter('mailpoet_automation_email_extend_personalization_tags', $captureSubjects, 10, 2);
+    try {
+      do_action('woocommerce_email_editor_personalization_tags_for_post', $presetId);
+    } finally {
+      remove_filter('mailpoet_automation_email_extend_personalization_tags', $captureSubjects, 10);
+    }
+
+    verify($subjects)->arrayContains('woocommerce:order');
+    verify($subjects)->arrayContains('woocommerce:customer');
+  }
+
   private function getPost(int $postId): \WP_Post {
     $post = get_post($postId);
     $this->assertInstanceOf(\WP_Post::class, $post);

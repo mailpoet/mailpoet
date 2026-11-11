@@ -6,6 +6,7 @@ use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Personalizer;
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\Renderer;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTagManager;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\PersonalizationTagLinkResolver;
 use MailPoet\EmailEditor\Integrations\MailPoet\Templates\TemplatesController;
 use MailPoet\InvalidStateException;
@@ -31,13 +32,16 @@ class EmailPresetsController {
 
   private PersonalizationTagLinkResolver $linkResolver;
 
+  private PersonalizationTagManager $personalizationTagManager;
+
   public function __construct(
     WPFunctions $wp,
     TemplatesController $templatesController,
     NewslettersRepository $newslettersRepository,
     MailerFactory $mailerFactory,
     MetaInfo $mailerMetaInfo,
-    PersonalizationTagLinkResolver $linkResolver
+    PersonalizationTagLinkResolver $linkResolver,
+    PersonalizationTagManager $personalizationTagManager
   ) {
     $this->wp = $wp;
     $this->templatesController = $templatesController;
@@ -45,6 +49,7 @@ class EmailPresetsController {
     $this->mailerFactory = $mailerFactory;
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->linkResolver = $linkResolver;
+    $this->personalizationTagManager = $personalizationTagManager;
   }
 
   public function getPreset(int $postId, bool $includeTrashed = false): ?\WP_Post {
@@ -194,6 +199,7 @@ class EmailPresetsController {
       'recipient_email' => $this->wp->wpGetCurrentUser()->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'is_preview' => true,
     ];
+    $this->personalizationTagManager->extendPersonalizationTagsByAllSubjects();
     $personalizer = Email_Editor_Container::container()->get(Personalizer::class);
     $personalizer->set_context($context);
     $text = $personalizer->personalize_content((string)$rendered['text'], Personalizer::RENDERING_CONTEXT_TEXT);
