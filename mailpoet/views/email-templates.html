@@ -1,0 +1,9 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+<div id="mailpoet_email_templates_container"></div>
+
+<script type="text/javascript">
+  var mailpoet_email_templates_api = <%= json_encode(api) %>;
+</script>
+<% endblock %>

@@ -116,8 +116,18 @@ class EmailPresetsEndpointsTest extends Test {
     $restored = $this->post(self::BASE_PATH . '/' . $presetId . '/restore');
     verify($restored['data']['status'])->equals(EmailPresetPostType::STATUS);
 
+    $this->post(self::BASE_PATH . '/' . $presetId . '/trash');
     $this->delete(self::BASE_PATH . '/' . $presetId);
     verify(get_post($presetId))->null();
+  }
+
+  public function testItDoesNotDeleteAPresetThatIsNotTrashed(): void {
+    $presetId = $this->controller->create('Not trashed');
+
+    $response = $this->delete(self::BASE_PATH . '/' . $presetId);
+
+    verify($response['code'])->equals('mailpoet_email_preset_not_trashed');
+    verify(get_post($presetId))->notNull();
   }
 
   public function testItDoesNotRestoreAPresetThatIsNotTrashed(): void {
