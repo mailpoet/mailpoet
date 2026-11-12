@@ -293,6 +293,27 @@ class BulkActionControllerTest extends \MailPoetTest {
     verify($this->listItemCounts($counts, $segment))->equals(['all' => 2, 'trash' => 0]);
   }
 
+  public function testRemoveFromAllListsUpdatesCachedWithoutListCounts(): void {
+    $segment = (new SegmentFactory())->withName('Left list')->create();
+    $removed = $this->createSubscriber('removed-from-all@example.com', SubscriberEntity::STATUS_SUBSCRIBED, [$segment]);
+    $counts = $this->cacheEnabledCountsController();
+    $counts->recalculateSubscribersWithoutSegmentStatisticsCache();
+
+    $this->controller->execute(BulkActionController::ACTION_REMOVE_FROM_ALL_LISTS, $this->definition([(int)$removed->getId()]));
+
+    verify($counts->getSubscribersWithoutSegmentStatisticsCount()['all'])->equals(1);
+  }
+
+  public function testTrashUpdatesCachedWithoutListCounts(): void {
+    $trashed = $this->createSubscriber('trashed-without-list@example.com', SubscriberEntity::STATUS_SUBSCRIBED);
+    $counts = $this->cacheEnabledCountsController();
+    $counts->recalculateSubscribersWithoutSegmentStatisticsCache();
+
+    $this->controller->execute(BulkActionController::ACTION_TRASH, $this->definition([(int)$trashed->getId()]));
+
+    verify($counts->getSubscribersWithoutSegmentStatisticsCount()['all'])->equals(0);
+  }
+
   public function testItAddsAndRemovesTags(): void {
     $tag = (new TagFactory())->withName('VIP')->create();
     $tagId = (int)$tag->getId();

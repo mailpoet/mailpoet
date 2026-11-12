@@ -106,9 +106,7 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
       'email' => 'status-change@test.com',
       'status' => SubscriberEntity::STATUS_UNCONFIRMED,
     ]);
-    $counts = $this->getServiceWithOverrides(SubscribersCountsController::class, [
-      'subscribersFeature' => $this->make(SubscribersFeature::class, ['isSubscribersCountEnoughForCache' => true]),
-    ]);
+    $counts = $this->cacheEnabledCountsController();
     $counts->recalculateGlobalStatusStatisticsCache();
 
     $this->saveController->save([
@@ -130,9 +128,7 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
       'status' => SubscriberEntity::STATUS_SUBSCRIBED,
       'segments' => [$listA->getId()],
     ]);
-    $counts = $this->getServiceWithOverrides(SubscribersCountsController::class, [
-      'subscribersFeature' => $this->make(SubscribersFeature::class, ['isSubscribersCountEnoughForCache' => true]),
-    ]);
+    $counts = $this->cacheEnabledCountsController();
     $counts->recalculateSegmentStatisticsCache($listA);
     $counts->recalculateSegmentStatisticsCache($listB);
 
@@ -148,6 +144,25 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     $listBCounts = $counts->getSegmentStatisticsCount($listB);
     verify($listBCounts['all'])->equals(1);
     verify($listBCounts[SubscriberEntity::STATUS_SUBSCRIBED])->equals(1);
+  }
+
+  public function testRemovingTheLastListUpdatesCachedWithoutListCounts(): void {
+    $list = $this->segmentsRepository->createOrUpdate('Only list');
+    $subscriber = $this->saveController->save([
+      'email' => 'last-list@test.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segments' => [$list->getId()],
+    ]);
+    $counts = $this->cacheEnabledCountsController();
+    $counts->recalculateSubscribersWithoutSegmentStatisticsCache();
+
+    $this->saveController->save([
+      'id' => $subscriber->getId(),
+      'email' => 'last-list@test.com',
+      'segments' => [],
+    ]);
+
+    verify($counts->getSubscribersWithoutSegmentStatisticsCount()['all'])->equals(1);
   }
 
   public function testItStripsClientSuppliedTrackingConsentProofFields(): void {
@@ -441,6 +456,12 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
 
     verify($subscriber->getFirstName())->equals('Tom & Jerry');
     verify($subscriber->getLastName())->equals("O'Brien-José");
+  }
+
+  private function cacheEnabledCountsController(): SubscribersCountsController {
+    return $this->getServiceWithOverrides(SubscribersCountsController::class, [
+      'subscribersFeature' => $this->make(SubscribersFeature::class, ['isSubscribersCountEnoughForCache' => true]),
+    ]);
   }
 
   private function createSubscriber(string $email, string $status): SubscriberEntity {

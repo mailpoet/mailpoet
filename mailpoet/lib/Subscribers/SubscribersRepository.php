@@ -155,6 +155,13 @@ class SubscribersRepository extends Repository {
     $this->transientCache->invalidateItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, $segmentId);
   }
 
+  /**
+   * The "Subscribers without a list" counts are cached as list item 0.
+   */
+  public function invalidateWithoutListStatisticsCache(): void {
+    $this->invalidateSegmentStatisticsCache(0);
+  }
+
   public function findBySegment(int $segmentId): array {
     return $this->entityManager
     ->createQueryBuilder()
@@ -216,6 +223,7 @@ class SubscribersRepository extends Repository {
     $this->changesNotifier->subscribersCountChanged($ids);
     $this->invalidateTotalSubscribersCache();
     $this->invalidateGlobalStatusStatisticsCache();
+    $this->invalidateWithoutListStatisticsCache();
     return count($ids);
   }
 
@@ -239,6 +247,7 @@ class SubscribersRepository extends Repository {
     $this->changesNotifier->subscribersCountChanged($ids);
     $this->invalidateTotalSubscribersCache();
     $this->invalidateGlobalStatusStatisticsCache();
+    $this->invalidateWithoutListStatisticsCache();
     return count($ids);
   }
 
@@ -293,6 +302,7 @@ class SubscribersRepository extends Repository {
     $this->changesNotifier->subscribersDeleted($ids);
     $this->invalidateTotalSubscribersCache();
     $this->invalidateGlobalStatusStatisticsCache();
+    $this->invalidateWithoutListStatisticsCache();
     return $count;
   }
 
@@ -820,6 +830,7 @@ class SubscribersRepository extends Repository {
     $this->segmentsCountRecalculator->recalculateForSubscribers($ids);
     $this->changesNotifier->subscribersUpdated($ids);
     $this->invalidateSegmentStatisticsCache((int)$segment->getId());
+    $this->invalidateWithoutListStatisticsCache();
     return $count;
   }
 
@@ -829,6 +840,7 @@ class SubscribersRepository extends Repository {
   public function bulkRemoveFromAllSegments(array $ids): int {
     $count = $this->removeSubscribersFromAllSegments($ids);
     $this->changesNotifier->subscribersUpdated($ids);
+    $this->invalidateWithoutListStatisticsCache();
     return $count;
   }
 
@@ -839,6 +851,7 @@ class SubscribersRepository extends Repository {
     $subscriberSegments = $this->addSubscribersToSegment($segment, $ids);
     $this->changesNotifier->subscribersUpdated($ids);
     $this->invalidateSegmentStatisticsCache((int)$segment->getId());
+    $this->invalidateWithoutListStatisticsCache();
     if (!$skipHooks) {
       $this->fireSegmentSubscribedHooks($subscriberSegments);
     }
@@ -876,6 +889,7 @@ class SubscribersRepository extends Repository {
 
     $this->changesNotifier->subscribersUpdated($ids);
     $this->invalidateSegmentStatisticsCache((int)$segment->getId());
+    $this->invalidateWithoutListStatisticsCache();
     if (!$skipHooks) {
       $this->fireSegmentSubscribedHooks($subscriberSegments, $subscriberIdsAlreadyInSegment);
     }
@@ -895,6 +909,7 @@ class SubscribersRepository extends Repository {
     $this->changesNotifier->subscribersCountChanged($ids);
     $this->invalidateTotalSubscribersCache();
     $this->invalidateGlobalStatusStatisticsCache();
+    $this->invalidateWithoutListStatisticsCache();
     return count($ids);
   }
 
