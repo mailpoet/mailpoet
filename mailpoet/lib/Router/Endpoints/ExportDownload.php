@@ -98,7 +98,7 @@ class ExportDownload {
   }
 
   /**
-   * index.php and .htaccess only work on a local disk served by the web server,
+   * index.php, .htaccess and web.config only work on a local disk served by the web server,
    * so they are skipped by default when uploads live on remote storage.
    */
   private static function shouldWriteServerFiles(WPFunctions $wp, string $exportDirectory): bool {
@@ -126,6 +126,28 @@ class ExportDownload {
       ])
     );
     if (!$htaccessWritten) {
+      throw new \RuntimeException('Could not protect the export directory.');
+    }
+    // IIS ignores .htaccess. Request Filtering ships with IIS 7+ and denies every file in the folder.
+    $webConfigWritten = self::writeFile(
+      $exportDirectory . '/web.config',
+      implode(PHP_EOL, [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<configuration>',
+        '  <system.webServer>',
+        '    <security>',
+        '      <requestFiltering>',
+        '        <fileExtensions allowUnlisted="false">',
+        '          <clear />',
+        '        </fileExtensions>',
+        '      </requestFiltering>',
+        '    </security>',
+        '  </system.webServer>',
+        '</configuration>',
+        '',
+      ])
+    );
+    if (!$webConfigWritten) {
       throw new \RuntimeException('Could not protect the export directory.');
     }
   }
