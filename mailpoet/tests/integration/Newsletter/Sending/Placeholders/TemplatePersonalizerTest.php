@@ -50,15 +50,18 @@ class TemplatePersonalizerTest extends \MailPoetTest {
     $this->assertStringContainsString('<p>{{mailpoet_mss_test_2}}</p>', $html);
     $this->assertStringContainsString('href="{{mailpoet_mss_test_3}}"', $html);
     $this->assertStringNotContainsString('data-link-href=', $html);
-    // Markdown links are not the Personalizer's business; the text body keeps them for the link resolver.
-    $this->assertSame('{{mailpoet_mss_test_4}} [Review](http://[mailpoet/test-url%5D)', $text);
+    // The Personalizer fills in link targets before the rest of the text body.
+    $this->assertSame('{{mailpoet_mss_test_5}} [Review]({{mailpoet_mss_test_4}})', $text);
     $this->assertSame([
       'subject' => ['{{mailpoet_mss_test_1}}' => 'Rosta & Co'],
       'html' => [
         '{{mailpoet_mss_test_2}}' => 'Rosta & Co',
         '{{mailpoet_mss_test_3}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&#038;source=mss',
       ],
-      'text' => ['{{mailpoet_mss_test_4}}' => 'Rosta & Co'],
+      'text' => [
+        '{{mailpoet_mss_test_4}}' => 'https://example.com/review-order/abc?email=rosta%40example.com&source=mss',
+        '{{mailpoet_mss_test_5}}' => 'Rosta & Co',
+      ],
     ], $collector->getValues());
     $this->assertReconstructsRenderedOutput($subjectSource, $subject, $collector, PlaceholderCollector::PART_SUBJECT);
     $this->assertReconstructsRenderedOutput($htmlSource, $html, $collector, PlaceholderCollector::PART_HTML);
@@ -100,6 +103,20 @@ class TemplatePersonalizerTest extends \MailPoetTest {
     $htmlValues = $collector->getValues()['html'];
     $this->assertContains('https://example.com/?a=1&b=2', $htmlValues);
     $this->assertContains('https://example.com/?a=1&#038;b=2', $htmlValues);
+  }
+
+  public function testItKeepsTextAndLinkTargetUsesOfOneTagApartInTheTextPart(): void {
+    // Tag callbacks get the rendering context, so a link target may resolve to another value than the text.
+    $this->registerTag('mailpoet/test-link', function (array $context): string {
+      return 'https://example.com/?for=' . $context[Personalizer::RENDERING_CONTEXT_KEY];
+    });
+    $collector = new PlaceholderCollector('ns');
+    $source = '<!--[mailpoet/test-link]--> [Open](http://[mailpoet/test-link%5D)';
+
+    $text = $this->templatePersonalizer->personalize($source, [], $collector, PlaceholderCollector::PART_TEXT);
+
+    $this->assertSame(2, count($collector->getValues()['text']));
+    $this->assertReconstructsRenderedOutput($source, $text, $collector, PlaceholderCollector::PART_TEXT);
   }
 
   public function testItEscapesATagEmbeddedInALinkUrlAsAUrlComponent(): void {

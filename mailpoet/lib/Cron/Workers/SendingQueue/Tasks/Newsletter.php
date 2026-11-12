@@ -165,11 +165,10 @@ class Newsletter {
    * have made. A restored URL may also carry a non-link shortcode of its own, such as
    * `http://example.com/?email=[subscriber:email]`, or a personalization tag embedded the same way.
    * The click redirect resolves both; for these recipients the shortcodes are resolved here
-   * (STOMAIL-8340) and the embedded tags later, by the Personalizer in the HTML part and by
-   * resolveMarkdownLinks() in the text part. Links of block emails whose URL is a personalization
-   * tag token are resolved with the resolver the redirect uses. A token link or shortcode that
-   * cannot be resolved becomes empty rather than shipping as literal text; an embedded tag that
-   * cannot be resolved stays literal.
+   * (STOMAIL-8340) and the embedded tags later, by the Personalizer. Links of block emails whose
+   * URL is a personalization tag token are resolved with the resolver the redirect uses. A token
+   * link or shortcode that cannot be resolved becomes empty rather than shipping as literal text;
+   * an embedded tag that cannot be resolved stays literal.
    *
    * @param array<string, mixed>|null $personalizationContext
    */
@@ -202,10 +201,9 @@ class Newsletter {
    * The destination a recipient we may not track gets for one stored link; see untrackLinks().
    *
    * A personalization tag embedded in a stored URL (https://example.com/?ref=[acme/url]) is resolved
-   * here too. On the rendered path the Personalizer does that for the HTML href while it runs over
-   * the restored content, writing it through esc_url(), and resolveMarkdownLinks() does it for the
-   * text body's link targets; on the templated path the URL leaves as a substitution value, so it
-   * has to be complete and, in the HTML part, escaped the same way.
+   * here too. On the rendered path the Personalizer does that while it runs over the restored
+   * content, writing HTML hrefs through esc_url(); on the templated path the URL leaves as a
+   * substitution value, so it has to be complete and, in the HTML part, escaped the same way.
    *
    * @param string $part The PlaceholderCollector::PART_* constant the URL is for
    * @param string $shortcodeLookupSource Content that shortcodes such as [newsletter:post_title] look their value up in
@@ -551,8 +549,8 @@ class Newsletter {
       $subject = $this->personalizer->personalize_content($subject, Personalizer::RENDERING_CONTEXT_TEXT);
       $html = $this->personalizer->personalize_content($html, Personalizer::RENDERING_CONTEXT_HTML);
       $text = $this->personalizer->personalize_content($text, Personalizer::RENDERING_CONTEXT_TEXT);
-      // The Personalizer does not touch markdown link targets: token links that were not hashed (tracking
-      // disabled) and tags embedded in restored links (no consent) are still literal in the text body.
+      // Empties markdown link targets that are still a whole token after the Personalizer, e.g. a tag
+      // that gave no value, so the recipient never sees a raw tag.
       $text = $this->personalizationTagLinkResolver->resolveMarkdownLinks($text, $context);
       $html = $this->applyDeprecatedAutomationPersonalizationFilter(self::AUTOMATION_EMAIL_PERSONALIZE_HTML_AFTER_FILTER, $html, $context);
       $text = $this->applyDeprecatedAutomationPersonalizationFilter(self::AUTOMATION_EMAIL_PERSONALIZE_TEXT_AFTER_FILTER, $text, $context);
@@ -619,8 +617,8 @@ class Newsletter {
       foreach ($parts as $part => $content) {
         $parts[$part] = $this->templatePersonalizer->personalize($content, $context, $collector, $part);
       }
-      // The Personalizer does not touch markdown link targets: token links and embedded tags that were not
-      // hashed (tracking disabled) are still literal in the text body.
+      // Empties markdown link targets that are still a whole token after the Personalizer, e.g. an
+      // unregistered tag, so the recipient never sees a raw tag.
       $parts[PlaceholderCollector::PART_TEXT] = $this->personalizationTagLinkResolver->resolveMarkdownLinks(
         $parts[PlaceholderCollector::PART_TEXT],
         $context,

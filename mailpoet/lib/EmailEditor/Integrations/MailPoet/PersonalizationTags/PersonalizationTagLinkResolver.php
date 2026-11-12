@@ -115,12 +115,11 @@ class PersonalizationTagLinkResolver {
    * ("http://%5B...%5D"), and tokens embedded in a longer target
    * ("[Profile](https://example.com/?email=[mailpoet/subscriber-email])").
    *
-   * The Personalizer resolves tokens only in HTML constructs (comments, anchor hrefs), never in the
-   * markdown links of the text body, so every target that can still carry a token when this runs is
-   * covered here: links that were not hashed (tracking disabled), links restored for recipients
-   * without tracking consent, and send previews. A whole token that does not resolve becomes an
-   * empty target rather than shipping as literal text; an embedded one stays literal unless an
-   * interceptor replaces it.
+   * Callers run it after the Personalizer, which fills in the registered tags of these targets
+   * itself, on targets that can still carry a token: links that were not hashed (tracking disabled),
+   * links restored for recipients without tracking consent, and send previews. A whole token that
+   * does not resolve becomes an empty target rather than shipping as literal text; an embedded one
+   * stays literal unless an interceptor replaces it.
    *
    * @param array<string, mixed> $context
    * @param (callable(string, string): string)|null $valueInterceptor Receives the resolved URL or token value

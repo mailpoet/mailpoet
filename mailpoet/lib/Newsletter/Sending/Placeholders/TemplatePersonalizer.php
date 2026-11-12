@@ -12,8 +12,9 @@ use Automattic\WooCommerce\EmailEditor\Engine\Personalizer;
  * this only intercepts the values it is about to write.
  *
  * A tag that resolves to an empty value still gets a placeholder. The rendered path leaves such
- * a link untouched, but the template has to look the same for every recipient, so the empty
- * value travels in the substitution map instead.
+ * a link untouched, or in the text body drops a link target that is only the tag ("[text]"), but
+ * the template has to look the same for every recipient, so the empty value travels in the
+ * substitution map instead ("[text]()").
  */
 class TemplatePersonalizer {
   private Personalizer $personalizer;
@@ -50,7 +51,9 @@ class TemplatePersonalizer {
       return $collector->addSubjectText($value, $source);
     }
     if ($part === PlaceholderCollector::PART_TEXT) {
-      return $collector->addText($value, $source);
+      return $renderingContext === Personalizer::RENDERING_CONTEXT_HREF
+        ? $collector->addTextUrl($value, $source)
+        : $collector->addText($value, $source);
     }
     if ($renderingContext === Personalizer::RENDERING_CONTEXT_HREF) {
       return $collector->addHtmlUrl($value, $source);
