@@ -192,6 +192,7 @@ class SubscriberSaveController {
     }
 
     $this->subscribersRepository->invalidateGlobalStatusStatisticsCache();
+    $this->subscribersRepository->invalidateWithoutListStatisticsCache();
     // Leaving a list only marks the link unsubscribed, so this includes the lists just left.
     foreach ($this->subscriberSegmentRepository->findBy(['subscriber' => $subscriber]) as $subscriberSegment) {
       $segment = $subscriberSegment->getSegment();
