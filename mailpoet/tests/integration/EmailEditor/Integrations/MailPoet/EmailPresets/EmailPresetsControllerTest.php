@@ -4,6 +4,8 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet\EmailPresets;
 
 use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\EmailEditor\Engine\Email_Editor;
+use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tag;
+use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
 use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlock;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Entities\FeatureFlagEntity;
@@ -191,6 +193,26 @@ class EmailPresetsControllerTest extends \MailPoetTest {
 
     verify($rendered['html'])->stringContainsString(CouponBlock::SAFE_PLACEHOLDER);
     verify($this->getCouponIds())->equals($couponIdsBefore);
+  }
+
+  public function testItKeepsSubjectTagsInThePlainText(): void {
+    $presetId = $this->controller->create('Subject tags');
+    wp_update_post(['ID' => $presetId, 'post_content' => '<!-- wp:paragraph --><p>Order <!--[mailpoet/test-subject-tag]--></p><!-- /wp:paragraph -->']);
+    $registerTag = function (Personalization_Tags_Registry $registry): Personalization_Tags_Registry {
+      $registry->register(new Personalization_Tag('Test', 'mailpoet/test-subject-tag', 'Test', function (): string {
+        return 'sample value';
+      }));
+      return $registry;
+    };
+    add_filter('mailpoet_automation_email_extend_personalization_tags', $registerTag);
+    try {
+      $rendered = $this->controller->render($this->getPost($presetId));
+    } finally {
+      remove_filter('mailpoet_automation_email_extend_personalization_tags', $registerTag);
+    }
+
+    verify($rendered['html'])->stringContainsString('Order sample value');
+    verify($rendered['text'])->stringContainsString('Order sample value');
   }
 
   public function testItUsesAPreviewUrlThatDoesNotNeedRewriteRules(): void {
