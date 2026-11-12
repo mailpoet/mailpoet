@@ -797,7 +797,7 @@ class SubscribersListingCest {
 
     $i->click('[data-automation-id="empty_trash"]');
     $i->waitForText('1 subscriber was permanently deleted.');
-    $i->dontSee('trash-bounced@example.com');
+    $i->waitForElementNotVisible(['xpath' => '//tbody//tr[contains(., "trash-bounced@example.com")]']);
 
     $i->clearDataViewsFilters();
     $i->waitForText('trash-subscribed@example.com');
