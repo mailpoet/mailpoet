@@ -8,6 +8,7 @@ use MailPoet\AdminPages\Pages\AutomationEditor;
 use MailPoet\AdminPages\Pages\AutomationTemplates;
 use MailPoet\AdminPages\Pages\CustomFields as CustomFieldsPage;
 use MailPoet\AdminPages\Pages\DynamicSegments;
+use MailPoet\AdminPages\Pages\EmailTemplates;
 use MailPoet\AdminPages\Pages\ExperimentalFeatures;
 use MailPoet\AdminPages\Pages\FormEditor;
 use MailPoet\AdminPages\Pages\Forms;
@@ -28,6 +29,7 @@ use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceSetup;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Util\License\Features\CapabilitiesManager;
@@ -49,6 +51,7 @@ class Menu {
   const TAGS_PAGE_SLUG = 'mailpoet-tags';
   const CUSTOM_FIELDS_PAGE_SLUG = 'mailpoet-custom-fields';
   const LISTS_PAGE_SLUG = 'mailpoet-lists';
+  const EMAIL_TEMPLATES_PAGE_SLUG = 'mailpoet-email-templates';
   const SEGMENTS_PAGE_SLUG = 'mailpoet-segments';
   const SETTINGS_PAGE_SLUG = 'mailpoet-settings';
   const HELP_PAGE_SLUG = 'mailpoet-help';
@@ -381,6 +384,26 @@ class Menu {
       ]
     );
 
+    if ($this->container->get(FeaturesController::class)->isSupported(FeaturesController::FEATURE_EMAIL_PRESETS)) {
+      $emailTemplatesMenuTitle = esc_html__('Email templates', 'mailpoet');
+      // The badge has the same color as the active menu item, so it shows only on other pages.
+      // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized through WPFunctions below.
+      if (self::sanitizeRequestValue($this->wp, $_GET['page'] ?? null) !== self::EMAIL_TEMPLATES_PAGE_SLUG) {
+        $emailTemplatesMenuTitle .= ' <span class="awaiting-mod">' . esc_html__('New', 'mailpoet') . '</span>';
+      }
+      $this->wp->addSubmenuPage(
+        self::MAIN_PAGE_SLUG,
+        $this->setPageTitle(__('Email templates', 'mailpoet')),
+        $emailTemplatesMenuTitle,
+        AccessControl::PERMISSION_MANAGE_EMAILS,
+        self::EMAIL_TEMPLATES_PAGE_SLUG,
+        [
+          $this,
+          'emailTemplates',
+        ]
+      );
+    }
+
     // Segments page
     $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
@@ -584,6 +607,10 @@ class Menu {
 
   public function lists() {
     $this->container->get(StaticSegments::class)->render();
+  }
+
+  public function emailTemplates() {
+    $this->container->get(EmailTemplates::class)->render();
   }
 
   public function segments() {
