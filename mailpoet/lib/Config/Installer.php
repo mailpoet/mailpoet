@@ -29,8 +29,15 @@ class Installer {
     WPFunctions::get()->addFilter('http_request_args', [$this, 'authenticateReleaseRequests'], 10, 2);
   }
 
-  public function authenticateReleaseRequests(array $args, string $url): array {
-    if (strpos($url, 'https://release.mailpoet.com/') !== 0) {
+  /**
+   * Hooked to `http_request_args`, which any code can apply with any values.
+   *
+   * @param mixed $args
+   * @param mixed $url
+   * @return mixed
+   */
+  public function authenticateReleaseRequests($args, $url) {
+    if (!is_array($args) || !is_string($url) || strpos($url, 'https://release.mailpoet.com/') !== 0) {
       return $args;
     }
     $args['method'] = 'POST';
