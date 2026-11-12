@@ -95,10 +95,11 @@ class NewsletterDraftReader {
   }
 
   /**
-   * What decides whether two blocks are the same. Editors save attributes in another order and
-   * don't escape quotes or ">" in text, and core's kses adds a space before "/>". None of that
-   * changes the block. Alignment has several spellings in the attributes across WordPress
-   * versions, while its class stays in the HTML.
+   * What decides whether two blocks are the same. Editors save block attributes in another order,
+   * and the HTML is compared as tags and text, not as it's written: editors don't escape quotes
+   * or ">" in text, kses adds a space before "/>", and since WordPress 7.2 kses writes the
+   * attributes in another order and leaves out the "/" of tags like <img>. Alignment has several
+   * spellings in the attributes across WordPress versions, while its class stays in the HTML.
    *
    * @param array<int, array<string, mixed>> $blocks
    * @return array<int, array<string, mixed>>
@@ -116,15 +117,30 @@ class NewsletterDraftReader {
       if ($style) {
         $attributes['style'] = $style;
       }
-      $html = $this->getHtml($block);
       return [
         'name' => $block['blockName'] ?? null,
         'attributes' => $this->sortKeys($attributes),
         // Collapses runs of whitespace, which the blocks don't depend on.
-        'html' => trim((string)preg_replace('/\s+/', ' ', str_replace([' />', '&#039;', '&quot;', '&gt;'], ['/>', "'", '"', '>'], $html))),
+        'html' => $this->getHtmlTokens(trim((string)preg_replace('/\s+/', ' ', $this->getHtml($block)))),
         'blocks' => $this->comparable($this->getInnerBlocks($block)),
       ];
     }, $blocks);
+  }
+
+  /** @return array<int, mixed> */
+  private function getHtmlTokens(string $html): array {
+    $processor = new \WP_HTML_Tag_Processor($html);
+    $tokens = [];
+    while ($processor->next_token()) {
+      $attributes = [];
+      foreach ($processor->get_attribute_names_with_prefix('') ?? [] as $name) {
+        $attributes[$name] = $processor->get_attribute($name);
+      }
+      ksort($attributes);
+      $tokens[] = [$processor->get_token_type(), $processor->get_tag(), $processor->is_tag_closer(), $attributes, $processor->get_modifiable_text()];
+    }
+    // Unfinished HTML can't be read this way, so it's compared as it is.
+    return $processor->paused_at_incomplete_token() ? [$html] : $tokens;
   }
 
   /**
