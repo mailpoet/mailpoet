@@ -1,3 +1,5 @@
+import 'common/dataviews/wp-compat-overlay-slot';
+
 // Modules that are exposed for usage in the premium plugin.
 // The exports below are available via "window.MailPoetLib".
 
