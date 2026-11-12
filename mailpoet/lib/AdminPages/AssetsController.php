@@ -61,6 +61,12 @@ class AssetsController {
     $this->wp->wpEnqueueStyle('mailpoet_tags', $this->getCssUrl('mailpoet-tags.css'));
   }
 
+  public function setupEmailTemplatesDependencies(): void {
+    $this->enqueueJsEntrypoint('email_templates');
+    $this->setupDataViewsDependencies();
+    $this->wp->wpEnqueueStyle('mailpoet_email_templates', $this->getCssUrl('mailpoet-email-templates.css'));
+  }
+
   public function setupCustomFieldsDependencies(): void {
     $this->enqueueJsEntrypoint('custom_fields');
     $this->setupDataViewsDependencies();

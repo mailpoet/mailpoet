@@ -144,6 +144,7 @@ class EmailPresetsControllerTest extends \MailPoetTest {
 
   public function testItListsPresetsWithSearchSortingAndGroups(): void {
     $alpha = $this->controller->create('Alpha digest');
+    wp_update_post(['ID' => $alpha, 'post_content' => '<!-- wp:paragraph --><p>Our promo</p><!-- /wp:paragraph -->']);
     $beta = $this->controller->create('Beta promo');
     $trashed = $this->controller->create('Gone');
     $this->controller->trash($this->getPost($trashed));

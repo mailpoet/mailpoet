@@ -147,6 +147,8 @@ class EmailPresetsController {
       'post_type' => EmailPresetPostType::NAME,
       'post_status' => $isTrash ? 'trash' : EmailPresetPostType::STATUS,
       's' => $args['search'] ?? '',
+      // The content is block markup, so searching it matches every preset.
+      'search_columns' => ['post_title'],
       'orderby' => ($args['orderby'] ?? '') === 'title' ? 'title' : 'modified',
       'order' => strtolower($args['order'] ?? '') === 'asc' ? 'ASC' : 'DESC',
       'paged' => max(1, $args['page'] ?? 1),

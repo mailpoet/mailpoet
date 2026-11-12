@@ -1,0 +1,33 @@
+// Fills the DataViews media wrapper, which is a square in the grid layout.
+.mailpoet-email-template-thumbnail {
+  background: var(--wpds-color-background-surface-neutral-weak);
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+
+  iframe {
+    border: 0;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    transform-origin: top left;
+  }
+}
+
+.mailpoet-email-template-thumbnail__error {
+  color: var(--wpds-color-foreground-content-neutral-weak);
+  left: 0;
+  position: absolute;
+  text-align: center;
+  top: 45%;
+  width: 100%;
+}
+
+.mailpoet-email-templates-preview-modal iframe {
+  border: 0;
+  display: block;
+  height: 70vh;
+  width: 100%;
+}
