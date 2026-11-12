@@ -139,7 +139,8 @@ class NewsletterDraftReader {
       ksort($attributes);
       $tokens[] = [$processor->get_token_type(), $processor->get_tag(), $processor->is_tag_closer(), $attributes, $processor->get_modifiable_text()];
     }
-    // Unfinished HTML can't be read this way, so it's compared as it is.
+    // The processor stops at unfinished HTML and skips the rest, so tokens could miss content.
+    // The rebuilt markup is never unfinished, so the raw HTML never matches it.
     return $processor->paused_at_incomplete_token() ? [$html] : $tokens;
   }
 

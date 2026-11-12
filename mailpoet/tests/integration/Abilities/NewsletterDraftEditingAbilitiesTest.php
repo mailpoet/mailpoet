@@ -244,6 +244,14 @@ class NewsletterDraftEditingAbilitiesTest extends \MailPoetTest {
     verify($this->get($created['id'])['blocks'])->null();
   }
 
+  public function testUnfinishedHtmlInABlockMakesADraftNotEditable(): void {
+    $created = $this->createDraft();
+    $content = str_replace('<p>Inside</p>', '<p>Inside</p><textarea>kept text', $this->getPostContent($created['wp_post_id']));
+    $this->setContent($created['wp_post_id'], $content);
+
+    verify($this->get($created['id'])['blocks'])->null();
+  }
+
   public function testABlockWithMoreStylingThanTheFormatHoldsMakesADraftNotEditable(): void {
     $created = $this->createDraft();
     $content = str_replace(
