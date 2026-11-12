@@ -77,6 +77,9 @@ class PermanentNotices {
   /** @var DatabaseEngineNotice */
   private $databaseEngineNotice;
 
+  /** @var IISServerNotice */
+  private $iisServerNotice;
+
   /** @var SendingQueueBodyCleanupNotice */
   private $sendingQueueBodyCleanupNotice;
 
@@ -126,6 +129,7 @@ class PermanentNotices {
     $this->woocommerceVersionWarning = new WooCommerceVersionWarning($wp);
     $this->premiumFeaturesAvailableNotice = new PremiumFeaturesAvailableNotice($subscribersFeature, $serviceChecker, $wp);
     $this->databaseEngineNotice = new DatabaseEngineNotice($wp, $entityManager);
+    $this->iisServerNotice = new IISServerNotice($wp);
     $this->wordPressPlaygroundNotice = new WordPressPlaygroundNotice();
     $this->sendingQueueBodyCleanupNotice = new SendingQueueBodyCleanupNotice($settings, $wp);
     $this->stuckPostNotificationNotice = new StuckPostNotificationNotice($wp, $newslettersRepository);
@@ -193,6 +197,9 @@ class PermanentNotices {
       Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
     $this->databaseEngineNotice->init(
+      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
+    );
+    $this->iisServerNotice->init(
       Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
     $this->wordPressPlaygroundNotice->init(
@@ -289,6 +296,9 @@ class PermanentNotices {
         break;
       case (DatabaseEngineNotice::OPTION_NAME):
         $this->databaseEngineNotice->disable();
+        break;
+      case (IISServerNotice::OPTION_NAME):
+        $this->iisServerNotice->disable();
         break;
       case (PremiumFeaturesAvailableNotice::OPTION_NAME):
         $this->premiumFeaturesAvailableNotice->disable();

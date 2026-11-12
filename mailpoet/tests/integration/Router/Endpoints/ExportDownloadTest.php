@@ -163,6 +163,9 @@ class ExportDownloadTest extends \MailPoetTest {
 
     $this->assertFileExists($exportDirectory . '/index.php');
     $this->assertStringContainsString('Require all denied', (string)file_get_contents($exportDirectory . '/.htaccess'));
+    $webConfig = (string)file_get_contents($exportDirectory . '/web.config');
+    $this->assertStringContainsString('<fileExtensions allowUnlisted="false">', $webConfig);
+    $this->assertStringContainsString('<clear />', $webConfig);
   }
 
   public function testItSkipsServerFilesWhenExportDirectoryIsOnRemoteStorage() {
@@ -205,6 +208,7 @@ class ExportDownloadTest extends \MailPoetTest {
     verify(is_dir(ExportDownload::getExportDirectory()))->true();
     $this->assertFileNotExists(ExportDownload::getExportDirectory() . '/index.php');
     $this->assertFileNotExists(ExportDownload::getExportDirectory() . '/.htaccess');
+    $this->assertFileNotExists(ExportDownload::getExportDirectory() . '/web.config');
   }
 
   public function testItAllowsValidExportFilesOnRemoteStorage() {

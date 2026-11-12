@@ -26,7 +26,7 @@ class ActivatorExportDirectoryTest extends \MailPoetTest {
   public function _after() {
     $exportDirectory = ExportDownload::getExportDirectory();
     if (is_dir($exportDirectory)) {
-      foreach (['index.php', '.htaccess'] as $file) {
+      foreach (['index.php', '.htaccess', 'web.config'] as $file) {
         if (is_file($exportDirectory . '/' . $file)) {
           unlink($exportDirectory . '/' . $file);
         }
