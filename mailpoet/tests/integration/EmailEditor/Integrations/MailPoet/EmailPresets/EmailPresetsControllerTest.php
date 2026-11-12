@@ -185,11 +185,12 @@ class EmailPresetsControllerTest extends \MailPoetTest {
     $presetId = $this->controller->create('Coupon');
     $content = '<!-- wp:woocommerce/coupon-code {"source":"createNew"} --><div class="wp-block-woocommerce-coupon-code"><strong>' . CouponBlock::SAFE_PLACEHOLDER . '</strong></div><!-- /wp:woocommerce/coupon-code -->';
     wp_update_post(['ID' => $presetId, 'post_content' => wp_slash($content)]);
+    $couponIdsBefore = $this->getCouponIds();
 
     $rendered = $this->controller->render($this->getPost($presetId));
 
     verify($rendered['html'])->stringContainsString(CouponBlock::SAFE_PLACEHOLDER);
-    verify(get_posts(['post_type' => 'shop_coupon', 'post_status' => 'any', 'numberposts' => -1]))->empty();
+    verify($this->getCouponIds())->equals($couponIdsBefore);
   }
 
   public function testItOffersTheTagsOfAllSubjectsForAPreset(): void {
@@ -230,6 +231,10 @@ class EmailPresetsControllerTest extends \MailPoetTest {
       verify($sampleContext)->arrayHasKey('order');
       verify($sampleContext)->arrayHasKey('customer');
     }
+  }
+
+  private function getCouponIds(): array {
+    return get_posts(['post_type' => 'shop_coupon', 'post_status' => 'any', 'numberposts' => -1, 'fields' => 'ids']);
   }
 
   private function getPost(int $postId): \WP_Post {
