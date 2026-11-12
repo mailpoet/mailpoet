@@ -50,7 +50,8 @@ class EmailPresetPostType {
           'name' => __('Email presets', 'mailpoet'),
           'singular_name' => __('Email preset', 'mailpoet'),
         ],
-        'rewrite' => ['slug' => self::NAME],
+        // A query-string preview URL works without flushing the rewrite rules when the flag is turned on.
+        'rewrite' => false,
         'map_meta_cap' => true,
         'capabilities' => $capabilities,
       ],

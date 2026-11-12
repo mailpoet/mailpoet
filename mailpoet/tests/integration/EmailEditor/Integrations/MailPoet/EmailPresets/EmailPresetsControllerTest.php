@@ -193,6 +193,12 @@ class EmailPresetsControllerTest extends \MailPoetTest {
     verify($this->getCouponIds())->equals($couponIdsBefore);
   }
 
+  public function testItUsesAPreviewUrlThatDoesNotNeedRewriteRules(): void {
+    $presetId = $this->controller->create('Preview URL');
+
+    verify((string)get_permalink($presetId))->stringContainsString('?' . EmailPresetPostType::NAME . '=');
+  }
+
   public function testItOffersTheTagsOfAllSubjectsForAPreset(): void {
     $presetId = $this->controller->create('Preset');
     $subjects = null;
