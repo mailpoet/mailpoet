@@ -474,9 +474,11 @@ class SubscribersListingCest {
       'bulk-resend-confirmation-checkbox-input',
       $i->executeJS('return document.activeElement.id;')
     );
-    $i->waitForElement('div[role="dialog"][aria-labelledby]');
-    $i->seeElement('div[role="dialog"] button[aria-label="Close"]');
-    $modalTitleId = $i->grabAttributeFrom('div[role="dialog"]', 'aria-labelledby');
+    // On WP 7.0 the @wordpress/ui overlay slot is a dialog too, so match the modal itself.
+    $modal = '.components-modal__frame[role="dialog"]';
+    $i->waitForElement($modal . '[aria-labelledby]');
+    $i->seeElement($modal . ' button[aria-label="Close"]');
+    $modalTitleId = $i->grabAttributeFrom($modal, 'aria-labelledby');
     Assert::assertSame(
       'Resend confirmation emails',
       $i->executeJS(
@@ -490,7 +492,7 @@ class SubscribersListingCest {
     $i->seeElement("[data-automation-id='bulk-resend-confirmation-confirm']:disabled");
 
     $i->pressKey('#bulk-resend-confirmation-checkbox-input', WebDriverKeys::ESCAPE);
-    $i->waitForElementNotVisible('div[role="dialog"]');
+    $i->waitForElementNotVisible($modal);
     $focusedText = $i->executeJS('return document.activeElement.textContent;');
     Assert::assertSame(
       'Resend confirmation emails',
