@@ -75,11 +75,14 @@ class SubscribersListingEndpoint extends AbstractListingEndpoint {
     // Mirror the legacy endpoint: when filtering by a specific segment, surface
     // the per-segment unsubscribe status as the visible status so the UI shows
     // "unsubscribed from this list" rather than the global subscriber status.
+    // The date they left the list stands in when they have no global one.
     $segmentFilter = $this->subscriberListingRepository->getSingleListFilter($definition);
     if ($segmentFilter !== null) {
       foreach ($subscribers as $key => $subscriber) {
-        if ($this->isUnsubscribedFromSegment($subscriber, $segmentFilter)) {
+        $subscription = $this->getUnsubscribedSubscription($subscriber, $segmentFilter);
+        if ($subscription !== null) {
           $subscribers[$key]['status'] = SubscriberEntity::STATUS_UNSUBSCRIBED;
+          $subscribers[$key]['unsubscribed_at'] = $subscriber['unsubscribed_at'] ?? $subscription['updated_at'] ?? null;
         }
       }
     }
@@ -116,19 +119,22 @@ class SubscribersListingEndpoint extends AbstractListingEndpoint {
   }
 
   /**
+   * The subscriber's subscription to the list, when they are unsubscribed from it.
+   *
    * @param array<string, mixed> $subscriber
+   * @return array<mixed>|null
    */
-  private function isUnsubscribedFromSegment(array $subscriber, string $segmentId): bool {
+  private function getUnsubscribedSubscription(array $subscriber, string $segmentId): ?array {
     if (!isset($subscriber['subscriptions']) || !is_array($subscriber['subscriptions'])) {
-      return false;
+      return null;
     }
     foreach ($subscriber['subscriptions'] as $segment) {
       if (!is_array($segment)) continue;
       if (!isset($segment['segment_id']) || !is_scalar($segment['segment_id'])) continue;
       if ((string)$segment['segment_id'] !== $segmentId) continue;
       $status = $segment['status'] ?? null;
-      return is_scalar($status) && (string)$status === SubscriberEntity::STATUS_UNSUBSCRIBED;
+      return is_scalar($status) && (string)$status === SubscriberEntity::STATUS_UNSUBSCRIBED ? $segment : null;
     }
-    return false;
+    return null;
   }
 }
