@@ -2,7 +2,7 @@
 # file for every oldest-version run: Free's nightly tests, and Premium's nightly
 # runs of Free's tests with Premium active. .github/workflows/scripts/ updates the
 # plugin and WordPress versions in it.
-woo_core_version: 11.1.2
+woo_core_version: 11.2.2
 woo_subscriptions_version: 9.3.0
 woo_memberships_version: 1.29.2
 automate_woo_version: 6.8.3
