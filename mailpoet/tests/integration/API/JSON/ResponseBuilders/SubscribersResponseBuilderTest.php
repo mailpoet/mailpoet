@@ -166,6 +166,49 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
     }
   }
 
+  public function testItBuildsUnsubscribedDateForListing(): void {
+    $unsubscribed = (new SubscriberFactory())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withLastSubscribedAt(new \DateTimeImmutable('2026-01-01 10:00:00'))
+      ->create();
+    $this->createUnsubscribe($unsubscribed, '2026-02-01 10:00:00');
+    $this->createUnsubscribe($unsubscribed, '2026-03-01 11:30:00');
+    $this->createUnsubscribe($unsubscribed, '2026-02-15 10:00:00');
+
+    // Signed up again after unsubscribing and has not confirmed yet.
+    $signedUpAgain = (new SubscriberFactory())
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withLastSubscribedAt(new \DateTimeImmutable('2026-01-01 10:00:00'))
+      ->create();
+    $this->createUnsubscribe($signedUpAgain, '2026-03-01 10:00:00');
+
+    // For example imported as unsubscribed.
+    $withoutRecord = (new SubscriberFactory())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+
+    // Subscribed again and then unsubscribed in a way that leaves no record.
+    $withOldRecord = (new SubscriberFactory())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withLastSubscribedAt(new \DateTimeImmutable('2026-04-01 10:00:00'))
+      ->create();
+    $this->createUnsubscribe($withOldRecord, '2026-03-01 10:00:00');
+
+    $response = $this->responseBuilder->buildForListing([$unsubscribed, $signedUpAgain, $withoutRecord, $withOldRecord]);
+
+    $this->assertSame('2026-03-01 11:30:00', $response[0]['unsubscribed_at'], 'latest unsubscribe');
+    $this->assertNull($response[1]['unsubscribed_at'], 'no longer unsubscribed');
+    $this->assertNull($response[2]['unsubscribed_at'], 'no unsubscribe record');
+    $this->assertNull($response[3]['unsubscribed_at'], 'record older than the last subscription');
+  }
+
+  private function createUnsubscribe(SubscriberEntity $subscriber, string $createdAt): void {
+    $unsubscribe = new StatisticsUnsubscribeEntity(null, null, $subscriber);
+    $unsubscribe->setCreatedAt(new \DateTimeImmutable($createdAt));
+    $this->entityManager->persist($unsubscribe);
+    $this->entityManager->flush();
+  }
+
   private function checkSubscription(array $responseItem, SubscriberEntity $subscriber): void {
     $this->assertCount(1, $responseItem['subscriptions']);
     $subscription = reset($responseItem['subscriptions']);

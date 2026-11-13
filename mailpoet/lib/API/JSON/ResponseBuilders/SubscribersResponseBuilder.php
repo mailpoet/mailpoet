@@ -54,17 +54,43 @@ class SubscribersResponseBuilder {
   public function buildForListing(array $subscribers): array {
     $this->prefetchRelations($subscribers);
     $engagementScoreTypes = $this->subscriberStatisticsRepository->getEngagementScoreTypes($subscribers);
+    $unsubscribedDates = $this->getUnsubscribedDates($subscribers);
     $data = [];
     foreach ($subscribers as $subscriber) {
       $data[] = $this->buildListingItem(
         $subscriber,
-        $engagementScoreTypes[(int)$subscriber->getId()] ?? SubscriberStatisticsRepository::ENGAGEMENT_SCORE_UNKNOWN
+        $engagementScoreTypes[(int)$subscriber->getId()] ?? SubscriberStatisticsRepository::ENGAGEMENT_SCORE_UNKNOWN,
+        $unsubscribedDates[(int)$subscriber->getId()] ?? null
       );
     }
     return $data;
   }
 
-  private function buildListingItem(SubscriberEntity $subscriber, string $engagementScoreType): array {
+  /**
+   * When each unsubscribed subscriber last unsubscribed, for those with a record of it.
+   *
+   * @param SubscriberEntity[] $subscribers
+   * @return array<int, string> Dates keyed by subscriber id.
+   */
+  private function getUnsubscribedDates(array $subscribers): array {
+    $unsubscribed = [];
+    foreach ($subscribers as $subscriber) {
+      if ($subscriber->getStatus() === SubscriberEntity::STATUS_UNSUBSCRIBED) {
+        $unsubscribed[(int)$subscriber->getId()] = $subscriber;
+      }
+    }
+    $dates = [];
+    foreach ($this->statisticsUnsubscribesRepository->getLatestDatesBySubscriberIds(array_keys($unsubscribed)) as $subscriberId => $date) {
+      $lastSubscribedAt = $unsubscribed[$subscriberId]->getLastSubscribedAt();
+      // A record from before the last subscription belongs to an earlier unsubscribe.
+      if (!$lastSubscribedAt || $date >= $lastSubscribedAt->format(self::DATE_FORMAT)) {
+        $dates[$subscriberId] = $date;
+      }
+    }
+    return $dates;
+  }
+
+  private function buildListingItem(SubscriberEntity $subscriber, string $engagementScoreType, ?string $unsubscribedAt): array {
     return [
       'id' => (string)$subscriber->getId(), // (string) for BC
       'email' => $subscriber->getEmail(),
@@ -79,6 +105,7 @@ class SubscribersResponseBuilder {
       'created_at' => ($createdAt = $subscriber->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
       'deleted_at' => ($deletedAt = $subscriber->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
       'last_subscribed_at' => ($lastSubscribedAt = $subscriber->getLastSubscribedAt()) ? $lastSubscribedAt->format(self::DATE_FORMAT) : null,
+      'unsubscribed_at' => $unsubscribedAt,
       'engagement_score' => $subscriber->getEngagementScore(),
       'engagement_score_type' => $engagementScoreType,
       'tags' => $this->buildTags($subscriber),

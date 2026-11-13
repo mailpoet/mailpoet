@@ -162,6 +162,35 @@ class StatisticsUnsubscribesRepository extends Repository {
     return $result instanceof StatisticsUnsubscribeEntity ? $result : null;
   }
 
+  /**
+   * The date of the latest unsubscribe of each subscriber that has one.
+   *
+   * @param int[] $subscriberIds
+   * @return array<int, string> Dates as Y-m-d H:i:s, keyed by subscriber id.
+   */
+  public function getLatestDatesBySubscriberIds(array $subscriberIds): array {
+    if ($subscriberIds === []) {
+      return [];
+    }
+    $statisticsTable = $this->getTableName();
+    $rows = $this->entityManager->getConnection()->executeQuery(
+      "SELECT subscriber_id, MAX(created_at) AS latest_date
+       FROM $statisticsTable
+       WHERE subscriber_id IN (:ids)
+       GROUP BY subscriber_id",
+      ['ids' => $subscriberIds],
+      ['ids' => ArrayParameterType::INTEGER]
+    )->fetchAllAssociative();
+
+    $dates = [];
+    foreach ($rows as $row) {
+      if (is_numeric($row['subscriber_id']) && is_string($row['latest_date'])) {
+        $dates[(int)$row['subscriber_id']] = $row['latest_date'];
+      }
+    }
+    return $dates;
+  }
+
   public function getReasonCountsForNewsletter(NewsletterEntity $newsletter): array {
     $reasonCounts = $this->entityManager->createQueryBuilder()
       ->select('stats.reason as reason, count(stats.id) as count')
