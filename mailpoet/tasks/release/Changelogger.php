@@ -4,7 +4,8 @@ namespace MailPoetTasks\Release;
 
 class Changelogger {
   const CHANGELOG_DIR = __DIR__ . '/../../changelog/';
-  const VALID_TYPES = ['Added', 'Updated', 'Improved', 'Changed', 'Fixed', 'Removed'];
+  const DEV_TYPE = 'Dev';
+  const VALID_TYPES = ['Added', 'Updated', 'Improved', 'Changed', 'Fixed', 'Removed', self::DEV_TYPE];
 
   /** @var string */
   private $changelogDir;
@@ -16,10 +17,13 @@ class Changelogger {
   }
 
   /**
-   * Compiles all changelog entries into a single changelog string
+   * Compiles all changelog entries into a single changelog string.
+   * Dev entries are left out: customers never see those changes.
    */
   public function compileChangelog(string $version): string {
-    $entries = $this->getChangelogEntries();
+    $entries = array_filter($this->getChangelogEntries(), function (array $entry): bool {
+      return $entry['type'] !== self::DEV_TYPE;
+    });
     if (empty($entries)) {
       return $this->getFallbackChangelog($version);
     }
@@ -166,7 +170,7 @@ class Changelogger {
    */
   public function createChangelogEntry(string $type, string $description): string {
     if (!in_array($type, self::VALID_TYPES)) {
-      throw new \Exception("Invalid changelog type: $type");
+      throw new \Exception("Invalid changelog type: $type. Valid types: " . implode(', ', self::VALID_TYPES));
     }
 
     $description = $this->removeTrailingPunctuation($description);

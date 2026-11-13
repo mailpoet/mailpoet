@@ -41,6 +41,41 @@ class ChangeloggerTest extends \MailPoetUnitTest {
     );
   }
 
+  public function testItLeavesDevEntriesOutOfTheCompiledChangelog() {
+    $changelogger = new Changelogger($this->tempDir);
+    $changelogger->createChangelogEntry('Dev', 'Faster lint job in CI');
+    $changelogger->createChangelogEntry('Fixed', 'Broken unsubscribe link');
+
+    verify($changelogger->compileChangelog('1.2.3'))->equals(
+      "= 1.2.3 - " . date('Y-m-d') . " =\n" .
+      "* Fixed: Broken unsubscribe link."
+    );
+  }
+
+  public function testItUsesTheFallbackChangelogWhenAllEntriesAreDev() {
+    $changelogger = new Changelogger($this->tempDir);
+    $changelogger->createChangelogEntry('Dev', 'Faster lint job in CI');
+
+    verify($changelogger->compileChangelog('1.2.3'))->equals(
+      "= 1.2.3 - " . date('Y-m-d') . " =\n" .
+      "* Improved: minor changes and fixes."
+    );
+  }
+
+  public function testItNamesTheValidTypesWhenTheTypeIsUnknown() {
+    $changelogger = new Changelogger($this->tempDir);
+
+    try {
+      $changelogger->createChangelogEntry('dev', 'Faster lint job in CI');
+      $this->fail('An unknown type was accepted');
+    } catch (\Exception $e) {
+      verify($e->getMessage())->equals(
+        'Invalid changelog type: dev. Valid types: Added, Updated, Improved, Changed, Fixed, Removed, Dev'
+      );
+    }
+    verify(glob($this->tempDir . '*.md'))->equals([]);
+  }
+
   private function createChangelogEntry(string $filename, string $type, string $description): void {
     file_put_contents(
       $this->tempDir . $filename,

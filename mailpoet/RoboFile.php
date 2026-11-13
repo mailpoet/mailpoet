@@ -1262,7 +1262,7 @@ class RoboFile extends \Robo\Tasks {
 
     if (empty($type)) {
       $this->say('Please specify a type with --type=<type>');
-      $this->say('Valid types: Added, Improved, Fixed, Changed, Updated, Removed');
+      $this->say('Valid types: ' . implode(', ', \MailPoetTasks\Release\Changelogger::VALID_TYPES));
       exit(1);
     }
 
