@@ -45,6 +45,7 @@ class ActivatorExportDirectoryTest extends \MailPoetTest {
 
     verify(is_file(ExportDownload::getExportDirectory() . '/index.php'))->true();
     verify(is_file(ExportDownload::getExportDirectory() . '/.htaccess'))->true();
+    verify(is_file(ExportDownload::getExportDirectory() . '/web.config'))->true();
   }
 
   public function testActivationCompletesWhenExportDirectoryCannotBePrepared() {
