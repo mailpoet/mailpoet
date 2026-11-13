@@ -163,34 +163,29 @@ class StatisticsUnsubscribesRepository extends Repository {
   }
 
   /**
-   * When each subscriber first unsubscribed since they last subscribed, for those
-   * with a record of it. A later record does not move the date: an automation can
-   * record an unsubscribe for someone who is already unsubscribed.
+   * The date of the latest unsubscribe of each subscriber that has one.
    *
    * @param int[] $subscriberIds
    * @return array<int, string> Dates as Y-m-d H:i:s, keyed by subscriber id.
    */
-  public function getDatesSinceLastSubscription(array $subscriberIds): array {
+  public function getLatestDatesBySubscriberIds(array $subscriberIds): array {
     if ($subscriberIds === []) {
       return [];
     }
     $statisticsTable = $this->getTableName();
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $rows = $this->entityManager->getConnection()->executeQuery(
-      "SELECT stats.subscriber_id, MIN(stats.created_at) AS unsubscribed_at
-       FROM $statisticsTable stats
-       JOIN $subscribersTable s ON s.id = stats.subscriber_id
-       WHERE stats.subscriber_id IN (:ids)
-         AND (s.last_subscribed_at IS NULL OR stats.created_at >= s.last_subscribed_at)
-       GROUP BY stats.subscriber_id",
+      "SELECT subscriber_id, MAX(created_at) AS latest_date
+       FROM $statisticsTable
+       WHERE subscriber_id IN (:ids)
+       GROUP BY subscriber_id",
       ['ids' => $subscriberIds],
       ['ids' => ArrayParameterType::INTEGER]
     )->fetchAllAssociative();
 
     $dates = [];
     foreach ($rows as $row) {
-      if (is_numeric($row['subscriber_id']) && is_string($row['unsubscribed_at'])) {
-        $dates[(int)$row['subscriber_id']] = $row['unsubscribed_at'];
+      if (is_numeric($row['subscriber_id']) && is_string($row['latest_date'])) {
+        $dates[(int)$row['subscriber_id']] = $row['latest_date'];
       }
     }
     return $dates;
