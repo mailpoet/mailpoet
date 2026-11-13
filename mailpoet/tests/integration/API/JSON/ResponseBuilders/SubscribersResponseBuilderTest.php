@@ -176,6 +176,11 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
     $this->createUnsubscribe($unsubscribed, '2026-03-01 11:30:00');
     $this->createUnsubscribe($unsubscribed, '2026-02-01 10:00:00');
 
+    $neverSubscribed = (new SubscriberFactory())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $this->createUnsubscribe($neverSubscribed, '2026-05-05 09:00:00');
+
     // Signed up again after unsubscribing and has not confirmed yet.
     $signedUpAgain = (new SubscriberFactory())
       ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
@@ -195,12 +200,13 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
       ->create();
     $this->createUnsubscribe($withOldRecord, '2026-03-01 10:00:00');
 
-    $response = $this->responseBuilder->buildForListing([$unsubscribed, $signedUpAgain, $withoutRecord, $withOldRecord]);
+    $response = $this->responseBuilder->buildForListing([$unsubscribed, $neverSubscribed, $signedUpAgain, $withoutRecord, $withOldRecord]);
 
     $this->assertSame('2026-02-01 10:00:00', $response[0]['unsubscribed_at'], 'first unsubscribe since the last subscription');
-    $this->assertNull($response[1]['unsubscribed_at'], 'no longer unsubscribed');
-    $this->assertNull($response[2]['unsubscribed_at'], 'no unsubscribe record');
-    $this->assertNull($response[3]['unsubscribed_at'], 'record older than the last subscription');
+    $this->assertSame('2026-05-05 09:00:00', $response[1]['unsubscribed_at'], 'second subscriber with a date');
+    $this->assertNull($response[2]['unsubscribed_at'], 'no longer unsubscribed');
+    $this->assertNull($response[3]['unsubscribed_at'], 'no unsubscribe record');
+    $this->assertNull($response[4]['unsubscribed_at'], 'record older than the last subscription');
   }
 
   private function createUnsubscribe(SubscriberEntity $subscriber, string $createdAt): void {
