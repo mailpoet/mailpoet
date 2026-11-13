@@ -108,5 +108,5 @@ Once the targeted suite is green locally and you’ve verified both directions, 
 - [[running-tests]] — exact repro commands per suite, premium variants, debug/multisite modes.
 - [[starting-branch]] — used when the failure originated on `trunk`.
 - [[creating-pull-requests]] — draft PR after the fix.
-- [[writing-changelog]] — when the fix is user-facing.
+- [[writing-changelog]] — a user-facing entry when the fix changes what customers see, a `Dev` entry when it only touches tests or CI.
 - [[beta-compat-test]] — broader beta/RC compatibility testing.

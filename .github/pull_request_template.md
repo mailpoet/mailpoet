@@ -29,6 +29,6 @@ _N/A_
 ### Tasks
 
 - [ ] I added or updated tests where needed
-- [ ] I have added a changelog entry (`pnpm changelog:add --type=<type> --description=<description>`)
+- [ ] I have added a changelog entry (`pnpm changelog:add --type=<type> --description=<description>`; use `--type=Dev` for development-only changes, which the release notes leave out)
 - [ ] I followed [best practices](https://codex.wordpress.org/I18n_for_WordPress_Developers) for translations
 - [ ] I embraced TypeScript by either creating new files in TypeScript or converting existing JavaScript files when making changes

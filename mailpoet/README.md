@@ -210,6 +210,8 @@ Create changelog entries using:
 pnpm changelog:add --type=Fixed --description="Brief description of the change"
 ```
 
+Use `--type=Dev` for development-only changes that customers won’t notice (CI, linting, tests, dev dependencies). The release notes leave `Dev` entries out.
+
 See [CHANGELOG.md](CHANGELOG.md) for detailed documentation.
 
 ### i18n

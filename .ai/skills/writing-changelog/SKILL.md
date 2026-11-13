@@ -1,13 +1,13 @@
 ---
 name: writing-changelog
-description: 'Use when adding a changelog entry for a branch, after finishing a user-facing feature, fix or improvement. Triggers on "add a changelog", "write the changelog entry".'
+description: 'Use when adding a changelog entry for a branch, after finishing a user-facing feature, fix or improvement, or a development-only change. Triggers on "add a changelog", "write the changelog entry".'
 ---
 
 # Writing Changelog Entries
 
 ## Overview
 
-User-facing changes MUST have a changelog entry. Each entry is a small Markdown file created by the `pnpm changelog:add` command for free-plugin changes. Follow the steps below in order.
+User-facing changes MUST have a changelog entry. Development-only changes get a `Dev` entry, which the release leaves out of the release notes. Each entry is a small Markdown file created by the `pnpm changelog:add` command for free-plugin changes. Follow the steps below in order.
 
 ## Workflow
 
@@ -16,6 +16,8 @@ User-facing changes MUST have a changelog entry. Each entry is a small Markdown 
 Compare the current branch against the base branch to understand what changed.
 
 Read the relevant code changes to understand the user-facing impact.
+
+If customers won’t notice any of it, the branch is development-only: go to [Development-only changes](#development-only-changes).
 
 ### Step 2: Categorize and Describe
 
@@ -51,19 +53,26 @@ Run the command from the repo root for free-plugin changes:
 pnpm changelog:add --type=<type> --description="<description>"
 ```
 
-### When to Skip
+### Development-only changes
 
-Most branches need a changelog. Skip only when changes are:
+Don’t skip the entry, and don’t write a user-facing one. A branch gets the `Dev` type when it only has:
 
 - Test-only changes
-- CI/build configuration changes
+- CI, build, linting or release tooling changes
+- Dev dependency updates
 - Documentation-only changes
 
-When in doubt, add a changelog entry.
+```bash
+pnpm changelog:add --type=Dev --description="Faster lint job in CI"
+```
+
+The release leaves `Dev` entries out of the release notes, so write the description for developers.
+
+Use `Dev` only when nothing in the branch is user-facing. A dependency that ships in the plugin is `Updated`, not `Dev`. When in doubt, use a user-facing type.
 
 ## Premium
 
-Premium changes get their changelog file in the premium repo. The root has no wrapper for it, so run the premium script from its directory:
+Premium changes get their changelog file in the premium repo, with the same types. The root has no wrapper for it, so run the premium script from its directory:
 
 ```bash
 cd mailpoet-premium && pnpm changelog:add --type=<type> --description="<description>"
