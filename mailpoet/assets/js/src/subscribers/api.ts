@@ -51,6 +51,7 @@ export type Subscriber = {
   created_at: string | null;
   deleted_at: string | null;
   last_subscribed_at: string | null;
+  unsubscribed_at: string | null;
   source?: string | null;
   subscriptions: Array<{
     id: number;
