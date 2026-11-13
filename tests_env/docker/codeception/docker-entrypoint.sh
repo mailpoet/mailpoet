@@ -275,6 +275,15 @@ cat > /wp-core/wp-content/mu-plugins/mailpoet-test-login-language-dropdown.php <
 add_filter('login_display_language_dropdown', '__return_false');
 PHP
 
+# Since 6.9.6, AutomateWoo opts guests and new accounts in from the checkout only after
+# they confirm the opt-in from its own email. The tests check that MailPoet's checkout
+# opt-in reaches AutomateWoo, so the test site opts them in right away, as before 6.9.6.
+# Remove this once MailPoet handles AutomateWoo's confirmation.
+cat > /wp-core/wp-content/mu-plugins/mailpoet-test-automatewoo-optin.php <<'PHP'
+<?php
+add_filter('automatewoo/communication_signup/require_optin_confirmation', '__return_false');
+PHP
+
 # Set constants in wp-config.php
 wp config set WP_DEBUG true --raw
 wp config set WP_DEBUG_DISPLAY true --raw
