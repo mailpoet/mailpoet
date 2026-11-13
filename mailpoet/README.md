@@ -136,9 +136,9 @@ $ ./do delete:docker      # stop and remove all running docker containers.
 $ ./do qa:lint             # PHP syntax linter only.
 $ ./do qa:code-sniffer     # PHPCS only.
 $ ./do qa:fix-file <path>  # Auto-fix one PHP or JS/TS file.
-$ ./do release:changelog-get [--version-name=...] # Prints changelog and release notes.
-$ ./do release:changelog-update [--version-name=...] [--quiet] # Updates changelog in readme.txt.
-$ ./do changelog:preview [--version=<version>] # Preview compiled changelog for next version.
+$ ./do release:changelog-get <version> # Prints changelog and release notes.
+$ ./do release:changelog-write <version> # Updates changelog in readme.txt and changelog.txt, and deletes the compiled entries.
+$ ./do changelog:preview [<version>] # Preview compiled changelog for next version.
 $ ./do container:dump      # Generates DI container cache.
 ```
 
@@ -210,7 +210,7 @@ Create changelog entries using:
 pnpm changelog:add --type=Fixed --description="Brief description of the change"
 ```
 
-See [readme](changelog/README.md) for detailed documentation.
+See [CHANGELOG.md](CHANGELOG.md) for detailed documentation.
 
 ### i18n
 
