@@ -267,6 +267,16 @@ export function getSubscriberFields(
       render: ({ item }) => <span>{dateTime(item.last_subscribed_at)}</span>,
     },
     {
+      id: 'unsubscribed_at',
+      label: __('Unsubscribed on', 'mailpoet'),
+      type: 'date',
+      // The server reads this from the unsubscribe records, so it can't sort or filter by it.
+      enableSorting: false,
+      enableGlobalSearch: false,
+      filterBy: false,
+      render: ({ item }) => <span>{dateTime(item.unsubscribed_at)}</span>,
+    },
+    {
       id: 'created_at',
       label: __('Created on', 'mailpoet'),
       type: 'date',

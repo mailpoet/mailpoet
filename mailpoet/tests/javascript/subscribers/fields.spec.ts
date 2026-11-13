@@ -166,6 +166,12 @@ describe('subscribers fields', () => {
     });
   });
 
+  it('offers no sorting or filtering on the unsubscribed date, which the server does not support', () => {
+    const { unsubscribed_at: unsubscribedAt } = byId(true);
+    expect(unsubscribedAt.enableSorting).to.equal(false);
+    expect(unsubscribedAt.filterBy).to.equal(false);
+  });
+
   it('registers the score field only when tracking is enabled', () => {
     const on = byId(true);
     expect(on.statistics.type).to.equal('integer');
