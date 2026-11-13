@@ -106,6 +106,8 @@ class BulkActionController {
 
     $ids = $this->subscriberListingRepository->getActionableIds($definition);
     $count = $this->dispatch($action, $ids, $segment, $tag, $skipHooks);
+    // Tag actions too: a dynamic list can be defined by a tag.
+    $this->invalidateViewedListStatisticsCache($definition);
 
     $result = ['count' => $count];
     if ($action === self::ACTION_DELETE) {
@@ -120,6 +122,17 @@ class BulkActionController {
       $result['tag'] = ['id' => (int)$tag->getId(), 'name' => (string)$tag->getName()];
     }
     return $result;
+  }
+
+  /**
+   * The item count of a single-list view comes from that list's cached statistics.
+   * The repository only knows the lists a write targets, not the one being viewed.
+   */
+  private function invalidateViewedListStatisticsCache(ListingDefinition $definition): void {
+    $listId = $this->subscriberListingRepository->getSingleListFilter($definition);
+    if ($listId !== null && ctype_digit($listId)) {
+      $this->subscribersRepository->invalidateSegmentStatisticsCache((int)$listId);
+    }
   }
 
   /**

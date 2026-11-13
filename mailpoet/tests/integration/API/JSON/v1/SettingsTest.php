@@ -14,6 +14,7 @@ use MailPoet\Cron\Workers\InactiveSubscribersMaintenance;
 use MailPoet\Cron\Workers\UnconfirmedSubscribersCleanup;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\FormMessageController;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
@@ -34,6 +35,8 @@ use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\Subscribers\SubscribersCountsController;
 use MailPoet\Test\DataFactories\Settings as SettingsFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -583,6 +586,19 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(ConfirmationEmailCustomizer::class),
       $this->diContainer->get(SendingEnvironment::class)
     );
+  }
+
+  public function testRecalculatingSubscribersCountsCacheRebuildsTheGlobalStatusCounts() {
+    $counts = $this->getServiceWithOverrides(SubscribersCountsController::class, [
+      'subscribersFeature' => $this->make(SubscribersFeature::class, ['isSubscribersCountEnoughForCache' => true]),
+    ]);
+    $counts->recalculateGlobalStatusStatisticsCache();
+    (new SubscriberFactory())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $endpoint = $this->getServiceWithOverrides(Settings::class, ['subscribersCountsController' => $counts]);
+
+    $endpoint->recalculateSubscribersCountsCache();
+
+    verify($counts->getGlobalStatusStatisticsCount()['all'])->equals(1);
   }
 
   private function createNewsletter(string $type, string $status = NewsletterEntity::STATUS_DRAFT, $parent = null): NewsletterEntity {
