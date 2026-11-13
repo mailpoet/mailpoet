@@ -94,7 +94,7 @@ Verify through the real flow when you can, letting WP-Cron or Action Scheduler p
 
 ## Git and pull requests
 
-Branch from `trunk`; never commit to it. Start branches with the `starting-branch` skill. Open PRs with the `creating-pull-requests` skill; never run `gh pr create` directly. PRs follow `.github/pull_request_template.md`; write `_N/A_` in sections that don’t apply. User-facing changes need a changelog file: `pnpm changelog:add --type=<type> --description=<description>` (see `writing-changelog`).
+Branch from `trunk`; never commit to it. Start branches with the `starting-branch` skill. Open PRs with the `creating-pull-requests` skill; never run `gh pr create` directly. PRs follow `.github/pull_request_template.md`; write `_N/A_` in sections that don’t apply. User-facing changes need a changelog file: `pnpm changelog:add --type=<type> --description=<description>` (see `writing-changelog`). Development-only changes (CI, linting, tests, dev dependencies, docs) get one with `--type=Dev`, which the release notes leave out.
 
 - Commit subject: imperative, max 50 characters, no trailing period. Body lines max 72 characters. Include the Linear issue ID.
 - Open PRs as drafts.
@@ -110,7 +110,7 @@ Skills live in `.ai/skills/` (`.claude/skills` links there). Claude Code loads t
 - `writing-tests` – pick the suite, then place and structure a new test.
 - `debugging-failed-tests` – investigate a failing GitHub Actions job or a local run.
 - `reviewing-code` – review a PR or local changes against these rules.
-- `writing-changelog` – write the changelog file for a user-facing change.
+- `writing-changelog` – write the changelog file for a user-facing or development-only change.
 - `beta-compat-test` – test the released plugin against a WordPress or WooCommerce beta/RC.
 - `sql-performance` – keep queries fast on large subscriber and stats tables.
 - `sql-collation-safety` – avoid collation errors in cross-table text comparisons.

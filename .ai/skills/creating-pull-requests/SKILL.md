@@ -17,7 +17,7 @@ Always create pull requests as **drafts** and follow the repository’s PR templ
 
 1. **Read the PR template first** refer .github/pull_request_template.md
 2. **Gather context**
-3. **Check for changelog** — if the branch has user-facing changes and no changelog entry exists yet, use the `writing-changelog` skill to create one before proceeding
+3. **Check for changelog** — if no changelog entry exists yet, use the `writing-changelog` skill to create one before proceeding: a user-facing type for changes customers notice, `Dev` for development-only changes
 4. **Run QA before pushing** — CI will fail the PR otherwise. Always run, even when only TS/JS files changed:
 
    ```bash
@@ -71,6 +71,7 @@ If every bullet could be derived by reading the code, use `_N/A_` instead.
 | Skipping template read             | ALWAYS read the template first, it may have changed                                 |
 | Narrating the diff in review notes | Only write what the reviewer can’t see from the code. Use `_N/A_` if nothing to add |
 | Missing changelog entry            | Check for changelog before creating the PR. Use the `writing-changelog` skill       |
+| User-facing entry for dev work     | Development-only changes get the `Dev` type, which the release notes leave out      |
 | Skipping Prettier / QA before push | Run `pnpm qa` first; CI will fail the PR otherwise                                  |
 | Skipping the trunk-only variants   | If the change touches Woo order code, run step 5 before opening                     |
 

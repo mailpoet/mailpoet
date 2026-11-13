@@ -23,7 +23,7 @@ Examples:
 Each changelog file should contain:
 
 ```markdown
-# Type: {Added|Improved|Fixed|Changed|Updated|Removed}
+# Type: {Added|Improved|Fixed|Changed|Updated|Removed|Dev}
 
 # Description
 
@@ -41,7 +41,10 @@ Descriptions should also start with a capital letter and read naturally after th
 - `Changed`: Changes to existing functionality
 - `Updated`: Updates to dependencies, requirements, etc.
 - `Removed`: Removed features or functionality
+- `Dev`: Development-only changes that customers won’t notice, such as CI, linting, tests, build and release tooling, dev dependencies and documentation
+
+`Dev` entries stay out of the release notes. Use `Dev` only when nothing in the change is user-facing. A dependency that ships in the plugin is `Updated`, not `Dev`.
 
 ## Compilation
 
-During the release process, these individual files are compiled into the final changelog format used in `readme.txt` and `changelog.txt`.
+During the release process, these individual files are compiled into the final changelog format used in `readme.txt` and `changelog.txt`. `Dev` entries are left out. A release with only `Dev` entries gets the line `Improved: minor changes and fixes`. All entry files, `Dev` ones too, are deleted once the changelog is compiled.

@@ -15,6 +15,7 @@ Used by Step 3 of the `reviewing-code` skill.
 
 - Scope & Completeness - Do the changes fully address the Linear ticket requirements? List any gaps.
 - Are there user-facing changes missing a changelog entry? (Check for files in `mailpoet/changelog/` on the branch.)
+- Does the changelog entry have the right type? Development-only changes (CI, linting, tests, dev dependencies, docs) use `Dev`, which the release notes leave out. A `Dev` entry on a change customers can notice hides it from them.
 - Are there missing test files for the changes? (Compare changed source files to test directories.)
 - Do the changes follow existing patterns in the codebase?
 - **PHP:** Is DI used correctly? Are WordPress functions called via `WP\Functions`? Are entities/repositories following Doctrine patterns?
