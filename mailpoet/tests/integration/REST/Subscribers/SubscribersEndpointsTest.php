@@ -823,6 +823,34 @@ class SubscribersEndpointsTest extends Test {
     $this->assertSame(2, $payload['meta']['count']);
   }
 
+  public function testListingShowsThePerListUnsubscribedDateUnderASingleListFilter(): void {
+    $suffix = uniqid();
+    $segment = (new SegmentFactory())->withName('REST Unsubscribed ' . $suffix)->create();
+    $subscriber = (new SubscriberFactory())
+      ->withEmail("left-list-{$suffix}@example.com")
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([$segment])
+      ->create();
+    $entityManager = $this->diContainer->get(EntityManager::class);
+    $entityManager->getConnection()->executeStatement(
+      'UPDATE ' . $entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName()
+      . " SET status = :status, updated_at = '2026-05-06 07:08:09' WHERE subscriber_id = :subscriberId",
+      ['status' => SubscriberEntity::STATUS_UNSUBSCRIBED, 'subscriberId' => $subscriber->getId()]
+    );
+    $entityManager->clear();
+
+    $underList = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => [
+      'search' => $suffix,
+      'filter' => ['segment_in' => [(int)$segment->getId()]],
+    ]]))['items'];
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $underList[0]['status']);
+    $this->assertSame('2026-05-06 07:08:09', $underList[0]['unsubscribed_at']);
+
+    $withoutFilter = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => ['search' => $suffix]]))['items'];
+    $this->assertSame(SubscriberEntity::STATUS_SUBSCRIBED, $withoutFilter[0]['status']);
+    $this->assertNull($withoutFilter[0]['unsubscribed_at']);
+  }
+
   /**
    * @param array<string, mixed> $payload
    * @return array<int, array{name: string, label: string, count: int}>
