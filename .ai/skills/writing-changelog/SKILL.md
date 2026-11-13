@@ -21,7 +21,7 @@ If customers won’t notice any of it, the branch is development-only: go to [De
 
 ### Step 2: Categorize and Describe
 
-Pick **one** valid type that best describes the change: `Added`, `Improved`, `Fixed`, `Changed`, `Updated`, `Removed`
+Pick **one** user-facing type that best describes the change: `Added`, `Improved`, `Fixed`, `Changed`, `Updated`, `Removed`
 
 Write a **short, user-facing description**:
 
