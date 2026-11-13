@@ -62,8 +62,15 @@ class CreateAutomationEmailWithBlockEditorCest {
     $i->type('This is automation email content created with block editor');
     $i->switchToIFrame();
 
-    $i->wantTo('Confirm we do not see email subject and preheader fields');
+    $i->wantTo('Check the email template can be edited from the sidebar');
     $i->click('Email', '.editor-sidebar__panel-tabs');
+    $i->click('Settings', '.woocommerce-email-editor__settings-panel');
+    $i->waitForText('Template', 10, '.woocommerce-email-editor__settings-panel');
+    $i->click('Newsletter', '.woocommerce-email-editor__settings-panel');
+    $i->waitForText('Edit template', 10, '.components-dropdown-menu__menu');
+    $i->click('Newsletter', '.woocommerce-email-editor__settings-panel'); // Close the menu again.
+
+    $i->wantTo('Confirm we do not see email subject and preheader fields');
     $i->dontSeeElement('[data-automation-id="email_subject"]');
     $i->dontSeeElement('[data-automation-id="email_preheader"]');
 

@@ -351,6 +351,15 @@ const initializeMailPoetEmailEditor = (): void => {
       render: AutomationSaveButton,
       scope: 'woocommerce-email-editor',
     });
+
+    // Show the template in the sidebar, as for newsletters, so it can be edited from there.
+    const { AutomationEmailSidebarExtension } =
+      require('./email-sidebar-extension') as EmailSidebarExtensionModule;
+
+    registerPlugin('mailpoet-automation-settings-sidebar', {
+      render: AutomationEmailSidebarExtension,
+      scope: 'woocommerce-email-editor',
+    });
   }
 
   initStripPostStatusOnSaveMiddleware();
