@@ -179,6 +179,9 @@ class EmailPresetsController {
     }
     $preheader = (string)$this->wp->getPostMeta($preset->ID, EmailPresetPostType::META_PREHEADER, true);
 
+    // The renderer drops tags that aren't registered yet from the plain-text version.
+    $this->personalizationTagManager->extendPersonalizationTagsByAllSubjects();
+
     // Without the MailPoet context, the coupon block renders nothing instead of its placeholder.
     $contextFilter = function (array $context): array {
       return array_merge($context, [
@@ -204,7 +207,6 @@ class EmailPresetsController {
       'recipient_email' => $this->wp->wpGetCurrentUser()->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'is_preview' => true,
     ]);
-    $this->personalizationTagManager->extendPersonalizationTagsByAllSubjects();
     $personalizer = Email_Editor_Container::container()->get(Personalizer::class);
     $personalizer->set_context($context);
     $text = $personalizer->personalize_content((string)$rendered['text'], Personalizer::RENDERING_CONTEXT_TEXT);
