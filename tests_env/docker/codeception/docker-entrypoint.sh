@@ -91,6 +91,20 @@ add_filter('action_scheduler_logger_class', static function () {
 }, 200);
 PHP
 
+# After its batch, the Action Scheduler async runner sleeps 5 seconds and starts
+# another runner. CleanupExtension waits only for claimed actions, so it can restore
+# the database during that sleep, and the next runner then fails on a missing table.
+# Without the sleep and the follow-up runner, the runner ends right after its batch,
+# which CleanupExtension waits for. Page loads still start runners as before.
+cat > /wp-core/wp-content/mu-plugins/mailpoet-test-action-scheduler-runner.php <<'PHP'
+<?php
+add_filter('action_scheduler_async_request_sleep_seconds', '__return_zero');
+add_filter('action_scheduler_allow_async_request_runner', static function ($allow) {
+  $isRunnerRequest = ($_REQUEST['action'] ?? '') === 'as_async_request_queue_runner';
+  return $isRunnerRequest ? false : $allow;
+});
+PHP
+
 # Messages from outside our code that the site logs as PHP errors, which fail the tests.
 cat > /wp-core/wp-content/mu-plugins/mailpoet-test-ignored-errors.php <<'PHP'
 <?php
