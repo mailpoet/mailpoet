@@ -67,27 +67,19 @@ class SubscribersResponseBuilder {
   }
 
   /**
-   * When each unsubscribed subscriber last unsubscribed, for those with a record of it.
+   * When each unsubscribed subscriber unsubscribed, for those with a record of it.
    *
    * @param SubscriberEntity[] $subscribers
    * @return array<int, string> Dates keyed by subscriber id.
    */
   private function getUnsubscribedDates(array $subscribers): array {
-    $unsubscribed = [];
+    $unsubscribedIds = [];
     foreach ($subscribers as $subscriber) {
       if ($subscriber->getStatus() === SubscriberEntity::STATUS_UNSUBSCRIBED) {
-        $unsubscribed[(int)$subscriber->getId()] = $subscriber;
+        $unsubscribedIds[] = (int)$subscriber->getId();
       }
     }
-    $dates = [];
-    foreach ($this->statisticsUnsubscribesRepository->getLatestDatesBySubscriberIds(array_keys($unsubscribed)) as $subscriberId => $date) {
-      $lastSubscribedAt = $unsubscribed[$subscriberId]->getLastSubscribedAt();
-      // A record from before the last subscription belongs to an earlier unsubscribe.
-      if (!$lastSubscribedAt || $date >= $lastSubscribedAt->format(self::DATE_FORMAT)) {
-        $dates[$subscriberId] = $date;
-      }
-    }
-    return $dates;
+    return $this->statisticsUnsubscribesRepository->getDatesSinceLastSubscription($unsubscribedIds);
   }
 
   private function buildListingItem(SubscriberEntity $subscriber, string $engagementScoreType, ?string $unsubscribedAt): array {
