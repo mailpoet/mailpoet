@@ -6,7 +6,7 @@
     "phpstan/phpstan-doctrine": "2.0.28",
     "phpstan/phpstan-phpunit": "2.1.1",
     "szepeviktor/phpstan-wordpress": "2.0.4",
-    "woocommerce/php-stubs": "2026.10.30"
+    "woocommerce/php-stubs": "2026.11.06.1"
   },
   "autoload": {
     "psr-4": {
