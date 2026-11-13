@@ -6,6 +6,7 @@ use DateTimeImmutable;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\REST\Test;
@@ -825,30 +826,66 @@ class SubscribersEndpointsTest extends Test {
 
   public function testListingShowsThePerListUnsubscribedDateUnderASingleListFilter(): void {
     $suffix = uniqid();
-    $segment = (new SegmentFactory())->withName('REST Unsubscribed ' . $suffix)->create();
-    $subscriber = (new SubscriberFactory())
-      ->withEmail("left-list-{$suffix}@example.com")
+    $firstList = (new SegmentFactory())->withName('REST Unsubscribed A ' . $suffix)->create();
+    $secondList = (new SegmentFactory())->withName('REST Unsubscribed B ' . $suffix)->create();
+    $leftLists = (new SubscriberFactory())
+      ->withEmail("a-left-lists-{$suffix}@example.com")
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
-      ->withSegments([$segment])
+      ->withSegments([$firstList, $secondList])
       ->create();
+    $unsubscribed = (new SubscriberFactory())
+      ->withEmail("b-unsubscribed-{$suffix}@example.com")
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withSegments([$firstList])
+      ->create();
+    $record = new StatisticsUnsubscribeEntity(null, null, $unsubscribed);
+    $record->setCreatedAt(new DateTimeImmutable('2026-03-04 05:06:07'));
+    $entityManager = $this->diContainer->get(EntityManager::class);
+    $entityManager->persist($record);
+    $entityManager->flush();
+    $this->leaveList($leftLists, $firstList, '2026-05-06 07:08:09');
+    $this->leaveList($leftLists, $secondList, '2026-06-07 08:09:10');
+    $this->leaveList($unsubscribed, $firstList, '2026-04-05 06:07:08');
+    $entityManager->clear();
+
+    $statusesAndDates = function (array $filter) use ($suffix): array {
+      $items = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => [
+        'search' => $suffix,
+        'orderby' => 'email',
+        'order' => 'asc',
+        'filter' => $filter,
+      ]]))['items'];
+      return array_map(function (array $item): array {
+        return [$item['status'], $item['unsubscribed_at']];
+      }, $items);
+    };
+
+    $this->assertSame([
+      [SubscriberEntity::STATUS_UNSUBSCRIBED, '2026-05-06 07:08:09'],
+      // The global date wins over the date they left the list.
+      [SubscriberEntity::STATUS_UNSUBSCRIBED, '2026-03-04 05:06:07'],
+    ], $statusesAndDates(['segment_in' => [(int)$firstList->getId()]]));
+    $this->assertSame([
+      [SubscriberEntity::STATUS_UNSUBSCRIBED, '2026-06-07 08:09:10'],
+    ], $statusesAndDates(['segment_in' => [(int)$secondList->getId()]]));
+    $this->assertSame([
+      [SubscriberEntity::STATUS_SUBSCRIBED, null],
+      [SubscriberEntity::STATUS_UNSUBSCRIBED, '2026-03-04 05:06:07'],
+    ], $statusesAndDates([]));
+  }
+
+  private function leaveList(SubscriberEntity $subscriber, SegmentEntity $segment, string $date): void {
     $entityManager = $this->diContainer->get(EntityManager::class);
     $entityManager->getConnection()->executeStatement(
       'UPDATE ' . $entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName()
-      . " SET status = :status, updated_at = '2026-05-06 07:08:09' WHERE subscriber_id = :subscriberId",
-      ['status' => SubscriberEntity::STATUS_UNSUBSCRIBED, 'subscriberId' => $subscriber->getId()]
+      . ' SET status = :status, updated_at = :date WHERE subscriber_id = :subscriberId AND segment_id = :segmentId',
+      [
+        'status' => SubscriberEntity::STATUS_UNSUBSCRIBED,
+        'date' => $date,
+        'subscriberId' => $subscriber->getId(),
+        'segmentId' => $segment->getId(),
+      ]
     );
-    $entityManager->clear();
-
-    $underList = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => [
-      'search' => $suffix,
-      'filter' => ['segment_in' => [(int)$segment->getId()]],
-    ]]))['items'];
-    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $underList[0]['status']);
-    $this->assertSame('2026-05-06 07:08:09', $underList[0]['unsubscribed_at']);
-
-    $withoutFilter = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => ['search' => $suffix]]))['items'];
-    $this->assertSame(SubscriberEntity::STATUS_SUBSCRIBED, $withoutFilter[0]['status']);
-    $this->assertNull($withoutFilter[0]['unsubscribed_at']);
   }
 
   /**
