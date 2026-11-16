@@ -240,12 +240,21 @@ const createSuccessNotice = (content: string): void => {
   void dispatch(noticesStore).createSuccessNotice(content);
 };
 
+const isEmailPresetsEnabled = MailPoet.FeaturesController.isSupported(
+  MailPoet.FeaturesController.FEATURE_EMAIL_PRESETS,
+);
+
 export function AutomationListingHeader(): JSX.Element {
   return (
     <PageHeader heading={__('Automations', 'mailpoet')}>
       <a href={MailPoet.urls.automationTemplates} className="page-title-action">
         {__('Add new automation', 'mailpoet')}
       </a>
+      {isEmailPresetsEnabled && (
+        <a href={MailPoet.urls.emailTemplates} className="page-title-action">
+          {__('Manage templates', 'mailpoet')}
+        </a>
+      )}
     </PageHeader>
   );
 }

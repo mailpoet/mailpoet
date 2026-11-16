@@ -5,6 +5,10 @@ import { PageHeader } from 'common/page-header';
 import { CompensateScreenOptions } from 'common/compensate-screen-options/compensate-screen-options';
 import { TopBarWithBoundary } from 'common/top-bar/top-bar';
 
+const isEmailPresetsEnabled = MailPoet.FeaturesController.isSupported(
+  MailPoet.FeaturesController.FEATURE_EMAIL_PRESETS,
+);
+
 export function ListingHeading(): JSX.Element {
   return (
     <>
@@ -22,6 +26,11 @@ export function ListingHeading(): JSX.Element {
         >
           {__('Add new email', 'mailpoet')}
         </Link>
+        {isEmailPresetsEnabled && (
+          <a href={MailPoet.urls.emailTemplates} className="page-title-action">
+            {__('Manage templates', 'mailpoet')}
+          </a>
+        )}
       </PageHeader>
     </>
   );
