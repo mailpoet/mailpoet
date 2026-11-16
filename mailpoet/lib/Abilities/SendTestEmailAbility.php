@@ -134,7 +134,7 @@ class SendTestEmailAbility implements Ability {
     } elseif ($this->subscribersFeature->check() || $this->subscribersFeature->checkEmailVolumeLimitIsReached()) {
       $hint = __('The subscriber or email limit of the MailPoet plan is reached. An administrator can check the plan in MailPoet.', 'mailpoet');
     } else {
-      $hint = __('An administrator can check the sender and the sending method in MailPoet > Settings, or with mailpoet/get-sending-status.', 'mailpoet');
+      $hint = __('An administrator can check the sender and the sending method in MailPoet > Settings. mailpoet/get-sending-status shows the sending method and the last error.', 'mailpoet');
     }
     $reason = rtrim($reason);
     if (!in_array(substr($reason, -1), ['.', '!', '?'], true)) {
