@@ -358,6 +358,8 @@ class DisplayFormInWPContent {
       return false;
     }
 
+    if ($this->isCurrentPostExcluded($setup)) return false;
+
     if (!$this->shouldDisplayFormForWPUser($form, $formType)) return false;
 
     if ($this->wp->isFrontPage() && $this->shouldDisplayFormOnFrontPage($setup)) {
@@ -405,6 +407,46 @@ class DisplayFormInWPContent {
   private function getSupportedPostTypes() {
     $supportedPostTypes = $this->wp->applyFilters('mailpoet_display_form_supported_post_types', self::SUPPORTED_POST_TYPES);
     return is_array($supportedPostTypes) || is_string($supportedPostTypes) ? $supportedPostTypes : self::SUPPORTED_POST_TYPES;
+  }
+
+  /**
+   * Excluded pages and posts win over every rule that displays the form (all pages, homepage, categories, tags…)
+   */
+  private function isCurrentPostExcluded(array $setup): bool {
+    $excludedIds = array_merge(
+      $this->getExcludedIds($setup, 'pages'),
+      $this->getExcludedIds($setup, 'posts')
+    );
+    if ($excludedIds === []) return false;
+    $currentPostId = $this->getCurrentPostId();
+    return $currentPostId !== null && in_array((string)$currentPostId, $excludedIds, true);
+  }
+
+  /**
+   * @return string[]
+   */
+  private function getExcludedIds(array $setup, string $postsKey): array {
+    $excluded = $setup[$postsKey]['excluded'] ?? [];
+    if (!is_array($excluded)) return [];
+    return array_map('strval', array_filter($excluded, 'is_scalar'));
+  }
+
+  /**
+   * ID of the page or post the visitor is on. Archives and the latest posts homepage have none.
+   */
+  private function getCurrentPostId(): ?int {
+    // Singular views and the "Posts page" from Settings > Reading.
+    // A Query Loop or page builder may leave another post in the global scope, so use the queried object.
+    if ($this->wp->isSingular() || $this->wp->isHome()) {
+      $queriedObjectId = (int)$this->wp->getQueriedObjectId();
+      return $queriedObjectId > 0 ? $queriedObjectId : null;
+    }
+    // WooCommerce Shop page, also when it is set as the static front page
+    if ($this->wp->isPostTypeArchive('product')) {
+      $shopPageId = (int)$this->woocommerceHelper->wcGetPageId('shop');
+      return $shopPageId > 0 ? $shopPageId : null;
+    }
+    return null;
   }
 
   private function shouldDisplayFormOnPost(array $setup, string $postsKey, $postId = null): bool {

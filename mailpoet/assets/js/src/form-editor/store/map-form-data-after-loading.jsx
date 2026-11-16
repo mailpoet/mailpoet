@@ -45,6 +45,11 @@ export function mapFormDataAfterLoading(data) {
             )
               ? data.settings.form_placement?.popup?.posts?.selected
               : [],
+            excluded: Array.isArray(
+              data.settings.form_placement?.popup?.posts?.excluded,
+            )
+              ? data.settings.form_placement?.popup?.posts?.excluded
+              : [],
           },
           pages: {
             all: data.settings.form_placement?.popup?.pages?.all === '1',
@@ -52,6 +57,11 @@ export function mapFormDataAfterLoading(data) {
               data.settings.form_placement?.popup?.pages?.selected,
             )
               ? data.settings.form_placement?.popup?.pages?.selected
+              : [],
+            excluded: Array.isArray(
+              data.settings.form_placement?.popup?.pages?.excluded,
+            )
+              ? data.settings.form_placement?.popup?.pages?.excluded
               : [],
           },
           homepage: data.settings.form_placement?.popup?.homepage === '1',
@@ -104,6 +114,11 @@ export function mapFormDataAfterLoading(data) {
             )
               ? data.settings.form_placement?.fixed_bar?.posts?.selected
               : [],
+            excluded: Array.isArray(
+              data.settings.form_placement?.fixed_bar?.posts?.excluded,
+            )
+              ? data.settings.form_placement?.fixed_bar?.posts?.excluded
+              : [],
           },
           pages: {
             all: data.settings.form_placement?.fixed_bar?.pages?.all === '1',
@@ -111,6 +126,11 @@ export function mapFormDataAfterLoading(data) {
               data.settings.form_placement?.fixed_bar?.pages?.selected,
             )
               ? data.settings.form_placement?.fixed_bar?.pages?.selected
+              : [],
+            excluded: Array.isArray(
+              data.settings.form_placement?.fixed_bar?.pages?.excluded,
+            )
+              ? data.settings.form_placement?.fixed_bar?.pages?.excluded
               : [],
           },
           homepage: data.settings.form_placement?.fixed_bar?.homepage === '1',
@@ -152,6 +172,11 @@ export function mapFormDataAfterLoading(data) {
             )
               ? data.settings.form_placement?.below_posts?.posts?.selected
               : [],
+            excluded: Array.isArray(
+              data.settings.form_placement?.below_posts?.posts?.excluded,
+            )
+              ? data.settings.form_placement?.below_posts?.posts?.excluded
+              : [],
           },
           pages: {
             all: data.settings.form_placement?.below_posts?.pages?.all === '1',
@@ -159,6 +184,11 @@ export function mapFormDataAfterLoading(data) {
               data.settings.form_placement?.below_posts?.pages?.selected,
             )
               ? data.settings.form_placement?.below_posts?.pages?.selected
+              : [],
+            excluded: Array.isArray(
+              data.settings.form_placement?.below_posts?.pages?.excluded,
+            )
+              ? data.settings.form_placement?.below_posts?.pages?.excluded
               : [],
           },
         },
@@ -192,6 +222,11 @@ export function mapFormDataAfterLoading(data) {
             )
               ? data.settings.form_placement?.slide_in?.posts?.selected
               : [],
+            excluded: Array.isArray(
+              data.settings.form_placement?.slide_in?.posts?.excluded,
+            )
+              ? data.settings.form_placement?.slide_in?.posts?.excluded
+              : [],
           },
           pages: {
             all: data.settings.form_placement?.slide_in?.pages?.all === '1',
@@ -199,6 +234,11 @@ export function mapFormDataAfterLoading(data) {
               data.settings.form_placement?.slide_in?.pages?.selected,
             )
               ? data.settings.form_placement?.slide_in?.pages?.selected
+              : [],
+            excluded: Array.isArray(
+              data.settings.form_placement?.slide_in?.pages?.excluded,
+            )
+              ? data.settings.form_placement?.slide_in?.pages?.excluded
               : [],
           },
           homepage: data.settings.form_placement?.slide_in?.homepage === '1',
