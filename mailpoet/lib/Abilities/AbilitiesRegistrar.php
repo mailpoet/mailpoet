@@ -27,7 +27,7 @@ class AbilitiesRegistrar {
     NewsletterDraftOptionsAbility::class,
     GetNewsletterDraftAbility::class,
     UpdateNewsletterDraftAbility::class,
-    SendNewsletterDraftTestAbility::class,
+    SendTestEmailAbility::class,
   ];
 
   /** @var WPFunctions */

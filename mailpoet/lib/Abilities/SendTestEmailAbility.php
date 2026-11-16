@@ -14,8 +14,8 @@ use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
-class SendNewsletterDraftTestAbility implements Ability {
-  public const NAME = 'mailpoet/send-newsletter-draft-test';
+class SendTestEmailAbility implements Ability {
+  public const NAME = 'mailpoet/send-test-email';
 
   /** @var NewsletterDrafts */
   private $drafts;

@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Abilities;
 
 use Codeception\Stub\Expected;
-use MailPoet\Abilities\SendNewsletterDraftTestAbility;
+use MailPoet\Abilities\SendTestEmailAbility;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Mailer\Mailer;
@@ -20,8 +20,8 @@ use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 
 require_once __DIR__ . '/AbilitiesTestHelper.php';
 
-class SendNewsletterDraftTestAbilityTest extends \MailPoetTest {
-  private const ABILITY = 'mailpoet/send-newsletter-draft-test';
+class SendTestEmailAbilityTest extends \MailPoetTest {
+  private const ABILITY = 'mailpoet/send-test-email';
 
   public function _before(): void {
     AbilitiesTestHelper::enableDraftAbilities();
@@ -217,22 +217,22 @@ class SendNewsletterDraftTestAbilityTest extends \MailPoetTest {
    *
    * @param mixed $send
    */
-  private function withMailer($send): SendNewsletterDraftTestAbility {
+  private function withMailer($send): SendTestEmailAbility {
     $mailer = $this->makeEmpty(Mailer::class, ['send' => $send]);
     $mailerFactory = $this->createMock(MailerFactory::class);
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     return $this->withPreviewController($mailerFactory);
   }
 
-  private function withMailerFactory(\Throwable $error): SendNewsletterDraftTestAbility {
+  private function withMailerFactory(\Throwable $error): SendTestEmailAbility {
     $mailerFactory = $this->createMock(MailerFactory::class);
     $mailerFactory->method('getDefaultMailer')->willThrowException($error);
     return $this->withPreviewController($mailerFactory);
   }
 
   /** @param MailerFactory&\PHPUnit\Framework\MockObject\MockObject $mailerFactory */
-  private function withPreviewController($mailerFactory): SendNewsletterDraftTestAbility {
+  private function withPreviewController($mailerFactory): SendTestEmailAbility {
     $sendPreviewController = $this->getServiceWithOverrides(SendPreviewController::class, ['mailerFactory' => $mailerFactory]);
-    return $this->getServiceWithOverrides(SendNewsletterDraftTestAbility::class, ['sendPreviewController' => $sendPreviewController]);
+    return $this->getServiceWithOverrides(SendTestEmailAbility::class, ['sendPreviewController' => $sendPreviewController]);
   }
 }
