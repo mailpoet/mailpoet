@@ -182,6 +182,17 @@ class TimeZoneCampaignScheduler {
     return $this->getCampaignQueuesById($newsletter, $campaignId);
   }
 
+  /**
+   * Batches of the campaign that nothing was sent for and that no worker is running.
+   *
+   * @return SendingQueueEntity[]
+   */
+  public function getUnstartedCampaignQueues(SendingQueueEntity $queue): array {
+    return array_values(array_filter($this->getCampaignQueues($queue), function(SendingQueueEntity $campaignQueue): bool {
+      return $this->isReplaceableScheduledQueue($campaignQueue);
+    }));
+  }
+
   /** Resolves replay sources directly so newsletters with many replays stay cheap to inspect. */
   public function resolveTimeZoneCampaignQueue(NewsletterEntity $newsletter): ?SendingQueueEntity {
     $latestQueue = $newsletter->getLatestQueue();

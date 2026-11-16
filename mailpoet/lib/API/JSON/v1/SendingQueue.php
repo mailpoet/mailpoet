@@ -580,15 +580,32 @@ class SendingQueue extends APIEndpoint {
   }
 
   /**
+   * A time zone campaign goes as a whole: its other unstarted batches are deleted too, e.g. one paused for the
+   * sender domain, which the hold does not mark.
+   *
    * @param ScheduledTaskEntity[]|null $heldTasks Loaded when not given.
    */
   private function deleteHeldCampaignQueues(NewsletterEntity $newsletter, ?array $heldTasks = null): void {
     $heldTasks = $heldTasks ?? $this->scheduledTasksRepository->findHeldOverdueForNewsletter($newsletter);
+    $queues = [];
+    $campaignIds = [];
     foreach ($heldTasks as $heldTask) {
       $heldQueue = $heldTask->getSendingQueue();
-      if ($heldQueue instanceof SendingQueueEntity) {
-        $this->timeZoneCampaignScheduler->deleteCampaignQueue($heldQueue);
+      if (!$heldQueue instanceof SendingQueueEntity) {
+        continue;
       }
+      $queues[spl_object_id($heldQueue)] = $heldQueue;
+      $campaignId = $this->timeZoneCampaignScheduler->getCampaignId($heldQueue);
+      if ($campaignId === null || isset($campaignIds[$campaignId])) {
+        continue;
+      }
+      $campaignIds[$campaignId] = true;
+      foreach ($this->timeZoneCampaignScheduler->getUnstartedCampaignQueues($heldQueue) as $campaignQueue) {
+        $queues[spl_object_id($campaignQueue)] = $campaignQueue;
+      }
+    }
+    foreach ($queues as $queue) {
+      $this->timeZoneCampaignScheduler->deleteCampaignQueue($queue);
     }
     if ($heldTasks) {
       $this->scheduledTasksRepository->flush();
