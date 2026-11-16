@@ -875,6 +875,64 @@ class SendingQueueTest extends \MailPoetTest {
     }
   }
 
+  public function testCancelHeldDeletesATimeZoneBatchPausedForTheSenderDomain(): void {
+    $this->newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $timeZoneMeta = [
+      TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+      TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => 'cancel-tz-sender-domain',
+    ];
+    [$senderDomainTask, $senderDomainQueue] = $this->createHeldCampaign($this->newsletter, -40);
+    $senderDomainTask->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
+    $senderDomainQueue->setMeta($timeZoneMeta);
+    [, $heldQueue] = $this->createHeldCampaign($this->newsletter, -30);
+    $heldQueue->setMeta($timeZoneMeta);
+    $this->entityManager->flush();
+    $queueIds = [(int)$senderDomainQueue->getId(), (int)$heldQueue->getId()];
+    $senderDomainTaskId = (int)$senderDomainTask->getId();
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->cancelHeld(['newsletter_id' => $this->newsletter->getId()]);
+
+    $this->assertSame(200, $result->status);
+    $this->entityManager->clear();
+    foreach ($queueIds as $queueId) {
+      $this->assertNull($this->diContainer->get(SendingQueuesRepository::class)->findOneById($queueId));
+    }
+    $this->assertNull($this->diContainer->get(ScheduledTasksRepository::class)->findOneById($senderDomainTaskId));
+    $this->assertSame(0, $this->countTaskSubscribers($senderDomainTaskId));
+    $newsletter = $this->entityManager->find(NewsletterEntity::class, $this->newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $this->assertSame(NewsletterEntity::STATUS_DRAFT, $newsletter->getStatus());
+  }
+
+  public function testCancelHeldKeepsTimeZoneBatchesThatStartedOrAreRunning(): void {
+    $timeZoneMeta = [
+      TimeZoneCampaignScheduler::META_SEND_BY_TIMEZONE => true,
+      TimeZoneCampaignScheduler::META_TIMEZONE_CAMPAIGN_ID => 'cancel-tz-started',
+    ];
+    [$startedTask, $startedQueue] = $this->createHeldCampaign($this->newsletter, -40);
+    $startedTask->setPauseReason(ScheduledTaskEntity::PAUSE_REASON_SENDER_DOMAIN);
+    $startedQueue->setCountProcessed(1);
+    $startedQueue->setMeta($timeZoneMeta);
+    [$runningTask, $runningQueue] = $this->createHeldCampaign($this->newsletter, -35);
+    $runningTask->setStatus(null);
+    $runningTask->setPauseReason(null);
+    $runningQueue->setMeta($timeZoneMeta);
+    [, $heldQueue] = $this->createHeldCampaign($this->newsletter, -30);
+    $heldQueue->setMeta($timeZoneMeta);
+    $this->entityManager->flush();
+    $startedQueueId = (int)$startedQueue->getId();
+    $runningQueueId = (int)$runningQueue->getId();
+    $heldQueueId = (int)$heldQueue->getId();
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->cancelHeld(['newsletter_id' => $this->newsletter->getId()]);
+
+    $this->assertSame(200, $result->status);
+    $this->entityManager->clear();
+    $this->assertNull($this->diContainer->get(SendingQueuesRepository::class)->findOneById($heldQueueId));
+    $this->assertNotNull($this->diContainer->get(SendingQueuesRepository::class)->findOneById($startedQueueId));
+    $this->assertNotNull($this->diContainer->get(SendingQueuesRepository::class)->findOneById($runningQueueId));
+  }
+
   public function testCancelHeldDeletesAHeldPostNotificationIssueAndKeepsItsParent(): void {
     $parent = (new NewsletterFactory())->withPostNotificationsType()->create();
     $issue = (new NewsletterFactory())->withPostNotificationHistoryType()->withParent($parent)->create();
