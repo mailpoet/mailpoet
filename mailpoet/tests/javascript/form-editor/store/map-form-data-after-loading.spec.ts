@@ -19,6 +19,7 @@ const data = {
         },
         pages: {
           all: '1',
+          excluded: ['7'],
         },
       },
       fixed_bar: {
@@ -101,6 +102,10 @@ describe('Form Data Load Mapper', () => {
         .that.is.an('object')
         .that.have.property('selected')
         .that.deep.equal([]);
+      expect(result.formPlacement.belowPosts.pages.excluded).to.deep.equal([
+        '7',
+      ]);
+      expect(result.formPlacement.belowPosts.posts.excluded).to.deep.equal([]);
     });
 
     it('Sets default form styles', () => {

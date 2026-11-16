@@ -305,6 +305,27 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     verify($result)->stringEndsWith($renderedForm);
   }
 
+  public function testDoesNotAppendFormOnExcludedPageWhenDisplayedOnAllPages(): void {
+    $this->wp->expects($this->any())->method('isSingle')->willReturn(true);
+    $this->wp->expects($this->any())->method('isPage')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->wp->expects($this->any())->method('getQueriedObjectId')->willReturn(7);
+    // A Query Loop block on the excluded page renders the content of another post
+    $this->wp->expects($this->any())->method('getPost')->willReturn(['ID' => 5]);
+    $this->templateRenderer->expects($this->never())->method('render');
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'below_posts' => ['enabled' => '1', 'pages' => ['all' => '1', 'selected' => [], 'excluded' => ['7']], 'posts' => ['all' => '1']],
+      ],
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+    $result = $this->hook->contentDisplay('content');
+    verify($result)->equals('content');
+  }
+
   public function testItPassThruNonStringPostContent() {
     $this->wp->expects($this->never())->method('isSingle');
     $this->wp->expects($this->never())->method('isSingular');
@@ -402,6 +423,56 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $result = $this->hook->contentDisplay('content');
     verify($result)->notEquals('content');
     verify($result)->stringEndsWith($renderedForm);
+  }
+
+  public function testDoesNotAppendFormOnExcludedWoocommerceShopPage(): void {
+    $this->applyFiltersValue = true;
+    $this->wp->expects($this->any())->method('isSingle')->willReturn(false);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(false);
+    $this->wp->expects($this->any())->method('isArchive')->willReturn(true);
+    $this->wp->expects($this->any())->method('isPostTypeArchive')->willReturn(true);
+    $this->woocommerceHelper->expects($this->any())->method('wcGetPageId')->willReturn(1);
+    $this->templateRenderer->expects($this->never())->method('render');
+
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'below_posts' => [
+          'enabled' => '1',
+          'pages' => ['all' => '1', 'excluded' => ['1']],
+          'posts' => ['all' => ''],
+        ],
+      ],
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+    verify($this->hook->contentDisplay('content'))->equals('content');
+  }
+
+  public function testItDoesNotDisplayOnExcludedWoocommerceShopSetAsHomepage(): void {
+    $this->wp->expects($this->any())->method('isFrontPage')->willReturn(true);
+    $this->wp->expects($this->any())->method('isArchive')->willReturn(true);
+    $this->wp->expects($this->any())->method('isPostTypeArchive')->willReturn(true);
+    // WooCommerce marks the Shop page on the front page as a page, but not as singular
+    $this->wp->expects($this->any())->method('isPage')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(false);
+    $this->wp->expects($this->any())->method('getPost')->willReturn(['ID' => 5]);
+    $this->woocommerceHelper->expects($this->any())->method('wcGetPageId')->willReturn(1);
+    $this->templateRenderer->expects($this->never())->method('render');
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'popup' => ['enabled' => '1', 'homepage' => '1', 'pages' => ['all' => '1', 'excluded' => ['1']]],
+      ],
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    verify(ob_get_clean())->equals('');
   }
 
   public function testAppendsRenderedFormOnWoocommerceShopListingPageWhenAllPagesIsSelected() {
@@ -819,6 +890,75 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->hook->maybeRenderFormsInFooter();
     $renderedFormHtml = ob_get_clean();
     verify($renderedFormHtml)->equals($formHtml);
+  }
+
+  public function testItDoesNotDisplayOnExcludedStaticHomepage(): void {
+    $this->wp->expects($this->any())->method('isFrontPage')->willReturn(true);
+    $this->wp->expects($this->any())->method('isPage')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->wp->expects($this->any())->method('getQueriedObjectId')->willReturn(12);
+    $this->wp->expects($this->any())->method('getPost')->willReturnCallback(fn($postId) => ['ID' => $postId]);
+    $this->templateRenderer->expects($this->never())->method('render');
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'popup' => ['enabled' => '1', 'homepage' => '1', 'pages' => ['all' => '1', 'excluded' => ['12']]],
+      ],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    $renderedFormHtml = ob_get_clean();
+    verify($renderedFormHtml)->equals('');
+  }
+
+  public function testItDisplaysOnArchiveWhenAPostInTheLoopIsExcluded(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->wp->expects($this->any())->method('isArchive')->willReturn(true);
+    $this->wp->expects($this->any())->method('isCategory')->willReturn(true);
+    $this->wp->expects($this->any())->method('getPost')->willReturn(['ID' => 5]);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'popup' => ['enabled' => '1', 'categoryArchives' => ['all' => '1'], 'posts' => ['all' => '', 'excluded' => ['5']]],
+      ],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    $renderedFormHtml = ob_get_clean();
+    verify($renderedFormHtml)->equals($formHtml);
+  }
+
+  public function testItDoesNotDisplayOnExcludedPostsPage(): void {
+    $this->wp->expects($this->any())->method('isFrontPage')->willReturn(false);
+    $this->wp->expects($this->any())->method('isHome')->willReturn(true);
+    $this->wp->expects($this->any())->method('getQueriedObjectId')->willReturn(50);
+    $this->templateRenderer->expects($this->never())->method('render');
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'form_placement' => [
+        'popup' => ['enabled' => '1', 'pages' => ['all' => '1', 'excluded' => ['50']]],
+      ],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    $renderedFormHtml = ob_get_clean();
+    verify($renderedFormHtml)->equals('');
   }
 
   public function testItDisplaysOnSpecificPostsPageWhenAllPagesSelected(): void {

@@ -19,6 +19,7 @@ const data = {
         },
         pages: {
           all: true,
+          excluded: ['7'],
         },
       },
       fixedBar: {
@@ -96,6 +97,12 @@ describe('Form Data Save Mapper', () => {
         .that.is.an('object')
         .that.have.property('selected')
         .that.deep.equal(['3']);
+      expect(result.form_placement.below_posts.pages.excluded).to.deep.equal([
+        '7',
+      ]);
+      expect(result.form_placement.below_posts.posts.excluded).to.deep.equal(
+        [],
+      );
     });
 
     it('Maps animation', () => {
