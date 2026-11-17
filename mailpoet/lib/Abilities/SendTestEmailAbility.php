@@ -103,7 +103,7 @@ class SendTestEmailAbility implements Ability {
       $this->sendPreviewController->sendPreview($newsletter, $recipient);
     } catch (SendPreviewException $e) {
       // MailPoet Sending Service errors are HTML notices with links and buttons for the admin.
-      $reason = html_entity_decode($this->wp->wpStripAllTags($e->getMessage(), true), ENT_QUOTES, 'UTF-8');
+      $reason = $this->wp->wpStripAllTags(html_entity_decode($e->getMessage(), ENT_QUOTES, 'UTF-8'), true);
       return $this->getNotSentError(SendingStatusAbility::maskPersonalData($reason));
     } catch (InvalidStateException $e) {
       // The mailer can't be built, e.g. no sending method or sender. The messages are written for users.

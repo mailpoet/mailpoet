@@ -125,13 +125,14 @@ class SendTestEmailAbilityTest extends \MailPoetTest {
 
   public function testItExplainsAFailedSend(): void {
     $id = $this->createDraft('Test me');
-    $error = new MailerError(MailerError::OPERATION_CONNECT, MailerError::LEVEL_HARD, 'Could not connect to SMTP host. Mail to john@example.org was not accepted.');
+    $error = new MailerError(MailerError::OPERATION_CONNECT, MailerError::LEVEL_HARD, 'Could not connect to SMTP host: &lt;b&gt;Connection refused&lt;/b&gt;. Mail to john@example.org was not accepted.');
 
     $result = $this->withMailer(Expected::once(['response' => false, 'error' => $error]))->execute(['id' => $id]);
 
     $this->assertInstanceOf(\WP_Error::class, $result);
     verify($result->get_error_code())->equals('mailpoet_test_email_not_sent');
-    verify($result->get_error_message())->stringContainsString('Could not connect to SMTP host');
+    verify($result->get_error_message())->stringContainsString('Could not connect to SMTP host: Connection refused.');
+    verify($result->get_error_message())->stringNotContainsString('<');
     verify($result->get_error_message())->stringNotContainsString('john@example.org');
     verify($result->get_error_message())->stringContainsString('was not accepted. An administrator can check the sender and the sending method');
   }
