@@ -33,7 +33,7 @@
   flex-shrink: 0;
   padding: 0;
   text-align: left;
-  width: 336px;
+  width: 100%;
 
   &:not(:disabled) {
     cursor: pointer;
@@ -42,6 +42,7 @@
   > div {
     display: grid;
     grid-template-rows: auto 1fr;
+    width: 100%;
   }
 
   &:hover,
@@ -102,7 +103,6 @@
   display: grid;
   grid-template-rows: 1fr auto;
   padding: 0 24px 24px;
-  width: 336px;
 
   .woocommerce-tag {
     margin: 0;
