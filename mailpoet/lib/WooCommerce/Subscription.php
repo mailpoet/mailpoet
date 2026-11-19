@@ -2,12 +2,14 @@
 
 namespace MailPoet\WooCommerce;
 
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\TrackingConsentCapture;
@@ -75,6 +77,9 @@ class Subscription {
   /** @var WooCommerceSegment */
   private $woocommerceSegment;
 
+  /** @var SubscriberActions */
+  private $subscriberActions;
+
   public function __construct(
     SettingsController $settings,
     ConfirmationEmailMailer $confirmationEmailMailer,
@@ -84,7 +89,8 @@ class Subscription {
     SegmentsRepository $segmentsRepository,
     SubscriberSegmentRepository $subscriberSegmentRepository,
     TrackingConsentCapture $trackingConsentCapture,
-    WooCommerceSegment $woocommerceSegment
+    WooCommerceSegment $woocommerceSegment,
+    SubscriberActions $subscriberActions
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
@@ -95,6 +101,7 @@ class Subscription {
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
     $this->trackingConsentCapture = $trackingConsentCapture;
     $this->woocommerceSegment = $woocommerceSegment;
+    $this->subscriberActions = $subscriberActions;
   }
 
   public function extendWooCommerceCheckoutForm() {
@@ -274,6 +281,21 @@ class Subscription {
 
     if ($shouldSubscribe) {
       $subscriber->setSource(Source::WOOCOMMERCE_CHECKOUT);
+      $segments = array_merge([$wcSegment], $moreSegmentsToSubscribe);
+      $segmentIdsToConfirm = [];
+
+      if (
+        $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED
+        && (bool)$signupConfirmation['enabled']
+      ) {
+        // Lists the subscriber left earlier are added only after confirmation
+        $segmentIdsToConfirm = $this->subscriberActions->holdLeftSegmentsForConfirmation(
+          $subscriber,
+          array_map(function (SegmentEntity $segment): int {
+            return (int)$segment->getId();
+          }, $segments)
+        );
+      }
 
       if (
         ($subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED)
@@ -284,7 +306,16 @@ class Subscription {
         $this->requireSubscriptionConfirmation($subscriber);
       }
 
-      $this->subscriberSegmentRepository->subscribeToSegments($subscriber, array_merge([$wcSegment], $moreSegmentsToSubscribe));
+      $this->subscriberSegmentRepository->subscribeToSegments(
+        $subscriber,
+        array_filter($segments, function (SegmentEntity $segment) use ($segmentIdsToConfirm): bool {
+          return !in_array((int)$segment->getId(), $segmentIdsToConfirm, true);
+        })
+      );
+
+      if ($segmentIdsToConfirm) {
+        $this->sendConfirmationEmail($subscriber);
+      }
 
       return true;
     } else {
@@ -364,7 +395,10 @@ class Subscription {
     $subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
     $this->subscribersRepository->persist($subscriber);
     $this->subscribersRepository->flush();
+    $this->sendConfirmationEmail($subscriber);
+  }
 
+  private function sendConfirmationEmail(SubscriberEntity $subscriber): void {
     try {
       // Per-list confirmation settings are not resolved here because this path
       // subscribes to the WooCommerce Customers segment (TYPE_WC_USERS),
