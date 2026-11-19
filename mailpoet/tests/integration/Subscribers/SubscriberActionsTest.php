@@ -365,6 +365,12 @@ class SubscriberActionsTest extends \MailPoetTest {
     verify(json_decode((string)$subscriber->getUnconfirmedData(), true))->equals([
       SubscriberActions::SEGMENTS_TO_CONFIRM => [$leftSegment->getId()],
     ]);
+
+    // Signing up again while the list waits for confirmation keeps the email limit
+    $subscriber->setConfirmationsCount(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
+    $this->entityManager->flush();
+    [, $meta] = $subscriberActions->subscribe(['email' => 'left-a-list@example.com'], [$leftSegment->getId()]);
+    verify($meta['error'] ?? null)->notEmpty();
   }
 
   public function testItUsesPublicConfirmationModeForPublicSubscribes(): void {
