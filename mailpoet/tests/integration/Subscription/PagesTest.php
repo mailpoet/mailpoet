@@ -29,6 +29,7 @@ use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Statistics\UnsubscribeReasonTracker;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
+use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -223,6 +224,53 @@ class PagesTest extends \MailPoetTest {
     verify($confirmedSubscriber->getLastSubscribedAt())->greaterThanOrEqual(Carbon::now()->millisecond(0)->subSecond());
     verify($confirmedSubscriber->getLastSubscribedAt())->lessThanOrEqual(Carbon::now()->millisecond(0)->addSecond());
     verify($confirmedSubscriber->getFirstName())->equals('First name');
+  }
+
+  public function testItAddsListsWaitingForConfirmationToSubscribedSubscriber() {
+    $keptSegment = (new SegmentFactory())->withName('Product updates')->create();
+    $leftSegment = (new SegmentFactory())->withName('Weekly digest')->create();
+    $subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
+    $subscriberSegmentRepository->subscribeToSegments($this->subscriber, [$keptSegment, $leftSegment]);
+    $subscriberSegmentRepository->unsubscribeFromSegments($this->subscriber, [$leftSegment]);
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->subscriber->setConfirmationsCount(2);
+    $this->subscriber->setUnconfirmedData((string)json_encode([
+      SubscriberActions::SEGMENTS_TO_CONFIRM => [$leftSegment->getId()],
+    ]));
+    $this->entityManager->flush();
+
+    $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::never()]);
+    $pages = $this->getPages($newSubscriberNotificationSender);
+    $subscription = $pages->init(false, $this->testData, false, false);
+
+    $hookCalls = 0;
+    $wp = $this->diContainer->get(WPFunctions::class);
+    $wp->removeAllActions('mailpoet_subscription_confirmed');
+    $wp->addAction('mailpoet_subscription_confirmed', function () use (&$hookCalls) {
+      $hookCalls++;
+    });
+    try {
+      $subscription->confirm();
+    } finally {
+      $wp->removeAllActions('mailpoet_subscription_confirmed');
+    }
+
+    $this->assertSame(0, $hookCalls);
+    $this->entityManager->clear();
+    $confirmedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $confirmedSubscriber);
+    $this->assertNull($confirmedSubscriber->getUnconfirmedData());
+    $this->assertSame(0, $confirmedSubscriber->getConfirmationsCount());
+    $statuses = [];
+    foreach ($confirmedSubscriber->getSubscriberSegments() as $subscriberSegment) {
+      $segment = $subscriberSegment->getSegment();
+      $this->assertInstanceOf(SegmentEntity::class, $segment);
+      $statuses[$segment->getName()] = $subscriberSegment->getStatus();
+    }
+    $this->assertSame([
+      'Product updates' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'Weekly digest' => SubscriberEntity::STATUS_SUBSCRIBED,
+    ], $statuses);
   }
 
   public function testItSendsWelcomeNotificationUponConfirmingSubscription() {

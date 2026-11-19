@@ -21,6 +21,7 @@ use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Statistics\UnsubscribeReasonTracker;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
+use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -234,6 +235,12 @@ class Pages {
     }
 
     $subscriberData = json_decode((string)$this->subscriber->getUnconfirmedData(), true);
+    $segmentIdsToConfirm = [];
+    if (is_array($subscriberData) && array_key_exists(SubscriberActions::SEGMENTS_TO_CONFIRM, $subscriberData)) {
+      $segmentIdsToConfirm = SubscriberActions::readSegmentIdsToConfirm($subscriberData);
+      unset($subscriberData[SubscriberActions::SEGMENTS_TO_CONFIRM]);
+      $subscriberData = $subscriberData ?: null;
+    }
     $originalStatus = $this->subscriber->getStatus();
     $confirmationCompleted = $originalStatus !== SubscriberEntity::STATUS_SUBSCRIBED || $subscriberData !== null;
 
@@ -251,6 +258,10 @@ class Pages {
       $this->subscriberHandler->identifyByEmail($this->subscriber->getEmail());
     } catch (\Exception $e) {
       return false;
+    }
+
+    if ($segmentIdsToConfirm) {
+      $this->subscribeToSegmentsToConfirm($segmentIdsToConfirm);
     }
 
     // Schedule welcome emails
@@ -288,6 +299,33 @@ class Pages {
     if ($confirmationCompleted) {
       $this->wp->doAction('mailpoet_subscription_confirmed', $this->subscriber);
     }
+  }
+
+  /**
+   * Adds the subscriber back to lists they left earlier and asked to join again.
+   * @param int[] $segmentIds
+   */
+  private function subscribeToSegmentsToConfirm(array $segmentIds): void {
+    if ($this->subscriber === null) {
+      return;
+    }
+    $segments = [];
+    foreach ($this->subscriber->getSubscriberSegments() as $subscriberSegment) {
+      $segment = $subscriberSegment->getSegment();
+      if (
+        $segment instanceof SegmentEntity
+        && $segment->getDeletedAt() === null
+        && $subscriberSegment->getStatus() === SubscriberEntity::STATUS_UNSUBSCRIBED
+        && in_array((int)$segment->getId(), $segmentIds, true)
+      ) {
+        $segments[] = $segment;
+      }
+    }
+    if ($segments) {
+      $this->subscriberSegmentRepository->subscribeToSegments($this->subscriber, $segments);
+    }
+    $this->subscriber->setConfirmationsCount(0);
+    $this->entityManager->flush();
   }
 
   public function unsubscribe(string $method): void {
