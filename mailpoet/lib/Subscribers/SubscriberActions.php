@@ -104,16 +104,7 @@ class SubscriberActions {
       $this->subscriberSaveController->updateCustomFields($subscriberData, $subscriber);
     } else if ($wasAlreadySubscribed) {
       // New lists are added right away, lists the subscriber left earlier only after confirmation
-      $segmentIdsToConfirm = $this->getLeftSegmentIds($subscriber, $segmentIds);
-      $previousSegmentIdsToConfirm = $this->getSegmentIdsToConfirm($subscriber);
-      if ($segmentIdsToConfirm && !$previousSegmentIdsToConfirm) {
-        // Emails sent for the original sign-up don't count towards the limit for this confirmation
-        $subscriber->setConfirmationsCount(0);
-      }
-      $pendingSegmentIds = $this->getLeftSegmentIds($subscriber, array_merge($segmentIdsToConfirm, $previousSegmentIdsToConfirm));
-      $subscriber->setUnconfirmedData(
-        $pendingSegmentIds ? (string)json_encode([self::SEGMENTS_TO_CONFIRM => $pendingSegmentIds]) : null
-      );
+      $segmentIdsToConfirm = $this->holdLeftSegmentsForConfirmation($subscriber, $segmentIds);
     } else {
       // store subscriber data to be updated after confirmation
       $unconfirmedData = $this->subscriberSaveController->filterOutReservedColumns($subscriberData);
@@ -180,6 +171,26 @@ class SubscriberActions {
     }
 
     return [$subscriber, $metaData];
+  }
+
+  /**
+   * Stores lists the subscriber left earlier in their unconfirmed data, so they are added
+   * only after the subscriber confirms. The caller sends the confirmation email.
+   * @param array<int|string> $segmentIds IDs of lists the subscriber asked to join
+   * @return int[] IDs from $segmentIds that wait for confirmation
+   */
+  public function holdLeftSegmentsForConfirmation(SubscriberEntity $subscriber, array $segmentIds): array {
+    $segmentIdsToConfirm = $this->getLeftSegmentIds($subscriber, $segmentIds);
+    $previousSegmentIdsToConfirm = $this->getSegmentIdsToConfirm($subscriber);
+    if ($segmentIdsToConfirm && !$previousSegmentIdsToConfirm) {
+      // Emails sent for the original sign-up don't count towards the limit for this confirmation
+      $subscriber->setConfirmationsCount(0);
+    }
+    $pendingSegmentIds = $this->getLeftSegmentIds($subscriber, array_merge($segmentIdsToConfirm, $previousSegmentIdsToConfirm));
+    $subscriber->setUnconfirmedData(
+      $pendingSegmentIds ? (string)json_encode([self::SEGMENTS_TO_CONFIRM => $pendingSegmentIds]) : null
+    );
+    return $segmentIdsToConfirm;
   }
 
   /**

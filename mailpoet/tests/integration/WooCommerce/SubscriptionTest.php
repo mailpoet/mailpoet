@@ -10,6 +10,7 @@ use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -308,6 +309,45 @@ class SubscriptionTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     verify($subscriber->getSource())->equals(Source::WOOCOMMERCE_CHECKOUT);
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+  }
+
+  public function testItAsksSubscribedCustomerToConfirmListsTheyLeft(): void {
+    $this->settings->set('signup_confirmation', ['enabled' => true]);
+    $leftSegment = $this->segmentsRepository->createOrUpdate('Weekly digest');
+    $this->subscribeToSegment($this->subscriber, $this->wcSegment);
+    $this->unsubscribeToSegment($this->subscriber, $leftSegment);
+    $this->entityManager->refresh($this->subscriber);
+    $this->confirmationEmailMailer
+      ->expects($this->once())
+      ->method('sendConfirmationEmailOnce')
+      ->with($this->isInstanceOf(SubscriberEntity::class), null, null, true);
+
+    $this->settings->set(Subscription::OPTIN_SEGMENTS_SETTING_NAME, [$leftSegment->getId()]);
+    $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, true);
+    $_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME] = 'on';
+    $data['billing_email'] = $this->subscriber->getEmail();
+
+    $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
+    unset($_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME]);
+
+    verify($subscribed)->equals(true);
+    $this->entityManager->clear();
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    $statuses = [];
+    foreach ($subscriber->getSubscriberSegments() as $subscriberSegment) {
+      $segment = $subscriberSegment->getSegment();
+      $this->assertInstanceOf(SegmentEntity::class, $segment);
+      $statuses[(int)$segment->getId()] = $subscriberSegment->getStatus();
+    }
+    verify($statuses)->equals([
+      $this->wcSegment->getId() => SubscriberEntity::STATUS_SUBSCRIBED,
+      $leftSegment->getId() => SubscriberEntity::STATUS_UNSUBSCRIBED,
+    ]);
+    verify(json_decode((string)$subscriber->getUnconfirmedData(), true))->equals([
+      SubscriberActions::SEGMENTS_TO_CONFIRM => [$leftSegment->getId()],
+    ]);
   }
 
   private function subscribeToSegment(SubscriberEntity $subscriber, SegmentEntity $segment): void {
