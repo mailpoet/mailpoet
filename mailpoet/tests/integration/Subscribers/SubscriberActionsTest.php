@@ -6,6 +6,7 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -315,6 +316,55 @@ class SubscriberActionsTest extends \MailPoetTest {
 
     $this->settings->set('signup_confirmation.enabled', $originalConfirmationSettingValue);
     $this->settings->set('collect_subscriber_timezones.enabled', $originalTimeZoneSettingValue);
+  }
+
+  public function testItAsksSubscribedSubscriberToConfirmListsTheyLeft(): void {
+    $this->settings->set('signup_confirmation.enabled', true);
+    $keptSegment = $this->segmentsRepository->createOrUpdate('Product updates');
+    $leftSegment = $this->segmentsRepository->createOrUpdate('Weekly digest');
+    $newSegment = $this->segmentsRepository->createOrUpdate('Events');
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('left-a-list@example.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([$keptSegment, $leftSegment])
+      ->create();
+    $subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
+    $subscriberSegmentRepository->unsubscribeFromSegments($subscriber, [$leftSegment]);
+    // all confirmation emails were used up for the original sign-up
+    $subscriber->setConfirmationsCount(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
+    $this->entityManager->flush();
+
+    $confirmationEmailMailer = $this->createMock(ConfirmationEmailMailer::class);
+    $confirmationEmailMailer->expects($this->once())
+      ->method('sendConfirmationEmailOnce')
+      ->with($this->isInstanceOf(SubscriberEntity::class), null, null, true)
+      ->willReturn(true);
+    $subscriberActions = $this->getServiceWithOverrides(SubscriberActions::class, [
+      'confirmationEmailMailer' => $confirmationEmailMailer,
+    ]);
+
+    [$subscriber, $meta] = $subscriberActions->subscribe(
+      ['email' => 'left-a-list@example.com'],
+      [$keptSegment->getId(), $leftSegment->getId(), $newSegment->getId()]
+    );
+
+    $this->entityManager->refresh($subscriber);
+    verify($meta['confirmationEmailResult'])->true();
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    $statuses = [];
+    foreach ($subscriber->getSubscriberSegments() as $subscriberSegment) {
+      $segment = $subscriberSegment->getSegment();
+      $this->assertInstanceOf(SegmentEntity::class, $segment);
+      $statuses[$segment->getName()] = $subscriberSegment->getStatus();
+    }
+    verify($statuses)->equals([
+      'Product updates' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'Weekly digest' => SubscriberEntity::STATUS_UNSUBSCRIBED,
+      'Events' => SubscriberEntity::STATUS_SUBSCRIBED,
+    ]);
+    verify(json_decode((string)$subscriber->getUnconfirmedData(), true))->equals([
+      SubscriberActions::SEGMENTS_TO_CONFIRM => [$leftSegment->getId()],
+    ]);
   }
 
   public function testItUsesPublicConfirmationModeForPublicSubscribes(): void {

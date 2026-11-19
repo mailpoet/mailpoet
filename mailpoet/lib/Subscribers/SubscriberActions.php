@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscribers;
 
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
@@ -11,6 +12,12 @@ use MailPoet\Util\Helpers;
 use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberActions {
+  /**
+   * Key in the subscriber's unconfirmed data holding IDs of lists the subscriber
+   * left earlier and asked to join again. They are added after confirmation.
+   */
+  public const SEGMENTS_TO_CONFIRM = 'segments_to_confirm';
+
   /** @var SettingsController */
   private $settings;
 
@@ -70,6 +77,7 @@ class SubscriberActions {
     // filter out keys from the subscriber_data array
     // that should not be editable when subscribing
     $subscriberData = $this->subscriberSaveController->filterOutReservedColumns($subscriberData);
+    unset($subscriberData[self::SEGMENTS_TO_CONFIRM]);
 
     $signupConfirmationEnabled = (bool)$this->settings->get(
       'signup_confirmation.enabled'
@@ -84,6 +92,7 @@ class SubscriberActions {
       $subscriber instanceof SubscriberEntity
       && $subscriber->getStatus() === SubscriberEntity::STATUS_UNCONFIRMED
     );
+    $segmentIdsToConfirm = [];
     if (!$subscriber && !isset($subscriberData['source'])) {
       $subscriberData['source'] = Source::FORM;
     }
@@ -94,7 +103,17 @@ class SubscriberActions {
       // custom fields should use the same approach as the subscriber main data that means to wait on confirmation
       $this->subscriberSaveController->updateCustomFields($subscriberData, $subscriber);
     } else if ($wasAlreadySubscribed) {
-      $subscriber->setUnconfirmedData(null);
+      // New lists are added right away, lists the subscriber left earlier only after confirmation
+      $segmentIdsToConfirm = $this->getLeftSegmentIds($subscriber, $segmentIds);
+      $previousSegmentIdsToConfirm = $this->getSegmentIdsToConfirm($subscriber);
+      if ($segmentIdsToConfirm && !$previousSegmentIdsToConfirm) {
+        // Emails sent for the original sign-up don't count towards the limit for this confirmation
+        $subscriber->setConfirmationsCount(0);
+      }
+      $pendingSegmentIds = $this->getLeftSegmentIds($subscriber, array_merge($segmentIdsToConfirm, $previousSegmentIdsToConfirm));
+      $subscriber->setUnconfirmedData(
+        $pendingSegmentIds ? (string)json_encode([self::SEGMENTS_TO_CONFIRM => $pendingSegmentIds]) : null
+      );
     } else {
       // store subscriber data to be updated after confirmation
       $unconfirmedData = $this->subscriberSaveController->filterOutReservedColumns($subscriberData);
@@ -126,7 +145,12 @@ class SubscriberActions {
     $metaData = ['confirmationEmailResult' => false];
     // link subscriber to segments
     $segments = $this->segmentsRepository->findByIds($segmentIds);
-    $this->subscriberSegmentRepository->subscribeToSegments($subscriber, $segments);
+    $this->subscriberSegmentRepository->subscribeToSegments(
+      $subscriber,
+      array_filter($segments, function (SegmentEntity $segment) use ($segmentIdsToConfirm): bool {
+        return !in_array((int)$segment->getId(), $segmentIdsToConfirm, true);
+      })
+    );
 
     // resolve confirmation settings from segment-level overrides
     [$confirmationEmailId, $confirmationPageId] = $this->confirmationEmailResolver->resolveFromSegments($segments);
@@ -134,11 +158,11 @@ class SubscriberActions {
     try {
       if (
         $signupConfirmationEnabled
-        && $isUnconfirmedResubscription
+        && ($isUnconfirmedResubscription || $segmentIdsToConfirm)
         && $subscriber->getConfirmationsCount() >= ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS
       ) {
         $metaData['error'] = $this->getMaxConfirmationEmailsReachedError();
-      } else if (!$wasAlreadySubscribed) {
+      } else if (!$wasAlreadySubscribed || $segmentIdsToConfirm) {
         $metaData['confirmationEmailResult'] = $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber, $confirmationEmailId, $confirmationPageId, true);
       }
     } catch (\Exception $e) {
@@ -156,6 +180,48 @@ class SubscriberActions {
     }
 
     return [$subscriber, $metaData];
+  }
+
+  /**
+   * @param array<int|string> $segmentIds
+   * @return int[] IDs from $segmentIds of lists the subscriber unsubscribed from
+   */
+  private function getLeftSegmentIds(SubscriberEntity $subscriber, array $segmentIds): array {
+    $segmentIds = array_map('intval', $segmentIds);
+    $leftSegmentIds = [];
+    foreach ($subscriber->getSubscriberSegments() as $subscriberSegment) {
+      $segment = $subscriberSegment->getSegment();
+      if (
+        $segment instanceof SegmentEntity
+        && $subscriberSegment->getStatus() === SubscriberEntity::STATUS_UNSUBSCRIBED
+        && in_array((int)$segment->getId(), $segmentIds, true)
+      ) {
+        $leftSegmentIds[] = (int)$segment->getId();
+      }
+    }
+    return $leftSegmentIds;
+  }
+
+  /**
+   * @return int[]
+   */
+  private function getSegmentIdsToConfirm(SubscriberEntity $subscriber): array {
+    $unconfirmedData = json_decode((string)$subscriber->getUnconfirmedData(), true);
+    return is_array($unconfirmedData) ? self::readSegmentIdsToConfirm($unconfirmedData) : [];
+  }
+
+  /**
+   * @param array<mixed> $unconfirmedData Decoded unconfirmed data of a subscriber
+   * @return int[]
+   */
+  public static function readSegmentIdsToConfirm(array $unconfirmedData): array {
+    $segmentIds = $unconfirmedData[self::SEGMENTS_TO_CONFIRM] ?? [];
+    if (!is_array($segmentIds)) {
+      return [];
+    }
+    return array_map(function ($segmentId): int {
+      return is_numeric($segmentId) ? (int)$segmentId : 0;
+    }, $segmentIds);
   }
 
   private function getMaxConfirmationEmailsReachedError(): string {
