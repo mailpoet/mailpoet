@@ -66,6 +66,40 @@ class PageRendererTest extends \MailPoetTest {
     $this->assertStringContainsString('var mailpoet_date_timezone = "America/New_York";', $output);
   }
 
+  public function testItPassesProductAndAiDisclosureToChatWidget(): void {
+    $this->diContainer->get(SettingsController::class)->set('3rd_party_libs.enabled', '1');
+
+    $output = $this->renderBlankPage();
+
+    $this->assertStringContainsString('<chat-widget', $output);
+    $this->assertStringContainsString('product="MailPoet"', $output);
+    $this->assertStringContainsString('ai-disclosure="You&#039;re chatting with AI from MailPoet Support."', $output);
+  }
+
+  public function testItEscapesTranslatedAiDisclosure(): void {
+    $this->diContainer->get(SettingsController::class)->set('3rd_party_libs.enabled', '1');
+    $translate = function (string $translation, string $text): string {
+      return $text === 'You\'re chatting with AI from %s Support.' ? 'Sie "chatten" mit KI von %s.' : $translation;
+    };
+    add_filter('gettext', $translate, 10, 2);
+
+    try {
+      $output = $this->renderBlankPage();
+    } finally {
+      remove_filter('gettext', $translate, 10);
+    }
+
+    $this->assertStringContainsString('ai-disclosure="Sie &quot;chatten&quot; mit KI von MailPoet."', $output);
+  }
+
+  public function testItDoesNotRenderChatWidgetWhenThirdPartyLibsAreDisabled(): void {
+    $this->diContainer->get(SettingsController::class)->set('3rd_party_libs.enabled', '0');
+
+    $output = $this->renderBlankPage();
+
+    $this->assertStringNotContainsString('<chat-widget', $output);
+  }
+
   private function renderBlankPage(): string {
     ob_start();
     try {
