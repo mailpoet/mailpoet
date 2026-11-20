@@ -127,7 +127,7 @@ Apply sections 1, 2 and 4 to the tests a PR adds or changes, and report findings
 
 ## 7. Report
 
-In the PR, under “Code review notes”, a reviewer should see the test decision, not guess it:
+When you hand the work back (to the person who asked, or in the agent’s final report), show the test decision so nobody has to guess it:
 
 ```
 Tests
@@ -138,6 +138,8 @@ Merged or dropped:
 Not tested:
 - <what, and the one-line reason, e.g. "copy change, checked in the browser">
 ```
+
+The PR gets only what the diff doesn’t show, in “Code review notes”: the “Not tested” lines, and a suite choice above the default with its reason (“integration, because the behaviour is the SQL”). Kept tests are in the diff, so don’t list them there.
 
 Before reporting, compare the number of new tests with the lines of production code changed. Many tests for a small change usually means one change tested many times: look again.
 
