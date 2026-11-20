@@ -1,0 +1,118 @@
+#mailpoet_email_templates_container .components-notice {
+  margin: 8px 0 0;
+}
+
+.mailpoet-email-templates-dataviews {
+  margin-top: 8px;
+
+  .dataviews-wrapper {
+    min-height: 200px;
+  }
+
+  .dataviews-view-grid__media {
+    background: #f6f7f7;
+  }
+}
+
+.mailpoet-email-templates__toolbar {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.mailpoet-email-templates__tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.mailpoet-email-templates__tab {
+  align-items: center;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: #1e1e1e;
+  cursor: pointer;
+  display: flex;
+  font-size: 13px;
+  gap: 6px;
+  height: 40px;
+  padding: 0 12px;
+
+  &.is-active {
+    border-bottom-color: var(--wp-admin-theme-color, #3858e9);
+    font-weight: 600;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--wp-admin-theme-color, #3858e9);
+    outline: none;
+  }
+}
+
+.mailpoet-email-templates__tab-count {
+  background: #f0f0f0;
+  border-radius: 2px;
+  color: #757575;
+  font-size: 11px;
+  font-weight: 400;
+  padding: 0 6px;
+}
+
+// Fills the DataViews media wrapper, which is a square in the grid layout.
+.mailpoet-email-template-thumbnail {
+  background: #f6f7f7;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+
+  iframe {
+    border: 0;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    transform-origin: top left;
+  }
+}
+
+// The table layout has no square wrapper, so give the thumbnail its own size.
+.dataviews-view-table .mailpoet-email-template-thumbnail {
+  aspect-ratio: 1;
+  width: 120px;
+}
+
+.mailpoet-email-template-thumbnail__error {
+  color: #757575;
+  font-size: 12px;
+  left: 0;
+  position: absolute;
+  text-align: center;
+  top: 45%;
+  width: 100%;
+}
+
+.mailpoet-email-templates__badge {
+  background: #f0f0f0;
+  border-radius: 2px;
+  color: #50575e;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+
+  &.is-yours {
+    background: #e6f2e8;
+    color: #00450c;
+  }
+}
+
+.mailpoet-email-templates__empty {
+  padding: 24px;
+  text-align: center;
+}
+
+.mailpoet-email-templates-preview-modal iframe {
+  border: 0;
+  display: block;
+  height: 70vh;
+  width: 100%;
+}
