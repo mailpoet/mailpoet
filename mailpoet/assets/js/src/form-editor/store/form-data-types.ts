@@ -9,8 +9,8 @@ type FormPlacementBase = {
   styles: PlacementStyles;
   categories: string[] | number[];
   tags: string[] | number[];
-  posts: { all: boolean | '' | '1'; selected: string[] };
-  pages: { all: boolean | '' | '1'; selected: string[] };
+  posts: { all: boolean | '' | '1'; selected: string[]; excluded: string[] };
+  pages: { all: boolean | '' | '1'; selected: string[]; excluded: string[] };
   homepage: boolean | '' | '1';
   tagArchives: { all: boolean | '' | '1'; selected: string[] };
   categoryArchives: { all: boolean | '' | '1'; selected: string[] };

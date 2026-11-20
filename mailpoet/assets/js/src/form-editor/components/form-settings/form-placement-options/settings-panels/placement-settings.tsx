@@ -321,6 +321,38 @@ function PlacementSettings({ settingsPlacementKey }: Props): JSX.Element {
           </div>
         </>
       )}
+      <div className="form-editor-placement-selection">
+        <ItemSelectControl
+          label={MailPoet.I18n.t('excludeFromPages')}
+          placeholder={MailPoet.I18n.t('selectPage')}
+          items={pages}
+          selected={placement.pages.excluded}
+          onChange={(selected): void =>
+            changeSelected(
+              'pages.excluded',
+              placement.pages.excluded,
+              selected,
+              [],
+            )
+          }
+        />
+      </div>
+      <div className="form-editor-placement-selection">
+        <ItemSelectControl
+          label={MailPoet.I18n.t('excludeFromPosts')}
+          placeholder={MailPoet.I18n.t('selectPage')}
+          items={posts}
+          selected={placement.posts.excluded}
+          onChange={(selected): void =>
+            changeSelected(
+              'posts.excluded',
+              placement.posts.excluded,
+              selected,
+              [],
+            )
+          }
+        />
+      </div>
     </>
   );
 }

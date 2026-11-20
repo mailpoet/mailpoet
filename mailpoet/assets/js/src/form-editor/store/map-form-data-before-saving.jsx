@@ -27,6 +27,7 @@ export function mapFormDataBeforeSaving(data) {
                 ? '1'
                 : '',
             selected: data.settings.formPlacement?.popup?.posts?.selected,
+            excluded: data.settings.formPlacement?.popup?.posts?.excluded ?? [],
           },
           pages: {
             all:
@@ -34,6 +35,7 @@ export function mapFormDataBeforeSaving(data) {
                 ? '1'
                 : '',
             selected: data.settings.formPlacement?.popup?.pages?.selected,
+            excluded: data.settings.formPlacement?.popup?.pages?.excluded ?? [],
           },
           homepage:
             data.settings.formPlacement?.popup?.homepage === true ? '1' : '',
@@ -70,6 +72,8 @@ export function mapFormDataBeforeSaving(data) {
                 ? '1'
                 : '',
             selected: data.settings.formPlacement?.fixedBar?.posts?.selected,
+            excluded:
+              data.settings.formPlacement?.fixedBar?.posts?.excluded ?? [],
           },
           pages: {
             all:
@@ -77,6 +81,8 @@ export function mapFormDataBeforeSaving(data) {
                 ? '1'
                 : '',
             selected: data.settings.formPlacement?.fixedBar?.pages?.selected,
+            excluded:
+              data.settings.formPlacement?.fixedBar?.pages?.excluded ?? [],
           },
           homepage:
             data.settings.formPlacement?.fixedBar?.homepage === true ? '1' : '',
@@ -112,6 +118,8 @@ export function mapFormDataBeforeSaving(data) {
                 ? '1'
                 : '',
             selected: data.settings.formPlacement?.belowPosts?.posts?.selected,
+            excluded:
+              data.settings.formPlacement?.belowPosts?.posts?.excluded ?? [],
           },
           pages: {
             all:
@@ -119,6 +127,8 @@ export function mapFormDataBeforeSaving(data) {
                 ? '1'
                 : '',
             selected: data.settings.formPlacement?.belowPosts?.pages?.selected,
+            excluded:
+              data.settings.formPlacement?.belowPosts?.pages?.excluded ?? [],
           },
         },
         slide_in: {
@@ -138,6 +148,8 @@ export function mapFormDataBeforeSaving(data) {
                 ? '1'
                 : '',
             selected: data.settings.formPlacement?.slideIn?.posts?.selected,
+            excluded:
+              data.settings.formPlacement?.slideIn?.posts?.excluded ?? [],
           },
           pages: {
             all:
@@ -145,6 +157,8 @@ export function mapFormDataBeforeSaving(data) {
                 ? '1'
                 : '',
             selected: data.settings.formPlacement?.slideIn?.pages?.selected,
+            excluded:
+              data.settings.formPlacement?.slideIn?.pages?.excluded ?? [],
           },
           homepage:
             data.settings.formPlacement?.slideIn?.homepage === true ? '1' : '',
