@@ -113,16 +113,16 @@ Ask the user what they want to do with the findings:
 
 ## Common Mistakes
 
-| Mistake                                 | Fix                                                                                 |
-| --------------------------------------- | ----------------------------------------------------------------------------------- |
-| Reviewing only the diff, not full files | Always read the complete changed files for context                                  |
-| Skipping the Linear ticket              | The ticket has acceptance criteria that may not be in the PR description            |
-| Not loading ticket comments/attachments | Comments and attachments often contain clarifications and design mockups            |
-| Generic security review                 | Tailor findings to the actual code -- do not list OWASP items with no code evidence |
-| Posting review to GitHub automatically  | Always print for the user to post themselves                                        |
-| Skipping linked PRs                     | Linked PRs need to be reviewed together                                             |
-| Not reading PR CI status                | CI failures are important context for the review                                    |
-| Missing regression test for bug fix     | Bug fixes without a test that reproduces the bug are incomplete -- always flag      |
+| Mistake                                 | Fix                                                                                   |
+| --------------------------------------- | ------------------------------------------------------------------------------------- |
+| Reviewing only the diff, not full files | Always read the complete changed files for context                                    |
+| Skipping the Linear ticket              | The ticket has acceptance criteria that may not be in the PR description              |
+| Not loading ticket comments/attachments | Comments and attachments often contain clarifications and design mockups              |
+| Generic security review                 | Tailor findings to the actual code -- do not list OWASP items with no code evidence   |
+| Posting review to GitHub automatically  | Always print for the user to post themselves                                          |
+| Skipping linked PRs                     | Linked PRs need to be reviewed together                                               |
+| Not reading PR CI status                | CI failures are important context for the review                                      |
+| Missing regression test for bug fix     | Flag a bug fix without a test unless the PR says why none is needed (`writing-tests`) |
 
 ## Premium
 
