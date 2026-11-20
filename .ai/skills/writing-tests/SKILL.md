@@ -1,40 +1,71 @@
 ---
 name: writing-tests
-description: 'Use when authoring tests for MailPoet — adding a new test case, picking the right test type, choosing a name, structuring the file, deciding what belongs in unit vs integration vs acceptance. For invoking the test runner (running a file, the whole suite, premium variants, debug mode) see running-tests. For investigating a CI failure see debugging-failed-tests. Triggers on "write a test", "add a test for this", "which suite should this test go in".'
+description: 'Use before writing, planning or reviewing tests for MailPoet — deciding whether a change needs a test at all, which suite it belongs in (unit, integration, acceptance, JavaScript), how to write it, and how to prove it catches a real regression. Triggers on "write a test", "add tests for this", "which suite should this test go in", "review these tests". For invoking the test runner see running-tests. For investigating a CI failure see debugging-failed-tests.'
 ---
 
 # Writing Tests
 
-## Overview
+Tests cost time three times: to write, on every CI run, and every time someone debugs a red build. Write the tests that catch a real regression, at the cheapest level that can catch it, and no others. A test earns its place when it catches a break no other test catches.
 
-MailPoet has six test suites across two plugins. This skill is about **authoring** them — where the file belongs, what to extend, how to name and structure it, what kind of test belongs where. For invoking the test runner, see [[running-tests]].
+**Lint the pattern, test the decision.** Most files are one of a few kinds (REST or JSON API endpoint, repository, automation step, form handler, React form, settings field, email block…) and follow the codebase’s pattern for that kind. A lint or static-analysis rule checks the pattern in every file, including files not written yet. A test is for the part of a file that goes beyond its pattern. Full coverage is not the goal.
 
-## Guidelines
+For running tests see [[running-tests]]. Commands come from the root `package.json`; don’t guess them.
 
-- **Prefer smaller tests over big ones.** Keep them focused, short, and linear. Avoid `if` / `for` / `while` inside a test — if you need a loop you probably need separate test cases instead. Why: loops hide which case actually failed, and one fix accidentally masks another.
-- **Use descriptive test names.** The name should make it obvious from CI output what failed and why. Describe the scenario and expected outcome, not the method being tested. A reader who has never seen the file should be able to guess the intent from the name alone.
-- **Prefer self-explanatory tests over comments.** First try to refactor — better naming, extract helpers, split into smaller tests — so the comment becomes unnecessary. A comment that survives that pass is usually worth keeping; one that doesn’t is a code smell pointing at the test itself.
-- **In acceptance tests use `$i->wantTo(...)` instead of comments.** `wantTo` text shows up in the Codeception output, plain comments don’t. The output is the only thing a future debugger sees.
-- **Prefer unit > integration > acceptance.** Unit tests are fast and cheap; acceptance tests are slow, flaky, and expensive to maintain. Only reach for acceptance when you genuinely need a real browser flow.
-- **Avoid brittle selectors in acceptance tests.** Long CSS chains and 3rd-party DOM structure break on library updates. Prefer `data-automation-id` attributes, ARIA roles, or short stable selectors. If a 3rd-party component doesn’t expose good hooks, add a `data-automation-id` (or a thin wrapper) in the production code so the test has something stable to grab.
-- **Defend against flakiness in acceptance tests.** Always wait for the page / element to be ready before interacting (`waitForElement`, `waitForText`, …) — never assume the page is loaded. When writing a test, deliberately ask “what could make this fail intermittently?” and guard against it.
-- **Always run the test before committing.** Never commit a test you haven’t seen pass at least once. If it can’t be run locally, say so out loud — don’t assume it works.
-- **Prefer TDD.** Write the failing test first, see it fail (this proves the test actually tests something), then write the code that makes it pass.
+## 1. Does this change need a test?
 
-## Picking the right suite
+Ask: **if someone breaks this next month, what goes wrong, and would anyone notice before a customer does?**
 
-| You need to test…                                                   | Use                           | Why                                                                           |
-| ------------------------------------------------------------------- | ----------------------------- | ----------------------------------------------------------------------------- |
-| Pure PHP logic with no WP / DB dependency                           | Unit                          | Fastest, no Docker, runs on the host                                          |
-| Behaviour that hits WP APIs, the DB, or our Doctrine repositories   | Integration                   | Real WordPress + DB inside Docker                                             |
-| A real browser flow (forms, redirects, JS, multi-page interactions) | Acceptance                    | Only place to drive an actual browser                                         |
-| Frontend React/TS logic without a real browser                      | JavaScript                    | Mocha-based, host-side                                                        |
-| The legacy Backbone newsletter editor                               | _do not write new tests here_ | The Backbone editor is being replaced — extend the block-based editor instead |
-| Load / scale behaviour                                              | Performance                   | k6 + Playwright; only for perf work                                           |
+- **Yes, test it:** logic that makes a decision (permissions, limits, prices, dates, sending, segments, billing, data shown to the wrong person), a bug that has happened before, and every security fix.
+- **Usually no new test:**
+  - Copy, styling, layout and markup changes. Check them in the browser.
+  - Config, version bumps, dependency updates, renames and pure refactors. The existing tests must pass before and after.
+  - Code that only passes values through to WordPress, WooCommerce or a library with no decision of its own. Don’t test the framework.
+  - A small, low-risk fix whose only possible test would be an acceptance test. Check it by hand instead.
+- **Already covered?** Search the existing tests first. Add an assertion to an existing test or a case to a data provider before writing a new test.
 
-When two options would work, choose the one further up the table — cheaper to run, cheaper to maintain.
+**Name the regression before you keep a test.** Write one sentence: a realistic code change that would make this test fail and that no existing test already catches. “If the segment filter stopped excluding unsubscribed subscribers, they would get the next newsletter” is a sentence. “Verifies the class works” is not. No sentence, no test.
 
-## Where new tests go and what they extend
+**What to cover:** the happy path, plus usually one to three high-impact cases. A case is high impact when it is a failure that loses data, money, access or security; the bug being fixed; or the main error result a caller acts on. Skip boundary, empty-input and odd-format variants unless one of them is the bug.
+
+**A file that only follows its pattern gets no test of its own.** Such a test restates the code and never finds a bug. A file earns a test when it decides something the pattern doesn’t:
+
+- it branches on a type, scope, role or status;
+- it builds a write from a read, and a failed read must stop the write;
+- it updates only some fields (which ones reach the write?);
+- it does more than one write (order, and what happens when one fails);
+- it makes a security decision, such as a value the server decides instead of taking it from the request;
+- it remaps or swallows an error, or reshapes a payload;
+- a form whose fields depend on each other or whose input is reshaped before submit; a list or dropdown that filters, groups or maps its options.
+
+Plain utility functions have no pattern: test them directly. “Add tests for the endpoints” means test the endpoints that decide something, not one test per file.
+
+When you decide not to write a test, say so in the PR in one line, with the reason. “No test: copy change, checked in the browser” is a complete answer.
+
+## 2. Which suite?
+
+Pick the **lowest** level that can catch the failure. Go one level up only when the lower one can’t, and write down why.
+
+| You need to test…                                                         | Use                           | Why                                                                           |
+| ------------------------------------------------------------------------- | ----------------------------- | ----------------------------------------------------------------------------- |
+| PHP logic with no WP / DB dependency (WP calls mocked via `WP\Functions`) | Unit                          | Fastest, no Docker, runs on the host                                          |
+| A SQL query, migration, Doctrine repository, or real WP wiring            | Integration                   | Real WordPress + DB inside Docker                                             |
+| A critical browser flow nothing lower can protect                         | Acceptance                    | Only place to drive an actual browser                                         |
+| Frontend React/TS logic                                                   | JavaScript                    | Mocha-based, host-side                                                        |
+| The legacy Backbone newsletter editor                                     | _do not write new tests here_ | The Backbone editor is being replaced — extend the block-based editor instead |
+| Load / scale behaviour                                                    | Performance                   | k6 + Playwright; only for perf work                                           |
+
+- **Unit is the default.** Most logic can be tested here by calling the class directly with plain inputs. If the code is hard to unit test because it reads the database or globals in the middle of its logic, a small refactor that moves the decision into a plain method is often the better fix.
+- **Integration** only when the behaviour _is_ the database or the real wiring. Integration tests are slower and need the Docker test stack, so keep them few and focused.
+- **Acceptance almost never.** Slow, flaky and slow to debug. Add one only for a critical user flow (sending an email, sign-up, checkout opt-in) when the task asks for it, never for a bug a unit test can catch. If an acceptance test already walks the flow, add an assertion to it instead of a new test.
+
+### Pattern checks belong in a linter, not a test
+
+If a test would only check that a file follows its pattern (the capability check runs first, the WordPress call goes through `WP\Functions`, output is escaped), that check belongs in PHPStan, phpcs (MailPoet’s own sniffs are in `mailpoet/tasks/code_sniffer/MailPoet/`) or ESLint. A rule catches a dropped line in every file, with `file:line`, before review.
+
+- If the rule exists, rely on it and don’t repeat it in a test.
+- If it doesn’t, say in the PR which rule would replace the test, instead of writing the pattern test.
+
+## 3. Where new tests go and what they extend
 
 ### PHP unit (`mailpoet/tests/unit/`)
 
@@ -51,30 +82,69 @@ When two options would work, choose the one further up the table — cheaper to 
 ### PHP acceptance (`mailpoet/tests/acceptance/` and `mailpoet-premium/tests/acceptance/`)
 
 - File pattern `*Cest.php`. Each test method takes the `AcceptanceTester $i` parameter.
-- Use `$i->wantTo("describe the scenario")` at the top of each method — it lands in the run output and is the only documentation a future debugger sees.
-- Anchor on `data-automation-id` / ARIA selectors, not DOM structure.
-- Always wait explicitly for the element you’re about to interact with.
+- Use `$i->wantTo("describe the scenario")` at the top of each method instead of comments — it lands in the run output and is the only documentation a future debugger sees.
+- Anchor on `data-automation-id` / ARIA selectors, not DOM structure or 3rd-party markup. If a component has no stable hook, add a `data-automation-id` in the production code.
+- Always wait explicitly for the element you’re about to interact with (`waitForElement`, `waitForText`, …), and ask what could make the test fail intermittently.
 
 ### JavaScript (`mailpoet/tests/javascript/`)
 
 - File pattern `*.spec.ts`. Mocha + Chai + Sinon.
 - **Free plugin only.**
-- Test logic, not the DOM. For DOM-level flows, prefer an acceptance test.
+- Test logic, not the DOM.
 
 ### Test data builders
 
-Place reusable test fixtures under `tests/DataFactories/`. If you find yourself constructing the same shape twice, lift it into a factory the next test in this area will thank you for.
+Reusable fixtures go in `tests/DataFactories/`. If you are building the same entity shape a second time, add it to a factory.
 
-## Common mistakes when authoring tests
+## 4. How to write it
 
-- **Writing the test after the code “just to have a test”.** That doesn’t prove the test tests anything; tests-after answer “what does this code do?” instead of “what should this code do?”. Write the failing test first.
-- **Picking acceptance for something a unit test could cover.** Acceptance tests are the most expensive thing you own. Push every assertion as far down the pyramid as it can go.
-- **Asserting on long error message strings.** Error text changes; assert on the structured behaviour (exception type, status code, stored DB state) instead.
-- **Sharing state across test methods within a file.** Each test must set up and tear down its own state. State leakage between tests is the #1 cause of “passes alone, fails in the suite” reports.
-- **Calling WordPress functions directly in production code.** Test pain here is a code smell — the production code should go through `WP\Functions` so the test can mock it. Fix the production code rather than working around it in the test.
+- **Small, linear tests with descriptive names.** No `if` / `for` / `while` in a test: loops hide which case failed. The name says the scenario and the expected outcome, so CI output alone tells a reader what broke.
+- **Test behaviour through the public interface.** No reflection into private or protected methods.
+- **Assert values, not shapes.** `verify($result)->same('jane@example.com')`, not `->notEmpty()` or `->isString()`.
+- **`same()` over `equals()`** in new assertions (`verify()->same()`, `assertSame()`), unless you compare objects by value. Don’t rewrite existing assertions only to change this.
+- **Write the expected value as a literal.** Don’t recompute it with the helpers or defaults the code under test uses, or the test agrees with the bug.
+- **Mocks only at the edges** (`WP\Functions`, HTTP, time, mail, the MailPoet sending service, WooCommerce). A test that only checks that your mocks were called proves the mocks work, not the code. Assert what leaves the code instead: the rows written (and that none are written after a failure), the returned result, and side effects such as scheduled actions, emails or redirects.
+- **Stubs must not hide calls.** `Stub::makeEmpty()` returns an empty value (`null`, `false`, `[]`, `''`, by return type) for every method the test didn’t set up, so an unexpected call passes silently and can send the code down another branch. When a call must not happen, say so with `Expected::never()` or `->expects($this->never())`.
+- **Don’t copy mock setup between test files.** A setup you need a second time belongs in a factory or a shared helper (`tests/DataFactories/`, `tests/_support/Helper/`). Set up the happy path once in `_before()` / `beforeEach`, then each test changes only what it is about.
+- **Check behaviour that goes through another plugin once against the real plugin.** A stub of WooCommerce Bookings, Subscriptions or Memberships can drift from the real one: a Premium test once passed only against its own Bookings stub and called a method the real plugin doesn’t have. When a change alters what a user or merchant sees through another plugin, run it at least once with the real plugin installed (an integration test or a browser check) and say which version in the PR.
+- **No hollow tests:** no `assertTrue(true)`, no `addToAssertionCount(1)`, no “the class exists”, no “does not throw” with nothing else checked, no test that pins a constant to its own literal (`verify(Foo::KEY)->same('key')`).
+- **No near-duplicates.** Three tests that differ in one input are one test with a data provider. Keep providers short (about 3 to 6 cases, one per distinct outcome). New providers can be `public static`: PHPUnit 9.6 accepts both and PHPUnit 10 requires it.
+- **Pin broad exceptions.** A bare `expectException(\Exception::class)` passes when the wrong path throws. Expect the specific exception class, or add `expectExceptionCode()`. Use `expectExceptionMessage()` only when nothing else tells the paths apart, and match a short stable part: long message strings change.
+- **Don’t assert inside a callback the code under test may catch.** Filters, hooks and stub callbacks often run inside a production `try`/`catch`, which swallows the failed assertion. Record what the callback received, then assert after the call returns.
+- **Fast and isolated.** No sleeps, no real time, no dependence on test order or on state left by another test method.
+- **Prefer self-explanatory tests over comments.** Rename or split the test first; keep a comment only if it still adds something.
+- **Only the tests your change adds or changes.** Don’t rewrite existing tests that are out of scope.
+
+## 5. Prove it
+
+- **Red before green.** Run each new test before the fix and watch it fail for the reason it exists (the assertion about the bug, not a syntax error or a missing fixture). Then fix, and watch it pass. Never commit a test you haven’t seen pass; if you can’t run it, say so.
+- **Break what it protects.** Delete the guard, flip the condition or return early, confirm the test fails, then restore the file and confirm it passes. If it still passes with the guard removed, tighten the assertion or drop the test. This is required for security fixes.
+- **Run the cheap tests often** (unit, and the tests you touched). Run integration or acceptance suites at the end, one suite at a time: they share the test database.
+
+## 6. Reviewing tests you didn’t write
+
+Apply sections 1, 2 and 4 to the tests a PR adds or changes, and report findings instead of editing: tests with no nameable regression, edge-case bulk, near-duplicates, hollow or constant-pinning tests, computed expected values, broad exceptions, assertions inside caught callbacks, mocks beyond the edges, pattern checks that belong in a linter, and a suite higher than needed. Don’t flag tests the PR didn’t touch.
+
+## 7. Report
+
+When you hand the work back (to the person who asked, or in the agent’s final report), show the test decision so nobody has to guess it:
+
+```
+Tests
+Kept:
+- FooTest::testBar (unit): catches <realistic change that would fail it>; fails when <the line you broke>
+Merged or dropped:
+- testX, testY → merged into the testZ data provider (near-duplicates)
+Not tested:
+- <what, and the one-line reason, e.g. "copy change, checked in the browser">
+```
+
+The PR gets only what the diff doesn’t show, in “Code review notes”: the “Not tested” lines, and a suite choice above the default with its reason (“integration, because the behaviour is the SQL”). Kept tests are in the diff, so don’t list them there.
+
+Before reporting, compare the number of new tests with the lines of production code changed. Many tests for a small change usually means one change tested many times: look again.
 
 ## Related skills
 
-- [[running-tests]] — how to actually invoke the test runner (single file, whole suite, premium variants, debug mode, multisite, Docker shell).
+- [[running-tests]] — how to invoke the test runner (single file, whole suite, premium variants, debug mode, multisite, Docker shell).
 - [[debugging-failed-tests]] — investigating a CI failure and shipping a fix.
 - [[code-quality]] — the broader lint/format/test loop you should run before pushing.
