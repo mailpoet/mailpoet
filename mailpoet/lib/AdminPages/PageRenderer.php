@@ -35,6 +35,8 @@ use MailPoetVendor\Carbon\Carbon;
 use Tracy\Debugger;
 
 class PageRenderer {
+  public const CHATBOT_PRODUCT = 'MailPoet';
+
   /** @var Bridge */
   private $bridge;
 
@@ -224,6 +226,8 @@ class PageRenderer {
         ];
       }, $this->tagRepository->findAll()),
       'display_chatbot_widget' => $this->displayChatBotWidget(),
+      'chatbot_product' => self::CHATBOT_PRODUCT,
+      'chatbot_ai_disclosure' => $this->getChatBotAiDisclosure(),
       'is_woocommerce_subscriptions_active' => $this->wooCommerceSubscriptionsHelper->isWooCommerceSubscriptionsActive(),
       'is_woocommerce_bookings_active' => $this->wooCommerceBookingsHelper->isWooCommerceBookingsActive(),
       'cron_trigger_method' => $this->settings->get('cron_trigger.method'),
@@ -284,5 +288,17 @@ class PageRenderer {
   public function displayChatBotWidget(): bool {
     $display = $this->wp->applyFilters('mailpoet_display_docsbot_widget', $this->settings->get('3rd_party_libs.enabled') === '1');
     return (bool)$display;
+  }
+
+  /**
+   * The line the support chat shows at the top.
+   * The widget only uses it if it contains the product name exactly.
+   */
+  private function getChatBotAiDisclosure(): string {
+    return sprintf(
+      // translators: %s is the product name "MailPoet". Do not translate it.
+      __('You\'re chatting with AI from %s Support.', 'mailpoet'),
+      self::CHATBOT_PRODUCT
+    );
   }
 }
