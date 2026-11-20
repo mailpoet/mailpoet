@@ -6,6 +6,7 @@ use MailPoet\Abilities\AbilitiesRegistrar;
 use MailPoet\Abilities\CreateNewsletterDraftAbility;
 use MailPoet\Abilities\GetNewsletterDraftAbility;
 use MailPoet\Abilities\NewsletterDraftOptionsAbility;
+use MailPoet\Abilities\SendTestEmailAbility;
 use MailPoet\Abilities\UpdateNewsletterDraftAbility;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Features\FeaturesController;
@@ -17,6 +18,7 @@ class AbilitiesTestHelper {
     NewsletterDraftOptionsAbility::NAME,
     GetNewsletterDraftAbility::NAME,
     UpdateNewsletterDraftAbility::NAME,
+    SendTestEmailAbility::NAME,
   ];
 
   public static function enableDraftAbilities(): void {
