@@ -16,7 +16,7 @@ Used by Step 3 of the `reviewing-code` skill.
 - Scope & Completeness - Do the changes fully address the Linear ticket requirements? List any gaps.
 - Is a changelog entry missing? User-facing changes need one, and development-only changes (CI, linting, tests, dev dependencies, docs) get a `Dev` one, which the release notes leave out. (Check for files in `mailpoet/changelog/`, or `mailpoet-premium/changelog/` for Premium, on the branch.)
 - Does the changelog entry have the right type? A `Dev` entry on a change customers can notice hides it from them.
-- Are there missing test files for the changes? (Compare changed source files to test directories.)
+- Does each change that makes a decision have a test, and does the PR say why the rest has none? Apply the `writing-tests` skill; a file that only follows its pattern needs no test of its own.
 - Do the changes follow existing patterns in the codebase?
 - **PHP:** Is DI used correctly? Are WordPress functions called via `WP\Functions`? Are entities/repositories following Doctrine patterns?
 - **Frontend:** Are components well-structured? Is state management appropriate? Are named exports used?
@@ -31,10 +31,8 @@ Used by Step 3 of the `reviewing-code` skill.
 - Are any WordPress hooks (actions/filters) added, removed, or changed in signature?
 - WooCommerce compatibility: If WooCommerce integration code changed, is it guarded with existence checks?
 - Test Coverage: Is there a regression test that reproduces the original bug and verifies the fix?
-- Is there sufficient test coverage for the new behavior? Are happy paths, error paths, and edge cases covered?
-- Are the right test types used? Unit tests vs Integration tests vs Acceptance tests
-- Are there tests that test implementation details rather than behavior?
-- Do the test properly check the code or blindly verify the mocks?
+- Is the happy path covered, plus the one to three high-impact failure cases? Flag edge-case bulk and near-duplicate tests as well as gaps.
+- Do the tests pass the `writing-tests` review (section “Reviewing tests you didn’t write”): lowest suite that can catch the failure, a nameable regression per test, values asserted rather than mocks?
 - Did all the checks in the GitHub Pull Request pass?
 - Can a reviewer follow the PR’s Testing instructions and see the change work? Is every template section filled or `_N/A_`?
 - Does a change to a Backward compatibility surface (see `AGENTS.md`) state its BC impact in the Description?

@@ -107,7 +107,7 @@ Skills live in `.ai/skills/` (`.claude/skills` links there). Claude Code loads t
 - `creating-pull-requests` – run QA, add the changelog, push and open a draft PR from the template.
 - `code-quality` – lint, format and `qa` commands, single-file fixes, hook switches, what CI runs.
 - `running-tests` – run a suite, one file or one test, on the host or in Docker.
-- `writing-tests` – pick the suite, then place and structure a new test.
+- `writing-tests` – decide whether a change needs a test, pick the suite, write it and prove it catches a regression.
 - `debugging-failed-tests` – investigate a failing GitHub Actions job or a local run.
 - `reviewing-code` – review a PR or local changes against these rules.
 - `writing-changelog` – write the changelog file for a user-facing or development-only change.
