@@ -119,6 +119,31 @@ class HooksWooCommerce {
     }
   }
 
+  public function synchronizeDeletedWpUser($wpUserId) {
+    try {
+      $this->woocommerceSegment->synchronizeDeletedWpUser((int)$wpUserId);
+    } catch (\Throwable $e) {
+      $this->logError($e, 'WooCommerce Sync');
+    }
+  }
+
+  /**
+   * @param \WP_User $wpUser
+   */
+  public function synchronizeCustomerOnPasswordReset($wpUser) {
+    if ($wpUser instanceof \WP_User) {
+      $this->synchronizeConfirmedCustomer($wpUser->ID); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps -- WP_User::$ID is named by WordPress core
+    }
+  }
+
+  public function synchronizeConfirmedCustomer($wpUserId) {
+    try {
+      $this->woocommerceSegment->synchronizeConfirmedCustomer((int)$wpUserId);
+    } catch (\Throwable $e) {
+      $this->logError($e, 'WooCommerce Sync');
+    }
+  }
+
   public function synchronizeGuestCustomer($orderId) {
     try {
       $this->woocommerceSegment->synchronizeGuestCustomer($orderId);
