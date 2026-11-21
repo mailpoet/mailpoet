@@ -5,6 +5,7 @@ namespace MailPoet\Subscribers;
 use MailPoet\ConflictException;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Doctrine\Validator\ValidationException;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
@@ -190,6 +191,14 @@ class SubscriberSaveController {
       }
     }
 
+    $this->subscribersRepository->invalidateGlobalStatusStatisticsCache();
+    // Leaving a list only marks the link unsubscribed, so this includes the lists just left.
+    foreach ($this->subscriberSegmentRepository->findBy(['subscriber' => $subscriber]) as $subscriberSegment) {
+      $segment = $subscriberSegment->getSegment();
+      if ($segment instanceof SegmentEntity) {
+        $this->subscribersRepository->invalidateSegmentStatisticsCache((int)$segment->getId());
+      }
+    }
     return $subscriber;
   }
 
