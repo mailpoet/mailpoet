@@ -115,10 +115,6 @@ remove_action('admin_init', '_maybe_update_themes');
 remove_action('load-plugins.php', 'wp_update_plugins');
 remove_action('load-themes.php', 'wp_update_themes');
 
-// An Action Scheduler runner throws this when its action was deleted while it ran.
-// CleanupExtension waits for running actions before it restores the database, but a
-// runner can still lose its action that way (seen once at the start of a test).
-// Keep only this message out of the error log.
 add_action('plugins_loaded', static function () {
   if (!class_exists(\Tracy\Debugger::class) || !\Tracy\Debugger::$productionMode) {
     return;
@@ -131,10 +127,24 @@ add_action('plugins_loaded', static function () {
     }
 
     public function log($value, $level = self::INFO) {
-      if ($value instanceof \Throwable && strpos($value->getMessage(), 'we were unable to mark this action as having failed') !== false) {
+      if ($value instanceof \Throwable && $this->isIgnored($value)) {
         return null;
       }
       return $this->logger->log($value, $level);
+    }
+
+    private function isIgnored(\Throwable $error): bool {
+      // An Action Scheduler runner throws this when its action was deleted while it ran.
+      // CleanupExtension waits for running actions before it restores the database, but a
+      // runner can still lose its action that way (seen once at the start of a test).
+      if (strpos($error->getMessage(), 'we were unable to mark this action as having failed') !== false) {
+        return true;
+      }
+      // WooCommerce 11.3.1 calls a method PHP 8.5 deprecates (WOOPLUG-8300).
+      // Remove once the WooCommerce version the tests use has the fix.
+      $file = '/woocommerce/src/StoreApi/Utilities/SessionConcurrencyGuard.php';
+      return strpos($error->getMessage(), 'SplObjectStorage::contains()') !== false
+        && substr($error->getFile(), -strlen($file)) === $file;
     }
   });
 });
