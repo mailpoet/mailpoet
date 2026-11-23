@@ -823,8 +823,9 @@ class SubscribersEndpointsTest extends Test {
     $scenarios = [
       'list and status tab' => [['filter' => ['segment_in' => [$data['segmentId']]] + $subscribed], 2, ['all' => 2, 'subscribed' => 2, 'unconfirmed' => 0, 'trash' => 0]],
       'list and search' => [['search' => 'subscribed-tagged', 'filter' => ['segment_in' => [$data['segmentId']]]], 1, ['all' => 2, 'subscribed' => 2, 'unconfirmed' => 0, 'trash' => 0]],
-      'dynamic segment and status tab' => [['filter' => ['segment_in' => [$data['dynamicId']]] + $subscribed], 1, ['all' => 1, 'subscribed' => 1, 'unconfirmed' => 0, 'trash' => 0]],
-      'dynamic segment and search' => [['search' => 'no-match', 'filter' => ['segment_in' => [$data['dynamicId']]]], 0, ['all' => 1, 'subscribed' => 1, 'unconfirmed' => 0, 'trash' => 0]],
+      'dynamic segment and status tab' => [['filter' => ['segment_in' => [$data['dynamicId']]] + $subscribed], 1, ['all' => 1, 'subscribed' => 1, 'unconfirmed' => 0, 'trash' => 1]],
+      'dynamic segment and search' => [['search' => 'no-match', 'filter' => ['segment_in' => [$data['dynamicId']]]], 0, ['all' => 1, 'subscribed' => 1, 'unconfirmed' => 0, 'trash' => 1]],
+      'dynamic segment in the trash' => [['group' => 'trash', 'filter' => ['segment_in' => [$data['dynamicId']]]], 1, ['all' => 1, 'subscribed' => 1, 'unconfirmed' => 0, 'trash' => 1]],
       'without a list and status tab' => [['filter' => ['segment_in' => ['without-list']] + $subscribed], 0, ['all' => 1, 'subscribed' => 0, 'unconfirmed' => 1, 'trash' => 1]],
     ];
     foreach ($scenarios as $name => [$query, $count, $expected]) {
