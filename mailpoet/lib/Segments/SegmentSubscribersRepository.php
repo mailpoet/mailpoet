@@ -606,25 +606,7 @@ class SegmentSubscribersRepository {
     SegmentEntity $segment,
     ?string $status = null
   ): QueryBuilder {
-    $filters = [];
-    $dynamicFilters = $segment->getDynamicFilters();
-    foreach ($dynamicFilters as $dynamicFilter) {
-      $filters[] = $dynamicFilter->getFilterData();
-    }
-
-    // We don't allow dynamic segment without filers since it would return all subscribers
-    // For BC compatibility fetching an empty result
-    if (count($filters) === 0) {
-      return $queryBuilder->andWhere('0 = 1');
-    } elseif ($segment instanceof SegmentEntity) {
-      try {
-        $queryBuilder = $this->filterHandler->apply($queryBuilder, $segment);
-      } catch (InvalidFilterException $e) {
-        // If a segment has an invalid filter, we should simply consider it empty instead of throwing
-        // an unhandled error. Unhandled errors here can break many admin pages.
-        $queryBuilder->andWhere('0 = 1');
-      }
-    }
+    $queryBuilder = $this->applyDynamicSegmentFilters($queryBuilder, $segment);
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $queryBuilder = $queryBuilder->andWhere("$subscribersTable.deleted_at IS NULL");
     if ($status) {
@@ -632,6 +614,26 @@ class SegmentSubscribersRepository {
         ->setParameter('status', $status);
     }
     return $queryBuilder;
+  }
+
+  /**
+   * Only the segment's own filters, trashed subscribers included. The
+   * statistics queries use this directly: their columns exclude trashed
+   * subscribers themselves, and their trash column counts them.
+   */
+  private function applyDynamicSegmentFilters(QueryBuilder $queryBuilder, SegmentEntity $segment): QueryBuilder {
+    // We don't allow dynamic segment without filters since it would return all subscribers
+    // For BC compatibility fetching an empty result
+    if (count($segment->getDynamicFilters()) === 0) {
+      return $queryBuilder->andWhere('0 = 1');
+    }
+    try {
+      return $this->filterHandler->apply($queryBuilder, $segment);
+    } catch (InvalidFilterException $e) {
+      // If a segment has an invalid filter, we should simply consider it empty instead of throwing
+      // an unhandled error. Unhandled errors here can break many admin pages.
+      return $queryBuilder->andWhere('0 = 1');
+    }
   }
 
   private function getSegment(int $id): SegmentEntity {
@@ -662,7 +664,7 @@ class SegmentSubscribersRepository {
         $queryBuilder = $this->createStaticGlobalStatusStatisticsQueryBuilder($segment);
       } else {
         $queryBuilder = $this->createDynamicStatisticsQueryBuilder();
-        $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
+        $this->applyDynamicSegmentFilters($queryBuilder, $segment);
       }
 
       $statement = $this->executeQuery($queryBuilder);
@@ -685,7 +687,7 @@ class SegmentSubscribersRepository {
       }
 
       $queryBuilder = $this->createDynamicStatisticsQueryBuilder();
-      $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
+      $this->applyDynamicSegmentFilters($queryBuilder, $segment);
       $statement = $this->executeQuery($queryBuilder);
       $result = $statement->fetch();
       if (is_array($result)) {
