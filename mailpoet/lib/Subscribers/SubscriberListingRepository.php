@@ -1357,12 +1357,24 @@ class SubscriberListingRepository extends ListingRepository {
     }
   }
 
-  /**
-   * The tab counts are site totals, like the status links in wp-admin lists:
-   * search and filters don’t change them.
-   */
   public function getGroups(ListingDefinition $definition): array {
-    return $this->formatGroups($this->globalStatisticsToCounts());
+    return $this->formatGroups($this->getStatusTabCounts($definition));
+  }
+
+  /**
+   * The status tab counts: one list’s counts when a single list is the only
+   * filter, otherwise site totals. Both come from the cron-warmed statistics,
+   * so search and other filters don’t change them. The Status filter is left
+   * out, because the status tabs set it.
+   *
+   * @return array<string, int>
+   */
+  private function getStatusTabCounts(ListingDefinition $definition): array {
+    $this->normalizedFilters = [];
+    $filters = $definition->getFilters() ?: [];
+    unset($filters['status_in'], $filters['status_not_in'], $filters['statusInclude'], $filters['statusExclude']);
+    $withoutStatus = new ListingDefinition($definition->getGroup(), $filters, $definition->getSearch());
+    return $this->getCachedGroupCounts($withoutStatus) ?? $this->globalStatisticsToCounts();
   }
 
   /**
@@ -1551,19 +1563,18 @@ class SubscriberListingRepository extends ListingRepository {
     return [
       'segment' => $this->getSegmentFilter($definition),
       'tag' => $this->getTagsFilter($definition),
-      'status' => $this->getStatusFilter(),
+      'status' => $this->getStatusFilter($definition),
       'source' => $this->getSourceFilter(),
     ];
   }
 
   /**
-   * The counts are global (all non-deleted subscribers), not narrowed by the
-   * current filters, so they come from the cached global statistics.
+   * The counts match the status tabs (see getStatusTabCounts).
    *
    * @return array<int, array{label: string, value: string}>
    */
-  private function getStatusFilter(): array {
-    $stats = $this->subscribersCountsController->getGlobalStatusStatisticsCount();
+  private function getStatusFilter(ListingDefinition $definition): array {
+    $stats = $this->getStatusTabCounts($definition);
     $labels = [
       SubscriberEntity::STATUS_SUBSCRIBED => __('Subscribed', 'mailpoet'),
       SubscriberEntity::STATUS_UNCONFIRMED => __('Unconfirmed', 'mailpoet'),

@@ -784,7 +784,7 @@ class SubscribersEndpointsTest extends Test {
     $this->assertSame([$data['b']], array_column($this->listingPayload($response)['items'], 'email'));
   }
 
-  public function testListingGroupsAreSiteTotalsWhateverTheFilters(): void {
+  public function testListingGroupsAreSiteTotalsWhenTheFiltersNarrowMoreThanOneList(): void {
     $data = $this->createGroupsData();
     $this->clearSubscribersCountCache();
     $sfx = $data['suffix'];
@@ -815,6 +815,24 @@ class SubscribersEndpointsTest extends Test {
       $payload = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => $query]));
       $this->assertSame($count, $payload['meta']['count'], "$name: meta.count");
       $this->assertSame($totals, $this->groupsOf($payload), "$name: groups");
+    }
+  }
+
+  public function testListingGroupsAndStatusOptionsFollowTheListUnderAStatusTab(): void {
+    $data = $this->createGroupsData();
+    $this->clearSubscribersCountCache();
+    $scenarios = [
+      'list' => [$data['segmentId'], 2, ['all' => 2, 'subscribed' => 2, 'unconfirmed' => 0, 'trash' => 0]],
+      'dynamic segment' => [$data['dynamicId'], 1, ['all' => 1, 'subscribed' => 1, 'unconfirmed' => 0, 'trash' => 0]],
+    ];
+    foreach ($scenarios as $name => [$segmentId, $count, $expected]) {
+      $payload = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => [
+        'filter' => ['segment_in' => [$segmentId], 'status_in' => ['subscribed']],
+      ]]));
+      $this->assertSame($count, $payload['meta']['count'], "$name: meta.count");
+      $counts = array_column($this->groupsOf($payload), 'count', 'name');
+      $this->assertSame($expected, array_intersect_key($counts, $expected), "$name: groups");
+      $this->assertSame("Subscribed ($count)", $payload['filters']['status'][0]['label'], "$name: status option");
     }
   }
 
@@ -1088,12 +1106,12 @@ class SubscribersEndpointsTest extends Test {
 
   /**
    * @param mixed $response
-   * @return array{items: array<int, array<string, mixed>>, meta: array{count: int, pages: int}}
+   * @return array{items: array<int, array<string, mixed>>, meta: array{count: int, pages: int}, filters: array{status: array<int, array{label: string, value: string}>}}
    */
   private function listingPayload($response): array {
     $this->assertIsArray($response);
     $this->assertArrayNotHasKey('code', $response, json_encode($response) ?: '');
-    /** @var array{data: array{items: array<int, array<string, mixed>>, meta: array{count: int, pages: int}}} $response */
+    /** @var array{data: array{items: array<int, array<string, mixed>>, meta: array{count: int, pages: int}, filters: array{status: array<int, array{label: string, value: string}>}}} $response */
     return $response['data'];
   }
 

@@ -246,35 +246,56 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($groups['6']['count'])->equals(1);
   }
 
-  public function testGetGroupsIgnoresSearchAndFilters() {
+  public function testGetGroupsFollowASingleListAndOtherwiseShowSiteTotals() {
     $list = $this->segmentRepository->createOrUpdate('Group Totals List');
     $member = $this->createSubscriberEntity();
     $member->setEmail('alice-group-totals@example.com');
     $this->createSubscriberSegmentEntity($list, $member);
     $leftList = $this->createSubscriberEntity();
     $this->createSubscriberSegmentEntity($list, $leftList)->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $trashedMember = $this->createSubscriberEntity();
+    $trashedMember->setDeletedAt(new \DateTimeImmutable());
+    $this->createSubscriberSegmentEntity($list, $trashedMember);
     $unconfirmed = $this->createSubscriberEntity();
     $unconfirmed->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $tag = (new Tag())->withName('Group Totals Tag')->create();
     $this->entityManager->flush();
 
-    $totals = $this->repository->getGroups(new ListingDefinition());
-    verify(array_column($totals, 'count', 'name'))->equals([
+    $siteTotals = [
       'all' => 3,
       SubscriberEntity::STATUS_SUBSCRIBED => 2,
       SubscriberEntity::STATUS_UNCONFIRMED => 1,
       SubscriberEntity::STATUS_UNSUBSCRIBED => 0,
       SubscriberEntity::STATUS_INACTIVE => 0,
       SubscriberEntity::STATUS_BOUNCED => 0,
-      'trash' => 0,
-    ]);
-    $definitions = [
-      new ListingDefinition('all', [], 'alice-group-totals'),
-      new ListingDefinition('all', ['segment_in' => [$list->getId()]]),
-      new ListingDefinition('all', ['status_in' => [SubscriberEntity::STATUS_UNCONFIRMED]]),
-      new ListingDefinition('trash', ['segment_in' => [$list->getId()]], 'alice'),
+      'trash' => 1,
     ];
-    foreach ($definitions as $definition) {
-      verify($this->repository->getGroups($definition))->equals($totals);
+    $listCounts = [
+      'all' => 2,
+      SubscriberEntity::STATUS_SUBSCRIBED => 1,
+      SubscriberEntity::STATUS_UNCONFIRMED => 0,
+      SubscriberEntity::STATUS_UNSUBSCRIBED => 1,
+      SubscriberEntity::STATUS_INACTIVE => 0,
+      SubscriberEntity::STATUS_BOUNCED => 0,
+      'trash' => 1,
+    ];
+    $listOnly = ['segment_in' => [$list->getId()]];
+    $cases = [
+      [new ListingDefinition(), $siteTotals],
+      [new ListingDefinition('all', $listOnly), $listCounts],
+      // A status tab sets the Status filter; the tabs still count the whole list.
+      [new ListingDefinition('all', $listOnly + ['status_in' => [SubscriberEntity::STATUS_UNSUBSCRIBED]]), $listCounts],
+      [new ListingDefinition('all', $listOnly + ['status_not_in' => [SubscriberEntity::STATUS_SUBSCRIBED]]), $listCounts],
+      [new ListingDefinition('trash', $listOnly), $listCounts],
+      // Anything narrower than one list keeps the site totals.
+      [new ListingDefinition('all', [], 'alice-group-totals'), $siteTotals],
+      [new ListingDefinition('all', ['status_in' => [SubscriberEntity::STATUS_UNCONFIRMED]]), $siteTotals],
+      [new ListingDefinition('all', $listOnly, 'alice'), $siteTotals],
+      [new ListingDefinition('all', $listOnly + ['tag_in' => [$tag->getId()]]), $siteTotals],
+      [new ListingDefinition('all', ['segment_in' => [SubscriberListingRepository::FILTER_WITHOUT_LIST]]), $siteTotals],
+    ];
+    foreach ($cases as [$definition, $expected]) {
+      verify(array_column($this->repository->getGroups($definition), 'count', 'name'))->equals($expected);
     }
   }
 
@@ -1890,13 +1911,24 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     ]);
   }
 
-  public function testItBuildsStatusAndSourceFiltersWithGlobalStatusCounts() {
+  public function testItBuildsStatusFilterWithTabCountsAndSourceFilter() {
     (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
     (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
-    (new Subscriber())->withStatus(SubscriberEntity::STATUS_BOUNCED)->create();
+    $bounced = (new Subscriber())->withStatus(SubscriberEntity::STATUS_BOUNCED)->create();
+    $list = $this->segmentRepository->createOrUpdate('Status Option List');
+    $this->createSubscriberSegmentEntity($list, $bounced);
+    $this->entityManager->flush();
     $this->diContainer->get(SubscribersCountsController::class)->recalculateGlobalStatusStatisticsCache();
 
-    // The counts are global: the current filters and group do not narrow them.
+    // The options show the same counts as the status tabs: one list's counts…
+    $listFilters = $this->repository->getFilters(new ListingDefinition('all', [
+      'segment_in' => [$list->getId()],
+      'status_in' => [SubscriberEntity::STATUS_SUBSCRIBED],
+    ]));
+    verify($listFilters['status'][0]['label'])->equals('Subscribed (0)');
+    verify($listFilters['status'][4]['label'])->equals('Bounced (1)');
+
+    // …and site totals when the filters narrow more than one list does.
     $definition = new ListingDefinition(SubscriberEntity::STATUS_BOUNCED, ['source_in' => [Source::FORM]]);
     $filters = $this->repository->getFilters($definition);
 
