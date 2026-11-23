@@ -246,7 +246,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($groups['6']['count'])->equals(1);
   }
 
-  public function testGetGroupsFollowASingleListAndOtherwiseShowSiteTotals() {
+  public function testGetGroupsCountTheSelectedListOrTheWholeSite() {
     $list = $this->segmentRepository->createOrUpdate('Group Totals List');
     $member = $this->createSubscriberEntity();
     $member->setEmail('alice-group-totals@example.com');
@@ -287,12 +287,24 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
       [new ListingDefinition('all', $listOnly + ['status_in' => [SubscriberEntity::STATUS_UNSUBSCRIBED]]), $listCounts],
       [new ListingDefinition('all', $listOnly + ['status_not_in' => [SubscriberEntity::STATUS_SUBSCRIBED]]), $listCounts],
       [new ListingDefinition('trash', $listOnly), $listCounts],
-      // Anything narrower than one list keeps the site totals.
+      // Search and the other filters narrow the rows, not the tabs.
+      [new ListingDefinition('all', $listOnly, 'alice'), $listCounts],
+      [new ListingDefinition('all', $listOnly + ['tag_in' => [$tag->getId()]]), $listCounts],
       [new ListingDefinition('all', [], 'alice-group-totals'), $siteTotals],
       [new ListingDefinition('all', ['status_in' => [SubscriberEntity::STATUS_UNCONFIRMED]]), $siteTotals],
-      [new ListingDefinition('all', $listOnly, 'alice'), $siteTotals],
-      [new ListingDefinition('all', $listOnly + ['tag_in' => [$tag->getId()]]), $siteTotals],
-      [new ListingDefinition('all', ['segment_in' => [SubscriberListingRepository::FILTER_WITHOUT_LIST]]), $siteTotals],
+      // The unsubscribed member left their only list, so they count as without a list.
+      [new ListingDefinition('all', ['segment_in' => [SubscriberListingRepository::FILTER_WITHOUT_LIST]]), [
+        'all' => 2,
+        SubscriberEntity::STATUS_SUBSCRIBED => 1,
+        SubscriberEntity::STATUS_UNCONFIRMED => 1,
+        SubscriberEntity::STATUS_UNSUBSCRIBED => 0,
+        SubscriberEntity::STATUS_INACTIVE => 0,
+        SubscriberEntity::STATUS_BOUNCED => 0,
+        'trash' => 0,
+      ]],
+      // Several lists, or a list excluded, have no single list to count.
+      [new ListingDefinition('all', ['segment_in' => [$list->getId(), SubscriberListingRepository::FILTER_WITHOUT_LIST]]), $siteTotals],
+      [new ListingDefinition('all', ['segment_not_in' => [$list->getId()]]), $siteTotals],
     ];
     foreach ($cases as [$definition, $expected]) {
       verify(array_column($this->repository->getGroups($definition), 'count', 'name'))->equals($expected);
@@ -1920,7 +1932,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
     $this->diContainer->get(SubscribersCountsController::class)->recalculateGlobalStatusStatisticsCache();
 
-    // The options show the same counts as the status tabs: one list's counts…
+    // The options show the same counts as the status tabs: the selected list's counts,
     $listFilters = $this->repository->getFilters(new ListingDefinition('all', [
       'segment_in' => [$list->getId()],
       'status_in' => [SubscriberEntity::STATUS_SUBSCRIBED],
@@ -1928,7 +1940,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     verify($listFilters['status'][0]['label'])->equals('Subscribed (0)');
     verify($listFilters['status'][4]['label'])->equals('Bounced (1)');
 
-    // …and site totals when the filters narrow more than one list does.
+    // and site totals when no single list is selected.
     $definition = new ListingDefinition(SubscriberEntity::STATUS_BOUNCED, ['source_in' => [Source::FORM]]);
     $filters = $this->repository->getFilters($definition);
 

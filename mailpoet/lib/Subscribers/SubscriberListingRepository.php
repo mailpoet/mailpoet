@@ -1362,19 +1362,23 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   /**
-   * The status tab counts: one list’s counts when a single list is the only
-   * filter, otherwise site totals. Both come from the cron-warmed statistics,
-   * so search and other filters don’t change them. The Status filter is left
-   * out, because the status tabs set it.
+   * The status tab counts: the selected list's counts when one list (or
+   * "without a list") is selected, otherwise site totals. They come from the
+   * cron-warmed statistics, so search and the other filters, the Status
+   * filter set by the tabs included, narrow the rows but not the tabs.
    *
    * @return array<string, int>
    */
   private function getStatusTabCounts(ListingDefinition $definition): array {
-    $this->normalizedFilters = [];
-    $filters = $definition->getFilters() ?: [];
-    unset($filters['status_in'], $filters['status_not_in'], $filters['statusInclude'], $filters['statusExclude']);
-    $withoutStatus = new ListingDefinition($definition->getGroup(), $filters, $definition->getSearch());
-    return $this->getCachedGroupCounts($withoutStatus) ?? $this->globalStatisticsToCounts();
+    $ids = $this->getSegmentIdsFromFilters($definition);
+    if ($ids['in'] === [self::FILTER_WITHOUT_LIST] && !$ids['not_in']) {
+      return $this->statisticsToCounts($this->subscribersCountsController->getSubscribersWithoutSegmentStatisticsCount());
+    }
+    $segment = $this->getSingleSegment($ids['in'], $ids['not_in']);
+    if ($segment instanceof SegmentEntity) {
+      return $this->statisticsToCounts($this->subscribersCountsController->getSegmentStatisticsCount($segment));
+    }
+    return $this->statisticsToCounts($this->subscribersCountsController->getGlobalStatusStatisticsCount());
   }
 
   /**
@@ -1402,12 +1406,14 @@ class SubscriberListingRepository extends ListingRepository {
    */
   private function getCachedGroupCounts(ListingDefinition $definition): ?array {
     if (!$this->hasSegmentListFilter($definition)) {
-      return $this->canUseGlobalStatisticsCache($definition) ? $this->globalStatisticsToCounts() : null;
+      return $this->canUseGlobalStatisticsCache($definition)
+        ? $this->statisticsToCounts($this->subscribersCountsController->getGlobalStatusStatisticsCount())
+        : null;
     }
     if ($this->canUseSegmentStatisticsCache($definition)) {
       $segment = $this->getSegmentFromDefinition($definition);
       if ($segment instanceof SegmentEntity) {
-        return $this->segmentStatisticsToCounts($segment);
+        return $this->statisticsToCounts($this->subscribersCountsController->getSegmentStatisticsCount($segment));
       }
     }
     return null;
@@ -1447,15 +1453,15 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   /**
-   * Map the cached per-segment statistics onto the listing's status-keyed counts
-   * array. "all" is read in getListingCount as the sum of the
-   * status buckets, which equals the cached "all" because the buckets partition
-   * the non-deleted members exactly.
+   * Map cached statistics (global, per list or without a list) onto the
+   * listing's status-keyed counts array. "all" is read in getListingCount and
+   * formatGroups as the sum of the status buckets, which equals the cached
+   * "all" because the buckets partition the non-deleted subscribers exactly.
    *
+   * @param array<string, int|string> $stats
    * @return array<string, int>
    */
-  private function segmentStatisticsToCounts(SegmentEntity $segment): array {
-    $stats = $this->subscribersCountsController->getSegmentStatisticsCount($segment);
+  private function statisticsToCounts(array $stats): array {
     $counts = array_fill_keys(self::SUPPORTED_STATUSES, 0);
     $counts['trash'] = 0;
     foreach (self::SUPPORTED_STATUSES as $status) {
@@ -1485,20 +1491,6 @@ class SubscriberListingRepository extends ListingRepository {
       return false;
     }
     return !$this->hasActiveFilter($this->normalizeFilters($definition->getFilters() ?: []));
-  }
-
-  /**
-   * @return array<string, int>
-   */
-  private function globalStatisticsToCounts(): array {
-    $stats = $this->subscribersCountsController->getGlobalStatusStatisticsCount();
-    $counts = array_fill_keys(self::SUPPORTED_STATUSES, 0);
-    $counts['trash'] = 0;
-    foreach (self::SUPPORTED_STATUSES as $status) {
-      $counts[$status] = (int)($stats[$status] ?? 0);
-    }
-    $counts['trash'] = (int)($stats['trash'] ?? 0);
-    return $counts;
   }
 
   /**
@@ -1552,7 +1544,7 @@ class SubscriberListingRepository extends ListingRepository {
 
   private function hasSegmentListFilter(ListingDefinition $definition): bool {
     $ids = $this->getSegmentIdsFromFilters($definition);
-    // “Without a list” alone has no per-list statistics, so it is not a list filter here.
+    // "Without a list" alone is not a list filter here: its listing count is computed live.
     if ($ids['in'] === [self::FILTER_WITHOUT_LIST] && !$ids['not_in']) {
       return false;
     }
