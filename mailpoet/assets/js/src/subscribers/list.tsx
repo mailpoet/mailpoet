@@ -19,6 +19,7 @@ import {
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { speak } from '@wordpress/a11y';
 
 import { Button } from 'common';
 import {
@@ -825,7 +826,7 @@ function SubscriberList() {
     [baseSegments, trashedLists],
   );
 
-  // Status labels carry the global per-status counts from the latest response.
+  // Status labels carry the status tab counts from the latest response.
   const [statusLabels, setStatusLabels] = useState<Record<string, string>>({});
   useEffect(() => {
     const next = (filters.status ?? []).reduce<Record<string, string>>(
@@ -969,6 +970,36 @@ function SubscriberList() {
     view.filters,
     view.search,
   ]);
+
+  // Screen readers hear the new total after a tab, filter or search change, so
+  // nobody has to reach the item count below the table. Paging and sorting
+  // keep the scope and stay quiet, and so does the first load.
+  const announcedScopeRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (responseVersion === 0) {
+      return;
+    }
+    const scope = loadedScopeRef.current;
+    if (
+      announcedScopeRef.current !== null &&
+      announcedScopeRef.current !== scope
+    ) {
+      speak(
+        sprintf(
+          // translators: %s is the number of subscribers that match the current tab, filters and search.
+          _n(
+            '%s subscriber found.',
+            '%s subscribers found.',
+            meta.count,
+            'mailpoet',
+          ),
+          formatCount(meta.count),
+        ),
+        'polite',
+      );
+    }
+    announcedScopeRef.current = scope;
+  }, [meta.count, responseVersion]);
 
   const restoreTriggerFocus = useCallback((): void => {
     const triggerElement = triggerElementRef.current;
