@@ -784,7 +784,7 @@ class SubscribersEndpointsTest extends Test {
     $this->assertSame([$data['b']], array_column($this->listingPayload($response)['items'], 'email'));
   }
 
-  public function testListingGroupsAreSiteTotalsWhenTheFiltersNarrowMoreThanOneList(): void {
+  public function testListingGroupsAreSiteTotalsWithoutASingleList(): void {
     $data = $this->createGroupsData();
     $this->clearSubscribersCountCache();
     $sfx = $data['suffix'];
@@ -805,8 +805,6 @@ class SubscribersEndpointsTest extends Test {
     $scenarios = [
       'search' => [['search' => $sfx], 3],
       'search and tag' => [['search' => $sfx, 'filter' => ['tag_in' => [$data['tagId']]]], 1],
-      'search and dynamic segment' => [['search' => $sfx, 'filter' => ['segment_in' => [$data['dynamicId']]]], 1],
-      'search and list' => [['search' => $sfx, 'filter' => ['segment_in' => [$data['segmentId']]]], 2],
       'search and status' => [['search' => $sfx, 'filter' => ['status_in' => ['unconfirmed']]], 1],
       'legacy unconfirmed group' => [['search' => $sfx, 'group' => 'unconfirmed'], 1],
       'trash group' => [['search' => $sfx, 'group' => 'trash'], 1],
@@ -818,21 +816,22 @@ class SubscribersEndpointsTest extends Test {
     }
   }
 
-  public function testListingGroupsAndStatusOptionsFollowTheListUnderAStatusTab(): void {
+  public function testListingGroupsAndStatusOptionsCountTheSelectedList(): void {
     $data = $this->createGroupsData();
     $this->clearSubscribersCountCache();
+    $subscribed = ['status_in' => ['subscribed']];
     $scenarios = [
-      'list' => [$data['segmentId'], 2, ['all' => 2, 'subscribed' => 2, 'unconfirmed' => 0, 'trash' => 0]],
-      'dynamic segment' => [$data['dynamicId'], 1, ['all' => 1, 'subscribed' => 1, 'unconfirmed' => 0, 'trash' => 0]],
+      'list and status tab' => [['filter' => ['segment_in' => [$data['segmentId']]] + $subscribed], 2, ['all' => 2, 'subscribed' => 2, 'unconfirmed' => 0, 'trash' => 0]],
+      'list and search' => [['search' => 'subscribed-tagged', 'filter' => ['segment_in' => [$data['segmentId']]]], 1, ['all' => 2, 'subscribed' => 2, 'unconfirmed' => 0, 'trash' => 0]],
+      'dynamic segment and status tab' => [['filter' => ['segment_in' => [$data['dynamicId']]] + $subscribed], 1, ['all' => 1, 'subscribed' => 1, 'unconfirmed' => 0, 'trash' => 0]],
+      'without a list and status tab' => [['filter' => ['segment_in' => ['without-list']] + $subscribed], 0, ['all' => 1, 'subscribed' => 0, 'unconfirmed' => 1, 'trash' => 1]],
     ];
-    foreach ($scenarios as $name => [$segmentId, $count, $expected]) {
-      $payload = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => [
-        'filter' => ['segment_in' => [$segmentId], 'status_in' => ['subscribed']],
-      ]]));
+    foreach ($scenarios as $name => [$query, $count, $expected]) {
+      $payload = $this->listingPayload($this->get(self::LISTING_PATH, ['query' => $query]));
       $this->assertSame($count, $payload['meta']['count'], "$name: meta.count");
       $counts = array_column($this->groupsOf($payload), 'count', 'name');
       $this->assertSame($expected, array_intersect_key($counts, $expected), "$name: groups");
-      $this->assertSame("Subscribed ($count)", $payload['filters']['status'][0]['label'], "$name: status option");
+      $this->assertSame("Subscribed ({$expected['subscribed']})", $payload['filters']['status'][0]['label'], "$name: status option");
     }
   }
 
