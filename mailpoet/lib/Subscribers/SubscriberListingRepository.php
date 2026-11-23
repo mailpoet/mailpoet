@@ -1358,6 +1358,7 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   public function getGroups(ListingDefinition $definition): array {
+    $this->normalizedFilters = [];
     return $this->formatGroups($this->getStatusTabCounts($definition));
   }
 
@@ -1552,6 +1553,7 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   public function getFilters(ListingDefinition $definition): array {
+    $this->normalizedFilters = [];
     return [
       'segment' => $this->getSegmentFilter($definition),
       'tag' => $this->getTagsFilter($definition),
