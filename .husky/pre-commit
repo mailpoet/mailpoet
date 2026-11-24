@@ -2,5 +2,5 @@
 . "$(dirname "$0")/common.sh"
 [ "$MP_GIT_HOOKS_ENABLE" != "true" ] && exit 0
 
-npx lint-staged -c mailpoet/package.json --cwd mailpoet
-npx lint-staged -c package.json
+pnpm exec lint-staged -c mailpoet/package.json --cwd mailpoet
+pnpm exec lint-staged -c package.json
