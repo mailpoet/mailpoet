@@ -228,7 +228,7 @@ class RoboFile extends \Robo\Tasks {
     array_map('unlink', glob("assets/dist/css/*.*"));
 
     $compilationResult = $this->taskExecStack()
-      ->exec('pnpm run stylelint-check -- "assets/css/src/**/*.scss"')
+      ->exec('pnpm run stylelint-check "assets/css/src/**/*.scss"')
       ->exec('pnpm run scss' . ($opts['env'] === 'production' ? ' --no-source-map' : ''))
       ->exec('pnpm run autoprefixer')
       ->run();
@@ -714,7 +714,7 @@ class RoboFile extends \Robo\Tasks {
     $collection = $this->collectionBuilder();
     return $collection->taskExecStack()
       ->stopOnFail()
-      ->exec('pnpm run stylelint-check -- "assets/css/src/**/*.scss"')
+      ->exec('pnpm run stylelint-check "assets/css/src/**/*.scss"')
       ->run();
   }
 
