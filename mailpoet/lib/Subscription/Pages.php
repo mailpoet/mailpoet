@@ -316,19 +316,7 @@ class Pages {
     if ($this->subscriber === null) {
       return;
     }
-    $subscribedSegmentIds = [];
-    foreach ($this->subscriber->getSubscriberSegments() as $subscriberSegment) {
-      $segment = $subscriberSegment->getSegment();
-      if ($segment instanceof SegmentEntity && $subscriberSegment->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED) {
-        $subscribedSegmentIds[] = (int)$segment->getId();
-      }
-    }
-    $segments = array_filter(
-      $this->segmentsRepository->findByIds($segmentIds),
-      function (SegmentEntity $segment) use ($subscribedSegmentIds): bool {
-        return $segment->getDeletedAt() === null && !in_array((int)$segment->getId(), $subscribedSegmentIds, true);
-      }
-    );
+    $segments = $this->segmentsRepository->findActiveNotSubscribedByIds($this->subscriber, $segmentIds);
     if ($segments) {
       $this->subscriberSegmentRepository->subscribeToSegments($this->subscriber, $segments);
     }
