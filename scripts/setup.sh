@@ -6,7 +6,7 @@ set -euo pipefail
 #
 # Prereqs:
 #   - Node per .nvmrc (run: nvm use)
-#   - pnpm (via: corepack enable pnpm)
+#   - pnpm 11 (via: corepack enable, or install pnpm 11)
 #   - PHP 8.4 (matches .wp-env.json phpVersion)
 #   - gh authenticated for private WooCommerce plugin downloads (run: gh auth login)
 #     External contributors without gh access can ignore the download warnings.
