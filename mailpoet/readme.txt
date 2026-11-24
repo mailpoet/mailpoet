@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 7.0
 Tested up to: 7.1
-Stable tag: 5.45.2
+Stable tag: 5.46.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,24 +227,29 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.45.2 - 2026-11-09 =
-* Added: Option for other plugins to add or update subscribers without sending every required custom field;
-* Added: Subscription source column in the subscriber export;
-* Improved: Styling of admin screens that use WordPress design system components;
-* Improved: Main filters stay visible on the Subscribers, Emails, Sending status, Forms and Logs pages;
-* Improved: Status tabs with counts on the Subscribers and Emails pages, so one status is a click away;
-* Improved: Handling of subscriber links in emails;
-* Improved: Stability of several admin features;
-* Improved: Landing page guidance for users who can't run the setup wizard;
-* Improved: Form editor list and placement pickers that match the WordPress admin style;
-* Improved: Show the admin bar and align the activate panel in the automation editor;
-* Fixed: Links in customized WooCommerce emails taking the branding color, which made them hard to read with a light branding color;
-* Fixed: Subscription forms showing a wait time that never counts down and a new CAPTCHA when a visitor subscribes again too soon;
-* Fixed: A double-click on “Review & send” or “Send” in the new email editor sending the email right away or twice;
-* Fixed: Unreadable error message in the new email editor’s send panel when a send request fails;
-* Fixed: Revenue from orders placed shortly after an email click being credited incorrectly on sites with a timezone other than UTC;
-* Fixed: Spacing around the "Back to Post notifications" button on the post notification history page;
-* Fixed: Missing Subscribers table background and other styles on sites that combine CSS files, such as WordPress VIP;
-* Fixed: Subscriber import clearing the selected lists instead of selecting a newly created list.
+= 5.46.0 - 2026-11-24 =
+* Added: Experimental option to save block emails as presets and start new emails from them;
+* Added: Separator and Preformatted blocks in the new email editor;
+* Added: Optional “Unsubscribed on” column on the Subscribers page, showing when each subscriber unsubscribed;
+* Added: Option to hide pop-up, slide-in, fixed bar and below-page forms on specific pages and posts;
+* Updated: npm dependencies;
+* Improved: Recent emails in the email preset list now show the email name alongside the subject;
+* Improved: Form input padding can be cleared so form fields use the padding from the theme;
+* Improved: Personalization tags in the new email editor go in at the cursor, and clicking a tag edits that tag, also in captions and button text;
+* Improved: Automation emails in the block editor show their template in the sidebar, so it can be edited from there;
+* Improved: Support chat shows at the top that you are chatting with AI from MailPoet Support;
+* Changed: Reduced the size of admin scripts by loading React from WordPress;
+* Changed: MailPoet runs on Microsoft IIS web servers, with a notice that IIS isn’t officially supported;
+* Fixed: Shortcodes showing in post excerpts of the Latest Posts block in sent emails;
+* Fixed: Tracked links with several query parameters in emails made in the new editor leading to a broken URL;
+* Fixed: Analytics tasks filling the scheduled tasks table when sharing anonymous data is turned off;
+* Fixed: Scheduled newsletters being sent an hour early or late, and dates being shown an hour off, across a daylight saving time change;
+* Fixed: Several differences between the new email editor and sent emails, such as link and caption colors, bold text, font sizes, fallback fonts, product prices, and images in Apple Mail and Outlook;
+* Fixed: Endless loading after moving an email to the trash in the new email editor on WordPress 7.2;
+* Fixed: Italic choices not saving in the new email editor’s Styles sidebar;
+* Fixed: Paragraphs and headings with only a personalization tag going missing, and personalization tags breaking in the plain-text version of emails made in the new email editor;
+* Fixed: Fatal error when another plugin sends an HTTP request with a URL that is not a string;
+* Fixed: Part of a held email sent in subscribers’ time zones staying in the sending queue after choosing Don’t send;
+* Fixed: Large gaps between template cards on smaller screens.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
