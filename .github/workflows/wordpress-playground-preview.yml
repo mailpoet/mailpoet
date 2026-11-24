@@ -24,9 +24,10 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref }}
         run: |
           DESCRIPTION="$(gh pr view "$PR_NUMBER" --json body -q .body)"
-          HEADING="## Preview"
+          HEADING="### Preview"
           CONTENT="$(printf '%s\n\n[Preview in WordPress Playground](https://account.mailpoet.com/playground/new/branch:%s)\n\n_The latest successful build from `%s` will be used. If none is available, the link won'\''t work._' "$HEADING" "$BRANCH_NAME" "$BRANCH_NAME")"
 
-          if [[ "$DESCRIPTION" != *"$HEADING"* ]]; then
+          # "## Preview" matches both "### Preview" and the older "## Preview", so no PR gets a second section.
+          if [[ "$DESCRIPTION" != *"## Preview"* ]]; then
             gh pr edit "$PR_NUMBER" --body "$(printf '%s\n\n%s' "$DESCRIPTION" "$CONTENT")"
           fi
