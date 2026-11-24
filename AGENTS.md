@@ -83,7 +83,7 @@ Verify through the real flow when you can, letting WP-Cron or Action Scheduler p
 ## Dependencies
 
 - PHP packages may need prefixer configuration, so ask before adding Composer or npm dependencies.
-- All pnpm `overrides` live in `pnpm-workspace.yaml`. Never add a `pnpm` field to the root `package.json`: pnpm then silently ignores the workspace overrides.
+- All pnpm settings, including `overrides`, live in `pnpm-workspace.yaml`. pnpm 11 ignores a `pnpm` field in `package.json` and reads only registry and auth settings from `.npmrc`.
 - For `pnpm audit` fixes, prefer a lockfile bump (`pnpm -r update <pkg>`); add an override only when a parent’s range excludes the patched version. Removing an override does not move a locked version that still satisfies its parents; pair the removal with the update command.
 
 ## Gotchas
