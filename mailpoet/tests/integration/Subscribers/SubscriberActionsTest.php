@@ -373,6 +373,37 @@ class SubscriberActionsTest extends \MailPoetTest {
     verify($meta['error'] ?? null)->notEmpty();
   }
 
+  public function testItStartsNewEmailLimitWhenNoPreviousListWaitsAnymore(): void {
+    $this->settings->set('signup_confirmation.enabled', true);
+    $joinedSegment = $this->segmentsRepository->createOrUpdate('Weekly digest');
+    $newSegment = $this->segmentsRepository->createOrUpdate('Events');
+    // the list was waiting when an admin added the subscriber to it with the bulk action
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('joined-meanwhile@example.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withUnconfirmedData((string)json_encode([SubscriberActions::SEGMENTS_TO_CONFIRM => [$joinedSegment->getId()]]))
+      ->create();
+    $subscriber->setConfirmationsCount(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
+    $this->entityManager->flush();
+    $this->diContainer->get(SubscribersRepository::class)->bulkAddToSegment($joinedSegment, [(int)$subscriber->getId()]);
+    $this->entityManager->refresh($subscriber);
+
+    $confirmationEmailMailer = $this->createMock(ConfirmationEmailMailer::class);
+    $confirmationEmailMailer->expects($this->once())
+      ->method('sendConfirmationEmailOnce')
+      ->willReturn(true);
+    $subscriberActions = $this->getServiceWithOverrides(SubscriberActions::class, [
+      'confirmationEmailMailer' => $confirmationEmailMailer,
+    ]);
+
+    [$subscriber, $meta] = $subscriberActions->subscribe(['email' => 'joined-meanwhile@example.com'], [$newSegment->getId()]);
+
+    $this->assertArrayNotHasKey('error', $meta);
+    verify(json_decode((string)$subscriber->getUnconfirmedData(), true))->equals([
+      SubscriberActions::SEGMENTS_TO_CONFIRM => [$newSegment->getId()],
+    ]);
+  }
+
   public function testItUsesPublicConfirmationModeForPublicSubscribes(): void {
     $this->settings->set('signup_confirmation.enabled', true);
     $confirmationEmailMailer = $this->createMock(ConfirmationEmailMailer::class);
