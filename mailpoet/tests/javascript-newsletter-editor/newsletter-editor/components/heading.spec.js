@@ -19,6 +19,9 @@ describe('Heading', function () {
       model.isConfirmationEmailTemplate = function () {
         return false;
       };
+      model.isTemplate = function () {
+        return false;
+      };
       view = new HeadingComponent.HeadingView({
         model: model,
       });
@@ -42,6 +45,9 @@ describe('Heading', function () {
           return false;
         };
         model.isConfirmationEmailTemplate = function () {
+          return false;
+        };
+        model.isTemplate = function () {
           return false;
         };
         view = new HeadingComponent.HeadingView({

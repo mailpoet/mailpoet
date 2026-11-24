@@ -13,7 +13,11 @@ import { setNewsletterStatus } from 'newsletters/api';
 import { initTutorial } from './tutorial';
 
 const renderHeading = (newsletterType, newsletterOptions) => {
-  if (!['wc_transactional', 'confirmation_email'].includes(newsletterType)) {
+  if (
+    !['wc_transactional', 'confirmation_email', 'template'].includes(
+      newsletterType,
+    )
+  ) {
     const stepsHeadingContainer = document.getElementById(
       'mailpoet_editor_steps_heading',
     );

@@ -127,6 +127,28 @@ Module.saveTemplate = function (options) {
   });
 };
 
+// Template mode: the body is synced on every save, this adds the thumbnail.
+// Autosave only changes the hidden email, so the template changes only here.
+Module.updateEditedTemplate = function () {
+  return fromNewsletter(App.toJSON()).then(function (thumbnail) {
+    var data = {
+      newsletter_id: App.getNewsletter().get('id'),
+      body: JSON.stringify(App.getBody()),
+      thumbnail_data: thumbnail,
+    };
+    var name = (App.getNewsletter().get('subject') || '').trim();
+    if (name) {
+      data.name = name;
+    }
+    return MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'newsletterTemplates',
+      action: 'save',
+      data: data,
+    });
+  });
+};
+
 Module.exportTemplate = function (options) {
   return fromNewsletter(App.toJSON()).then(function (thumbnail) {
     var data = _.extend(options || {}, {
@@ -156,6 +178,7 @@ Module.SaveView = Marionette.View.extend({
         'woocommerceCustomizerEnabled',
       ),
       isConfirmationEmailTemplate: this.model.isConfirmationEmailTemplate(),
+      isTemplate: this.model.isTemplate(),
       confirmationEmailCustomizerEnabled: App.getConfig().get(
         'confirmationEmailCustomizerEnabled',
       ),
@@ -180,6 +203,8 @@ Module.SaveView = Marionette.View.extend({
       'activateConfirmationEmailCustomizer',
     /* Automation email */
     'click .mailpoet_save_go_to_automation': 'saveAndGoToAutomation',
+    /* Template editing */
+    'click .mailpoet_save_edited_template': 'saveEditedTemplate',
     'click .mailpoet_show_preview': 'showPreview',
   },
 
@@ -396,6 +421,24 @@ Module.SaveView = Marionette.View.extend({
         window.location.href = App.getConfig().get('urls.send');
       });
     }
+  },
+  saveEditedTemplate: function () {
+    var editorTop = $('#mailpoet_editor_top');
+    Module._cancelAutosave();
+    Module.save()
+      .then(Module.updateEditedTemplate)
+      .then(function () {
+        MailPoet.Notice.success(__('Template has been saved.', 'mailpoet'), {
+          positionAfter: editorTop,
+          scroll: true,
+        });
+      })
+      .catch(function () {
+        MailPoet.Notice.error(
+          __('Template has not been saved, please try again', 'mailpoet'),
+          { positionAfter: editorTop, scroll: true },
+        );
+      });
   },
   saveAndGoToAutomation: function () {
     this.hideSaveOptions();

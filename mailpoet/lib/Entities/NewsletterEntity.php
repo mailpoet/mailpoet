@@ -31,6 +31,8 @@ class NewsletterEntity {
   const TYPE_RE_ENGAGEMENT = 're_engagement';
   const TYPE_WC_TRANSACTIONAL_EMAIL = 'wc_transactional';
   const TYPE_CONFIRMATION_EMAIL_CUSTOMIZER = 'confirmation_email';
+  // Hidden email that holds a saved template while it is open in the editor.
+  const TYPE_TEMPLATE = 'template';
 
   // legacy types, replaced by automations
   const TYPE_AUTOMATIC = 'automatic';
@@ -58,6 +60,7 @@ class NewsletterEntity {
   const AUTO_CREATED_TYPES = [
     NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL,
     NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER,
+    NewsletterEntity::TYPE_TEMPLATE,
   ];
 
   /**

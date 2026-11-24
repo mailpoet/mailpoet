@@ -22,6 +22,7 @@ Module.HeadingView = Marionette.View.extend({
       isWoocommerceTransactional: this.model.isWoocommerceTransactional(),
       isAutomationEmail: this.model.isAutomationEmail(),
       isConfirmationEmailTemplate: this.model.isConfirmationEmailTemplate(),
+      isTemplate: this.model.isTemplate(),
     };
   },
   // eslint-disable-next-line func-names

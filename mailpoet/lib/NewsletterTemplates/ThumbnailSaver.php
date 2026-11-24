@@ -45,7 +45,10 @@ class ThumbnailSaver {
     }
   }
 
-  public function ensureTemplateThumbnailFile(NewsletterTemplateEntity $template): NewsletterTemplateEntity {
+  /**
+   * @param bool $replace Save a new file from the thumbnail data even when the current file exists.
+   */
+  public function ensureTemplateThumbnailFile(NewsletterTemplateEntity $template, bool $replace = false): NewsletterTemplateEntity {
     if ($template->getReadonly()) {
       return $template;
     }
@@ -56,8 +59,11 @@ class ThumbnailSaver {
       [$savedBaseUrl, $savedFilename] = explode('/' . self::THUMBNAIL_DIRECTORY . '/', $thumbnailUrl);
     }
     $file = $this->baseDirectory . '/' . self::THUMBNAIL_DIRECTORY . '/' . $savedFilename;
-    if (!$savedFilename || !$this->isThumbnailFileName($savedFilename) || !file_exists($file)) {
+    if ($replace || !$savedFilename || !$this->isThumbnailFileName($savedFilename) || !file_exists($file)) {
       $this->saveTemplateImage($template);
+      if ($savedFilename && $template->getThumbnail() !== $thumbnailUrl) {
+        $this->deleteOwnThumbnailFile($template, $savedFilename);
+      }
     }
 
     // File might exist but domain was changed
@@ -67,6 +73,18 @@ class ThumbnailSaver {
       $template->setThumbnail(str_replace($savedBaseUrl, $this->baseUrl, $thumbnailUrl));
     }
     return $template;
+  }
+
+  private function deleteOwnThumbnailFile(NewsletterTemplateEntity $template, string $fileName): void {
+    // A copy of a template starts with the original's file, so only delete files made for this template.
+    $suffix = '_template_' . $template->getId() . '.jpg';
+    if (!$this->isThumbnailFileName($fileName) || substr($fileName, -strlen($suffix)) !== $suffix) {
+      return;
+    }
+    $file = $this->baseDirectory . '/' . self::THUMBNAIL_DIRECTORY . '/' . $fileName;
+    if (file_exists($file)) {
+      $this->wp->wpDeleteFile($file);
+    }
   }
 
   private function isThumbnailFileName(string $fileName): bool {

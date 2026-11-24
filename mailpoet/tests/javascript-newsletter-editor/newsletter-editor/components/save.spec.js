@@ -131,6 +131,9 @@ describe('Save', function () {
       model.isConfirmationEmailTemplate = function () {
         return false;
       };
+      model.isTemplate = function () {
+        return false;
+      };
       view = new SaveComponent.SaveView({ model: model });
       expect(view.render).to.not.throw();
     });
@@ -152,6 +155,9 @@ describe('Save', function () {
           return false;
         };
         model.isConfirmationEmailTemplate = function () {
+          return false;
+        };
+        model.isTemplate = function () {
           return false;
         };
         view = new SaveComponent.SaveView({ model: model });
@@ -351,6 +357,9 @@ describe('Save', function () {
         model.isConfirmationEmailTemplate = function () {
           return false;
         };
+        model.isTemplate = function () {
+          return false;
+        };
         view = new SaveComponent.SaveView({ model: model });
         view.render();
       });
@@ -419,6 +428,9 @@ describe('Save', function () {
         model.isConfirmationEmailTemplate = function () {
           return false;
         };
+        model.isTemplate = function () {
+          return false;
+        };
         view = new SaveComponent.SaveView({ model: model });
         view.render();
 
@@ -452,6 +464,9 @@ describe('Save', function () {
           return false;
         };
         model.isConfirmationEmailTemplate = function () {
+          return false;
+        };
+        model.isTemplate = function () {
           return false;
         };
         view = new SaveComponent.SaveView({ model: model });

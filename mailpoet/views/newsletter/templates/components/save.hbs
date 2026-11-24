@@ -20,6 +20,18 @@
 {{else if isAutomationEmail}}
     <input type="button" name="preview" class="button mailpoet_show_preview mailpoet_hidden" value="<%= __('Preview') %>" />
     <input type="button" name="save" value="<%= __('Save') %>" class="button button-primary mailpoet_save_go_to_automation mailpoet_hidden" />
+{{else if isTemplate}}
+    <input type="button" name="preview" class="button mailpoet_show_preview" value="<%= __('Preview') %>" />
+    <input type="button" name="save" value="<%= __('Save template') %>" class="button button-primary mailpoet_save_edited_template" />
+    <div class="clearfix"></div>
+    <div class="mailpoet_editor_messages">
+        <div class="mailpoet_save_error" aria-live="polite"></div>
+        <div class="mailpoet_editor_last_saved">
+            &nbsp;
+            <span class="mailpoet_autosaved_message mailpoet_hidden"><%= __('Autosaved') %></span>
+            <span class="mailpoet_autosaved_at mailpoet_hidden"></span>
+        </div>
+    </div>
 {{else if isConfirmationEmailTemplate}}
   <div class="mailpoet_editor_confirmation_email_section">
     <div class="mailpoet_save_button_group">

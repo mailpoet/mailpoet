@@ -32,6 +32,9 @@ Module.NewsletterModel = SuperModel.extend({
   isConfirmationEmailTemplate: function isConfirmationEmailTemplate() {
     return this.get('type') === 'confirmation_email';
   },
+  isTemplate: function isTemplate() {
+    return this.get('type') === 'template';
+  },
   isStandardEmail: function isStandardEmail() {
     return this.get('type') === NewsletterType.Standard;
   },

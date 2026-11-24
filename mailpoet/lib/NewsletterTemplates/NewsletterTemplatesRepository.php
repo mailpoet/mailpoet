@@ -74,6 +74,38 @@ class NewsletterTemplatesRepository extends Repository {
     return $template;
   }
 
+  public function duplicate(NewsletterTemplateEntity $template): NewsletterTemplateEntity {
+    $duplicate = new NewsletterTemplateEntity(
+      // translators: %s is the name of the template that is copied.
+      sprintf(__('Copy of %s', 'mailpoet'), $template->getName())
+    );
+    $duplicate->setBody($template->getBody());
+    $duplicate->setCategories($this->getSavedCategories($template));
+    $duplicate->setThumbnail($template->getThumbnail());
+    $thumbnailData = $template->getThumbnailData();
+    if ($thumbnailData !== null) {
+      $duplicate->setThumbnailData($thumbnailData);
+    }
+    $this->entityManager->persist($duplicate);
+    $this->entityManager->flush();
+    return $duplicate;
+  }
+
+  /**
+   * Built-in templates use [type, "all"|"blank"], saved ones use ["saved", type].
+   */
+  private function getSavedCategories(NewsletterTemplateEntity $template): string {
+    $categories = json_decode($template->getCategories(), true);
+    if (!is_array($categories) || !$categories) {
+      return json_encode(['saved', NewsletterEntity::TYPE_STANDARD]) ?: '[]';
+    }
+    if ($categories[0] === 'saved' || !$template->getReadonly()) {
+      return $template->getCategories();
+    }
+    $type = is_string($categories[0]) ? $categories[0] : NewsletterEntity::TYPE_STANDARD;
+    return json_encode(['saved', $type]) ?: '[]';
+  }
+
   public function cleanRecentlySent() {
     // fetch 'RECENTLY_SENT_COUNT' of most recent template IDs in 'RECENTLY_SENT_CATEGORIES'
     $recentIds = $this->doctrineRepository->createQueryBuilder('nt')
