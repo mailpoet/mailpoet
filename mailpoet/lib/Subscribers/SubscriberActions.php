@@ -181,12 +181,13 @@ class SubscriberActions {
    */
   public function holdSegmentsForConfirmation(SubscriberEntity $subscriber, array $segmentIds): array {
     $segmentIdsToConfirm = $this->getSegmentIdsNotSubscribedTo($subscriber, $segmentIds);
-    $previousSegmentIdsToConfirm = $this->getSegmentIdsToConfirm($subscriber);
+    // Lists that were deleted or joined in the meantime don't wait anymore
+    $previousSegmentIdsToConfirm = $this->getSegmentIdsNotSubscribedTo($subscriber, $this->getSegmentIdsToConfirm($subscriber));
     if ($segmentIdsToConfirm && !$previousSegmentIdsToConfirm) {
       // Emails sent for the original sign-up don't count towards the limit for this confirmation
       $subscriber->setConfirmationsCount(0);
     }
-    $pendingSegmentIds = $this->getSegmentIdsNotSubscribedTo($subscriber, array_merge($previousSegmentIdsToConfirm, $segmentIdsToConfirm));
+    $pendingSegmentIds = array_values(array_unique(array_merge($previousSegmentIdsToConfirm, $segmentIdsToConfirm)));
     $subscriber->setUnconfirmedData(
       $pendingSegmentIds ? (string)json_encode([self::SEGMENTS_TO_CONFIRM => $pendingSegmentIds]) : null
     );
