@@ -6,10 +6,11 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Preview\SendPreviewController;
 use MailPoet\Newsletter\Preview\SendPreviewException;
-use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
@@ -23,8 +24,8 @@ class SendTestEmailAbility implements Ability {
   /** @var SendPreviewController */
   private $sendPreviewController;
 
-  /** @var SubscribersFeature */
-  private $subscribersFeature;
+  /** @var SettingsController */
+  private $settings;
 
   /** @var LoggerFactory */
   private $loggerFactory;
@@ -35,13 +36,13 @@ class SendTestEmailAbility implements Ability {
   public function __construct(
     NewsletterDrafts $drafts,
     SendPreviewController $sendPreviewController,
-    SubscribersFeature $subscribersFeature,
+    SettingsController $settings,
     LoggerFactory $loggerFactory,
     WPFunctions $wp
   ) {
     $this->drafts = $drafts;
     $this->sendPreviewController = $sendPreviewController;
-    $this->subscribersFeature = $subscribersFeature;
+    $this->settings = $settings;
     $this->loggerFactory = $loggerFactory;
     $this->wp = $wp;
   }
@@ -109,6 +110,11 @@ class SendTestEmailAbility implements Ability {
     try {
       $this->sendPreviewController->sendPreview($newsletter, $recipient);
     } catch (SendPreviewException $e) {
+      $mailerError = $e->getMailerError();
+      $message = $mailerError ? $this->getMessageForOperation($mailerError->getOperation()) : null;
+      if ($message) {
+        return new \WP_Error('mailpoet_test_email_not_sent', $message, ['status' => 502]);
+      }
       // MailPoet Sending Service errors are HTML notices with links and buttons for the admin.
       $reason = $this->wp->wpStripAllTags(html_entity_decode($e->getMessage(), ENT_QUOTES, 'UTF-8'), true);
       return $this->getNotSentError(SendingStatusAbility::maskPersonalData($reason));
@@ -134,14 +140,40 @@ class SendTestEmailAbility implements Ability {
     ];
   }
 
+  /**
+   * Errors of the MailPoet Sending Service that need their own text: its messages are notices for the bulk sending,
+   * with buttons for the admin.
+   */
+  private function getMessageForOperation(string $operation): ?string {
+    $sender = (string)$this->settings->get('sender.address', '');
+    switch ($operation) {
+      case MailerError::OPERATION_AUTHORIZATION:
+        // translators: %s is an email address.
+        return sprintf(__('The test email was not sent because the MailPoet Sending Service has not authorized the sender address %s. An administrator can authorize it, or choose another sender, in MailPoet > Settings.', 'mailpoet'), $sender);
+      case MailerError::OPERATION_DOMAIN_AUTHORIZATION:
+        // translators: %s is an email address.
+        return sprintf(__('The test email was not sent because the domain of the sender address %s is not authenticated with the MailPoet Sending Service. An administrator can authenticate it, or choose another sender, in MailPoet > Settings.', 'mailpoet'), $sender);
+      case MailerError::OPERATION_SUBSCRIBER_LIMIT_REACHED:
+      case MailerError::OPERATION_INSUFFICIENT_PRIVILEGES: // Older keys over the subscriber limit get this one.
+        return __('The test email was not sent because the site has more subscribers than its MailPoet plan allows. An administrator can upgrade the plan or remove subscribers.', 'mailpoet');
+      case MailerError::OPERATION_EMAIL_LIMIT_REACHED:
+        return __('The test email was not sent because the email volume limit of the MailPoet plan is reached. An administrator can upgrade the plan.', 'mailpoet');
+      case MailerError::OPERATION_PENDING_APPROVAL:
+        return __('The test email was not sent because MailPoet is still reviewing the subscription of this site. Until then, test emails can go only to the authorized email addresses of the MailPoet account.', 'mailpoet');
+      default:
+        return null;
+    }
+  }
+
   /** The reason, and what to check, in one message: users who manage emails can't read the sending status. */
   private function getNotSentError(string $reason): \WP_Error {
     if (MailerLog::isSendingPaused()) {
       $hint = __('Sending is paused. An administrator has to resolve the problem and resume sending in MailPoet.', 'mailpoet');
-    } elseif ($this->subscribersFeature->check() || $this->subscribersFeature->checkEmailVolumeLimitIsReached()) {
-      $hint = __('The subscriber or email limit of the MailPoet plan is reached. An administrator can check the plan in MailPoet.', 'mailpoet');
     } else {
-      $hint = __('An administrator can check the sender and the sending method in MailPoet > Settings. mailpoet/get-sending-status shows the sending method and the last error.', 'mailpoet');
+      $hint = __('An administrator can check the sender and the sending method in MailPoet > Settings.', 'mailpoet');
+      if ($this->wp->currentUserCan(AccessControl::PERMISSION_MANAGE_SETTINGS)) {
+        $hint .= ' ' . __('mailpoet/get-sending-status shows how the site sends emails.', 'mailpoet');
+      }
     }
     $reason = rtrim($reason);
     if (!in_array(substr($reason, -1), ['.', '!', '?'], true)) {

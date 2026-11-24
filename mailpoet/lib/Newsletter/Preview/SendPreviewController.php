@@ -120,7 +120,7 @@ class SendPreviewController {
         __('The email could not be sent: %s', 'mailpoet'),
         $result['error']->getMessage()
       );
-      throw new SendPreviewException($error);
+      throw new SendPreviewException($error, $result['error']);
     }
   }
 

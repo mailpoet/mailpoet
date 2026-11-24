@@ -10,13 +10,13 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
-use MailPoet\Services\Bridge;
+use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter;
-use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 
 require_once __DIR__ . '/AbilitiesTestHelper.php';
 
@@ -164,6 +164,8 @@ class SendTestEmailAbilityTest extends \MailPoetTest {
     verify($result->get_error_message())->stringNotContainsString('<');
     verify($result->get_error_message())->stringNotContainsString('john@example.org');
     verify($result->get_error_message())->stringContainsString('was not accepted. An administrator can check the sender and the sending method');
+    // Editors cannot read the sending status.
+    verify($result->get_error_message())->stringNotContainsString('get-sending-status');
   }
 
   public function testItExplainsAMailerThatCannotBeBuilt(): void {
@@ -176,6 +178,16 @@ class SendTestEmailAbilityTest extends \MailPoetTest {
     verify($result->get_error_message())->stringStartsWith('Sender name and email are not configured. An administrator can check');
   }
 
+  public function testItPointsAdministratorsToTheSendingStatus(): void {
+    $id = $this->createDraft('Test me');
+    wp_set_current_user((int)$this->tester->createWordPressUser('draft-admin@example.com', 'administrator'));
+
+    $result = $this->withMailerFactory(new InvalidStateException('Mailer is not configured.'))->execute(['id' => $id]);
+
+    $this->assertInstanceOf(\WP_Error::class, $result);
+    verify($result->get_error_message())->stringContainsString('mailpoet/get-sending-status');
+  }
+
   public function testItHidesUnexpectedErrors(): void {
     $id = $this->createDraft('Test me');
 
@@ -186,21 +198,18 @@ class SendTestEmailAbilityTest extends \MailPoetTest {
     verify($result->get_error_message())->stringContainsString('MailPoet logs');
   }
 
-  public function testItSaysWhenThePlanLimitIsReached(): void {
+  public function testItExplainsSendingServiceErrorsInItsOwnWords(): void {
     $id = $this->createDraft('Test me');
-    $settings = $this->diContainer->get(SettingsController::class);
-    $settings->set(SubscribersFeature::MSS_KEY_STATE, Bridge::KEY_VALID);
-    $settings->set(SubscribersFeature::MSS_EMAIL_VOLUME_LIMIT_SETTING_KEY, 10);
-    $settings->set(SubscribersFeature::MSS_EMAILS_SENT_SETTING_KEY, 11);
-    // The message the MailPoet Sending Service error mapper builds for this case.
-    $message = 'You have reached the subscriber limit of your plan. Please <a href="https://account.mailpoet.com/account/" target="_blank">upgrade your plan</a>, or <a href="https://www.mailpoet.com/support/">contact our support team</a> if you have any questions.<br/>';
-    $error = new MailerError(MailerError::OPERATION_SEND, MailerError::LEVEL_HARD, $message);
+    $this->diContainer->get(SettingsController::class)->set('sender', ['name' => 'Shop', 'address' => 'shop@example.com']);
 
-    $result = $this->withMailer(Expected::once(['response' => false, 'error' => $error]))->execute(['id' => $id]);
+    $unauthorized = $this->withMailer(Expected::once(['response' => false, 'error' => $this->getSendingServiceError(API::ERROR_MESSAGE_INVALID_FROM)]))->execute(['id' => $id]);
+    $limit = $this->withMailer(Expected::once(['response' => false, 'error' => $this->getSendingServiceError(API::ERROR_MESSAGE_SUBSCRIBERS_LIMIT_REACHED)]))->execute(['id' => $id]);
 
-    $this->assertInstanceOf(\WP_Error::class, $result);
-    verify($result->get_error_message())->stringContainsString('Please upgrade your plan, or contact our support team if you have any questions. The subscriber or email limit');
-    verify($result->get_error_message())->stringNotContainsString('<');
+    $this->assertInstanceOf(\WP_Error::class, $unauthorized);
+    verify($unauthorized->get_error_message())->stringContainsString('has not authorized the sender address shop@example.com.');
+    verify($unauthorized->get_error_message())->stringNotContainsString('paused');
+    $this->assertInstanceOf(\WP_Error::class, $limit);
+    verify($limit->get_error_message())->stringContainsString('more subscribers than its MailPoet plan allows');
   }
 
   public function testItSaysWhenSendingIsPaused(): void {
@@ -212,6 +221,15 @@ class SendTestEmailAbilityTest extends \MailPoetTest {
 
     $this->assertInstanceOf(\WP_Error::class, $result);
     verify($result->get_error_message())->stringContainsString('Sending failed. Sending is paused.');
+  }
+
+  /** The error the MailPoet Sending Service mailer returns when it refuses to send. */
+  private function getSendingServiceError(string $error): MailerError {
+    return $this->diContainer->get(MailPoetMapper::class)->getErrorForResult(
+      ['code' => API::RESPONSE_CODE_CAN_NOT_SEND, 'error' => $error, 'message' => $error],
+      ['draft-tester@example.com'],
+      ['from_email' => 'shop@example.com']
+    );
   }
 
   private function createDraft(string $subject): int {
