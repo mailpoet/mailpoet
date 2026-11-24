@@ -27,7 +27,8 @@ jobs:
           HEADING="### Preview"
           CONTENT="$(printf '%s\n\n[Preview in WordPress Playground](https://account.mailpoet.com/playground/new/branch:%s)\n\n_The latest successful build from `%s` will be used. If none is available, the link won'\''t work._' "$HEADING" "$BRANCH_NAME" "$BRANCH_NAME")"
 
-          # "## Preview" matches both "### Preview" and the older "## Preview", so no PR gets a second section.
-          if [[ "$DESCRIPTION" != *"## Preview"* ]]; then
+          # Look for a "### Preview" line, or the "## Preview" line older PRs have, so no PR gets a second section.
+          # Mentions of the heading inside other text don't count. [[:space:]]* also covers the \r of CRLF bodies.
+          if ! grep -qE '^###? Preview[[:space:]]*$' <<< "$DESCRIPTION"; then
             gh pr edit "$PR_NUMBER" --body "$(printf '%s\n\n%s' "$DESCRIPTION" "$CONTENT")"
           fi
