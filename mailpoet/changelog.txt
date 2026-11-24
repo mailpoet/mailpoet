@@ -1,5 +1,30 @@
 == Changelog ==
 
+= 5.46.0 - 2026-11-24 =
+* Added: Experimental option to save block emails as presets and start new emails from them;
+* Added: Separator and Preformatted blocks in the new email editor;
+* Added: Optional “Unsubscribed on” column on the Subscribers page, showing when each subscriber unsubscribed;
+* Added: Option to hide pop-up, slide-in, fixed bar and below-page forms on specific pages and posts;
+* Updated: npm dependencies;
+* Improved: Recent emails in the email preset list now show the email name alongside the subject;
+* Improved: Form input padding can be cleared so form fields use the padding from the theme;
+* Improved: Personalization tags in the new email editor go in at the cursor, and clicking a tag edits that tag, also in captions and button text;
+* Improved: Automation emails in the block editor show their template in the sidebar, so it can be edited from there;
+* Improved: Support chat shows at the top that you are chatting with AI from MailPoet Support;
+* Changed: Reduced the size of admin scripts by loading React from WordPress;
+* Changed: MailPoet runs on Microsoft IIS web servers, with a notice that IIS isn’t officially supported;
+* Fixed: Shortcodes showing in post excerpts of the Latest Posts block in sent emails;
+* Fixed: Tracked links with several query parameters in emails made in the new editor leading to a broken URL;
+* Fixed: Analytics tasks filling the scheduled tasks table when sharing anonymous data is turned off;
+* Fixed: Scheduled newsletters being sent an hour early or late, and dates being shown an hour off, across a daylight saving time change;
+* Fixed: Several differences between the new email editor and sent emails, such as link and caption colors, bold text, font sizes, fallback fonts, product prices, and images in Apple Mail and Outlook;
+* Fixed: Endless loading after moving an email to the trash in the new email editor on WordPress 7.2;
+* Fixed: Italic choices not saving in the new email editor’s Styles sidebar;
+* Fixed: Paragraphs and headings with only a personalization tag going missing, and personalization tags breaking in the plain-text version of emails made in the new email editor;
+* Fixed: Fatal error when another plugin sends an HTTP request with a URL that is not a string;
+* Fixed: Part of a held email sent in subscribers’ time zones staying in the sending queue after choosing Don’t send;
+* Fixed: Large gaps between template cards on smaller screens.
+
 = 5.45.2 - 2026-11-09 =
 * Added: Option for other plugins to add or update subscribers without sending every required custom field;
 * Added: Subscription source column in the subscriber export;
