@@ -74,10 +74,10 @@ Stylelint config is at `mailpoet/.stylelintrc`. Key rules:
 pnpm lint:css
 
 # Fix SCSS files (auto-fix where possible)
-cd mailpoet && pnpm run stylelint -- "assets/css/src/**/*.scss"
+cd mailpoet && pnpm run stylelint "assets/css/src/**/*.scss"
 ```
 
-Under the hood, `qa:lint-css` runs `pnpm run stylelint-check -- "assets/css/src/**/*.scss"`.
+Under the hood, `qa:lint-css` runs `pnpm run stylelint-check "assets/css/src/**/*.scss"`.
 
 ### Common Stylelint Issues
 
