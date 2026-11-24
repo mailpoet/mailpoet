@@ -32,7 +32,7 @@ A premium-suite failure may originate in the free plugin — keep that possibili
 
 - **GitHub Actions URL** → read the failing step with `gh run view <run-id> --log-failed`, then open the file the error points at. MailPoet does not allow skipped tests on `trunk` or release branches outside `tests/_support/CheckSkippedTestsExtension`’s allowlist — so on those branches a skipped test is itself a signal worth investigating, not noise. Skipped tests show up as `<skipped` entries in the JUnit `report.xml` inside the `integration-*` / `acceptance-*` artifacts. If the message is empty or generic and the suite is acceptance, download the `*.fail.png` / `*.fail.html` artifacts (`gh run download <run-id> -p 'acceptance-*'`) before anything else.
 - **Local failure dump** → open the file the error points at. You don’t need CI at all.
-- **Red job, but no test failed** → it’s a _non-test_ CI failure. Common causes: composer/npm install bombed, asset build broke, lint/QA gate caught something, OOM, or a runner problem. Read the failing step’s raw output and fix the build/install/lint issue directly. For a runner problem, re-run the job before investigating. The investigation flow below doesn’t apply.
+- **Red job, but no test failed** → it’s a _non-test_ CI failure. Common causes: composer/pnpm install bombed, asset build broke, lint/QA gate caught something, OOM, or a runner problem. Read the failing step’s raw output and fix the build/install/lint issue directly. For a runner problem, re-run the job before investigating. The investigation flow below doesn’t apply.
 
 ## Investigation moves
 

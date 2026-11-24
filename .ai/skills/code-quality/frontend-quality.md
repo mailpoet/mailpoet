@@ -120,11 +120,11 @@ pnpm qa:prettier
 pnpm format
 ```
 
-Prettier runs from the repo root internally via `npx prettier`. It applies to JS, TS, JSX, TSX, SCSS, JSON, and other supported file types.
+Prettier runs from the repo root internally via `pnpm exec prettier`. It applies to JS, TS, JSX, TSX, SCSS, JSON, and other supported file types.
 
 ### ⚠️ Docker vs CI Prettier Mismatch
 
-**Never use Docker’s `./do run` to run Prettier write/check.** Docker’s `npx` can resolve to a different Prettier version than what CI uses, causing the check to silently pass locally but fail in CI.
+**Never use Docker’s `./do run` to run Prettier write/check.** Docker can resolve a different Prettier version than what CI uses, causing the check to silently pass locally but fail in CI.
 
 The project uses **Prettier 2.6.2** with `singleQuote: true`. CI runs `node_modules/.bin/prettier` from the repo root, which enforces single quotes for all string literals in JS/JSX/TS/TSX files.
 
@@ -132,11 +132,11 @@ The project uses **Prettier 2.6.2** with `singleQuote: true`. CI runs `node_modu
 
 ```bash
 # From the repo root — format only the files you've changed
-npx prettier@2.6.2 --write mailpoet/assets/js/src/path/to/file.jsx
-npx prettier@2.6.2 --write mailpoet/assets/css/src/path/to/file.scss
+pnpm exec prettier --write mailpoet/assets/js/src/path/to/file.jsx
+pnpm exec prettier --write mailpoet/assets/css/src/path/to/file.scss
 
 # Verify both files pass
-npx prettier@2.6.2 --check mailpoet/assets/js/src/path/to/file.jsx
+pnpm exec prettier --check mailpoet/assets/js/src/path/to/file.jsx
 ```
 
 The most common symptom of this mismatch: CI fails with exactly the files you modified, while `./do qa:prettier-check` passes locally. This means Docker’s Prettier formatted with double quotes (`"string"`) instead of the required single quotes (`'string'`).

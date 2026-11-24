@@ -625,11 +625,11 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function qaPrettierCheck() {
-    return $this->taskExec('npx prettier --check .')->dir(dirname(__DIR__));
+    return $this->taskExec('pnpm exec prettier --check .')->dir(dirname(__DIR__));
   }
 
   public function qaPrettierWrite() {
-    return $this->taskExec('npx prettier --write .')->dir(dirname(__DIR__));
+    return $this->taskExec('pnpm exec prettier --write .')->dir(dirname(__DIR__));
   }
 
   public function qaPhp() {
