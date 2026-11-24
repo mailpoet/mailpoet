@@ -77,10 +77,16 @@ class SendTestEmailAbilityTest extends \MailPoetTest {
     $id = $this->createDraft('Test me');
     wp_update_post(['ID' => $this->getWpPostId($id), 'post_content' => '<!-- wp:paragraph --><p>Only the editor can change this</p><!-- /wp:paragraph -->']);
 
-    $result = $this->withMailer(Expected::once(['response' => true]))->execute(['id' => $id]);
+    $html = '';
+
+    $result = $this->withMailer(Expected::once(function ($newsletter) use (&$html) {
+      $html = $newsletter['body']['html'];
+      return ['response' => true];
+    }))->execute(['id' => $id]);
 
     $this->assertIsArray($result);
     verify($result['sent_to'])->equals('draft-tester@example.com');
+    verify($html)->stringContainsString('Only the editor can change this');
   }
 
   public function testItSendsNothingForANewsletterThatIsNotADraft(): void {
