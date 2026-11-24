@@ -64,9 +64,17 @@ overrides:
   'ws@>=8.0.0 <8.21.0': 8.21.0
   'zod@<4.6.6': 4.6.6
 
-onlyBuiltDependencies:
-  - core-js
-  - core-js-pure
+# No dependency needs its install script: core-js only prints a banner, and
+# the others ship prebuilt binaries.
+allowBuilds:
+  '@parcel/watcher': false
+  core-js: false
+  core-js-pure: false
+  fs-ext-extra-prebuilt: false
+  unrs-resolver: false
+
+autoInstallPeers: false
+pmOnFail: download
 
 # Supply chain security: block packages published less than 24 hours ago.
 # Excludes @wordpress, @woocommerce, @automattic — these are first-party
