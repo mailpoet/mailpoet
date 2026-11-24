@@ -12,6 +12,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\AssetsController;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\Pages as SettingsPages;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
@@ -116,6 +117,9 @@ class Pages {
   /** @var WPUserSubscriberLink */
   private $wpUserSubscriberLink;
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
@@ -139,7 +143,8 @@ class Pages {
     UnsubscribeReasonTracker $unsubscribeReasonTracker,
     Request $request,
     TrackingConsentController $trackingConsentController,
-    WPUserSubscriberLink $wpUserSubscriberLink
+    WPUserSubscriberLink $wpUserSubscriberLink,
+    SegmentsRepository $segmentsRepository
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
@@ -164,6 +169,7 @@ class Pages {
     $this->request = $request;
     $this->trackingConsentController = $trackingConsentController;
     $this->wpUserSubscriberLink = $wpUserSubscriberLink;
+    $this->segmentsRepository = $segmentsRepository;
   }
 
   public function init($action = false, $data = [], $initShortcodes = false, $initPageFilters = false) {
@@ -303,25 +309,26 @@ class Pages {
   }
 
   /**
-   * Adds the subscriber back to lists they left earlier and asked to join again.
+   * Adds the subscriber to lists they asked to join and confirmed.
    * @param int[] $segmentIds
    */
   private function subscribeToSegmentsToConfirm(array $segmentIds): void {
     if ($this->subscriber === null) {
       return;
     }
-    $segments = [];
+    $subscribedSegmentIds = [];
     foreach ($this->subscriber->getSubscriberSegments() as $subscriberSegment) {
       $segment = $subscriberSegment->getSegment();
-      if (
-        $segment instanceof SegmentEntity
-        && $segment->getDeletedAt() === null
-        && $subscriberSegment->getStatus() === SubscriberEntity::STATUS_UNSUBSCRIBED
-        && in_array((int)$segment->getId(), $segmentIds, true)
-      ) {
-        $segments[] = $segment;
+      if ($segment instanceof SegmentEntity && $subscriberSegment->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED) {
+        $subscribedSegmentIds[] = (int)$segment->getId();
       }
     }
+    $segments = array_filter(
+      $this->segmentsRepository->findByIds($segmentIds),
+      function (SegmentEntity $segment) use ($subscribedSegmentIds): bool {
+        return $segment->getDeletedAt() === null && !in_array((int)$segment->getId(), $subscribedSegmentIds, true);
+      }
+    );
     if ($segments) {
       $this->subscriberSegmentRepository->subscribeToSegments($this->subscriber, $segments);
     }

@@ -286,6 +286,7 @@ class SubscriberActionsTest extends \MailPoetTest {
       ->withSubscriber($subscriber->getId(), 'blue')
       ->create();
     $segment = $this->segmentsRepository->createOrUpdate('Already Subscribed List');
+    $this->diContainer->get(SubscriberSegmentRepository::class)->subscribeToSegments($subscriber, [$segment]);
 
     $confirmationEmailMailer = $this->createMock(ConfirmationEmailMailer::class);
     $confirmationEmailMailer->expects($this->never())
@@ -318,7 +319,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     $this->settings->set('collect_subscriber_timezones.enabled', $originalTimeZoneSettingValue);
   }
 
-  public function testItAsksSubscribedSubscriberToConfirmListsTheyLeft(): void {
+  public function testItAsksSubscribedSubscriberToConfirmListsTheyAreNotIn(): void {
     $this->settings->set('signup_confirmation.enabled', true);
     $keptSegment = $this->segmentsRepository->createOrUpdate('Product updates');
     $leftSegment = $this->segmentsRepository->createOrUpdate('Weekly digest');
@@ -360,10 +361,9 @@ class SubscriberActionsTest extends \MailPoetTest {
     verify($statuses)->equals([
       'Product updates' => SubscriberEntity::STATUS_SUBSCRIBED,
       'Weekly digest' => SubscriberEntity::STATUS_UNSUBSCRIBED,
-      'Events' => SubscriberEntity::STATUS_SUBSCRIBED,
     ]);
     verify(json_decode((string)$subscriber->getUnconfirmedData(), true))->equals([
-      SubscriberActions::SEGMENTS_TO_CONFIRM => [$leftSegment->getId()],
+      SubscriberActions::SEGMENTS_TO_CONFIRM => [$leftSegment->getId(), $newSegment->getId()],
     ]);
 
     // Signing up again while the list waits for confirmation keeps the email limit

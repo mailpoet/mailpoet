@@ -963,6 +963,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $subscriber = (new SubscriberFactory())
       ->withEmail($email)
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([$segment])
       ->create();
 
     $subscriberController->subscribe([

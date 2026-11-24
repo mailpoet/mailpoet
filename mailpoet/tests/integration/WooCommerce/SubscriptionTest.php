@@ -311,10 +311,10 @@ class SubscriptionTest extends \MailPoetTest {
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
-  public function testItAsksSubscribedCustomerToConfirmListsTheyLeft(): void {
+  public function testItAsksSubscribedCustomerToConfirmOptInListsTheyAreNotIn(): void {
     $this->settings->set('signup_confirmation', ['enabled' => true]);
     $leftSegment = $this->segmentsRepository->createOrUpdate('Weekly digest');
-    $this->subscribeToSegment($this->subscriber, $this->wcSegment);
+    $newSegment = $this->segmentsRepository->createOrUpdate('Events');
     $this->unsubscribeToSegment($this->subscriber, $leftSegment);
     $this->entityManager->refresh($this->subscriber);
     $this->confirmationEmailMailer
@@ -322,7 +322,7 @@ class SubscriptionTest extends \MailPoetTest {
       ->method('sendConfirmationEmailOnce')
       ->with($this->isInstanceOf(SubscriberEntity::class), null, null, true);
 
-    $this->settings->set(Subscription::OPTIN_SEGMENTS_SETTING_NAME, [$leftSegment->getId()]);
+    $this->settings->set(Subscription::OPTIN_SEGMENTS_SETTING_NAME, [$leftSegment->getId(), $newSegment->getId()]);
     $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, true);
     $_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME] = 'on';
     $data['billing_email'] = $this->subscriber->getEmail();
@@ -342,11 +342,11 @@ class SubscriptionTest extends \MailPoetTest {
       $statuses[(int)$segment->getId()] = $subscriberSegment->getStatus();
     }
     verify($statuses)->equals([
-      $this->wcSegment->getId() => SubscriberEntity::STATUS_SUBSCRIBED,
       $leftSegment->getId() => SubscriberEntity::STATUS_UNSUBSCRIBED,
+      $this->wcSegment->getId() => SubscriberEntity::STATUS_SUBSCRIBED,
     ]);
     verify(json_decode((string)$subscriber->getUnconfirmedData(), true))->equals([
-      SubscriberActions::SEGMENTS_TO_CONFIRM => [$leftSegment->getId()],
+      SubscriberActions::SEGMENTS_TO_CONFIRM => [$leftSegment->getId(), $newSegment->getId()],
     ]);
   }
 

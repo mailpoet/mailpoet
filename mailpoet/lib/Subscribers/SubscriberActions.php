@@ -103,8 +103,8 @@ class SubscriberActions {
       // custom fields should use the same approach as the subscriber main data that means to wait on confirmation
       $this->subscriberSaveController->updateCustomFields($subscriberData, $subscriber);
     } else if ($wasAlreadySubscribed) {
-      // New lists are added right away, lists the subscriber left earlier only after confirmation
-      $segmentIdsToConfirm = $this->holdLeftSegmentsForConfirmation($subscriber, $segmentIds);
+      // Lists the subscriber isn't in yet are added only after confirmation
+      $segmentIdsToConfirm = $this->holdSegmentsForConfirmation($subscriber, $segmentIds);
     } else {
       // store subscriber data to be updated after confirmation
       $unconfirmedData = $this->subscriberSaveController->filterOutReservedColumns($subscriberData);
@@ -174,19 +174,19 @@ class SubscriberActions {
   }
 
   /**
-   * Stores lists the subscriber left earlier in their unconfirmed data, so they are added
-   * only after the subscriber confirms. The caller sends the confirmation email.
+   * Stores lists the subscriber isn't subscribed to yet in their unconfirmed data, so they
+   * are added only after the subscriber confirms. The caller sends the confirmation email.
    * @param array<int|string> $segmentIds IDs of lists the subscriber asked to join
    * @return int[] IDs from $segmentIds that wait for confirmation
    */
-  public function holdLeftSegmentsForConfirmation(SubscriberEntity $subscriber, array $segmentIds): array {
-    $segmentIdsToConfirm = $this->getLeftSegmentIds($subscriber, $segmentIds);
+  public function holdSegmentsForConfirmation(SubscriberEntity $subscriber, array $segmentIds): array {
+    $segmentIdsToConfirm = $this->getSegmentIdsNotSubscribedTo($subscriber, $segmentIds);
     $previousSegmentIdsToConfirm = $this->getSegmentIdsToConfirm($subscriber);
     if ($segmentIdsToConfirm && !$previousSegmentIdsToConfirm) {
       // Emails sent for the original sign-up don't count towards the limit for this confirmation
       $subscriber->setConfirmationsCount(0);
     }
-    $pendingSegmentIds = $this->getLeftSegmentIds($subscriber, array_merge($segmentIdsToConfirm, $previousSegmentIdsToConfirm));
+    $pendingSegmentIds = $this->getSegmentIdsNotSubscribedTo($subscriber, array_merge($previousSegmentIdsToConfirm, $segmentIdsToConfirm));
     $subscriber->setUnconfirmedData(
       $pendingSegmentIds ? (string)json_encode([self::SEGMENTS_TO_CONFIRM => $pendingSegmentIds]) : null
     );
@@ -195,22 +195,26 @@ class SubscriberActions {
 
   /**
    * @param array<int|string> $segmentIds
-   * @return int[] IDs from $segmentIds of lists the subscriber unsubscribed from
+   * @return int[] IDs from $segmentIds of existing lists the subscriber isn't subscribed to
    */
-  private function getLeftSegmentIds(SubscriberEntity $subscriber, array $segmentIds): array {
-    $segmentIds = array_map('intval', $segmentIds);
-    $leftSegmentIds = [];
+  private function getSegmentIdsNotSubscribedTo(SubscriberEntity $subscriber, array $segmentIds): array {
+    $subscribedSegmentIds = [];
     foreach ($subscriber->getSubscriberSegments() as $subscriberSegment) {
       $segment = $subscriberSegment->getSegment();
-      if (
-        $segment instanceof SegmentEntity
-        && $subscriberSegment->getStatus() === SubscriberEntity::STATUS_UNSUBSCRIBED
-        && in_array((int)$segment->getId(), $segmentIds, true)
-      ) {
-        $leftSegmentIds[] = (int)$segment->getId();
+      if ($segment instanceof SegmentEntity && $subscriberSegment->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED) {
+        $subscribedSegmentIds[] = (int)$segment->getId();
       }
     }
-    return $leftSegmentIds;
+    $existingSegmentIds = array_map(function (SegmentEntity $segment): int {
+      return (int)$segment->getId();
+    }, $this->segmentsRepository->findByIds($segmentIds));
+    $result = [];
+    foreach (array_unique(array_map('intval', $segmentIds)) as $segmentId) {
+      if (in_array($segmentId, $existingSegmentIds, true) && !in_array($segmentId, $subscribedSegmentIds, true)) {
+        $result[] = $segmentId;
+      }
+    }
+    return $result;
   }
 
   /**
