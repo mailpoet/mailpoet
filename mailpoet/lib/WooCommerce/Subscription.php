@@ -8,6 +8,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
+use MailPoet\Subscribers\ConfirmationEmailResolver;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
@@ -80,6 +81,9 @@ class Subscription {
   /** @var SubscriberActions */
   private $subscriberActions;
 
+  /** @var ConfirmationEmailResolver */
+  private $confirmationEmailResolver;
+
   public function __construct(
     SettingsController $settings,
     ConfirmationEmailMailer $confirmationEmailMailer,
@@ -90,7 +94,8 @@ class Subscription {
     SubscriberSegmentRepository $subscriberSegmentRepository,
     TrackingConsentCapture $trackingConsentCapture,
     WooCommerceSegment $woocommerceSegment,
-    SubscriberActions $subscriberActions
+    SubscriberActions $subscriberActions,
+    ConfirmationEmailResolver $confirmationEmailResolver
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
@@ -102,6 +107,7 @@ class Subscription {
     $this->trackingConsentCapture = $trackingConsentCapture;
     $this->woocommerceSegment = $woocommerceSegment;
     $this->subscriberActions = $subscriberActions;
+    $this->confirmationEmailResolver = $confirmationEmailResolver;
   }
 
   public function extendWooCommerceCheckoutForm() {
@@ -307,6 +313,9 @@ class Subscription {
         $this->requireSubscriptionConfirmation($subscriber);
       }
 
+      $segmentsToConfirm = array_filter($segments, function (SegmentEntity $segment) use ($segmentIdsToConfirm): bool {
+        return in_array((int)$segment->getId(), $segmentIdsToConfirm, true);
+      });
       $this->subscriberSegmentRepository->subscribeToSegments(
         $subscriber,
         array_filter($segments, function (SegmentEntity $segment) use ($segmentIdsToConfirm): bool {
@@ -314,8 +323,10 @@ class Subscription {
         })
       );
 
-      if ($segmentIdsToConfirm) {
-        $this->sendConfirmationEmail($subscriber);
+      if ($segmentsToConfirm) {
+        // Use the confirmation email and page of the lists waiting for confirmation
+        [$confirmationEmailId, $confirmationPageId] = $this->confirmationEmailResolver->resolveFromSegments($segmentsToConfirm);
+        $this->sendConfirmationEmail($subscriber, $confirmationEmailId, $confirmationPageId);
       }
 
       return true;
@@ -399,12 +410,9 @@ class Subscription {
     $this->sendConfirmationEmail($subscriber);
   }
 
-  private function sendConfirmationEmail(SubscriberEntity $subscriber): void {
+  private function sendConfirmationEmail(SubscriberEntity $subscriber, ?int $confirmationEmailId = null, ?int $confirmationPageId = null): void {
     try {
-      // Per-list confirmation settings are not resolved here because this path
-      // subscribes to the WooCommerce Customers segment (TYPE_WC_USERS),
-      // which does not support custom confirmation overrides.
-      $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber, null, null, true);
+      $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber, $confirmationEmailId, $confirmationPageId, true);
     } catch (\Exception $e) {
       // ignore errors
     }

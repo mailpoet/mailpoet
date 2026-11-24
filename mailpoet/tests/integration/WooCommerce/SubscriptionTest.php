@@ -315,12 +315,15 @@ class SubscriptionTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation', ['enabled' => true]);
     $leftSegment = $this->segmentsRepository->createOrUpdate('Weekly digest');
     $newSegment = $this->segmentsRepository->createOrUpdate('Events');
+    $newSegment->setConfirmationEmailId(42);
+    $newSegment->setConfirmationPageId(7);
+    $this->entityManager->flush();
     $this->unsubscribeToSegment($this->subscriber, $leftSegment);
     $this->entityManager->refresh($this->subscriber);
     $this->confirmationEmailMailer
       ->expects($this->once())
       ->method('sendConfirmationEmailOnce')
-      ->with($this->isInstanceOf(SubscriberEntity::class), null, null, true);
+      ->with($this->isInstanceOf(SubscriberEntity::class), 42, 7, true);
 
     $this->settings->set(Subscription::OPTIN_SEGMENTS_SETTING_NAME, [$leftSegment->getId(), $newSegment->getId()]);
     $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, true);
