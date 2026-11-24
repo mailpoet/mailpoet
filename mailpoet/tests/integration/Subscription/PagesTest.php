@@ -227,17 +227,7 @@ class PagesTest extends \MailPoetTest {
   }
 
   public function testItAddsListsWaitingForConfirmationToSubscribedSubscriber() {
-    $keptSegment = (new SegmentFactory())->withName('Product updates')->create();
-    $leftSegment = (new SegmentFactory())->withName('Weekly digest')->create();
-    $subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
-    $subscriberSegmentRepository->subscribeToSegments($this->subscriber, [$keptSegment, $leftSegment]);
-    $subscriberSegmentRepository->unsubscribeFromSegments($this->subscriber, [$leftSegment]);
-    $this->subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
-    $this->subscriber->setConfirmationsCount(2);
-    $this->subscriber->setUnconfirmedData((string)json_encode([
-      SubscriberActions::SEGMENTS_TO_CONFIRM => [$leftSegment->getId()],
-    ]));
-    $this->entityManager->flush();
+    $this->createSubscriberWithListWaitingForConfirmation();
 
     $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::never()]);
     $pages = $this->getPages($newSubscriberNotificationSender);
@@ -271,6 +261,43 @@ class PagesTest extends \MailPoetTest {
       'Product updates' => SubscriberEntity::STATUS_SUBSCRIBED,
       'Weekly digest' => SubscriberEntity::STATUS_SUBSCRIBED,
     ], $statuses);
+  }
+
+  public function testItAddsListsWaitingForConfirmationWhenTrackingFails() {
+    $this->createSubscriberWithListWaitingForConfirmation();
+    $subscriberHandler = $this->makeEmpty(SubscriberHandler::class, [
+      'identifyByEmail' => function () {
+        throw new \Exception('Cookie could not be set');
+      },
+    ]);
+    $subscription = $this->getPages(null, null, null, $subscriberHandler)->init(false, $this->testData, false, false);
+
+    $this->assertFalse($subscription->confirm());
+
+    $this->entityManager->clear();
+    $confirmedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $confirmedSubscriber);
+    $statuses = [];
+    foreach ($confirmedSubscriber->getSubscriberSegments() as $subscriberSegment) {
+      $segment = $subscriberSegment->getSegment();
+      $this->assertInstanceOf(SegmentEntity::class, $segment);
+      $statuses[$segment->getName()] = $subscriberSegment->getStatus();
+    }
+    $this->assertSame(SubscriberEntity::STATUS_SUBSCRIBED, $statuses['Weekly digest']);
+  }
+
+  private function createSubscriberWithListWaitingForConfirmation(): void {
+    $keptSegment = (new SegmentFactory())->withName('Product updates')->create();
+    $leftSegment = (new SegmentFactory())->withName('Weekly digest')->create();
+    $subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
+    $subscriberSegmentRepository->subscribeToSegments($this->subscriber, [$keptSegment, $leftSegment]);
+    $subscriberSegmentRepository->unsubscribeFromSegments($this->subscriber, [$leftSegment]);
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->subscriber->setConfirmationsCount(2);
+    $this->subscriber->setUnconfirmedData((string)json_encode([
+      SubscriberActions::SEGMENTS_TO_CONFIRM => [$leftSegment->getId()],
+    ]));
+    $this->entityManager->flush();
   }
 
   public function testItSendsWelcomeNotificationUponConfirmingSubscription() {
@@ -769,7 +796,8 @@ class PagesTest extends \MailPoetTest {
   private function getPages(
     ?NewSubscriberNotificationMailer $newSubscriberNotificationsMock = null,
     ?Unsubscribes $unsubscribesMock = null,
-    ?WPFunctions $wp = null
+    ?WPFunctions $wp = null,
+    ?SubscriberHandler $subscriberHandler = null
   ): Pages {
     $container = ContainerWrapper::getInstance();
     return new Pages(
@@ -782,7 +810,7 @@ class PagesTest extends \MailPoetTest {
       $container->get(Renderer::class),
       $unsubscribesMock ?? $container->get(Unsubscribes::class),
       $container->get(ManageSubscriptionFormRenderer::class),
-      $container->get(SubscriberHandler::class),
+      $subscriberHandler ?? $container->get(SubscriberHandler::class),
       $this->subscribersRepository,
       $container->get(TrackingConfig::class),
       $container->get(EntityManager::class),

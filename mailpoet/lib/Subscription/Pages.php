@@ -244,6 +244,11 @@ class Pages {
     $originalStatus = $this->subscriber->getStatus();
     $confirmationCompleted = $originalStatus !== SubscriberEntity::STATUS_SUBSCRIBED || $subscriberData !== null;
 
+    // Lists are added before the unconfirmed data is cleared, so the link still works if this fails
+    if ($segmentIdsToConfirm) {
+      $this->subscribeToSegmentsToConfirm($segmentIdsToConfirm);
+    }
+
     $this->subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $this->subscriber->setConfirmedIp(Helpers::getIP());
     $this->subscriber->setConfirmedAt(Carbon::now()->millisecond(0));
@@ -258,10 +263,6 @@ class Pages {
       $this->subscriberHandler->identifyByEmail($this->subscriber->getEmail());
     } catch (\Exception $e) {
       return false;
-    }
-
-    if ($segmentIdsToConfirm) {
-      $this->subscribeToSegmentsToConfirm($segmentIdsToConfirm);
     }
 
     // Schedule welcome emails
