@@ -119,6 +119,29 @@ class SendTestEmailAbilityTest extends \MailPoetTest {
     }
   }
 
+  public function testItSendsNothingWhenTheUserHasNoEmailAddress(): void {
+    global $wpdb;
+    $id = $this->createDraft('Test me');
+    $userId = get_current_user_id();
+    // WordPress lets users exist without an email address.
+    $wpdb->update($wpdb->users, ['user_email' => ''], ['ID' => $userId]);
+    clean_user_cache($userId);
+    // The current user object is reloaded only when the ID changes.
+    wp_set_current_user(0);
+    wp_set_current_user($userId);
+
+    try {
+      $result = $this->withMailer(Expected::never())->execute(['id' => $id]);
+    } finally {
+      // The created users are deleted by their email address.
+      $wpdb->update($wpdb->users, ['user_email' => 'draft-tester@example.com'], ['ID' => $userId]);
+      clean_user_cache($userId);
+    }
+
+    $this->assertInstanceOf(\WP_Error::class, $result);
+    verify($result->get_error_code())->equals('mailpoet_no_recipient');
+  }
+
   public function testUsersWhoCannotManageEmailsAreRefused(): void {
     $id = $this->createDraft('Test me');
     wp_set_current_user((int)$this->tester->createWordPressUser('draft-author@example.com', 'author'));
