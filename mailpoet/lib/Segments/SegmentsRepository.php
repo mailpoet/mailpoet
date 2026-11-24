@@ -474,4 +474,25 @@ class SegmentsRepository extends Repository {
       ->fetchOne();
     return (int)$result;
   }
+
+  /**
+   * Returns lists from the given IDs that aren't trashed and the subscriber isn't subscribed to.
+   * @param int[] $segmentIds
+   * @return SegmentEntity[]
+   */
+  public function findActiveNotSubscribedByIds(SubscriberEntity $subscriber, array $segmentIds): array {
+    $subscribedSegmentIds = [];
+    foreach ($subscriber->getSubscriberSegments() as $subscriberSegment) {
+      $segment = $subscriberSegment->getSegment();
+      if ($segment instanceof SegmentEntity && $subscriberSegment->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED) {
+        $subscribedSegmentIds[] = (int)$segment->getId();
+      }
+    }
+    return array_values(array_filter(
+      $this->findByIds($segmentIds),
+      function (SegmentEntity $segment) use ($subscribedSegmentIds): bool {
+        return $segment->getDeletedAt() === null && !in_array((int)$segment->getId(), $subscribedSegmentIds, true);
+      }
+    ));
+  }
 }

@@ -12,6 +12,7 @@ use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -49,6 +50,9 @@ class ConfirmationEmailMailer {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
   /** @var array Cache for confirmation emails sent within a request */
   private $sentEmails = [];
 
@@ -59,6 +63,7 @@ class ConfirmationEmailMailer {
     SubscriptionUrlFactory $subscriptionUrlFactory,
     ConfirmationEmailCustomizer $confirmationEmailCustomizer,
     NewslettersRepository $newslettersRepository,
+    SegmentsRepository $segmentsRepository,
     ?WPFunctions $wp = null
   ) {
     $this->mailerFactory = $mailerFactory;
@@ -69,6 +74,7 @@ class ConfirmationEmailMailer {
     $this->subscribersRepository = $subscribersRepository;
     $this->confirmationEmailCustomizer = $confirmationEmailCustomizer;
     $this->newslettersRepository = $newslettersRepository;
+    $this->segmentsRepository = $segmentsRepository;
   }
 
   /**
@@ -296,7 +302,7 @@ class ConfirmationEmailMailer {
       return false;
     }
 
-    $segments = $subscriber->getSegments()->toArray();
+    $segments = $this->getSegmentsToConfirm($subscriber);
     $segmentNames = array_map(function(SegmentEntity $segment) {
       return $segment->getName();
     }, $segments);
@@ -333,6 +339,17 @@ class ConfirmationEmailMailer {
     MailerLog::incrementSentCount();
 
     return true;
+  }
+
+  /**
+   * Lists waiting for confirmation, or all lists of the subscriber when they confirm the whole subscription.
+   * @return SegmentEntity[]
+   */
+  private function getSegmentsToConfirm(SubscriberEntity $subscriber): array {
+    $unconfirmedData = json_decode((string)$subscriber->getUnconfirmedData(), true);
+    $segmentIds = is_array($unconfirmedData) ? SubscriberActions::readSegmentIdsToConfirm($unconfirmedData) : [];
+    $segments = $this->segmentsRepository->findActiveNotSubscribedByIds($subscriber, $segmentIds);
+    return $segments ?: $subscriber->getSegments()->toArray();
   }
 
   private function recordSuccessfulConfirmationSend(SubscriberEntity $subscriber): void {
