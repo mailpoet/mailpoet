@@ -288,12 +288,13 @@ class Subscription {
         $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED
         && (bool)$signupConfirmation['enabled']
       ) {
-        // Lists the subscriber left earlier are added only after confirmation
-        $segmentIdsToConfirm = $this->subscriberActions->holdLeftSegmentsForConfirmation(
+        // Opt-in lists the subscriber isn't in yet are added only after confirmation.
+        // The WooCommerce Customers list is left out, the customer sync adds every customer to it.
+        $segmentIdsToConfirm = $this->subscriberActions->holdSegmentsForConfirmation(
           $subscriber,
           array_map(function (SegmentEntity $segment): int {
             return (int)$segment->getId();
-          }, $segments)
+          }, $moreSegmentsToSubscribe)
         );
       }
 

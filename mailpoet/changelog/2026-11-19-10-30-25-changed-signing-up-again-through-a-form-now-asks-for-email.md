@@ -2,4 +2,4 @@
 
 # Description
 
-Signing up again now asks for email confirmation before adding a subscriber back to a list they unsubscribed from
+Existing subscribers who sign up for more lists now confirm by email before they are added

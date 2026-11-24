@@ -20,6 +20,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsClicksRepository;
@@ -260,6 +261,7 @@ class PagesTest extends \MailPoetTest {
     $this->assertSame([
       'Product updates' => SubscriberEntity::STATUS_SUBSCRIBED,
       'Weekly digest' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'Events' => SubscriberEntity::STATUS_SUBSCRIBED,
     ], $statuses);
   }
 
@@ -289,13 +291,14 @@ class PagesTest extends \MailPoetTest {
   private function createSubscriberWithListWaitingForConfirmation(): void {
     $keptSegment = (new SegmentFactory())->withName('Product updates')->create();
     $leftSegment = (new SegmentFactory())->withName('Weekly digest')->create();
+    $newSegment = (new SegmentFactory())->withName('Events')->create();
     $subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
     $subscriberSegmentRepository->subscribeToSegments($this->subscriber, [$keptSegment, $leftSegment]);
     $subscriberSegmentRepository->unsubscribeFromSegments($this->subscriber, [$leftSegment]);
     $this->subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $this->subscriber->setConfirmationsCount(2);
     $this->subscriber->setUnconfirmedData((string)json_encode([
-      SubscriberActions::SEGMENTS_TO_CONFIRM => [$leftSegment->getId()],
+      SubscriberActions::SEGMENTS_TO_CONFIRM => [$leftSegment->getId(), $newSegment->getId()],
     ]));
     $this->entityManager->flush();
   }
@@ -823,7 +826,8 @@ class PagesTest extends \MailPoetTest {
       $container->get(UnsubscribeReasonTracker::class),
       $container->get(Request::class),
       $container->get(TrackingConsentController::class),
-      $container->get(WPUserSubscriberLink::class)
+      $container->get(WPUserSubscriberLink::class),
+      $container->get(SegmentsRepository::class)
     );
   }
 
