@@ -60,9 +60,10 @@
     "typescript": "^5.7.0"
   },
   "engines": {
-    "node": "^24.15.0"
+    "node": "^24.15.0",
+    "pnpm": "^11.29.0"
   },
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@11.29.0+sha512.d913f9b37cd5fe6780052e809774edabb7bdcf69a6e6d9b8fd3b38bc052fa8a7d891b6c201a38fb504a07ffce2e5e8c262ef54fb8f57db62f22d353a30bc8a96",
   "volta": {
     "node": "24.21.0"
   }
