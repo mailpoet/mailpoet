@@ -98,6 +98,13 @@ class SendTestEmailAbility implements Ability {
       );
     }
     $recipient = (string)$this->wp->wpGetCurrentUser()->user_email;
+    if (!$this->wp->isEmail($recipient)) {
+      return new \WP_Error(
+        'mailpoet_no_recipient',
+        __('Your user account has no valid email address, so no test email was sent.', 'mailpoet'),
+        ['status' => 400]
+      );
+    }
 
     try {
       $this->sendPreviewController->sendPreview($newsletter, $recipient);
