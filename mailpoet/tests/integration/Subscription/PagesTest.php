@@ -648,6 +648,9 @@ class PagesTest extends \MailPoetTest {
     verify($this->wpUserSubscriberLink->isUnconfirmed($wpUserId))->false();
   }
 
+  /**
+   * @group woo
+   */
   public function testOpeningManagePageWithValidLinkRestoresTrashedFormerWooCommerceCustomer(): void {
     $wpUserId = $this->createWpUserLinkedToSubscriber();
     (new \WP_User($wpUserId))->set_role('customer');
