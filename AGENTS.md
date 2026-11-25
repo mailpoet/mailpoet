@@ -97,14 +97,14 @@ Verify through the real flow when you can, letting WP-Cron or Action Scheduler p
 Branch from `trunk`; never commit to it. Start branches with the `starting-branch` skill. Open PRs with the `creating-pull-requests` skill; never run `gh pr create` directly. PRs follow `.github/pull_request_template.md`; write `_N/A_` in sections that don’t apply. User-facing changes need a changelog file: `pnpm changelog:add --type=<type> --description=<description>` (see `writing-changelog`). Development-only changes (CI, linting, tests, dev dependencies, docs) get one with `--type=Dev`, which the release notes leave out.
 
 - Commit subject: imperative, max 50 characters, no trailing period. Body lines max 72 characters. Include the Linear issue ID.
-- Open PRs as drafts.
+- Open PRs ready for review. Open a draft only when asked.
 
 ## Skills
 
 Skills live in `.ai/skills/` (`.claude/skills` links there). Claude Code loads them as skills. Other agents read `.ai/skills/<name>/SKILL.md` when the task matches. After reading one, also apply `~/.ai/skills/<name>-personal/SKILL.md` if it exists; it wins on conflict.
 
 - `starting-branch` – name and create a branch from `trunk` for a Linear issue.
-- `creating-pull-requests` – run QA, add the changelog, push and open a draft PR from the template.
+- `creating-pull-requests` – run QA, add the changelog, push and open a PR from the template.
 - `code-quality` – lint, format and `qa` commands, single-file fixes, hook switches, what CI runs.
 - `running-tests` – run a suite, one file or one test, on the host or in Docker.
 - `writing-tests` – decide whether a change needs a test, pick the suite, write it and prove it catches a regression.

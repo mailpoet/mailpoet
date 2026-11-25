@@ -8,7 +8,7 @@ When any test fails, classify each error into one of three categories and take t
 
 The error is in code from `mailpoet/` or `mailpoet-premium/` (e.g., a PHP fatal in `lib/`, a JS error from `assets/js/src/`, a failing test in `tests/`).
 
-**Action:** Open a feature branch (use the `starting-branch` skill), fix the issue, add or update a test, run `pnpm qa` and the relevant `pnpm test:*`, and open a draft PR via the `creating-pull-requests` skill. Do not commit straight to `trunk`.
+**Action:** Open a feature branch (use the `starting-branch` skill), fix the issue, add or update a test, run `pnpm qa` and the relevant `pnpm test:*`, and open a PR via the `creating-pull-requests` skill. Do not commit straight to `trunk`.
 
 ## 2. QIT / test environment error — report to #qit
 
