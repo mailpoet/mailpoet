@@ -151,7 +151,8 @@ class MailPoet implements MailerMethod {
         $this->processSubscriber($subscriber),
         (!empty($extraParams['unsubscribe_url'])) ? $extraParams['unsubscribe_url'] : false,
         (!empty($extraParams['one_click_unsubscribe'])) ? $extraParams['one_click_unsubscribe'] : false,
-        (!empty($extraParams['meta'])) ? $extraParams['meta'] : false
+        (!empty($extraParams['meta'])) ? $extraParams['meta'] : false,
+        (!empty($extraParams['recipients']) && is_array($extraParams['recipients'])) ? $extraParams['recipients'] : []
       );
     }
     return $body;
@@ -216,12 +217,14 @@ class MailPoet implements MailerMethod {
     return $body;
   }
 
-  private function composeBody($newsletter, $subscriber, $unsubscribeUrl, $oneClickUnsubscribeUrl, $meta): array {
+  private function composeBody($newsletter, $subscriber, $unsubscribeUrl, $oneClickUnsubscribeUrl, $meta, array $recipients = []): array {
+    $to = [
+      'address' => $subscriber['email'],
+      'name' => $subscriber['name'],
+    ];
     $body = [
-      'to' => ([
-        'address' => $subscriber['email'],
-        'name' => $subscriber['name'],
-      ]),
+      // A list is sent only when there are more To addresses, otherwise we keep the single address shape.
+      'to' => !empty($recipients['to']) ? array_merge([$to], $recipients['to']) : $to,
       'from' => ([
         'address' => $this->sender['from_email'],
         'name' => $this->sender['from_name'],
@@ -246,6 +249,11 @@ class MailPoet implements MailerMethod {
         'url' => $isHttps && $oneClickUnsubscribeUrl ? $oneClickUnsubscribeUrl : $unsubscribeUrl,
         'post' => $isHttps,
       ];
+    }
+    foreach (['cc', 'bcc'] as $field) {
+      if (!empty($recipients[$field])) {
+        $body[$field] = $recipients[$field];
+      }
     }
     if ($meta) {
       $body['meta'] = $meta;

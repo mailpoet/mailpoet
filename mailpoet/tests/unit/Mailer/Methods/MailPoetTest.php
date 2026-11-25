@@ -121,6 +121,35 @@ class MailPoetTest extends \MailPoetUnitTest {
     $this->assertArrayNotHasKey('meta', $body['messages'][0]);
   }
 
+  public function testGetBodyKeepsSingleToObjectWithoutExtraRecipients(): void {
+    $body = $this->createMethod()->getBody(['subject' => 'Hi', 'body' => ['text' => 'Hi']], 'Rosta <rosta@example.com>');
+
+    $this->assertSame(['address' => 'rosta@example.com', 'name' => 'Rosta'], $body[0]['to']);
+    $this->assertArrayNotHasKey('cc', $body[0]);
+    $this->assertArrayNotHasKey('bcc', $body[0]);
+  }
+
+  public function testGetBodyAddsMultipleToCcAndBcc(): void {
+    $body = $this->createMethod()->getBody(
+      ['subject' => 'Hi', 'body' => ['text' => 'Hi']],
+      'Rosta <rosta@example.com>',
+      [
+        'recipients' => [
+          'to' => [['address' => 'to2@example.com', 'name' => 'To 2']],
+          'cc' => [['address' => 'cc@example.com', 'name' => '']],
+          'bcc' => [['address' => 'bcc@example.com', 'name' => 'Bcc']],
+        ],
+      ]
+    );
+
+    $this->assertSame([
+      ['address' => 'rosta@example.com', 'name' => 'Rosta'],
+      ['address' => 'to2@example.com', 'name' => 'To 2'],
+    ], $body[0]['to']);
+    $this->assertSame([['address' => 'cc@example.com', 'name' => '']], $body[0]['cc']);
+    $this->assertSame([['address' => 'bcc@example.com', 'name' => 'Bcc']], $body[0]['bcc']);
+  }
+
   private function createMethod(): MailPoet {
     $url = $this->createMock(Url::class);
     $url->method('isUsingHttps')->willReturnCallback(function(string $url): bool {

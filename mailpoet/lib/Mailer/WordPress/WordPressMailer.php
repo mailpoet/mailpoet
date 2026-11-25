@@ -41,11 +41,24 @@ class WordPressMailer extends PHPMailer {
     $this->preSend();
 
     $email = $this->getEmail();
-    $address = $this->formatAddress($this->getToAddresses());
-    $subscriber = $this->subscribersRepository->findOneBy(['email' => $address]);
+    $toAddresses = $this->getToAddresses();
+    $address = $this->formatAddress($toAddresses);
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $address['address']]);
     $extraParams = [
       'meta' => $this->mailerMetaInfo->getWordPressTransactionalMetaInfo($subscriber),
     ];
+    // The first To address is the main recipient. The remaining To, CC and BCC addresses
+    // are sent along so the Sending Service can deliver to all of them. The Sending
+    // Service validates the limits (max 5 per field) and rejects the request when exceeded.
+    $recipients = [
+      'to' => array_map([$this, 'formatAddressEntry'], array_slice($toAddresses, 1)),
+      'cc' => array_map([$this, 'formatAddressEntry'], $this->getCcAddresses()),
+      'bcc' => array_map([$this, 'formatAddressEntry'], $this->getBccAddresses()),
+    ];
+    $recipients = array_filter($recipients);
+    if ($recipients) {
+      $extraParams['recipients'] = $recipients;
+    }
 
     try {
       // we need to build fresh mailer for every single WP e-mail to make sure reply-to is set
@@ -102,6 +115,17 @@ class WordPressMailer extends PHPMailer {
       $result['full_name'] = $data[1];
     }
     return $result;
+  }
+
+  /**
+   * @param array{0: string, 1?: string} $data PHPMailer address entry: [email, name]
+   * @return array{address: string, name: string}
+   */
+  private function formatAddressEntry(array $data): array {
+    return [
+      'address' => $data[0],
+      'name' => $data[1] ?? '',
+    ];
   }
 
   private function getReplyToAddress(): ?array {

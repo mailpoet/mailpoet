@@ -75,6 +75,37 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->send();
   }
 
+  public function testItPassesAdditionalToCcAndBccRecipientsToMailer() {
+    $mailer = $this->createMock(Mailer::class);
+    $mailer
+      ->expects($this->once())
+      ->method('send')
+      ->with(
+        $this->anything(),
+        ['address' => 'to1@example.com'],
+        $this->callback(function(array $extraParams): bool {
+          return $extraParams['recipients'] === [
+            'to' => [['address' => 'to2@example.com', 'name' => 'To 2']],
+            'cc' => [['address' => 'cc@example.com', 'name' => '']],
+            'bcc' => [['address' => 'bcc@example.com', 'name' => 'Bcc']],
+          ];
+        })
+      )
+      ->willReturn(['response' => true]);
+    $mailerFactoryMock = $this->createMailerFactoryMock($mailer);
+
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
+    $wpMailer->addAddress('to1@example.com');
+    $wpMailer->addAddress('to2@example.com', 'To 2');
+    $wpMailer->addCC('cc@example.com');
+    $wpMailer->addBCC('bcc@example.com', 'Bcc');
+    $wpMailer->From = 'email-from@example.com';
+    $wpMailer->Subject = 'Subject';
+    $wpMailer->Body = 'Body';
+    $wpMailer->isHTML(false);
+    $wpMailer->send();
+  }
+
   public function testItFormatsHtmlNewsletterForMailer() {
     $mailer = $this->createMock(Mailer::class);
     $mailer
