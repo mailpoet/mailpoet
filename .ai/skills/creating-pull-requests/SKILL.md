@@ -11,7 +11,7 @@ description: 'Use when asked to create, open or make a PR, push and create a PR,
 
 ## Overview
 
-Always create pull requests as **drafts** and follow the repository’s PR template format.
+Create pull requests ready for review, not as drafts, and follow the repository’s PR template format. Create a draft only when asked for one.
 
 ## Workflow
 
@@ -37,7 +37,7 @@ Always create pull requests as **drafts** and follow the repository’s PR templ
 
    In the PR’s **Testing instructions**, say which tests ran, or that this did not apply.
 
-6. **Push and create as draft** — `git push -u origin <branch>`, then `gh pr create --draft` with the filled template as the body
+6. **Push and create the PR** — `git push -u origin <branch>`, then `gh pr create` with the filled template as the body. Add `--draft` only when asked for a draft
 7. **Follow template sections exactly** - Not all sections are mandatory, use `_N/A_` for non-applicable ones
 8. There are some checkboxes on the bottom of the template, only check the ones that are applicable.
 
@@ -65,7 +65,7 @@ If every bullet could be derived by reading the code, use `_N/A_` instead.
 | Mistake                            | Fix                                                                                 |
 | ---------------------------------- | ----------------------------------------------------------------------------------- |
 | Using `gh pr create` directly      | ALWAYS use this skill workflow first                                                |
-| Creating non-draft PR              | Always use `--draft` flag                                                           |
+| Creating an unrequested draft PR   | Open the PR ready for review; use `--draft` only when asked                         |
 | Custom PR format                   | Read and follow `.github/pull_request_template.md`                                  |
 | Missing sections                   | Include all template sections, use `_N/A_` if not applicable                        |
 | Skipping template read             | ALWAYS read the template first, it may have changed                                 |
