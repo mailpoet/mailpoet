@@ -52,8 +52,9 @@ class BlockPostQuery {
   /** @var int|false */
   public $newsletterId = false;
 
-  /***
-   * Translates to \WP_Query::date_query => array{'column': 'post_date_gmt', 'after': date string}
+  /**
+   * When the post notification last sent an email. AutomatedLatestContent uses it to pick
+   * the posts published since then.
    *
    * @var bool|DateTimeInterface|null
    */
@@ -205,18 +206,6 @@ class BlockPostQuery {
     // However, it also enables other plugins and themes to hook in and alter
     // the query.
     $parameters['suppress_filters'] = false;
-
-    if ($this->newerThanTimestamp instanceof DateTimeInterface) {
-      //Ensure UTC timezone
-      $after = new \DateTime('now', new \DateTimeZone('UTC'));
-      $after->setTimestamp($this->newerThanTimestamp->getTimestamp());
-      $parameters['date_query'] = [
-        [
-          'column' => 'post_date_gmt',
-          'after' => $after->format('Y-m-d H:i:s'),
-        ],
-      ];
-    }
 
     $parameters['tax_query'] = $this->constructTaxonomiesQuery();
     return $parameters;

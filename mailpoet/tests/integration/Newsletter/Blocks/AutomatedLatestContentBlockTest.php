@@ -170,6 +170,27 @@ class AutomatedLatestContentBlockTest extends \MailPoetTest {
     verify($encodedResult)->stringNotContainsString('POST 1');
   }
 
+  public function testItRendersBackdatedPostPublishedAfterLastSent() {
+    $notification = $this->createNewsletter('Newsletter', NewsletterEntity::TYPE_NOTIFICATION);
+    $notificationHistory = $this->createNewsletter('Newsletter', NewsletterEntity::TYPE_NOTIFICATION_HISTORY, $notification);
+    $newsletterPost = new NewsletterPostEntity($notification, $this->postIds[2]); // Id of POST3
+    $this->newsletterPostRepository->persist($newsletterPost);
+    $this->newsletterPostRepository->flush();
+    $newsletterPost->setCreatedAt(new \DateTime('2020-03-30 01:01:01'));
+    $this->newsletterPostRepository->flush();
+    // Created after the last email, dated 5 hours before it (e.g. Postie's time offset)
+    $this->createPost('POST 5', '2020-03-29 20:01:01');
+    // Created after the last email, dated weeks before it (e.g. an import of old posts)
+    $this->createPost('POST 6', '2020-03-15 01:01:01');
+
+    $result = $this->block->render($notificationHistory, array_merge($this->alcBlock, ['amount' => '10']));
+    $encodedResult = json_encode($result);
+    verify($encodedResult)->stringContainsString('POST 5');
+    verify($encodedResult)->stringContainsString('POST 4');
+    verify($encodedResult)->stringNotContainsString('POST 6');
+    verify($encodedResult)->stringNotContainsString('POST 3');
+  }
+
   public function testItRendersOnlyPostsNewerThanLastSentAndTakesTimezoneCorrectlyIntoAccount() {
     //get current WP timezone
     $timezone = $this->wp->getOption('timezone_string');
