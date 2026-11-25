@@ -2,7 +2,11 @@
 
 namespace MailPoet\Test\Mailer\Methods;
 
+use MailPoet\Config\ServicesChecker;
 use MailPoet\InvalidStateException;
+use MailPoet\Mailer\MailerError;
+use MailPoet\Mailer\Methods\Common\BlacklistCheck;
+use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Mailer\Methods\MailPoet;
 use MailPoet\Newsletter\Sending\TemplateBatch;
 use MailPoet\Util\Url;
@@ -148,6 +152,34 @@ class MailPoetTest extends \MailPoetUnitTest {
     ], $body[0]['to']);
     $this->assertSame([['address' => 'cc@example.com', 'name' => '']], $body[0]['cc']);
     $this->assertSame([['address' => 'bcc@example.com', 'name' => 'Bcc']], $body[0]['bcc']);
+  }
+
+  public function testSendRejectsBlacklistedAdditionalRecipients(): void {
+    foreach (['to', 'cc', 'bcc'] as $field) {
+      $blacklist = $this->createMock(BlacklistCheck::class);
+      $blacklist->method('isBlacklisted')->willReturnCallback(function($subscriber): bool {
+        return $subscriber === 'blocked@example.com';
+      });
+      $servicesChecker = $this->createMock(ServicesChecker::class);
+      $servicesChecker->method('isMailPoetAPIKeyValid')->willReturn(true);
+      $method = $this->createMethod();
+      $method->servicesChecker = $servicesChecker;
+      $errorMapper = $this->createMock(MailPoetMapper::class);
+      $errorMapper->method('getBlacklistError')->willReturn(new MailerError(MailerError::OPERATION_SEND, MailerError::LEVEL_SOFT, 'blacklisted'));
+      foreach (['blacklist' => $blacklist, 'errorMapper' => $errorMapper] as $property => $value) {
+        $reflection = new \ReflectionProperty(MailPoet::class, $property);
+        $reflection->setAccessible(true);
+        $reflection->setValue($method, $value);
+      }
+
+      $result = $method->send(
+        ['subject' => 'Hi', 'body' => ['text' => 'Hi']],
+        'rosta@example.com',
+        ['recipients' => [$field => [['address' => 'blocked@example.com', 'name' => '']]]]
+      );
+
+      $this->assertFalse($result['response'], $field);
+    }
   }
 
   private function createMethod(): MailPoet {

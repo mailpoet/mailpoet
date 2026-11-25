@@ -60,6 +60,12 @@ class MailPoet implements MailerMethod {
     }
 
     $subscribersForBlacklistCheck = is_array($subscriber) ? $subscriber : [$subscriber];
+    // Additional To, CC and BCC recipients must pass the same check as the main recipient.
+    foreach (['to', 'cc', 'bcc'] as $field) {
+      foreach ($extraParams['recipients'][$field] ?? [] as $recipient) {
+        $subscribersForBlacklistCheck[] = $recipient['address'];
+      }
+    }
     foreach ($subscribersForBlacklistCheck as $sub) {
       if ($this->blacklist->isBlacklisted($sub)) {
         $error = $this->errorMapper->getBlacklistError($sub);
