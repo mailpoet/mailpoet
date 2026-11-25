@@ -12,6 +12,9 @@ use PHPMailer\PHPMailer\PHPMailer;
 PHPMailerLoader::load();
 
 class WordPressMailer extends PHPMailer {
+  // The Sending Service rejects a message with more addresses in To, CC or BCC.
+  private const MAX_RECIPIENTS_PER_FIELD = 5;
+
   /** @var MailerFactory */
   private $mailerFactory;
 
@@ -48,12 +51,13 @@ class WordPressMailer extends PHPMailer {
       'meta' => $this->mailerMetaInfo->getWordPressTransactionalMetaInfo($subscriber),
     ];
     // The first To address is the main recipient. The remaining To, CC and BCC addresses
-    // are sent along so the Sending Service can deliver to all of them. The Sending
-    // Service validates the limits (max 5 per field) and rejects the request when exceeded.
+    // are sent along so the Sending Service can deliver to all of them. Each field is cut
+    // to 5 addresses (the main recipient counts toward To), because the Sending Service
+    // rejects the whole request when a field has more.
     $recipients = [
-      'to' => array_map([$this, 'formatAddressEntry'], array_slice($toAddresses, 1)),
-      'cc' => array_map([$this, 'formatAddressEntry'], $this->getCcAddresses()),
-      'bcc' => array_map([$this, 'formatAddressEntry'], $this->getBccAddresses()),
+      'to' => array_map([$this, 'formatAddressEntry'], array_slice($toAddresses, 1, self::MAX_RECIPIENTS_PER_FIELD - 1)),
+      'cc' => array_map([$this, 'formatAddressEntry'], array_slice($this->getCcAddresses(), 0, self::MAX_RECIPIENTS_PER_FIELD)),
+      'bcc' => array_map([$this, 'formatAddressEntry'], array_slice($this->getBccAddresses(), 0, self::MAX_RECIPIENTS_PER_FIELD)),
     ];
     $recipients = array_filter($recipients);
     if ($recipients) {

@@ -106,6 +106,39 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->send();
   }
 
+  public function testItCapsToCcAndBccRecipientsToFive() {
+    $mailer = $this->createMock(Mailer::class);
+    $mailer
+      ->expects($this->once())
+      ->method('send')
+      ->with(
+        $this->anything(),
+        $this->anything(),
+        $this->callback(function(array $extraParams): bool {
+          $addresses = function(array $entries): array {
+            return array_column($entries, 'address');
+          };
+          return $addresses($extraParams['recipients']['to']) === ['to2@example.com', 'to3@example.com', 'to4@example.com', 'to5@example.com']
+            && $addresses($extraParams['recipients']['cc']) === ['cc1@example.com', 'cc2@example.com', 'cc3@example.com', 'cc4@example.com', 'cc5@example.com']
+            && $addresses($extraParams['recipients']['bcc']) === ['bcc1@example.com', 'bcc2@example.com', 'bcc3@example.com', 'bcc4@example.com', 'bcc5@example.com'];
+        })
+      )
+      ->willReturn(['response' => true]);
+    $mailerFactoryMock = $this->createMailerFactoryMock($mailer);
+
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
+    for ($i = 1; $i <= 6; $i++) {
+      $wpMailer->addAddress("to$i@example.com");
+      $wpMailer->addCC("cc$i@example.com");
+      $wpMailer->addBCC("bcc$i@example.com");
+    }
+    $wpMailer->From = 'email-from@example.com';
+    $wpMailer->Subject = 'Subject';
+    $wpMailer->Body = 'Body';
+    $wpMailer->isHTML(false);
+    $wpMailer->send();
+  }
+
   public function testItFormatsHtmlNewsletterForMailer() {
     $mailer = $this->createMock(Mailer::class);
     $mailer
