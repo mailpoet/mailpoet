@@ -71,6 +71,39 @@ class MetaInfoTest extends \MailPoetTest {
     ]);
   }
 
+  public function testItGetsSourcePluginAndUrlForWordPressTransactionalEmails() {
+    verify($this->meta->getWordPressTransactionalMetaInfo(null, 'woocommerce', 'https://example.com/checkout/'))->equals([
+      'email_type' => 'transactional',
+      'subscriber_status' => 'unknown',
+      'subscriber_source' => 'unknown',
+      'subscriber_source_plugin' => 'woocommerce',
+      'subscriber_source_url' => 'https://example.com/checkout/',
+    ]);
+  }
+
+  public function testItPrefersResolvedSourceForWordPressTransactionalEmails() {
+    $subscriber = $this->make(SubscriberEntity::class, [
+      'getStatus' => 'subscribed',
+      'getSource' => 'form',
+      'getSourceUrl' => 'https://example.com/signup/',
+    ]);
+    verify($this->meta->getWordPressTransactionalMetaInfo($subscriber, 'woocommerce', 'https://example.com/checkout/'))->equals([
+      'email_type' => 'transactional',
+      'subscriber_status' => 'subscribed',
+      'subscriber_source' => 'form',
+      'subscriber_source_plugin' => 'woocommerce',
+      'subscriber_source_url' => 'https://example.com/checkout/',
+    ]);
+    // Without a resolved source the subscriber's stored one is kept
+    verify($this->meta->getWordPressTransactionalMetaInfo($subscriber))->equals([
+      'email_type' => 'transactional',
+      'subscriber_status' => 'subscribed',
+      'subscriber_source' => 'form',
+      'subscriber_source_plugin' => 'mailpoet',
+      'subscriber_source_url' => 'https://example.com/signup/',
+    ]);
+  }
+
   public function testItGetsMetaInfoForConfirmationEmails() {
     $subscriber = (new SubscriberFactory())
       ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)

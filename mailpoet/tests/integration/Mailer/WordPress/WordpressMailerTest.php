@@ -8,6 +8,8 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
+use MailPoet\Subscribers\ApiSourcePluginResolver;
+use MailPoet\Subscribers\SourceUrlResolver;
 use MailPoet\Subscribers\SubscribersRepository;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -17,15 +19,23 @@ class WordpressMailerTest extends \MailPoetTest {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var ApiSourcePluginResolver */
+  private $sourcePluginResolver;
+
+  /** @var SourceUrlResolver */
+  private $sourceUrlResolver;
+
   public function _before() {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->sourcePluginResolver = $this->diContainer->get(ApiSourcePluginResolver::class);
+    $this->sourceUrlResolver = $this->diContainer->get(SourceUrlResolver::class);
   }
 
   public function testItDoesNotSendWhenPreSendCheckFails() {
     $mailerFactoryMock = $this->createMock(MailerFactory::class);
     $mailerFactoryMock->expects($this->never())->method('buildMailer');
 
-    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository, $this->sourcePluginResolver, $this->sourceUrlResolver);
     $wpMailer->From = 'email-from@example.com';
     $this->expectException(PHPMailerException::class);
     $wpMailer->send();
@@ -45,7 +55,7 @@ class WordpressMailerTest extends \MailPoetTest {
       ->willReturn(['response' => true]);
     $mailerFactoryMock = $this->createMailerFactoryMock($mailer);
 
-    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository, $this->sourcePluginResolver, $this->sourceUrlResolver);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Subject = 'Subject';
@@ -66,7 +76,7 @@ class WordpressMailerTest extends \MailPoetTest {
       ->willReturn(['response' => true]);
     $mailerFactoryMock = $this->createMailerFactoryMock($mailer);
 
-    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository, $this->sourcePluginResolver, $this->sourceUrlResolver);
     $wpMailer->addAddress('email@example.com', 'Full Name');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Subject = 'Subject';
@@ -94,7 +104,7 @@ class WordpressMailerTest extends \MailPoetTest {
       ->willReturn(['response' => true]);
     $mailerFactoryMock = $this->createMailerFactoryMock($mailer);
 
-    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository, $this->sourcePluginResolver, $this->sourceUrlResolver);
     $wpMailer->addAddress('to1@example.com');
     $wpMailer->addAddress('to2@example.com', 'To 2');
     $wpMailer->addCC('cc@example.com');
@@ -126,7 +136,7 @@ class WordpressMailerTest extends \MailPoetTest {
       ->willReturn(['response' => true]);
     $mailerFactoryMock = $this->createMailerFactoryMock($mailer);
 
-    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository, $this->sourcePluginResolver, $this->sourceUrlResolver);
     for ($i = 1; $i <= 6; $i++) {
       $wpMailer->addAddress("to$i@example.com");
       $wpMailer->addCC("cc$i@example.com");
@@ -154,7 +164,7 @@ class WordpressMailerTest extends \MailPoetTest {
       ->willReturn(['response' => true]);
 
     $mailerFactoryMock = $this->createMailerFactoryMock($mailer);
-    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository, $this->sourcePluginResolver, $this->sourceUrlResolver);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Subject = 'Subject';
@@ -178,7 +188,7 @@ class WordpressMailerTest extends \MailPoetTest {
       ->willReturn(['response' => true]);
 
     $mailerFactoryMock = $this->createMailerFactoryMock($mailer);
-    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository, $this->sourcePluginResolver, $this->sourceUrlResolver);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Subject = 'Subject';
@@ -203,6 +213,8 @@ class WordpressMailerTest extends \MailPoetTest {
         'mailerFactory' => $mailerFactoryMock,
         'mailerMetaInfo' => new MetaInfo,
         'subscribersRepository' => $this->subscribersRepository,
+        'sourcePluginResolver' => $this->sourcePluginResolver,
+        'sourceUrlResolver' => $this->sourceUrlResolver,
       ],
       [
         'postSend' => Expected::never(), // When Mailer instance provided by MailPoet sends successfully postSend is not called
@@ -230,6 +242,8 @@ class WordpressMailerTest extends \MailPoetTest {
         'mailerFactory' => $mailerFactoryMock,
         'mailerMetaInfo' => new MetaInfo,
         'subscribersRepository' => $this->subscribersRepository,
+        'sourcePluginResolver' => $this->sourcePluginResolver,
+        'sourceUrlResolver' => $this->sourceUrlResolver,
       ],
       [
         'postSend' => Expected::once(true),
@@ -256,6 +270,8 @@ class WordpressMailerTest extends \MailPoetTest {
         'mailerFactory' => $mailerFactoryMock,
         'mailerMetaInfo' => new MetaInfo,
         'subscribersRepository' => $this->subscribersRepository,
+        'sourcePluginResolver' => $this->sourcePluginResolver,
+        'sourceUrlResolver' => $this->sourceUrlResolver,
       ],
       [
         'postSend' => function() { throw new \Exception('Some strange error in mailer');
@@ -285,7 +301,7 @@ class WordpressMailerTest extends \MailPoetTest {
       ->method('send');
 
     $mailerFactoryMock = $this->createMailerFactoryMock($mailer);
-    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository, $this->sourcePluginResolver, $this->sourceUrlResolver);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Body = 'body';
     $wpMailer->From = 'email-from@example.com';
@@ -317,9 +333,41 @@ class WordpressMailerTest extends \MailPoetTest {
     $this->subscribersRepository->persist($subscriber);
     $this->subscribersRepository->flush();
 
-    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
+    $pluginResolver = $this->createMock(ApiSourcePluginResolver::class);
+    $pluginResolver->method('resolve')->willReturn(null);
+    $urlResolver = $this->createMock(SourceUrlResolver::class);
+    $urlResolver->method('resolve')->willReturn(null);
+
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository, $pluginResolver, $urlResolver);
     $wpMailer->addAddress('email@example.com', 'Full Name');
     $wpMailer->Subject = 'Subject';
+    $wpMailer->From = 'email-from@example.com';
+    $wpMailer->Body = 'Body';
+    $wpMailer->send();
+  }
+
+  public function testItAddsSourcePluginAndUrlToMetaInfo() {
+    $mailer = $this->createMock(Mailer::class);
+    $mailer
+      ->expects($this->once())
+      ->method('send')
+      ->with($this->anything(), $this->anything(), [
+        'meta' => [
+          'email_type' => 'transactional',
+          'subscriber_status' => 'unknown',
+          'subscriber_source' => 'unknown',
+          'subscriber_source_plugin' => 'woocommerce',
+          'subscriber_source_url' => 'https://example.com/checkout/',
+        ],
+      ])
+      ->willReturn(['response' => true]);
+    $pluginResolver = $this->createMock(ApiSourcePluginResolver::class);
+    $pluginResolver->method('resolve')->willReturn('woocommerce');
+    $urlResolver = $this->createMock(SourceUrlResolver::class);
+    $urlResolver->method('resolve')->willReturn('https://example.com/checkout/');
+
+    $wpMailer = new WordPressMailer($this->createMailerFactoryMock($mailer), new MetaInfo, $this->subscribersRepository, $pluginResolver, $urlResolver);
+    $wpMailer->addAddress('not-a-subscriber@example.com');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'Body';
     $wpMailer->send();
@@ -337,7 +385,7 @@ class WordpressMailerTest extends \MailPoetTest {
         'name' => 'Reply To',
       ]));
 
-    $wpMailer = new WordPressMailer($mailerFactory, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactory, new MetaInfo, $this->subscribersRepository, $this->sourcePluginResolver, $this->sourceUrlResolver);
     $wpMailer->addAddress('email@example.com', 'Full Name');
     $wpMailer->addReplyTo('reply-to@example.com', 'Reply To');
     $wpMailer->From = 'email-from@example.com';
@@ -354,7 +402,7 @@ class WordpressMailerTest extends \MailPoetTest {
       ->method('buildMailer')
       ->with($this->isNull(), $this->isNull(), $this->isNull());
 
-    $wpMailer = new WordPressMailer($mailerFactory, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactory, new MetaInfo, $this->subscribersRepository, $this->sourcePluginResolver, $this->sourceUrlResolver);
     $wpMailer->addAddress('email@example.com', 'Full Name');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'Body';
@@ -374,14 +422,14 @@ class WordpressMailerTest extends \MailPoetTest {
         [null, null, null]
       );
 
-    $wpMailer = new WordPressMailer($mailerFactory, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactory, new MetaInfo, $this->subscribersRepository, $this->sourcePluginResolver, $this->sourceUrlResolver);
     $wpMailer->addAddress('email@example.com', 'Full Name');
     $wpMailer->addReplyTo('reply-to@example.com', 'Reply To');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'Body';
     $wpMailer->send();
 
-    $wpMailer = new WordPressMailer($mailerFactory, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactory, new MetaInfo, $this->subscribersRepository, $this->sourcePluginResolver, $this->sourceUrlResolver);
     $wpMailer->addAddress('email@example.com', 'Full Name');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'Body';

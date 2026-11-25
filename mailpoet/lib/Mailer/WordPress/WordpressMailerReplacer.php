@@ -5,6 +5,8 @@ namespace MailPoet\Mailer\WordPress;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\ApiSourcePluginResolver;
+use MailPoet\Subscribers\SourceUrlResolver;
 use MailPoet\Subscribers\SubscribersRepository;
 
 class WordpressMailerReplacer {
@@ -21,16 +23,26 @@ class WordpressMailerReplacer {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var ApiSourcePluginResolver */
+  private $sourcePluginResolver;
+
+  /** @var SourceUrlResolver */
+  private $sourceUrlResolver;
+
   public function __construct(
     MailerFactory $mailerFactory,
     MetaInfo $mailerMetaInfo,
     SettingsController $settings,
-    SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository,
+    ApiSourcePluginResolver $sourcePluginResolver,
+    SourceUrlResolver $sourceUrlResolver
   ) {
     $this->mailerFactory = $mailerFactory;
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->settings = $settings;
     $this->subscribersRepository = $subscribersRepository;
+    $this->sourcePluginResolver = $sourcePluginResolver;
+    $this->sourceUrlResolver = $sourceUrlResolver;
   }
 
   public function replaceWordPressMailer() {
@@ -46,7 +58,9 @@ class WordpressMailerReplacer {
       $phpmailer = new WordPressMailer(
         $this->mailerFactory,
         $this->mailerMetaInfo,
-        $this->subscribersRepository
+        $this->subscribersRepository,
+        $this->sourcePluginResolver,
+        $this->sourceUrlResolver
       );
     }
     return $phpmailer;
