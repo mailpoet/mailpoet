@@ -295,12 +295,13 @@ class Subscription {
         && (bool)$signupConfirmation['enabled']
       ) {
         // Opt-in lists the subscriber isn't in yet are added only after confirmation.
-        // The WooCommerce Customers list is left out, the customer sync adds every customer to it.
+        // The WooCommerce Customers list waits only if the subscriber left it, the customer sync adds other customers.
+        $segmentsToHold = $this->hasLeftSegment($subscriber, $wcSegment) ? $segments : $moreSegmentsToSubscribe;
         $segmentIdsToConfirm = $this->subscriberActions->holdSegmentsForConfirmation(
           $subscriber,
           array_map(function (SegmentEntity $segment): int {
             return (int)$segment->getId();
-          }, $moreSegmentsToSubscribe)
+          }, $segmentsToHold)
         );
       }
 
@@ -390,6 +391,11 @@ class Subscription {
    */
   private function isCheckoutOptinEnabled(): bool {
     return (bool)$this->settings->get(self::OPTIN_ENABLED_SETTING_NAME, false);
+  }
+
+  private function hasLeftSegment(SubscriberEntity $subscriber, SegmentEntity $segment): bool {
+    $subscriberSegment = $this->subscriberSegmentRepository->findOneBy(['subscriber' => $subscriber, 'segment' => $segment]);
+    return $subscriberSegment && $subscriberSegment->getStatus() !== SubscriberEntity::STATUS_SUBSCRIBED;
   }
 
   private function subscribe(SubscriberEntity $subscriber) {

@@ -140,6 +140,33 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     verify($html)->stringContainsString('Lists: <strong>Weekly digest, Events</strong>');
   }
 
+  public function testItNamesNoListsWhenWaitingListsWereTrashed(): void {
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set('signup_confirmation.body', 'Lists: [lists_to_confirm] [activation_link]Confirm[/activation_link]');
+    $keptSegment = $this->segmentFactory->withName('Product updates')->create();
+    $trashedSegment = (new SegmentFactory())->withName('Old news')->withDeleted()->create();
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->subscriberSegmentRepository->subscribeToSegments($this->subscriber, [$keptSegment]);
+    $this->subscriber->setUnconfirmedData((string)json_encode([
+      SubscriberActions::SEGMENTS_TO_CONFIRM => [$trashedSegment->getId()],
+    ]));
+    $this->subscribersRepository->flush();
+
+    $html = '';
+    $mailer = Stub::makeEmpty(Mailer::class, [
+      'send' => Stub\Expected::once(function($email) use (&$html) {
+        $html = $email['body']['html'];
+        return ['response' => true];
+      }),
+    ], $this);
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
+    $sender = $this->getServiceWithOverrides(ConfirmationEmailMailer::class, ['mailerFactory' => $mailerFactory]);
+
+    verify($sender->sendConfirmationEmail($this->subscriber, null, null, true))->true();
+    verify($html)->stringContainsString('Lists: <strong></strong>');
+  }
+
   public function testItThrowsExceptionWhenConfirmationEmailCannotBeSent() {
     $this->subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
     $this->subscribersRepository->flush();
