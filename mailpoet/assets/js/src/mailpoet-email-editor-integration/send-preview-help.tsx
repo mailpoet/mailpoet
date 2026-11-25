@@ -17,7 +17,7 @@ function getSendingServiceNote(postType: string): JSX.Element {
     ),
     {
       link: (
-        // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label -- createInterpolateElement fills in the link text.
+        // createInterpolateElement replaces the children with the translated link text.
         <a
           href={`https://account.mailpoet.com/?s=1&g=1&${utmParameters(
             postType,
@@ -29,7 +29,9 @@ function getSendingServiceNote(postType: string): JSX.Element {
               'email_editor_events_send_preview_email_modal_sign_up_for_mailpoet_sending_service_link_clicked',
             );
           }}
-        />
+        >
+          Sign up for free
+        </a>
       ),
     },
   );
