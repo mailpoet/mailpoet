@@ -74,3 +74,7 @@ export async function getClassicTemplateEditUrl(id: number): Promise<string> {
   const data = await request<{ editor_url: string }>('edit', { id });
   return data.editor_url;
 }
+
+export function createClassicTemplate(name: string): Promise<ClassicTemplate> {
+  return request('create', { name });
+}

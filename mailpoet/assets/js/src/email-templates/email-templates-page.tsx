@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DataViews, type Action, type View } from '@wordpress/dataviews';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { Button, Modal } from '@wordpress/components';
+import {
+  Button,
+  Dropdown,
+  MenuGroup,
+  MenuItem,
+  Modal,
+} from '@wordpress/components';
 import { EmptyState, Notice } from '@wordpress/ui';
 import { Categories } from 'common/categories/categories';
 import {
@@ -25,7 +31,12 @@ import {
   trashPreset,
   type PresetsGroup,
 } from './api';
-import { getClassicTemplates, type ClassicTemplate } from './classic-api';
+import {
+  createClassicTemplate,
+  getClassicTemplateEditUrl,
+  getClassicTemplates,
+  type ClassicTemplate,
+} from './classic-api';
 import { ClassicTemplates } from './classic-templates';
 import { presetFields } from './fields';
 import { PresetNameForm, PresetPreviewModal } from './modals';
@@ -83,7 +94,7 @@ export function EmailTemplatesPage() {
   const [isEmptyingTrash, setIsEmptyingTrash] = useState(false);
   const [notice, setNotice] = useState<NoticeState | null>(null);
   const [previewTarget, setPreviewTarget] = useState<EmailPreset | null>(null);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [addModal, setAddModal] = useState<'preset' | 'classic' | null>(null);
   const [initialView] = useState<View>(() =>
     getDataViewsPreference(PREFERENCE_KEY, DEFAULT_VIEW, presetFields),
   );
@@ -367,6 +378,32 @@ export function EmailTemplatesPage() {
     }
   }, []);
 
+  const handleCreateClassic = useCallback(
+    async (name: string): Promise<boolean> => {
+      let template: ClassicTemplate;
+      try {
+        template = await createClassicTemplate(name);
+      } catch (error) {
+        setNotice({ status: 'error', message: errorMessage(error) });
+        return false;
+      }
+      try {
+        window.location.href = await getClassicTemplateEditUrl(template.id);
+      } catch {
+        setNotice({
+          status: 'error',
+          message: __(
+            'The template was created, but the editor could not be opened. You can find it in Classic templates.',
+            'mailpoet',
+          ),
+        });
+        loadClassicTemplates();
+      }
+      return true;
+    },
+    [loadClassicTemplates],
+  );
+
   const handleRename = useCallback(
     async (preset: EmailPreset, title: string): Promise<boolean> => {
       try {
@@ -479,13 +516,46 @@ export function EmailTemplatesPage() {
     <>
       <TopBarWithBoundary />
       <PageHeader heading={__('Email templates', 'mailpoet')}>
-        <Button
-          className="page-title-action"
-          onClick={() => setIsAddModalOpen(true)}
-          data-automation-id="email_templates_add_preset"
-        >
-          {__('Add preset', 'mailpoet')}
-        </Button>
+        <Dropdown
+          popoverProps={{ placement: 'bottom-end' }}
+          renderToggle={({ isOpen, onToggle }) => (
+            <Button
+              className="page-title-action"
+              size="compact"
+              onClick={onToggle}
+              aria-expanded={isOpen}
+              data-automation-id="email_templates_add_new"
+            >
+              {__('Add new', 'mailpoet')}
+            </Button>
+          )}
+          renderContent={({ onClose }) => (
+            <>
+              <MenuGroup label={__('Block editor', 'mailpoet')}>
+                <MenuItem
+                  onClick={() => {
+                    onClose();
+                    setAddModal('preset');
+                  }}
+                  data-automation-id="email_templates_add_preset"
+                >
+                  {__('Add preset', 'mailpoet')}
+                </MenuItem>
+              </MenuGroup>
+              <MenuGroup label={__('Classic editor', 'mailpoet')}>
+                <MenuItem
+                  onClick={() => {
+                    onClose();
+                    setAddModal('classic');
+                  }}
+                  data-automation-id="email_templates_add_classic_template"
+                >
+                  {__('Add classic template', 'mailpoet')}
+                </MenuItem>
+              </MenuGroup>
+            </>
+          )}
+        />
       </PageHeader>
 
       {loadError && (
@@ -571,17 +641,32 @@ export function EmailTemplatesPage() {
         </div>
       )}
 
-      {isAddModalOpen && (
+      {addModal === 'preset' && (
         <Modal
           title={__('Add preset', 'mailpoet')}
-          onRequestClose={() => setIsAddModalOpen(false)}
+          onRequestClose={() => setAddModal(null)}
           focusOnMount="firstContentElement"
         >
           <PresetNameForm
             defaultTitle=""
             submitLabel={__('Add preset', 'mailpoet')}
             onSubmit={handleCreate}
-            onClose={() => setIsAddModalOpen(false)}
+            onClose={() => setAddModal(null)}
+          />
+        </Modal>
+      )}
+      {addModal === 'classic' && (
+        <Modal
+          title={__('Add classic template', 'mailpoet')}
+          onRequestClose={() => setAddModal(null)}
+          focusOnMount="firstContentElement"
+        >
+          <PresetNameForm
+            label={__('Template name', 'mailpoet')}
+            defaultTitle=""
+            submitLabel={__('Add template', 'mailpoet')}
+            onSubmit={handleCreateClassic}
+            onClose={() => setAddModal(null)}
           />
         </Modal>
       )}

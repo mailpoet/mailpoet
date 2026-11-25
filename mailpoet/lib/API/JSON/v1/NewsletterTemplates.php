@@ -155,6 +155,18 @@ class NewsletterTemplates extends APIEndpoint {
     return $this->successResponse($this->newsletterTemplatesResponseBuilder->build($duplicate));
   }
 
+  public function create($data = []) {
+    $name = isset($data['name']) && is_string($data['name']) ? trim($this->wp->sanitizeTextField($data['name'])) : '';
+    if ($name === '') {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => __('Please enter a template name.', 'mailpoet'),
+      ]);
+    }
+
+    $template = $this->newsletterTemplatesRepository->createFromBlank($name);
+    return $this->successResponse($this->newsletterTemplatesResponseBuilder->build($template));
+  }
+
   public function rename($data = []) {
     $template = $this->getTemplate($data);
     if (!$template) {
@@ -191,7 +203,7 @@ class NewsletterTemplates extends APIEndpoint {
     }
     if ($template->getReadonly()) {
       return $this->badRequest([
-        APIError::BAD_REQUEST => __('Built-in templates cannot be edited. Duplicate the template first.', 'mailpoet'),
+        APIError::BAD_REQUEST => __('MailPoet templates cannot be edited. Duplicate the template first.', 'mailpoet'),
       ]);
     }
 

@@ -2,6 +2,8 @@
 
 namespace MailPoet\NewsletterTemplates;
 
+use MailPoet\Config\Env;
+use MailPoet\Config\PopulatorData\Templates\NewsletterBlank1Column;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterTemplateEntity;
@@ -89,6 +91,18 @@ class NewsletterTemplatesRepository extends Repository {
     $this->entityManager->persist($duplicate);
     $this->entityManager->flush();
     return $duplicate;
+  }
+
+  public function createFromBlank(string $name): NewsletterTemplateEntity {
+    $blank = (new NewsletterBlank1Column(Env::$assetsUrl))->get();
+    $template = new NewsletterTemplateEntity($name);
+    $body = json_decode($blank['body'], true);
+    $template->setBody(is_array($body) ? $body : null);
+    $template->setCategories(json_encode(['saved', NewsletterEntity::TYPE_STANDARD]) ?: '[]');
+    $template->setThumbnail($blank['thumbnail']);
+    $this->entityManager->persist($template);
+    $this->entityManager->flush();
+    return $template;
   }
 
   /**
