@@ -173,7 +173,10 @@ class AutomatedLatestContentBlockTest extends \MailPoetTest {
   public function testItRendersBackdatedPostPublishedAfterLastSent() {
     $notification = $this->createNewsletter('Newsletter', NewsletterEntity::TYPE_NOTIFICATION);
     $notificationHistory = $this->createNewsletter('Newsletter', NewsletterEntity::TYPE_NOTIFICATION_HISTORY, $notification);
-    $newsletterPost = new NewsletterPostEntity($notification, $this->postIds[2]); // Id of POST3
+    // Existed before the last email but was left out of it, dated shortly before it
+    $this->createPost('POST 7', '2020-03-29 22:01:01');
+    $sentPostId = $this->createPost('POST SENT', '2020-03-29 23:01:01');
+    $newsletterPost = new NewsletterPostEntity($notification, $sentPostId);
     $this->newsletterPostRepository->persist($newsletterPost);
     $this->newsletterPostRepository->flush();
     $newsletterPost->setCreatedAt(new \DateTime('2020-03-30 01:01:01'));
@@ -188,7 +191,8 @@ class AutomatedLatestContentBlockTest extends \MailPoetTest {
     verify($encodedResult)->stringContainsString('POST 5');
     verify($encodedResult)->stringContainsString('POST 4');
     verify($encodedResult)->stringNotContainsString('POST 6');
-    verify($encodedResult)->stringNotContainsString('POST 3');
+    verify($encodedResult)->stringNotContainsString('POST 7');
+    verify($encodedResult)->stringNotContainsString('POST SENT');
   }
 
   public function testItRendersOnlyPostsNewerThanLastSentAndTakesTimezoneCorrectlyIntoAccount() {
