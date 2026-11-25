@@ -202,6 +202,26 @@ class LatestPostsTest extends \MailPoetTest {
     verify($html)->stringNotContainsString('Latest posts block A');
   }
 
+  public function testItRendersBackdatedPostPublishedAfterLastSentForNotificationHistory(): void {
+    $notification = $this->createBlockEmailNewsletter(NewsletterEntity::TYPE_NOTIFICATION);
+    $history = $this->createBlockEmailNewsletter(NewsletterEntity::TYPE_NOTIFICATION_HISTORY, $notification);
+    $this->setCurrentEmailPostForNewsletter($history);
+
+    $newsletterPost = new NewsletterPostEntity($notification, $this->postIds[1]);
+    $this->newsletterPostsRepository->persist($newsletterPost);
+    $this->newsletterPostsRepository->flush();
+    $newsletterPost->setCreatedAt(new \DateTime('2020-02-15 01:01:01'));
+    $this->newsletterPostsRepository->flush();
+    // Created after the last email, dated 5 hours before it (e.g. Postie's time offset)
+    $this->createPost('Latest posts block D', '2020-02-14 20:01:01');
+
+    $html = $this->render(['perPage' => 3]);
+
+    verify($html)->stringContainsString('Latest posts block D');
+    verify($html)->stringContainsString('Latest posts block C');
+    verify($html)->stringNotContainsString('Latest posts block B');
+  }
+
   public function testItSupportsPages(): void {
     $this->postIds[] = $this->createPost('Latest pages block A', '2020-04-01 01:01:01', 'page');
     $this->setCurrentEmailPostForNewsletter($this->createBlockEmailNewsletter(NewsletterEntity::TYPE_STANDARD));

@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter;
 
+use DateTimeInterface;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\Editor\Transformer;
 use MailPoet\WP\Functions as WPFunctions;
@@ -15,6 +16,9 @@ class AutomatedLatestContent {
 
   /** @var int|false */
   private $newsletterId;
+
+  /** @var bool|DateTimeInterface|null */
+  private $newerThanTimestamp;
 
   /** @var NewsletterPostsRepository */
   private $newsletterPostsRepository;
@@ -40,6 +44,22 @@ class AutomatedLatestContent {
 
     $wherePostUnsent = 'ID NOT IN (' . $sentPostsQuery . ')';
 
+    if ($this->newerThanTimestamp instanceof DateTimeInterface) {
+      global $wpdb;
+      // A post is new when it is dated after the last email, or when it was created after the
+      // newest post already sent and is dated at most a day before the last email. The second
+      // case covers posts published with an earlier date, e.g. by Postie's time offset, while
+      // imported old posts stay out.
+      $lastSentAt = $this->newerThanTimestamp->getTimestamp();
+      $wherePostUnsent .= $wpdb->prepare(
+        " AND ({$wpdb->posts}.post_date_gmt > %s OR ({$wpdb->posts}.ID > (SELECT MAX(post_id) FROM %i WHERE newsletter_id = %d) AND {$wpdb->posts}.post_date_gmt > %s))",
+        gmdate('Y-m-d H:i:s', $lastSentAt),
+        $newsletterPostsTableName,
+        (int)$this->newsletterId,
+        gmdate('Y-m-d H:i:s', $lastSentAt - DAY_IN_SECONDS)
+      );
+    }
+
     if (!empty($where)) $wherePostUnsent = ' AND ' . $wherePostUnsent;
 
     return $where . $wherePostUnsent;
@@ -59,6 +79,7 @@ class AutomatedLatestContent {
       return [];
     }
     $this->newsletterId = $query->newsletterId;
+    $this->newerThanTimestamp = $query->newerThanTimestamp;
     // Get posts as logged out user, so private posts hidden by other plugins (e.g. UAM) are also excluded
     $currentUserId = $this->wp->getCurrentUserId();
     // phpcs:ignore Generic.PHP.ForbiddenFunctions.Discouraged

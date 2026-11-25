@@ -119,10 +119,6 @@ class DynamicProducts {
       $wcArgs['tax_query'] = $parameters['tax_query'];
     }
 
-    if (!empty($parameters['date_query'])) {
-      $wcArgs['date_query'] = $parameters['date_query'];
-    }
-
     // Fetch published products (safe for everyone)
     $products = $this->wcHelper->wcGetProducts($wcArgs);
 
