@@ -32,6 +32,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
 
     $this->createNewsletter(NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL);
     $this->createNewsletter(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER);
+    $this->createNewsletter(NewsletterEntity::TYPE_TEMPLATE);
     verify($this->repository->countUserCreatedNewsletters())->equals(0);
   }
 
