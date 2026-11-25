@@ -65,6 +65,7 @@ describe('Send preview help', () => {
       originalModuleLoad;
     removeAllFilters(LINK_FILTER);
     removeAllFilters(HELP_ITEMS_FILTER);
+    dom.window.close();
   });
 
   beforeEach(() => {
