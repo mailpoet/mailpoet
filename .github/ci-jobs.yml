@@ -1,0 +1,71 @@
+# Which jobs of .github/workflows/checks.yml a pull request runs, by the
+# files it changes. .github/workflows/scripts/pick-ci-jobs.sh reads it.
+#
+# A job runs when a changed file is in one of the job's areas. A file in no
+# area runs every job, so list only paths whose readers are known. "*"
+# matches within a folder, "**" across folders, and a pattern that starts
+# with "!" takes files out of its area.
+#
+# Pushes, manual runs and pull requests into release run every job. The
+# build and All checks always run, and so does a job missing from the list.
+
+areas:
+  # No job reads these. The build checks them with Prettier.
+  docs:
+    - '**/*.md'
+    - '.ai/**'
+    - '.claude/**'
+    - '.coderabbit.yaml'
+    - '.editorconfig'
+    - '.git-blame-ignore-revs'
+    - '.github/ISSUE_TEMPLATE/**'
+    - '.github/dependabot.yml'
+
+  # PHP reads only the build output that webpack.config.js names, so its
+  # tests can't see these files.
+  js:
+    - 'mailpoet/assets/js/**'
+    - 'mailpoet/assets/css/**'
+    - 'packages/js/**'
+    - 'mailpoet/tsconfig.json'
+    - 'tsconfig.base.json'
+    - 'babel.config.js'
+    - 'mailpoet/.babelrc'
+    - 'mailpoet/postcss.config.mjs'
+    - 'mailpoet/eslint.config.js'
+    - 'mailpoet/eslint-suppressions.json'
+    - 'mailpoet/.stylelintrc'
+    # PHP registers these blocks from their built block.json.
+    - '!mailpoet/assets/js/src/mailpoet-custom-email-editor-blocks/**'
+    - '!mailpoet/assets/js/src/marketing-optin-block/**'
+
+  js-tests:
+    - 'mailpoet/tests/javascript/**'
+    - 'mailpoet/tests/javascript-newsletter-editor/**'
+
+  unit-tests:
+    - 'mailpoet/tests/unit/**'
+    - 'mailpoet/tests/unit.suite.yml'
+
+  integration-tests:
+    - 'mailpoet/tests/integration/**'
+    - 'mailpoet/tests/integration.suite.yml'
+
+  acceptance-tests:
+    - 'mailpoet/tests/acceptance/**'
+    - 'mailpoet/tests/acceptance.suite.yml'
+
+jobs:
+  static_analysis: [unit-tests, integration-tests, acceptance-tests]
+  qa_php: [unit-tests, integration-tests, acceptance-tests]
+  qa_js: [js, js-tests]
+  js_tests: [js, js-tests]
+  unit_tests: [unit-tests]
+  # The QIT security scan needs the zip, so it follows.
+  release_zip: [js]
+  # All setups, from base to multisite
+  integration: [integration-tests]
+  acceptance: [js, acceptance-tests]
+  # Only in full runs
+  security_analysis: []
+  ci_script_tests: []
