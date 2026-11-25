@@ -32,6 +32,7 @@ import {
 } from './constants';
 import { getRecentEmailTitle } from './recent-email-title';
 import { getDefaultEmailName } from './sidebar/campaign-name';
+import { registerSendPreviewHelp } from './send-preview-help';
 import type { MailPoetEmailData } from './shared/mailpoet-email-data';
 
 type RecentEmailPost = {
@@ -45,6 +46,7 @@ registerCouponCodeRestrictToSubscriberExtension();
 registerLatestPostsTemplateBlocks();
 registerLatestPostsProtectedContent();
 registerOrderProductCollectionsWhenAvailable();
+registerSendPreviewHelp();
 
 // MailPoet's shared Modal portals into a `#mailpoet-modal` container that the
 // legacy admin layout provides. The block editor has no such layout, so create
