@@ -3,6 +3,7 @@
 namespace MailPoet\Mailer\WordPress;
 
 use Automattic\WooCommerce\EmailEditor\Engine\Renderer\Html2Text;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -55,9 +56,9 @@ class WordPressMailer extends PHPMailer {
     // to 5 addresses (the main recipient counts toward To), because the Sending Service
     // rejects the whole request when a field has more.
     $recipients = [
-      'to' => array_map([$this, 'formatAddressEntry'], array_slice($toAddresses, 1, self::MAX_RECIPIENTS_PER_FIELD - 1)),
-      'cc' => array_map([$this, 'formatAddressEntry'], array_slice($this->getCcAddresses(), 0, self::MAX_RECIPIENTS_PER_FIELD)),
-      'bcc' => array_map([$this, 'formatAddressEntry'], array_slice($this->getBccAddresses(), 0, self::MAX_RECIPIENTS_PER_FIELD)),
+      'to' => $this->limitRecipients('to', array_slice($toAddresses, 1), self::MAX_RECIPIENTS_PER_FIELD - 1),
+      'cc' => $this->limitRecipients('cc', $this->getCcAddresses(), self::MAX_RECIPIENTS_PER_FIELD),
+      'bcc' => $this->limitRecipients('bcc', $this->getBccAddresses(), self::MAX_RECIPIENTS_PER_FIELD),
     ];
     $recipients = array_filter($recipients);
     if ($recipients) {
@@ -84,6 +85,22 @@ class WordPressMailer extends PHPMailer {
       }
     }
     return true;
+  }
+
+  /**
+   * Cuts a recipient list to $limit addresses and logs how many were dropped (never the addresses).
+   * @param array<int, array{0: string, 1?: string}> $addresses
+   * @return array<int, array{address: string, name: string}>
+   */
+  private function limitRecipients(string $field, array $addresses, int $limit): array {
+    $dropped = count($addresses) - $limit;
+    if ($dropped > 0) {
+      LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SENDING)->warning(
+        'Transactional email recipients over the Sending Service limit were dropped',
+        ['field' => $field, 'dropped' => $dropped, 'limit' => $limit]
+      );
+    }
+    return array_map([$this, 'formatAddressEntry'], array_slice($addresses, 0, $limit));
   }
 
   private function getEmail() {
