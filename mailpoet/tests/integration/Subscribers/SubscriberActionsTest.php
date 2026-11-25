@@ -15,6 +15,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\CustomField;
 use MailPoet\Test\DataFactories\NewsletterOption;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -402,6 +403,34 @@ class SubscriberActionsTest extends \MailPoetTest {
     verify(json_decode((string)$subscriber->getUnconfirmedData(), true))->equals([
       SubscriberActions::SEGMENTS_TO_CONFIRM => [$newSegment->getId()],
     ]);
+  }
+
+  public function testItIgnoresTrashedListsWhenItStartsNewEmailLimit(): void {
+    $this->settings->set('signup_confirmation.enabled', true);
+    $trashedSegment = (new SegmentFactory())->withName('Old news')->withDeleted()->create();
+    $newSegment = $this->segmentsRepository->createOrUpdate('Events');
+    $trashedId = (int)$trashedSegment->getId();
+    $newId = (int)$newSegment->getId();
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('trashed-list@example.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withUnconfirmedData((string)json_encode([SubscriberActions::SEGMENTS_TO_CONFIRM => [$trashedId]]))
+      ->create();
+    $subscriber->setConfirmationsCount(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
+    $subscriberActions = $this->diContainer->get(SubscriberActions::class);
+
+    // a trashed list alone doesn't start the limit over
+    $subscriberActions->holdSegmentsForConfirmation($subscriber, [$trashedId]);
+    verify($subscriber->getConfirmationsCount())->equals(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
+
+    // a trashed list that waits doesn't block a new limit for another list
+    $subscriberActions->holdSegmentsForConfirmation($subscriber, [$trashedId, $newId]);
+    verify($subscriber->getConfirmationsCount())->equals(0);
+
+    // the limit keeps counting while the other list waits
+    $subscriber->setConfirmationsCount(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
+    $subscriberActions->holdSegmentsForConfirmation($subscriber, [$trashedId, $newId]);
+    verify($subscriber->getConfirmationsCount())->equals(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
   }
 
   public function testItUsesPublicConfirmationModeForPublicSubscribes(): void {

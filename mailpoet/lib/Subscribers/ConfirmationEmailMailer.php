@@ -348,8 +348,10 @@ class ConfirmationEmailMailer {
   private function getSegmentsToConfirm(SubscriberEntity $subscriber): array {
     $unconfirmedData = json_decode((string)$subscriber->getUnconfirmedData(), true);
     $segmentIds = is_array($unconfirmedData) ? SubscriberActions::readSegmentIdsToConfirm($unconfirmedData) : [];
-    $segments = $this->segmentsRepository->findActiveNotSubscribedByIds($subscriber, $segmentIds);
-    return $segments ?: $subscriber->getSegments()->toArray();
+    if ($segmentIds) {
+      return $this->segmentsRepository->findActiveNotSubscribedByIds($subscriber, $segmentIds);
+    }
+    return $subscriber->getSegments()->toArray();
   }
 
   private function recordSuccessfulConfirmationSend(SubscriberEntity $subscriber): void {

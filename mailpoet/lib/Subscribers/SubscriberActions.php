@@ -183,7 +183,11 @@ class SubscriberActions {
     $segmentIdsToConfirm = $this->getSegmentIdsNotSubscribedTo($subscriber, $segmentIds);
     // Lists that were deleted or joined in the meantime don't wait anymore
     $previousSegmentIdsToConfirm = $this->getSegmentIdsNotSubscribedTo($subscriber, $this->getSegmentIdsToConfirm($subscriber));
-    if ($segmentIdsToConfirm && !$previousSegmentIdsToConfirm) {
+    // Trashed lists can't be confirmed, so they don't affect the limit
+    if (
+      $this->segmentsRepository->findActiveNotSubscribedByIds($subscriber, $segmentIdsToConfirm)
+      && !$this->segmentsRepository->findActiveNotSubscribedByIds($subscriber, $previousSegmentIdsToConfirm)
+    ) {
       // Emails sent for the original sign-up don't count towards the limit for this confirmation
       $subscriber->setConfirmationsCount(0);
     }

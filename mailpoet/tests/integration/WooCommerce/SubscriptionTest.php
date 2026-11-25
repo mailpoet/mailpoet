@@ -353,6 +353,34 @@ class SubscriptionTest extends \MailPoetTest {
     ]);
   }
 
+  public function testItAsksSubscribedCustomerToConfirmCustomersListTheyLeft(): void {
+    $this->settings->set('signup_confirmation', ['enabled' => true]);
+    $newSegment = $this->segmentsRepository->createOrUpdate('Events');
+    $newSegment->setConfirmationEmailId(42);
+    $newSegment->setConfirmationPageId(7);
+    $this->entityManager->flush();
+    $this->unsubscribeToSegment($this->subscriber, $this->wcSegment);
+    $this->entityManager->refresh($this->subscriber);
+    $this->confirmationEmailMailer
+      ->expects($this->once())
+      ->method('sendConfirmationEmailOnce')
+      ->with($this->isInstanceOf(SubscriberEntity::class), 42, 7, true);
+
+    $this->settings->set(Subscription::OPTIN_SEGMENTS_SETTING_NAME, [$newSegment->getId()]);
+    $this->subscription->handleSubscriberOptin($this->subscriber, true);
+
+    $this->entityManager->clear();
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    verify($subscriber->getSegments()->count())->equals(1);
+    $subscriberSegment = $subscriber->getSubscriberSegments()->first();
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
+    verify($subscriberSegment->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify(json_decode((string)$subscriber->getUnconfirmedData(), true))->equals([
+      SubscriberActions::SEGMENTS_TO_CONFIRM => [$this->wcSegment->getId(), $newSegment->getId()],
+    ]);
+  }
+
   private function subscribeToSegment(SubscriberEntity $subscriber, SegmentEntity $segment): void {
     $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, SubscriberEntity::STATUS_SUBSCRIBED);
     $this->entityManager->persist($subscriberSegment);
