@@ -47,7 +47,11 @@ export function Transactional() {
           <br />
           <span className="mailpoet-note">
             {ReactStringReplace(
-              t('transactionalMssNote'),
+              t(
+                isMssActive
+                  ? 'transactionalMssActiveNote'
+                  : 'transactionalMssNote',
+              ),
               /\[link\](.*?)\[\/link\]/,
               (text) => (
                 <a
