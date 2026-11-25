@@ -25,14 +25,25 @@ class MetaInfo {
     return $this->makeMetaInfo('email_stats_notification', 'unknown', 'administrator');
   }
 
-  public function getWordPressTransactionalMetaInfo(?SubscriberEntity $subscriber = null) {
-    return $this->makeMetaInfo(
+  /**
+   * The plugin and URL describe the request that sent the email. When they are unknown,
+   * the ones stored on the subscriber (if any) are used.
+   */
+  public function getWordPressTransactionalMetaInfo(?SubscriberEntity $subscriber = null, ?string $sourcePlugin = null, ?string $sourceUrl = null) {
+    $metaInfo = $this->makeMetaInfo(
       'transactional',
       $subscriber ? $subscriber->getStatus() : 'unknown',
       $subscriber ? $subscriber->getSource() : 'unknown',
       $subscriber ? $subscriber->getSourcePlugin() : null,
       $subscriber ? $subscriber->getSourceUrl() : null
     );
+    if ($sourcePlugin) {
+      $metaInfo['subscriber_source_plugin'] = $sourcePlugin;
+    }
+    if ($sourceUrl) {
+      $metaInfo['subscriber_source_url'] = $sourceUrl;
+    }
+    return $metaInfo;
   }
 
   public function getConfirmationMetaInfo(SubscriberEntity $subscriber) {

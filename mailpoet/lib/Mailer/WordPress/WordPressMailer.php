@@ -6,6 +6,8 @@ use Automattic\WooCommerce\EmailEditor\Engine\Renderer\Html2Text;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
+use MailPoet\Subscribers\ApiSourcePluginResolver;
+use MailPoet\Subscribers\SourceUrlResolver;
 use MailPoet\Subscribers\SubscribersRepository;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -25,15 +27,25 @@ class WordPressMailer extends PHPMailer {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var ApiSourcePluginResolver */
+  private $sourcePluginResolver;
+
+  /** @var SourceUrlResolver */
+  private $sourceUrlResolver;
+
   public function __construct(
     MailerFactory $mailerFactory,
     MetaInfo $mailerMetaInfo,
-    SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository,
+    ApiSourcePluginResolver $sourcePluginResolver,
+    SourceUrlResolver $sourceUrlResolver
   ) {
     parent::__construct(true);
     $this->mailerFactory = $mailerFactory;
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->subscribersRepository = $subscribersRepository;
+    $this->sourcePluginResolver = $sourcePluginResolver;
+    $this->sourceUrlResolver = $sourceUrlResolver;
   }
 
   public function send() {
@@ -49,7 +61,11 @@ class WordPressMailer extends PHPMailer {
     $address = $this->formatAddress($toAddresses);
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $address['address']]);
     $extraParams = [
-      'meta' => $this->mailerMetaInfo->getWordPressTransactionalMetaInfo($subscriber),
+      'meta' => $this->mailerMetaInfo->getWordPressTransactionalMetaInfo(
+        $subscriber,
+        $this->sourcePluginResolver->resolve(),
+        $this->sourceUrlResolver->resolve()
+      ),
     ];
     // The first To address is the main recipient. The remaining To, CC and BCC addresses
     // are sent along so the Sending Service can deliver to all of them. Each field is cut
