@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DataViews, type Action, type View } from '@wordpress/dataviews';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Button, Modal } from '@wordpress/components';
@@ -25,6 +25,8 @@ import {
   trashPreset,
   type PresetsGroup,
 } from './api';
+import { getClassicTemplates, type ClassicTemplate } from './classic-api';
+import { ClassicTemplates } from './classic-templates';
 import { presetFields } from './fields';
 import { PresetNameForm, PresetPreviewModal } from './modals';
 
@@ -68,8 +70,15 @@ async function settleAll(requests: Promise<void>[]): Promise<void> {
   if (failed) throw failed.reason;
 }
 
+type Tab = PresetsGroup | 'classic';
+
 export function EmailTemplatesPage() {
-  const [group, setGroup] = useState<PresetsGroup>('all');
+  const [tab, setTab] = useState<Tab>('all');
+  const group: PresetsGroup = tab === 'trash' ? 'trash' : 'all';
+  const [classicTemplates, setClassicTemplates] = useState<ClassicTemplate[]>(
+    [],
+  );
+  const [isLoadingClassic, setIsLoadingClassic] = useState(true);
   const [selection, setSelection] = useState<string[]>([]);
   const [isEmptyingTrash, setIsEmptyingTrash] = useState(false);
   const [notice, setNotice] = useState<NoticeState | null>(null);
@@ -103,6 +112,35 @@ export function EmailTemplatesPage() {
     onChangeView,
   );
 
+  // An older load can finish after a newer one, so only the latest one counts.
+  const latestClassicLoad = useRef(0);
+  const loadClassicTemplates = useCallback(() => {
+    latestClassicLoad.current += 1;
+    const loadId = latestClassicLoad.current;
+    const isLatest = () => loadId === latestClassicLoad.current;
+    setIsLoadingClassic(true);
+    getClassicTemplates()
+      .then((templates) => {
+        if (isLatest()) setClassicTemplates(templates);
+      })
+      .catch((error) => {
+        if (isLatest()) {
+          setNotice({ status: 'error', message: errorMessage(error) });
+        }
+      })
+      .finally(() => {
+        if (isLatest()) setIsLoadingClassic(false);
+      });
+  }, []);
+
+  useEffect(loadClassicTemplates, [loadClassicTemplates]);
+
+  const showClassicNotice = useCallback(
+    (status: NoticeState['status'], message: string) =>
+      setNotice({ status, message }),
+    [],
+  );
+
   const counts = useMemo(() => {
     const result: Record<PresetsGroup, number> = { all: 0, trash: 0 };
     (groups ?? []).forEach(({ name, count }) => {
@@ -116,21 +154,39 @@ export function EmailTemplatesPage() {
       all: __('Presets', 'mailpoet'),
       trash: __('Trash', 'mailpoet'),
     };
-    return groupsToTabs(
+    const presetTabs = groupsToTabs(
       (groups ?? []).map((item) => ({
         ...item,
         label: labels[item.name] ?? item.name,
       })),
-      group,
+      tab,
     );
-  }, [group, groups]);
+    const classicTab = {
+      name: 'classic',
+      label: __('Classic templates', 'mailpoet'),
+      count: classicTemplates.length,
+      automationId: 'filters_classic',
+      className: 'mailpoet-dataviews-group-classic',
+    };
+    // Trash stays last, next to the presets it belongs to.
+    const trashIndex = presetTabs.findIndex((item) => item.name === 'trash');
+    return trashIndex === -1
+      ? [...presetTabs, classicTab]
+      : [
+          ...presetTabs.slice(0, trashIndex),
+          classicTab,
+          ...presetTabs.slice(trashIndex),
+        ];
+  }, [tab, groups, classicTemplates.length]);
 
-  const switchGroup = (next: string) => {
-    if (next !== 'all' && next !== 'trash') return;
-    if (next === group) return;
+  const switchTab = (next: string) => {
+    if (next !== 'all' && next !== 'trash' && next !== 'classic') return;
+    if (next === tab) return;
     setSelection([]);
-    setGroup(next);
-    setView((current) => ({ ...current, page: 1 }));
+    setTab(next);
+    if (next !== 'classic') {
+      setView((current) => ({ ...current, page: 1 }));
+    }
   };
 
   const runForEach = useCallback(
@@ -457,54 +513,63 @@ export function EmailTemplatesPage() {
       <Categories
         className="mailpoet-dataviews__tabs mailpoet-email-templates-dataviews__tabs"
         categories={tabs}
-        active={group}
-        onSelect={switchGroup}
+        active={tab}
+        onSelect={switchTab}
       />
 
-      <div
-        className="mailpoet-dataviews mailpoet-email-templates-dataviews"
-        data-automation-id="email_templates_listing"
-      >
-        <DataViews<EmailPreset>
-          data={items}
-          fields={presetFields}
-          view={view}
-          onChangeView={handleViewChange}
-          actions={actions}
-          paginationInfo={paginationInfo}
-          defaultLayouts={{ grid: {} }}
-          getItemId={(item) => String(item.id)}
-          selection={selection}
-          onChangeSelection={setSelection}
-          isLoading={isLoading}
-          empty={
-            <EmptyState.Root>
-              <EmptyState.Description>{emptyMessage}</EmptyState.Description>
-            </EmptyState.Root>
-          }
+      {tab === 'classic' ? (
+        <ClassicTemplates
+          templates={classicTemplates}
+          isLoading={isLoadingClassic}
+          refresh={loadClassicTemplates}
+          onNotice={showClassicNotice}
+        />
+      ) : (
+        <div
+          className="mailpoet-dataviews mailpoet-email-templates-dataviews"
+          data-automation-id="email_templates_listing"
         >
-          <div className="mailpoet-dataviews__toolbar">
-            <div className="mailpoet-dataviews__toolbar-end">
-              {group === 'trash' && counts.trash > 0 && (
-                <Button
-                  size="compact"
-                  variant="secondary"
-                  isDestructive
-                  isBusy={isEmptyingTrash}
-                  disabled={isEmptyingTrash}
-                  onClick={() => void handleEmptyTrash()}
-                >
-                  {__('Empty Trash', 'mailpoet')}
-                </Button>
-              )}
-              <DataViews.Search label={__('Search presets', 'mailpoet')} />
-              <DataViews.ViewConfig />
+          <DataViews<EmailPreset>
+            data={items}
+            fields={presetFields}
+            view={view}
+            onChangeView={handleViewChange}
+            actions={actions}
+            paginationInfo={paginationInfo}
+            defaultLayouts={{ grid: {} }}
+            getItemId={(item) => String(item.id)}
+            selection={selection}
+            onChangeSelection={setSelection}
+            isLoading={isLoading}
+            empty={
+              <EmptyState.Root>
+                <EmptyState.Description>{emptyMessage}</EmptyState.Description>
+              </EmptyState.Root>
+            }
+          >
+            <div className="mailpoet-dataviews__toolbar">
+              <div className="mailpoet-dataviews__toolbar-end">
+                {group === 'trash' && counts.trash > 0 && (
+                  <Button
+                    size="compact"
+                    variant="secondary"
+                    isDestructive
+                    isBusy={isEmptyingTrash}
+                    disabled={isEmptyingTrash}
+                    onClick={() => void handleEmptyTrash()}
+                  >
+                    {__('Empty Trash', 'mailpoet')}
+                  </Button>
+                )}
+                <DataViews.Search label={__('Search presets', 'mailpoet')} />
+                <DataViews.ViewConfig />
+              </div>
             </div>
-          </div>
-          <DataViews.Layout />
-          <DataViews.Footer />
-        </DataViews>
-      </div>
+            <DataViews.Layout />
+            <DataViews.Footer />
+          </DataViews>
+        </div>
+      )}
 
       {isAddModalOpen && (
         <Modal

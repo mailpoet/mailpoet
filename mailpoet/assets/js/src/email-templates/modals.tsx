@@ -6,6 +6,7 @@ import type { EmailPreset } from 'common/email-presets';
 import { loadPreview } from './thumbnail';
 
 type NameFormProps = {
+  label?: string;
   defaultTitle: string;
   submitLabel: string;
   // Resolves to true when the preset was saved.
@@ -14,6 +15,7 @@ type NameFormProps = {
 };
 
 export function PresetNameForm({
+  label = __('Preset name', 'mailpoet'),
   defaultTitle,
   submitLabel,
   onSubmit,
@@ -40,11 +42,7 @@ export function PresetNameForm({
       }}
     >
       <Stack direction="column" gap="lg">
-        <InputControl
-          label={__('Preset name', 'mailpoet')}
-          value={title}
-          onValueChange={setTitle}
-        />
+        <InputControl label={label} value={title} onValueChange={setTitle} />
         <Stack direction="row" gap="sm" justify="flex-end">
           <Button
             __next40pxDefaultSize

@@ -34,6 +34,7 @@ class NewsletterTemplatesResponseBuilder {
         'thumbnail' => $template->getThumbnail(),
         'name' => $template->getName(),
         'readonly' => $template->getReadonly(),
+        'updated_at' => ($updatedAt = $template->getUpdatedAt()) ? $updatedAt->format(self::DATE_FORMAT) : null,
       ];
     }
     return $data;

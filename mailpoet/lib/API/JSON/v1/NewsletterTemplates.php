@@ -155,6 +155,32 @@ class NewsletterTemplates extends APIEndpoint {
     return $this->successResponse($this->newsletterTemplatesResponseBuilder->build($duplicate));
   }
 
+  public function rename($data = []) {
+    $template = $this->getTemplate($data);
+    if (!$template) {
+      return $this->templateNotFound();
+    }
+    if ($template->getReadonly()) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => __('This template cannot be renamed.', 'mailpoet'),
+      ]);
+    }
+    $name = isset($data['name']) && is_string($data['name']) ? trim($this->wp->sanitizeTextField($data['name'])) : '';
+    if ($name === '') {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => __('Please enter a template name.', 'mailpoet'),
+      ]);
+    }
+
+    $template->setName($name);
+    $newsletter = $template->getNewsletter();
+    if ($newsletter && $newsletter->getType() === NewsletterEntity::TYPE_TEMPLATE) {
+      $newsletter->setSubject($name);
+    }
+    $this->newsletterTemplatesRepository->flush();
+    return $this->successResponse($this->newsletterTemplatesResponseBuilder->build($template));
+  }
+
   /**
    * Returns the hidden email that the editor uses to edit a saved template.
    */

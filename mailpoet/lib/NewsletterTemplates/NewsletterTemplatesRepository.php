@@ -22,7 +22,7 @@ class NewsletterTemplatesRepository extends Repository {
    */
   public function findAllForListing(): array {
     return $this->doctrineRepository->createQueryBuilder('nt')
-      ->select('PARTIAL nt.{id,categories,thumbnail,name,readonly}')
+      ->select('PARTIAL nt.{id,categories,thumbnail,name,readonly,updatedAt}')
       ->addOrderBy('nt.readonly', 'ASC')
       ->addOrderBy('nt.createdAt', 'DESC')
       ->addOrderBy('nt.id', 'DESC')
