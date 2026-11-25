@@ -65,7 +65,7 @@ Hooks see only staged files, so still run `pnpm qa` before pushing. Do not use `
 
 ## What CI runs
 
-GitHub Actions (`.github/workflows/checks.yml`) runs these jobs from `mailpoet/` on every pull request:
+GitHub Actions (`.github/workflows/checks.yml`) runs these jobs from `mailpoet/`:
 
 | Job                                 | Command                                         | PHP |
 | ----------------------------------- | ----------------------------------------------- | --- |
@@ -83,6 +83,8 @@ GitHub Actions (`.github/workflows/checks.yml`) runs these jobs from `mailpoet/`
 | `QIT security scan`                 | `./do qa:qit-security` on the zip               | –   |
 
 Integration and acceptance tests run in `checks.yml` too (the “Integration tests” and “Acceptance tests” jobs, through `.github/workflows/codeception-tests.yml`). The release tooling (`./do release:publish`) takes the zip and `.pot` from the checks run on the `release` branch. The Playground previews of pull requests use the zip of the branch’s latest successful checks run. Premium’s nightly workflow runs Free’s tests with Premium active, and so does Premium’s `free-release-tests.yml` on the head of Free’s `release` branch: `./do release:prepare` starts it, and `./do release:publish` refuses to publish until it has passed. `.github/workflows/nightly-qit.yml` builds the release zip with the same workflow (`.github/workflows/release-zip.yml`) and runs all six QIT checks on Tuesdays and Wednesdays. `.github/workflows/nightly-tests.yml` runs the unit, integration and acceptance tests every weekday night on the latest and oldest supported versions (from `tests_env/oldest-versions.yml`) and on the WordPress and WooCommerce betas.
+
+A pull request skips the jobs its changes can’t affect. The “Pick jobs” job reads the rules from `.github/ci-jobs.yml` and its summary says why each job runs or not. A file in no area of that config runs every job, and so do pushes to `trunk` and `release`, pull requests into `release` and manual runs. To run every job for a branch, start Checks by hand: Actions → Checks → Run workflow. A pull request that skips the release zip has no zip for its Playground preview.
 
 `pnpm qa` does not run Semgrep, the PHP 7.4 lint, the WP.org build lint or the newsletter editor tests.
 

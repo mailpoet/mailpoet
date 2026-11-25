@@ -32,9 +32,45 @@ jobs:
     permissions:
       contents: read
 
+  # Picks the jobs a pull request needs from the files it changes, by the
+  # rules in .github/ci-jobs.yml. A job runs unless its output is 'false', so
+  # a job missing from the config runs.
+  changes:
+    name: 'Pick jobs'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      static_analysis: ${{ steps.pick.outputs.static_analysis }}
+      qa_php: ${{ steps.pick.outputs.qa_php }}
+      qa_js: ${{ steps.pick.outputs.qa_js }}
+      js_tests: ${{ steps.pick.outputs.js_tests }}
+      unit_tests: ${{ steps.pick.outputs.unit_tests }}
+      release_zip: ${{ steps.pick.outputs.release_zip }}
+      integration: ${{ steps.pick.outputs.integration }}
+      acceptance: ${{ steps.pick.outputs.acceptance }}
+      security_analysis: ${{ steps.pick.outputs.security_analysis }}
+      ci_script_tests: ${{ steps.pick.outputs.ci_script_tests }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # The commit and its parents. A pull request runs on a merge
+          # commit, whose first parent is the base branch.
+          fetch-depth: 2
+      - name: 'Pick the jobs'
+        id: pick
+        # The jobs go to the outputs, the reasons to the log and the summary.
+        run: |
+          git diff --name-only --no-renames HEAD^1 HEAD \
+            | bash .github/workflows/scripts/pick-ci-jobs.sh .github/ci-jobs.yml 2>&1 >> "$GITHUB_OUTPUT" \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+
   static_analysis:
     name: 'PHPStan'
-    needs: build
+    needs: [build, changes]
+    if: ${{ needs.changes.outputs.static_analysis != 'false' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -52,7 +88,8 @@ jobs:
 
   qa_php:
     name: 'PHP lint and code style (PHP ${{ matrix.php }})'
-    needs: build
+    needs: [build, changes]
+    if: ${{ needs.changes.outputs.qa_php != 'false' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -81,7 +118,8 @@ jobs:
 
   qa_js:
     name: 'JS and CSS lint'
-    needs: build
+    needs: [build, changes]
+    if: ${{ needs.changes.outputs.qa_js != 'false' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -99,7 +137,8 @@ jobs:
 
   js_tests:
     name: 'JS tests'
-    needs: build
+    needs: [build, changes]
+    if: ${{ needs.changes.outputs.js_tests != 'false' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -133,7 +172,8 @@ jobs:
 
   unit_tests:
     name: 'PHP unit tests'
-    needs: build
+    needs: [build, changes]
+    if: ${{ needs.changes.outputs.unit_tests != 'false' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -158,8 +198,10 @@ jobs:
           path: mailpoet/tests/_output
           retention-days: 14
 
-  trunk_alert_tests:
-    name: 'Trunk failure alert tests'
+  ci_script_tests:
+    name: 'CI script tests'
+    needs: changes
+    if: ${{ needs.changes.outputs.ci_script_tests != 'false' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -168,8 +210,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: 'Run the tests'
+      - name: 'Trunk failure alert tests'
         run: bash .github/workflows/scripts/trunk-failure-alert.test.sh
+      - name: 'Job picker tests'
+        run: bash .github/workflows/scripts/pick-ci-jobs.test.sh
 
   security_analysis:
     name: 'Security scan (Semgrep)'
@@ -177,7 +221,8 @@ jobs:
     # rules with; the scan runs on trunk after the merge. Dependabot reads the key
     # from the Dependabot secrets. Everywhere else a missing key must fail the
     # job.
-    if: ${{ !github.event.pull_request.head.repo.fork }}
+    needs: changes
+    if: ${{ needs.changes.outputs.security_analysis != 'false' && !github.event.pull_request.head.repo.fork }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -196,7 +241,8 @@ jobs:
 
   release_zip:
     name: 'Release zip'
-    needs: build
+    needs: [build, changes]
+    if: ${{ needs.changes.outputs.release_zip != 'false' }}
     uses: ./.github/workflows/release-zip.yml
     permissions:
       contents: read
@@ -251,7 +297,8 @@ jobs:
 
   integration_base:
     name: 'Integration tests'
-    needs: build
+    needs: [build, changes]
+    if: ${{ needs.changes.outputs.integration != 'false' }}
     uses: ./.github/workflows/codeception-tests.yml
     permissions:
       contents: read
@@ -269,8 +316,8 @@ jobs:
   # the token from the Dependabot secrets.
   integration:
     name: 'Integration tests (${{ matrix.title }})'
-    needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork }}
+    needs: [build, changes]
+    if: ${{ needs.changes.outputs.integration != 'false' && !github.event.pull_request.head.repo.fork }}
     strategy:
       fail-fast: false
       matrix:
@@ -322,8 +369,8 @@ jobs:
   # WooCommerce plugins, so they skip forks like the jobs above.
   acceptance:
     name: 'Acceptance tests (${{ matrix.title }})'
-    needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork }}
+    needs: [build, changes]
+    if: ${{ needs.changes.outputs.acceptance != 'false' && !github.event.pull_request.head.repo.fork }}
     strategy:
       fail-fast: false
       matrix:
@@ -380,21 +427,23 @@ jobs:
 
   # The one check branch protection requires. It fails when any job failed or
   # was cancelled, so jobs can be added or renamed without changing the repo
-  # settings. Skipped jobs count as passed. Pull requests from forks get no
-  # secrets, so they skip the security scan and the WooCommerce, multisite and
-  # acceptance tests; the push to trunk runs them after the merge. List every
-  # job of this workflow under needs.
+  # settings. Skipped jobs count as passed: the ones the changed files don't
+  # need, and for pull requests from forks, which get no secrets, the security
+  # scan and the WooCommerce, multisite and acceptance tests. The push to
+  # trunk runs them all after the merge. List every job of this workflow
+  # under needs.
   all_checks:
     name: 'All checks'
     if: always()
     needs:
       - build
+      - changes
       - static_analysis
       - qa_php
       - qa_js
       - js_tests
       - unit_tests
-      - trunk_alert_tests
+      - ci_script_tests
       - security_analysis
       - release_zip
       - qit_security
