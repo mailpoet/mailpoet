@@ -18,6 +18,7 @@ class PendingApprovalNoticeReviewStatusTest extends \MailPoetUnitTest {
     ]);
     $wp = $this->createMock(WPFunctions::class);
     $wp->method('getOption')->willReturnMap([['date_format', false, 'j. n. Y']]);
+    $wp->method('escAttr')->willReturnCallback('htmlspecialchars');
     $wp->method('wpDate')->willReturnCallback(function (string $format, int $timestamp): string {
       return gmdate($format, $timestamp);
     });
