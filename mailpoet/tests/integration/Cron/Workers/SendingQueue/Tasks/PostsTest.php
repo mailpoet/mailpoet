@@ -44,11 +44,12 @@ class PostsTest extends \MailPoetTest {
     $renderedNewsletter = [
       'html' => '<a data-post-id="' . $postId . '" href="#">sample post</a>',
     ];
-    verify($this->postsTask->extractAndSave($renderedNewsletter, $newsletter))->equals(true);
+    verify($this->postsTask->extractAndSave($renderedNewsletter, $newsletter, 25))->equals(true);
     $newsletterPostRepository = ContainerWrapper::getInstance()->get(NewsletterPostsRepository::class);
     $newsletterPost = $newsletterPostRepository->findOneBy(['newsletter' => $parent]);
     $this->assertInstanceOf(NewsletterPostEntity::class, $newsletterPost);
     $this->assertSame($newsletterPost->getPostId(), $postId);
+    $this->assertSame(25, $newsletterPostRepository->getNewestPostIdAtLastSend((int)$parent->getId()));
   }
 
   public function testItDoesNotSavePostsWhenNewsletterIsNotANotificationHistory() {

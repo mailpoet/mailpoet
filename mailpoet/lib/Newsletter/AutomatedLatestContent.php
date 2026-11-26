@@ -46,16 +46,15 @@ class AutomatedLatestContent {
 
     if ($this->newerThanTimestamp instanceof DateTimeInterface) {
       global $wpdb;
-      // A post is new when it is dated after the last email, or when it was created after the
-      // newest post already sent and is dated at most a day before the last email. The second
-      // case covers posts published with an earlier date, e.g. by Postie's time offset, while
-      // imported old posts stay out.
+      // A post is new when it is dated after the last email, or when it was created after that
+      // email and is dated at most a day before it. The second case covers posts published with
+      // an earlier date, e.g. by Postie's time offset, while imported old posts stay out.
       $lastSentAt = $this->newerThanTimestamp->getTimestamp();
+      $newestPostIdAtLastSend = (int)$this->newsletterPostsRepository->getNewestPostIdAtLastSend((int)$this->newsletterId);
       $wherePostUnsent .= $wpdb->prepare(
-        " AND ({$wpdb->posts}.post_date_gmt > %s OR ({$wpdb->posts}.ID > (SELECT MAX(post_id) FROM %i WHERE newsletter_id = %d) AND {$wpdb->posts}.post_date_gmt > %s))",
+        " AND ({$wpdb->posts}.post_date_gmt > %s OR ({$wpdb->posts}.ID > %d AND {$wpdb->posts}.post_date_gmt > %s))",
         gmdate('Y-m-d H:i:s', $lastSentAt),
-        $newsletterPostsTableName,
-        (int)$this->newsletterId,
+        $newestPostIdAtLastSend,
         gmdate('Y-m-d H:i:s', $lastSentAt - DAY_IN_SECONDS)
       );
     }

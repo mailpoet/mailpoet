@@ -334,6 +334,10 @@ class Newsletter {
     );
 
     $campaignId = null;
+    // Posts created while the email renders get a higher ID, so the next email treats them as new
+    $newestSitePostId = $newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY
+      ? $this->postsTask->getNewestSitePostId()
+      : null;
     $this->preflightCouponBlockGeneration($newsletter, $queue);
 
     // if tracking is enabled, do additional processing
@@ -381,7 +385,7 @@ class Newsletter {
       return false;
     }
     // extract and save newsletter posts
-    $this->postsTask->extractAndSave($renderedNewsletter, $newsletter);
+    $this->postsTask->extractAndSave($renderedNewsletter, $newsletter, $newestSitePostId);
 
     if ($campaignId !== null) {
       $this->sendingQueuesRepository->saveCampaignId($queue, $campaignId);

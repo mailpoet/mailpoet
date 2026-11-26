@@ -20,7 +20,14 @@ class Posts {
     $this->newsletterPostRepository = ContainerWrapper::getInstance()->get(NewsletterPostsRepository::class);
   }
 
-  public function extractAndSave($renderedNewsletter, NewsletterEntity $newsletter): bool {
+  public function getNewestSitePostId(): int {
+    return $this->newsletterPostRepository->getNewestSitePostId();
+  }
+
+  /**
+   * @param int|null $newestSitePostId The highest post ID on the site before the email was rendered
+   */
+  public function extractAndSave($renderedNewsletter, NewsletterEntity $newsletter, ?int $newestSitePostId = null): bool {
     if ($newsletter->getType() !== NewsletterEntity::TYPE_NOTIFICATION_HISTORY) {
       return false;
     }
@@ -50,6 +57,10 @@ class Posts {
       $this->newsletterPostRepository->persist($newsletterPost);
     }
     $this->newsletterPostRepository->flush();
+    $this->newsletterPostRepository->saveNewestPostIdAtSend(
+      (int)$parent->getId(),
+      $newestSitePostId ?? $this->newsletterPostRepository->getNewestSitePostId()
+    );
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
       'Saved the posts found in the email (extract and save posts - after).',
       ['newsletter_id' => $newsletter->getId(), 'matched_posts_ids' => $matchedPostsIds]

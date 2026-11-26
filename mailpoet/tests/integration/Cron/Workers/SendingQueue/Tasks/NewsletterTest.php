@@ -260,13 +260,28 @@ class NewsletterTest extends \MailPoetTest {
       'loggerFactory' => $this->loggerFactory,
       'newsletterPostRepository' => $newsletterPostRepository,
     ]);
-    $newsletterTask = new NewsletterTask(new WPFunctions, $postsTask);
-    $result = $newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
+    $wp = new WPFunctions;
+    $newsletterTask = new NewsletterTask($wp, $postsTask);
+    // A post created while the email renders must count as new for the next email
+    $postCreatedDuringRender = 0;
+    $createPost = function ($renderedNewsletter) use ($wp, &$postCreatedDuringRender) {
+      $postCreatedDuringRender = (int)$wp->wpInsertPost(['post_title' => 'During render', 'post_status' => 'publish']);
+      return $renderedNewsletter;
+    };
+    $wp->addFilter('mailpoet_sending_newsletter_render_after_pre_process', $createPost);
+    try {
+      $result = $newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
+    } finally {
+      $wp->removeFilter('mailpoet_sending_newsletter_render_after_pre_process', $createPost);
+    }
     $newsletterPost = $newsletterPostRepository->findOneBy(['newsletter' => $this->newsletter->getId()]);
     verify($newsletterPost)->instanceOf(NewsletterPostEntity::class);
     verify($result)->notEquals(false);
     $this->assertInstanceOf(NewsletterPostEntity::class, $newsletterPost);
     verify($newsletterPost->getPostId())->equals('10');
+    $newestPostIdAtSend = $newsletterPostRepository->getNewestPostIdAtLastSend((int)$this->newsletter->getId());
+    $this->assertIsInt($newestPostIdAtSend);
+    $this->assertLessThan($postCreatedDuringRender, $newestPostIdAtSend);
   }
 
   public function testItUpdatesStatusAndSetsSentAtDateOnlyForStandardAndPostNotificationNewsletters() {
