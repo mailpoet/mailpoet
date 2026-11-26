@@ -125,7 +125,7 @@ class PermanentNotices {
     $this->deprecatedFilterNotice = new DeprecatedFilterNotice($wp);
     $this->disabledMailFunctionNotice = new DisabledMailFunctionNotice($wp, $settings, $subscribersFeature, $mailerFactory);
     $this->disabledWPCronNotice = new DisabledWPCronNotice($wp, $cronHelper, $settings);
-    $this->pendingApprovalNotice = new PendingApprovalNotice($settings);
+    $this->pendingApprovalNotice = new PendingApprovalNotice($settings, $wp);
     $this->woocommerceVersionWarning = new WooCommerceVersionWarning($wp);
     $this->premiumFeaturesAvailableNotice = new PremiumFeaturesAvailableNotice($subscribersFeature, $serviceChecker, $wp);
     $this->databaseEngineNotice = new DatabaseEngineNotice($wp, $entityManager);
