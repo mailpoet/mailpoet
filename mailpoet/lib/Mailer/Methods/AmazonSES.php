@@ -4,6 +4,7 @@ namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
+use MailPoet\Mailer\Methods\Common\ExtraRecipients;
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
 use MailPoet\Settings\Hosts;
 use MailPoet\Util\Url;
@@ -95,6 +96,10 @@ class AmazonSES extends PHPMailerMethod {
       $error = $this->errorMapper->getBlacklistError($subscriber);
       return Mailer::formatMailerErrorResult($error);
     }
+    $blacklistedRecipient = ExtraRecipients::findBlacklisted($this->blacklist, $extraParams);
+    if ($blacklistedRecipient !== null) {
+      return Mailer::formatMailerErrorResult($this->errorMapper->getBlacklistError($blacklistedRecipient));
+    }
     try {
       $result = $this->wp->wpRemotePost(
         $this->url,
@@ -123,15 +128,27 @@ class AmazonSES extends PHPMailerMethod {
   public function getBody($newsletter, $subscriber, $extraParams = []) {
     /* Configure mailer and call preSend() method to prepare message */
     $mailer = $this->configureMailerWithMessage($newsletter, $subscriber, $extraParams);
+    $extraAddresses = ExtraRecipients::getAddresses($extraParams);
+    if ($extraAddresses) {
+      // PHPMailer writes a Bcc header for the "mail" mailer, so BCC goes only into Destinations.
+      $mailer->clearBCCs();
+    }
     $mailer->preSend();
     /* When message is prepared, we can get the raw message */
     $this->rawMessage = $mailer->getSentMIMEMessage();
-    return [
+    $body = [
       'Action' => 'SendRawEmail',
       'Version' => '2010-12-01',
       'Source' => $this->sender['from_name_email'],
       'RawMessage.Data' => $this->encodeMessage($this->rawMessage),
     ];
+    if ($extraAddresses) {
+      $destinations = array_merge([$this->processSubscriber($subscriber)['email']], $extraAddresses);
+      foreach ($destinations as $index => $address) {
+        $body['Destinations.member.' . ($index + 1)] = $address;
+      }
+    }
+    return $body;
   }
 
   public function encodeMessage(string $message) {

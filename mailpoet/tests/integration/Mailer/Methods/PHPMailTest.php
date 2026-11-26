@@ -159,6 +159,56 @@ class PHPMailTest extends \MailPoetTest {
     verify($result['error']->getMessage())->stringContainsString('PHPMail has returned an unknown error.');
   }
 
+  public function testItAddsExtraToCcAndBccRecipients() {
+    $mailer = $this->mailer->configureMailerWithMessage(
+      $this->newsletter,
+      $this->subscriber,
+      array_merge($this->extraParams, $this->getExtraRecipients())
+    );
+    verify($mailer->getToAddresses())->equals([
+      ['blackhole@mailpoet.com', 'Recipient'],
+      ['to2@example.com', 'To Two'],
+    ]);
+    verify($mailer->getCcAddresses())->equals([['cc1@example.com', 'Cc One']]);
+    verify($mailer->getBccAddresses())->equals([['bcc1@example.com', '']]);
+  }
+
+  public function testItDoesNotKeepExtraRecipientsForTheNextMessage() {
+    $this->mailer->configureMailerWithMessage($this->newsletter, $this->subscriber, $this->getExtraRecipients());
+    $mailer = $this->mailer->configureMailerWithMessage($this->newsletter, $this->subscriber, $this->extraParams);
+    verify($mailer->getToAddresses())->equals([['blackhole@mailpoet.com', 'Recipient']]);
+    verify($mailer->getCcAddresses())->equals([]);
+    verify($mailer->getBccAddresses())->equals([]);
+    verify($mailer->getAllRecipientAddresses())->equals(['blackhole@mailpoet.com' => true]);
+  }
+
+  public function testItChecksBlacklistForExtraRecipients() {
+    $blacklist = Stub::make(new BlacklistCheck(), [
+      'isBlacklisted' => function ($address) {
+        return $address === 'bcc1@example.com';
+      },
+    ], $this);
+    $mailer = Stub::make(
+      $this->mailer,
+      ['blacklist' => $blacklist, 'errorMapper' => new PHPMailMapper()],
+      $this
+    );
+    $result = $mailer->send($this->newsletter, $this->subscriber, $this->getExtraRecipients());
+    verify($result['response'])->false();
+    verify($result['error'])->instanceOf(MailerError::class);
+    verify($result['error']->getSubscriberErrors()[0]->getEmail())->equals('bcc1@example.com');
+  }
+
+  private function getExtraRecipients(): array {
+    return [
+      'recipients' => [
+        'to' => [['address' => 'to2@example.com', 'name' => 'To Two']],
+        'cc' => [['address' => 'cc1@example.com', 'name' => 'Cc One']],
+        'bcc' => [['address' => 'bcc1@example.com', 'name' => '']],
+      ],
+    ];
+  }
+
   public function testItCanSend() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $result = $this->mailer->send(

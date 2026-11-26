@@ -133,4 +133,48 @@ class SendGridTest extends \MailPoetTest {
     verify($result['error'])->instanceOf(MailerError::class);
     verify($result['error']->getMessage())->stringContainsString('SendGrid has returned an unknown error.');
   }
+
+  public function testItSendsExtraRecipientsAsLists() {
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $this->getExtraRecipients());
+    verify($body['to'])->equals(['mailpoet@sink.sendgrid.net', 'to2@example.com']);
+    verify($body['cc'])->equals(['cc1@example.com']);
+    verify($body['bcc'])->equals(['bcc1@example.com']);
+    verify($body)->arrayHasNotKey('toname');
+  }
+
+  public function testItWritesListsWithEmptyBrackets() {
+    $request = $this->mailer->request($this->newsletter, $this->subscriber, $this->getExtraRecipients());
+    parse_str($request['body'], $parsed);
+    verify($parsed['to'])->equals(['mailpoet@sink.sendgrid.net', 'to2@example.com']);
+    verify($request['body'])->stringContainsString('to%5B%5D=mailpoet%40sink.sendgrid.net&to%5B%5D=to2%40example.com');
+    verify($request['body'])->stringContainsString('cc%5B%5D=cc1%40example.com');
+    verify($request['body'])->stringContainsString('bcc%5B%5D=bcc1%40example.com');
+    verify($request['body'])->stringNotContainsString('%5B0%5D');
+  }
+
+  public function testItChecksBlacklistForExtraRecipients() {
+    $blacklist = Stub::make(new BlacklistCheck(), [
+      'isBlacklisted' => function ($address) {
+        return $address === 'to2@example.com';
+      },
+    ], $this);
+    $mailer = Stub::make(
+      $this->mailer,
+      ['blacklist' => $blacklist, 'errorMapper' => new SendGridMapper()],
+      $this
+    );
+    $result = $mailer->send($this->newsletter, $this->subscriber, $this->getExtraRecipients());
+    verify($result['response'])->false();
+    verify($result['error']->getSubscriberErrors()[0]->getEmail())->equals('to2@example.com');
+  }
+
+  private function getExtraRecipients(): array {
+    return [
+      'recipients' => [
+        'to' => [['address' => 'to2@example.com', 'name' => 'To Two']],
+        'cc' => [['address' => 'cc1@example.com', 'name' => 'Cc One']],
+        'bcc' => [['address' => 'bcc1@example.com', 'name' => '']],
+      ],
+    ];
+  }
 }

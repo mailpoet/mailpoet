@@ -67,10 +67,8 @@ class WordPressMailer extends PHPMailer {
         $this->sourceUrlResolver->resolve()
       ),
     ];
-    // The first To address is the main recipient. The remaining To, CC and BCC addresses
-    // are sent along so the Sending Service can deliver to all of them. Each field is cut
-    // to 5 addresses (the main recipient counts toward To), because the Sending Service
-    // rejects the whole request when a field has more.
+    // The Sending Service rejects the whole request when a field has more than 5 addresses,
+    // so every sending method gets the same cap (the main recipient counts toward To).
     $recipients = [
       'to' => $this->limitRecipients('to', array_slice($toAddresses, 1), self::MAX_RECIPIENTS_PER_FIELD - 1),
       'cc' => $this->limitRecipients('cc', $this->getCcAddresses(), self::MAX_RECIPIENTS_PER_FIELD),
@@ -112,7 +110,7 @@ class WordPressMailer extends PHPMailer {
     $dropped = count($addresses) - $limit;
     if ($dropped > 0) {
       LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SENDING)->warning(
-        'Transactional email recipients over the Sending Service limit were dropped',
+        'Transactional email recipients over the limit of 5 per field were dropped',
         ['field' => $field, 'dropped' => $dropped, 'limit' => $limit]
       );
     }

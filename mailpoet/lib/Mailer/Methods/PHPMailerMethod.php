@@ -4,6 +4,7 @@ namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
+use MailPoet\Mailer\Methods\Common\ExtraRecipients;
 use MailPoet\Mailer\WordPress\PHPMailerLoader;
 use MailPoet\Util\Url;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -49,6 +50,10 @@ abstract class PHPMailerMethod implements MailerMethod {
       $error = $this->errorMapper->getBlacklistError($subscriber);
       return Mailer::formatMailerErrorResult($error);
     }
+    $blacklistedRecipient = ExtraRecipients::findBlacklisted($this->blacklist, $extraParams);
+    if ($blacklistedRecipient !== null) {
+      return Mailer::formatMailerErrorResult($this->errorMapper->getBlacklistError($blacklistedRecipient));
+    }
     try {
       $mailer = $this->configureMailerWithMessage($newsletter, $subscriber, $extraParams);
       $result = $mailer->send();
@@ -67,7 +72,7 @@ abstract class PHPMailerMethod implements MailerMethod {
 
   public function configureMailerWithMessage($newsletter, $subscriber, $extraParams = []) {
     $mailer = $this->mailer;
-    $mailer->clearAddresses();
+    $mailer->clearAllRecipients();
     $mailer->clearCustomHeaders();
     $mailer->isHTML(!empty($newsletter['body']['html']));
     $mailer->CharSet = 'UTF-8'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -75,6 +80,16 @@ abstract class PHPMailerMethod implements MailerMethod {
     $mailer->addReplyTo($this->replyTo['reply_to_email'], $this->replyTo['reply_to_name']);
     $subscriber = $this->processSubscriber($subscriber);
     $mailer->addAddress($subscriber['email'], $subscriber['name']);
+    $extraRecipients = ExtraRecipients::fromExtraParams($extraParams);
+    foreach ($extraRecipients['to'] as $recipient) {
+      $mailer->addAddress($recipient['address'], $recipient['name']);
+    }
+    foreach ($extraRecipients['cc'] as $recipient) {
+      $mailer->addCC($recipient['address'], $recipient['name']);
+    }
+    foreach ($extraRecipients['bcc'] as $recipient) {
+      $mailer->addBCC($recipient['address'], $recipient['name']);
+    }
     $mailer->Subject = (!empty($newsletter['subject'])) ? $newsletter['subject'] : ''; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $mailer->Body = (!empty($newsletter['body']['html'])) ? $newsletter['body']['html'] : $newsletter['body']['text']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     if ($mailer->ContentType !== 'text/plain') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps

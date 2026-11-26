@@ -125,6 +125,27 @@ class SMTPTest extends \MailPoetTest {
     ]);
   }
 
+  public function testItSendsToExtraRecipientsWithoutShowingBcc() {
+    $mailer = $this->mailer->configureMailerWithMessage($this->newsletter, $this->subscriber, [
+      'recipients' => [
+        'to' => [['address' => 'to2@example.com', 'name' => '']],
+        'cc' => [['address' => 'cc1@example.com', 'name' => '']],
+        'bcc' => [['address' => 'bcc1@example.com', 'name' => '']],
+      ],
+    ]);
+    verify($mailer->getAllRecipientAddresses())->equals([
+      'blackhole@mailpoet.com' => true,
+      'to2@example.com' => true,
+      'cc1@example.com' => true,
+      'bcc1@example.com' => true,
+    ]);
+    $mailer->preSend();
+    $message = $mailer->getSentMIMEMessage();
+    verify($message)->stringContainsString('To: Recipient <blackhole@mailpoet.com>, to2@example.com');
+    verify($message)->stringContainsString('Cc: cc1@example.com');
+    verify($message)->stringNotContainsString('bcc1@example.com');
+  }
+
   public function testItCanProcessSubscriber() {
     verify($this->mailer->processSubscriber('test@test.com'))
       ->equals([
