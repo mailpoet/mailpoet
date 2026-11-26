@@ -171,9 +171,13 @@ class EmailPresetsEndpointsTest extends Test {
     wp_set_current_user(0);
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(FeatureFlagEntity::class);
-    $presetIds = get_posts(['post_type' => EmailPresetPostType::NAME, 'post_status' => ['private', 'trash'], 'numberposts' => -1, 'fields' => 'ids']);
+    // Not wp_delete_post(): WooCommerce HPOS blocks it when the ID matches a leftover order.
+    global $wpdb;
+    $presetIds = $wpdb->get_col($wpdb->prepare("SELECT ID FROM {$wpdb->posts} WHERE post_type = %s", EmailPresetPostType::NAME));
+    $wpdb->query($wpdb->prepare("DELETE pm FROM {$wpdb->postmeta} pm JOIN {$wpdb->posts} p ON p.ID = pm.post_id WHERE p.post_type = %s", EmailPresetPostType::NAME));
+    $wpdb->query($wpdb->prepare("DELETE FROM {$wpdb->posts} WHERE post_type = %s", EmailPresetPostType::NAME));
     foreach ($presetIds as $presetId) {
-      wp_delete_post((int)$presetId, true);
+      clean_post_cache((int)$presetId);
     }
     remove_filter('woocommerce_email_editor_post_types', [$this->diContainer->get(EmailEditor::class), 'addEmailPostType']);
     unregister_post_type(EmailPresetPostType::NAME);
