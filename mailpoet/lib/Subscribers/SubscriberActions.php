@@ -143,8 +143,11 @@ class SubscriberActions {
       })
     );
 
-    // resolve confirmation settings from segment-level overrides
-    [$confirmationEmailId, $confirmationPageId] = $this->confirmationEmailResolver->resolveFromSegments($segments);
+    // resolve confirmation settings from segment-level overrides, from the waiting lists if any wait
+    $segmentsToConfirm = array_filter($segments, function (SegmentEntity $segment) use ($segmentIdsToConfirm): bool {
+      return in_array((int)$segment->getId(), $segmentIdsToConfirm, true);
+    });
+    [$confirmationEmailId, $confirmationPageId] = $this->confirmationEmailResolver->resolveFromSegments($segmentsToConfirm ?: $segments);
 
     try {
       if (
