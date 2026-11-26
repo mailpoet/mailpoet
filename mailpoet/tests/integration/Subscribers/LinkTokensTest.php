@@ -8,8 +8,8 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class LinkTokensTest extends \MailPoetTest {
-  private const UPGRADED_TOKEN = 'abcdef-0123456789abcdef012345678';
-  private const OTHER_UPGRADED_TOKEN = 'fedcba-0123456789abcdef012345678';
+  private const UPGRADED_TOKEN = 'abcdef-0123456789abcdef012345678'; // test fixture, gitleaks:allow
+  private const OTHER_UPGRADED_TOKEN = 'fedcba-0123456789abcdef012345678'; // test fixture, gitleaks:allow
 
   /** @var LinkTokens */
   private $linkTokens;
