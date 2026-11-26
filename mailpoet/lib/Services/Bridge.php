@@ -12,6 +12,9 @@ class Bridge {
   const API_KEY_SETTING_NAME = 'mta.mailpoet_api_key';
   const API_KEY_STATE_SETTING_NAME = 'mta.mailpoet_api_key_state';
   const SUBSCRIPTION_TYPE_SETTING_NAME = 'mta.mailpoet_subscription_type';
+  // Refreshed with every key check; it expires when the hourly check for a pending key stops.
+  const REVIEW_STATUS_TRANSIENT_NAME = 'mailpoet_mss_review_status';
+  const REVIEW_STATUS_TRANSIENT_EXPIRATION = 2 * 60 * 60;
   const MANUAL_SUBSCRIPTION_TYPE = 'MANUAL';
   const STRIPE_SUBSCRIPTION_TYPE = 'STRIPE';
   const WCCOM_SUBSCRIPTION_TYPE = 'WCCOM';
@@ -235,10 +238,21 @@ class Bridge {
     if ($storedState === null) {
       return null;
     }
+    $this->storeReviewStatus($key, $storedState);
     if (!self::isMPSendingServiceEnabled() || !self::isPendingApprovalKeyState($storedState)) {
       MailerLog::resumeSendingIfPausedForPendingApproval();
     }
     return $storedState;
+  }
+
+  private function storeReviewStatus($key, array $state): void {
+    $wp = WPFunctions::get();
+    $review = self::isPendingApprovalKeyState($state) ? $this->getApi($key)->getReviewStatus() : null;
+    if ($review) {
+      $wp->setTransient(self::REVIEW_STATUS_TRANSIENT_NAME, $review->toArray(), self::REVIEW_STATUS_TRANSIENT_EXPIRATION);
+    } else {
+      $wp->deleteTransient(self::REVIEW_STATUS_TRANSIENT_NAME);
+    }
   }
 
   public static function isPendingApprovalKeyState(?array $state): bool {

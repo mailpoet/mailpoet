@@ -92,6 +92,8 @@ class API {
   public $urlTemplateMessages = self::API_BASE_URL_V2 . '/template-messages';
   // Bounced recipients report, see getBouncesReport().
   public $urlBouncesReport = self::API_BASE_URL_V2 . '/bounces/report';
+  // Where the review of a plan that is not approved yet stands, see getReviewStatus().
+  public $urlReviewStatus = self::API_BASE_URL_V2 . '/review_status';
   public $urlStats = 'https://bridge.mailpoet.com/api/v0/stats';
   public $urlAuthorizedEmailAddresses = 'https://bridge.mailpoet.com/api/v1/authorized_email_address';
   public $urlAuthorizedSenderDomains = 'https://bridge.mailpoet.com/api/v1/sender_domain';
@@ -342,6 +344,18 @@ class API {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('Stats API call failed. The statistics request to the MailPoet Sending Service did not succeed.', $logData);
     }
     return $isSuccess;
+  }
+
+  /**
+   * Returns null when the plan is not in review or the answer can't be used.
+   */
+  public function getReviewStatus(): ?ReviewStatus {
+    $result = $this->request($this->urlReviewStatus, null, 'GET');
+    if ($this->wp->wpRemoteRetrieveResponseCode($result) !== 200) {
+      return null;
+    }
+    $data = json_decode($this->wp->wpRemoteRetrieveBody($result), true);
+    return is_array($data) ? ReviewStatus::fromArray($data['review'] ?? null) : null;
   }
 
   public function getAuthorizedEmailAddresses(): ?array {
