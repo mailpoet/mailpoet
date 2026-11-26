@@ -105,8 +105,8 @@ Each entry in `unsubscribes` describes a single unsubscribe event. `newsletterId
   'unconfirmed_data' => NULL,
   'source' => 'woocommerce_user',
   'count_confirmations' => '0',
-  'unsubscribe_token' => 'a1b2c3d4e5f6g7h',
-  'link_token' => '0123456789abcdef0123456789abcdef',
+  'unsubscribe_token' => 'a1b2c3d4e5f6g7h', // example value, gitleaks:allow
+  'link_token' => '0123456789abcdef0123456789abcdef', // example value, gitleaks:allow
   'tracking_consent' => 'denied',
   'tracking_consent_updated_at' => '2026-08-20 09:12:44',
   'tracking_consent_method' => 'footer_link',

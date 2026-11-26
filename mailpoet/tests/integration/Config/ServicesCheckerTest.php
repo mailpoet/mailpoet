@@ -470,7 +470,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   }
 
   private function fillPremiumKey() {
-    $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, '123457890abcdef');
+    $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, '123457890abcdef'); // test fixture, gitleaks:allow
   }
 
   private function renderAdminNotices(callable $trigger): string {

@@ -32,7 +32,7 @@ class ServicesTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->servicesEndpoint = $this->diContainer->get(Services::class);
-    $this->data = ['key' => '1234567890abcdef'];
+    $this->data = ['key' => '1234567890abcdef']; // test fixture, gitleaks:allow
     $this->settings = SettingsController::getInstance();
   }
 

@@ -32,7 +32,7 @@ class MailChimpTest extends \MailPoetTest {
   }
 
   public function testItCanGetAPIKey(): void {
-    $validApiKeyFormat = '12345678901234567890123456789012-ab1';
+    $validApiKeyFormat = '12345678901234567890123456789012-ab1'; // test fixture, gitleaks:allow
     // key must consist of two parts separated by hyphen
     verify($this->mailchimp->getAPIKey('invalid_api_key_format'))->false();
     // key must only contain numerals and letters
@@ -50,14 +50,14 @@ class MailChimpTest extends \MailPoetTest {
   }
 
   public function testItRejectsAPIKeyWithExtraCharacters(): void {
-    $validApiKeyFormat = '12345678901234567890123456789012-ab1';
+    $validApiKeyFormat = '12345678901234567890123456789012-ab1'; // test fixture, gitleaks:allow
     verify($this->mailchimp->getAPIKey('key ' . $validApiKeyFormat))->false();
     verify($this->mailchimp->getAPIKey('1' . $validApiKeyFormat))->false();
     verify($this->mailchimp->getAPIKey($validApiKeyFormat . "\n"))->false();
   }
 
   public function testItCanGetDatacenter(): void {
-    $validApiKeyFormat = '12345678901234567890123456789012-ab1';
+    $validApiKeyFormat = '12345678901234567890123456789012-ab1'; // test fixture, gitleaks:allow
     $dataCenter = 'ab1';
     verify($this->mailchimp->getDataCenter($validApiKeyFormat))
       ->equals($dataCenter);

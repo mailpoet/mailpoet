@@ -19,7 +19,7 @@ class PremiumKeyCheckTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
-    $this->premiumKey = '123457890abcdef';
+    $this->premiumKey = '123457890abcdef'; // test fixture, gitleaks:allow
     $cronWorkerScheduler = $this->diContainer->get(CronWorkerScheduler::class);
     $this->worker = new PremiumKeyCheck($this->settings, $cronWorkerScheduler);
   }
