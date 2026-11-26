@@ -325,6 +325,10 @@ class SubscriberActionsTest extends \MailPoetTest {
     $keptSegment = $this->segmentsRepository->createOrUpdate('Product updates');
     $leftSegment = $this->segmentsRepository->createOrUpdate('Weekly digest');
     $newSegment = $this->segmentsRepository->createOrUpdate('Events');
+    // only the waiting lists' confirmation settings apply
+    $keptSegment->setConfirmationEmailId(42);
+    $keptSegment->setConfirmationPageId(7);
+    $newSegment->setConfirmationPageId(9);
     $subscriber = (new SubscriberFactory())
       ->withEmail('left-a-list@example.com')
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
@@ -339,7 +343,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     $confirmationEmailMailer = $this->createMock(ConfirmationEmailMailer::class);
     $confirmationEmailMailer->expects($this->once())
       ->method('sendConfirmationEmailOnce')
-      ->with($this->isInstanceOf(SubscriberEntity::class), null, null, true)
+      ->with($this->isInstanceOf(SubscriberEntity::class), null, 9, true)
       ->willReturn(true);
     $subscriberActions = $this->getServiceWithOverrides(SubscriberActions::class, [
       'confirmationEmailMailer' => $confirmationEmailMailer,
