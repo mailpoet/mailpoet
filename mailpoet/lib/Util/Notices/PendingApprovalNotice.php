@@ -78,11 +78,11 @@ class PendingApprovalNotice {
     // The data attributes are read by the analytics event for the shown status.
     return sprintf(
       '<strong data-mailpoet-review-status="%s" data-reason="%s" data-since="%s" data-public-subscription-id="%s">%s</strong> %s%s<br>%s',
-      esc_attr($review->getStatus()),
-      esc_attr((string)$review->getReason()),
+      $this->wp->escAttr($review->getStatus()),
+      $this->wp->escAttr((string)$review->getReason()),
       // Same format as the account page sends: the review dates are in UTC.
-      esc_attr($since ? $since->format('Y-m-d\TH:i:s.v\Z') : ''),
-      esc_attr((string)$this->settings->get('mta.mailpoet_api_key_state.data.public_subscription_id', null)),
+      $this->wp->escAttr($since ? $since->format('Y-m-d\TH:i:s.v\Z') : ''),
+      $this->wp->escAttr((string)$this->settings->get('mta.mailpoet_api_key_state.data.public_subscription_id', null)),
       $heading,
       $text,
       $whyLink,
