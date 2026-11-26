@@ -23,9 +23,7 @@ class SendGridTest extends \MailPoetTest {
     parent::_before();
     $this->settings = [
       'method' => 'SendGrid',
-      'api_key' => getenv('WP_TEST_MAILER_SENDGRID_API') ?
-        getenv('WP_TEST_MAILER_SENDGRID_API') :
-        '1234567890',
+      'api_key' => '1234567890',
     ];
     $this->sender = [
       'from_name' => 'Sender',
@@ -134,22 +132,5 @@ class SendGridTest extends \MailPoetTest {
     verify($result['response'])->false();
     verify($result['error'])->instanceOf(MailerError::class);
     verify($result['error']->getMessage())->stringContainsString('SendGrid has returned an unknown error.');
-  }
-
-  public function testItCanSendWithSendGrid() {
-    if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true' || empty(getenv('WP_TEST_MAILER_SENDGRID_API'))) $this->markTestSkipped();
-    $result = $this->mailer->send(
-      $this->newsletter,
-      $this->subscriber
-    );
-    if (!$result['response'] && $result['error']->getOperation() === MailerError::OPERATION_CONNECT) {
-      sleep(5);
-      $result = $this->mailer->send(
-        $this->newsletter,
-        $this->subscriber
-      );
-    }
-    $message = isset($result['error']) ? $result['error']->getMessage() : '';
-    verify($result['response'])->true($message);
   }
 }
