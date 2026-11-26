@@ -92,13 +92,15 @@ add_filter('action_scheduler_logger_class', static function () {
 PHP
 
 # After its batch, the Action Scheduler async runner sleeps 5 seconds and starts
-# another runner. Without the sleep and the follow-up runner, only page loads start runners.
-# A runner still queries the database before it claims actions and after it releases
-# them, so CleanupExtension also waits for every runner request in flight: each one has
-# a marker file from when it is sent until its PHP process ends (after the shutdown hook).
-# The request writes "arrived" into it, so a request that never arrives expires sooner.
-mkdir -p /wp-core/wp-content/mailpoet-test-as-runner-requests
-chown www-data:www-data /wp-core/wp-content/mailpoet-test-as-runner-requests
+# another runner. Without the sleep and the follow-up runner, only page loads start them.
+# Runners (Action Scheduler's, MailPoet's cron and AutomateWoo's) still query the database
+# outside an Action Scheduler claim, so CleanupExtension also waits for every background
+# request the site sends to itself: each non-blocking admin-ajax.php request has a marker
+# file from when it is sent until its PHP process ends (after the shutdown hook). The
+# request writes "arrived" into it, so a request that never arrives expires sooner.
+mkdir -p /wp-core/wp-content/mailpoet-test-background-requests
+find /wp-core/wp-content/mailpoet-test-background-requests -mindepth 1 -delete
+chown www-data:www-data /wp-core/wp-content/mailpoet-test-background-requests
 cat > /wp-core/wp-content/mu-plugins/mailpoet-test-action-scheduler-runner.php <<'PHP'
 <?php
 add_filter('action_scheduler_async_request_sleep_seconds', '__return_zero');
@@ -107,19 +109,23 @@ add_filter('action_scheduler_allow_async_request_runner', static function ($allo
   return $isRunnerRequest ? false : $allow;
 });
 
-$mailpoetRunnerRequestsDir = WP_CONTENT_DIR . '/mailpoet-test-as-runner-requests/';
-add_filter('as_async_request_queue_runner_post_args', static function ($args) use ($mailpoetRunnerRequestsDir) {
+$mailpoetBackgroundRequestsDir = WP_CONTENT_DIR . '/mailpoet-test-background-requests/';
+add_filter('http_request_args', static function ($args, $url) use ($mailpoetBackgroundRequestsDir) {
+  $isBackgroundLoopback = !($args['blocking'] ?? true) && strpos($url, admin_url('admin-ajax.php')) === 0;
+  if (!$isBackgroundLoopback || !is_array($args['headers'] ?? [])) {
+    return $args;
+  }
   $requestId = wp_generate_uuid4();
-  touch($mailpoetRunnerRequestsDir . $requestId);
-  $args['body'] = array_merge((array)($args['body'] ?? []), ['mailpoet_test_runner_request' => $requestId]);
+  touch($mailpoetBackgroundRequestsDir . $requestId);
+  $args['headers']['X-MailPoet-Test-Request'] = $requestId;
   return $args;
-});
-$mailpoetRunnerRequestId = $_POST['mailpoet_test_runner_request'] ?? '';
-if (is_string($mailpoetRunnerRequestId) && wp_is_uuid($mailpoetRunnerRequestId, 4) && is_file($mailpoetRunnerRequestsDir . $mailpoetRunnerRequestId)) {
-  file_put_contents($mailpoetRunnerRequestsDir . $mailpoetRunnerRequestId, 'arrived');
-  register_shutdown_function(static function () use ($mailpoetRunnerRequestsDir, $mailpoetRunnerRequestId) {
-    if (is_file($mailpoetRunnerRequestsDir . $mailpoetRunnerRequestId)) {
-      unlink($mailpoetRunnerRequestsDir . $mailpoetRunnerRequestId);
+}, 10, 2);
+$mailpoetBackgroundRequestId = $_SERVER['HTTP_X_MAILPOET_TEST_REQUEST'] ?? '';
+if (is_string($mailpoetBackgroundRequestId) && wp_is_uuid($mailpoetBackgroundRequestId, 4) && is_file($mailpoetBackgroundRequestsDir . $mailpoetBackgroundRequestId)) {
+  file_put_contents($mailpoetBackgroundRequestsDir . $mailpoetBackgroundRequestId, 'arrived');
+  register_shutdown_function(static function () use ($mailpoetBackgroundRequestsDir, $mailpoetBackgroundRequestId) {
+    if (is_file($mailpoetBackgroundRequestsDir . $mailpoetBackgroundRequestId)) {
+      unlink($mailpoetBackgroundRequestsDir . $mailpoetBackgroundRequestId);
     }
   });
 }
