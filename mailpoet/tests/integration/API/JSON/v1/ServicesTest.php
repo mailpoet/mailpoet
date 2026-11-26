@@ -16,6 +16,7 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
+use MailPoet\Services\Bridge\API;
 use MailPoet\Services\CongratulatoryMssEmailController;
 use MailPoet\Services\SubscribersCountReporter;
 use MailPoet\Settings\SettingsController;
@@ -192,6 +193,7 @@ class ServicesTest extends \MailPoetTest {
       Bridge::class,
       [
         'settings' => SettingsController::getInstance(),
+        'getApi' => $this->makeEmpty(API::class),
         'checkMSSKey' => [
           'state' => Bridge::KEY_VALID,
           'data' => ['is_approved' => false],
@@ -239,6 +241,7 @@ class ServicesTest extends \MailPoetTest {
       Bridge::class,
       [
         'settings' => SettingsController::getInstance(),
+        'getApi' => $this->makeEmpty(API::class),
         'checkMSSKey' => [
           'state' => Bridge::KEY_VALID,
           'data' => ['is_approved' => false],
@@ -261,6 +264,7 @@ class ServicesTest extends \MailPoetTest {
       Bridge::class,
       [
         'settings' => SettingsController::getInstance(),
+        'getApi' => $this->makeEmpty(API::class),
         'checkMSSKey' => ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => false]],
       ]
     );

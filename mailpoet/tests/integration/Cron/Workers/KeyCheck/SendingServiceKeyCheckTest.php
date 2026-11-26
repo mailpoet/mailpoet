@@ -10,6 +10,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
+use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Settings as SettingsFactory;
 use MailPoetVendor\Carbon\Carbon;
@@ -124,6 +125,7 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
     return $this->make(Bridge::class, [
       'settings' => $this->diContainer->get(SettingsController::class),
       'checkMSSKey' => $state,
+      'getApi' => $this->makeEmpty(API::class),
     ]);
   }
 

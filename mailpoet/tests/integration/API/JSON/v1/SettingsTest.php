@@ -26,6 +26,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
+use MailPoet\Services\Bridge\API;
 use MailPoet\Services\SubscribersCountReporter;
 use MailPoet\Settings\SettingsChangeHandler;
 use MailPoet\Settings\SettingsController;
@@ -259,6 +260,7 @@ class SettingsTest extends \MailPoetTest {
 
     $bridge = $this->make(Bridge::class, [
       'settings' => $this->settings,
+      'getApi' => $this->makeEmpty(API::class),
       'checkMSSKey' => ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => false]],
     ]);
     $this->endpoint = new Settings(
