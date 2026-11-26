@@ -28,6 +28,8 @@ class AbilityUsageTrackerTest extends \MailPoetTest {
   public function _after(): void {
     // Events left in the queue go to the capture, not to Tracks.
     $this->tracker->flush();
+    // The tracker is a shared DI service.
+    $this->tracker->clearInvalidInputMarkers();
     remove_filter('pre_http_request', [$this, 'captureRequest'], 10);
     AbilitiesTestHelper::disableDraftAbilities();
     wp_set_current_user(0);
@@ -114,16 +116,27 @@ class AbilityUsageTrackerTest extends \MailPoetTest {
     $this->tracker->flush();
     verify($this->requests)->arrayCount(0);
 
-    // The REST API validates the input more than once per call.
+    // The REST API validates the input more than once per request. Under WP-CLI each event
+    // is flushed right away, so a flush must not end the call.
     $this->loginAsAdmin();
     $this->tracker->recordInvalidInput($error, 'abc', 'mailpoet/get-newsletter-draft');
+    $this->tracker->flush();
     $this->tracker->recordInvalidInput($error, 'abc', 'mailpoet/get-newsletter-draft');
     $this->tracker->flush();
-    verify($this->getSentProps())->equals([[
+    verify($this->requests)->arrayCount(1);
+
+    // The next REST request and the next ability call are recorded again.
+    apply_filters('rest_pre_dispatch', null, rest_get_server(), new \WP_REST_Request());
+    $this->tracker->recordInvalidInput($error, 'abc', 'mailpoet/get-newsletter-draft');
+    do_action('wp_ability_invoked', 'mailpoet/get-newsletter-draft', 'abc', null);
+    $this->tracker->recordInvalidInput($error, 'abc', 'mailpoet/get-newsletter-draft');
+    $this->tracker->flush();
+    $event = [
       'ability_name' => 'mailpoet__get-newsletter-draft',
       'outcome' => 'error',
       'error_code' => 'ability_invalid_input',
-    ]]);
+    ];
+    verify($this->getSentProps())->equals([$event, $event, $event]);
   }
 
   public function testItRecordsAnExceptionAndRethrowsIt(): void {

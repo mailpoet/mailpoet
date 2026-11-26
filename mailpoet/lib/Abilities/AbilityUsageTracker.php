@@ -50,6 +50,23 @@ class AbilityUsageTracker {
     $this->wp->addAction('wp_after_execute_ability', [$this, 'recordSuccess']);
     // WordPress 7.1+. Input that fails validation never reaches the ability's callback.
     $this->wp->addFilter('wp_ability_validate_input', [$this, 'recordInvalidInput'], PHP_INT_MAX, 3);
+    // A call starts with wp_ability_invoked (WordPress 7.1+). The REST API rejects invalid input before the call
+    // starts, and validates it again after the response for the Allow header, so each REST request starts anew too.
+    $this->wp->addAction('wp_ability_invoked', [$this, 'clearInvalidInputMarkers']);
+    $this->wp->addFilter('rest_pre_dispatch', [$this, 'clearInvalidInputMarkersBeforeRestRequest']);
+  }
+
+  public function clearInvalidInputMarkers(): void {
+    $this->invalidInputRecorded = [];
+  }
+
+  /**
+   * @param mixed $result
+   * @return mixed
+   */
+  public function clearInvalidInputMarkersBeforeRestRequest($result) {
+    $this->clearInvalidInputMarkers();
+    return $result;
   }
 
   /**
@@ -89,7 +106,7 @@ class AbilityUsageTracker {
       !$isValid instanceof \WP_Error
       || !is_string($abilityName)
       || strpos($abilityName, self::ABILITY_PREFIX) !== 0
-      // The REST API validates the input more than once per call, so one error per ability is recorded until the next flush.
+      // The REST API validates the input more than once per request, so one error per ability is recorded per REST request or call.
       || isset($this->invalidInputRecorded[$abilityName])
     ) {
       return $isValid;
@@ -108,7 +125,6 @@ class AbilityUsageTracker {
   public function flush(): void {
     $events = $this->events;
     $this->events = [];
-    $this->invalidInputRecorded = [];
     $this->flushScheduled = false;
     foreach ($events as $event) {
       $this->send($event);
