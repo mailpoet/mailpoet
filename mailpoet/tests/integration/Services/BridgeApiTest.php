@@ -491,4 +491,40 @@ class BridgeApiTest extends \MailPoetTest {
 
     $api->sendTemplateMessages(['format' => API::SENDING_FORMAT_TEMPLATE_BATCH, 'messages' => []]);
   }
+
+  public function testItReturnsTheReviewStatusFromTheBridge() {
+    $this->wpMock->expects($this->once())
+      ->method('wpRemotePost')
+      ->with(
+        'https://public-api.wordpress.com/wpcom/v2/mailpoet-bridge/v2/review_status',
+        $this->callback(function (array $params): bool {
+          return $params['method'] === 'GET' && $params['headers']['Authorization'] === 'Basic ' . base64_encode('api:test-api-key');
+        })
+      )
+      ->willReturn(['response']);
+    $this->wpMock->method('wpRemoteRetrieveResponseCode')->willReturn(200);
+    $this->wpMock->method('wpRemoteRetrieveBody')->willReturn('{"review":{"status":"question","reason":null,"since":"2026-11-20T10:00:00.000Z"}}');
+
+    $review = $this->api->getReviewStatus();
+    $this->assertInstanceOf(ReviewStatus::class, $review);
+    $this->assertSame('question', $review->getStatus());
+  }
+
+  /**
+   * @dataProvider unusableReviewStatusAnswers
+   */
+  public function testItReturnsNoReviewStatusWithoutAUsableAnswer(int $code, string $body) {
+    $this->wpMock->method('wpRemoteRetrieveResponseCode')->willReturn($code);
+    $this->wpMock->method('wpRemoteRetrieveBody')->willReturn($body);
+    $this->assertNull($this->api->getReviewStatus());
+  }
+
+  public static function unusableReviewStatusAnswers(): array {
+    return [
+      'route not released yet' => [404, '{"code":"rest_no_route"}'],
+      'error with a review-like body' => [500, '{"review":{"status":"reviewing","reason":null,"since":null}}'],
+      'not JSON' => [200, '<html>'],
+      'not in review' => [200, '{"review":null}'],
+    ];
+  }
 }

@@ -66,6 +66,10 @@ class BridgeTestMockAPI extends API {
     return true;
   }
 
+  public function getReviewStatus(): ?ReviewStatus {
+    return null;
+  }
+
   public function createAuthorizedSenderDomain(string $domain): array {
     switch ($domain) {
       case 'existing.com':

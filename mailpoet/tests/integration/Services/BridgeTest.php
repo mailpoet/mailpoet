@@ -10,6 +10,7 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Services\Bridge\BridgeTestMockAPI as MockAPI;
+use MailPoet\Services\Bridge\ReviewStatus;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Settings as SettingsFactory;
 use MailPoet\WP\Functions as WPFunctions;
@@ -172,6 +173,43 @@ class BridgeTest extends \MailPoetTest {
     $this->pauseSendingForPendingApproval();
     $this->bridge->storeMSSKeyAndState($this->validKey, ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => false]]);
     verify(MailerLog::isSendingPaused())->true();
+  }
+
+  public function testItStoresTheReviewStatusOfAPendingKey() {
+    $api = $this->createMock(API::class);
+    $api->expects($this->once())
+      ->method('getReviewStatus')
+      ->willReturn(ReviewStatus::fromArray(['status' => 'replied', 'reason' => null, 'since' => '2026-11-21T08:30:00.000Z']));
+    $this->bridge->api = $api;
+
+    $this->bridge->storeMSSKeyAndState($this->validKey, ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => false]]);
+
+    $this->assertSame(
+      ['status' => 'replied', 'reason' => null, 'since' => '2026-11-21T08:30:00.000+00:00'],
+      get_transient(Bridge::REVIEW_STATUS_TRANSIENT_NAME)
+    );
+  }
+
+  public function testItForgetsTheReviewStatusWhenTheBridgeHasNoAnswer() {
+    set_transient(Bridge::REVIEW_STATUS_TRANSIENT_NAME, ['status' => 'reviewing', 'reason' => null, 'since' => null]);
+    $api = $this->createMock(API::class);
+    $api->method('getReviewStatus')->willReturn(null);
+    $this->bridge->api = $api;
+
+    $this->bridge->storeMSSKeyAndState($this->validKey, ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => false]]);
+
+    $this->assertFalse(get_transient(Bridge::REVIEW_STATUS_TRANSIENT_NAME));
+  }
+
+  public function testItDoesNotAskForTheReviewStatusOfAnApprovedKey() {
+    set_transient(Bridge::REVIEW_STATUS_TRANSIENT_NAME, ['status' => 'reviewing', 'reason' => null, 'since' => null]);
+    $api = $this->createMock(API::class);
+    $api->expects($this->never())->method('getReviewStatus');
+    $this->bridge->api = $api;
+
+    $this->bridge->storeMSSKeyAndState($this->validKey, ['state' => Bridge::KEY_VALID, 'data' => ['is_approved' => true]]);
+
+    $this->assertFalse(get_transient(Bridge::REVIEW_STATUS_TRANSIENT_NAME));
   }
 
   public function testItKeepsSendingPausedWhenStoringPendingMSSKeyStateFlaggedAsString() {
