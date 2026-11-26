@@ -92,10 +92,13 @@ add_filter('action_scheduler_logger_class', static function () {
 PHP
 
 # After its batch, the Action Scheduler async runner sleeps 5 seconds and starts
-# another runner. CleanupExtension waits only for claimed actions, so it can restore
-# the database during that sleep, and the next runner then fails on a missing table.
-# Without the sleep and the follow-up runner, the runner ends right after its batch,
-# which CleanupExtension waits for. Page loads still start runners as before.
+# another runner. Without the sleep and the follow-up runner, only page loads start runners.
+# A runner still queries the database before it claims actions and after it releases
+# them, so CleanupExtension also waits for every runner request in flight: each one has
+# a marker file from when it is sent until its PHP process ends (after the shutdown hook).
+# The request writes "arrived" into it, so a request that never arrives expires sooner.
+mkdir -p /wp-core/wp-content/mailpoet-test-as-runner-requests
+chown www-data:www-data /wp-core/wp-content/mailpoet-test-as-runner-requests
 cat > /wp-core/wp-content/mu-plugins/mailpoet-test-action-scheduler-runner.php <<'PHP'
 <?php
 add_filter('action_scheduler_async_request_sleep_seconds', '__return_zero');
@@ -103,6 +106,23 @@ add_filter('action_scheduler_allow_async_request_runner', static function ($allo
   $isRunnerRequest = ($_REQUEST['action'] ?? '') === 'as_async_request_queue_runner';
   return $isRunnerRequest ? false : $allow;
 });
+
+$mailpoetRunnerRequestsDir = WP_CONTENT_DIR . '/mailpoet-test-as-runner-requests/';
+add_filter('as_async_request_queue_runner_post_args', static function ($args) use ($mailpoetRunnerRequestsDir) {
+  $requestId = wp_generate_uuid4();
+  touch($mailpoetRunnerRequestsDir . $requestId);
+  $args['body'] = array_merge((array)($args['body'] ?? []), ['mailpoet_test_runner_request' => $requestId]);
+  return $args;
+});
+$mailpoetRunnerRequestId = $_POST['mailpoet_test_runner_request'] ?? '';
+if (is_string($mailpoetRunnerRequestId) && wp_is_uuid($mailpoetRunnerRequestId, 4) && is_file($mailpoetRunnerRequestsDir . $mailpoetRunnerRequestId)) {
+  file_put_contents($mailpoetRunnerRequestsDir . $mailpoetRunnerRequestId, 'arrived');
+  register_shutdown_function(static function () use ($mailpoetRunnerRequestsDir, $mailpoetRunnerRequestId) {
+    if (is_file($mailpoetRunnerRequestsDir . $mailpoetRunnerRequestId)) {
+      unlink($mailpoetRunnerRequestsDir . $mailpoetRunnerRequestId);
+    }
+  });
+}
 PHP
 
 # Messages from outside our code that the site logs as PHP errors, which fail the tests.

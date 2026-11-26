@@ -19,6 +19,12 @@ class CleanupExtension extends Extension {
   const ACTION_SCHEDULER_ACTIONS_TABLE = 'mp_actionscheduler_actions';
   const ACTION_SCHEDULER_DRAIN_TIMEOUT_SECONDS = 10;
   const ACTION_SCHEDULER_DRAIN_POLL_MICROSECONDS = 50000; // 50ms
+  // Written by the mailpoet-test-action-scheduler-runner mu-plugin (tests_env docker-entrypoint.sh).
+  const ACTION_SCHEDULER_RUNNER_REQUESTS_PATH = '/wp-core/wp-content/mailpoet-test-as-runner-requests';
+  // Older markers belong to requests that never arrived (a loopback normally arrives in
+  // milliseconds) or died (Action Scheduler's runner time limit is 30 seconds).
+  const ACTION_SCHEDULER_RUNNER_REQUEST_ARRIVAL_SECONDS = 5;
+  const ACTION_SCHEDULER_RUNNER_REQUEST_MAX_AGE_SECONDS = 60;
 
   public static $events = [
     Events::SUITE_BEFORE => 'backupDatabase',
@@ -143,12 +149,15 @@ class CleanupExtension extends Extension {
    * exception is logged and fails an unrelated test via ErrorsExtension. Wait for any active
    * runner to finish before restoring so the row is still there when it writes its result.
    *
+   * A runner also queries the database before it claims actions and after it releases them,
+   * so wait for every runner request in flight too, not only for active claims.
+   *
    * A short timeout keeps a genuinely stuck runner from ever hanging the suite; the next
    * restore wipes its rows anyway, so the worst case is a single test paying the timeout.
    */
   private function waitForActionSchedulerToFinish(): void {
     $deadline = microtime(true) + self::ACTION_SCHEDULER_DRAIN_TIMEOUT_SECONDS;
-    while ($this->hasActiveActionSchedulerClaim()) {
+    while ($this->hasActiveActionSchedulerClaim() || $this->hasActionSchedulerRunnerRequestInFlight()) {
       if (microtime(true) >= $deadline) {
         return;
       }
@@ -181,6 +190,25 @@ class CleanupExtension extends Extension {
     $row = $result->fetch_row();
     $result->free();
     return $row !== null && (int)$row[0] > 0;
+  }
+
+  private function hasActionSchedulerRunnerRequestInFlight(): bool {
+    $markers = glob(self::ACTION_SCHEDULER_RUNNER_REQUESTS_PATH . '/*');
+    foreach ($markers ?: [] as $marker) {
+      $file = new \SplFileInfo($marker);
+      try {
+        $age = time() - $file->getMTime();
+        $maxAge = $file->getSize() > 0
+          ? self::ACTION_SCHEDULER_RUNNER_REQUEST_MAX_AGE_SECONDS
+          : self::ACTION_SCHEDULER_RUNNER_REQUEST_ARRIVAL_SECONDS;
+      } catch (\RuntimeException $e) {
+        continue; // the request ended between glob() and the check
+      }
+      if ($age < $maxAge) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private function createMysqlDumpCommand() {
