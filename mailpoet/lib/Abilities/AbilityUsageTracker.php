@@ -135,6 +135,15 @@ class AbilityUsageTracker {
       'outcome' => $errorCode === null ? 'success' : 'error',
       'error_code' => $errorCode ?? self::NONE,
     ];
+    // A WP-CLI process can serve many calls (the MCP adapter's STDIO server) and may never reach shutdown.
+    if (defined('WP_CLI') && WP_CLI) {
+      try {
+        $this->flush();
+      } catch (\Throwable $e) {
+        // Sent while the ability call is still running, which usage data must never break.
+      }
+      return;
+    }
     if (!$this->flushScheduled) {
       $this->flushScheduled = true;
       $this->wp->addAction('shutdown', [$this, 'flush']);
