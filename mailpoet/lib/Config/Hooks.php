@@ -532,6 +532,23 @@ class Hooks {
       [$this->hooksWooCommerce, 'synchronizeRegisteredCustomer'],
       7
     );
+    // Priority 2: runs after WP::synchronizeUser() unlinks the subscriber on priority 1.
+    $this->wp->addAction(
+      'delete_user',
+      [$this->hooksWooCommerce, 'synchronizeDeletedWpUser'],
+      2
+    );
+    // Priority 11: runs after WPUserSubscriberLink confirms the address on priority 10.
+    $this->wp->addAction(
+      'password_reset',
+      [$this->hooksWooCommerce, 'synchronizeCustomerOnPasswordReset'],
+      11
+    );
+    $this->wp->addAction(
+      'woocommerce_customer_email_verified',
+      [$this->hooksWooCommerce, 'synchronizeConfirmedCustomer'],
+      11
+    );
     $this->wp->addAction(
       'woocommerce_checkout_update_order_meta',
       [$this->hooksWooCommerce, 'synchronizeGuestCustomer'],
