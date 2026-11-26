@@ -195,6 +195,31 @@ class AutomatedLatestContentBlockTest extends \MailPoetTest {
     verify($encodedResult)->stringNotContainsString('POST SENT');
   }
 
+  public function testItRendersOnlyPostsCreatedAfterLastSent() {
+    $notification = $this->createNewsletter('Newsletter', NewsletterEntity::TYPE_NOTIFICATION);
+    $notificationHistory = $this->createNewsletter('Newsletter', NewsletterEntity::TYPE_NOTIFICATION_HISTORY, $notification);
+    $sentPostId = $this->createPost('POST SENT', '2020-03-29 21:01:01');
+    // Existed when the last email was sent but was left out of it, e.g. by the post limit
+    $this->createPost('POST LEFT OUT', '2020-03-29 22:01:01');
+    $newsletterPost = new NewsletterPostEntity($notification, $sentPostId);
+    $this->newsletterPostRepository->persist($newsletterPost);
+    $this->newsletterPostRepository->flush();
+    $newsletterPost->setCreatedAt(new \DateTime('2020-03-30 01:01:01'));
+    $this->newsletterPostRepository->flush();
+    $this->newsletterPostRepository->saveNewestPostIdAtSend((int)$notification->getId(), $this->newsletterPostRepository->getNewestSitePostId());
+    // Created after the last email, dated after it and 5 hours before it
+    $this->createPost('POST NEW', '2020-03-30 02:01:01');
+    $this->createPost('POST BACKDATED', '2020-03-29 20:01:01');
+
+    $result = $this->block->render($notificationHistory, array_merge($this->alcBlock, ['amount' => '10']));
+    $encodedResult = json_encode($result);
+    verify($encodedResult)->stringContainsString('POST NEW');
+    verify($encodedResult)->stringContainsString('POST BACKDATED');
+    verify($encodedResult)->stringContainsString('POST 4');
+    verify($encodedResult)->stringNotContainsString('POST LEFT OUT');
+    verify($encodedResult)->stringNotContainsString('POST SENT');
+  }
+
   public function testItRendersOnlyPostsNewerThanLastSentAndTakesTimezoneCorrectlyIntoAccount() {
     //get current WP timezone
     $timezone = $this->wp->getOption('timezone_string');
