@@ -2,6 +2,7 @@
 
 namespace MailPoet\Mailer\Methods;
 
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\Common\ExtraRecipients;
@@ -54,10 +55,28 @@ abstract class PHPMailerMethod implements MailerMethod {
     if ($blacklistedRecipient !== null) {
       return Mailer::formatMailerErrorResult($this->errorMapper->getBlacklistError($blacklistedRecipient));
     }
+    $acceptedCount = 0;
+    $rejectedCount = 0;
     try {
       $mailer = $this->configureMailerWithMessage($newsletter, $subscriber, $extraParams);
+      $mailer->action_function = function ($isSent) use (&$acceptedCount, &$rejectedCount): void { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        if ($isSent) {
+          $acceptedCount++;
+        } else {
+          $rejectedCount++;
+        }
+      };
       $result = $mailer->send();
     } catch (\Exception $e) {
+      // SMTP delivers to the accepted recipients before PHPMailer throws for the rejected ones.
+      // Reporting an error here would make the WordPress mailer fallback send them a second copy.
+      if ($acceptedCount > 0) {
+        LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SENDING)->warning(
+          'Some recipients of an email were rejected by the sending server',
+          ['accepted' => $acceptedCount, 'rejected' => $rejectedCount]
+        );
+        return Mailer::formatMailerSendSuccessResult();
+      }
       return Mailer::formatMailerErrorResult($this->errorMapper->getErrorFromException($e, $subscriber));
     }
     if ($result === true) {

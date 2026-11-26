@@ -199,6 +199,43 @@ class PHPMailTest extends \MailPoetTest {
     verify($result['error']->getSubscriberErrors()[0]->getEmail())->equals('bcc1@example.com');
   }
 
+  public function testItReportsSuccessWhenTheServerRejectsOnlySomeRecipients() {
+    $this->mailer->mailer = $this->getMailerThatRejects(['cc1@example.com']);
+    $result = $this->mailer->send($this->newsletter, $this->subscriber, $this->getExtraRecipients());
+    verify($result['response'])->true();
+  }
+
+  public function testItReportsAnErrorWhenTheServerRejectsEveryRecipient() {
+    $this->mailer->mailer = $this->getMailerThatRejects(['blackhole@mailpoet.com', 'to2@example.com', 'cc1@example.com', 'bcc1@example.com']);
+    $result = $this->mailer->send($this->newsletter, $this->subscriber, $this->getExtraRecipients());
+    verify($result['response'])->false();
+  }
+
+  /**
+   * @param string[] $rejected
+   */
+  private function getMailerThatRejects(array $rejected): PHPMailer {
+    return new class(true, $rejected) extends PHPMailer {
+      /** @var string[] */
+      private $rejected;
+
+      public function __construct(
+        $exceptions,
+        array $rejected
+      ) {
+        parent::__construct($exceptions);
+        $this->rejected = $rejected;
+      }
+
+      public function send() {
+        foreach (array_keys($this->getAllRecipientAddresses()) as $address) {
+          $this->doCallback(!in_array($address, $this->rejected, true), [[$address, '']], [], [], '', '', '', []);
+        }
+        throw new \PHPMailer\PHPMailer\Exception('SMTP Error: The following recipients failed', PHPMailer::STOP_CONTINUE);
+      }
+    };
+  }
+
   private function getExtraRecipients(): array {
     return [
       'recipients' => [

@@ -110,7 +110,7 @@ class WordPressMailer extends PHPMailer {
     $dropped = count($addresses) - $limit;
     if ($dropped > 0) {
       LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SENDING)->warning(
-        'Transactional email recipients over the limit of 5 per field were dropped',
+        'Transactional email recipients over the per-field limit were dropped',
         ['field' => $field, 'dropped' => $dropped, 'limit' => $limit]
       );
     }
