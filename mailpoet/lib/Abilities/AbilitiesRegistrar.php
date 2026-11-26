@@ -42,13 +42,17 @@ class AbilitiesRegistrar {
   /** @var ContainerWrapper */
   private $container;
 
+  /** @var AbilityUsageTracker */
+  private $usageTracker;
+
   public function __construct(
     WPFunctions $wp,
     FeaturesController $featuresController,
     SendingStatusAbility $sendingStatusAbility,
     UnsubscribeTrendAbility $unsubscribeTrendAbility,
     RecentNewslettersAbility $recentNewslettersAbility,
-    ContainerWrapper $container
+    ContainerWrapper $container,
+    AbilityUsageTracker $usageTracker
   ) {
     $this->wp = $wp;
     $this->featuresController = $featuresController;
@@ -58,11 +62,13 @@ class AbilitiesRegistrar {
       $recentNewslettersAbility,
     ];
     $this->container = $container;
+    $this->usageTracker = $usageTracker;
   }
 
   public function init(): void {
     $this->wp->addAction('wp_abilities_api_categories_init', [$this, 'registerCategory']);
     $this->wp->addAction('wp_abilities_api_init', [$this, 'registerAbilities']);
+    $this->usageTracker->init();
   }
 
   public function registerCategory(): void {
@@ -81,9 +87,11 @@ class AbilitiesRegistrar {
       }
     }
     foreach ($abilities as $ability) {
+      $args = $ability->getRegistrationArgs();
+      $args['execute_callback'] = $this->usageTracker->wrapExecuteCallback($ability->getName(), $args['execute_callback']);
       $this->wp->registerAbility(
         $ability->getName(),
-        array_merge($ability->getRegistrationArgs(), ['category' => self::CATEGORY])
+        array_merge($args, ['category' => self::CATEGORY])
       );
     }
   }

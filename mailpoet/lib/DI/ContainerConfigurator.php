@@ -33,6 +33,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Abilities\AbilitiesRegistrar::class)
       ->setPublic(true)
       ->setArgument('$container', new Reference(ContainerWrapper::class));
+    $container->autowire(\MailPoet\Abilities\AbilityUsageTracker::class)->setPublic(true);
     $container->autowire(\MailPoet\Abilities\CreateNewsletterDraftAbility::class)->setPublic(true);
     $container->autowire(\MailPoet\Abilities\GetNewsletterDraftAbility::class)->setPublic(true);
     $container->autowire(\MailPoet\Abilities\NewsletterDraftBlocks::class)->setPublic(true);
