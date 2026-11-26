@@ -9,8 +9,9 @@ if (!defined('ABSPATH')) exit;
 
 /**
  * Sends a Tracks event for calls of MailPoet abilities on sites that opted in to analytics:
- * successful calls, and errors and exceptions of the ability's callback. Calls without permission
- * and input or output that fails validation are not recorded. Only the ability name and the
+ * successful calls, errors and exceptions of the ability's callback (only for abilities registered
+ * by AbilitiesRegistrar) and, on WordPress 7.1+, input that fails validation. Calls without
+ * permission and output that fails validation are not recorded. Only the ability name and the
  * outcome are sent, never the input or the output.
  * The props follow WooCommerce's `ability_called` event.
  */
@@ -30,6 +31,9 @@ class AbilityUsageTracker {
   /** @var array<int, array{public_id: string, ability_name: string, outcome: string, error_code: string}> */
   private $events = [];
 
+  /** @var array<string, true> */
+  private $invalidInputRecorded = [];
+
   /** @var bool */
   private $flushScheduled = false;
 
@@ -44,6 +48,8 @@ class AbilityUsageTracker {
   public function init(): void {
     // Fires after the output was validated, so only for calls that succeeded.
     $this->wp->addAction('wp_after_execute_ability', [$this, 'recordSuccess']);
+    // WordPress 7.1+. Input that fails validation never reaches the ability's callback.
+    $this->wp->addFilter('wp_ability_validate_input', [$this, 'recordInvalidInput'], PHP_INT_MAX, 3);
   }
 
   /**
@@ -72,9 +78,37 @@ class AbilityUsageTracker {
     }
   }
 
+  /**
+   * @param true|\WP_Error $isValid
+   * @param mixed $input
+   * @param mixed $abilityName
+   * @return true|\WP_Error
+   */
+  public function recordInvalidInput($isValid, $input, $abilityName) {
+    if (
+      !$isValid instanceof \WP_Error
+      || !is_string($abilityName)
+      || strpos($abilityName, self::ABILITY_PREFIX) !== 0
+      // The REST API validates the input more than once per call, so one error per ability is recorded until the next flush.
+      || isset($this->invalidInputRecorded[$abilityName])
+    ) {
+      return $isValid;
+    }
+    // The REST API validates the input before it checks permissions. Callers who may not run the ability aren't recorded,
+    // like for valid input. The permission callbacks of MailPoet abilities only check capabilities, not the input.
+    $ability = $this->wp->getAbility($abilityName);
+    if (!$ability || $ability->check_permissions($input) !== true) {
+      return $isValid;
+    }
+    $this->invalidInputRecorded[$abilityName] = true;
+    $this->record($abilityName, $this->getErrorCode($isValid));
+    return $isValid;
+  }
+
   public function flush(): void {
     $events = $this->events;
     $this->events = [];
+    $this->invalidInputRecorded = [];
     $this->flushScheduled = false;
     foreach ($events as $event) {
       $this->send($event);

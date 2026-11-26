@@ -90,6 +90,42 @@ class AbilityUsageTrackerTest extends \MailPoetTest {
     ]]);
   }
 
+  public function testItSendsOneEventForInvalidInputOverRest(): void {
+    $this->loginAsAdmin();
+    $response = rest_do_request(new \WP_REST_Request('GET', '/wp-abilities/v1/abilities/mailpoet/get-newsletter-draft/run'));
+    verify($response->get_status())->equals(400);
+    $this->tracker->flush();
+
+    // WordPress before 7.1 has no hook for input that fails validation.
+    $expected = version_compare(get_bloginfo('version'), '7.1', '>=') ? [[
+      'ability_name' => 'mailpoet__get-newsletter-draft',
+      'outcome' => 'error',
+      'error_code' => 'ability_invalid_input',
+    ]] : [];
+    verify($this->getSentProps())->equals($expected);
+  }
+
+  public function testItRecordsInvalidInputOnceAndOnlyForCallersWithPermission(): void {
+    // Called directly, because WordPress before 7.1 doesn't apply the filter.
+    $error = new \WP_Error('ability_invalid_input');
+    // The REST API validates the input before it checks permissions.
+    $result = $this->tracker->recordInvalidInput($error, 'abc', 'mailpoet/get-newsletter-draft');
+    verify($result)->same($error);
+    $this->tracker->flush();
+    verify($this->requests)->arrayCount(0);
+
+    // The REST API validates the input more than once per call.
+    $this->loginAsAdmin();
+    $this->tracker->recordInvalidInput($error, 'abc', 'mailpoet/get-newsletter-draft');
+    $this->tracker->recordInvalidInput($error, 'abc', 'mailpoet/get-newsletter-draft');
+    $this->tracker->flush();
+    verify($this->getSentProps())->equals([[
+      'ability_name' => 'mailpoet__get-newsletter-draft',
+      'outcome' => 'error',
+      'error_code' => 'ability_invalid_input',
+    ]]);
+  }
+
   public function testItRecordsAnExceptionAndRethrowsIt(): void {
     $callback = $this->tracker->wrapExecuteCallback('mailpoet/test-ability', function () {
       throw new \RuntimeException('Failed');
