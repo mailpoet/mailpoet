@@ -127,8 +127,8 @@ Module.saveTemplate = function (options) {
   });
 };
 
-// Template mode: the body is synced on every save, this adds the thumbnail.
-// Autosave only changes the hidden email, so the template changes only here.
+// Template mode: every save also saves the template body, this adds the
+// thumbnail and the name.
 Module.updateEditedTemplate = function () {
   return fromNewsletter(App.toJSON()).then(function (thumbnail) {
     var data = {
