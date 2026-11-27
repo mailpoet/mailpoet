@@ -149,6 +149,27 @@ Module.updateEditedTemplate = function () {
   });
 };
 
+// Template mode: autosave saves the body, so the thumbnail is updated once
+// the user stops editing. Making a thumbnail on every autosave is too slow.
+Module.scheduleTemplateThumbnail = _.debounce(function () {
+  if (Module.isSavingTemplate) return;
+  fromNewsletter(App.toJSON())
+    .then(function (thumbnail) {
+      return MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
+        endpoint: 'newsletterTemplates',
+        action: 'save',
+        data: {
+          newsletter_id: App.getNewsletter().get('id'),
+          thumbnail_data: thumbnail,
+        },
+      });
+    })
+    .catch(function () {
+      // The template keeps its old thumbnail until the next save.
+    });
+}, 5000);
+
 Module.exportTemplate = function (options) {
   return fromNewsletter(App.toJSON()).then(function (thumbnail) {
     var data = _.extend(options || {}, {
@@ -428,6 +449,7 @@ Module.SaveView = Marionette.View.extend({
     if (Module.isSavingTemplate) return;
     Module.isSavingTemplate = true;
     Module._cancelAutosave();
+    Module.scheduleTemplateThumbnail.cancel();
     Module.save()
       .then(Module.updateEditedTemplate)
       .then(function () {
@@ -721,6 +743,11 @@ Module.autoSave = function () {
     }
     App.getChannel()
       .request('save')
+      .done(function () {
+        if (App.getNewsletter().isTemplate()) {
+          Module.scheduleTemplateThumbnail();
+        }
+      })
       .always(function () {
         Module._cancelAutosave();
       });
