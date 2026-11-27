@@ -18,6 +18,7 @@ use MailPoet\Test\DataFactories\StatisticsUnsubscribes;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\Util\License\Features\Data\Capability;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -93,6 +94,7 @@ class RecentNewslettersAbilityTest extends \MailPoetTest {
         $this->make(CapabilitiesManager::class, [
           'getCapability' => new Capability('detailedAnalytics', Capability::TYPE_BOOLEAN, false),
         ]),
+        $this->diContainer->get(WooCommerceHelper::class),
         $this->diContainer->get(WPFunctions::class)
       ),
       $this->diContainer->get(WPFunctions::class)

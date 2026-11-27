@@ -11,6 +11,7 @@ use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Util\License\Features\CapabilitiesManager;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
@@ -29,6 +30,9 @@ class NewsletterReportSummary {
   /** @var CapabilitiesManager */
   private $capabilitiesManager;
 
+  /** @var WooCommerceHelper */
+  private $wooCommerceHelper;
+
   /** @var WPFunctions */
   private $wp;
 
@@ -36,11 +40,13 @@ class NewsletterReportSummary {
     NewsletterStatisticsRepository $statisticsRepository,
     StatisticsUnsubscribesRepository $unsubscribesRepository,
     CapabilitiesManager $capabilitiesManager,
+    WooCommerceHelper $wooCommerceHelper,
     WPFunctions $wp
   ) {
     $this->statisticsRepository = $statisticsRepository;
     $this->unsubscribesRepository = $unsubscribesRepository;
     $this->capabilitiesManager = $capabilitiesManager;
+    $this->wooCommerceHelper = $wooCommerceHelper;
     $this->wp = $wp;
   }
 
@@ -79,7 +85,7 @@ class NewsletterReportSummary {
         'clicks' => $newsletterStatistics->getClickCount(),
         'click_rate' => $this->getRate($newsletterStatistics->getClickCount(), $trackedSent),
         'revenue' => $revenue ? [
-          'value' => round((float)$revenue->getValue(), 2),
+          'value' => $this->roundPrice((float)$revenue->getValue()),
           'currency' => (string)$revenue->getCurrency(),
           'orders' => (int)$revenue->getOrdersCount(),
         ] : null,
@@ -127,6 +133,14 @@ class NewsletterReportSummary {
         'description' => __('Counts per reason: normal (no longer interested), nosignup, inappropriate, spam, other, unspecified.', 'mailpoet'),
       ],
     ];
+  }
+
+  /**
+   * Rounds an amount to the store's price decimals, as the stats show it. Sums of float
+   * columns otherwise carry noise such as 2160.0000000002. Call it only with WooCommerce active.
+   */
+  public function roundPrice(float $amount): float {
+    return round($amount, $this->wooCommerceHelper->wcGetPriceDecimals());
   }
 
   private function getRate(int $count, int $trackedSent): ?float {
