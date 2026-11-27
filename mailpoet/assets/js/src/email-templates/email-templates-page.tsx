@@ -35,6 +35,7 @@ import {
   createClassicTemplate,
   getClassicTemplateEditUrl,
   getClassicTemplates,
+  importClassicTemplate,
   type ClassicTemplate,
 } from './classic-api';
 import { ClassicTemplates } from './classic-templates';
@@ -95,6 +96,7 @@ export function EmailTemplatesPage() {
   const [notice, setNotice] = useState<NoticeState | null>(null);
   const [previewTarget, setPreviewTarget] = useState<EmailPreset | null>(null);
   const [addModal, setAddModal] = useState<'preset' | 'classic' | null>(null);
+  const importInput = useRef<HTMLInputElement>(null);
   const [initialView] = useState<View>(() =>
     getDataViewsPreference(PREFERENCE_KEY, DEFAULT_VIEW, presetFields),
   );
@@ -404,6 +406,25 @@ export function EmailTemplatesPage() {
     [loadClassicTemplates],
   );
 
+  const handleImportClassic = async (file: File) => {
+    try {
+      const template = await importClassicTemplate(file);
+      setNotice({
+        status: 'success',
+        message: sprintf(
+          /* translators: %s is the name of the imported template */
+          __('Template "%s" imported.', 'mailpoet'),
+          template.name,
+        ),
+      });
+      setTab('classic');
+    } catch (error) {
+      setNotice({ status: 'error', message: errorMessage(error) });
+    } finally {
+      loadClassicTemplates();
+    }
+  };
+
   const handleRename = useCallback(
     async (preset: EmailPreset, title: string): Promise<boolean> => {
       try {
@@ -552,11 +573,33 @@ export function EmailTemplatesPage() {
                 >
                   {__('Add classic template', 'mailpoet')}
                 </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    onClose();
+                    importInput.current?.click();
+                  }}
+                  data-automation-id="email_templates_import_classic_template"
+                >
+                  {__('Import classic template', 'mailpoet')}
+                </MenuItem>
               </MenuGroup>
             </>
           )}
         />
       </PageHeader>
+      <input
+        ref={importInput}
+        type="file"
+        accept=".json,application/json"
+        hidden
+        onChange={(event) => {
+          const input = event.target;
+          const file = input.files?.[0];
+          // Lets the same file be picked again.
+          input.value = '';
+          if (file) void handleImportClassic(file);
+        }}
+      />
 
       {loadError && (
         <Notice.Root intent="error">
