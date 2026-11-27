@@ -72,6 +72,9 @@ jobs:
           php-version: '8.3'
           extensions: mbstring, xml, mysql, gd, zip, intl
           tools: wp-cli
+        # Fail here when WP-CLI can't be downloaded, not later with `wp: command not found`.
+        env:
+          fail-fast: true
 
       - name: 'Setup pnpm'
         uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
