@@ -405,6 +405,27 @@ class SendingQueueTest extends \MailPoetTest {
     verify($scheduled->format('Y-m-d H:i:s'))->equals('2018-11-11 11:00:00');
   }
 
+  public function testItRefusesSubscriberTimeZoneSchedulingWithoutPremium(): void {
+    $newsletter = $this->newsletter;
+    $localDate = (new \DateTimeImmutable('+3 days', new \DateTimeZone('UTC')))->format('Y-m-d');
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_IS_SCHEDULED => '1',
+      NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE => TimeZoneCampaignScheduler::SCHEDULE_MODE_SUBSCRIBER_TIMEZONE,
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_DATE => $localDate,
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_TIME => '12:00:00',
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_AT => $localDate . ' 12:00:00',
+    ]);
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->add(['newsletter_id' => $newsletter->getId()]);
+
+    verify($result->status)->equals(APIResponse::STATUS_FORBIDDEN);
+    verify($result->errors[0]['error'])->equals(APIError::FORBIDDEN);
+    $queues = $this->diContainer->get(SendingQueuesRepository::class)->findBy(['newsletter' => $newsletter]);
+    verify($queues)->empty();
+    $this->entityManager->refresh($newsletter);
+    verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_DRAFT);
+  }
+
   public function testItReplacesTimezoneQueuesWhenSchedulingByWebsiteTime(): void {
     $newsletter = $this->newsletter;
     $newsletter->setStatus(NewsletterEntity::STATUS_SCHEDULED);
