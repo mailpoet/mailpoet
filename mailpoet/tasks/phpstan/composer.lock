@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "880fd428d088e6e6384bb8472ed6b9dd",
+    "content-hash": "aab1b4369ade628dc23690c738e71279",
     "packages": [
         {
             "name": "phar-io/version",
@@ -417,16 +417,16 @@
         },
         {
             "name": "woocommerce/php-stubs",
-            "version": "v2026.11.12.2",
+            "version": "v2026.11.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/woocommerce/php-stubs.git",
-                "reference": "f81210eed075ff1108be1cc0bf4a332588199f17"
+                "reference": "27009252ab720365cd866af0b6e04fa047500b17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/woocommerce/php-stubs/zipball/f81210eed075ff1108be1cc0bf4a332588199f17",
-                "reference": "f81210eed075ff1108be1cc0bf4a332588199f17",
+                "url": "https://api.github.com/repos/woocommerce/php-stubs/zipball/27009252ab720365cd866af0b6e04fa047500b17",
+                "reference": "27009252ab720365cd866af0b6e04fa047500b17",
                 "shasum": ""
             },
             "type": "library",
@@ -445,9 +445,9 @@
             ],
             "support": {
                 "issues": "https://github.com/woocommerce/php-stubs/issues",
-                "source": "https://github.com/woocommerce/php-stubs/tree/v2026.11.12.2"
+                "source": "https://github.com/woocommerce/php-stubs/tree/v2026.11.20"
             },
-            "time": "2026-11-12T19:09:39+00:00"
+            "time": "2026-11-20T03:05:50+00:00"
         }
     ],
     "packages-dev": [],
