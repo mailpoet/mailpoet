@@ -54,6 +54,14 @@ class ScheduleEmailUsingGutenbergCest {
     $i->click('//button[contains(., "Send:")]', '.mailpoet-send-panel');
     $i->waitForElementVisible('.components-datetime');
 
+    $i->wantTo('See that sending in each subscriber’s time zone is locked without Premium');
+    $i->click('[data-automation-id="email-schedule-mode-subscriber-timezone"]');
+    $i->waitForElementVisible('.mailpoet-premium-modal');
+    $i->click('Cancel', '.mailpoet-premium-modal-footer');
+    $i->waitForElementNotVisible('.mailpoet-premium-modal');
+    $i->dontSeeCheckboxIsChecked('[data-automation-id="email-schedule-mode-subscriber-timezone"]');
+    $i->waitForElementVisible('.components-datetime');
+
     // A few days out so this never lands on a past date, regardless of when the
     // suite runs. Year and month are set before day so the day field's max-days
     // validation already matches the target month.
