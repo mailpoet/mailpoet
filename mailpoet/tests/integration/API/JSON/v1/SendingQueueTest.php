@@ -15,7 +15,6 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Newsletter\Sending\OverdueCampaignHold;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -208,7 +207,6 @@ class SendingQueueTest extends \MailPoetTest {
       'capabilitiesManager' => Stub::makeEmpty(CapabilitiesManager::class, [
         'getCapability' => new Capability('sendByTimezone', Capability::TYPE_BOOLEAN, false),
       ]),
-      'featuresController' => Stub::make(FeaturesController::class, ['isSupported' => true]),
       'wp' => Stub::make(WPFunctions::class, ['wpTimezone' => new \DateTimeZone('Europe/Bratislava')]),
     ]);
     $scheduler->schedule($newsletter);
@@ -1354,7 +1352,6 @@ class SendingQueueTest extends \MailPoetTest {
       'capabilitiesManager' => Stub::makeEmpty(CapabilitiesManager::class, [
         'getCapability' => new Capability('sendByTimezone', Capability::TYPE_BOOLEAN, false),
       ]),
-      'featuresController' => Stub::make(FeaturesController::class, ['isSupported' => true]),
       'wp' => Stub::make(WPFunctions::class, ['wpTimezone' => new \DateTimeZone('Europe/Bratislava')]),
     ]);
     $this->entityManager->refresh($newsletter);
@@ -1434,7 +1431,6 @@ class SendingQueueTest extends \MailPoetTest {
         'capabilitiesManager' => Stub::makeEmpty(CapabilitiesManager::class, [
           'getCapability' => new Capability('sendByTimezone', Capability::TYPE_BOOLEAN, false),
         ]),
-        'featuresController' => Stub::make(FeaturesController::class, ['isSupported' => true]),
         'wp' => Stub::make(WPFunctions::class, ['wpTimezone' => new \DateTimeZone('America/New_York')]),
       ]);
     }
