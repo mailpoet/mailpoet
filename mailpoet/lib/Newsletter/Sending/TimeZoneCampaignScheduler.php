@@ -71,11 +71,11 @@ class TimeZoneCampaignScheduler {
    */
   public function schedule(NewsletterEntity $newsletter): SendingQueueEntity {
     if (!$this->isSubscriberTimeZoneMode($newsletter)) {
-      throw new \Exception(__('Send by subscriber time zone is available only for standard newsletters.', 'mailpoet'), 400);
+      throw new \Exception(__('Only newsletters can be sent in each subscriber’s time zone.', 'mailpoet'), 400);
     }
     $capability = $this->capabilitiesManager->getCapability('sendByTimezone');
     if ($capability && $capability->isRestricted) {
-      throw new \Exception(__('Send by subscriber time zone requires a paid MailPoet plan.', 'mailpoet'), 403);
+      throw new \Exception(__('Sending in each subscriber’s time zone needs a paid MailPoet plan.', 'mailpoet'), 403);
     }
     if (!$this->canReplaceScheduledQueues($newsletter)) {
       throw new \Exception(__('This email can no longer be edited because one or more time zone batches have already started.', 'mailpoet'), 400);
