@@ -205,6 +205,20 @@ class PHPMailTest extends \MailPoetTest {
     verify($result['response'])->true();
   }
 
+  public function testItKeepsADeliveryCallbackSetOnTheMailer() {
+    $calls = [];
+    $siteCallback = function (...$args) use (&$calls) {
+      $calls[] = $args;
+    };
+    $this->mailer->mailer = $this->getMailerThatRejects(['cc1@example.com']);
+    $this->mailer->mailer->action_function = $siteCallback; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $this->mailer->send($this->newsletter, $this->subscriber, $this->getExtraRecipients());
+    verify(array_column($calls, 0))->equals([true, true, false, true]);
+    verify($calls[0][1])->equals([['blackhole@mailpoet.com', '']]);
+    verify(count($calls[0]))->equals(8);
+    verify($this->mailer->mailer->action_function)->same($siteCallback); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  }
+
   public function testItReportsAnErrorWhenTheServerRejectsEveryRecipient() {
     $this->mailer->mailer = $this->getMailerThatRejects(['blackhole@mailpoet.com', 'to2@example.com', 'cc1@example.com', 'bcc1@example.com']);
     $result = $this->mailer->send($this->newsletter, $this->subscriber, $this->getExtraRecipients());

@@ -57,13 +57,18 @@ abstract class PHPMailerMethod implements MailerMethod {
     }
     $acceptedCount = 0;
     $rejectedCount = 0;
+    $originalCallback = $this->mailer->action_function; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     try {
       $mailer = $this->configureMailerWithMessage($newsletter, $subscriber, $extraParams);
-      $mailer->action_function = function ($isSent) use (&$acceptedCount, &$rejectedCount): void { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      // A site can set its own delivery callback through the mailpoet_mailer_smtp_instance filter.
+      $mailer->action_function = function ($isSent, ...$args) use (&$acceptedCount, &$rejectedCount, $originalCallback): void { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         if ($isSent) {
           $acceptedCount++;
         } else {
           $rejectedCount++;
+        }
+        if (is_callable($originalCallback)) {
+          call_user_func($originalCallback, $isSent, ...$args);
         }
       };
       $result = $mailer->send();
@@ -78,6 +83,8 @@ abstract class PHPMailerMethod implements MailerMethod {
         return Mailer::formatMailerSendSuccessResult();
       }
       return Mailer::formatMailerErrorResult($this->errorMapper->getErrorFromException($e, $subscriber));
+    } finally {
+      $this->mailer->action_function = $originalCallback; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
     if ($result === true) {
       return Mailer::formatMailerSendSuccessResult();
