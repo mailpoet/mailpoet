@@ -136,20 +136,21 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     verify($deletedTemplate)->null();
   }
 
-  public function testAutosaveInTheEditorDoesNotChangeTheTemplate() {
+  public function testAutosaveInTheEditorSavesTheTemplate() {
     $template = $this->createSavedTemplate('Saved template');
     $endpoint = $this->diContainer->get(NewsletterTemplates::class);
     $newsletterId = $endpoint->edit(['id' => $template->getId()])->data['newsletter_id'];
 
     $this->diContainer->get(NewsletterSaveController::class)->save([
       'id' => $newsletterId,
-      'subject' => 'Unsaved name',
-      'body' => '{"content": "unsaved"}',
+      'subject' => 'Autosaved name',
+      'body' => '{"content":{"type":"container","blocks":[{"type":"text","text":"autosaved"}]}}',
     ]);
+    $endpoint->edit(['id' => $template->getId()]);
 
     $this->entityManager->refresh($template);
-    verify($template->getName())->same('Saved template');
-    verify($template->getBody())->same(['content' => 'original']);
+    verify($template->getName())->same('Autosaved name');
+    verify($template->getBody())->same(['content' => ['type' => 'container', 'blocks' => [['type' => 'text', 'text' => 'autosaved']]]]);
   }
 
   public function testItReplacesTheThumbnailOnEverySave() {
