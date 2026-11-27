@@ -106,18 +106,19 @@ class NewsletterTemplatesRepository extends Repository {
   }
 
   /**
-   * Built-in templates use [type, "all"|"blank"], saved ones use ["saved", type].
+   * Built-in templates use [type, "all"|"blank"], saved ones use ["saved", type],
+   * and the old importer added "saved" last. Copies always get ["saved", type].
    */
   private function getSavedCategories(NewsletterTemplateEntity $template): string {
     $categories = json_decode($template->getCategories(), true);
-    if (!is_array($categories) || !$categories) {
-      return json_encode(['saved', NewsletterEntity::TYPE_STANDARD]) ?: '[]';
+    $type = NewsletterEntity::TYPE_STANDARD;
+    foreach (is_array($categories) ? $categories : [] as $category) {
+      // Recently sent templates use ["recent"] and are deleted by cleanRecentlySent(), so their copies become standard.
+      if (is_string($category) && !in_array($category, ['saved', 'all', 'blank', 'recent'], true)) {
+        $type = $category;
+        break;
+      }
     }
-    if ($categories[0] === 'saved') {
-      return $template->getCategories();
-    }
-    // Recently sent templates use ["recent"] and are deleted by cleanRecentlySent(), so their copies become standard.
-    $type = $template->getReadonly() && is_string($categories[0]) ? $categories[0] : NewsletterEntity::TYPE_STANDARD;
     return json_encode(['saved', $type]) ?: '[]';
   }
 

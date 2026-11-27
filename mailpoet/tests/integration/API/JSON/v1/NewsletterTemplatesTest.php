@@ -244,6 +244,17 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     verify($response->data['categories'])->same('["saved","standard"]');
   }
 
+  public function testItDuplicatesATemplateFromTheOldImporter() {
+    $template = $this->createSavedTemplate('Imported');
+    $template->setCategories('["welcome","saved"]');
+    $this->entityManager->flush();
+    $endpoint = $this->diContainer->get(NewsletterTemplates::class);
+
+    $response = $endpoint->duplicate(['id' => $template->getId()]);
+
+    verify($response->data['categories'])->same('["saved","welcome"]');
+  }
+
   public function testItDeletesTheTemplateEmailWithTheTemplate() {
     $template = $this->createSavedTemplate('Saved template');
     $endpoint = $this->diContainer->get(NewsletterTemplates::class);

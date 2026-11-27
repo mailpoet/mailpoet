@@ -41,10 +41,16 @@ function parseCategories(value: string): string[] {
   }
 }
 
+const nonTypeCategories = ['saved', 'all', 'blank', 'recent'];
+
 // Built-in templates store [type, "all"|"blank"], saved ones ["saved", type].
+// The old importer added "saved" last.
 export function getClassicTemplateType(template: ClassicTemplate): string {
-  const categories = parseCategories(template.categories);
-  return (template.readonly ? categories[0] : categories[1]) ?? 'standard';
+  return (
+    parseCategories(template.categories).find(
+      (category) => !nonTypeCategories.includes(category),
+    ) ?? 'standard'
+  );
 }
 
 export async function getClassicTemplates(): Promise<ClassicTemplate[]> {
@@ -52,7 +58,8 @@ export async function getClassicTemplates(): Promise<ClassicTemplate[]> {
   // Recently sent templates are managed by MailPoet, not by the user.
   return templates.filter(
     (template) =>
-      template.readonly || parseCategories(template.categories)[0] === 'saved',
+      template.readonly ||
+      parseCategories(template.categories).includes('saved'),
   );
 }
 
