@@ -141,7 +141,7 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
 
   private function deleteAllPosts() {
     global $wpdb;
-    $wpdb->query("TRUNCATE TABLE $wpdb->posts");
+    $wpdb->query("DELETE FROM $wpdb->posts");
   }
 
   public function testGetBulkTransformedPosts() {
@@ -232,8 +232,9 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
 
     $this->loginWithRole("editor");
     $result = $this->alcAPI->getPosts(['postStatus' => "any", "contentType" => "post"]);
-    verify($result->data)->arrayCount(2);
+    verify($result->data)->arrayCount(3);
     verify($this->getPostTitles($result->data))->arrayContains($publicPost["post_title"]);
+    verify($this->getPostTitles($result->data))->arrayContains($draftPost["post_title"]);
     verify($this->getPostTitles($result->data))->arrayContains($privatePost["post_title"]);
 
     $user = $this->loginWithRole("administrator");
