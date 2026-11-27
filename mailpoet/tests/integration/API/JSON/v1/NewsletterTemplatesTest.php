@@ -180,6 +180,18 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     verify(file_get_contents($this->thumbnailPath($originalThumbnail)))->same('original');
   }
 
+  public function testSavingTheOriginalKeepsTheCopyThumbnail() {
+    $original = $this->createSavedTemplate('Original');
+    $endpoint = $this->diContainer->get(NewsletterTemplates::class);
+    $originalNewsletterId = $endpoint->edit(['id' => $original->getId()])->data['newsletter_id'];
+    $endpoint->save(['newsletter_id' => $originalNewsletterId, 'thumbnail_data' => $this->thumbnailData('original')]);
+    $copyThumbnail = $endpoint->duplicate(['id' => $original->getId()])->data['thumbnail'];
+
+    $endpoint->save(['newsletter_id' => $originalNewsletterId, 'thumbnail_data' => $this->thumbnailData('changed')]);
+
+    verify(file_get_contents($this->thumbnailPath($copyThumbnail)))->same('original');
+  }
+
   public function testItCreatesOneTemplateEmailAndReusesIt() {
     $template = $this->createSavedTemplate('Saved template');
     $endpoint = $this->diContainer->get(NewsletterTemplates::class);

@@ -152,6 +152,8 @@ class NewsletterTemplates extends APIEndpoint {
     }
 
     $duplicate = $this->newsletterTemplatesRepository->duplicate($template);
+    // The copy needs its own file, because saving the original deletes the old one.
+    $duplicate = $this->thumbnailImageSaver->ensureTemplateThumbnailFile($duplicate, true);
     return $this->successResponse($this->newsletterTemplatesResponseBuilder->build($duplicate));
   }
 
