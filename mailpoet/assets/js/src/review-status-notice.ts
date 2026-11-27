@@ -1,9 +1,8 @@
-import jQuery from 'jquery';
 import { MailPoet } from 'mailpoet';
 
 // Same event and properties as the account page on account.mailpoet.com, so
 // both show which review status customers saw.
-jQuery(() => {
+const trackShownReviewStatus = (): void => {
   const status = document.querySelector<HTMLElement>(
     '[data-mailpoet-review-status]',
   );
@@ -16,4 +15,10 @@ jQuery(() => {
     reason: status.dataset.reason || null,
     since: status.dataset.since || null,
   });
-});
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', trackShownReviewStatus);
+} else {
+  trackShownReviewStatus();
+}
