@@ -118,7 +118,7 @@ type FormField =
 
 const timeZoneField: SelectField = {
   name: 'timezone',
-  label: __('Timezone', 'mailpoet'),
+  label: __('Time zone', 'mailpoet'),
   type: 'select',
   automationId: 'subscriber-timezone',
   placeholder: __('Not set', 'mailpoet'),

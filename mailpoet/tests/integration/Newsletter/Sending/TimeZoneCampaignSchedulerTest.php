@@ -167,7 +167,7 @@ class TimeZoneCampaignSchedulerTest extends \MailPoetTest {
 
     $this->expectException(\Exception::class);
     $this->expectExceptionCode(400);
-    $this->expectExceptionMessageMatches('/lead time/');
+    $this->expectExceptionMessageMatches('/at least 24 hours ahead/');
 
     $this->getScheduler(false, 'UTC')->schedule($newsletter);
   }

@@ -472,12 +472,12 @@ class TimeZoneCampaignScheduler {
     $earliest = $schedule[0]['scheduledAt'];
     $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
     if ($earliest <= $now) {
-      throw new \Exception(__('Subscriber time zone scheduling cannot include time zones that have already passed.', 'mailpoet'), 400);
+      throw new \Exception(__('The selected time has already passed in some subscribers’ time zones. Pick a later date.', 'mailpoet'), 400);
     }
     if ($earliest < $now->modify('+' . self::LEAD_TIME_HOURS . ' hours')) {
       throw new \Exception(sprintf(
         // translators: %d is the minimum number of hours required before the first timezone batch can send.
-        __('Subscriber time zone scheduling requires at least %d hours of lead time.', 'mailpoet'),
+        __('To send in each subscriber’s time zone, schedule the email at least %d hours ahead.', 'mailpoet'),
         self::LEAD_TIME_HOURS
       ), 400);
     }

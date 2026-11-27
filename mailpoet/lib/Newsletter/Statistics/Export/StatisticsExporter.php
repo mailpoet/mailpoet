@@ -151,8 +151,8 @@ class StatisticsExporter {
       __('Unsubscribed', 'mailpoet'),
     ];
     if ($newsletter && $this->isTimeZoneCampaign($newsletter)) {
-      $headers[] = __('Delivery timezone', 'mailpoet');
-      $headers[] = __('Timezone fallback used', 'mailpoet');
+      $headers[] = __('Delivery time zone', 'mailpoet');
+      $headers[] = __('Time zone fallback used', 'mailpoet');
       $headers[] = __('Local send time', 'mailpoet');
     }
     return $headers;
