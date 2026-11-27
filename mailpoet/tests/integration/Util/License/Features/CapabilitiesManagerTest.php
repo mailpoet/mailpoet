@@ -24,6 +24,7 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     $capabilities = $capabilitiesManager->getCapabilities();
     verify($capabilities['mailpoetLogoInEmails']->isRestricted)->true();
     verify($capabilities['detailedAnalytics']->isRestricted)->true();
+    verify($capabilities['sendByTimezone']->isRestricted)->true();
     verify($capabilities['automationSteps']->value)->equals(1);
     verify($capabilities['segmentFilters']->value)->equals(1);
   }
@@ -37,6 +38,7 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     $capabilities = $capabilitiesManager->getCapabilities();
     verify($capabilities['mailpoetLogoInEmails']->isRestricted)->false();
     verify($capabilities['detailedAnalytics']->isRestricted)->false();
+    verify($capabilities['sendByTimezone']->isRestricted)->false();
     verify($capabilities['automationSteps']->value)->equals(1);
     verify($capabilities['segmentFilters']->value)->equals(1);
   }
@@ -126,6 +128,20 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     $capabilitiesManager = $this->getCapabilitiesManager($settings);
     $capabilities = $capabilitiesManager->getCapabilities();
     verify($capabilities['detailedAnalytics']->isRestricted)->false();
+    verify($capabilities['sendByTimezone']->isRestricted)->false();
+  }
+
+  public function testSendByTimezoneIsRestrictedWithoutActivePremiumPlugin() {
+    $settings = $this->createMock(SettingsController::class);
+    $settings->method('get')->willReturnMap([
+      ['mta.mailpoet_api_key_state.data.tier', null, 2],
+      ['mta.mailpoet_api_key_state.data.send_by_timezone', null, true],
+    ]);
+    $servicesChecker = $this->createMock(ServicesChecker::class);
+    $servicesChecker->method('isPremiumPluginActive')->willReturn(false);
+    $capabilitiesManager = $this->getCapabilitiesManager($settings, $servicesChecker);
+    $capabilities = $capabilitiesManager->getCapabilities();
+    verify($capabilities['sendByTimezone']->isRestricted)->true();
   }
 
   public function testAutomationStepsAndSegmentFiltersAreUnlimitedIfNoCapabilities() {
