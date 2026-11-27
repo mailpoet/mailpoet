@@ -221,7 +221,7 @@ class EmailApiController {
     );
   }
 
-  private function updateOption($newsletter, string $optionName, $optionValue): void {
+  private function updateOption(NewsletterEntity $newsletter, string $optionName, $optionValue): void {
     $optionField = $this->newsletterOptionFieldsRepository->findOneBy([
       'name' => $optionName,
       'newsletterType' => $newsletter->getType(),
@@ -231,10 +231,8 @@ class EmailApiController {
       return;
     }
 
-    $option = $this->newsletterOptionsRepository->findOneBy([
-      'newsletter' => $newsletter,
-      'optionField' => $optionField,
-    ]);
+    // Read the entity's options, not the repository: an option created earlier in this request isn't flushed yet.
+    $option = $newsletter->getOption($optionName);
 
     if (!$option) {
       $option = new NewsletterOptionEntity($newsletter, $optionField);

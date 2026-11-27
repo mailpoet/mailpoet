@@ -8,6 +8,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
 use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\NotFoundException;
@@ -371,6 +372,42 @@ class EmailApiControllerTest extends \MailPoetTest {
       verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT))->equals('2024-12-25 19:30:00');
       verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_IS_SCHEDULED))->equals('1');
     });
+  }
+
+  public function testItSavesSubscriberTimeZoneScheduleForANewEmail(): void {
+    $wpPostId = 8;
+    $newsletter = (new NewsletterFactory())
+      ->withWpPostId($wpPostId)
+      ->create();
+    $optionNames = [
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_AT,
+      NewsletterOptionFieldEntity::NAME_IS_SCHEDULED,
+      NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE,
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_DATE,
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_TIME,
+    ];
+    foreach ($optionNames as $optionName) {
+      (new NewsletterOptionField())->findOrCreate($optionName, NewsletterEntity::TYPE_STANDARD);
+    }
+    $this->entityManager->flush();
+
+    // The block editor sends scheduled_at and schedule_mode together, and both set isScheduled.
+    $this->emailApiController->saveEmailData([
+      'id' => $newsletter->getId(),
+      'subject' => 'Test Subject',
+      'preheader' => 'Test Preheader',
+      'scheduled_at' => null,
+      'schedule_mode' => TimeZoneCampaignScheduler::SCHEDULE_MODE_SUBSCRIBER_TIMEZONE,
+      'scheduled_local_date' => '2030-11-30',
+      'scheduled_local_time' => '08:00:00',
+    ], new \WP_Post((object)['ID' => $wpPostId]));
+
+    $this->entityManager->clear();
+    $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_IS_SCHEDULED))->equals('1');
+    verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE))->equals(TimeZoneCampaignScheduler::SCHEDULE_MODE_SUBSCRIBER_TIMEZONE);
+    verify($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_DATE))->equals('2030-11-30');
   }
 
   public function testItUpdatesScheduledAtFromTFormUsingDstOffset(): void {
