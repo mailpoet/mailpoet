@@ -103,10 +103,9 @@ class WordPressMailer extends PHPMailer {
   /**
    * The To addresses after the first, and the CC and BCC addresses, cut to what the sending method accepts.
    * @param array<int, array{0: string, 1?: string}> $toAddresses
-   * @param MailerMethod|null $mailerMethod
    * @return array{to: array<int, array{address: string, name: string}>, cc: array<int, array{address: string, name: string}>, bcc: array<int, array{address: string, name: string}>}
    */
-  private function getExtraRecipients(array $toAddresses, $mailerMethod): array {
+  private function getExtraRecipients(array $toAddresses, ?MailerMethod $mailerMethod): array {
     $lists = [
       'to' => array_slice($toAddresses, 1),
       'cc' => $this->getCcAddresses(),
@@ -121,21 +120,22 @@ class WordPressMailer extends PHPMailer {
       ];
     }
     $maxPerEmail = $this->getMaxRecipientsPerEmail($mailerMethod);
-    $remaining = $maxPerEmail === null ? null : $maxPerEmail - 1;
+    $remaining = $maxPerEmail === null ? PHP_INT_MAX : $maxPerEmail - 1;
     $result = [];
+    $dropped = 0;
     foreach ($lists as $field => $addresses) {
-      $result[$field] = $this->limitRecipients($field, $addresses, $remaining ?? count($addresses));
-      if ($remaining !== null) {
-        $remaining -= count($result[$field]);
-      }
+      $kept = array_slice($addresses, 0, $remaining);
+      $dropped += count($addresses) - count($kept);
+      $remaining -= count($kept);
+      $result[$field] = array_map([$this, 'formatAddressEntry'], $kept);
+    }
+    if ($dropped > 0) {
+      $this->logDroppedRecipients(['dropped' => $dropped, 'limit' => $maxPerEmail]);
     }
     return $result;
   }
 
-  /**
-   * @param MailerMethod|null $mailerMethod
-   */
-  private function getMaxRecipientsPerEmail($mailerMethod): ?int {
+  private function getMaxRecipientsPerEmail(?MailerMethod $mailerMethod): ?int {
     if ($mailerMethod instanceof AmazonSES) {
       return self::AMAZON_SES_MAX_RECIPIENTS_PER_EMAIL;
     }
@@ -153,12 +153,19 @@ class WordPressMailer extends PHPMailer {
   private function limitRecipients(string $field, array $addresses, int $limit): array {
     $dropped = count($addresses) - $limit;
     if ($dropped > 0) {
-      LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SENDING)->warning(
-        'Transactional email recipients over the sending method limit were dropped',
-        ['field' => $field, 'dropped' => $dropped, 'limit' => $limit]
-      );
+      $this->logDroppedRecipients(['field' => $field, 'dropped' => $dropped, 'limit' => $limit]);
     }
     return array_map([$this, 'formatAddressEntry'], array_slice($addresses, 0, $limit));
+  }
+
+  /**
+   * @param array<string, string|int|null> $context Counts only, never addresses.
+   */
+  private function logDroppedRecipients(array $context): void {
+    LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SENDING)->warning(
+      'Transactional email recipients over the sending method limit were dropped',
+      $context
+    );
   }
 
   private function getEmail() {
