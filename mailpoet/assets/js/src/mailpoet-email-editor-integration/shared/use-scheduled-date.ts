@@ -13,7 +13,10 @@ import {
 } from 'common/newsletter-schedule-mode';
 import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
 import type { MailPoetEmailData } from './mailpoet-email-data';
-import { formatScheduledDate } from './format-scheduled-date';
+import {
+  formatLocalScheduledDate,
+  formatScheduledDate,
+} from './format-scheduled-date';
 
 type UseScheduledDate = {
   scheduledDate: string | null;
@@ -120,7 +123,7 @@ export function useScheduledDate(): UseScheduledDate {
     formattedDate = sprintf(
       // translators: %s is a date and time. Example: "July 10, 2026 8:00 am in subscriber’s time zone".
       __('%s in subscriber’s time zone', 'mailpoet'),
-      formatScheduledDate(`${effectiveLocalDate}T${effectiveLocalTime}`),
+      formatLocalScheduledDate(effectiveLocalDate, effectiveLocalTime),
     );
   } else {
     formattedDate = scheduledDate
