@@ -90,11 +90,6 @@ class StandardScheduling extends Component<
 
   isScheduled = () => this.getCurrentValue().isScheduled === '1';
 
-  isTimezoneSchedulingAvailable = () =>
-    MailPoet.FeaturesController.isSupported(
-      MailPoet.FeaturesController.FEATURE_SEND_BY_TIMEZONE,
-    );
-
   isSubscriberTimezoneRestricted = () =>
     !MailPoet.capabilities?.sendByTimezone ||
     MailPoet.capabilities.sendByTimezone.isRestricted;
@@ -265,14 +260,12 @@ class StandardScheduling extends Component<
 
     if (this.isScheduled()) {
       const isSubscriberTimezoneMode =
-        this.isTimezoneSchedulingAvailable() &&
         getScheduleMode(this.getCurrentValue().scheduleMode) ===
-          SCHEDULE_MODE_SUBSCRIBER_TIMEZONE;
+        SCHEDULE_MODE_SUBSCRIBER_TIMEZONE;
 
       schedulingOptions = (
         <>
-          {this.isTimezoneSchedulingAvailable() &&
-            this.renderScheduleModeSelector(isSubscriberTimezoneMode)}
+          {this.renderScheduleModeSelector(isSubscriberTimezoneMode)}
           {isSubscriberTimezoneMode
             ? this.renderSubscriberTimezoneScheduling()
             : this.renderWebsiteTimeScheduling()}
@@ -553,11 +546,8 @@ export const StandardNewsletterFields = {
     newsletter: Partial<NewsLetter> = {},
   ): SendButtonOptions => {
     const isSubscriberTimezoneMode =
-      MailPoet.FeaturesController.isSupported(
-        MailPoet.FeaturesController.FEATURE_SEND_BY_TIMEZONE,
-      ) &&
       getScheduleMode(newsletter.options?.scheduleMode) ===
-        SCHEDULE_MODE_SUBSCRIBER_TIMEZONE;
+      SCHEDULE_MODE_SUBSCRIBER_TIMEZONE;
     // Subscriber timezone campaigns are always scheduled sends; whether the
     // selected local date is still valid is decided by the server, which sees
     // it relative to every subscriber's timezone.

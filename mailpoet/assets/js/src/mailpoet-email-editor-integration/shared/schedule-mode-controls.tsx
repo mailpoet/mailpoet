@@ -13,17 +13,11 @@ import { useScheduledDate } from './use-scheduled-date';
 
 /**
  * Scheduling mode selector (website time vs subscriber's time zone). Shared
- * between the scheduled sidebar row and the review & send panel. Renders
- * nothing when the send_by_timezone feature flag is off.
+ * between the scheduled sidebar row and the review & send panel.
  */
-export function ScheduleModeControls(): JSX.Element | null {
-  const { isTimezoneSchedulingAvailable, scheduleMode, setScheduleMode } =
-    useScheduledDate();
+export function ScheduleModeControls(): JSX.Element {
+  const { scheduleMode, setScheduleMode } = useScheduledDate();
   const [showPremiumModal, setShowPremiumModal] = useState(false);
-
-  if (!isTimezoneSchedulingAvailable) {
-    return null;
-  }
 
   const isRestricted =
     !MailPoet.capabilities?.sendByTimezone ||

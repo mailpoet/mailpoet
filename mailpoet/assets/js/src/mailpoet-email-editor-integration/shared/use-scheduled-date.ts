@@ -3,11 +3,9 @@ import { date as formatWpDate } from '@wordpress/date';
 import { select, dispatch } from '@wordpress/data';
 import { store as coreDataStore, useEntityProp } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
-import { MailPoet } from 'mailpoet';
 import {
   DEFAULT_SCHEDULED_LOCAL_TIME,
   SCHEDULE_MODE_SUBSCRIBER_TIMEZONE,
-  SCHEDULE_MODE_WEBSITE_TIME,
   ScheduleMode,
   getScheduleMode,
   getScheduleModeOptionChanges,
@@ -26,7 +24,6 @@ type UseScheduledDate = {
   scheduledLocalTime: string | null;
   effectiveLocalDate: string;
   effectiveLocalTime: string;
-  isTimezoneSchedulingAvailable: boolean;
   setScheduleMode: (mode: ScheduleMode) => void;
   setScheduledLocalDateTime: (date: string, time: string) => void;
 };
@@ -77,12 +74,7 @@ export function useScheduledDate(): UseScheduledDate {
   );
 
   const scheduledDate = mailpoetEmailData?.scheduled_at || null;
-  const isTimezoneSchedulingAvailable = MailPoet.FeaturesController.isSupported(
-    MailPoet.FeaturesController.FEATURE_SEND_BY_TIMEZONE,
-  );
-  const scheduleMode = isTimezoneSchedulingAvailable
-    ? getScheduleMode(mailpoetEmailData?.schedule_mode)
-    : SCHEDULE_MODE_WEBSITE_TIME;
+  const scheduleMode = getScheduleMode(mailpoetEmailData?.schedule_mode);
   const isSubscriberTimezoneMode =
     scheduleMode === SCHEDULE_MODE_SUBSCRIBER_TIMEZONE;
   const scheduledLocalDate = mailpoetEmailData?.scheduled_local_date || null;
@@ -146,7 +138,6 @@ export function useScheduledDate(): UseScheduledDate {
     scheduledLocalTime,
     effectiveLocalDate,
     effectiveLocalTime,
-    isTimezoneSchedulingAvailable,
     setScheduleMode,
     setScheduledLocalDateTime,
   };
