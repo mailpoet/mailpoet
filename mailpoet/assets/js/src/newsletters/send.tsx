@@ -34,6 +34,7 @@ import { NewsLetter, NewsletterType } from 'common/newsletter';
 import {
   DEFAULT_SCHEDULED_LOCAL_TIME,
   getDefaultScheduledAt,
+  getSubscriberTimezoneDefaultDate,
 } from 'common/newsletter-schedule-mode';
 import { mapFilterType } from '../analytics';
 import { PremiumModal, premiumValidAndActive } from '../common/premium-modal';
@@ -307,7 +308,9 @@ class NewsletterSendComponent extends Component<
         if (wasHeld) {
           item.options = withoutStaleSchedule(item.options, {
             scheduledAt: getDefaultScheduledAt(),
-            scheduledLocalDate: window.mailpoet_tomorrow_date ?? '',
+            scheduledLocalDate: getSubscriberTimezoneDefaultDate(
+              window.mailpoet_tomorrow_date ?? '',
+            ),
             scheduledLocalTime: DEFAULT_SCHEDULED_LOCAL_TIME,
           });
         }

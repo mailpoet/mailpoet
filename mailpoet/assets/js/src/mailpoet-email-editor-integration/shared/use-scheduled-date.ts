@@ -3,18 +3,20 @@ import { date as formatWpDate } from '@wordpress/date';
 import { select, dispatch } from '@wordpress/data';
 import { store as coreDataStore, useEntityProp } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
-import { MailPoet } from 'mailpoet';
 import {
   DEFAULT_SCHEDULED_LOCAL_TIME,
   SCHEDULE_MODE_SUBSCRIBER_TIMEZONE,
-  SCHEDULE_MODE_WEBSITE_TIME,
   ScheduleMode,
   getScheduleMode,
   getScheduleModeOptionChanges,
+  getSubscriberTimezoneDefaultDate,
 } from 'common/newsletter-schedule-mode';
 import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
 import type { MailPoetEmailData } from './mailpoet-email-data';
-import { formatScheduledDate } from './format-scheduled-date';
+import {
+  formatLocalScheduledDate,
+  formatScheduledDate,
+} from './format-scheduled-date';
 
 type UseScheduledDate = {
   scheduledDate: string | null;
@@ -26,7 +28,6 @@ type UseScheduledDate = {
   scheduledLocalTime: string | null;
   effectiveLocalDate: string;
   effectiveLocalTime: string;
-  isTimezoneSchedulingAvailable: boolean;
   setScheduleMode: (mode: ScheduleMode) => void;
   setScheduledLocalDateTime: (date: string, time: string) => void;
 };
@@ -77,12 +78,7 @@ export function useScheduledDate(): UseScheduledDate {
   );
 
   const scheduledDate = mailpoetEmailData?.scheduled_at || null;
-  const isTimezoneSchedulingAvailable = MailPoet.FeaturesController.isSupported(
-    MailPoet.FeaturesController.FEATURE_SEND_BY_TIMEZONE,
-  );
-  const scheduleMode = isTimezoneSchedulingAvailable
-    ? getScheduleMode(mailpoetEmailData?.schedule_mode)
-    : SCHEDULE_MODE_WEBSITE_TIME;
+  const scheduleMode = getScheduleMode(mailpoetEmailData?.schedule_mode);
   const isSubscriberTimezoneMode =
     scheduleMode === SCHEDULE_MODE_SUBSCRIBER_TIMEZONE;
   const scheduledLocalDate = mailpoetEmailData?.scheduled_local_date || null;
@@ -90,7 +86,9 @@ export function useScheduledDate(): UseScheduledDate {
   // Defaults shown by the picker when the local options are not stored yet;
   // used everywhere the local schedule is displayed so the panel stays
   // consistent with what the picker shows.
-  const effectiveLocalDate = scheduledLocalDate || getSiteTomorrowDate();
+  const effectiveLocalDate =
+    scheduledLocalDate ||
+    getSubscriberTimezoneDefaultDate(getSiteTomorrowDate());
   const effectiveLocalTime = scheduledLocalTime || DEFAULT_SCHEDULED_LOCAL_TIME;
 
   const setScheduledDate = (date: string | null) => {
@@ -104,7 +102,7 @@ export function useScheduledDate(): UseScheduledDate {
         scheduledLocalDate: scheduledLocalDate || undefined,
         scheduledLocalTime: scheduledLocalTime || undefined,
       },
-      getSiteTomorrowDate(),
+      getSubscriberTimezoneDefaultDate(getSiteTomorrowDate()),
     );
     editMailpoetData({
       schedule_mode: changes.scheduleMode,
@@ -123,10 +121,9 @@ export function useScheduledDate(): UseScheduledDate {
   let formattedDate;
   if (isSubscriberTimezoneMode) {
     formattedDate = sprintf(
-      // translators: %1$s is a date, %2$s is a time. Example: "2026-07-10 at 08:00 in subscriber’s time zone".
-      __('%1$s at %2$s in subscriber’s time zone', 'mailpoet'),
-      effectiveLocalDate,
-      effectiveLocalTime.slice(0, 5),
+      // translators: %s is a date and time. Example: "July 10, 2026 8:00 am in subscriber’s time zone".
+      __('%s in subscriber’s time zone', 'mailpoet'),
+      formatLocalScheduledDate(effectiveLocalDate, effectiveLocalTime),
     );
   } else {
     formattedDate = scheduledDate
@@ -146,7 +143,6 @@ export function useScheduledDate(): UseScheduledDate {
     scheduledLocalTime,
     effectiveLocalDate,
     effectiveLocalTime,
-    isTimezoneSchedulingAvailable,
     setScheduleMode,
     setScheduledLocalDateTime,
   };

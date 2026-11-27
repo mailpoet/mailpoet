@@ -248,8 +248,8 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     verify($headers)->arrayCount(16);
     verify(array_slice($headers, 0, 13))->equals($exporter->getRecipientHeaders());
     verify(array_slice($headers, 13))->equals([
-      'Delivery timezone',
-      'Timezone fallback used',
+      'Delivery time zone',
+      'Time zone fallback used',
       'Local send time',
     ]);
   }
@@ -284,8 +284,8 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     $exportedRows = $this->parseCsvRows(substr((string)file_get_contents($files[0]), 3));
     verify($exportedRows)->arrayCount(2);
     verify($exportedRows[0])->arrayCount(16);
-    verify($exportedRows[0][13])->equals('Delivery timezone');
-    verify($exportedRows[0][14])->equals('Timezone fallback used');
+    verify($exportedRows[0][13])->equals('Delivery time zone');
+    verify($exportedRows[0][14])->equals('Time zone fallback used');
     verify($exportedRows[0][15])->equals('Local send time');
     verify($exportedRows[1])->arrayCount(16);
     verify($exportedRows[1][13])->equals('Europe/Prague');
@@ -351,8 +351,8 @@ class StatisticsExporterTest extends \MailPoetUnitTest {
     verify($exportedRows)->arrayCount(2);
     verify($exportedRows[0])->arrayCount(16);
     verify(array_slice($exportedRows[0], 13))->equals([
-      'Delivery timezone',
-      'Timezone fallback used',
+      'Delivery time zone',
+      'Time zone fallback used',
       'Local send time',
     ]);
     verify($exportedRows[1])->arrayCount(16);

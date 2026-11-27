@@ -9,7 +9,6 @@ use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
@@ -168,7 +167,7 @@ class TimeZoneCampaignSchedulerTest extends \MailPoetTest {
 
     $this->expectException(\Exception::class);
     $this->expectExceptionCode(400);
-    $this->expectExceptionMessageMatches('/lead time/');
+    $this->expectExceptionMessageMatches('/at least 24 hours ahead/');
 
     $this->getScheduler(false, 'UTC')->schedule($newsletter);
   }
@@ -540,9 +539,6 @@ class TimeZoneCampaignSchedulerTest extends \MailPoetTest {
     return $this->getServiceWithOverrides(TimeZoneCampaignScheduler::class, [
       'capabilitiesManager' => Stub::makeEmpty(CapabilitiesManager::class, [
         'getCapability' => new Capability('sendByTimezone', Capability::TYPE_BOOLEAN, $restricted),
-      ]),
-      'featuresController' => Stub::make(FeaturesController::class, [
-        'isSupported' => true,
       ]),
       'wp' => Stub::make(WPFunctions::class, [
         'wpTimezone' => new \DateTimeZone($siteTimeZone),

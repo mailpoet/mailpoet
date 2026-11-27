@@ -15,7 +15,6 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Newsletter\Sending\OverdueCampaignHold;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -208,7 +207,6 @@ class SendingQueueTest extends \MailPoetTest {
       'capabilitiesManager' => Stub::makeEmpty(CapabilitiesManager::class, [
         'getCapability' => new Capability('sendByTimezone', Capability::TYPE_BOOLEAN, false),
       ]),
-      'featuresController' => Stub::make(FeaturesController::class, ['isSupported' => true]),
       'wp' => Stub::make(WPFunctions::class, ['wpTimezone' => new \DateTimeZone('Europe/Bratislava')]),
     ]);
     $scheduler->schedule($newsletter);
@@ -405,6 +403,27 @@ class SendingQueueTest extends \MailPoetTest {
     $scheduled = $rescheduledTask->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduled);
     verify($scheduled->format('Y-m-d H:i:s'))->equals('2018-11-11 11:00:00');
+  }
+
+  public function testItRefusesSubscriberTimeZoneSchedulingWithoutPremium(): void {
+    $newsletter = $this->newsletter;
+    $localDate = (new \DateTimeImmutable('+3 days', new \DateTimeZone('UTC')))->format('Y-m-d');
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_IS_SCHEDULED => '1',
+      NewsletterOptionFieldEntity::NAME_SCHEDULE_MODE => TimeZoneCampaignScheduler::SCHEDULE_MODE_SUBSCRIBER_TIMEZONE,
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_DATE => $localDate,
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_LOCAL_TIME => '12:00:00',
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_AT => $localDate . ' 12:00:00',
+    ]);
+
+    $result = $this->diContainer->get(SendingQueueAPI::class)->add(['newsletter_id' => $newsletter->getId()]);
+
+    verify($result->status)->equals(APIResponse::STATUS_FORBIDDEN);
+    verify($result->errors[0]['error'])->equals(APIError::FORBIDDEN);
+    $queues = $this->diContainer->get(SendingQueuesRepository::class)->findBy(['newsletter' => $newsletter]);
+    verify($queues)->empty();
+    $this->entityManager->refresh($newsletter);
+    verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_DRAFT);
   }
 
   public function testItReplacesTimezoneQueuesWhenSchedulingByWebsiteTime(): void {
@@ -1354,7 +1373,6 @@ class SendingQueueTest extends \MailPoetTest {
       'capabilitiesManager' => Stub::makeEmpty(CapabilitiesManager::class, [
         'getCapability' => new Capability('sendByTimezone', Capability::TYPE_BOOLEAN, false),
       ]),
-      'featuresController' => Stub::make(FeaturesController::class, ['isSupported' => true]),
       'wp' => Stub::make(WPFunctions::class, ['wpTimezone' => new \DateTimeZone('Europe/Bratislava')]),
     ]);
     $this->entityManager->refresh($newsletter);
@@ -1434,7 +1452,6 @@ class SendingQueueTest extends \MailPoetTest {
         'capabilitiesManager' => Stub::makeEmpty(CapabilitiesManager::class, [
           'getCapability' => new Capability('sendByTimezone', Capability::TYPE_BOOLEAN, false),
         ]),
-        'featuresController' => Stub::make(FeaturesController::class, ['isSupported' => true]),
         'wp' => Stub::make(WPFunctions::class, ['wpTimezone' => new \DateTimeZone('America/New_York')]),
       ]);
     }

@@ -25,6 +25,15 @@ class ScheduleNewsletterCest {
     $i->waitForElement('[data-automation-id="newsletter_send_form"]');
     $i->selectOptionInSelect2($segmentName);
     $i->click('[data-automation-id="email-schedule-checkbox"]');
+
+    $i->wantTo('See that sending in each subscriber’s time zone is locked without Premium');
+    $i->seeCheckboxIsChecked('[data-automation-id="email-schedule-mode-website-time"] input');
+    $i->click('[data-automation-id="email-schedule-mode-subscriber-timezone"]');
+    $i->waitForElementVisible('.mailpoet-premium-modal');
+    $i->click('Cancel', '.mailpoet-premium-modal-footer');
+    $i->waitForElementNotVisible('.mailpoet-premium-modal');
+    $i->seeCheckboxIsChecked('[data-automation-id="email-schedule-mode-website-time"] input');
+
     $i->click('select[name=time]');
     $i->selectOption('form select[name=time]', '6:00');
     $i->click('Schedule');

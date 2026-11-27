@@ -691,11 +691,6 @@
       "count": 1
     }
   },
-  "assets/js/src/newsletters/send/standard.tsx": {
-    "@typescript-eslint/no-unsafe-return": {
-      "count": 1
-    }
-  },
   "assets/js/src/newsletters/sending-status/sending-status.tsx": {
     "@wordpress/use-recommended-components": {
       "count": 1

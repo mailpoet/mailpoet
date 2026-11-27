@@ -19,8 +19,8 @@ export function TimezoneCampaignIcon({ newsletterId, sent }: Props) {
       <Icon icon={globe} size={20} style={{ verticalAlign: 'middle' }} />
       <Tooltip place="right" id={tooltipId}>
         {sent
-          ? __("Sent in subscriber's time zone", 'mailpoet')
-          : __("Sends in subscriber's time zone", 'mailpoet')}
+          ? __('Sent in subscriber’s time zone', 'mailpoet')
+          : __('Sends in subscriber’s time zone', 'mailpoet')}
       </Tooltip>
     </span>
   );

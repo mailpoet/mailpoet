@@ -8,7 +8,6 @@ use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\License\Features\CapabilitiesManager;
@@ -35,7 +34,6 @@ class TimeZoneCampaignScheduler {
 
   private CapabilitiesManager $capabilitiesManager;
   private EntityManager $entityManager;
-  private FeaturesController $featuresController;
   private ScheduledTasksRepository $scheduledTasksRepository;
   private ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository;
   private SendingQueuesRepository $sendingQueuesRepository;
@@ -46,7 +44,6 @@ class TimeZoneCampaignScheduler {
   public function __construct(
     CapabilitiesManager $capabilitiesManager,
     EntityManager $entityManager,
-    FeaturesController $featuresController,
     ScheduledTasksRepository $scheduledTasksRepository,
     ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
     SendingQueuesRepository $sendingQueuesRepository,
@@ -56,7 +53,6 @@ class TimeZoneCampaignScheduler {
   ) {
     $this->capabilitiesManager = $capabilitiesManager;
     $this->entityManager = $entityManager;
-    $this->featuresController = $featuresController;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
@@ -74,15 +70,12 @@ class TimeZoneCampaignScheduler {
    * @throws \Exception
    */
   public function schedule(NewsletterEntity $newsletter): SendingQueueEntity {
-    if (!$this->featuresController->isSupported(FeaturesController::FEATURE_SEND_BY_TIMEZONE)) {
-      throw new \Exception(__('Send by subscriber time zone is not available.', 'mailpoet'), 400);
-    }
     if (!$this->isSubscriberTimeZoneMode($newsletter)) {
-      throw new \Exception(__('Send by subscriber time zone is available only for standard newsletters.', 'mailpoet'), 400);
+      throw new \Exception(__('Only newsletters can be sent in each subscriber’s time zone.', 'mailpoet'), 400);
     }
     $capability = $this->capabilitiesManager->getCapability('sendByTimezone');
     if ($capability && $capability->isRestricted) {
-      throw new \Exception(__('Send by subscriber time zone requires a paid MailPoet plan.', 'mailpoet'), 403);
+      throw new \Exception(__('Sending in each subscriber’s time zone needs a paid MailPoet plan.', 'mailpoet'), 403);
     }
     if (!$this->canReplaceScheduledQueues($newsletter)) {
       throw new \Exception(__('This email can no longer be edited because one or more time zone batches have already started.', 'mailpoet'), 400);
@@ -479,12 +472,12 @@ class TimeZoneCampaignScheduler {
     $earliest = $schedule[0]['scheduledAt'];
     $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
     if ($earliest <= $now) {
-      throw new \Exception(__('Subscriber time zone scheduling cannot include time zones that have already passed.', 'mailpoet'), 400);
+      throw new \Exception(__('The selected time has already passed in some subscribers’ time zones. Pick a later date.', 'mailpoet'), 400);
     }
     if ($earliest < $now->modify('+' . self::LEAD_TIME_HOURS . ' hours')) {
       throw new \Exception(sprintf(
         // translators: %d is the minimum number of hours required before the first timezone batch can send.
-        __('Subscriber time zone scheduling requires at least %d hours of lead time.', 'mailpoet'),
+        __('To send in each subscriber’s time zone, schedule the email at least %d hours ahead.', 'mailpoet'),
         self::LEAD_TIME_HOURS
       ), 400);
     }

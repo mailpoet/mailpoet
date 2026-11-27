@@ -17,6 +17,20 @@ export function getDefaultScheduledAt(): string {
   );
 }
 
+/**
+ * Default date for sending in each subscriber's time zone: three days after
+ * the site's today. The earliest batch goes to the time zone furthest ahead
+ * (up to UTC+14), and from a site at UTC-12 only a date three days out is
+ * always at least SUBSCRIBER_TIMEZONE_LEAD_TIME_HOURS away.
+ */
+export function getSubscriberTimezoneDefaultDate(
+  siteTomorrowDate: string,
+): string {
+  const date = new Date(`${siteTomorrowDate}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + 2);
+  return date.toISOString().slice(0, 10);
+}
+
 export function getScheduleMode(scheduleMode?: string | null): ScheduleMode {
   return scheduleMode === SCHEDULE_MODE_SUBSCRIBER_TIMEZONE
     ? SCHEDULE_MODE_SUBSCRIBER_TIMEZONE

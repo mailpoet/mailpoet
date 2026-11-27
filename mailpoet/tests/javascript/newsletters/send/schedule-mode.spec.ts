@@ -5,6 +5,7 @@ import {
   getDefaultScheduledAt,
   getScheduleMode,
   getScheduleModeOptionChanges,
+  getSubscriberTimezoneDefaultDate,
   snapLocalDateTimeToQuarterHour,
 } from '../../../../assets/js/src/common/newsletter-schedule-mode';
 
@@ -67,6 +68,20 @@ describe('newsletter schedule mode helpers', () => {
         scheduledLocalDate: '2026-08-01',
         scheduledLocalTime: '21:45:00',
       });
+    });
+  });
+
+  describe('getSubscriberTimezoneDefaultDate', () => {
+    it('picks two days after the site’s tomorrow', () => {
+      expect(getSubscriberTimezoneDefaultDate('2026-11-28')).to.equal(
+        '2026-11-30',
+      );
+    });
+
+    it('rolls over months and years', () => {
+      expect(getSubscriberTimezoneDefaultDate('2026-12-31')).to.equal(
+        '2027-01-02',
+      );
     });
   });
 

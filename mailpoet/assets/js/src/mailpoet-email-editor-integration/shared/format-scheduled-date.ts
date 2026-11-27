@@ -1,4 +1,4 @@
-import { dateI18n, getDate, getSettings } from '@wordpress/date';
+import { dateI18n, getDate, getSettings, gmdateI18n } from '@wordpress/date';
 
 /**
  * Formats a scheduled_at value (a timezone-less `Y-m-d\TH:i:s` string in the
@@ -13,4 +13,13 @@ export function formatScheduledDate(scheduledDate: string): string {
     getDate(scheduledDate),
     settings.timezone.string,
   );
+}
+
+/**
+ * Formats a local date and time that has no time zone of its own, such as a
+ * send time in each subscriber's time zone. Formatting in UTC keeps the wall
+ * clock as picked, even when it falls in a clock-change gap of the site zone.
+ */
+export function formatLocalScheduledDate(date: string, time: string): string {
+  return gmdateI18n(getSettings().formats.datetime, `${date}T${time}Z`);
 }
