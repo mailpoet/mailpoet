@@ -118,10 +118,9 @@ export function useScheduledDate(): UseScheduledDate {
   let formattedDate;
   if (isSubscriberTimezoneMode) {
     formattedDate = sprintf(
-      // translators: %1$s is a date, %2$s is a time. Example: "2026-07-10 at 08:00 in subscriber’s time zone".
-      __('%1$s at %2$s in subscriber’s time zone', 'mailpoet'),
-      effectiveLocalDate,
-      effectiveLocalTime.slice(0, 5),
+      // translators: %s is a date and time. Example: "July 10, 2026 8:00 am in subscriber’s time zone".
+      __('%s in subscriber’s time zone', 'mailpoet'),
+      formatScheduledDate(`${effectiveLocalDate}T${effectiveLocalTime}`),
     );
   } else {
     formattedDate = scheduledDate
