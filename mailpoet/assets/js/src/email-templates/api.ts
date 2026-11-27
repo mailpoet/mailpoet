@@ -13,6 +13,7 @@ import type { EmailPreset } from 'common/email-presets';
 declare global {
   interface Window {
     mailpoet_email_templates_api: RestApiConfig;
+    mailpoet_email_templates_classic_first?: boolean;
   }
 }
 

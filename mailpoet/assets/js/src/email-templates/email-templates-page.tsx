@@ -84,8 +84,11 @@ async function settleAll(requests: Promise<void>[]): Promise<void> {
 
 type Tab = PresetsGroup | 'classic';
 
+// Users who always pick the classic editor see their templates first.
+const isClassicFirst = !!window.mailpoet_email_templates_classic_first;
+
 export function EmailTemplatesPage() {
-  const [tab, setTab] = useState<Tab>('all');
+  const [tab, setTab] = useState<Tab>(isClassicFirst ? 'classic' : 'all');
   const group: PresetsGroup = tab === 'trash' ? 'trash' : 'all';
   const [classicTemplates, setClassicTemplates] = useState<ClassicTemplate[]>(
     [],
@@ -181,6 +184,7 @@ export function EmailTemplatesPage() {
       automationId: 'filters_classic',
       className: 'mailpoet-dataviews-group-classic',
     };
+    if (isClassicFirst) return [classicTab, ...presetTabs];
     // Trash stays last, next to the presets it belongs to.
     const trashIndex = presetTabs.findIndex((item) => item.name === 'trash');
     return trashIndex === -1
