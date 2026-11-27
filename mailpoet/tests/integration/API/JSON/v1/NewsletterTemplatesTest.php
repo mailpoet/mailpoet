@@ -231,6 +231,19 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     verify($response->data['body'])->same(['content' => 'mailpoet']);
   }
 
+  public function testItDuplicatesARecentlySentTemplateAsAStandardTemplate() {
+    $template = new NewsletterTemplateEntity('Recently sent');
+    $template->setBody(['content' => 'recent']);
+    $template->setCategories(NewsletterTemplatesRepository::RECENTLY_SENT_CATEGORIES);
+    $this->entityManager->persist($template);
+    $this->entityManager->flush();
+    $endpoint = $this->diContainer->get(NewsletterTemplates::class);
+
+    $response = $endpoint->duplicate(['id' => $template->getId()]);
+
+    verify($response->data['categories'])->same('["saved","standard"]');
+  }
+
   public function testItDeletesTheTemplateEmailWithTheTemplate() {
     $template = $this->createSavedTemplate('Saved template');
     $endpoint = $this->diContainer->get(NewsletterTemplates::class);

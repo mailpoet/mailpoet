@@ -113,10 +113,11 @@ class NewsletterTemplatesRepository extends Repository {
     if (!is_array($categories) || !$categories) {
       return json_encode(['saved', NewsletterEntity::TYPE_STANDARD]) ?: '[]';
     }
-    if ($categories[0] === 'saved' || !$template->getReadonly()) {
+    if ($categories[0] === 'saved') {
       return $template->getCategories();
     }
-    $type = is_string($categories[0]) ? $categories[0] : NewsletterEntity::TYPE_STANDARD;
+    // Recently sent templates use ["recent"] and are deleted by cleanRecentlySent(), so their copies become standard.
+    $type = $template->getReadonly() && is_string($categories[0]) ? $categories[0] : NewsletterEntity::TYPE_STANDARD;
     return json_encode(['saved', $type]) ?: '[]';
   }
 
