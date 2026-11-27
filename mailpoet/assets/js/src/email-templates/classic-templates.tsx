@@ -45,7 +45,17 @@ const typeLabels: Record<string, string> = {
   notification: __('Post notification', 'mailpoet'),
   re_engagement: __('Re-engagement email', 'mailpoet'),
   woocommerce: __('WooCommerce', 'mailpoet'),
+  automatic: __('Automatic email', 'mailpoet'),
+  automation: __('Automation email', 'mailpoet'),
+  automation_transactional: __('Automation transactional email', 'mailpoet'),
+  wc_transactional: __('WooCommerce transactional email', 'mailpoet'),
+  other: __('Other', 'mailpoet'),
 };
+
+function getCategory(template: ClassicTemplate): string {
+  const type = getClassicTemplateType(template);
+  return type in typeLabels ? type : 'other';
+}
 
 const fields: Field<ClassicTemplate>[] = [
   {
@@ -87,7 +97,7 @@ const fields: Field<ClassicTemplate>[] = [
     id: 'type',
     label: __('Category', 'mailpoet'),
     enableSorting: false,
-    getValue: ({ item }) => getClassicTemplateType(item),
+    getValue: ({ item }) => getCategory(item),
     elements: Object.entries(typeLabels).map(([value, label]) => ({
       value,
       label,
