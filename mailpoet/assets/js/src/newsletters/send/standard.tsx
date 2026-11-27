@@ -26,6 +26,7 @@ import {
   getDefaultScheduledAt,
   getScheduleMode,
   getScheduleModeOptionChanges,
+  getSubscriberTimezoneDefaultDate,
 } from 'common/newsletter-schedule-mode';
 import { PremiumModal } from 'common/premium-modal';
 import { LockedBadge } from 'common/premium-modal/locked-badge';
@@ -111,7 +112,7 @@ class StandardScheduling extends Component<
           ...getScheduleModeOptionChanges(
             mode,
             oldValue,
-            window.mailpoet_tomorrow_date,
+            getSubscriberTimezoneDefaultDate(window.mailpoet_tomorrow_date),
           ),
         },
       },
@@ -201,7 +202,8 @@ class StandardScheduling extends Component<
             <DateText
               name="scheduledLocalDate"
               value={
-                currentValue.scheduledLocalDate || window.mailpoet_tomorrow_date
+                currentValue.scheduledLocalDate ||
+                getSubscriberTimezoneDefaultDate(window.mailpoet_tomorrow_date)
               }
               onChange={this.handleValueChange}
               displayFormat={dateDisplayFormat}

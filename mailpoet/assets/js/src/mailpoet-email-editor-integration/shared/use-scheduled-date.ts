@@ -9,6 +9,7 @@ import {
   ScheduleMode,
   getScheduleMode,
   getScheduleModeOptionChanges,
+  getSubscriberTimezoneDefaultDate,
 } from 'common/newsletter-schedule-mode';
 import { MAILPOET_EMAIL_POST_TYPE } from '../constants';
 import type { MailPoetEmailData } from './mailpoet-email-data';
@@ -82,7 +83,9 @@ export function useScheduledDate(): UseScheduledDate {
   // Defaults shown by the picker when the local options are not stored yet;
   // used everywhere the local schedule is displayed so the panel stays
   // consistent with what the picker shows.
-  const effectiveLocalDate = scheduledLocalDate || getSiteTomorrowDate();
+  const effectiveLocalDate =
+    scheduledLocalDate ||
+    getSubscriberTimezoneDefaultDate(getSiteTomorrowDate());
   const effectiveLocalTime = scheduledLocalTime || DEFAULT_SCHEDULED_LOCAL_TIME;
 
   const setScheduledDate = (date: string | null) => {
@@ -96,7 +99,7 @@ export function useScheduledDate(): UseScheduledDate {
         scheduledLocalDate: scheduledLocalDate || undefined,
         scheduledLocalTime: scheduledLocalTime || undefined,
       },
-      getSiteTomorrowDate(),
+      getSubscriberTimezoneDefaultDate(getSiteTomorrowDate()),
     );
     editMailpoetData({
       schedule_mode: changes.scheduleMode,
