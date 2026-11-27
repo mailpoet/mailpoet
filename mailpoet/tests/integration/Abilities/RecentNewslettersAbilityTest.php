@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Abilities;
 
 use MailPoet\Abilities\AbilitiesRegistrar;
+use MailPoet\Abilities\NewsletterReportSummary;
 use MailPoet\Abilities\RecentNewslettersAbility;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
@@ -17,6 +18,7 @@ use MailPoet\Test\DataFactories\StatisticsUnsubscribes;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\Util\License\Features\Data\Capability;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -86,11 +88,15 @@ class RecentNewslettersAbilityTest extends \MailPoetTest {
   public function testItAddsUnsubscribeReasonsWithDetailedAnalytics(): void {
     $ability = new RecentNewslettersAbility(
       $this->diContainer->get(NewslettersRepository::class),
-      $this->diContainer->get(NewsletterStatisticsRepository::class),
-      $this->diContainer->get(StatisticsUnsubscribesRepository::class),
-      $this->make(CapabilitiesManager::class, [
-        'getCapability' => new Capability('detailedAnalytics', Capability::TYPE_BOOLEAN, false),
-      ]),
+      new NewsletterReportSummary(
+        $this->diContainer->get(NewsletterStatisticsRepository::class),
+        $this->diContainer->get(StatisticsUnsubscribesRepository::class),
+        $this->make(CapabilitiesManager::class, [
+          'getCapability' => new Capability('detailedAnalytics', Capability::TYPE_BOOLEAN, false),
+        ]),
+        $this->diContainer->get(WooCommerceHelper::class),
+        $this->diContainer->get(WPFunctions::class)
+      ),
       $this->diContainer->get(WPFunctions::class)
     );
 
