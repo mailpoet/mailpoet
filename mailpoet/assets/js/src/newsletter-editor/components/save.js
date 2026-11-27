@@ -424,16 +424,21 @@ Module.SaveView = Marionette.View.extend({
   },
   saveEditedTemplate: function () {
     var editorTop = $('#mailpoet_editor_top');
+    // An older save that finishes last would overwrite the newer template.
+    if (Module.isSavingTemplate) return;
+    Module.isSavingTemplate = true;
     Module._cancelAutosave();
     Module.save()
       .then(Module.updateEditedTemplate)
       .then(function () {
+        Module.isSavingTemplate = false;
         MailPoet.Notice.success(__('Template has been saved.', 'mailpoet'), {
           positionAfter: editorTop,
           scroll: true,
         });
       })
       .catch(function () {
+        Module.isSavingTemplate = false;
         MailPoet.Notice.error(
           __('Template has not been saved, please try again', 'mailpoet'),
           { positionAfter: editorTop, scroll: true },
