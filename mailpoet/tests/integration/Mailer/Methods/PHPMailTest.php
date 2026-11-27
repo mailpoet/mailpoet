@@ -159,6 +159,107 @@ class PHPMailTest extends \MailPoetTest {
     verify($result['error']->getMessage())->stringContainsString('PHPMail has returned an unknown error.');
   }
 
+  public function testItAddsExtraToCcAndBccRecipients() {
+    $mailer = $this->mailer->configureMailerWithMessage(
+      $this->newsletter,
+      $this->subscriber,
+      array_merge($this->extraParams, $this->getExtraRecipients())
+    );
+    verify($mailer->getToAddresses())->equals([
+      ['blackhole@mailpoet.com', 'Recipient'],
+      ['to2@example.com', 'To Two'],
+    ]);
+    verify($mailer->getCcAddresses())->equals([['cc1@example.com', 'Cc One']]);
+    verify($mailer->getBccAddresses())->equals([['bcc1@example.com', '']]);
+  }
+
+  public function testItDoesNotKeepExtraRecipientsForTheNextMessage() {
+    $this->mailer->configureMailerWithMessage($this->newsletter, $this->subscriber, $this->getExtraRecipients());
+    $mailer = $this->mailer->configureMailerWithMessage($this->newsletter, $this->subscriber, $this->extraParams);
+    verify($mailer->getToAddresses())->equals([['blackhole@mailpoet.com', 'Recipient']]);
+    verify($mailer->getCcAddresses())->equals([]);
+    verify($mailer->getBccAddresses())->equals([]);
+    verify($mailer->getAllRecipientAddresses())->equals(['blackhole@mailpoet.com' => true]);
+  }
+
+  public function testItChecksBlacklistForExtraRecipients() {
+    $blacklist = Stub::make(new BlacklistCheck(), [
+      'isBlacklisted' => function ($address) {
+        return $address === 'bcc1@example.com';
+      },
+    ], $this);
+    $mailer = Stub::make(
+      $this->mailer,
+      ['blacklist' => $blacklist, 'errorMapper' => new PHPMailMapper()],
+      $this
+    );
+    $result = $mailer->send($this->newsletter, $this->subscriber, $this->getExtraRecipients());
+    verify($result['response'])->false();
+    verify($result['error'])->instanceOf(MailerError::class);
+    verify($result['error']->getSubscriberErrors()[0]->getEmail())->equals('bcc1@example.com');
+  }
+
+  public function testItReportsSuccessWhenTheServerRejectsOnlySomeRecipients() {
+    $this->mailer->mailer = $this->getMailerThatRejects(['cc1@example.com']);
+    $result = $this->mailer->send($this->newsletter, $this->subscriber, $this->getExtraRecipients());
+    verify($result['response'])->true();
+  }
+
+  public function testItKeepsADeliveryCallbackSetOnTheMailer() {
+    $calls = [];
+    $siteCallback = function (...$args) use (&$calls) {
+      $calls[] = $args;
+    };
+    $this->mailer->mailer = $this->getMailerThatRejects(['cc1@example.com']);
+    $this->mailer->mailer->action_function = $siteCallback; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $this->mailer->send($this->newsletter, $this->subscriber, $this->getExtraRecipients());
+    verify(array_column($calls, 0))->equals([true, true, false, true]);
+    verify($calls[0][1])->equals([['blackhole@mailpoet.com', '']]);
+    verify(count($calls[0]))->equals(8);
+    verify($this->mailer->mailer->action_function)->same($siteCallback); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  }
+
+  public function testItReportsAnErrorWhenTheServerRejectsEveryRecipient() {
+    $this->mailer->mailer = $this->getMailerThatRejects(['blackhole@mailpoet.com', 'to2@example.com', 'cc1@example.com', 'bcc1@example.com']);
+    $result = $this->mailer->send($this->newsletter, $this->subscriber, $this->getExtraRecipients());
+    verify($result['response'])->false();
+  }
+
+  /**
+   * @param string[] $rejected
+   */
+  private function getMailerThatRejects(array $rejected): PHPMailer {
+    return new class(true, $rejected) extends PHPMailer {
+      /** @var string[] */
+      private $rejected;
+
+      public function __construct(
+        $exceptions,
+        array $rejected
+      ) {
+        parent::__construct($exceptions);
+        $this->rejected = $rejected;
+      }
+
+      public function send() {
+        foreach (array_keys($this->getAllRecipientAddresses()) as $address) {
+          $this->doCallback(!in_array($address, $this->rejected, true), [[$address, '']], [], [], '', '', '', []);
+        }
+        throw new \PHPMailer\PHPMailer\Exception('SMTP Error: The following recipients failed', PHPMailer::STOP_CONTINUE);
+      }
+    };
+  }
+
+  private function getExtraRecipients(): array {
+    return [
+      'recipients' => [
+        'to' => [['address' => 'to2@example.com', 'name' => 'To Two']],
+        'cc' => [['address' => 'cc1@example.com', 'name' => 'Cc One']],
+        'bcc' => [['address' => 'bcc1@example.com', 'name' => '']],
+      ],
+    ];
+  }
+
   public function testItCanSend() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $result = $this->mailer->send(

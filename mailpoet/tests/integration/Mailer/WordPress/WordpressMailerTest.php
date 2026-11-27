@@ -8,6 +8,10 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
+use MailPoet\Mailer\Methods\AmazonSES;
+use MailPoet\Mailer\Methods\MailPoet;
+use MailPoet\Mailer\Methods\SendGrid;
+use MailPoet\Mailer\Methods\SMTP;
 use MailPoet\Subscribers\ApiSourcePluginResolver;
 use MailPoet\Subscribers\SourceUrlResolver;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -116,8 +120,9 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->send();
   }
 
-  public function testItCapsToCcAndBccRecipientsToFive() {
+  public function testItCapsToCcAndBccRecipientsToFiveForTheSendingService() {
     $mailer = $this->createMock(Mailer::class);
+    $mailer->mailerMethod = $this->createMock(MailPoet::class);
     $mailer
       ->expects($this->once())
       ->method('send')
@@ -146,6 +151,69 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->Subject = 'Subject';
     $wpMailer->Body = 'Body';
     $wpMailer->isHTML(false);
+    $wpMailer->send();
+  }
+
+  public function testItDoesNotCapRecipientsForSmtp() {
+    $mailer = $this->createMock(Mailer::class);
+    $mailer->mailerMethod = $this->createMock(SMTP::class);
+    $mailer
+      ->expects($this->once())
+      ->method('send')
+      ->with(
+        $this->anything(),
+        $this->anything(),
+        $this->callback(function(array $extraParams): bool {
+          return count($extraParams['recipients']['to']) === 5
+            && count($extraParams['recipients']['cc']) === 6
+            && count($extraParams['recipients']['bcc']) === 6;
+        })
+      )
+      ->willReturn(['response' => true]);
+
+    $wpMailer = $this->createWordPressMailerWithRecipients($this->createMailerFactoryMock($mailer), 6, 6, 6);
+    $wpMailer->send();
+  }
+
+  public function testItCapsAmazonSesAtFiftyRecipientsPerEmail() {
+    $mailer = $this->createMock(Mailer::class);
+    $mailer->mailerMethod = $this->createMock(AmazonSES::class);
+    $mailer
+      ->expects($this->once())
+      ->method('send')
+      ->with(
+        $this->anything(),
+        $this->anything(),
+        $this->callback(function(array $extraParams): bool {
+          return count($extraParams['recipients']['to']) === 29
+            && count($extraParams['recipients']['cc']) === 20
+            && !isset($extraParams['recipients']['bcc']);
+        })
+      )
+      ->willReturn(['response' => true]);
+
+    $wpMailer = $this->createWordPressMailerWithRecipients($this->createMailerFactoryMock($mailer), 30, 30, 5);
+    $wpMailer->send();
+  }
+
+  public function testItCapsSendGridAtOneThousandRecipientsPerEmail() {
+    $mailer = $this->createMock(Mailer::class);
+    $mailer->mailerMethod = $this->createMock(SendGrid::class);
+    $mailer
+      ->expects($this->once())
+      ->method('send')
+      ->with(
+        $this->anything(),
+        $this->anything(),
+        $this->callback(function(array $extraParams): bool {
+          return count($extraParams['recipients']['to']) === 599
+            && count($extraParams['recipients']['cc']) === 400
+            && !isset($extraParams['recipients']['bcc']);
+        })
+      )
+      ->willReturn(['response' => true]);
+
+    $wpMailer = $this->createWordPressMailerWithRecipients($this->createMailerFactoryMock($mailer), 600, 600, 5);
     $wpMailer->send();
   }
 
@@ -440,6 +508,24 @@ class WordpressMailerTest extends \MailPoetTest {
     $mailer = $this->createMock(Mailer::class);
     $mailer->expects($this->any())->method('send')->willReturn(['response' => true]);
     return $this->createMailerFactoryMock($mailer);
+  }
+
+  private function createWordPressMailerWithRecipients(MailerFactory $mailerFactory, int $to, int $cc, int $bcc): WordPressMailer {
+    $wpMailer = new WordPressMailer($mailerFactory, new MetaInfo, $this->subscribersRepository, $this->sourcePluginResolver, $this->sourceUrlResolver);
+    for ($i = 1; $i <= $to; $i++) {
+      $wpMailer->addAddress("to$i@example.com");
+    }
+    for ($i = 1; $i <= $cc; $i++) {
+      $wpMailer->addCC("cc$i@example.com");
+    }
+    for ($i = 1; $i <= $bcc; $i++) {
+      $wpMailer->addBCC("bcc$i@example.com");
+    }
+    $wpMailer->From = 'email-from@example.com';
+    $wpMailer->Subject = 'Subject';
+    $wpMailer->Body = 'Body';
+    $wpMailer->isHTML(false);
+    return $wpMailer;
   }
 
   /**

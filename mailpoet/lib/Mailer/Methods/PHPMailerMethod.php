@@ -2,8 +2,10 @@
 
 namespace MailPoet\Mailer\Methods;
 
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
+use MailPoet\Mailer\Methods\Common\ExtraRecipients;
 use MailPoet\Mailer\WordPress\PHPMailerLoader;
 use MailPoet\Util\Url;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -49,11 +51,40 @@ abstract class PHPMailerMethod implements MailerMethod {
       $error = $this->errorMapper->getBlacklistError($subscriber);
       return Mailer::formatMailerErrorResult($error);
     }
+    $blacklistedRecipient = ExtraRecipients::findBlacklisted($this->blacklist, $extraParams);
+    if ($blacklistedRecipient !== null) {
+      return Mailer::formatMailerErrorResult($this->errorMapper->getBlacklistError($blacklistedRecipient));
+    }
+    $acceptedCount = 0;
+    $rejectedCount = 0;
+    $originalCallback = $this->mailer->action_function; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     try {
       $mailer = $this->configureMailerWithMessage($newsletter, $subscriber, $extraParams);
+      // A site can set its own delivery callback through the mailpoet_mailer_smtp_instance filter.
+      $mailer->action_function = function ($isSent, ...$args) use (&$acceptedCount, &$rejectedCount, $originalCallback): void { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        if ($isSent) {
+          $acceptedCount++;
+        } else {
+          $rejectedCount++;
+        }
+        if (is_callable($originalCallback)) {
+          call_user_func($originalCallback, $isSent, ...$args);
+        }
+      };
       $result = $mailer->send();
     } catch (\Exception $e) {
+      // SMTP delivers to the accepted recipients before PHPMailer throws for the rejected ones.
+      // Reporting an error here would make the WordPress mailer fallback send them a second copy.
+      if ($acceptedCount > 0) {
+        LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SENDING)->warning(
+          'Some recipients of an email were rejected by the sending server',
+          ['accepted' => $acceptedCount, 'rejected' => $rejectedCount]
+        );
+        return Mailer::formatMailerSendSuccessResult();
+      }
       return Mailer::formatMailerErrorResult($this->errorMapper->getErrorFromException($e, $subscriber));
+    } finally {
+      $this->mailer->action_function = $originalCallback; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
     if ($result === true) {
       return Mailer::formatMailerSendSuccessResult();
@@ -67,7 +98,7 @@ abstract class PHPMailerMethod implements MailerMethod {
 
   public function configureMailerWithMessage($newsletter, $subscriber, $extraParams = []) {
     $mailer = $this->mailer;
-    $mailer->clearAddresses();
+    $mailer->clearAllRecipients();
     $mailer->clearCustomHeaders();
     $mailer->isHTML(!empty($newsletter['body']['html']));
     $mailer->CharSet = 'UTF-8'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -75,6 +106,16 @@ abstract class PHPMailerMethod implements MailerMethod {
     $mailer->addReplyTo($this->replyTo['reply_to_email'], $this->replyTo['reply_to_name']);
     $subscriber = $this->processSubscriber($subscriber);
     $mailer->addAddress($subscriber['email'], $subscriber['name']);
+    $extraRecipients = ExtraRecipients::fromExtraParams($extraParams);
+    foreach ($extraRecipients['to'] as $recipient) {
+      $mailer->addAddress($recipient['address'], $recipient['name']);
+    }
+    foreach ($extraRecipients['cc'] as $recipient) {
+      $mailer->addCC($recipient['address'], $recipient['name']);
+    }
+    foreach ($extraRecipients['bcc'] as $recipient) {
+      $mailer->addBCC($recipient['address'], $recipient['name']);
+    }
     $mailer->Subject = (!empty($newsletter['subject'])) ? $newsletter['subject'] : ''; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $mailer->Body = (!empty($newsletter['body']['html'])) ? $newsletter['body']['html'] : $newsletter['body']['text']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     if ($mailer->ContentType !== 'text/plain') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps

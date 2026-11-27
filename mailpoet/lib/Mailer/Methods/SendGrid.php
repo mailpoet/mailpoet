@@ -4,6 +4,7 @@ namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
+use MailPoet\Mailer\Methods\Common\ExtraRecipients;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\Util\Url;
 use MailPoet\WP\Functions as WPFunctions;
@@ -46,6 +47,10 @@ class SendGrid implements MailerMethod {
       $error = $this->errorMapper->getBlacklistError($subscriber);
       return Mailer::formatMailerErrorResult($error);
     }
+    $blacklistedRecipient = ExtraRecipients::findBlacklisted($this->blacklist, $extraParams);
+    if ($blacklistedRecipient !== null) {
+      return Mailer::formatMailerErrorResult($this->errorMapper->getBlacklistError($blacklistedRecipient));
+    }
     $result = $this->wp->wpRemotePost(
       $this->url,
       $this->request($newsletter, $subscriber, $extraParams)
@@ -84,6 +89,15 @@ class SendGrid implements MailerMethod {
       'replyto' => $this->replyTo['reply_to_email'],
       'subject' => $newsletter['subject'],
     ];
+    $extraRecipients = ExtraRecipients::fromExtraParams($extraParams);
+    if ($extraRecipients['to'] || $extraRecipients['cc'] || $extraRecipients['bcc']) {
+      $body['to'] = array_merge([$body['to']], array_column($extraRecipients['to'], 'address'));
+    }
+    foreach (['cc', 'bcc'] as $field) {
+      if ($extraRecipients[$field]) {
+        $body[$field] = array_column($extraRecipients[$field], 'address');
+      }
+    }
     $headers = [];
 
     // unsubscribe header
@@ -122,7 +136,26 @@ class SendGrid implements MailerMethod {
       'headers' => [
         'Authorization' => $this->auth(),
       ],
-      'body' => http_build_query($body, '', '&'),
+      'body' => $this->buildQuery($body),
     ];
+  }
+
+  /**
+   * Like http_build_query(), but writes lists as "to[]=a&to[]=b", the form the SendGrid v2 docs use.
+   * @param array<string, string|string[]> $body
+   */
+  private function buildQuery(array $body): string {
+    $scalars = [];
+    $lists = [];
+    foreach ($body as $key => $value) {
+      if (!is_array($value)) {
+        $scalars[$key] = $value;
+        continue;
+      }
+      foreach ($value as $item) {
+        $lists[] = urlencode($key . '[]') . '=' . urlencode($item);
+      }
+    }
+    return implode('&', array_filter([http_build_query($scalars, '', '&'), implode('&', $lists)]));
   }
 }

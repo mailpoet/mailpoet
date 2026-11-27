@@ -6,6 +6,10 @@ use Automattic\WooCommerce\EmailEditor\Engine\Renderer\Html2Text;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
+use MailPoet\Mailer\Methods\AmazonSES;
+use MailPoet\Mailer\Methods\MailerMethod;
+use MailPoet\Mailer\Methods\MailPoet;
+use MailPoet\Mailer\Methods\SendGrid;
 use MailPoet\Subscribers\ApiSourcePluginResolver;
 use MailPoet\Subscribers\SourceUrlResolver;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -16,7 +20,10 @@ PHPMailerLoader::load();
 
 class WordPressMailer extends PHPMailer {
   // The Sending Service rejects a message with more addresses in To, CC or BCC.
-  private const MAX_RECIPIENTS_PER_FIELD = 5;
+  private const MSS_MAX_RECIPIENTS_PER_FIELD = 5;
+  // Limits across To, CC and BCC together, from the Amazon SES and SendGrid v2 API docs.
+  private const AMAZON_SES_MAX_RECIPIENTS_PER_EMAIL = 50;
+  private const SENDGRID_MAX_RECIPIENTS_PER_EMAIL = 1000;
 
   /** @var MailerFactory */
   private $mailerFactory;
@@ -67,24 +74,14 @@ class WordPressMailer extends PHPMailer {
         $this->sourceUrlResolver->resolve()
       ),
     ];
-    // The first To address is the main recipient. The remaining To, CC and BCC addresses
-    // are sent along so the Sending Service can deliver to all of them. Each field is cut
-    // to 5 addresses (the main recipient counts toward To), because the Sending Service
-    // rejects the whole request when a field has more.
-    $recipients = [
-      'to' => $this->limitRecipients('to', array_slice($toAddresses, 1), self::MAX_RECIPIENTS_PER_FIELD - 1),
-      'cc' => $this->limitRecipients('cc', $this->getCcAddresses(), self::MAX_RECIPIENTS_PER_FIELD),
-      'bcc' => $this->limitRecipients('bcc', $this->getBccAddresses(), self::MAX_RECIPIENTS_PER_FIELD),
-    ];
-    $recipients = array_filter($recipients);
-    if ($recipients) {
-      $extraParams['recipients'] = $recipients;
-    }
-
     try {
       // we need to build fresh mailer for every single WP e-mail to make sure reply-to is set
       $replyTo = $this->getReplyToAddress();
       $mailer = $this->mailerFactory->buildMailer(null, null, $replyTo);
+      $recipients = array_filter($this->getExtraRecipients($toAddresses, $mailer->mailerMethod));
+      if ($recipients) {
+        $extraParams['recipients'] = $recipients;
+      }
       $result = $mailer->send($email, $address, $extraParams);
       if (!$result['response']) {
         throw new \Exception($result['error']->getMessage());
@@ -104,6 +101,51 @@ class WordPressMailer extends PHPMailer {
   }
 
   /**
+   * The To addresses after the first, and the CC and BCC addresses, cut to what the sending method accepts.
+   * @param array<int, array{0: string, 1?: string}> $toAddresses
+   * @return array{to: array<int, array{address: string, name: string}>, cc: array<int, array{address: string, name: string}>, bcc: array<int, array{address: string, name: string}>}
+   */
+  private function getExtraRecipients(array $toAddresses, ?MailerMethod $mailerMethod): array {
+    $lists = [
+      'to' => array_slice($toAddresses, 1),
+      'cc' => $this->getCcAddresses(),
+      'bcc' => $this->getBccAddresses(),
+    ];
+    if ($mailerMethod instanceof MailPoet) {
+      // The main recipient counts toward To.
+      return [
+        'to' => $this->limitRecipients('to', $lists['to'], self::MSS_MAX_RECIPIENTS_PER_FIELD - 1),
+        'cc' => $this->limitRecipients('cc', $lists['cc'], self::MSS_MAX_RECIPIENTS_PER_FIELD),
+        'bcc' => $this->limitRecipients('bcc', $lists['bcc'], self::MSS_MAX_RECIPIENTS_PER_FIELD),
+      ];
+    }
+    $maxPerEmail = $this->getMaxRecipientsPerEmail($mailerMethod);
+    $remaining = $maxPerEmail === null ? PHP_INT_MAX : $maxPerEmail - 1;
+    $result = [];
+    $dropped = 0;
+    foreach ($lists as $field => $addresses) {
+      $kept = array_slice($addresses, 0, $remaining);
+      $dropped += count($addresses) - count($kept);
+      $remaining -= count($kept);
+      $result[$field] = array_map([$this, 'formatAddressEntry'], $kept);
+    }
+    if ($dropped > 0) {
+      $this->logDroppedRecipients(['dropped' => $dropped, 'limit' => $maxPerEmail]);
+    }
+    return $result;
+  }
+
+  private function getMaxRecipientsPerEmail(?MailerMethod $mailerMethod): ?int {
+    if ($mailerMethod instanceof AmazonSES) {
+      return self::AMAZON_SES_MAX_RECIPIENTS_PER_EMAIL;
+    }
+    if ($mailerMethod instanceof SendGrid) {
+      return self::SENDGRID_MAX_RECIPIENTS_PER_EMAIL;
+    }
+    return null;
+  }
+
+  /**
    * Cuts a recipient list to $limit addresses and logs how many were dropped (never the addresses).
    * @param array<int, array{0: string, 1?: string}> $addresses
    * @return array<int, array{address: string, name: string}>
@@ -111,12 +153,19 @@ class WordPressMailer extends PHPMailer {
   private function limitRecipients(string $field, array $addresses, int $limit): array {
     $dropped = count($addresses) - $limit;
     if ($dropped > 0) {
-      LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SENDING)->warning(
-        'Transactional email recipients over the Sending Service limit were dropped',
-        ['field' => $field, 'dropped' => $dropped, 'limit' => $limit]
-      );
+      $this->logDroppedRecipients(['field' => $field, 'dropped' => $dropped, 'limit' => $limit]);
     }
     return array_map([$this, 'formatAddressEntry'], array_slice($addresses, 0, $limit));
+  }
+
+  /**
+   * @param array<string, string|int|null> $context Counts only, never addresses.
+   */
+  private function logDroppedRecipients(array $context): void {
+    LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SENDING)->warning(
+      'Transactional email recipients over the sending method limit were dropped',
+      $context
+    );
   }
 
   private function getEmail() {

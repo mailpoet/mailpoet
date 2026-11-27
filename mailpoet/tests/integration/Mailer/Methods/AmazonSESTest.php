@@ -298,6 +298,54 @@ class AmazonSESTest extends \MailPoetTest {
     verify($result['error']->getMessage())->stringContainsString('AmazonSES has returned an unknown error.');
   }
 
+  public function testItListsEveryRecipientAsADestination() {
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $this->getExtraRecipients());
+    verify($body['Destinations.member.1'])->equals('blackhole@mailpoet.com');
+    verify($body['Destinations.member.2'])->equals('to2@example.com');
+    verify($body['Destinations.member.3'])->equals('cc1@example.com');
+    verify($body['Destinations.member.4'])->equals('bcc1@example.com');
+    verify($body)->arrayHasNotKey('Destinations.member.5');
+  }
+
+  public function testItKeepsBccOutOfTheRawMessage() {
+    $this->mailer->getBody($this->newsletter, $this->subscriber, $this->getExtraRecipients());
+    $message = $this->mailer->rawMessage;
+    verify($message)->stringContainsString('To: Recipient <blackhole@mailpoet.com>, To Two <to2@example.com>');
+    verify($message)->stringContainsString('Cc: Cc One <cc1@example.com>');
+    verify($message)->stringNotContainsString('bcc1@example.com');
+  }
+
+  public function testItSendsNoDestinationsWithoutExtraRecipients() {
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $this->extraParams);
+    verify(array_keys($body))->equals(['Action', 'Version', 'Source', 'RawMessage.Data']);
+  }
+
+  public function testItChecksBlacklistForExtraRecipients() {
+    $blacklist = Stub::make(new BlacklistCheck(), [
+      'isBlacklisted' => function ($address) {
+        return $address === 'cc1@example.com';
+      },
+    ], $this);
+    $mailer = Stub::make(
+      $this->mailer,
+      ['blacklist' => $blacklist, 'errorMapper' => new AmazonSESMapper()],
+      $this
+    );
+    $result = $mailer->send($this->newsletter, $this->subscriber, $this->getExtraRecipients());
+    verify($result['response'])->false();
+    verify($result['error']->getSubscriberErrors()[0]->getEmail())->equals('cc1@example.com');
+  }
+
+  private function getExtraRecipients(): array {
+    return [
+      'recipients' => [
+        'to' => [['address' => 'to2@example.com', 'name' => 'To Two']],
+        'cc' => [['address' => 'cc1@example.com', 'name' => 'Cc One']],
+        'bcc' => [['address' => 'bcc1@example.com', 'name' => 'Bcc One']],
+      ],
+    ];
+  }
+
   public function testItCanSend() {
     $mockedWp = $this->createMock(WPFunctions::class);
     /**
