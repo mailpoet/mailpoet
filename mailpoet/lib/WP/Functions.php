@@ -171,6 +171,10 @@ class Functions {
     return wp_register_ability($name, $args);
   }
 
+  public function getAbility(string $name): ?\WP_Ability {
+    return wp_get_ability($name);
+  }
+
   public function currentUserCan($capability, ...$args) {
     return current_user_can($capability, ...$args);
   }
