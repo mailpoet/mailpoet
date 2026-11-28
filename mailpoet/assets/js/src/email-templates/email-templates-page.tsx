@@ -1,7 +1,13 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DataViews, type Action, type View } from '@wordpress/dataviews';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { Button, Modal } from '@wordpress/components';
+import {
+  Button,
+  Dropdown,
+  MenuGroup,
+  MenuItem,
+  Modal,
+} from '@wordpress/components';
 import { EmptyState, Notice } from '@wordpress/ui';
 import { Categories } from 'common/categories/categories';
 import {
@@ -25,6 +31,14 @@ import {
   trashPreset,
   type PresetsGroup,
 } from './api';
+import {
+  createClassicTemplate,
+  getClassicTemplateEditUrl,
+  getClassicTemplates,
+  importClassicTemplate,
+  type ClassicTemplate,
+} from './classic-api';
+import { ClassicTemplates } from './classic-templates';
 import { presetFields } from './fields';
 import { PresetNameForm, PresetPreviewModal } from './modals';
 
@@ -68,13 +82,24 @@ async function settleAll(requests: Promise<void>[]): Promise<void> {
   if (failed) throw failed.reason;
 }
 
+type Tab = PresetsGroup | 'classic';
+
+// Users who always pick the classic editor see their templates first.
+const isClassicFirst = !!window.mailpoet_email_templates_classic_first;
+
 export function EmailTemplatesPage() {
-  const [group, setGroup] = useState<PresetsGroup>('all');
+  const [tab, setTab] = useState<Tab>(isClassicFirst ? 'classic' : 'all');
+  const group: PresetsGroup = tab === 'trash' ? 'trash' : 'all';
+  const [classicTemplates, setClassicTemplates] = useState<ClassicTemplate[]>(
+    [],
+  );
+  const [isLoadingClassic, setIsLoadingClassic] = useState(true);
   const [selection, setSelection] = useState<string[]>([]);
   const [isEmptyingTrash, setIsEmptyingTrash] = useState(false);
   const [notice, setNotice] = useState<NoticeState | null>(null);
   const [previewTarget, setPreviewTarget] = useState<EmailPreset | null>(null);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [addModal, setAddModal] = useState<'preset' | 'classic' | null>(null);
+  const importInput = useRef<HTMLInputElement>(null);
   const [initialView] = useState<View>(() =>
     getDataViewsPreference(PREFERENCE_KEY, DEFAULT_VIEW, presetFields),
   );
@@ -103,6 +128,35 @@ export function EmailTemplatesPage() {
     onChangeView,
   );
 
+  // An older load can finish after a newer one, so only the latest one counts.
+  const latestClassicLoad = useRef(0);
+  const loadClassicTemplates = useCallback(() => {
+    latestClassicLoad.current += 1;
+    const loadId = latestClassicLoad.current;
+    const isLatest = () => loadId === latestClassicLoad.current;
+    setIsLoadingClassic(true);
+    getClassicTemplates()
+      .then((templates) => {
+        if (isLatest()) setClassicTemplates(templates);
+      })
+      .catch((error) => {
+        if (isLatest()) {
+          setNotice({ status: 'error', message: errorMessage(error) });
+        }
+      })
+      .finally(() => {
+        if (isLatest()) setIsLoadingClassic(false);
+      });
+  }, []);
+
+  useEffect(loadClassicTemplates, [loadClassicTemplates]);
+
+  const showClassicNotice = useCallback(
+    (status: NoticeState['status'], message: string) =>
+      setNotice({ status, message }),
+    [],
+  );
+
   const counts = useMemo(() => {
     const result: Record<PresetsGroup, number> = { all: 0, trash: 0 };
     (groups ?? []).forEach(({ name, count }) => {
@@ -116,21 +170,40 @@ export function EmailTemplatesPage() {
       all: __('Presets', 'mailpoet'),
       trash: __('Trash', 'mailpoet'),
     };
-    return groupsToTabs(
+    const presetTabs = groupsToTabs(
       (groups ?? []).map((item) => ({
         ...item,
         label: labels[item.name] ?? item.name,
       })),
-      group,
+      tab,
     );
-  }, [group, groups]);
+    const classicTab = {
+      name: 'classic',
+      label: __('Classic templates', 'mailpoet'),
+      count: classicTemplates.length,
+      automationId: 'filters_classic',
+      className: 'mailpoet-dataviews-group-classic',
+    };
+    if (isClassicFirst) return [classicTab, ...presetTabs];
+    // Trash stays last, next to the presets it belongs to.
+    const trashIndex = presetTabs.findIndex((item) => item.name === 'trash');
+    return trashIndex === -1
+      ? [...presetTabs, classicTab]
+      : [
+          ...presetTabs.slice(0, trashIndex),
+          classicTab,
+          ...presetTabs.slice(trashIndex),
+        ];
+  }, [tab, groups, classicTemplates.length]);
 
-  const switchGroup = (next: string) => {
-    if (next !== 'all' && next !== 'trash') return;
-    if (next === group) return;
+  const switchTab = (next: string) => {
+    if (next !== 'all' && next !== 'trash' && next !== 'classic') return;
+    if (next === tab) return;
     setSelection([]);
-    setGroup(next);
-    setView((current) => ({ ...current, page: 1 }));
+    setTab(next);
+    if (next !== 'classic') {
+      setView((current) => ({ ...current, page: 1 }));
+    }
   };
 
   const runForEach = useCallback(
@@ -311,6 +384,51 @@ export function EmailTemplatesPage() {
     }
   }, []);
 
+  const handleCreateClassic = useCallback(
+    async (name: string): Promise<boolean> => {
+      let template: ClassicTemplate;
+      try {
+        template = await createClassicTemplate(name);
+      } catch (error) {
+        setNotice({ status: 'error', message: errorMessage(error) });
+        return false;
+      }
+      try {
+        window.location.href = await getClassicTemplateEditUrl(template.id);
+      } catch {
+        setNotice({
+          status: 'error',
+          message: __(
+            'The template was created, but the editor could not be opened. You can find it in Classic templates.',
+            'mailpoet',
+          ),
+        });
+        loadClassicTemplates();
+      }
+      return true;
+    },
+    [loadClassicTemplates],
+  );
+
+  const handleImportClassic = async (file: File) => {
+    try {
+      const template = await importClassicTemplate(file);
+      setNotice({
+        status: 'success',
+        message: sprintf(
+          /* translators: %s is the name of the imported template */
+          __('Template "%s" imported.', 'mailpoet'),
+          template.name,
+        ),
+      });
+      setTab('classic');
+    } catch (error) {
+      setNotice({ status: 'error', message: errorMessage(error) });
+    } finally {
+      loadClassicTemplates();
+    }
+  };
+
   const handleRename = useCallback(
     async (preset: EmailPreset, title: string): Promise<boolean> => {
       try {
@@ -423,14 +541,69 @@ export function EmailTemplatesPage() {
     <>
       <TopBarWithBoundary />
       <PageHeader heading={__('Email templates', 'mailpoet')}>
-        <Button
-          className="page-title-action"
-          onClick={() => setIsAddModalOpen(true)}
-          data-automation-id="email_templates_add_preset"
-        >
-          {__('Add preset', 'mailpoet')}
-        </Button>
+        <Dropdown
+          popoverProps={{ placement: 'bottom-end' }}
+          renderToggle={({ isOpen, onToggle }) => (
+            <Button
+              className="page-title-action"
+              size="compact"
+              onClick={onToggle}
+              aria-expanded={isOpen}
+              data-automation-id="email_templates_add_new"
+            >
+              {__('Add new', 'mailpoet')}
+            </Button>
+          )}
+          renderContent={({ onClose }) => (
+            <>
+              <MenuGroup label={__('Block editor', 'mailpoet')}>
+                <MenuItem
+                  onClick={() => {
+                    onClose();
+                    setAddModal('preset');
+                  }}
+                  data-automation-id="email_templates_add_preset"
+                >
+                  {__('Add preset', 'mailpoet')}
+                </MenuItem>
+              </MenuGroup>
+              <MenuGroup label={__('Classic editor', 'mailpoet')}>
+                <MenuItem
+                  onClick={() => {
+                    onClose();
+                    setAddModal('classic');
+                  }}
+                  data-automation-id="email_templates_add_classic_template"
+                >
+                  {__('Add classic template', 'mailpoet')}
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    onClose();
+                    importInput.current?.click();
+                  }}
+                  data-automation-id="email_templates_import_classic_template"
+                >
+                  {__('Import classic template', 'mailpoet')}
+                </MenuItem>
+              </MenuGroup>
+            </>
+          )}
+        />
       </PageHeader>
+      <input
+        ref={importInput}
+        type="file"
+        accept=".json,application/json"
+        hidden
+        onChange={(event) => {
+          const input = event.target;
+          const file = input.files?.[0];
+          // Lets the same file be picked again.
+          input.value = '';
+          if (file) void handleImportClassic(file);
+        }}
+      />
 
       {loadError && (
         <Notice.Root intent="error">
@@ -457,66 +630,90 @@ export function EmailTemplatesPage() {
       <Categories
         className="mailpoet-dataviews__tabs mailpoet-email-templates-dataviews__tabs"
         categories={tabs}
-        active={group}
-        onSelect={switchGroup}
+        active={tab}
+        onSelect={switchTab}
       />
 
-      <div
-        className="mailpoet-dataviews mailpoet-email-templates-dataviews"
-        data-automation-id="email_templates_listing"
-      >
-        <DataViews<EmailPreset>
-          data={items}
-          fields={presetFields}
-          view={view}
-          onChangeView={handleViewChange}
-          actions={actions}
-          paginationInfo={paginationInfo}
-          defaultLayouts={{ grid: {} }}
-          getItemId={(item) => String(item.id)}
-          selection={selection}
-          onChangeSelection={setSelection}
-          isLoading={isLoading}
-          empty={
-            <EmptyState.Root>
-              <EmptyState.Description>{emptyMessage}</EmptyState.Description>
-            </EmptyState.Root>
-          }
+      {tab === 'classic' ? (
+        <ClassicTemplates
+          templates={classicTemplates}
+          isLoading={isLoadingClassic}
+          refresh={loadClassicTemplates}
+          onNotice={showClassicNotice}
+        />
+      ) : (
+        <div
+          className="mailpoet-dataviews mailpoet-email-templates-dataviews"
+          data-automation-id="email_templates_listing"
         >
-          <div className="mailpoet-dataviews__toolbar">
-            <div className="mailpoet-dataviews__toolbar-end">
-              {group === 'trash' && counts.trash > 0 && (
-                <Button
-                  size="compact"
-                  variant="secondary"
-                  isDestructive
-                  isBusy={isEmptyingTrash}
-                  disabled={isEmptyingTrash}
-                  onClick={() => void handleEmptyTrash()}
-                >
-                  {__('Empty Trash', 'mailpoet')}
-                </Button>
-              )}
-              <DataViews.Search label={__('Search presets', 'mailpoet')} />
-              <DataViews.ViewConfig />
+          <DataViews<EmailPreset>
+            data={items}
+            fields={presetFields}
+            view={view}
+            onChangeView={handleViewChange}
+            actions={actions}
+            paginationInfo={paginationInfo}
+            defaultLayouts={{ grid: {} }}
+            getItemId={(item) => String(item.id)}
+            selection={selection}
+            onChangeSelection={setSelection}
+            isLoading={isLoading}
+            empty={
+              <EmptyState.Root>
+                <EmptyState.Description>{emptyMessage}</EmptyState.Description>
+              </EmptyState.Root>
+            }
+          >
+            <div className="mailpoet-dataviews__toolbar">
+              <div className="mailpoet-dataviews__toolbar-end">
+                {group === 'trash' && counts.trash > 0 && (
+                  <Button
+                    size="compact"
+                    variant="secondary"
+                    isDestructive
+                    isBusy={isEmptyingTrash}
+                    disabled={isEmptyingTrash}
+                    onClick={() => void handleEmptyTrash()}
+                  >
+                    {__('Empty Trash', 'mailpoet')}
+                  </Button>
+                )}
+                <DataViews.Search label={__('Search presets', 'mailpoet')} />
+                <DataViews.ViewConfig />
+              </div>
             </div>
-          </div>
-          <DataViews.Layout />
-          <DataViews.Footer />
-        </DataViews>
-      </div>
+            <DataViews.Layout />
+            <DataViews.Footer />
+          </DataViews>
+        </div>
+      )}
 
-      {isAddModalOpen && (
+      {addModal === 'preset' && (
         <Modal
           title={__('Add preset', 'mailpoet')}
-          onRequestClose={() => setIsAddModalOpen(false)}
+          onRequestClose={() => setAddModal(null)}
           focusOnMount="firstContentElement"
         >
           <PresetNameForm
             defaultTitle=""
             submitLabel={__('Add preset', 'mailpoet')}
             onSubmit={handleCreate}
-            onClose={() => setIsAddModalOpen(false)}
+            onClose={() => setAddModal(null)}
+          />
+        </Modal>
+      )}
+      {addModal === 'classic' && (
+        <Modal
+          title={__('Add classic template', 'mailpoet')}
+          onRequestClose={() => setAddModal(null)}
+          focusOnMount="firstContentElement"
+        >
+          <PresetNameForm
+            label={__('Template name', 'mailpoet')}
+            defaultTitle=""
+            submitLabel={__('Add template', 'mailpoet')}
+            onSubmit={handleCreateClassic}
+            onClose={() => setAddModal(null)}
           />
         </Modal>
       )}

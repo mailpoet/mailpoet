@@ -172,7 +172,28 @@ class NewsletterSaveController {
     if ($this->isNewEditor($data)) {
       $this->ensureWpPost($newsletter);
     }
+    $this->updateEditedTemplate($newsletter);
     return $newsletter;
+  }
+
+  /**
+   * Autosave in template mode also saves the template, so no changes are lost.
+   */
+  private function updateEditedTemplate(NewsletterEntity $newsletter): void {
+    if ($newsletter->getType() !== NewsletterEntity::TYPE_TEMPLATE) {
+      return;
+    }
+    $template = $this->newsletterTemplatesRepository->findOneBy(['newsletter' => $newsletter, 'readonly' => false]);
+    if (!$template) {
+      return;
+    }
+    $body = $newsletter->getBody();
+    $template->setBody(is_array($body) ? $this->newsletterCoupon->cleanupBodySensitiveData($body) : $body);
+    $name = trim($newsletter->getSubject());
+    if ($name !== '') {
+      $template->setName($name);
+    }
+    $this->newsletterTemplatesRepository->flush();
   }
 
   public function updateShareVisibility(NewsletterEntity $newsletter, string $visibility): NewsletterEntity {

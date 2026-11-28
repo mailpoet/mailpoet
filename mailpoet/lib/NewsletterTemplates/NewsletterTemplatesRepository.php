@@ -2,6 +2,8 @@
 
 namespace MailPoet\NewsletterTemplates;
 
+use MailPoet\Config\Env;
+use MailPoet\Config\PopulatorData\Templates\NewsletterBlank1Column;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterTemplateEntity;
@@ -22,7 +24,7 @@ class NewsletterTemplatesRepository extends Repository {
    */
   public function findAllForListing(): array {
     return $this->doctrineRepository->createQueryBuilder('nt')
-      ->select('PARTIAL nt.{id,categories,thumbnail,name,readonly}')
+      ->select('PARTIAL nt.{id,categories,thumbnail,name,readonly,updatedAt}')
       ->addOrderBy('nt.readonly', 'ASC')
       ->addOrderBy('nt.createdAt', 'DESC')
       ->addOrderBy('nt.id', 'DESC')
@@ -72,6 +74,52 @@ class NewsletterTemplatesRepository extends Repository {
 
     $this->entityManager->flush();
     return $template;
+  }
+
+  public function duplicate(NewsletterTemplateEntity $template): NewsletterTemplateEntity {
+    $duplicate = new NewsletterTemplateEntity(
+      // translators: %s is the name of the template that is copied.
+      sprintf(__('Copy of %s', 'mailpoet'), $template->getName())
+    );
+    $duplicate->setBody($template->getBody());
+    $duplicate->setCategories($this->getSavedCategories($template));
+    $duplicate->setThumbnail($template->getThumbnail());
+    $thumbnailData = $template->getThumbnailData();
+    if ($thumbnailData !== null) {
+      $duplicate->setThumbnailData($thumbnailData);
+    }
+    $this->entityManager->persist($duplicate);
+    $this->entityManager->flush();
+    return $duplicate;
+  }
+
+  public function createFromBlank(string $name): NewsletterTemplateEntity {
+    $blank = (new NewsletterBlank1Column(Env::$assetsUrl))->get();
+    $template = new NewsletterTemplateEntity($name);
+    $body = json_decode($blank['body'], true);
+    $template->setBody(is_array($body) ? $body : null);
+    $template->setCategories(json_encode(['saved', NewsletterEntity::TYPE_STANDARD]) ?: '[]');
+    $template->setThumbnail($blank['thumbnail']);
+    $this->entityManager->persist($template);
+    $this->entityManager->flush();
+    return $template;
+  }
+
+  /**
+   * Built-in templates use [type, "all"|"blank"], saved ones use ["saved", type],
+   * and the old importer added "saved" last. Copies always get ["saved", type].
+   */
+  private function getSavedCategories(NewsletterTemplateEntity $template): string {
+    $categories = json_decode($template->getCategories(), true);
+    $type = NewsletterEntity::TYPE_STANDARD;
+    foreach (is_array($categories) ? $categories : [] as $category) {
+      // Recently sent templates use ["recent"] and are deleted by cleanRecentlySent(), so their copies become standard.
+      if (is_string($category) && !in_array($category, ['saved', 'all', 'blank', 'recent'], true)) {
+        $type = $category;
+        break;
+      }
+    }
+    return json_encode(['saved', $type]) ?: '[]';
   }
 
   public function cleanRecentlySent() {

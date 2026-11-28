@@ -127,6 +127,49 @@ Module.saveTemplate = function (options) {
   });
 };
 
+// Template mode: every save also saves the template body, this adds the
+// thumbnail and the name.
+Module.updateEditedTemplate = function () {
+  return fromNewsletter(App.toJSON()).then(function (thumbnail) {
+    var data = {
+      newsletter_id: App.getNewsletter().get('id'),
+      body: JSON.stringify(App.getBody()),
+      thumbnail_data: thumbnail,
+    };
+    var name = (App.getNewsletter().get('subject') || '').trim();
+    if (name) {
+      data.name = name;
+    }
+    return MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'newsletterTemplates',
+      action: 'save',
+      data: data,
+    });
+  });
+};
+
+// Template mode: autosave saves the body, so the thumbnail is updated once
+// the user stops editing. Making a thumbnail on every autosave is too slow.
+Module.scheduleTemplateThumbnail = _.debounce(function () {
+  if (Module.isSavingTemplate) return;
+  fromNewsletter(App.toJSON())
+    .then(function (thumbnail) {
+      return MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
+        endpoint: 'newsletterTemplates',
+        action: 'save',
+        data: {
+          newsletter_id: App.getNewsletter().get('id'),
+          thumbnail_data: thumbnail,
+        },
+      });
+    })
+    .catch(function () {
+      // The template keeps its old thumbnail until the next save.
+    });
+}, 5000);
+
 Module.exportTemplate = function (options) {
   return fromNewsletter(App.toJSON()).then(function (thumbnail) {
     var data = _.extend(options || {}, {
@@ -156,6 +199,7 @@ Module.SaveView = Marionette.View.extend({
         'woocommerceCustomizerEnabled',
       ),
       isConfirmationEmailTemplate: this.model.isConfirmationEmailTemplate(),
+      isTemplate: this.model.isTemplate(),
       confirmationEmailCustomizerEnabled: App.getConfig().get(
         'confirmationEmailCustomizerEnabled',
       ),
@@ -180,6 +224,8 @@ Module.SaveView = Marionette.View.extend({
       'activateConfirmationEmailCustomizer',
     /* Automation email */
     'click .mailpoet_save_go_to_automation': 'saveAndGoToAutomation',
+    /* Template editing */
+    'click .mailpoet_save_edited_template': 'saveEditedTemplate',
     'click .mailpoet_show_preview': 'showPreview',
   },
 
@@ -396,6 +442,30 @@ Module.SaveView = Marionette.View.extend({
         window.location.href = App.getConfig().get('urls.send');
       });
     }
+  },
+  saveEditedTemplate: function () {
+    var editorTop = $('#mailpoet_editor_top');
+    // An older save that finishes last would overwrite the newer template.
+    if (Module.isSavingTemplate) return;
+    Module.isSavingTemplate = true;
+    Module._cancelAutosave();
+    Module.scheduleTemplateThumbnail.cancel();
+    Module.save()
+      .then(Module.updateEditedTemplate)
+      .then(function () {
+        Module.isSavingTemplate = false;
+        MailPoet.Notice.success(__('Template has been saved.', 'mailpoet'), {
+          positionAfter: editorTop,
+          scroll: true,
+        });
+      })
+      .catch(function () {
+        Module.isSavingTemplate = false;
+        MailPoet.Notice.error(
+          __('Template has not been saved, please try again', 'mailpoet'),
+          { positionAfter: editorTop, scroll: true },
+        );
+      });
   },
   saveAndGoToAutomation: function () {
     this.hideSaveOptions();
@@ -673,6 +743,11 @@ Module.autoSave = function () {
     }
     App.getChannel()
       .request('save')
+      .done(function () {
+        if (App.getNewsletter().isTemplate()) {
+          Module.scheduleTemplateThumbnail();
+        }
+      })
       .always(function () {
         Module._cancelAutosave();
       });

@@ -304,9 +304,12 @@ App.on('before:start', function beforeStartApp(BeforeStartApp, options) {
     blockView: Module.AbandonedCartContentBlockView,
   });
 
+  // Templates can be used for abandoned cart emails, so they get the block too.
   if (
-    options.newsletter.options.group !== 'woocommerce' ||
-    options.newsletter.options.event !== 'woocommerce_abandoned_shopping_cart'
+    options.newsletter.type !== 'template' &&
+    (options.newsletter.options.group !== 'woocommerce' ||
+      options.newsletter.options.event !==
+        'woocommerce_abandoned_shopping_cart')
   ) {
     isAbandonedCartContentBlockActive = false;
     return;

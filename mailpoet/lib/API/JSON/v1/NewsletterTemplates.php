@@ -6,11 +6,15 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\ResponseBuilders\NewsletterTemplatesResponseBuilder;
 use MailPoet\Config\AccessControl;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterTemplateEntity;
 use MailPoet\Newsletter\ApiDataSanitizer;
 use MailPoet\Newsletter\NewsletterCoupon;
+use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\NewsletterTemplates\ThumbnailSaver;
+use MailPoet\WP\Functions as WPFunctions;
 
 class NewsletterTemplates extends APIEndpoint {
   public $permissions = [
@@ -39,13 +43,21 @@ class NewsletterTemplates extends APIEndpoint {
   /*** @var NewsletterCoupon */
   private $newsletterCoupon;
 
+  /** @var NewsletterSaveController */
+  private $newsletterSaveController;
+
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     NewsletterTemplatesRepository $newsletterTemplatesRepository,
     NewsletterTemplatesResponseBuilder $newsletterTemplatesResponseBuilder,
     ThumbnailSaver $thumbnailImageSaver,
     ApiDataSanitizer $apiDataSanitizer,
     NewslettersRepository $newsletterRepository,
-    NewsletterCoupon $newsletterCoupon
+    NewsletterCoupon $newsletterCoupon,
+    NewsletterSaveController $newsletterSaveController,
+    WPFunctions $wp
   ) {
     $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
     $this->newsletterTemplatesResponseBuilder = $newsletterTemplatesResponseBuilder;
@@ -53,6 +65,8 @@ class NewsletterTemplates extends APIEndpoint {
     $this->apiDataSanitizer = $apiDataSanitizer;
     $this->newsletterRepository = $newsletterRepository;
     $this->newsletterCoupon = $newsletterCoupon;
+    $this->newsletterSaveController = $newsletterSaveController;
+    $this->wp = $wp;
   }
 
   public function get($data = []) {
@@ -99,7 +113,7 @@ class NewsletterTemplates extends APIEndpoint {
     }
     try {
       $template = $this->newsletterTemplatesRepository->createOrUpdate($data);
-      $template = $this->thumbnailImageSaver->ensureTemplateThumbnailFile($template);
+      $template = $this->thumbnailImageSaver->ensureTemplateThumbnailFile($template, isset($data['thumbnail_data']));
       if (!empty($data['categories']) && $data['categories'] === NewsletterTemplatesRepository::RECENTLY_SENT_CATEGORIES) {
         $this->newsletterTemplatesRepository->cleanRecentlySent();
       }
@@ -121,8 +135,111 @@ class NewsletterTemplates extends APIEndpoint {
       ]);
     }
 
+    $newsletter = $template->getNewsletter();
     $this->newsletterTemplatesRepository->remove($template);
     $this->newsletterTemplatesRepository->flush();
+    if ($newsletter && $newsletter->getType() === NewsletterEntity::TYPE_TEMPLATE) {
+      $this->newsletterRepository->remove($newsletter);
+      $this->newsletterRepository->flush();
+    }
     return $this->successResponse(null, ['count' => 1]);
+  }
+
+  public function duplicate($data = []) {
+    $template = $this->getTemplate($data);
+    if (!$template) {
+      return $this->templateNotFound();
+    }
+
+    $duplicate = $this->newsletterTemplatesRepository->duplicate($template);
+    // The copy needs its own file, because saving the original deletes the old one.
+    $duplicate = $this->thumbnailImageSaver->ensureTemplateThumbnailFile($duplicate, true);
+    return $this->successResponse($this->newsletterTemplatesResponseBuilder->build($duplicate));
+  }
+
+  public function create($data = []) {
+    $name = isset($data['name']) && is_string($data['name']) ? trim($this->wp->sanitizeTextField($data['name'])) : '';
+    if ($name === '') {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => __('Please enter a template name.', 'mailpoet'),
+      ]);
+    }
+
+    $template = $this->newsletterTemplatesRepository->createFromBlank($name);
+    return $this->successResponse($this->newsletterTemplatesResponseBuilder->build($template));
+  }
+
+  public function rename($data = []) {
+    $template = $this->getTemplate($data);
+    if (!$template) {
+      return $this->templateNotFound();
+    }
+    if ($template->getReadonly()) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => __('This template cannot be renamed.', 'mailpoet'),
+      ]);
+    }
+    $name = isset($data['name']) && is_string($data['name']) ? trim($this->wp->sanitizeTextField($data['name'])) : '';
+    if ($name === '') {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => __('Please enter a template name.', 'mailpoet'),
+      ]);
+    }
+
+    $template->setName($name);
+    $newsletter = $template->getNewsletter();
+    if ($newsletter && $newsletter->getType() === NewsletterEntity::TYPE_TEMPLATE) {
+      $newsletter->setSubject($name);
+    }
+    $this->newsletterTemplatesRepository->flush();
+    return $this->successResponse($this->newsletterTemplatesResponseBuilder->build($template));
+  }
+
+  /**
+   * Returns the hidden email that the editor uses to edit a saved template.
+   */
+  public function edit($data = []) {
+    $template = $this->getTemplate($data);
+    if (!$template) {
+      return $this->templateNotFound();
+    }
+    if ($template->getReadonly()) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => __('MailPoet templates cannot be edited. Duplicate the template first.', 'mailpoet'),
+      ]);
+    }
+
+    $newsletter = $template->getNewsletter();
+    if (!$newsletter || $newsletter->getType() !== NewsletterEntity::TYPE_TEMPLATE) {
+      $newsletter = $this->newsletterSaveController->save([
+        'type' => NewsletterEntity::TYPE_TEMPLATE,
+        'subject' => $template->getName(),
+        'body' => json_encode($template->getBody()),
+      ]);
+      $template->setNewsletter($newsletter);
+      $this->newsletterTemplatesRepository->flush();
+    } else {
+      // The template can change outside the editor (import, rename), so the editor always starts from it.
+      $newsletter->setSubject($template->getName());
+      $newsletter->setBody($template->getBody());
+      $this->newsletterRepository->flush();
+    }
+
+    return $this->successResponse([
+      'newsletter_id' => $newsletter->getId(),
+      'editor_url' => $this->wp->adminUrl('admin.php?page=mailpoet-newsletter-editor&id=' . $newsletter->getId()),
+    ]);
+  }
+
+  private function getTemplate(array $data): ?NewsletterTemplateEntity {
+    return isset($data['id'])
+      ? $this->newsletterTemplatesRepository->findOneById((int)$data['id'])
+      : null;
+  }
+
+  private function templateNotFound() {
+    return $this->errorResponse([
+      APIError::NOT_FOUND => __('This template does not exist.', 'mailpoet'),
+    ]);
   }
 }
